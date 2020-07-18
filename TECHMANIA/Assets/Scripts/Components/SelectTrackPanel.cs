@@ -118,4 +118,34 @@ public class SelectTrackPanel : MonoBehaviour
 
         Refresh();
     }
+
+    public void Delete()
+    {
+        if (selectedTrack == null) return;
+        StartCoroutine(InternalDelete());
+    }
+
+    private IEnumerator InternalDelete()
+    {
+        string title = selectedTrack.GetComponentInChildren<Text>().text;
+        string path = $"{Paths.GetTrackFolder()}\\{title}";
+        ConfirmDialog.Show($"Deleting {title}. This will permanently delele {path} and everything in it. Are you sure?");
+        yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
+
+        if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
+        {
+            yield break;
+        }
+
+        try
+        {
+            Directory.Delete(path, recursive: true);
+        }
+        catch (Exception e)
+        {
+            MessageDialog.Show(e.Message);
+        }
+
+        Refresh();
+    }
 }

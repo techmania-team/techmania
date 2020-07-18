@@ -15,9 +15,9 @@ public class MessageDialog : ModalDialog
         return instance;
     }
 
-    public static void Show(string prompt)
+    public static void Show(string message)
     {
-        GetInstance().InternalShow(prompt);
+        GetInstance().InternalShow(message);
     }
     public static bool IsResolved()
     {
@@ -35,9 +35,9 @@ public class MessageDialog : ModalDialog
         }
     }
 
-    private void InternalShow(string prompt)
+    private void InternalShow(string message)
     {
-        messageText.text = prompt;
+        messageText.text = message;
         resolved = false;
         gameObject.SetActive(true);
     }
