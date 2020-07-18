@@ -8,11 +8,15 @@ public class SelectTrackPanel : MonoBehaviour
 {
     public GridLayoutGroup trackGrid;
     public GameObject trackTemplate;
+    public Button deleteButton;
+    public Button openButton;
+
+    private GameObject selectedTrack;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        Refresh();
     }
 
     // Update is called once per frame
@@ -30,6 +34,8 @@ public class SelectTrackPanel : MonoBehaviour
             if (track == trackTemplate) continue;
             Destroy(track);
         }
+        selectedTrack = null;
+        RefreshButtons();
 
         // Rebuild track list.
         foreach (string dir in Directory.EnumerateDirectories(
@@ -41,6 +47,30 @@ public class SelectTrackPanel : MonoBehaviour
             track.transform.SetParent(trackGrid.transform);
             track.GetComponentInChildren<Text>().text = name;
             track.SetActive(true);
+
+            // Bind click event.
+            // TODO: double click to open?
+            track.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                Select(track);
+            });
         }
+    }
+
+    private void RefreshButtons()
+    {
+        deleteButton.interactable = selectedTrack != null;
+        openButton.interactable = selectedTrack != null;
+    }
+
+    private void Select(GameObject track)
+    {
+        if (selectedTrack != null)
+        {
+            selectedTrack.transform.Find("Selection").gameObject.SetActive(false);
+        }
+        selectedTrack = track;
+        RefreshButtons();
+        selectedTrack.transform.Find("Selection").gameObject.SetActive(true);
     }
 }
