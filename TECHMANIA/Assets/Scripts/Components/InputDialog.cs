@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InputDialog : ModalDialog
@@ -42,12 +43,25 @@ public class InputDialog : ModalDialog
     private Result result;
     private string value;  // Only meaningful if state is OK
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            OK();
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cancel();
+        }
+    }
+
     private void InternalShow(string prompt)
     {
+        gameObject.SetActive(true);
         promptText.text = prompt;
         inputField.text = "";
+        inputField.ActivateInputField();
         resolved = false;
-        gameObject.SetActive(true);
     }
 
     public void OK()

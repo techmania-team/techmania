@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -84,6 +85,37 @@ public class SelectTrackPanel : MonoBehaviour
     {
         InputDialog.Show("Title:");
         yield return new WaitUntil(() => { return InputDialog.IsResolved(); });
-        Debug.Log("Title: " + InputDialog.GetValue());
+        if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
+        {
+            yield break;
+        }
+        string title = InputDialog.GetValue();
+        if (title.Length == 0)
+        {
+            yield break;
+        }
+
+        string invalidChars = "\\/*:?\"<>|";
+        foreach (char invalidChar in invalidChars)
+        {
+            if (title.Contains(invalidChar.ToString()))
+            {
+                MessageDialog.Show($"Title cannot contain these characters:\n{invalidChars}");
+                yield break;
+            }
+        }
+
+        string newDir = $"{Paths.GetTrackFolder()}\\{title}";
+        try
+        {
+            Directory.CreateDirectory(newDir);
+        }
+        catch (Exception e)
+        {
+            MessageDialog.Show(e.Message);
+            yield break;
+        }
+
+        Refresh();
     }
 }
