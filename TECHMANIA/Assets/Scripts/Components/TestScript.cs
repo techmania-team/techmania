@@ -21,6 +21,11 @@ public class TestScript : MonoBehaviour
     void Update()
     {
         string report = "";
+        // Working directory is the project folder when:
+        // - Running in editor
+        // - Running standalone from editor
+        report += $"Working directory: {System.IO.Directory.GetCurrentDirectory()}\n";
+        report += "\n";
         report += $"Input.mousePresent: {Input.mousePresent}\n";
         report += $"Input.mousePosition: {Input.mousePosition}\n";
         report += $"Input.mouseScrollDelta: {Input.mouseScrollDelta}\n";
