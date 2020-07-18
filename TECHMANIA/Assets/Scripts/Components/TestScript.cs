@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SFB;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,9 @@ public class TestScript : MonoBehaviour
     {
         text = GetComponent<Text>();
         Input.simulateMouseWithTouches = false;
+
+        // Use SFB to open/save files.
+        // string[] folders = StandaloneFileBrowser.OpenFolderPanel("", "", multiselect: false);
     }
 
     // Update is called once per frame
