@@ -5,7 +5,7 @@ using System.IO;
 
 public static class Paths
 {
-    public static string GetSongFolder()
+    public static string GetTrackFolder()
     {
         string current = Directory.GetCurrentDirectory();  // Does not end with \
         // If there's a "Builds" folder, assume we are running from
@@ -15,11 +15,11 @@ public static class Paths
             current += "\\Builds";
         }
 
-        string songs = current + "\\Songs";
-        if (!Directory.Exists(songs))
+        string tracks = current + "\\Tracks";
+        if (!Directory.Exists(tracks))
         {
-            Directory.CreateDirectory(songs);
+            Directory.CreateDirectory(tracks);
         }
-        return songs;
+        return tracks;
     }
 }

@@ -2,16 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// Song is the container of all patterns in a song. In anticipation of
-// format updates, each format version is a derived class of SongBase.
+// Track is the container of all patterns in a track. In anticipation of
+// format updates, each format version is a derived class of TrackBase.
 //
 // Because class names are not serialized, we can change class names
 // however we want without breaking old files, so the current version
-// class will always be called "Song", and deprecated versions will be
-// called "SongVersion1" or such.
+// class will always be called "Track", and deprecated versions will be
+// called "TrackVersion1" or such.
 
 [Serializable]
-public class SongBase
+public class TrackBase
 {
     public string version;
 
@@ -19,13 +19,13 @@ public class SongBase
     {
         return UnityEngine.JsonUtility.ToJson(this, prettyPrint: true);
     }
-    public static SongBase Deserialize(string json)
+    public static TrackBase Deserialize(string json)
     {
-        string version = UnityEngine.JsonUtility.FromJson<SongBase>(json).version;
+        string version = UnityEngine.JsonUtility.FromJson<TrackBase>(json).version;
         switch (version)
         {
-            case Song.kVersion:
-                return UnityEngine.JsonUtility.FromJson<Song>(json);
+            case Track.kVersion:
+                return UnityEngine.JsonUtility.FromJson<Track>(json);
                 // For non-current versions, maybe attempt conversion?
             default:
                 throw new Exception($"Unknown version: {version}");
@@ -36,17 +36,17 @@ public class SongBase
 // Heavily inspired by bmson:
 // https://bmson-spec.readthedocs.io/en/master/doc/index.html#format-overview
 [Serializable]
-public class Song : SongBase
+public class Track : TrackBase
 {
     public const string kVersion = "1";
-    public Song() { version = kVersion; }
+    public Track() { version = kVersion; }
 
-    public SongMetadata song_metadata;
+    public TrackMetadata track_metadata;
     public List<Pattern> patterns;
 }
 
 [Serializable]
-public class SongMetadata
+public class TrackMetadata
 {
     // Text stuff.
 
@@ -56,7 +56,7 @@ public class SongMetadata
     public List<string> sub_artists;
     public string genre;
 
-    // In song select screen.
+    // In track select screen.
 
     // Filename of eyecatch image.
     public string eyecatch_image;
@@ -103,7 +103,7 @@ public class PatternMetadata
 
     // The backing track played in game.
     // This always plays from the beginning.
-    // If no keysounds, this should be the entire song.
+    // If no keysounds, this should be the entire track.
     public string base_music;
     // Beat 0 starts at this time.
     public double first_beat_offset;

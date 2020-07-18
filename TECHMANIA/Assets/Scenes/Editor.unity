@@ -1248,7 +1248,7 @@ GameObject:
   - component: {fileID: 566397972}
   - component: {fileID: 566397973}
   m_Layer: 5
-  m_Name: Select Song Panel
+  m_Name: Select Track Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1296,8 +1296,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd810a2bb768a8f4f9dccf9f4a8287e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  songGrid: {fileID: 822894929}
-  songTemplate: {fileID: 1346889630}
+  trackGrid: {fileID: 822894929}
+  trackTemplate: {fileID: 1346889630}
 --- !u!1 &578936551
 GameObject:
   m_ObjectHideFlags: 0
@@ -2758,7 +2758,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Select song
+  m_Text: Select track
 --- !u!222 &1274996722
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3018,7 +3018,7 @@ GameObject:
   - component: {fileID: 1346889632}
   - component: {fileID: 1346889634}
   m_Layer: 5
-  m_Name: Song Panel Template
+  m_Name: Track Panel Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
