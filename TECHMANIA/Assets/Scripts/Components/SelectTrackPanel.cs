@@ -16,6 +16,7 @@ public class SelectTrackPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         Refresh();
     }
 
@@ -72,5 +73,17 @@ public class SelectTrackPanel : MonoBehaviour
         selectedTrack = track;
         RefreshButtons();
         selectedTrack.transform.Find("Selection").gameObject.SetActive(true);
+    }
+
+    public void New()
+    {
+        StartCoroutine(InternalNew());
+    }
+
+    private IEnumerator InternalNew()
+    {
+        InputDialog.Show("Title:");
+        yield return new WaitUntil(() => { return InputDialog.IsResolved(); });
+        Debug.Log("Title: " + InputDialog.GetValue());
     }
 }
