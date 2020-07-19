@@ -24,13 +24,18 @@ public class SelectTrackPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Refresh();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnEnable()
+    {
+        Refresh();
     }
 
     public void Refresh()
@@ -206,7 +211,20 @@ public class SelectTrackPanel : MonoBehaviour
     public void Open()
     {
         if (selectedTrackObject == null) return;
-        Navigation.SetCurrentTrack(objectToTrack[selectedTrackObject].track);
+
+        // Reload track from disk, just in case.
+        try
+        {
+            string path = $"{objectToTrack[selectedTrackObject].folder}\\{Paths.kTrackFilename}";
+            Track track = TrackBase.LoadFromFile(path) as Track;
+            Navigation.SetCurrentTrack(track, path);
+        }
+        catch (Exception e)
+        {
+            MessageDialog.Show(e.Message);
+            return;
+        }
+
         Navigation.GoTo(Navigation.Location.Track);
     }
 }

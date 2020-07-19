@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class TrackPanel : MonoBehaviour
 {
-    public static Track currentTrack;
-
-    public TextField title;
-    public TextField artist;
-    public TextField genre;
+    public InputField title;
+    public InputField artist;
+    public InputField genre;
 
     // Start is called before the first frame update
     void Start()
@@ -25,20 +23,22 @@ public class TrackPanel : MonoBehaviour
 
     private void OnEnable()
     {
-
+        MemoryToUI();
     }
 
     public void UIToMemory()
     {
-        currentTrack.trackMetadata.title = title.value;
-        currentTrack.trackMetadata.artist = artist.value;
-        currentTrack.trackMetadata.genre = genre.value;
+        Navigation.GetCurrentTrack().trackMetadata.title = title.text;
+        Navigation.GetCurrentTrack().trackMetadata.artist = artist.text;
+        Navigation.GetCurrentTrack().trackMetadata.genre = genre.text;
+
+        Navigation.SetDirty();
     }
 
     public void MemoryToUI()
     {
-        title.value = currentTrack.trackMetadata.title;
-        artist.value = currentTrack.trackMetadata.artist;
-        genre.value = currentTrack.trackMetadata.genre;
+        title.text = Navigation.GetCurrentTrack().trackMetadata.title;
+        artist.text = Navigation.GetCurrentTrack().trackMetadata.artist;
+        genre.text = Navigation.GetCurrentTrack().trackMetadata.genre;
     }
 }
