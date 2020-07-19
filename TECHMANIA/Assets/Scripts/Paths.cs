@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 public static class Paths
 {
@@ -22,4 +23,21 @@ public static class Paths
         }
         return tracks;
     }
+
+    // Removes characters that aren't allowed in file names.
+    public static string FilterString(string input)
+    {
+        StringBuilder builder = new StringBuilder();
+        const string invalidChars = "\\/*:?\"<>|";
+        foreach (char c in input)
+        {
+            if (!invalidChars.Contains(c.ToString()))
+            {
+                builder.Append(c);
+            }
+        }
+        return builder.ToString();
+    }
+
+    public const string kTrackFilename = "track.tech";
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,12 +13,17 @@ public class SelectTrackPanel : MonoBehaviour
     public Button deleteButton;
     public Button openButton;
 
-    private GameObject selectedTrack;
+    private class TrackInFolder
+    {
+        public string folder;
+        public Track track;
+    }
+    private Dictionary<GameObject, TrackInFolder> objectToTrack;
+    private GameObject selectedTrackObject;
 
     // Start is called before the first frame update
     void Start()
     {
-        
         Refresh();
     }
 
@@ -36,44 +42,84 @@ public class SelectTrackPanel : MonoBehaviour
             if (track == trackTemplate) continue;
             Destroy(track);
         }
-        selectedTrack = null;
+        selectedTrackObject = null;
         RefreshButtons();
 
         // Rebuild track list.
+        objectToTrack = new Dictionary<GameObject, TrackInFolder>();
         foreach (string dir in Directory.EnumerateDirectories(
             Paths.GetTrackFolder()))
         {
-            string name = new DirectoryInfo(dir).Name;
-            GameObject track = Instantiate(trackTemplate);
-            track.name = "Track Panel";
-            track.transform.SetParent(trackGrid.transform);
-            track.GetComponentInChildren<Text>().text = name;
-            track.SetActive(true);
+            // Is there a track?
+            string possibleTrackFile = $"{dir}\\{Paths.kTrackFilename}";
+            if (!File.Exists(possibleTrackFile))
+            {
+                continue;
+            }
+
+            // Attempt to load track.
+            TrackBase trackBase = null;
+            try
+            {
+                trackBase = TrackBase.LoadFromFile(possibleTrackFile);
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+            if (!(trackBase is Track))
+            {
+                continue;
+            }
+            Track track = trackBase as Track;
+
+            // Instantiate track representation.
+            GameObject trackObject = Instantiate(trackTemplate);
+            trackObject.name = "Track Panel";
+            trackObject.transform.SetParent(trackGrid.transform);
+            string textOnObject = $"<b>{track.trackMetadata.title}</b>\n" +
+                $"<size=16>{track.trackMetadata.artist}</size>";
+            trackObject.GetComponentInChildren<Text>().text = textOnObject;
+            trackObject.SetActive(true);
+
+            // Record mapping.
+            objectToTrack.Add(trackObject, new TrackInFolder()
+            {
+                folder = dir,
+                track = track
+            });
 
             // Bind click event.
             // TODO: double click to open?
-            track.GetComponent<Button>().onClick.AddListener(() =>
+            trackObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                Select(track);
+                Select(trackObject);
             });
         }
     }
 
     private void RefreshButtons()
     {
-        deleteButton.interactable = selectedTrack != null;
-        openButton.interactable = selectedTrack != null;
+        deleteButton.interactable = selectedTrackObject != null;
+        openButton.interactable = selectedTrackObject != null;
     }
 
-    private void Select(GameObject track)
+    private void Select(GameObject trackObject)
     {
-        if (selectedTrack != null)
+        if (selectedTrackObject != null)
         {
-            selectedTrack.transform.Find("Selection").gameObject.SetActive(false);
+            selectedTrackObject.transform.Find("Selection").gameObject.SetActive(false);
         }
-        selectedTrack = track;
+        if (!objectToTrack.ContainsKey(trackObject))
+        {
+            selectedTrackObject = null;
+        }
+        else
+        {
+            selectedTrackObject = trackObject;
+            selectedTrackObject.transform.Find("Selection").gameObject.SetActive(true);
+        }
         RefreshButtons();
-        selectedTrack.transform.Find("Selection").gameObject.SetActive(true);
     }
 
     public void New()
@@ -83,32 +129,38 @@ public class SelectTrackPanel : MonoBehaviour
 
     private IEnumerator InternalNew()
     {
-        InputDialog.Show("Title:");
-        yield return new WaitUntil(() => { return InputDialog.IsResolved(); });
-        if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
+        // Get title and artist.
+        NewTrackDialog.Show();
+        yield return new WaitUntil(() => { return NewTrackDialog.IsResolved(); });
+        if (NewTrackDialog.GetResult() == NewTrackDialog.Result.Cancelled)
         {
             yield break;
         }
-        string title = InputDialog.GetValue();
-        if (title.Length == 0)
-        {
-            yield break;
-        }
+        string title = NewTrackDialog.GetTitle();
+        string artist = NewTrackDialog.GetArtist();
+        string filteredTitle = Paths.FilterString(title);
+        string filteredArtist = Paths.FilterString(artist);
+        string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        string invalidChars = "\\/*:?\"<>|";
-        foreach (char invalidChar in invalidChars)
-        {
-            if (title.Contains(invalidChar.ToString()))
-            {
-                MessageDialog.Show($"Title cannot contain these characters:\n{invalidChars}");
-                yield break;
-            }
-        }
-
-        string newDir = $"{Paths.GetTrackFolder()}\\{title}";
+        // Create new directory. Contains timestamp so collisions are
+        // very unlikely.
+        string newDir = $"{Paths.GetTrackFolder()}\\{filteredArtist} - {filteredTitle} - {timestamp}";
         try
         {
             Directory.CreateDirectory(newDir);
+        }
+        catch (Exception e)
+        {
+            MessageDialog.Show(e.Message);
+            yield break;
+        }
+
+        // Create empty track.
+        Track track = new Track(title, artist);
+        string filename = $"{newDir}\\{Paths.kTrackFilename}";
+        try
+        {
+            track.SaveToFile(filename);
         }
         catch (Exception e)
         {
@@ -121,15 +173,17 @@ public class SelectTrackPanel : MonoBehaviour
 
     public void Delete()
     {
-        if (selectedTrack == null) return;
+        if (selectedTrackObject == null) return;
         StartCoroutine(InternalDelete());
     }
 
     private IEnumerator InternalDelete()
     {
-        string title = selectedTrack.GetComponentInChildren<Text>().text;
-        string path = $"{Paths.GetTrackFolder()}\\{title}";
-        ConfirmDialog.Show($"Deleting {title}. This will permanently delele {path} and everything in it. Are you sure?");
+        TrackInFolder trackInFolder = objectToTrack[selectedTrackObject];
+        string title = trackInFolder.track.trackMetadata.title;
+        string path = trackInFolder.folder;
+        ConfirmDialog.Show($"Deleting {title}. This will permanently " +
+            $"delele \"{path}\" and everything in it. Are you sure?");
         yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
 
         if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)

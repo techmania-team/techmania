@@ -15,11 +15,11 @@ public class TrackBase
 {
     public string version;
 
-    public string Serialize()
+    private string Serialize()
     {
         return UnityEngine.JsonUtility.ToJson(this, prettyPrint: true);
     }
-    public static TrackBase Deserialize(string json)
+    private static TrackBase Deserialize(string json)
     {
         string version = UnityEngine.JsonUtility.FromJson<TrackBase>(json).version;
         switch (version)
@@ -31,6 +31,17 @@ public class TrackBase
                 throw new Exception($"Unknown version: {version}");
         }
     }
+
+    public void SaveToFile(string path)
+    {
+        System.IO.File.WriteAllText(path, Serialize());
+    }
+
+    public static TrackBase LoadFromFile(string path)
+    {
+        string fileContent = System.IO.File.ReadAllText(path);
+        return Deserialize(fileContent);
+    }
 }
 
 // Heavily inspired by bmson:
@@ -40,8 +51,16 @@ public class Track : TrackBase
 {
     public const string kVersion = "1";
     public Track() { version = kVersion; }
+    public Track(string title, string artist)
+    {
+        version = kVersion;
+        trackMetadata = new TrackMetadata();
+        trackMetadata.title = title;
+        trackMetadata.artist = artist;
+        patterns = new List<Pattern>();
+    }
 
-    public TrackMetadata track_metadata;
+    public TrackMetadata trackMetadata;
     public List<Pattern> patterns;
 }
 
@@ -53,37 +72,37 @@ public class TrackMetadata
     public string title;
     public string subtitle;
     public string artist;
-    public List<string> sub_artists;
+    public List<string> subArtists;
     public string genre;
 
     // In track select screen.
 
     // Filename of eyecatch image.
-    public string eyecatch_image;
+    public string eyecatchImage;
     // Filename of preview music.
-    public string preview_music;
+    public string previewMusic;
     // In seconds.
-    public double preview_start_time;
-    public double preview_end_time;
+    public double previewStartTime;
+    public double previewEndTime;
 
     // In gameplay.
 
     // Filename of background image, used in loading screen
-    public string back_image;
+    public string backImage;
     // Filename of background animation (BGA)
     // If empty, will show background image
     public string bga;
     // Play BGA from this time.
-    public double bga_start_time;
+    public double bgaStartTime;
 }
 
 [Serializable]
 public class Pattern
 {
-    public PatternMetadata pattern_metadata;
-    public List<BpmEvent> bpm_events;
-    public List<BpcEvent> bpc_events;
-    public List<SoundChannel> sound_channels;
+    public PatternMetadata patternMetadata;
+    public List<BpmEvent> bpmEvents;
+    public List<BpsEvent> bpsEvents;
+    public List<SoundChannel> soundChannels;
 }
 
 [Serializable]
@@ -97,21 +116,21 @@ public enum ControlScheme
 [Serializable]
 public class PatternMetadata
 {
-    public string pattern_name;
+    public string patternName;
     public int level;
-    public ControlScheme control_scheme;
+    public ControlScheme controlScheme;
 
     // The backing track played in game.
     // This always plays from the beginning.
     // If no keysounds, this should be the entire track.
-    public string base_music;
+    public string baseMusic;
     // Beat 0 starts at this time.
-    public double first_beat_offset;
+    public double firstBeatOffset;
 
     // These can be changed by events.
-    public double init_bpm;
-    // BPC: beats per scan.
-    public int init_bpc;
+    public double initBpm;
+    // BPS: beats per scan.
+    public int initBps;
 }
 
 [Serializable]
@@ -127,7 +146,7 @@ public class BpmEvent : PatternEventBase
 }
 
 [Serializable]
-public class BpcEvent : PatternEventBase
+public class BpsEvent : PatternEventBase
 {
     public int bpc;
 }
@@ -139,8 +158,8 @@ public class SoundChannel
     public string name;
     // Notes using this sound.
     public List<Note> notes;
-    public List<HoldNote> hold_notes;
-    public List<DragNote> drag_notes;
+    public List<HoldNote> holdNotes;
+    public List<DragNote> dragNotes;
 }
 
 [Serializable]
