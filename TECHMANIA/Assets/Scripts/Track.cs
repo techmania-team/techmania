@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// Track is the container of all patterns in a track. In anticipation of
+// Track is the container of all patterns in a musical track. In anticipation of
 // format updates, each format version is a derived class of TrackBase.
 //
 // Because class names are not serialized, we can change class names
