@@ -202,4 +202,11 @@ public class SelectTrackPanel : MonoBehaviour
 
         Refresh();
     }
+
+    public void Open()
+    {
+        if (selectedTrackObject == null) return;
+        Navigation.SetCurrentTrack(objectToTrack[selectedTrackObject].track);
+        Navigation.GoTo(Navigation.Location.Track);
+    }
 }
