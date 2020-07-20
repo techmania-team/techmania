@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ResourcePanel : MonoBehaviour
@@ -23,6 +24,8 @@ public class ResourcePanel : MonoBehaviour
     private List<string> audioFiles;
     private List<string> imageFiles;
     private List<string> videoFiles;
+
+    public static event UnityAction resourceRefreshed;
 
     public static List<string> GetAudioFiles()
     {
@@ -80,6 +83,7 @@ public class ResourcePanel : MonoBehaviour
         }
 
         list.text = listText.TrimEnd('\n');
+        resourceRefreshed?.Invoke();
     }
 
     public void Import()
