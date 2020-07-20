@@ -32,6 +32,11 @@ public class TrackBase
         }
     }
 
+    public TrackBase Clone()
+    {
+        return Deserialize(Serialize());
+    }
+
     public void SaveToFile(string path)
     {
         System.IO.File.WriteAllText(path, Serialize());
@@ -158,7 +163,6 @@ public class SoundChannel
     public string name;
     // Notes using this sound.
     public List<Note> notes;
-    public List<HoldNote> holdNotes;
     public List<DragNote> dragNotes;
 }
 
@@ -168,11 +172,13 @@ public enum NoteType
     Basic,
     ChainHead,
     Chain,
-    Hold,
+    HoldStart,
+    HoldEnd,
     Drag,
     ComboHead,
     Combo,
-    ComboHold
+    ComboHoldStart,
+    ComboHoldEnd,
 }
 
 [Serializable]
@@ -181,13 +187,6 @@ public class Note
     public int lane;
     public long pulse;
     public NoteType type;
-}
-
-// For Hold and ComboHold notes.
-[Serializable]
-public class HoldNote : Note
-{
-    public long length;
 }
 
 [Serializable]

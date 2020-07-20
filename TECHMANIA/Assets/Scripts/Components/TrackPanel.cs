@@ -26,17 +26,39 @@ public class TrackPanel : MonoBehaviour
         MemoryToUI();
     }
 
+    private void UpdateProperty(ref string property, string newValue, ref bool madeRecord)
+    {
+        if (property == newValue)
+        {
+            return;
+        }
+        if (!madeRecord)
+        {
+            Navigation.PrepareForChange();
+            madeRecord = true;
+        }
+        property = newValue;
+    }
+
     public void UIToMemory()
     {
-        Navigation.GetCurrentTrack().trackMetadata.title = title.text;
-        Navigation.GetCurrentTrack().trackMetadata.artist = artist.text;
-        Navigation.GetCurrentTrack().trackMetadata.genre = genre.text;
+        bool madeChange = false;
+        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.title,
+            title.text, ref madeChange);
+        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.artist,
+            artist.text, ref madeChange);
+        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.genre,
+            genre.text, ref madeChange);
 
-        Navigation.SetDirty();
+        if (madeChange)
+        {
+            Navigation.DoneWithChange();
+        }
     }
 
     public void MemoryToUI()
     {
+        // This does NOT fire EndEdit events.
         title.text = Navigation.GetCurrentTrack().trackMetadata.title;
         artist.text = Navigation.GetCurrentTrack().trackMetadata.artist;
         genre.text = Navigation.GetCurrentTrack().trackMetadata.genre;

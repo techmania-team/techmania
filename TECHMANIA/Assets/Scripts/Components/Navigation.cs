@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,8 @@ public class Navigation : MonoBehaviour
     public Text backButtonText;
     public Text title;
     public GameObject editButtons;
+    public Button undoButton;
+    public Button redoButton;
 
     public enum Location
     {
@@ -35,10 +38,14 @@ public class Navigation : MonoBehaviour
     private Track currentTrack;
     private string currentTrackPath;
     private bool dirty;
+    private LimitedStack<Track> undoStack;
+    private LimitedStack<Track> redoStack;
 
     // Start is called before the first frame update
     void Start()
     {
+        undoStack = new LimitedStack<Track>(100);
+        redoStack = new LimitedStack<Track>(100);
         InternalGoTo(Location.SelectTrack);
         currentTrack = null;
     }
@@ -70,9 +77,12 @@ public class Navigation : MonoBehaviour
 
     public static void SetCurrentTrack(Track track, string path)
     {
-        GetInstance().currentTrack = track;
-        GetInstance().currentTrackPath = path;
-        GetInstance().dirty = false;
+        Navigation instance = GetInstance();
+        instance.currentTrack = track;
+        instance.currentTrackPath = path;
+        instance.dirty = false;
+        instance.undoStack.Clear();
+        instance.redoStack.Clear();
     }
 
     public static Track GetCurrentTrack()
@@ -80,10 +90,30 @@ public class Navigation : MonoBehaviour
         return GetInstance().currentTrack;
     }
 
-    public static void SetDirty()
+    // Call this before making any change to currentTrack.
+    public static void PrepareForChange()
     {
-        GetInstance().dirty = true;
-        GetInstance().RefreshBackAndLocationText();
+        Debug.Log("Cloning in-memory track.");
+        Navigation instance = GetInstance();
+        instance.dirty = true;
+        instance.undoStack.Push(instance.currentTrack.Clone() as Track);
+        instance.redoStack.Clear();
+    }
+
+    // Call this after making any change to currentTrack.
+    public static void DoneWithChange()
+    {
+        GetInstance().RefreshNavigationPanel();
+    }
+
+    private void MemoryToUI()
+    {
+        switch (location)
+        {
+            case Location.Track:
+                trackPanel.MemoryToUI();
+                break;
+        }
     }
 
     public void GoBack()
@@ -129,13 +159,12 @@ public class Navigation : MonoBehaviour
     {
         selectTrackPanel.gameObject.SetActive(location == Location.SelectTrack);
         trackPanel.gameObject.SetActive(location == Location.Track);
-        editButtons.SetActive(location != Location.SelectTrack);
         this.location = location;
 
-        RefreshBackAndLocationText();
+        RefreshNavigationPanel();
     }
 
-    private void RefreshBackAndLocationText()
+    private void RefreshNavigationPanel()
     {
         switch (location)
         {
@@ -152,6 +181,10 @@ public class Navigation : MonoBehaviour
         {
             title.text += "*";
         }
+
+        editButtons.SetActive(location != Location.SelectTrack);
+        undoButton.interactable = !undoStack.Empty();
+        redoButton.interactable = !redoStack.Empty();
     }
 
     public void Save()
@@ -165,16 +198,24 @@ public class Navigation : MonoBehaviour
         {
             MessageDialog.Show(e.Message);
         }
-        RefreshBackAndLocationText();
+        RefreshNavigationPanel();
     }
 
     public void Undo()
     {
-
+        if (undoStack.Empty()) return;
+        redoStack.Push(currentTrack.Clone() as Track);
+        currentTrack = undoStack.Pop();
+        RefreshNavigationPanel();
+        MemoryToUI();
     }
 
     public void Redo()
     {
-
+        if (redoStack.Empty()) return;
+        undoStack.Push(currentTrack.Clone() as Track);
+        currentTrack = redoStack.Pop();
+        RefreshNavigationPanel();
+        MemoryToUI();
     }
 }
