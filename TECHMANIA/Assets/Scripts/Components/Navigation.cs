@@ -19,6 +19,7 @@ public class Navigation : MonoBehaviour
 
     public SelectTrackPanel selectTrackPanel;
     public TrackPanel trackPanel;
+    public ResourcePanel resourcePanel;
 
     public Text backButtonText;
     public Text title;
@@ -90,6 +91,11 @@ public class Navigation : MonoBehaviour
         return GetInstance().currentTrack;
     }
 
+    public static string GetCurrentTrackPath()
+    {
+        return GetInstance().currentTrackPath;
+    }
+
     // Call this before making any change to currentTrack.
     public static void PrepareForChange()
     {
@@ -159,6 +165,7 @@ public class Navigation : MonoBehaviour
     {
         selectTrackPanel.gameObject.SetActive(location == Location.SelectTrack);
         trackPanel.gameObject.SetActive(location == Location.Track);
+        resourcePanel.gameObject.SetActive(location == Location.Track);
         this.location = location;
 
         RefreshNavigationPanel();

@@ -1773,6 +1773,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 566397971}
+  - {fileID: 427829344}
   - {fileID: 1624636482}
   m_Father: {fileID: 1047825572}
   m_RootOrder: 1
@@ -3423,13 +3424,14 @@ GameObject:
   m_Component:
   - component: {fileID: 427829344}
   - component: {fileID: 427829345}
+  - component: {fileID: 427829346}
   m_Layer: 5
   m_Name: Resource Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &427829344
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3444,8 +3446,8 @@ RectTransform:
   - {fileID: 881878033}
   - {fileID: 718146099}
   - {fileID: 1604263915}
-  m_Father: {fileID: 1624636482}
-  m_RootOrder: 0
+  m_Father: {fileID: 235235809}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
@@ -3460,6 +3462,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 427829343}
   m_CullTransparentMesh: 0
+--- !u!114 &427829346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 427829343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8c7ca399ee8f5440b6321fa8343c920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  list: {fileID: 2005695459}
 --- !u!1 &431469687
 GameObject:
   m_ObjectHideFlags: 0
@@ -3619,7 +3634,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 755607460}
   m_HandleRect: {fileID: 755607459}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4805,7 +4820,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1245917256}
   m_HandleRect: {fileID: 1245917255}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5179,8 +5194,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1495529582}
-        m_MethodName: OK
+      - m_Target: {fileID: 427829346}
+        m_MethodName: Import
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6004,7 +6019,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 715341671}
   m_HandleRect: {fileID: 715341670}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8977,7 +8992,7 @@ RectTransform:
   - {fileID: 1191117147}
   - {fileID: 1332544417}
   m_Father: {fileID: 1624636482}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -11165,6 +11180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectTrackPanel: {fileID: 566397973}
   trackPanel: {fileID: 1624636484}
+  resourcePanel: {fileID: 427829346}
   backButtonText: {fileID: 919883240}
   title: {fileID: 2058373540}
   editButtons: {fileID: 1617086585}
@@ -11252,8 +11268,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1495529582}
-        m_MethodName: Cancel
+      - m_Target: {fileID: 427829346}
+        m_MethodName: Refresh
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11917,7 +11933,7 @@ RectTransform:
   - {fileID: 6200252}
   - {fileID: 155988750}
   m_Father: {fileID: 1624636482}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -13876,11 +13892,10 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 427829344}
   - {fileID: 1193742248}
   - {fileID: 1434236415}
   m_Father: {fileID: 235235809}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -16328,6 +16343,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2005695457}
+  - component: {fileID: 2005695460}
+  - component: {fileID: 2005695459}
+  - component: {fileID: 2005695458}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -16352,8 +16370,67 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.00007055984}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 86}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &2005695458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005695456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
+--- !u!114 &2005695459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005695456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Resource #1
+
+    Resource #2
+
+    Resource #3'
+--- !u!222 &2005695460
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005695456}
+  m_CullTransparentMesh: 0
 --- !u!1 &2010841651
 GameObject:
   m_ObjectHideFlags: 0
