@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 // Track is the container of all patterns in a musical track. In anticipation of
@@ -113,9 +112,9 @@ public class Pattern
 [Serializable]
 public enum ControlScheme
 {
-    Touch,
-    Keys,
-    KM
+    Touch = 0,
+    Keys = 1,
+    KM = 2
 }
 
 [Serializable]
@@ -128,7 +127,7 @@ public class PatternMetadata
     // The backing track played in game.
     // This always plays from the beginning.
     // If no keysounds, this should be the entire track.
-    public string baseMusic;
+    public string backingTrack;
     // Beat 0 starts at this time.
     public double firstBeatOffset;
 

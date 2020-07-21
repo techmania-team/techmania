@@ -20,6 +20,7 @@ public class Navigation : MonoBehaviour
     public SelectTrackPanel selectTrackPanel;
     public TrackPanel trackPanel;
     public ResourcePanel resourcePanel;
+    public PatternMetadataPanel patternMetadataPanel;
 
     public Text backButtonText;
     public Text title;
@@ -31,12 +32,13 @@ public class Navigation : MonoBehaviour
     {
         SelectTrack,
         Track,
-        Pattern,
-        PatternMetadata
+        PatternMetadata,
+        Pattern
     }
     private Location location;
 
     private Track currentTrack;
+    private Pattern currentPattern;
     private string currentTrackPath;
     private bool dirty;
     private LimitedStack<Track> undoStack;
@@ -96,10 +98,20 @@ public class Navigation : MonoBehaviour
         return GetInstance().currentTrackPath;
     }
 
+    public static void SetCurrentPattern(Pattern pattern)
+    {
+        GetInstance().currentPattern = pattern;
+    }
+
+    public static Pattern GetCurrentPattern()
+    {
+        return GetInstance().currentPattern;
+    }
+
     // Call this before making any change to currentTrack.
     public static void PrepareForChange()
     {
-        Debug.Log("Cloning in-memory track.");
+        // Debug.Log("Cloning in-memory track.");
         Navigation instance = GetInstance();
         instance.dirty = true;
         instance.undoStack.Push(instance.currentTrack.Clone() as Track);
@@ -118,6 +130,11 @@ public class Navigation : MonoBehaviour
         {
             case Location.Track:
                 trackPanel.MemoryToUI();
+                break;
+            case Location.PatternMetadata:
+                patternMetadataPanel.MemoryToUI();
+                break;
+            case Location.Pattern:
                 break;
         }
     }
@@ -138,6 +155,12 @@ public class Navigation : MonoBehaviour
                 {
                     GoTo(Location.SelectTrack);
                 }
+                break;
+            case Location.PatternMetadata:
+                GoTo(Location.Track);
+                break;
+            case Location.Pattern:
+                GoTo(Location.PatternMetadata);
                 break;
         }
     }
@@ -165,10 +188,13 @@ public class Navigation : MonoBehaviour
     {
         selectTrackPanel.gameObject.SetActive(location == Location.SelectTrack);
         trackPanel.gameObject.SetActive(location == Location.Track);
-        resourcePanel.gameObject.SetActive(location == Location.Track);
+        resourcePanel.gameObject.SetActive(location == Location.Track ||
+            location == Location.PatternMetadata);
+        patternMetadataPanel.gameObject.SetActive(location == Location.PatternMetadata);
         this.location = location;
 
         RefreshNavigationPanel();
+        MemoryToUI();
     }
 
     private void RefreshNavigationPanel()
@@ -182,6 +208,14 @@ public class Navigation : MonoBehaviour
             case Location.Track:
                 backButtonText.text = "< All tracks";
                 title.text = currentTrack.trackMetadata.title;
+                break;
+            case Location.PatternMetadata:
+                backButtonText.text = "< All patterns";
+                title.text = $"{currentTrack.trackMetadata.title} - {currentPattern.patternMetadata.patternName}";
+                break;
+            case Location.Pattern:
+                backButtonText.text = "< Pattern setup";
+                title.text = $"{currentTrack.trackMetadata.title} - {currentPattern.patternMetadata.patternName}";
                 break;
         }
         if (dirty)
