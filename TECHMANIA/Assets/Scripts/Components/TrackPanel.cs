@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class TrackPanel : MonoBehaviour
 {
+    [Header("Metadata")]
     public InputField title;
     public InputField artist;
     public InputField genre;
@@ -16,6 +17,14 @@ public class TrackPanel : MonoBehaviour
     public Dropdown backgroundImage;
     public Dropdown backgroundVideo;
     public InputField videoStartTime;
+
+    [Header("Patterns")]
+    public VerticalLayoutGroup patternList;
+    public GameObject patternTemplate;
+    public Button deleteButton;
+    public Button openButton;
+    private Dictionary<GameObject, Pattern> objectToPattern;
+    private GameObject selectedPatternObject;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +40,7 @@ public class TrackPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        MemoryToUI();
+        // MemoryToUI();
         ResourcePanel.resourceRefreshed += RefreshDropdowns;
     }
 
@@ -110,7 +119,7 @@ public class TrackPanel : MonoBehaviour
                 break;
             }
         }
-        dropdown.value = option;
+        dropdown.SetValueWithoutNotify(option);
     }
 
     public void MemoryToUI()
@@ -130,6 +139,36 @@ public class TrackPanel : MonoBehaviour
         MemoryToDropdown(metadata.backImage, backgroundImage);
         MemoryToDropdown(metadata.bga, backgroundVideo);
         videoStartTime.text = metadata.bgaStartTime.ToString();
+
+        // Remove all patterns from pattern list, except for template.
+        for (int i = 0; i < patternList.transform.childCount; i++)
+        {
+            GameObject pattern = patternList.transform.GetChild(i).gameObject;
+            if (pattern == patternTemplate) continue;
+            Destroy(pattern);
+        }
+        selectedPatternObject = null;
+        RefreshPatternButtons();
+
+        // Rebuild pattern list.
+        objectToPattern = new Dictionary<GameObject, Pattern>();
+        foreach (Pattern p in Navigation.GetCurrentTrack().patterns)
+        {
+            GameObject patternObject = Instantiate(patternTemplate);
+            patternObject.name = "Pattern Panel";
+            patternObject.transform.SetParent(patternList.transform);
+            string textOnObject = $"{p.patternMetadata.patternName}\n" +
+                $"<size=16>{p.patternMetadata.controlScheme} {p.patternMetadata.level}</size>";
+            patternObject.GetComponentInChildren<Text>().text = textOnObject;
+            patternObject.SetActive(true);
+            objectToPattern.Add(patternObject, p);
+
+            // TODO: double click to open?
+            patternObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                SelectPattern(patternObject);
+            });
+        }
     }
 
     private void RefreshDropdowns()
@@ -159,6 +198,57 @@ public class TrackPanel : MonoBehaviour
             dropdown.options.Add(new Dropdown.OptionData(name));
         }
 
-        dropdown.value = newValue;
+        dropdown.SetValueWithoutNotify(newValue);
+    }
+
+    private void RefreshPatternButtons()
+    {
+        deleteButton.interactable = selectedPatternObject != null;
+        openButton.interactable = selectedPatternObject != null;
+    }
+
+    private void SelectPattern(GameObject patternObject)
+    {
+        if (selectedPatternObject != null)
+        {
+            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(false);
+        }
+        if (!objectToPattern.ContainsKey(patternObject))
+        {
+            selectedPatternObject = null;
+        }
+        else
+        {
+            selectedPatternObject = patternObject;
+            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(true);
+        }
+        RefreshPatternButtons();
+    }
+
+    public void NewPattern()
+    {
+        StartCoroutine(InternalNewPattern());
+    }
+
+    private IEnumerator InternalNewPattern()
+    {
+        // Get pattern name.
+        InputDialog.Show("Pattern name:");
+        yield return new WaitUntil(() => { return InputDialog.IsResolved(); });
+        if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
+        {
+            yield break;
+        }
+        string name = InputDialog.GetValue();
+
+        Pattern p = new Pattern();
+        p.patternMetadata = new PatternMetadata();
+        p.patternMetadata.patternName = name;
+
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentTrack().patterns.Add(p);
+        Navigation.DoneWithChange();
+
+        MemoryToUI();
     }
 }
