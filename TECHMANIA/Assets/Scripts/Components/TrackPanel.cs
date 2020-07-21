@@ -23,8 +23,7 @@ public class TrackPanel : MonoBehaviour
     public GameObject patternTemplate;
     public Button deleteButton;
     public Button openButton;
-    private Dictionary<GameObject, Pattern> objectToPattern;
-    private GameObject selectedPatternObject;
+    private int selectedPatternIndex;
 
     // Start is called before the first frame update
     void Start()
@@ -107,13 +106,28 @@ public class TrackPanel : MonoBehaviour
             if (pattern == patternTemplate) continue;
             Destroy(pattern);
         }
-        selectedPatternObject = null;
+        selectedPatternIndex = -1;
         RefreshPatternButtons();
 
-        // Rebuild pattern list.
-        objectToPattern = new Dictionary<GameObject, Pattern>();
-        foreach (Pattern p in Navigation.GetCurrentTrack().patterns)
+        // Sort patterns.
+        Navigation.GetCurrentTrack().patterns.Sort((Pattern p1, Pattern p2) =>
         {
+            if (p1.patternMetadata.controlScheme != p2.patternMetadata.controlScheme)
+            {
+                return (int)p1.patternMetadata.controlScheme -
+                    (int)p2.patternMetadata.controlScheme;
+            }
+            else
+            {
+                return p1.patternMetadata.level - p2.patternMetadata.level;
+            }
+        });
+
+        // Rebuild pattern list.
+        for (int i = 0; i < Navigation.GetCurrentTrack().patterns.Count; i++)
+        {
+            Pattern p = Navigation.GetCurrentTrack().patterns[i];
+
             GameObject patternObject = Instantiate(patternTemplate);
             patternObject.name = "Pattern Panel";
             patternObject.transform.SetParent(patternList.transform);
@@ -121,12 +135,12 @@ public class TrackPanel : MonoBehaviour
                 $"<size=16>{p.patternMetadata.controlScheme} {p.patternMetadata.level}</size>";
             patternObject.GetComponentInChildren<Text>().text = textOnObject;
             patternObject.SetActive(true);
-            objectToPattern.Add(patternObject, p);
 
             // TODO: double click to open?
+            int copyOfI = i;
             patternObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                SelectPattern(patternObject);
+                SelectPattern(copyOfI);
             });
         }
     }
@@ -142,24 +156,28 @@ public class TrackPanel : MonoBehaviour
 
     private void RefreshPatternButtons()
     {
-        deleteButton.interactable = selectedPatternObject != null;
-        openButton.interactable = selectedPatternObject != null;
+        deleteButton.interactable = selectedPatternIndex >= 0;
+        openButton.interactable = selectedPatternIndex >= 0;
     }
 
-    private void SelectPattern(GameObject patternObject)
+    private Transform PatternIndexToTransform(int index)
     {
-        if (selectedPatternObject != null)
+        // Child #0 is the template?
+        return patternList.transform.GetChild(index + 1);
+    }
+
+    private void SelectPattern(int index)
+    {
+        if (selectedPatternIndex >= 0)
         {
-            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(false);
+            PatternIndexToTransform(selectedPatternIndex)
+                .Find("Selection").gameObject.SetActive(false);
         }
-        if (!objectToPattern.ContainsKey(patternObject))
+        selectedPatternIndex = index;
+        if (selectedPatternIndex >= 0)
         {
-            selectedPatternObject = null;
-        }
-        else
-        {
-            selectedPatternObject = patternObject;
-            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(true);
+            PatternIndexToTransform(selectedPatternIndex)
+                .Find("Selection").gameObject.SetActive(true);
         }
         RefreshPatternButtons();
     }
@@ -194,21 +212,16 @@ public class TrackPanel : MonoBehaviour
     public void DeletePattern()
     {
         // This is undoable, so no need for confirmation.
-        if (!objectToPattern.ContainsKey(selectedPatternObject))
-        {
-            return;
-        }
         Navigation.PrepareForChange();
-        Navigation.GetCurrentTrack().patterns.Remove(
-            objectToPattern[selectedPatternObject]);
+        Navigation.GetCurrentTrack().patterns.RemoveAt(selectedPatternIndex);
         Navigation.DoneWithChange();
         MemoryToUI();
     }
 
     public void Open()
     {
-        if (selectedPatternObject == null) return;
-        Navigation.SetCurrentPattern(objectToPattern[selectedPatternObject]);
+        if (selectedPatternIndex < 0) return;
+        Navigation.SetCurrentPattern(selectedPatternIndex);
         Navigation.GoTo(Navigation.Location.PatternMetadata);
     }
 }

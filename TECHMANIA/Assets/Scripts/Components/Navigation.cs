@@ -38,7 +38,7 @@ public class Navigation : MonoBehaviour
     private Location location;
 
     private Track currentTrack;
-    private Pattern currentPattern;
+    private int currentPatternIndex;
     private string currentTrackPath;
     private bool dirty;
     private LimitedStack<Track> undoStack;
@@ -98,14 +98,15 @@ public class Navigation : MonoBehaviour
         return GetInstance().currentTrackPath;
     }
 
-    public static void SetCurrentPattern(Pattern pattern)
+    public static void SetCurrentPattern(int index)
     {
-        GetInstance().currentPattern = pattern;
+        GetInstance().currentPatternIndex = index;
     }
 
     public static Pattern GetCurrentPattern()
     {
-        return GetInstance().currentPattern;
+        Navigation instance = GetInstance();
+        return instance.currentTrack.patterns[instance.currentPatternIndex];
     }
 
     // Call this before making any change to currentTrack.
@@ -211,11 +212,13 @@ public class Navigation : MonoBehaviour
                 break;
             case Location.PatternMetadata:
                 backButtonText.text = "< All patterns";
-                title.text = $"{currentTrack.trackMetadata.title} - {currentPattern.patternMetadata.patternName}";
+                title.text = $"{currentTrack.trackMetadata.title} - " +
+                    $"{currentTrack.patterns[currentPatternIndex].patternMetadata.patternName}";
                 break;
             case Location.Pattern:
                 backButtonText.text = "< Pattern setup";
-                title.text = $"{currentTrack.trackMetadata.title} - {currentPattern.patternMetadata.patternName}";
+                title.text = $"{currentTrack.trackMetadata.title} - " +
+                    $"{currentTrack.patterns[currentPatternIndex].patternMetadata.patternName}";
                 break;
         }
         if (dirty)
