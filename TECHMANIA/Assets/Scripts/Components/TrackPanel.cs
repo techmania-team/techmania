@@ -251,4 +251,18 @@ public class TrackPanel : MonoBehaviour
 
         MemoryToUI();
     }
+
+    public void DeletePattern()
+    {
+        // This is undoable, so no need for confirmation.
+        if (!objectToPattern.ContainsKey(selectedPatternObject))
+        {
+            return;
+        }
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentTrack().patterns.Remove(
+            objectToPattern[selectedPatternObject]);
+        Navigation.DoneWithChange();
+        MemoryToUI();
+    }
 }
