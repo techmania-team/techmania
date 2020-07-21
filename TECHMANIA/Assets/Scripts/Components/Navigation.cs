@@ -213,6 +213,7 @@ public class Navigation : MonoBehaviour
         if (undoStack.Empty()) return;
         redoStack.Push(currentTrack.Clone() as Track);
         currentTrack = undoStack.Pop();
+        dirty = true;
         RefreshNavigationPanel();
         MemoryToUI();
     }
@@ -222,6 +223,7 @@ public class Navigation : MonoBehaviour
         if (redoStack.Empty()) return;
         undoStack.Push(currentTrack.Clone() as Track);
         currentTrack = redoStack.Pop();
+        dirty = true;
         RefreshNavigationPanel();
         MemoryToUI();
     }

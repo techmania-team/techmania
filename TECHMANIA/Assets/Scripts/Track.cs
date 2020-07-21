@@ -85,7 +85,7 @@ public class TrackMetadata
     // Filename of eyecatch image.
     public string eyecatchImage;
     // Filename of preview music.
-    public string previewMusic;
+    public string previewTrack;
     // In seconds.
     public double previewStartTime;
     public double previewEndTime;

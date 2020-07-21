@@ -40,29 +40,58 @@ public class TrackPanel : MonoBehaviour
         ResourcePanel.resourceRefreshed -= RefreshDropdowns;
     }
 
-    private void UpdateProperty(ref string property, string newValue, ref bool madeRecord)
+    private void UpdateProperty(ref string property, string newValue, ref bool madeChange)
     {
         if (property == newValue)
         {
             return;
         }
-        if (!madeRecord)
+        if (!madeChange)
         {
             Navigation.PrepareForChange();
-            madeRecord = true;
+            madeChange = true;
+        }
+        property = newValue;
+    }
+
+    private void UpdatePropertyFromDropdown(ref string property,
+        Dropdown dropdown, ref bool madeChange)
+    {
+        UpdateProperty(ref property, dropdown.options[dropdown.value].text, ref madeChange);
+    }
+
+    private void UpdateProperty(ref double property, string newValueString, ref bool madeChange)
+    {
+        double newValue = double.Parse(newValueString);
+        if (property == newValue)
+        {
+            return;
+        }
+        if (!madeChange)
+        {
+            Navigation.PrepareForChange();
+            madeChange = true;
         }
         property = newValue;
     }
 
     public void UIToMemory()
     {
+        TrackMetadata metadata = Navigation.GetCurrentTrack().trackMetadata;
         bool madeChange = false;
-        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.title,
-            title.text, ref madeChange);
-        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.artist,
-            artist.text, ref madeChange);
-        UpdateProperty(ref Navigation.GetCurrentTrack().trackMetadata.genre,
-            genre.text, ref madeChange);
+
+        UpdateProperty(ref metadata.title, title.text, ref madeChange);
+        UpdateProperty(ref metadata.artist, artist.text, ref madeChange);
+        UpdateProperty(ref metadata.genre, genre.text, ref madeChange);
+
+        UpdatePropertyFromDropdown(ref metadata.previewTrack, previewTrack, ref madeChange);
+        UpdateProperty(ref metadata.previewStartTime, startTime.text, ref madeChange);
+        UpdateProperty(ref metadata.previewEndTime, endTime.text, ref madeChange);
+
+        UpdatePropertyFromDropdown(ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
+        UpdatePropertyFromDropdown(ref metadata.backImage, backgroundImage, ref madeChange);
+        UpdatePropertyFromDropdown(ref metadata.bga, backgroundVideo, ref madeChange);
+        UpdateProperty(ref metadata.bgaStartTime, videoStartTime.text, ref madeChange);
 
         if (madeChange)
         {
@@ -70,12 +99,37 @@ public class TrackPanel : MonoBehaviour
         }
     }
 
+    private void MemoryToDropdown(string value, Dropdown dropdown)
+    {
+        int option = 0;
+        for (int i = 0; i < dropdown.options.Count; i++)
+        {
+            if (dropdown.options[i].text == value)
+            {
+                option = i;
+                break;
+            }
+        }
+        dropdown.value = option;
+    }
+
     public void MemoryToUI()
     {
-        // This does NOT fire EndEdit events.
-        title.text = Navigation.GetCurrentTrack().trackMetadata.title;
-        artist.text = Navigation.GetCurrentTrack().trackMetadata.artist;
-        genre.text = Navigation.GetCurrentTrack().trackMetadata.genre;
+        TrackMetadata metadata = Navigation.GetCurrentTrack().trackMetadata;
+
+        // Editing a InputField's text does not fire EndEdit events.
+        title.text = metadata.title;
+        artist.text = metadata.artist;
+        genre.text = metadata.genre;
+
+        MemoryToDropdown(metadata.previewTrack, previewTrack);
+        startTime.text = metadata.previewStartTime.ToString();
+        endTime.text = metadata.previewEndTime.ToString();
+
+        MemoryToDropdown(metadata.eyecatchImage, eyecatchImage);
+        MemoryToDropdown(metadata.backImage, backgroundImage);
+        MemoryToDropdown(metadata.bga, backgroundVideo);
+        videoStartTime.text = metadata.bgaStartTime.ToString();
     }
 
     private void RefreshDropdowns()
@@ -84,6 +138,7 @@ public class TrackPanel : MonoBehaviour
         RefreshDropdown(eyecatchImage, ResourcePanel.GetImageFiles());
         RefreshDropdown(backgroundImage, ResourcePanel.GetImageFiles());
         RefreshDropdown(backgroundVideo, ResourcePanel.GetVideoFiles());
+        MemoryToUI();
     }
 
     private void RefreshDropdown(Dropdown dropdown, List<string> newOptions)
