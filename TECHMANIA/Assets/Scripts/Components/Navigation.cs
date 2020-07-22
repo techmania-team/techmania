@@ -21,6 +21,7 @@ public class Navigation : MonoBehaviour
     public TrackPanel trackPanel;
     public ResourcePanel resourcePanel;
     public PatternMetadataPanel patternMetadataPanel;
+    public PatternPanel patternPanel;
 
     public Text backButtonText;
     public Text title;
@@ -192,6 +193,7 @@ public class Navigation : MonoBehaviour
         resourcePanel.gameObject.SetActive(location == Location.Track ||
             location == Location.PatternMetadata);
         patternMetadataPanel.gameObject.SetActive(location == Location.PatternMetadata);
+        patternPanel.gameObject.SetActive(location == Location.Pattern);
         this.location = location;
 
         RefreshNavigationPanel();
