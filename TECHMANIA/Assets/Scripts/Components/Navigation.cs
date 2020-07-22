@@ -130,10 +130,10 @@ public class Navigation : MonoBehaviour
         switch (location)
         {
             case Location.Track:
-                trackPanel.MemoryToUI();
+                trackPanel.RefreshDropdowns();
                 break;
             case Location.PatternMetadata:
-                patternMetadataPanel.MemoryToUI();
+                patternMetadataPanel.RefreshDropdowns();
                 break;
             case Location.Pattern:
                 break;

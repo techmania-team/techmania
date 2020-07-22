@@ -88,7 +88,7 @@ public class PatternMetadataPanel : MonoBehaviour
         initialBps.text = metadata.initBps.ToString();
     }
 
-    private void RefreshDropdowns()
+    public void RefreshDropdowns()
     {
         UIUtils.RefreshFilenameDropdown(backingTrack, ResourcePanel.GetAudioFiles());
         MemoryToUI();

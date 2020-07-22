@@ -145,7 +145,7 @@ public class TrackPanel : MonoBehaviour
         }
     }
 
-    private void RefreshDropdowns()
+    public void RefreshDropdowns()
     {
         UIUtils.RefreshFilenameDropdown(previewTrack, ResourcePanel.GetAudioFiles());
         UIUtils.RefreshFilenameDropdown(eyecatchImage, ResourcePanel.GetImageFiles());
