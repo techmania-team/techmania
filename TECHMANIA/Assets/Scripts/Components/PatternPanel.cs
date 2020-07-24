@@ -71,12 +71,14 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Draw beat dividers
-        int bps = pattern.patternMetadata.initBps;
+        int bps = pattern.patternMetadata.bps;
         double secondsPerBeat = 60.0 / pattern.patternMetadata.initBpm;
         for (int i = 0; i < numScans * bps ; i++)
         {
             float x = scanLength * i / bps;
-            float time = (float)secondsPerBeat * i;
+
+            float time = (float)(secondsPerBeat * i +
+                pattern.patternMetadata.firstBeatOffset);
             int minute = Mathf.FloorToInt(time / 60f);
             time -= minute * 60f;
             int second = Mathf.FloorToInt(time);
@@ -87,7 +89,7 @@ public class PatternPanel : MonoBehaviour
 
             SpawnMarker(x, beatMarkerY, $"Beat {i}");
             SpawnMarker(x, timeMarkerY,
-                $"{minute}:{second:D2}:{milliSecond:D3}");
+                $"{minute}:{second:D2}.{milliSecond:D3}");
         }
     }
 

@@ -105,7 +105,6 @@ public class Pattern
 {
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
-    public List<BpsEvent> bpsEvents;
     public List<SoundChannel> soundChannels;
 }
 
@@ -134,7 +133,7 @@ public class PatternMetadata
     // These can be changed by events.
     public double initBpm;
     // BPS: beats per scan.
-    public int initBps;
+    public int bps;
 }
 
 [Serializable]
@@ -147,12 +146,6 @@ public class PatternEventBase
 public class BpmEvent : PatternEventBase
 {
     public double bpm;
-}
-
-[Serializable]
-public class BpsEvent : PatternEventBase
-{
-    public int bpc;
 }
 
 [Serializable]
@@ -174,10 +167,11 @@ public enum NoteType
     HoldStart,
     HoldEnd,
     Drag,
-    ComboHead,
-    Combo,
-    ComboHoldStart,
-    ComboHoldEnd,
+    RepeatHead,
+    RepeatHeadHold,
+    Repeat,
+    RepeatHoldStart,
+    RepeatHoldEnd,
 }
 
 [Serializable]

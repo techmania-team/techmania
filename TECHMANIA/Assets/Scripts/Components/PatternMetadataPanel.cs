@@ -65,7 +65,7 @@ public class PatternMetadataPanel : MonoBehaviour
         UIUtils.UpdatePropertyInMemory(
             ref metadata.initBpm, initialBpm.text, ref madeChange);
         UIUtils.UpdatePropertyInMemory(
-            ref metadata.initBps, initialBps.text, ref madeChange);
+            ref metadata.bps, initialBps.text, ref madeChange);
 
         if (madeChange)
         {
@@ -85,7 +85,7 @@ public class PatternMetadataPanel : MonoBehaviour
 
         firstBeatOffset.text = metadata.firstBeatOffset.ToString();
         initialBpm.text = metadata.initBpm.ToString();
-        initialBps.text = metadata.initBps.ToString();
+        initialBps.text = metadata.bps.ToString();
     }
 
     public void RefreshDropdowns()
