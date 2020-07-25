@@ -67,14 +67,14 @@ public class EditorElement : MonoBehaviour
         {
             case Type.Line:
             case Type.ScanMarker:
-                x = PatternPanel.ScanLength * scan;
+                x = PatternPanel.ScanWidth * scan;
                 break;
             case Type.DottedLine:
             case Type.BeatMarker:
             case Type.TimeMarker:
                 {
                     float scan = (float)beat / bps;
-                    x = PatternPanel.ScanLength * scan;
+                    x = PatternPanel.ScanWidth * scan;
                 }
                 break;
             case Type.BpmMarker:
@@ -82,7 +82,7 @@ public class EditorElement : MonoBehaviour
                 {
                     float beat = (float)pulse / Pattern.pulsesPerBeat;
                     float scan = beat / bps;
-                    x = PatternPanel.ScanLength * scan;
+                    x = PatternPanel.ScanWidth * scan;
                 }
                 break;
         }

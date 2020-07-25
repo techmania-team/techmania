@@ -21,23 +21,27 @@ public class PatternPanel : MonoBehaviour
     public const float bpmMarkerY = -60f;
     public const float containerHeight = 480f;
 
-    public static float ScanLength
+    public static float ScanWidth
     {
         get
         {
             return 1500f * zoom * 0.01f;
         }
     }
-
-    private int numScans;
+    
     private float containerWidth
     {
         get
         {
-            return ScanLength * numScans;
+            return ScanWidth * numScans;
         }
     }
+
+    private int numScans;
     private static int zoom;
+    private int divisionsPerBeat;
+
+    public Text divisionsPerBeatDisplay;
 
     public static event UnityAction RepositionNeeded;
 
@@ -141,6 +145,7 @@ public class PatternPanel : MonoBehaviour
     {
         numScans = 4;
         zoom = 100;
+        divisionsPerBeat = 2;
         ResizeContainer();
         SpawnMarkersAndLines();
         RepositionNeeded?.Invoke();
@@ -173,23 +178,37 @@ public class PatternPanel : MonoBehaviour
             }
         }
 
-        // Experiment: locating cursor
+        // Snap cursor
         Vector2 pointInContainer;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             patternContainer.GetComponent<RectTransform>(),
             Input.mousePosition,
             cam: null,
             out pointInContainer);
-        bool cursorInContainer =
-            pointInContainer.x >= 0f &&
-            pointInContainer.x <= containerWidth &&
-            pointInContainer.y <= 0f &&
-            pointInContainer.y >= -containerHeight;
-        if (cursorInContainer)
+
+        float cursorScan = pointInContainer.x / ScanWidth;
+        float cursorBeat = cursorScan *
+            Navigation.GetCurrentPattern().patternMetadata.bps;
+        float cursorPulse = cursorBeat * Pattern.pulsesPerBeat;
+        int pulsesPerDivision = Pattern.pulsesPerBeat / divisionsPerBeat;
+        int snappedPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
+            * pulsesPerDivision;
+        float snappedScan = (float)snappedPulse / Pattern.pulsesPerBeat
+            / Navigation.GetCurrentPattern().patternMetadata.bps;
+        float snappedX = snappedScan * ScanWidth;
+
+        int cursorLane = Mathf.FloorToInt((pointInContainer.y + 80f)
+            / -100f);
+        float snappedY = -130f - 100f * cursorLane;
+
+        if (snappedX >= 0f &&
+            snappedX <= containerWidth &&
+            cursorLane >= 0 &&
+            cursorLane <= 3)
         {
             cursor.SetActive(true);
             cursor.GetComponent<RectTransform>().anchoredPosition =
-                pointInContainer;
+                new Vector2(snappedX, snappedY);
         }
         else
         {
@@ -197,8 +216,21 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    public void ScrollPositionChanged()
+    public void ModifyDevisionsPerBeat(int direction)
     {
-        // Debug.Log("Horizontal: " + scrollRect.horizontalNormalizedPosition);
+        do
+        {
+            divisionsPerBeat += direction;
+            if (divisionsPerBeat <= 0 && direction < 0)
+            {
+                divisionsPerBeat = Pattern.pulsesPerBeat;
+            }
+            if (divisionsPerBeat > Pattern.pulsesPerBeat && direction > 0)
+            {
+                divisionsPerBeat = 1;
+            }
+        }
+        while (Pattern.pulsesPerBeat % divisionsPerBeat != 0);
+        divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
     }
 }
