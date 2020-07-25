@@ -106,6 +106,8 @@ public class Pattern
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
     public List<SoundChannel> soundChannels;
+
+    public const int pulsesPerBeat = 240;
 }
 
 [Serializable]
@@ -137,14 +139,9 @@ public class PatternMetadata
 }
 
 [Serializable]
-public class PatternEventBase
+public class BpmEvent
 {
     public long pulse;
-}
-
-[Serializable]
-public class BpmEvent : PatternEventBase
-{
     public double bpm;
 }
 
