@@ -13,6 +13,13 @@ public class PatternPanel : MonoBehaviour
     public GameObject lineTemplate;
     public GameObject dottedLineTemplate;
     public GameObject laneDividers;
+    public GameObject cursor;
+
+    public const float scanMarkerY = 0f;
+    public const float beatMarkerY = -20f;
+    public const float timeMarkerY = -40f;
+    public const float bpmMarkerY = -60f;
+    public const float containerHeight = 480f;
 
     public static float ScanLength
     {
@@ -23,6 +30,13 @@ public class PatternPanel : MonoBehaviour
     }
 
     private int numScans;
+    private float containerWidth
+    {
+        get
+        {
+            return ScanLength * numScans;
+        }
+    }
     private static int zoom;
 
     public static event UnityAction RepositionNeeded;
@@ -75,7 +89,7 @@ public class PatternPanel : MonoBehaviour
     {
         RectTransform containerRect = patternContainer.GetComponent<RectTransform>();
         containerRect.sizeDelta = new Vector3(
-            ScanLength * numScans,
+            containerWidth,
             containerRect.sizeDelta.y);
     }
 
@@ -88,6 +102,7 @@ public class PatternPanel : MonoBehaviour
             if (t == lineTemplate.transform) continue;
             if (t == dottedLineTemplate.transform) continue;
             if (t == laneDividers.transform) continue;
+            if (t == cursor.transform) continue;
             Destroy(t.gameObject);
         }
 
@@ -156,6 +171,29 @@ public class PatternPanel : MonoBehaviour
                 scrollRect.horizontalNormalizedPosition +=
                     Input.mouseScrollDelta.y * 0.05f;
             }
+        }
+
+        // Experiment: locating cursor
+        Vector2 pointInContainer;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            patternContainer.GetComponent<RectTransform>(),
+            Input.mousePosition,
+            cam: null,
+            out pointInContainer);
+        bool cursorInContainer =
+            pointInContainer.x >= 0f &&
+            pointInContainer.x <= containerWidth &&
+            pointInContainer.y <= 0f &&
+            pointInContainer.y >= -containerHeight;
+        if (cursorInContainer)
+        {
+            cursor.SetActive(true);
+            cursor.GetComponent<RectTransform>().anchoredPosition =
+                pointInContainer;
+        }
+        else
+        {
+            cursor.SetActive(false);
         }
     }
 
