@@ -1,12 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-// This base class corresponds to the un-interactable
-// elements in the editor: lines and markers.
-//
-// A derived class will handle writing note positions
-// back to the pattern.
+// Elements include lines, markers and notes.
 public class EditorElement : MonoBehaviour
 {
     public enum Type
@@ -140,5 +137,24 @@ public class EditorElement : MonoBehaviour
                 // Not supported yet
                 break;
         }
+    }
+
+    public void OnClickPatternContainer(BaseEventData eventData)
+    {
+        if (type != Type.Note) return;
+        if (!(eventData is PointerEventData)) return;
+        if ((eventData as PointerEventData).button !=
+            PointerEventData.InputButton.Right)
+        {
+            return;
+        }
+
+        // Delete note from pattern
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentPattern().DeleteNoteAt(pulse, lane);
+        Navigation.DoneWithChange();
+
+        // Delete note from UI
+        Destroy(gameObject);
     }
 }

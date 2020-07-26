@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // Note to self: (0, 0) is bottom-left.
@@ -280,8 +281,14 @@ public class PatternPanel : MonoBehaviour
         divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
     }
 
-    public void OnClickPatternContainer()
+    public void OnClickPatternContainer(BaseEventData eventData)
     {
+        if (!(eventData is PointerEventData)) return;
+        if ((eventData as PointerEventData).button !=
+            PointerEventData.InputButton.Left)
+        {
+            return;
+        }
         if (!cursor.activeSelf) return;
         if (Navigation.GetCurrentPattern().HasNoteAt(
             snappedCursorPulse, snappedCursorLane))

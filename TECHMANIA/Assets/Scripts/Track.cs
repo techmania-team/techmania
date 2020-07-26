@@ -153,7 +153,7 @@ public class Pattern
     // such as a basic note at the middle of a hold note.
     public bool HasNoteAt(int pulse, int lane)
     {
-        if (sortedNotes.Count <= pulse) return false;
+        if (sortedNotes.Count < pulse + 1) return false;
         if (sortedNotes[pulse] == null) return false;
         foreach (Note n in sortedNotes[pulse])
         {
@@ -177,7 +177,45 @@ public class Pattern
 
     public void DeleteNote(Note n)
     {
+        // Delete from serialized fields.
+        SoundChannel channel = soundChannels.Find(
+            (SoundChannel c) => { return c.name == n.sound; });
+        if (channel == null)
+        {
+            throw new Exception(
+                $"Sound channel {n.sound} not found in pattern when deleting.");
+        }
+        channel.notes.Remove(n);
 
+        // Delete from unserialized fields.
+        if (sortedNotes.Count < n.pulse + 1)
+        {
+            throw new Exception(
+                $"Pulse {n.pulse} not found in pattern when deleting.");
+        }
+        sortedNotes[n.pulse].Remove(n);
+    }
+
+    // Throws no exception if note doesn't exist.
+    public void DeleteNoteAt(int pulse, int lane)
+    {
+        // Find the note first.
+        if (sortedNotes.Count < pulse + 1) return;
+        if (sortedNotes[pulse] == null) return;
+        Note n = sortedNotes[pulse].Find((Note note) =>
+        {
+            return note.lane == lane;
+        });
+        if (n == null) return;
+
+        // Delete from serialized fields.
+        SoundChannel channel = soundChannels.Find(
+            (SoundChannel c) => { return c.name == n.sound; });
+        if (channel == null) return;
+        channel.notes.Remove(n);
+
+        // Delete from unserialized fields.
+        sortedNotes[pulse].Remove(n);
     }
 }
 
