@@ -7,6 +7,7 @@ using UnityEngine.UI;
 // Note to self: (0, 0) is bottom-left.
 public class PatternPanel : MonoBehaviour
 {
+    [Header("Pattern Container")]
     public ScrollRect scrollRect;
     public Transform patternContainer;
     public GameObject markerTemplate;
@@ -14,12 +15,6 @@ public class PatternPanel : MonoBehaviour
     public GameObject dottedLineTemplate;
     public GameObject laneDividers;
     public GameObject cursor;
-
-    public const float scanMarkerY = 0f;
-    public const float beatMarkerY = -20f;
-    public const float timeMarkerY = -40f;
-    public const float bpmMarkerY = -60f;
-    public const float containerHeight = 480f;
 
     public static float ScanWidth
     {
@@ -41,9 +36,16 @@ public class PatternPanel : MonoBehaviour
     private static int zoom;
     private int divisionsPerBeat;
 
+    [Header("UI and options")]
     public Text divisionsPerBeatDisplay;
 
+    [Header("Note Prefabs")]
+    public GameObject basicNote;
+
     public static event UnityAction RepositionNeeded;
+
+    private int snappedCursorPulse;
+    private int snappedCursorLane;
 
     private void SpawnLine(int scan, GameObject template)
     {
@@ -70,7 +72,6 @@ public class PatternPanel : MonoBehaviour
         GameObject marker = Instantiate(markerTemplate, patternContainer);
         marker.SetActive(true);
         marker.GetComponentInChildren<Text>().text = text;
-        marker.GetComponent<EditorElement>().type = type;
 
         EditorElement element = marker.GetComponent<EditorElement>();
         element.type = type;
@@ -82,7 +83,6 @@ public class PatternPanel : MonoBehaviour
         GameObject marker = Instantiate(markerTemplate, patternContainer);
         marker.SetActive(true);
         marker.GetComponentInChildren<Text>().text = text;
-        marker.GetComponent<EditorElement>().type = type;
 
         EditorElement element = marker.GetComponent<EditorElement>();
         element.type = type;
@@ -141,13 +141,41 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    private void SpawnNote(int pulse, int lane)
+    {
+        GameObject noteObject = Instantiate(basicNote, patternContainer);
+        noteObject.SetActive(true);
+
+        EditorElement element = noteObject.GetComponent<EditorElement>();
+        element.type = EditorElement.Type.Note;
+        element.pulse = pulse;
+        element.lane = lane;
+        element.Reposition();
+    }
+
+    private void SpawnExistingNotes()
+    {
+        foreach (List<Note> list in Navigation.GetCurrentPattern().sortedNotes)
+        {
+            if (list == null) continue;
+            foreach (Note n in list)
+            {
+                SpawnNote(n.pulse, n.lane);
+            }
+        }
+    }
+
     private void OnEnable()
     {
         numScans = 4;
         zoom = 100;
         divisionsPerBeat = 2;
+
+        Navigation.GetCurrentPattern().FillUnserializedFields();
+
         ResizeContainer();
         SpawnMarkersAndLines();
+        SpawnExistingNotes();
         RepositionNeeded?.Invoke();
     }
 
@@ -178,7 +206,20 @@ public class PatternPanel : MonoBehaviour
             }
         }
 
-        // Snap cursor
+        SnapCursor();
+    }
+
+    private void SnapCursor()
+    {
+        if (Input.mousePosition.x < 0 ||
+            Input.mousePosition.x > Screen.width ||
+            Input.mousePosition.y < 0 ||
+            Input.mousePosition.y > Screen.height)
+        {
+            cursor.SetActive(false);
+            return;
+        }
+
         Vector2 pointInContainer;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             patternContainer.GetComponent<RectTransform>(),
@@ -191,20 +232,20 @@ public class PatternPanel : MonoBehaviour
             Navigation.GetCurrentPattern().patternMetadata.bps;
         float cursorPulse = cursorBeat * Pattern.pulsesPerBeat;
         int pulsesPerDivision = Pattern.pulsesPerBeat / divisionsPerBeat;
-        int snappedPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
+        snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
             * pulsesPerDivision;
-        float snappedScan = (float)snappedPulse / Pattern.pulsesPerBeat
+        float snappedScan = (float)snappedCursorPulse / Pattern.pulsesPerBeat
             / Navigation.GetCurrentPattern().patternMetadata.bps;
         float snappedX = snappedScan * ScanWidth;
 
-        int cursorLane = Mathf.FloorToInt((pointInContainer.y + 80f)
+        snappedCursorLane = Mathf.FloorToInt((pointInContainer.y + 80f)
             / -100f);
-        float snappedY = -130f - 100f * cursorLane;
+        float snappedY = -130f - 100f * snappedCursorLane;
 
         if (snappedX >= 0f &&
             snappedX <= containerWidth &&
-            cursorLane >= 0 &&
-            cursorLane <= 3)
+            snappedCursorLane >= 0 &&
+            snappedCursorLane <= 3)
         {
             cursor.SetActive(true);
             cursor.GetComponent<RectTransform>().anchoredPosition =
@@ -232,5 +273,33 @@ public class PatternPanel : MonoBehaviour
         }
         while (Pattern.pulsesPerBeat % divisionsPerBeat != 0);
         divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
+    }
+
+    public void OnClickPatternContainer()
+    {
+        if (!cursor.activeSelf) return;
+        if (Navigation.GetCurrentPattern().HasNoteAt(
+            snappedCursorPulse, snappedCursorLane))
+        {
+            return;
+        }
+
+        // Add note to pattern
+        Note n = new Note();
+        n.pulse = snappedCursorPulse;
+        n.lane = snappedCursorLane;
+        n.type = NoteType.Basic;
+        n.sound = "";
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentPattern().AddNote(n);
+        Navigation.DoneWithChange();
+
+        // Add note to UI
+        SpawnNote(snappedCursorPulse, snappedCursorLane);
+    }
+
+    public void OnClickNote()
+    {
+
     }
 }

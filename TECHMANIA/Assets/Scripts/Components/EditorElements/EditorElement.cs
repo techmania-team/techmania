@@ -36,6 +36,14 @@ public class EditorElement : MonoBehaviour
     [HideInInspector]
     public int lane;
 
+    private const float scanMarkerY = 0f;
+    private const float beatMarkerY = -20f;
+    private const float timeMarkerY = -40f;
+    private const float bpmMarkerY = -60f;
+    private const float containerHeight = 480f;
+    private const float laneHeight = 100f;
+    private const float firstLaneY = -80f - laneHeight * 0.5f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -91,16 +99,19 @@ public class EditorElement : MonoBehaviour
         switch (type)
         {
             case Type.ScanMarker:
-                y = 0f;
+                y = scanMarkerY;
                 break;
             case Type.BeatMarker:
-                y = -20f;
+                y = beatMarkerY;
                 break;
             case Type.TimeMarker:
-                y = -40f;
+                y = timeMarkerY;
                 break;
             case Type.BpmMarker:
-                y = -60f;
+                y = bpmMarkerY;
+                break;
+            case Type.Note:
+                y = firstLaneY - laneHeight * lane;
                 break;
             default:
                 // Not supported yet
@@ -120,6 +131,7 @@ public class EditorElement : MonoBehaviour
             case Type.BeatMarker:
             case Type.TimeMarker:
             case Type.BpmMarker:
+            case Type.Note:
                 rect.anchorMin = new Vector2(0f, 1f);
                 rect.anchorMax = new Vector2(0f, 1f);
                 rect.anchoredPosition = new Vector2(x, y);

@@ -108,6 +108,77 @@ public class Pattern
     public List<SoundChannel> soundChannels;
 
     public const int pulsesPerBeat = 240;
+
+    // Filled at runtime, sorted and indexed by pulse.
+    [NonSerialized]
+    public List<List<Note>> sortedNotes;
+
+    public void FillUnserializedFields()
+    {
+        sortedNotes = new List<List<Note>>();
+        foreach (SoundChannel channel in soundChannels)
+        {
+            foreach (Note n in channel.notes)
+            {
+                n.sound = channel.name;
+                AddToSortedNotes(n);
+            }
+        }
+    }
+
+    // Assumes no note exists at the same location.
+    public void AddNote(Note n)
+    {
+        // Write to serialized fields.
+        if (soundChannels == null)
+        {
+            soundChannels = new List<SoundChannel>();
+        }
+        SoundChannel channel = soundChannels.Find(
+            (SoundChannel c) => { return c.name == n.sound; });
+        if (channel == null)
+        {
+            channel = new SoundChannel();
+            channel.name = n.sound;
+            channel.notes = new List<Note>();
+            soundChannels.Add(channel);
+        }
+        channel.notes.Add(n);
+
+        // Write to unserialized fields.
+        AddToSortedNotes(n);
+    }
+
+    // This does not check for notes crossing each other,
+    // such as a basic note at the middle of a hold note.
+    public bool HasNoteAt(int pulse, int lane)
+    {
+        if (sortedNotes.Count <= pulse) return false;
+        if (sortedNotes[pulse] == null) return false;
+        foreach (Note n in sortedNotes[pulse])
+        {
+            if (n.lane == lane) return true;
+        }
+        return false;
+    }
+
+    private void AddToSortedNotes(Note n)
+    {
+        while (sortedNotes.Count < n.pulse + 1)
+        {
+            sortedNotes.Add(null);
+        }
+        if (sortedNotes[n.pulse] == null)
+        {
+            sortedNotes[n.pulse] = new List<Note>();
+        }
+        sortedNotes[n.pulse].Add(n);
+    }
+
+    public void DeleteNote(Note n)
+    {
+
+    }
 }
 
 [Serializable]
@@ -141,7 +212,7 @@ public class PatternMetadata
 [Serializable]
 public class BpmEvent
 {
-    public long pulse;
+    public int pulse;
     public double bpm;
 }
 
@@ -175,15 +246,39 @@ public enum NoteType
 public class Note
 {
     public int lane;
-    public long pulse;
+    public int pulse;
     public NoteType type;
+
+    // Following fields are filled at runtime, and most
+    // only apply to specific types.
+
+    [NonSerialized]
+    public string sound;
+    // ChainHead and Chain only
+    [NonSerialized]
+    public Note nextChainNode;
+    // Chain only
+    [NonSerialized]
+    public Note prevChainNode;
+    // HoldStart, RepeatHeadHold, RepeatHoldStart only
+    [NonSerialized]
+    public Note holdEnd;
+    // HoldEnd, RepeatHoldEnd only
+    [NonSerialized]
+    public Note holdStart;
+    // Repeat* only
+    [NonSerialized]
+    public Note nextRepeatNote;
+    // Repeat* only
+    [NonSerialized]
+    public Note prevRepeatNote;
 }
 
 [Serializable]
 public class DragNotePath
 {
     public int lane;
-    public long pulse;
+    public int pulse;
 }
 
 [Serializable]
