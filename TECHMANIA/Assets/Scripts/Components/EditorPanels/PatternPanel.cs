@@ -171,12 +171,7 @@ public class PatternPanel : MonoBehaviour
         zoom = 100;
         divisionsPerBeat = 2;
 
-        Navigation.GetCurrentPattern().FillUnserializedFields();
-
-        ResizeContainer();
-        SpawnMarkersAndLines();
-        SpawnExistingNotes();
-        RepositionNeeded?.Invoke();
+        MemoryToUI();
     }
 
     // Update is called once per frame
@@ -207,6 +202,16 @@ public class PatternPanel : MonoBehaviour
         }
 
         SnapCursor();
+    }
+
+    public void MemoryToUI()
+    {
+        Navigation.GetCurrentPattern().FillUnserializedFields();
+
+        ResizeContainer();
+        SpawnMarkersAndLines();
+        SpawnExistingNotes();
+        RepositionNeeded?.Invoke();
     }
 
     private void SnapCursor()

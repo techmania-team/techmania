@@ -137,6 +137,7 @@ public class Navigation : MonoBehaviour
                 patternMetadataPanel.RefreshDropdowns();
                 break;
             case Location.Pattern:
+                patternPanel.MemoryToUI();
                 break;
         }
     }
