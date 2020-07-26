@@ -36,6 +36,8 @@ public class PatternPanel : MonoBehaviour
     private int numScans;
     private static int zoom;
     private int divisionsPerBeat;
+    private SortedNoteObjects sortedNoteObjects;
+    private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
     public Text divisionsPerBeatDisplay;
@@ -48,6 +50,7 @@ public class PatternPanel : MonoBehaviour
     private int snappedCursorPulse;
     private int snappedCursorLane;
 
+    #region Markers and Lines
     private void SpawnLine(int scan, GameObject template)
     {
         GameObject line = Instantiate(template, patternContainer);
@@ -141,27 +144,31 @@ public class PatternPanel : MonoBehaviour
                 beat, $"{minute}:{second:D2}.{milliSecond:D3}");
         }
     }
+    #endregion
 
-    private void SpawnNote(int pulse, int lane)
+    private void SpawnNoteObject(Note n, string sound)
     {
         GameObject noteObject = Instantiate(basicNote, patternContainer);
         noteObject.SetActive(true);
 
         EditorElement element = noteObject.GetComponent<EditorElement>();
         element.type = EditorElement.Type.Note;
-        element.pulse = pulse;
-        element.lane = lane;
+        element.note = n;
+        element.sound = sound;
         element.Reposition();
+
+        sortedNoteObjects.Add(noteObject);
     }
 
     private void SpawnExistingNotes()
     {
-        foreach (List<Note> list in Navigation.GetCurrentPattern().sortedNotes)
+        sortedNoteObjects = new SortedNoteObjects();
+        selectedNoteObjects = new HashSet<GameObject>();
+        foreach (SoundChannel channel in Navigation.GetCurrentPattern().soundChannels)
         {
-            if (list == null) continue;
-            foreach (Note n in list)
+            foreach (Note n in channel.notes)
             {
-                SpawnNote(n.pulse, n.lane);
+                SpawnNoteObject(n, channel.name);
             }
         }
     }
@@ -173,6 +180,15 @@ public class PatternPanel : MonoBehaviour
         divisionsPerBeat = 2;
 
         MemoryToUI();
+
+        EditorElement.LeftClicked += OnNoteObjectLeftClick;
+        EditorElement.RightClicked += OnNoteObjectRightClick;
+    }
+
+    private void OnDisable()
+    {
+        EditorElement.LeftClicked -= OnNoteObjectLeftClick;
+        EditorElement.RightClicked -= OnNoteObjectRightClick;
     }
 
     // Update is called once per frame
@@ -207,8 +223,6 @@ public class PatternPanel : MonoBehaviour
 
     public void MemoryToUI()
     {
-        Navigation.GetCurrentPattern().FillUnserializedFields();
-
         ResizeContainer();
         SpawnMarkersAndLines();
         SpawnExistingNotes();
@@ -290,28 +304,50 @@ public class PatternPanel : MonoBehaviour
             return;
         }
         if (!cursor.activeSelf) return;
-        if (Navigation.GetCurrentPattern().HasNoteAt(
+        if (sortedNoteObjects.HasAt(
             snappedCursorPulse, snappedCursorLane))
         {
             return;
         }
 
         // Add note to pattern
+        string sound = "";
         Note n = new Note();
         n.pulse = snappedCursorPulse;
         n.lane = snappedCursorLane;
         n.type = NoteType.Basic;
-        n.sound = "";
         Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().AddNote(n);
+        Navigation.GetCurrentPattern().AddNote(n, sound);
         Navigation.DoneWithChange();
 
         // Add note to UI
-        SpawnNote(snappedCursorPulse, snappedCursorLane);
+        SpawnNoteObject(n, sound);
     }
 
-    public void OnClickNote()
+    public void OnNoteObjectLeftClick(GameObject o)
     {
+        if (selectedNoteObjects.Contains(o))
+        {
+            selectedNoteObjects.Remove(o);
+            o.GetComponent<Image>().enabled = false;
+        }
+        else
+        {
+            selectedNoteObjects.Add(o);
+            o.GetComponent<Image>().enabled = true;
+        }
+    }
 
+    public void OnNoteObjectRightClick(GameObject o)
+    {
+        // Delete note from pattern
+        EditorElement e = o.GetComponent<EditorElement>();
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
+        Navigation.DoneWithChange();
+
+        // Delete note from UI
+        sortedNoteObjects.Delete(o);
+        Destroy(o);
     }
 }

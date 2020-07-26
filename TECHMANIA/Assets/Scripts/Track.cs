@@ -109,113 +109,36 @@ public class Pattern
 
     public const int pulsesPerBeat = 240;
 
-    // Filled at runtime, sorted and indexed by pulse.
-    [NonSerialized]
-    public List<List<Note>> sortedNotes;
-
-    public void FillUnserializedFields()
-    {
-        sortedNotes = new List<List<Note>>();
-        foreach (SoundChannel channel in soundChannels)
-        {
-            foreach (Note n in channel.notes)
-            {
-                n.sound = channel.name;
-                AddToSortedNotes(n);
-            }
-        }
-    }
-
     // Assumes no note exists at the same location.
-    public void AddNote(Note n)
+    public void AddNote(Note n, string sound)
     {
-        // Write to serialized fields.
         if (soundChannels == null)
         {
             soundChannels = new List<SoundChannel>();
         }
         SoundChannel channel = soundChannels.Find(
-            (SoundChannel c) => { return c.name == n.sound; });
+            (SoundChannel c) => { return c.name == sound; });
         if (channel == null)
         {
             channel = new SoundChannel();
-            channel.name = n.sound;
+            channel.name = sound;
             channel.notes = new List<Note>();
             soundChannels.Add(channel);
         }
         channel.notes.Add(n);
-
-        // Write to unserialized fields.
-        AddToSortedNotes(n);
     }
 
-    // This does not check for notes crossing each other,
-    // such as a basic note at the middle of a hold note.
-    public bool HasNoteAt(int pulse, int lane)
-    {
-        if (sortedNotes.Count < pulse + 1) return false;
-        if (sortedNotes[pulse] == null) return false;
-        foreach (Note n in sortedNotes[pulse])
-        {
-            if (n.lane == lane) return true;
-        }
-        return false;
-    }
-
-    private void AddToSortedNotes(Note n)
-    {
-        while (sortedNotes.Count < n.pulse + 1)
-        {
-            sortedNotes.Add(null);
-        }
-        if (sortedNotes[n.pulse] == null)
-        {
-            sortedNotes[n.pulse] = new List<Note>();
-        }
-        sortedNotes[n.pulse].Add(n);
-    }
-
-    public void DeleteNote(Note n)
+    public void DeleteNote(Note n, string sound)
     {
         // Delete from serialized fields.
         SoundChannel channel = soundChannels.Find(
-            (SoundChannel c) => { return c.name == n.sound; });
+            (SoundChannel c) => { return c.name == sound; });
         if (channel == null)
         {
             throw new Exception(
-                $"Sound channel {n.sound} not found in pattern when deleting.");
+                $"Sound channel {sound} not found in pattern when deleting.");
         }
         channel.notes.Remove(n);
-
-        // Delete from unserialized fields.
-        if (sortedNotes.Count < n.pulse + 1)
-        {
-            throw new Exception(
-                $"Pulse {n.pulse} not found in pattern when deleting.");
-        }
-        sortedNotes[n.pulse].Remove(n);
-    }
-
-    // Throws no exception if note doesn't exist.
-    public void DeleteNoteAt(int pulse, int lane)
-    {
-        // Find the note first.
-        if (sortedNotes.Count < pulse + 1) return;
-        if (sortedNotes[pulse] == null) return;
-        Note n = sortedNotes[pulse].Find((Note note) =>
-        {
-            return note.lane == lane;
-        });
-        if (n == null) return;
-
-        // Delete from serialized fields.
-        SoundChannel channel = soundChannels.Find(
-            (SoundChannel c) => { return c.name == n.sound; });
-        if (channel == null) return;
-        channel.notes.Remove(n);
-
-        // Delete from unserialized fields.
-        sortedNotes[pulse].Remove(n);
     }
 }
 
@@ -290,8 +213,6 @@ public class Note
     // Following fields are filled at runtime, and most
     // only apply to specific types.
 
-    [NonSerialized]
-    public string sound;
     // ChainHead and Chain only
     [NonSerialized]
     public Note nextChainNode;

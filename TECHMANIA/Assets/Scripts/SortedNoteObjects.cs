@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+// A list of lists of GameObjects, each with an EditorElement.
+// Outer list is sorted and indexed by pulse; inner list is
+// not sorted, and may be empty, null, or nonexistant.
+//
+// This class does not interact with Notes in any way.
+public class SortedNoteObjects
+{
+    private List<List<GameObject>> list;
+    public SortedNoteObjects()
+    {
+        list = new List<List<GameObject>>();
+    }
+
+    private int GetPulse(GameObject o)
+    {
+        return o.GetComponent<EditorElement>().note.pulse;
+    }
+
+    private int GetLane(GameObject o)
+    {
+        return o.GetComponent<EditorElement>().note.lane;
+    }
+
+    public GameObject GetAt(int pulse, int lane)
+    {
+        if (list.Count < pulse + 1) return null;
+        if (list[pulse] == null) return null;
+        return list[pulse].Find((GameObject o) =>
+        {
+            return GetLane(o) == lane;
+        });
+    }
+
+    public bool HasAt(int pulse, int lane)
+    {
+        return GetAt(pulse, lane) != null;
+    }
+
+    public void Add(GameObject o)
+    {
+        int pulse = GetPulse(o);
+        while (list.Count < pulse + 1)
+        {
+            list.Add(null);
+        }
+        if (list[pulse] == null)
+        {
+            list[pulse] = new List<GameObject>();
+        }
+        list[pulse].Add(o);
+    }
+
+    // No-op if not found.
+    public void Delete(GameObject o)
+    {
+        int pulse = GetPulse(o);
+        if (list.Count < pulse + 1) return;
+        list[pulse].Remove(o);
+    }
+
+    // No-op if no note exists at (pulse, lane).
+    public void DeleteAt(int pulse, int lane)
+    {
+        GameObject o = GetAt(pulse, lane);
+        if (o == null) return;
+        list[pulse].Remove(o);
+    }
+}

@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 // Elements include lines, markers and notes.
 public class EditorElement : MonoBehaviour
@@ -20,7 +22,8 @@ public class EditorElement : MonoBehaviour
         // Position expressed in pulses
         BpmMarker,
 
-        // Position expressed in pulses and lane
+        // Position expressed in pulses and lane, which are
+        // stored in the note field
         Note
     }
     public Type type;
@@ -33,6 +36,12 @@ public class EditorElement : MonoBehaviour
     [HideInInspector]
     public int lane;
 
+    // Specific to notes
+    [HideInInspector]
+    public Note note;
+    [HideInInspector]
+    public string sound;
+
     private const float scanMarkerY = 0f;
     private const float beatMarkerY = -20f;
     private const float timeMarkerY = -40f;
@@ -40,6 +49,9 @@ public class EditorElement : MonoBehaviour
     private const float containerHeight = 480f;
     private const float laneHeight = 100f;
     private const float firstLaneY = -80f - laneHeight * 0.5f;
+
+    public static event UnityAction<GameObject> LeftClicked;
+    public static event UnityAction<GameObject> RightClicked;
 
     // Start is called before the first frame update
     void Start()
@@ -85,7 +97,7 @@ public class EditorElement : MonoBehaviour
             case Type.BpmMarker:
             case Type.Note:
                 {
-                    float beat = (float)pulse / Pattern.pulsesPerBeat;
+                    float beat = (float)note.pulse / Pattern.pulsesPerBeat;
                     float scan = beat / bps;
                     x = PatternPanel.ScanWidth * scan;
                 }
@@ -108,7 +120,7 @@ public class EditorElement : MonoBehaviour
                 y = bpmMarkerY;
                 break;
             case Type.Note:
-                y = firstLaneY - laneHeight * lane;
+                y = firstLaneY - laneHeight * note.lane;
                 break;
             default:
                 // Not supported yet
@@ -143,18 +155,14 @@ public class EditorElement : MonoBehaviour
     {
         if (type != Type.Note) return;
         if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button !=
-            PointerEventData.InputButton.Right)
+        switch ((eventData as PointerEventData).button)
         {
-            return;
+            case PointerEventData.InputButton.Left:
+                LeftClicked?.Invoke(gameObject);
+                break;
+            case PointerEventData.InputButton.Right:
+                RightClicked?.Invoke(gameObject);
+                break;
         }
-
-        // Delete note from pattern
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().DeleteNoteAt(pulse, lane);
-        Navigation.DoneWithChange();
-
-        // Delete note from UI
-        Destroy(gameObject);
     }
 }
