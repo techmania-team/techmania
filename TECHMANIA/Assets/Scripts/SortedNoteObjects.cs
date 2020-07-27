@@ -36,6 +36,46 @@ public class SortedNoteObjects
         });
     }
 
+    // Gets the list of note objects whose pulse and lane are both
+    // between first and last, inclusive.
+    public List<GameObject> GetRange(GameObject first, GameObject last)
+    {
+        List<GameObject> answer = new List<GameObject>();
+        int firstPulse = GetPulse(first), lastPulse = GetPulse(last);
+        int minPulse = Mathf.Min(firstPulse, lastPulse);
+        int maxPulse = Mathf.Max(firstPulse, lastPulse);
+        int firstLane = GetLane(first), lastLane = GetLane(last);
+        int minLane = Mathf.Min(firstLane, lastLane);
+        int maxLane = Mathf.Max(firstLane, lastLane);
+
+        for (int pulse = minPulse; pulse <= maxPulse; pulse++)
+        {
+            if (list.Count < pulse + 1) continue;
+            if (list[pulse] == null) continue;
+            foreach (GameObject o in list[pulse])
+            {
+                int lane = GetLane(o);
+                if (lane >= minLane && lane <= maxLane)
+                {
+                    answer.Add(o);
+                }
+            }
+        }
+
+        return answer;
+    }
+
+    public GameObject GetFirst()
+    {
+        for (int pulse = 0; pulse < list.Count; pulse++)
+        {
+            if (list[pulse] == null) continue;
+            if (list[pulse].Count == 0) continue;
+            return list[pulse][0];
+        }
+        return null;
+    }
+
     public bool HasAt(int pulse, int lane)
     {
         return GetAt(pulse, lane) != null;

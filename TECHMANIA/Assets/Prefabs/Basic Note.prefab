@@ -93,6 +93,11 @@ MonoBehaviour:
   beat: 0
   pulse: 0
   lane: 0
+  note:
+    lane: 0
+    pulse: 0
+    type: 0
+  sound: 
 --- !u!1 &7913193108259630596
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,7 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:

@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 6411691592365922321}
   - component: {fileID: 6411691592365922323}
   m_Layer: 5
-  m_Name: Solid Line Template
+  m_Name: Solid Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6411691592365922320
 RectTransform:
   m_ObjectHideFlags: 0
@@ -92,3 +92,8 @@ MonoBehaviour:
   beat: 0
   pulse: 0
   lane: 0
+  note:
+    lane: 0
+    pulse: 0
+    type: 0
+  sound: 

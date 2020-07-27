@@ -68,11 +68,13 @@ public class EditorElement : MonoBehaviour
     private void OnEnable()
     {
         PatternPanel.RepositionNeeded += Reposition;
+        PatternPanel.SelectionChanged += UpdateSelection;
     }
 
     private void OnDisable()
     {
         PatternPanel.RepositionNeeded -= Reposition;
+        PatternPanel.SelectionChanged -= UpdateSelection;
     }
 
     public void Reposition()
@@ -149,6 +151,12 @@ public class EditorElement : MonoBehaviour
                 // Not supported yet
                 break;
         }
+    }
+
+    private void UpdateSelection(HashSet<GameObject> selection)
+    {
+        if (type != Type.Note) return;
+        GetComponent<Image>().enabled = selection.Contains(gameObject);
     }
 
     public void OnClickPatternContainer(BaseEventData eventData)

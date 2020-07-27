@@ -209,28 +209,6 @@ public class Note
     public int lane;
     public int pulse;
     public NoteType type;
-
-    // Following fields are filled at runtime, and most
-    // only apply to specific types.
-
-    // ChainHead and Chain only
-    [NonSerialized]
-    public Note nextChainNode;
-    // Chain only
-    [NonSerialized]
-    public Note prevChainNode;
-    // HoldStart, RepeatHeadHold, RepeatHoldStart only
-    [NonSerialized]
-    public Note holdEnd;
-    // HoldEnd, RepeatHoldEnd only
-    [NonSerialized]
-    public Note holdStart;
-    // Repeat* only
-    [NonSerialized]
-    public Note nextRepeatNote;
-    // Repeat* only
-    [NonSerialized]
-    public Note prevRepeatNote;
 }
 
 [Serializable]

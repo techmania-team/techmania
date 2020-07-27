@@ -37,6 +37,7 @@ public class PatternPanel : MonoBehaviour
     private static int zoom;
     private int divisionsPerBeat;
     private SortedNoteObjects sortedNoteObjects;
+    private GameObject lastSelectedNoteObjectWithoutShift;
     private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
@@ -46,6 +47,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject basicNote;
 
     public static event UnityAction RepositionNeeded;
+    public static event UnityAction<HashSet<GameObject>> SelectionChanged;
 
     private int snappedCursorPulse;
     private int snappedCursorLane;
@@ -54,7 +56,6 @@ public class PatternPanel : MonoBehaviour
     private void SpawnLine(int scan, GameObject template)
     {
         GameObject line = Instantiate(template, patternContainer);
-        line.SetActive(true);
 
         EditorElement element = line.GetComponent<EditorElement>();
         element.type = EditorElement.Type.Line;
@@ -64,7 +65,6 @@ public class PatternPanel : MonoBehaviour
     private void SpawnDottedLine(int beat, GameObject template)
     {
         GameObject line = Instantiate(template, patternContainer);
-        line.SetActive(true);
 
         EditorElement element = line.GetComponent<EditorElement>();
         element.type = EditorElement.Type.DottedLine;
@@ -74,7 +74,6 @@ public class PatternPanel : MonoBehaviour
     private void SpawnScanBasedMarker(EditorElement.Type type, int scan, string text)
     {
         GameObject marker = Instantiate(markerTemplate, patternContainer);
-        marker.SetActive(true);
         marker.GetComponentInChildren<Text>().text = text;
 
         EditorElement element = marker.GetComponent<EditorElement>();
@@ -85,7 +84,6 @@ public class PatternPanel : MonoBehaviour
     private void SpawnBeatBasedMarker(EditorElement.Type type, int beat, string text)
     {
         GameObject marker = Instantiate(markerTemplate, patternContainer);
-        marker.SetActive(true);
         marker.GetComponentInChildren<Text>().text = text;
 
         EditorElement element = marker.GetComponent<EditorElement>();
@@ -149,7 +147,6 @@ public class PatternPanel : MonoBehaviour
     private void SpawnNoteObject(Note n, string sound)
     {
         GameObject noteObject = Instantiate(basicNote, patternContainer);
-        noteObject.SetActive(true);
 
         EditorElement element = noteObject.GetComponent<EditorElement>();
         element.type = EditorElement.Type.Note;
@@ -163,6 +160,7 @@ public class PatternPanel : MonoBehaviour
     private void SpawnExistingNotes()
     {
         sortedNoteObjects = new SortedNoteObjects();
+        lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
         foreach (SoundChannel channel in Navigation.GetCurrentPattern().soundChannels)
         {
@@ -326,15 +324,82 @@ public class PatternPanel : MonoBehaviour
 
     public void OnNoteObjectLeftClick(GameObject o)
     {
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        if (shift)
+        {
+            if (lastSelectedNoteObjectWithoutShift == null)
+            {
+                lastSelectedNoteObjectWithoutShift = sortedNoteObjects.GetFirst();
+            }
+            List<GameObject> range = sortedNoteObjects.GetRange(
+                    lastSelectedNoteObjectWithoutShift, o);
+            if (ctrl)
+            {
+                // Add [prev, o] to current selection.
+                foreach (GameObject oInRange in range)
+                {
+                    selectedNoteObjects.Add(oInRange);
+                }
+            }
+            else  // !ctrl
+            {
+                // Overwrite current selection with [prev, o].
+                selectedNoteObjects.Clear();
+                foreach (GameObject oInRange in range)
+                {
+                    selectedNoteObjects.Add(oInRange);
+                }
+            }
+        }
+        else  // !shift
+        {
+            lastSelectedNoteObjectWithoutShift = o;
+            if (ctrl)
+            {
+                // Toggle o in current selection.
+                ToggleSelection(o);
+            }
+            else  // !ctrl
+            {
+                if (selectedNoteObjects.Count > 1)
+                {
+                    selectedNoteObjects.Clear();
+                    selectedNoteObjects.Add(o);
+                }
+                else if (selectedNoteObjects.Count == 1)
+                {
+                    if (selectedNoteObjects.Contains(o))
+                    {
+                        selectedNoteObjects.Remove(o);
+                    }
+                    else
+                    {
+                        selectedNoteObjects.Clear();
+                        selectedNoteObjects.Add(o);
+                    }
+                }
+                else  // Count == 0
+                {
+                    selectedNoteObjects.Add(o);
+                }
+            }
+        }
+
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    private void ToggleSelection(GameObject o)
+    {
         if (selectedNoteObjects.Contains(o))
         {
             selectedNoteObjects.Remove(o);
-            o.GetComponent<Image>().enabled = false;
         }
         else
         {
             selectedNoteObjects.Add(o);
-            o.GetComponent<Image>().enabled = true;
         }
     }
 
@@ -348,6 +413,11 @@ public class PatternPanel : MonoBehaviour
 
         // Delete note from UI
         sortedNoteObjects.Delete(o);
+        if (lastSelectedNoteObjectWithoutShift == o)
+        {
+            lastSelectedNoteObjectWithoutShift = null;
+        }
+        selectedNoteObjects.Remove(o);
         Destroy(o);
     }
 }
