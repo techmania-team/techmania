@@ -45,6 +45,12 @@ public class PatternPanel : MonoBehaviour
     private List<string> currentKeysounds;
     private int currentKeysoundIndex;
     public Text divisionsPerBeatDisplay;
+    public Text selectedNotesKeysoundDisplay;
+    public Button modifySelectedNotesKeysoundButton;
+    public Button cutButton;
+    public Button copyButton;
+    public Button pasteButton;
+    public Button deleteButton;
 
     [Header("Note Prefabs")]
     public GameObject basicNote;
@@ -150,6 +156,8 @@ public class PatternPanel : MonoBehaviour
     private void SpawnNoteObject(Note n, string sound)
     {
         GameObject noteObject = Instantiate(basicNote, patternContainer);
+        noteObject.GetComponentInChildren<Text>().text =
+            UIUtils.StripExtension(sound);
 
         EditorElement element = noteObject.GetComponent<EditorElement>();
         element.type = EditorElement.Type.Note;
@@ -231,8 +239,8 @@ public class PatternPanel : MonoBehaviour
         SpawnMarkersAndLines();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
-        UpdateSelectedKeysoundDisplay();
         UpdateCurrentKeysoundDisplay();
+        UpdateSelectionKeysoundsDisplay();
     }
 
     private void SnapCursor()
@@ -399,6 +407,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         SelectionChanged?.Invoke(selectedNoteObjects);
+        UpdateSelectionKeysoundsDisplay();
     }
 
     private void ToggleSelection(GameObject o)
@@ -434,8 +443,8 @@ public class PatternPanel : MonoBehaviour
     #region Keysounds
     private string KeysoundName(string filename)
     {
-        if (filename == "") return "(None)";
-        return filename.Replace(".wav", "");
+        if (filename == "") return UIUtils.kEmptyKeysoundDisplayText;
+        return UIUtils.StripExtension(filename);
     }
 
     private void UpdateCurrentKeysoundDisplay()
@@ -476,12 +485,37 @@ public class PatternPanel : MonoBehaviour
         UpdateCurrentKeysoundDisplay();
     }
 
-    private void UpdateSelectedKeysoundDisplay()
+    private void UpdateSelectionKeysoundsDisplay()
     {
+        HashSet<string> keysounds = new HashSet<string>();
+        foreach (GameObject noteObject in selectedNoteObjects)
+        {
+            keysounds.Add(noteObject.GetComponent<EditorElement>().sound);
+        }
 
+        if (keysounds.Count == 0)
+        {
+            // Assume empty selection.
+            selectedNotesKeysoundDisplay.text =
+                UIUtils.kEmptyKeysoundDisplayText;
+            modifySelectedNotesKeysoundButton.interactable = false;
+        }
+        else if (keysounds.Count == 1)
+        {
+            HashSet<string>.Enumerator enumerator = keysounds.GetEnumerator();
+            enumerator.MoveNext();
+            selectedNotesKeysoundDisplay.text = 
+                KeysoundName(enumerator.Current);
+            modifySelectedNotesKeysoundButton.interactable = true;
+        }
+        else
+        {
+            selectedNotesKeysoundDisplay.text = "(Multiple)";
+            modifySelectedNotesKeysoundButton.interactable = true;
+        }
     }
 
-    public void UpdateSelectedKeysound()
+    public void UpdateSelectionKeysound()
     {
 
     }

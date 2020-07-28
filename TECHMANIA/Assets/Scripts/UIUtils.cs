@@ -103,4 +103,10 @@ public class UIUtils
         }
         dropdown.SetValueWithoutNotify(option);
     }
+
+    public const string kEmptyKeysoundDisplayText = "(None)";
+    public static string StripExtension(string filename)
+    {
+        return filename.Replace(".wav", "");
+    }
 }

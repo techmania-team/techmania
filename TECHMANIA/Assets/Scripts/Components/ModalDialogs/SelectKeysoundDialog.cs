@@ -48,7 +48,6 @@ public class SelectKeysoundDialog : ModalDialog
     private Result result;
     private List<string> selectedKeysounds;
     private HashSet<GameObject> emptyKeysoundObjects;
-    private const string kEmptyKeysoundDisplayText = "(None)";
 
     private void Update()
     {
@@ -127,7 +126,7 @@ public class SelectKeysoundDialog : ModalDialog
         VerticalLayoutGroup group, string text)
     {
         string displayText = (text == "") ?
-            kEmptyKeysoundDisplayText : text;
+            UIUtils.kEmptyKeysoundDisplayText : text;
         GameObject keysoundObject = Instantiate(
                 template, group.transform);
         keysoundObject.GetComponentInChildren<Text>().text = displayText;
