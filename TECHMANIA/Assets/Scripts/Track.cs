@@ -128,9 +128,31 @@ public class Pattern
         channel.notes.Add(n);
     }
 
+    public void ModifyNoteKeysound(Note n, string oldSound, string newSound)
+    {
+        SoundChannel oldChannel = soundChannels.Find(
+            (SoundChannel c) => { return c.name == oldSound; });
+        if (oldChannel == null)
+        {
+            throw new Exception(
+                $"Sound channel {oldSound} not found in pattern when modifying keysound.");
+        }
+        SoundChannel newChannel = soundChannels.Find(
+            (SoundChannel c) => { return c.name == newSound; });
+        if (newChannel == null)
+        {
+            newChannel = new SoundChannel();
+            newChannel.name = newSound;
+            newChannel.notes = new List<Note>();
+            soundChannels.Add(newChannel);
+        }
+
+        oldChannel.notes.Remove(n);
+        newChannel.notes.Add(n);
+    }
+
     public void DeleteNote(Note n, string sound)
     {
-        // Delete from serialized fields.
         SoundChannel channel = soundChannels.Find(
             (SoundChannel c) => { return c.name == sound; });
         if (channel == null)

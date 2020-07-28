@@ -240,7 +240,7 @@ public class PatternPanel : MonoBehaviour
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
         UpdateCurrentKeysoundDisplay();
-        UpdateSelectionKeysoundsDisplay();
+        UpdateSelectedNotesKeysoundDisplay();
     }
 
     private void SnapCursor()
@@ -407,7 +407,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         SelectionChanged?.Invoke(selectedNoteObjects);
-        UpdateSelectionKeysoundsDisplay();
+        UpdateSelectedNotesKeysoundDisplay();
     }
 
     private void ToggleSelection(GameObject o)
@@ -485,7 +485,7 @@ public class PatternPanel : MonoBehaviour
         UpdateCurrentKeysoundDisplay();
     }
 
-    private void UpdateSelectionKeysoundsDisplay()
+    private void UpdateSelectedNotesKeysoundDisplay()
     {
         HashSet<string> keysounds = new HashSet<string>();
         foreach (GameObject noteObject in selectedNoteObjects)
@@ -515,9 +515,65 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    public void UpdateSelectionKeysound()
+    public void UpdateSelectedNotesKeysound()
     {
+        StartCoroutine(InternalUpdateSelectedNotesKeysound());
+    }
 
+    private IEnumerator InternalUpdateSelectedNotesKeysound()
+    {
+        SelectKeysoundDialog.Show("Select keysounds to apply to selected notes. " +
+            "You can select multiple, and they will apply successively.",
+            currentKeysounds);
+        yield return new WaitUntil(() =>
+        {
+            return SelectKeysoundDialog.IsResolved();
+        });
+        if (SelectKeysoundDialog.GetResult() ==
+            SelectKeysoundDialog.Result.Cancelled)
+        {
+            yield return null;
+        }
+
+        // Sort selection by pulse, then by lane.
+        List<EditorElement> selectionAsList = new List<EditorElement>();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            selectionAsList.Add(o.GetComponent<EditorElement>());
+        }
+        selectionAsList.Sort((EditorElement e1, EditorElement e2) =>
+        {
+            if (e1.pulse != e2.pulse)
+            {
+                return e1.pulse - e2.pulse;
+            }
+            else
+            {
+                return e1.lane - e2.lane;
+            }
+        });
+
+        // Apply new keysounds.
+        List<string> newKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
+        Navigation.PrepareForChange();
+        for (int i = 0; i < selectionAsList.Count; i++)
+        {
+            int soundIndex = i % newKeysounds.Count;
+            string newSound = newKeysounds[soundIndex];
+
+            // Update pattern
+            Navigation.GetCurrentPattern().ModifyNoteKeysound(
+                selectionAsList[i].note, selectionAsList[i].sound,
+                newSound);
+
+            // Update in display
+            selectionAsList[i].sound = newKeysounds[soundIndex];
+            selectionAsList[i].GetComponentInChildren<Text>().text =
+                UIUtils.StripExtension(newSound);
+        }
+        Navigation.DoneWithChange();
+
+        UpdateSelectedNotesKeysoundDisplay();
     }
     #endregion
 }
