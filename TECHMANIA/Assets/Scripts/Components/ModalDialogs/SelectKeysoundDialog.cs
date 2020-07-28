@@ -47,6 +47,8 @@ public class SelectKeysoundDialog : ModalDialog
     }
     private Result result;
     private List<string> selectedKeysounds;
+    private HashSet<GameObject> emptyKeysoundObjects;
+    private const string kEmptyKeysoundDisplayText = "(None)";
 
     private void Update()
     {
@@ -63,19 +65,14 @@ public class SelectKeysoundDialog : ModalDialog
     private void InternalShow(string prompt, List<string> initialSelection)
     {
         gameObject.SetActive(true);
-        promptText.text = "";
-        // Clone initialSelection so to not modify the caller.
-        selectedKeysounds = new List<string>();
-        foreach (string keysound in initialSelection)
-        {
-            selectedKeysounds.Add(keysound);
-        }
+        promptText.text = prompt;
         resolved = false;
 
-        BuildLists();
+        emptyKeysoundObjects = new HashSet<GameObject>();
+        BuildLists(initialSelection);
     }
 
-    private void BuildLists()
+    private void BuildLists(List<string> initialSelection)
     {
         // Clear both lists.
         for (int i = 0; i < availableList.transform.childCount; i++)
@@ -91,9 +88,16 @@ public class SelectKeysoundDialog : ModalDialog
             Destroy(keysoundObject);
         }
 
+        // The available list starts with empty.
+        GameObject emptyKeysoundObject = InstantiateKeysoundObject(
+            availableTemplate, availableList, "");
+        emptyKeysoundObject.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            Select("");
+        });
+
         // Build available list while enumerating sound files.
         string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
-
         foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
         {
             string filename = new FileInfo(file).Name;
@@ -107,16 +111,14 @@ public class SelectKeysoundDialog : ModalDialog
         }
 
         // Build selected list.
-        for (int i = 0; i < selectedKeysounds.Count; i++)
+        foreach (string sound in initialSelection)
         {
-            string sound = selectedKeysounds[i];
             GameObject keysoundObject = InstantiateKeysoundObject(
                 selectedTemplate, selectedList, sound);
 
-            int copyOfI = i;
             keysoundObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                Unselect(keysoundObject, copyOfI);
+                Unselect(keysoundObject);
             });
         }
     }
@@ -124,35 +126,60 @@ public class SelectKeysoundDialog : ModalDialog
     private GameObject InstantiateKeysoundObject(GameObject template,
         VerticalLayoutGroup group, string text)
     {
+        string displayText = (text == "") ?
+            kEmptyKeysoundDisplayText : text;
         GameObject keysoundObject = Instantiate(
                 template, group.transform);
-        keysoundObject.GetComponentInChildren<Text>().text = text;
+        keysoundObject.GetComponentInChildren<Text>().text = displayText;
         keysoundObject.SetActive(true);
+
+        if (text == "")
+        {
+            emptyKeysoundObjects.Add(keysoundObject);
+        }
 
         return keysoundObject;
     }
 
     private void Select(string keysound)
     {
-        // Add to list
-        selectedKeysounds.Add(keysound);
-
-        // Add to UI
-        InstantiateKeysoundObject(selectedTemplate,
-            selectedList, keysound);
+        GameObject keysoundObject = InstantiateKeysoundObject(
+            selectedTemplate, selectedList, keysound);
+        keysoundObject.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            Unselect(keysoundObject);
+        });
     }
 
-    private void Unselect(GameObject keysoundObject, int index)
+    private void Unselect(GameObject keysoundObject)
     {
-        // Remove from list
-        selectedKeysounds.RemoveAt(index);
-
-        // Remove from UI
+        if (emptyKeysoundObjects.Contains(keysoundObject))
+        {
+            emptyKeysoundObjects.Remove(keysoundObject);
+        }
         Destroy(keysoundObject);
     }
 
     public void OK()
     {
+        selectedKeysounds = new List<string>();
+        for (int i = 0; i < selectedList.transform.childCount; i++)
+        {
+            GameObject keysoundObject = selectedList.transform.GetChild(i).gameObject;
+            if (keysoundObject == selectedTemplate) continue;
+            if (emptyKeysoundObjects.Contains(keysoundObject))
+            {
+                selectedKeysounds.Add("");
+            }
+            else
+            {
+                selectedKeysounds.Add(keysoundObject.GetComponentInChildren<Text>().text);
+            }
+        }
+        if (selectedKeysounds.Count == 0)
+        {
+            selectedKeysounds.Add("");
+        }
         resolved = true;
         result = Result.OK;
         gameObject.SetActive(false);

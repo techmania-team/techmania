@@ -41,6 +41,9 @@ public class PatternPanel : MonoBehaviour
     private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
+    public Text currentKeysoundDisplay;
+    private List<string> currentKeysounds;
+    private int currentKeysoundIndex;
     public Text divisionsPerBeatDisplay;
 
     [Header("Note Prefabs")]
@@ -176,6 +179,9 @@ public class PatternPanel : MonoBehaviour
         numScans = 4;
         zoom = 100;
         divisionsPerBeat = 2;
+        currentKeysounds = new List<string>();
+        currentKeysounds.Add("");
+        currentKeysoundIndex = 0;
 
         MemoryToUI();
 
@@ -225,6 +231,8 @@ public class PatternPanel : MonoBehaviour
         SpawnMarkersAndLines();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
+        UpdateSelectedKeysoundDisplay();
+        UpdateCurrentKeysoundDisplay();
     }
 
     private void SnapCursor()
@@ -309,7 +317,8 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Add note to pattern
-        string sound = "";
+        string sound = currentKeysounds[currentKeysoundIndex];
+        currentKeysoundIndex = (currentKeysoundIndex + 1) % currentKeysounds.Count;
         Note n = new Note();
         n.pulse = snappedCursorPulse;
         n.lane = snappedCursorLane;
@@ -320,6 +329,7 @@ public class PatternPanel : MonoBehaviour
 
         // Add note to UI
         SpawnNoteObject(n, sound);
+        UpdateCurrentKeysoundDisplay();
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -420,4 +430,60 @@ public class PatternPanel : MonoBehaviour
         selectedNoteObjects.Remove(o);
         Destroy(o);
     }
+
+    #region Keysounds
+    private string KeysoundName(string filename)
+    {
+        if (filename == "") return "(None)";
+        return filename.Replace(".wav", "");
+    }
+
+    private void UpdateCurrentKeysoundDisplay()
+    {
+        string display = "Current ";
+        if (currentKeysounds.Count > 1)
+        {
+            display += $"({currentKeysoundIndex + 1}/{currentKeysounds.Count})";
+        }
+        display += ": ";
+        display += KeysoundName(currentKeysounds[currentKeysoundIndex]);
+
+        currentKeysoundDisplay.text = display;
+    }
+
+    public void UpdateCurrentKeysounds()
+    {
+        StartCoroutine(InternalUpdateCurrentKeysounds());
+    }
+
+    private IEnumerator InternalUpdateCurrentKeysounds()
+    {
+        SelectKeysoundDialog.Show("Select keysounds to apply to new notes. " +
+            "You can select multiple, and they will apply successively.",
+            currentKeysounds);
+        yield return new WaitUntil(() =>
+        {
+            return SelectKeysoundDialog.IsResolved();
+        });
+        if (SelectKeysoundDialog.GetResult() ==
+            SelectKeysoundDialog.Result.Cancelled)
+        {
+            yield return null;
+        }
+
+        currentKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
+        currentKeysoundIndex = 0;
+        UpdateCurrentKeysoundDisplay();
+    }
+
+    private void UpdateSelectedKeysoundDisplay()
+    {
+
+    }
+
+    public void UpdateSelectedKeysound()
+    {
+
+    }
+    #endregion
 }
