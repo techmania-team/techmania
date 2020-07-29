@@ -61,7 +61,7 @@ public class PatternPanel : MonoBehaviour
     private int snappedCursorPulse;
     private int snappedCursorLane;
 
-    #region Markers and Lines
+    #region Spawning Markers and Lines
     private void SpawnLine(int scan, GameObject template)
     {
         GameObject line = Instantiate(template, patternContainer);
@@ -195,12 +195,18 @@ public class PatternPanel : MonoBehaviour
 
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
+        EditorElement.BeginDrag += OnNoteObjectBeginDrag;
+        EditorElement.Drag += OnNoteObjectDrag;
+        EditorElement.EndDrag += OnNoteObjectEndDrag;
     }
 
     private void OnDisable()
     {
         EditorElement.LeftClicked -= OnNoteObjectLeftClick;
         EditorElement.RightClicked -= OnNoteObjectRightClick;
+        EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
+        EditorElement.Drag -= OnNoteObjectDrag;
+        EditorElement.EndDrag -= OnNoteObjectEndDrag;
     }
 
     // Update is called once per frame
@@ -340,6 +346,7 @@ public class PatternPanel : MonoBehaviour
         UpdateUpcomingKeysoundDisplay();
     }
 
+    #region Left and Right click on note objects
     public void OnNoteObjectLeftClick(GameObject o)
     {
         bool shift = Input.GetKey(KeyCode.LeftShift) ||
@@ -440,6 +447,89 @@ public class PatternPanel : MonoBehaviour
         UpdateSelectedKeysoundDisplay();
         Destroy(o);
     }
+    #endregion
+
+    #region Drag and Drop
+    private GameObject draggedNoteObject;
+    private void OnNoteObjectBeginDrag(GameObject o)
+    {
+        draggedNoteObject = o;
+        if (!selectedNoteObjects.Contains(o))
+        {
+            selectedNoteObjects.Clear();
+            selectedNoteObjects.Add(o);
+
+            SelectionChanged?.Invoke(selectedNoteObjects);
+            UpdateSelectedKeysoundDisplay();
+        }
+    }
+
+    private void OnNoteObjectDrag(Vector2 delta)
+    {
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            // This is only visual. Notes are only really moved
+            // in EndDrag.
+            o.GetComponent<RectTransform>().anchoredPosition += delta;
+        }
+    }
+
+    private void OnNoteObjectEndDrag()
+    {
+        // Calculate delta pulse and delta lane
+        EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
+        int oldPulse = element.note.pulse;
+        int oldLane = element.note.lane;
+        int deltaPulse = snappedCursorPulse - oldPulse;
+        int deltaLane = snappedCursorLane - oldLane;
+
+        // Is the movement applicable to all notes?
+        int minPulse = 0;
+        int maxPulse = numScans * Navigation.GetCurrentPattern().patternMetadata.bps
+            * Pattern.pulsesPerBeat;
+        int minLane = 0;
+        int maxLane = 3;
+        bool movable = true;
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            Note n = o.GetComponent<EditorElement>().note;
+            if (n.pulse + deltaPulse < minPulse ||
+                n.pulse + deltaPulse > maxPulse ||
+                n.lane + deltaLane < minLane ||
+                n.lane + deltaLane > maxLane)
+            {
+                movable = false;
+                break;
+            }
+            if (sortedNoteObjects.HasAt(n.pulse + deltaPulse,
+                n.lane + deltaLane))
+            {
+                movable = false;
+                break;
+            }
+        }
+
+        if (movable)
+        {
+            // Apply move.
+            Navigation.PrepareForChange();
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                sortedNoteObjects.Delete(o);
+                Note n = o.GetComponent<EditorElement>().note;
+                n.pulse += deltaPulse;
+                n.lane += deltaLane;
+                sortedNoteObjects.Add(o);
+            }
+            Navigation.DoneWithChange();
+        }
+
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            o.GetComponent<EditorElement>().Reposition();
+        }
+    }
+    #endregion
 
     #region Keysounds
     private string KeysoundName(string filename)

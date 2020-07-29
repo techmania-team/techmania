@@ -52,6 +52,9 @@ public class EditorElement : MonoBehaviour
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
+    public static event UnityAction<GameObject> BeginDrag;
+    public static event UnityAction<Vector2> Drag;
+    public static event UnityAction EndDrag;
 
     // Start is called before the first frame update
     void Start()
@@ -181,22 +184,21 @@ public class EditorElement : MonoBehaviour
     {
         if (type != Type.Note) return;
         if (!(eventData is PointerEventData)) return;
+        BeginDrag?.Invoke(gameObject);
     }
 
     public void OnDrag(BaseEventData eventData)
     {
         if (type != Type.Note) return;
         if (!(eventData is PointerEventData)) return;
-
-        // Move the object with cursor. Purely visual; note is
-        // only really moved on EndDrag.
         PointerEventData pointerData = eventData as PointerEventData;
-        GetComponent<RectTransform>().anchoredPosition += pointerData.delta;
+        Drag?.Invoke(pointerData.delta);
     }
 
     public void OnEndDrag(BaseEventData eventData)
     {
         if (type != Type.Note) return;
         if (!(eventData is PointerEventData)) return;
+        EndDrag?.Invoke();
     }
 }
