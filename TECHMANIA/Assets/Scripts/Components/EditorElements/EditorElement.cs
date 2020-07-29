@@ -159,11 +159,14 @@ public class EditorElement : MonoBehaviour
         GetComponent<Image>().enabled = selection.Contains(gameObject);
     }
 
-    public void OnClickPatternContainer(BaseEventData eventData)
+    public void OnPointerClick(BaseEventData eventData)
     {
         if (type != Type.Note) return;
         if (!(eventData is PointerEventData)) return;
-        switch ((eventData as PointerEventData).button)
+        PointerEventData pointerData = eventData as PointerEventData;
+        if (pointerData.dragging) return;
+
+        switch (pointerData.button)
         {
             case PointerEventData.InputButton.Left:
                 LeftClicked?.Invoke(gameObject);
@@ -172,5 +175,28 @@ public class EditorElement : MonoBehaviour
                 RightClicked?.Invoke(gameObject);
                 break;
         }
+    }
+
+    public void OnBeginDrag(BaseEventData eventData)
+    {
+        if (type != Type.Note) return;
+        if (!(eventData is PointerEventData)) return;
+    }
+
+    public void OnDrag(BaseEventData eventData)
+    {
+        if (type != Type.Note) return;
+        if (!(eventData is PointerEventData)) return;
+
+        // Move the object with cursor. Purely visual; note is
+        // only really moved on EndDrag.
+        PointerEventData pointerData = eventData as PointerEventData;
+        GetComponent<RectTransform>().anchoredPosition += pointerData.delta;
+    }
+
+    public void OnEndDrag(BaseEventData eventData)
+    {
+        if (type != Type.Note) return;
+        if (!(eventData is PointerEventData)) return;
     }
 }
