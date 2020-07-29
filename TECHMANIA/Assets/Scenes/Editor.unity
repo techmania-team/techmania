@@ -1396,7 +1396,7 @@ GameObject:
   - component: {fileID: 70304887}
   - component: {fileID: 70304886}
   m_Layer: 5
-  m_Name: Selected Notes Panel
+  m_Name: Keysound Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1415,7 +1415,7 @@ RectTransform:
   m_Children:
   - {fileID: 901436110}
   - {fileID: 567879362}
-  - {fileID: 520865635}
+  - {fileID: 258016601}
   m_Father: {fileID: 1663307903}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3927,6 +3927,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 251287302}
   m_CullTransparentMesh: 0
+--- !u!1 &258016600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 258016601}
+  m_Layer: 5
+  m_Name: Upcoming Keysounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &258016601
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258016600}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1594335134}
+  - {fileID: 1841381986}
+  - {fileID: 1468028378}
+  m_Father: {fileID: 70304885}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -100}
+  m_SizeDelta: {x: 0, y: 50}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &259713786
 GameObject:
   m_ObjectHideFlags: 0
@@ -7911,12 +7949,12 @@ RectTransform:
   - {fileID: 89015800}
   - {fileID: 454789750}
   - {fileID: 865375417}
-  m_Father: {fileID: 70304885}
-  m_RootOrder: 2
+  m_Father: {fileID: 1632373756}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &520865636
@@ -8805,7 +8843,7 @@ GameObject:
   m_Component:
   - component: {fileID: 567879362}
   m_Layer: 5
-  m_Name: Keysound
+  m_Name: Selected Keysounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9186,7 +9224,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Keysound(s)
+  m_Text: Edit
 --- !u!222 &582420067
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13467,7 +13505,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1663307905}
-        m_MethodName: UpdateSelectedNotesKeysound
+        m_MethodName: ModifySelectedKeysounds
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14354,7 +14392,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Keysound:'
+  m_Text: 'Selected:'
 --- !u!222 &887353224
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14432,7 +14470,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Selected Note(s)
+  m_Text: Keysounds
 --- !u!222 &901436112
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14510,7 +14548,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Choose
+  m_Text: Modify
 --- !u!222 &903394944
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23088,7 +23126,7 @@ GameObject:
   - component: {fileID: 1468028380}
   - component: {fileID: 1468028379}
   m_Layer: 5
-  m_Name: Choose Button
+  m_Name: Modify Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23106,14 +23144,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 903394942}
-  m_Father: {fileID: 1632373756}
+  m_Father: {fileID: 258016601}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: 100, y: 50}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 0}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1468028379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23158,7 +23196,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1663307905}
-        m_MethodName: UpdateCurrentKeysounds
+        m_MethodName: ModifyUpcomingKeysounds
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26059,6 +26097,84 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1587451220}
   m_CullTransparentMesh: 0
+--- !u!1 &1594335133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1594335134}
+  - component: {fileID: 1594335136}
+  - component: {fileID: 1594335135}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1594335134
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594335133}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 258016601}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 150, y: 0}
+  m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &1594335135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594335133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 30
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 3
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Upcoming:'
+--- !u!222 &1594335136
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594335133}
+  m_CullTransparentMesh: 0
 --- !u!1 &1596609480
 GameObject:
   m_ObjectHideFlags: 0
@@ -26985,7 +27101,7 @@ GameObject:
   - component: {fileID: 1632373758}
   - component: {fileID: 1632373757}
   m_Layer: 5
-  m_Name: Keysound Panel
+  m_Name: Edit Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27003,8 +27119,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 582420065}
-  - {fileID: 1841381986}
-  - {fileID: 1468028378}
+  - {fileID: 520865635}
   m_Father: {fileID: 1663307903}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -27276,14 +27391,14 @@ MonoBehaviour:
     type: 3}
   laneDividers: {fileID: 342536621}
   cursor: {fileID: 290972923}
-  currentKeysoundDisplay: {fileID: 1841381987}
-  divisionsPerBeatDisplay: {fileID: 867161112}
-  selectedNotesKeysoundDisplay: {fileID: 2056470341}
-  modifySelectedNotesKeysoundButton: {fileID: 859890706}
   cutButton: {fileID: 1489586713}
   copyButton: {fileID: 89015801}
   pasteButton: {fileID: 454789751}
   deleteButton: {fileID: 865375418}
+  divisionsPerBeatDisplay: {fileID: 867161112}
+  selectedKeysoundsDisplay: {fileID: 2056470341}
+  modifySelectedKeysoundsButton: {fileID: 859890706}
+  upcomingKeysoundDisplay: {fileID: 1841381987}
   basicNote: {fileID: 4938960492040002543, guid: 714aff4aaeb177b4095f064e865c1f03,
     type: 3}
 --- !u!1 &1672228109
@@ -30110,7 +30225,7 @@ GameObject:
   - component: {fileID: 1841381988}
   - component: {fileID: 1841381987}
   m_Layer: 5
-  m_Name: Current Keysound
+  m_Name: Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30127,14 +30242,14 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1632373756}
+  m_Father: {fileID: 258016601}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -50}
-  m_SizeDelta: {x: 500, y: 50}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 150, y: 0}
+  m_SizeDelta: {x: 350, y: 0}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1841381987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30164,10 +30279,10 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Current (1/18): sound_1.wav'
+  m_Text: sound_1.wav
 --- !u!222 &1841381988
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33276,7 +33391,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 250, y: 0}
+  m_SizeDelta: {x: 350, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &2056470341
 MonoBehaviour:
@@ -33307,7 +33422,7 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: sound_2.wav

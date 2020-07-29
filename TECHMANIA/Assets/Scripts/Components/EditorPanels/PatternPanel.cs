@@ -41,16 +41,16 @@ public class PatternPanel : MonoBehaviour
     private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
-    public Text currentKeysoundDisplay;
-    private List<string> currentKeysounds;
-    private int currentKeysoundIndex;
-    public Text divisionsPerBeatDisplay;
-    public Text selectedNotesKeysoundDisplay;
-    public Button modifySelectedNotesKeysoundButton;
     public Button cutButton;
     public Button copyButton;
     public Button pasteButton;
     public Button deleteButton;
+    public Text divisionsPerBeatDisplay;
+    public Text selectedKeysoundsDisplay;
+    public Button modifySelectedKeysoundsButton;
+    public Text upcomingKeysoundDisplay;
+    private List<string> upcomingKeysounds;
+    private int upcomingKeysoundIndex;
 
     [Header("Note Prefabs")]
     public GameObject basicNote;
@@ -187,9 +187,9 @@ public class PatternPanel : MonoBehaviour
         numScans = 4;
         zoom = 100;
         divisionsPerBeat = 2;
-        currentKeysounds = new List<string>();
-        currentKeysounds.Add("");
-        currentKeysoundIndex = 0;
+        upcomingKeysounds = new List<string>();
+        upcomingKeysounds.Add("");
+        upcomingKeysoundIndex = 0;
 
         MemoryToUI();
 
@@ -239,8 +239,8 @@ public class PatternPanel : MonoBehaviour
         SpawnMarkersAndLines();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
-        UpdateCurrentKeysoundDisplay();
-        UpdateSelectedNotesKeysoundDisplay();
+        UpdateSelectedKeysoundDisplay();
+        UpdateUpcomingKeysoundDisplay();
     }
 
     private void SnapCursor()
@@ -325,8 +325,8 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Add note to pattern
-        string sound = currentKeysounds[currentKeysoundIndex];
-        currentKeysoundIndex = (currentKeysoundIndex + 1) % currentKeysounds.Count;
+        string sound = upcomingKeysounds[upcomingKeysoundIndex];
+        upcomingKeysoundIndex = (upcomingKeysoundIndex + 1) % upcomingKeysounds.Count;
         Note n = new Note();
         n.pulse = snappedCursorPulse;
         n.lane = snappedCursorLane;
@@ -337,7 +337,7 @@ public class PatternPanel : MonoBehaviour
 
         // Add note to UI
         SpawnNoteObject(n, sound);
-        UpdateCurrentKeysoundDisplay();
+        UpdateUpcomingKeysoundDisplay();
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -407,7 +407,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         SelectionChanged?.Invoke(selectedNoteObjects);
-        UpdateSelectedNotesKeysoundDisplay();
+        UpdateSelectedKeysoundDisplay();
     }
 
     private void ToggleSelection(GameObject o)
@@ -437,6 +437,7 @@ public class PatternPanel : MonoBehaviour
             lastSelectedNoteObjectWithoutShift = null;
         }
         selectedNoteObjects.Remove(o);
+        UpdateSelectedKeysoundDisplay();
         Destroy(o);
     }
 
@@ -447,29 +448,27 @@ public class PatternPanel : MonoBehaviour
         return UIUtils.StripExtension(filename);
     }
 
-    private void UpdateCurrentKeysoundDisplay()
+    private void UpdateUpcomingKeysoundDisplay()
     {
-        string display = "Current ";
-        if (currentKeysounds.Count > 1)
+        string display = KeysoundName(upcomingKeysounds[upcomingKeysoundIndex]);
+        if (upcomingKeysounds.Count > 1)
         {
-            display += $"({currentKeysoundIndex + 1}/{currentKeysounds.Count})";
+            display += $" ({upcomingKeysoundIndex + 1}/{upcomingKeysounds.Count})";
         }
-        display += ": ";
-        display += KeysoundName(currentKeysounds[currentKeysoundIndex]);
 
-        currentKeysoundDisplay.text = display;
+        upcomingKeysoundDisplay.text = display;
     }
 
-    public void UpdateCurrentKeysounds()
+    public void ModifyUpcomingKeysounds()
     {
-        StartCoroutine(InternalUpdateCurrentKeysounds());
+        StartCoroutine(InternalModifyUpcomingKeysounds());
     }
 
-    private IEnumerator InternalUpdateCurrentKeysounds()
+    private IEnumerator InternalModifyUpcomingKeysounds()
     {
         SelectKeysoundDialog.Show("Select keysounds to apply to new notes. " +
             "You can select multiple, and they will apply successively.",
-            currentKeysounds);
+            upcomingKeysounds);
         yield return new WaitUntil(() =>
         {
             return SelectKeysoundDialog.IsResolved();
@@ -480,12 +479,12 @@ public class PatternPanel : MonoBehaviour
             yield return null;
         }
 
-        currentKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
-        currentKeysoundIndex = 0;
-        UpdateCurrentKeysoundDisplay();
+        upcomingKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
+        upcomingKeysoundIndex = 0;
+        UpdateUpcomingKeysoundDisplay();
     }
 
-    private void UpdateSelectedNotesKeysoundDisplay()
+    private void UpdateSelectedKeysoundDisplay()
     {
         HashSet<string> keysounds = new HashSet<string>();
         foreach (GameObject noteObject in selectedNoteObjects)
@@ -496,35 +495,35 @@ public class PatternPanel : MonoBehaviour
         if (keysounds.Count == 0)
         {
             // Assume empty selection.
-            selectedNotesKeysoundDisplay.text =
+            selectedKeysoundsDisplay.text =
                 UIUtils.kEmptyKeysoundDisplayText;
-            modifySelectedNotesKeysoundButton.interactable = false;
+            modifySelectedKeysoundsButton.interactable = false;
         }
         else if (keysounds.Count == 1)
         {
             HashSet<string>.Enumerator enumerator = keysounds.GetEnumerator();
             enumerator.MoveNext();
-            selectedNotesKeysoundDisplay.text = 
+            selectedKeysoundsDisplay.text = 
                 KeysoundName(enumerator.Current);
-            modifySelectedNotesKeysoundButton.interactable = true;
+            modifySelectedKeysoundsButton.interactable = true;
         }
         else
         {
-            selectedNotesKeysoundDisplay.text = "(Multiple)";
-            modifySelectedNotesKeysoundButton.interactable = true;
+            selectedKeysoundsDisplay.text = "(Multiple)";
+            modifySelectedKeysoundsButton.interactable = true;
         }
     }
 
-    public void UpdateSelectedNotesKeysound()
+    public void ModifySelectedKeysounds()
     {
-        StartCoroutine(InternalUpdateSelectedNotesKeysound());
+        StartCoroutine(InternalModifySelectedKeysounds());
     }
 
-    private IEnumerator InternalUpdateSelectedNotesKeysound()
+    private IEnumerator InternalModifySelectedKeysounds()
     {
         SelectKeysoundDialog.Show("Select keysounds to apply to selected notes. " +
             "You can select multiple, and they will apply successively.",
-            currentKeysounds);
+            upcomingKeysounds);
         yield return new WaitUntil(() =>
         {
             return SelectKeysoundDialog.IsResolved();
@@ -573,7 +572,7 @@ public class PatternPanel : MonoBehaviour
         }
         Navigation.DoneWithChange();
 
-        UpdateSelectedNotesKeysoundDisplay();
+        UpdateSelectedKeysoundDisplay();
     }
     #endregion
 }
