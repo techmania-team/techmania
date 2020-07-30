@@ -192,7 +192,7 @@ public class PatternPanel : MonoBehaviour
         upcomingKeysounds.Add("");
         upcomingKeysoundIndex = 0;
 
-        MemoryToUI();
+        // MemoryToUI();
 
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
@@ -246,6 +246,21 @@ public class PatternPanel : MonoBehaviour
         SpawnMarkersAndLines();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
+        RefreshControls();
+    }
+
+    private void RefreshControls()
+    {
+        // Edit panel
+        cutButton.interactable = selectedNoteObjects.Count > 0;
+        copyButton.interactable = selectedNoteObjects.Count > 0;
+        pasteButton.interactable = true;
+        deleteButton.interactable = selectedNoteObjects.Count > 0;
+
+        // Timing panel
+        divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
+
+        // Keysounds panel
         UpdateSelectedKeysoundDisplay();
         UpdateUpcomingKeysoundDisplay();
     }
@@ -327,7 +342,7 @@ public class PatternPanel : MonoBehaviour
             }
         }
         while (Pattern.pulsesPerBeat % divisionsPerBeat != 0);
-        divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
+        RefreshControls();
     }
 
     public void OnClickPatternContainer(BaseEventData eventData)
@@ -429,7 +444,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         SelectionChanged?.Invoke(selectedNoteObjects);
-        UpdateSelectedKeysoundDisplay();
+        RefreshControls();
     }
 
     private void ToggleSelection(GameObject o)
@@ -459,7 +474,7 @@ public class PatternPanel : MonoBehaviour
             lastSelectedNoteObjectWithoutShift = null;
         }
         selectedNoteObjects.Remove(o);
-        UpdateSelectedKeysoundDisplay();
+        RefreshControls();
         Destroy(o);
     }
     #endregion
@@ -475,7 +490,7 @@ public class PatternPanel : MonoBehaviour
             selectedNoteObjects.Add(o);
 
             SelectionChanged?.Invoke(selectedNoteObjects);
-            UpdateSelectedKeysoundDisplay();
+            RefreshControls();
         }
     }
 
@@ -500,37 +515,61 @@ public class PatternPanel : MonoBehaviour
 
         // Is the movement applicable to all notes?
         int minPulse = 0;
-        int maxPulse = numScans * Navigation.GetCurrentPattern().patternMetadata.bps
+        int pulsesPerScan = Navigation.GetCurrentPattern().patternMetadata.bps
             * Pattern.pulsesPerBeat;
+        int maxPulse = numScans * pulsesPerScan;
         int minLane = 0;
         int maxLane = 3;
         bool movable = true;
+        int addedScans = 0;
         foreach (GameObject o in selectedNoteObjects)
         {
             Note n = o.GetComponent<EditorElement>().note;
-            if (n.pulse + deltaPulse < minPulse ||
-                n.pulse + deltaPulse > maxPulse ||
-                n.lane + deltaLane < minLane ||
-                n.lane + deltaLane > maxLane)
+            int newPulse = n.pulse + deltaPulse;
+            int newLane = n.lane + deltaLane;
+
+            if (sortedNoteObjects.HasAt(newPulse, newLane))
+            {
+                GameObject collision = sortedNoteObjects.GetAt(newPulse, newLane);
+                if (!selectedNoteObjects.Contains(collision))
+                {
+                    movable = false;
+                    break;
+                }
+            }
+            if (newPulse < minPulse ||
+                newLane < minLane ||
+                newLane > maxLane)
             {
                 movable = false;
                 break;
             }
-            if (sortedNoteObjects.HasAt(n.pulse + deltaPulse,
-                n.lane + deltaLane))
+            while (newPulse >= maxPulse)
             {
-                movable = false;
-                break;
+                addedScans++;
+                maxPulse += pulsesPerScan;
             }
         }
 
         if (movable)
         {
+            // Add scans if needed.
+            if (addedScans > 0)
+            {
+                numScans += addedScans;
+                ResizeContainer();
+                SpawnMarkersAndLines();
+                RepositionNeeded?.Invoke();
+            }
+
             // Apply move.
             Navigation.PrepareForChange();
             foreach (GameObject o in selectedNoteObjects)
             {
                 sortedNoteObjects.Delete(o);
+            }
+            foreach (GameObject o in selectedNoteObjects)
+            {
                 Note n = o.GetComponent<EditorElement>().note;
                 n.pulse += deltaPulse;
                 n.lane += deltaLane;
@@ -586,7 +625,7 @@ public class PatternPanel : MonoBehaviour
 
         upcomingKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
         upcomingKeysoundIndex = 0;
-        UpdateUpcomingKeysoundDisplay();
+        RefreshControls();
     }
 
     private void UpdateSelectedKeysoundDisplay()
@@ -677,7 +716,7 @@ public class PatternPanel : MonoBehaviour
         }
         Navigation.DoneWithChange();
 
-        UpdateSelectedKeysoundDisplay();
+        RefreshControls();
     }
     #endregion
 
@@ -702,6 +741,13 @@ public class PatternPanel : MonoBehaviour
             Navigation.GetCurrentPattern().patternMetadata.bps;
         int lastScan = lastPulse / pulsesPerScan;
         numScans = lastScan + 1;
+
+        // Move scanline if needed.
+        EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
+        if (scanlineElement.pulse > lastPulse)
+        {
+            scanlineElement.pulse = lastPulse;
+        }
         
         ResizeContainer();
         SpawnMarkersAndLines();
