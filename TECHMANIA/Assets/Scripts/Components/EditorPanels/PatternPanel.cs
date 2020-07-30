@@ -11,6 +11,8 @@ public class PatternPanel : MonoBehaviour
     [Header("Pattern Container")]
     public ScrollRect scrollRect;
     public Transform patternContainer;
+    public Transform lineAndMarkerContainer;
+    public Transform noteObjectContainer;
     public GameObject markerTemplate;
     public GameObject lineTemplate;
     public GameObject dottedLineTemplate;
@@ -65,7 +67,7 @@ public class PatternPanel : MonoBehaviour
     #region Spawning Markers and Lines
     private void SpawnLine(int scan, GameObject template)
     {
-        GameObject line = Instantiate(template, patternContainer);
+        GameObject line = Instantiate(template, lineAndMarkerContainer);
 
         EditorElement element = line.GetComponent<EditorElement>();
         element.type = EditorElement.Type.Line;
@@ -74,7 +76,7 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnDottedLine(int beat, GameObject template)
     {
-        GameObject line = Instantiate(template, patternContainer);
+        GameObject line = Instantiate(template, lineAndMarkerContainer);
 
         EditorElement element = line.GetComponent<EditorElement>();
         element.type = EditorElement.Type.DottedLine;
@@ -83,7 +85,7 @@ public class PatternPanel : MonoBehaviour
     
     private void SpawnScanBasedMarker(EditorElement.Type type, int scan, string text)
     {
-        GameObject marker = Instantiate(markerTemplate, patternContainer);
+        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
         marker.GetComponentInChildren<Text>().text = text;
 
         EditorElement element = marker.GetComponent<EditorElement>();
@@ -93,7 +95,7 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnBeatBasedMarker(EditorElement.Type type, int beat, string text)
     {
-        GameObject marker = Instantiate(markerTemplate, patternContainer);
+        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
         marker.GetComponentInChildren<Text>().text = text;
 
         EditorElement element = marker.GetComponent<EditorElement>();
@@ -111,15 +113,9 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnMarkersAndLines()
     {
-        for (int i = 0; i < patternContainer.childCount; i++)
+        for (int i = 0; i < lineAndMarkerContainer.childCount; i++)
         {
-            EditorElement childElement = patternContainer.GetChild(i)
-                .GetComponent<EditorElement>();
-            if (childElement == null) continue;
-            if (childElement.type == EditorElement.Type.Note) continue;
-            if (childElement.type == EditorElement.Type.Scanline) continue;
-            
-            Destroy(childElement.gameObject);
+            Destroy(lineAndMarkerContainer.GetChild(i).gameObject);
         }
 
         Pattern pattern = Navigation.GetCurrentPattern();
@@ -156,7 +152,7 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnNoteObject(Note n, string sound)
     {
-        GameObject noteObject = Instantiate(basicNote, patternContainer);
+        GameObject noteObject = Instantiate(basicNote, noteObjectContainer);
         noteObject.GetComponentInChildren<Text>().text =
             UIUtils.StripExtension(sound);
 
