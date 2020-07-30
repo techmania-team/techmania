@@ -112,12 +112,16 @@ public class PatternPanel : MonoBehaviour
     {
         for (int i = 0; i < patternContainer.childCount; i++)
         {
+            EditorElement childElement = patternContainer.GetChild(i)
+                .GetComponent<EditorElement>();
+            if (childElement == null) continue;
+            if (childElement.type == EditorElement.Type.Note) continue;
+
             Transform t = patternContainer.GetChild(i);
             if (t == markerTemplate.transform) continue;
             if (t == lineTemplate.transform) continue;
             if (t == dottedLineTemplate.transform) continue;
-            if (t == laneDividers.transform) continue;
-            if (t == cursor.transform) continue;
+            
             Destroy(t.gameObject);
         }
 
@@ -663,6 +667,34 @@ public class PatternPanel : MonoBehaviour
         Navigation.DoneWithChange();
 
         UpdateSelectedKeysoundDisplay();
+    }
+    #endregion
+
+    #region Scans
+    public void AddScan()
+    {
+        numScans++;
+
+        ResizeContainer();
+        SpawnMarkersAndLines();
+        RepositionNeeded?.Invoke();
+    }
+
+    public void TrimTrailingScans()
+    {
+        // Which scan is the last note in?
+        GameObject lastNoteObject = sortedNoteObjects.GetLast();
+        if (lastNoteObject == null) return;
+        Note lastNote = lastNoteObject.GetComponent<EditorElement>().note;
+        int lastPulse = lastNote.pulse;
+        int pulsesPerScan = Pattern.pulsesPerBeat *
+            Navigation.GetCurrentPattern().patternMetadata.bps;
+        int lastScan = lastPulse / pulsesPerScan;
+        numScans = lastScan + 1;
+        
+        ResizeContainer();
+        SpawnMarkersAndLines();
+        RepositionNeeded?.Invoke();
     }
     #endregion
 }

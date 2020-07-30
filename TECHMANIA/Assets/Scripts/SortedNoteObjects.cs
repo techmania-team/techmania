@@ -76,6 +76,17 @@ public class SortedNoteObjects
         return null;
     }
 
+    public GameObject GetLast()
+    {
+        for (int pulse = list.Count - 1; pulse >= 0; pulse--)
+        {
+            if (list[pulse] == null) continue;
+            if (list[pulse].Count == 0) continue;
+            return list[pulse][0];
+        }
+        return null;
+    }
+
     public bool HasAt(int pulse, int lane)
     {
         return GetAt(pulse, lane) != null;
