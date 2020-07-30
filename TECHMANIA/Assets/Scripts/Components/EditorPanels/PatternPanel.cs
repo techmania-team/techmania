@@ -16,6 +16,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject dottedLineTemplate;
     public GameObject laneDividers;
     public GameObject cursor;
+    public GameObject scanline;
 
     public static float ScanWidth
     {
@@ -116,13 +117,9 @@ public class PatternPanel : MonoBehaviour
                 .GetComponent<EditorElement>();
             if (childElement == null) continue;
             if (childElement.type == EditorElement.Type.Note) continue;
-
-            Transform t = patternContainer.GetChild(i);
-            if (t == markerTemplate.transform) continue;
-            if (t == lineTemplate.transform) continue;
-            if (t == dottedLineTemplate.transform) continue;
+            if (childElement.type == EditorElement.Type.Scanline) continue;
             
-            Destroy(t.gameObject);
+            Destroy(childElement.gameObject);
         }
 
         Pattern pattern = Navigation.GetCurrentPattern();
@@ -240,7 +237,7 @@ public class PatternPanel : MonoBehaviour
             }
         }
 
-        SnapCursor();
+        SnapCursorAndScanline();
     }
 
     public void MemoryToUI()
@@ -253,7 +250,7 @@ public class PatternPanel : MonoBehaviour
         UpdateUpcomingKeysoundDisplay();
     }
 
-    private void SnapCursor()
+    private void SnapCursorAndScanline()
     {
         if (Input.mousePosition.x < 0 ||
             Input.mousePosition.x > Screen.width ||
@@ -282,7 +279,9 @@ public class PatternPanel : MonoBehaviour
             / Navigation.GetCurrentPattern().patternMetadata.bps;
         float snappedX = snappedScan * ScanWidth;
 
-        snappedCursorLane = Mathf.FloorToInt((pointInContainer.y + 80f)
+        const float kHeightAboveFirstLane = 80f;
+
+        snappedCursorLane = Mathf.FloorToInt((pointInContainer.y + kHeightAboveFirstLane)
             / -100f);
         float snappedY = -130f - 100f * snappedCursorLane;
 
@@ -298,6 +297,18 @@ public class PatternPanel : MonoBehaviour
         else
         {
             cursor.SetActive(false);
+        }
+
+        if (snappedX >= 0f &&
+            snappedX <= containerWidth &&
+            pointInContainer.y <= 0f &&
+            pointInContainer.y >= -kHeightAboveFirstLane &&
+            Input.GetMouseButton(0))
+        {
+            // Move scanline to cursor
+            EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
+            scanlineElement.pulse = snappedCursorPulse;
+            scanlineElement.Reposition();
         }
     }
 

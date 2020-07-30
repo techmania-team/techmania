@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -21,6 +22,7 @@ public class EditorElement : MonoBehaviour
 
         // Position expressed in pulses
         BpmMarker,
+        Scanline,
 
         // Position expressed in pulses and lane, which are
         // stored in the note field
@@ -100,6 +102,13 @@ public class EditorElement : MonoBehaviour
                 }
                 break;
             case Type.BpmMarker:
+            case Type.Scanline:
+                {
+                    float beat = (float)pulse / Pattern.pulsesPerBeat;
+                    float scan = beat / bps;
+                    x = PatternPanel.ScanWidth * scan;
+                }
+                break;
             case Type.Note:
                 {
                     float beat = (float)note.pulse / Pattern.pulsesPerBeat;
@@ -124,6 +133,9 @@ public class EditorElement : MonoBehaviour
             case Type.BpmMarker:
                 y = bpmMarkerY;
                 break;
+            case Type.Scanline:
+                y = -containerHeight;
+                break;
             case Type.Note:
                 y = firstLaneY - laneHeight * note.lane;
                 break;
@@ -145,6 +157,7 @@ public class EditorElement : MonoBehaviour
             case Type.BeatMarker:
             case Type.TimeMarker:
             case Type.BpmMarker:
+            case Type.Scanline:
             case Type.Note:
                 rect.anchorMin = new Vector2(0f, 1f);
                 rect.anchorMax = new Vector2(0f, 1f);
