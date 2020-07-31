@@ -507,6 +507,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectBeginDrag(GameObject o)
     {
         draggedNoteObject = o;
+        lastSelectedNoteObjectWithoutShift = o;
         if (!selectedNoteObjects.Contains(o))
         {
             selectedNoteObjects.Clear();
@@ -797,6 +798,7 @@ public class PatternPanel : MonoBehaviour
     // so we are free of Unity stuff such as MonoBehaviors and
     // Instantiating.
     private List<NoteWithSound> clipboard;
+    private int minPulseInClipboard;
     public void CutSelection()
     {
         if (selectedNoteObjects.Count == 0) return;
@@ -809,15 +811,24 @@ public class PatternPanel : MonoBehaviour
         if (selectedNoteObjects.Count == 0) return;
 
         clipboard.Clear();
+        minPulseInClipboard = int.MaxValue;
         foreach (GameObject o in selectedNoteObjects)
         {
-            clipboard.Add(NoteWithSound.MakeFrom(o));
+            NoteWithSound n = NoteWithSound.MakeFrom(o);
+            if (n.note.pulse < minPulseInClipboard)
+            {
+                minPulseInClipboard = n.note.pulse;
+            }
+            clipboard.Add(n);
         }
     }
 
     public void PasteAtScanline()
     {
+        if (clipboard.Count == 0) return;
 
+        int scanlinePulse = scanline.GetComponent<EditorElement>().pulse;
+        int deltaPulse = scanlinePulse - minPulseInClipboard;
     }
 
     public void DeleteSelection()
