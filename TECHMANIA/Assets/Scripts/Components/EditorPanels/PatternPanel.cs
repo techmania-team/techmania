@@ -829,6 +829,50 @@ public class PatternPanel : MonoBehaviour
 
         int scanlinePulse = scanline.GetComponent<EditorElement>().pulse;
         int deltaPulse = scanlinePulse - minPulseInClipboard;
+
+        // Does the paste conflict with any existing note?
+        int pulsesPerScan = Navigation.GetCurrentPattern().patternMetadata.bps
+            * Pattern.pulsesPerBeat;
+        int maxPulse = numScans * pulsesPerScan;
+        int addedScans = 0;
+        foreach (NoteWithSound n in clipboard)
+        {
+            int newPulse = n.note.pulse + deltaPulse;
+            if (sortedNoteObjects.HasAt(newPulse, n.note.lane))
+            {
+                MessageDialog.Show("Cannot paste here because some pasted notes would overwrite existing notes.");
+                return;
+            }
+            while (newPulse >= maxPulse)
+            {
+                addedScans++;
+                maxPulse += pulsesPerScan;
+            }
+        }
+
+        // OK to paste. Add scans if needed.
+        if (addedScans > 0)
+        {
+            numScans += addedScans;
+            ResizeContainer();
+            SpawnMarkersAndLines();
+            RepositionNeeded?.Invoke();
+        }
+
+        // Paste.
+        Navigation.PrepareForChange();
+        foreach (NoteWithSound n in clipboard)
+        {
+            Note noteClone = n.note.Clone();
+            noteClone.pulse += deltaPulse;
+
+            // Add note to pattern.
+            Navigation.GetCurrentPattern().AddNote(noteClone, n.sound);
+
+            // Add note to UI.
+            SpawnNoteObject(noteClone, n.sound);
+        }
+        Navigation.DoneWithChange();
     }
 
     public void DeleteSelection()
