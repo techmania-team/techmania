@@ -167,6 +167,11 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnExistingNotes()
     {
+        for (int i = 0; i < noteObjectContainer.childCount; i++)
+        {
+            Destroy(noteObjectContainer.GetChild(i).gameObject);
+        }
+
         sortedNoteObjects = new SortedNoteObjects();
         lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
@@ -187,6 +192,7 @@ public class PatternPanel : MonoBehaviour
         upcomingKeysounds = new List<string>();
         upcomingKeysounds.Add("");
         upcomingKeysoundIndex = 0;
+        clipboard = new List<NoteWithSound>();
 
         // MemoryToUI();
 
@@ -234,6 +240,27 @@ public class PatternPanel : MonoBehaviour
         }
 
         SnapCursorAndScanline();
+
+        if (Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl))
+        {
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                CutSelection();
+            }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                CopySelection();
+            }
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                PasteAtScanline();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            DeleteSelection();
+        }
     }
 
     public void MemoryToUI()
@@ -250,7 +277,7 @@ public class PatternPanel : MonoBehaviour
         // Edit panel
         cutButton.interactable = selectedNoteObjects.Count > 0;
         copyButton.interactable = selectedNoteObjects.Count > 0;
-        pasteButton.interactable = true;
+        pasteButton.interactable = clipboard.Count > 0;
         deleteButton.interactable = selectedNoteObjects.Count > 0;
 
         // Timing panel
@@ -748,6 +775,73 @@ public class PatternPanel : MonoBehaviour
         ResizeContainer();
         SpawnMarkersAndLines();
         RepositionNeeded?.Invoke();
+    }
+    #endregion
+
+    #region Cut Copy Paste Delete
+    private class NoteWithSound
+    {
+        public Note note;
+        public string sound;
+        public static NoteWithSound MakeFrom(GameObject o)
+        {
+            EditorElement e = o.GetComponent<EditorElement>();
+            return new NoteWithSound()
+            {
+                note = e.note.Clone(),
+                sound = e.sound
+            };
+        }
+    }
+    // Clipboard stores notes and sounds instead of GameObjects,
+    // so we are free of Unity stuff such as MonoBehaviors and
+    // Instantiating.
+    private List<NoteWithSound> clipboard;
+    public void CutSelection()
+    {
+        if (selectedNoteObjects.Count == 0) return;
+        CopySelection();
+        DeleteSelection();
+    }
+
+    public void CopySelection()
+    {
+        if (selectedNoteObjects.Count == 0) return;
+
+        clipboard.Clear();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            clipboard.Add(NoteWithSound.MakeFrom(o));
+        }
+    }
+
+    public void PasteAtScanline()
+    {
+
+    }
+
+    public void DeleteSelection()
+    {
+        if (selectedNoteObjects.Count == 0) return;
+
+        // Delete notes from pattern.
+        Navigation.PrepareForChange();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            EditorElement e = o.GetComponent<EditorElement>();
+            Navigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
+        }
+        Navigation.DoneWithChange();
+
+        // Delete notes from UI.
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            sortedNoteObjects.Delete(o);
+            Destroy(o);
+        }
+        lastSelectedNoteObjectWithoutShift = null;
+        selectedNoteObjects.Clear();
+        RefreshControls();
     }
     #endregion
 }

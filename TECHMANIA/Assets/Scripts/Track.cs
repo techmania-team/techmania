@@ -231,6 +231,16 @@ public class Note
     public int lane;
     public int pulse;
     public NoteType type;
+
+    public Note Clone()
+    {
+        return new Note()
+        {
+            lane = this.lane,
+            pulse = this.pulse,
+            type = this.type
+        };
+    }
 }
 
 [Serializable]
