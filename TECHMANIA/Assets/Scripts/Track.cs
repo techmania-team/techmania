@@ -174,6 +174,94 @@ public class Pattern
         }
         channel.notes.Remove(n);
     }
+
+    // Fill the time fields of BPM events and notes.
+    // Also sorts BPM events by time.
+    // Only call TimeToPulse and PulseToTime after calling this.
+    public void PrepareForPlayback()
+    {
+        bpmEvents.Sort((BpmEvent e1, BpmEvent e2) =>
+        {
+            return e1.pulse - e2.pulse;
+        });
+
+        float currentBpm = (float)patternMetadata.initBpm;
+        float currentTime = (float)patternMetadata.firstBeatOffset;
+        int currentPulse = 0;
+        // beat / minute = currentBpm
+        // pulse / beat = pulsesPerBeat
+        // ==>
+        // pulse / minute = pulsesPerBeat * currentBpm
+        // ==>
+        // minute / pulse = 1f / (pulsesPerBeat * currentBpm)
+        // ==>
+        // second / pulse = 60f / (pulsesPerBeat * currentBpm)
+        float secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
+
+        foreach (BpmEvent e in bpmEvents)
+        {
+            e.time = currentTime + secondsPerPulse * (e.pulse - currentPulse);
+
+            currentBpm = (float)e.bpm;
+            currentTime = e.time;
+            currentPulse = e.pulse;
+            secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
+        }
+
+        foreach (SoundChannel c in soundChannels)
+        {
+            foreach (Note n in c.notes)
+            {
+                n.time = PulseToTime(n.pulse);
+            }
+        }
+    }
+
+    public float TimeToPulse(float time)
+    {
+        float referenceBpm = (float)patternMetadata.initBpm;
+        float referenceTime = (float)patternMetadata.firstBeatOffset;
+        int referencePulse = 0;
+
+        // Find the immediate BpmEvent before specified pulse.
+        for (int i = bpmEvents.Count - 1; i >= 0; i--)
+        {
+            BpmEvent e = bpmEvents[i];
+            if (e.time <= time)
+            {
+                referenceBpm = (float)e.bpm;
+                referenceTime = e.time;
+                referencePulse = e.pulse;
+            }
+        }
+
+        float secondsPerPulse = 60f / (pulsesPerBeat * referenceBpm);
+
+        return referencePulse + (time - referenceTime) / secondsPerPulse;
+    }
+
+    public float PulseToTime(int pulse)
+    {
+        float referenceBpm = (float)patternMetadata.initBpm;
+        float referenceTime = (float)patternMetadata.firstBeatOffset;
+        int referencePulse = 0;
+
+        // Find the immediate BpmEvent before specified pulse.
+        for (int i = bpmEvents.Count - 1; i >= 0; i--)
+        {
+            BpmEvent e = bpmEvents[i];
+            if (e.pulse <= pulse)
+            {
+                referenceBpm = (float)e.bpm;
+                referenceTime = e.time;
+                referencePulse = e.pulse;
+            }
+        }
+
+        float secondsPerPulse = 60f / (pulsesPerBeat * referenceBpm);
+
+        return referenceTime + secondsPerPulse * (pulse - referencePulse);
+    }
 }
 
 [Serializable]
@@ -209,6 +297,8 @@ public class BpmEvent
 {
     public int pulse;
     public double bpm;
+    [NonSerialized]
+    public float time;
 }
 
 [Serializable]
@@ -243,6 +333,8 @@ public class Note
     public int lane;
     public int pulse;
     public NoteType type;
+    [NonSerialized]
+    public float time;
 
     public Note Clone()
     {

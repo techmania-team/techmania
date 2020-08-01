@@ -280,6 +280,11 @@ public class PatternPanel : MonoBehaviour
         {
             DeleteSelection();
         }
+
+        if (isPlaying)
+        {
+            UpdateScanlineDuringPlayback();
+        }
     }
 
     public void MemoryToUI()
@@ -367,7 +372,7 @@ public class PatternPanel : MonoBehaviour
         {
             // Move scanline to cursor
             EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-            scanlineElement.pulse = snappedCursorPulse;
+            scanlineElement.floatPulse = snappedCursorPulse;
             scanlineElement.Reposition();
         }
     }
@@ -790,9 +795,9 @@ public class PatternPanel : MonoBehaviour
 
         // Move scanline if needed.
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-        if (scanlineElement.pulse > lastPulse)
+        if (scanlineElement.floatPulse > lastPulse)
         {
-            scanlineElement.pulse = lastPulse;
+            scanlineElement.floatPulse = lastPulse;
         }
         
         ResizeContainer();
@@ -860,7 +865,8 @@ public class PatternPanel : MonoBehaviour
     {
         if (clipboard.Count == 0) return;
 
-        int scanlinePulse = scanline.GetComponent<EditorElement>().pulse;
+        int scanlinePulse = Mathf.FloorToInt(
+            scanline.GetComponent<EditorElement>().floatPulse);
         int deltaPulse = scanlinePulse - minPulseInClipboard;
 
         // Does the paste conflict with any existing note?
@@ -962,6 +968,22 @@ public class PatternPanel : MonoBehaviour
         RefreshControls();
 
         backingTrackSource.Stop();
+    }
+
+    public void UpdateScanlineDuringPlayback()
+    {
+        if (!backingTrackSource.isPlaying)
+        {
+            isPlaying = false;
+            RefreshControls();
+            return;
+        }
+
+        float time = backingTrackSource.time;
+        float pulse = Navigation.GetCurrentPattern().TimeToPulse(time);
+        EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
+        scanlineElement.floatPulse = pulse;
+        scanlineElement.Reposition();
     }
     #endregion
 }

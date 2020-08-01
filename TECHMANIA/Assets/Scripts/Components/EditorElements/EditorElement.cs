@@ -22,6 +22,8 @@ public class EditorElement : MonoBehaviour
 
         // Position expressed in pulses
         BpmMarker,
+
+        // Position expressed in floatPulses
         Scanline,
 
         // Position expressed in pulses and lane, which are
@@ -35,6 +37,8 @@ public class EditorElement : MonoBehaviour
     public int beat;
     [HideInInspector]
     public int pulse;
+    [HideInInspector]
+    public float floatPulse;
     [HideInInspector]
     public int lane;
 
@@ -102,9 +106,15 @@ public class EditorElement : MonoBehaviour
                 }
                 break;
             case Type.BpmMarker:
-            case Type.Scanline:
                 {
                     float beat = (float)pulse / Pattern.pulsesPerBeat;
+                    float scan = beat / bps;
+                    x = PatternPanel.ScanWidth * scan;
+                }
+                break;
+            case Type.Scanline:
+                {
+                    float beat = floatPulse / Pattern.pulsesPerBeat;
                     float scan = beat / bps;
                     x = PatternPanel.ScanWidth * scan;
                 }
