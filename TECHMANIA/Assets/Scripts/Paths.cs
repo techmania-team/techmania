@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using UnityEngine.Events;
 
 public static class Paths
 {
@@ -22,6 +23,40 @@ public static class Paths
             Directory.CreateDirectory(tracks);
         }
         return tracks;
+    }
+
+    private static List<string> GetAllMatchingFiles(string folder, List<string> patterns)
+    {
+        List<string> files = new List<string>();
+        foreach (string pattern in patterns)
+        {
+            foreach (string file in Directory.EnumerateFiles(folder, pattern))
+            {
+                files.Add(file);
+            }
+        }
+        return files;
+    }
+
+    public static List<string> GetAllAudioFiles(string folder)
+    {
+        return GetAllMatchingFiles(folder, new List<string>()
+            { "*.wav", "*.ogg"}
+        );
+    }
+
+    public static List<string> GetAllImageFiles(string folder)
+    {
+        return GetAllMatchingFiles(folder, new List<string>()
+            { "*.png", "*.jpg"}
+        );
+    }
+
+    public static List<string> GetAllVideoFiles(string folder)
+    {
+        return GetAllMatchingFiles(folder, new List<string>()
+            { "*.mp4"}
+        );
     }
 
     // Removes characters that aren't allowed in file names.

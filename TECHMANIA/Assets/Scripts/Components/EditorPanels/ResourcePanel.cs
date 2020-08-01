@@ -61,24 +61,21 @@ public class ResourcePanel : MonoBehaviour
     {
         string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
 
-        audioFiles = new List<string>();
-        imageFiles = new List<string>();
-        videoFiles = new List<string>();
+        audioFiles = Paths.GetAllAudioFiles(folder);
+        imageFiles = Paths.GetAllImageFiles(folder);
+        videoFiles = Paths.GetAllVideoFiles(folder);
         string listText = "";
 
-        foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
+        foreach (string file in audioFiles)
         {
-            audioFiles.Add(file);
             listText += new FileInfo(file).Name + "\n";
         }
-        foreach (string file in Directory.EnumerateFiles(folder, "*.png"))
+        foreach (string file in imageFiles)
         {
-            imageFiles.Add(file);
             listText += new FileInfo(file).Name + "\n";
         }
-        foreach (string file in Directory.EnumerateFiles(folder, "*.mp4"))
+        foreach (string file in videoFiles)
         {
-            videoFiles.Add(file);
             listText += new FileInfo(file).Name + "\n";
         }
 

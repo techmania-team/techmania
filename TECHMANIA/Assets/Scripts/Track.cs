@@ -109,6 +109,18 @@ public class Pattern
 
     public const int pulsesPerBeat = 240;
 
+    public void CreateListsIfNull()
+    {
+        if (bpmEvents == null)
+        {
+            bpmEvents = new List<BpmEvent>();
+        }
+        if (soundChannels == null)
+        {
+            soundChannels = new List<SoundChannel>();
+        }
+    }
+
     // Assumes no note exists at the same location.
     public void AddNote(Note n, string sound)
     {

@@ -95,9 +95,9 @@ public class SelectKeysoundDialog : ModalDialog
             Select("");
         });
 
-        // Build available list while enumerating sound files.
+        // Build available list.
         string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
-        foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
+        foreach (string file in Paths.GetAllAudioFiles(folder))
         {
             string filename = new FileInfo(file).Name;
             GameObject keysoundObject = InstantiateKeysoundObject(

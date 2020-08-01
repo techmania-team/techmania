@@ -58,6 +58,9 @@ public class PatternPanel : MonoBehaviour
     [Header("Note Prefabs")]
     public GameObject basicNote;
 
+    [Header("Audio")]
+    public ResourceLoader resourceLoader;
+
     public static event UnityAction RepositionNeeded;
     public static event UnityAction<HashSet<GameObject>> SelectionChanged;
 
@@ -175,6 +178,12 @@ public class PatternPanel : MonoBehaviour
         sortedNoteObjects = new SortedNoteObjects();
         lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
+
+        // For newly created patterns, there's no sound channel yet.
+        if (Navigation.GetCurrentPattern().soundChannels == null)
+        {
+            Navigation.GetCurrentPattern().CreateListsIfNull();
+        }
         foreach (SoundChannel channel in Navigation.GetCurrentPattern().soundChannels)
         {
             foreach (Note n in channel.notes)
@@ -195,6 +204,7 @@ public class PatternPanel : MonoBehaviour
         clipboard = new List<NoteWithSound>();
 
         // MemoryToUI();
+        resourceLoader.LoadResources();
 
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
@@ -244,6 +254,10 @@ public class PatternPanel : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl))
         {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                SelectAll();
+            }
             if (Input.GetKeyDown(KeyCode.X))
             {
                 CutSelection();
@@ -644,7 +658,7 @@ public class PatternPanel : MonoBehaviour
         if (SelectKeysoundDialog.GetResult() ==
             SelectKeysoundDialog.Result.Cancelled)
         {
-            yield return null;
+            yield break;
         }
 
         upcomingKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
@@ -699,7 +713,7 @@ public class PatternPanel : MonoBehaviour
         if (SelectKeysoundDialog.GetResult() ==
             SelectKeysoundDialog.Result.Cancelled)
         {
-            yield return null;
+            yield break;
         }
 
         // Sort selection by pulse, then by lane.
@@ -779,7 +793,18 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Cut Copy Paste Delete
+    #region Edit
+    public void SelectAll()
+    {
+        selectedNoteObjects.Clear();
+        for (int i = 0; i < noteObjectContainer.childCount; i++)
+        {
+            selectedNoteObjects.Add(noteObjectContainer.GetChild(i).gameObject);
+        }
+        SelectionChanged?.Invoke(selectedNoteObjects);
+        RefreshControls();
+    }
+
     private class NoteWithSound
     {
         public Note note;
