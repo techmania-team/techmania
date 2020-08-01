@@ -60,6 +60,10 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Audio")]
     public ResourceLoader resourceLoader;
+    public GameObject playButton;
+    public GameObject stopButton;
+    public AudioSource backingTrackSource;
+    public List<AudioSource> keysoundSources;
 
     public static event UnityAction RepositionNeeded;
     public static event UnityAction<HashSet<GameObject>> SelectionChanged;
@@ -202,6 +206,7 @@ public class PatternPanel : MonoBehaviour
         upcomingKeysounds.Add("");
         upcomingKeysoundIndex = 0;
         clipboard = new List<NoteWithSound>();
+        isPlaying = false;
 
         // MemoryToUI();
         resourceLoader.LoadResources();
@@ -300,6 +305,9 @@ public class PatternPanel : MonoBehaviour
         // Keysounds panel
         UpdateSelectedKeysoundDisplay();
         UpdateUpcomingKeysoundDisplay();
+
+        // Playback panel
+        RefreshPlaybackPanel();
     }
 
     private void SnapCursorAndScanline()
@@ -922,6 +930,38 @@ public class PatternPanel : MonoBehaviour
         lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects.Clear();
         RefreshControls();
+    }
+    #endregion
+
+    #region Playback
+    private bool isPlaying;
+
+    private void RefreshPlaybackPanel()
+    {
+        playButton.SetActive(!isPlaying);
+        stopButton.SetActive(isPlaying);
+    }
+
+    public void StartPlayback()
+    {
+        if (isPlaying) return;
+        isPlaying = true;
+        if (!resourceLoader.LoadComplete()) return;
+        RefreshControls();
+
+        backingTrackSource.clip = resourceLoader.GetClip(
+            Navigation.GetCurrentPattern().patternMetadata.backingTrack);
+        backingTrackSource.time = 0f;
+        backingTrackSource.Play();
+    }
+
+    public void StopPlayback()
+    {
+        if (!isPlaying) return;
+        isPlaying = false;
+        RefreshControls();
+
+        backingTrackSource.Stop();
     }
     #endregion
 }

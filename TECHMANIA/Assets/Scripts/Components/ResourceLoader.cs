@@ -19,6 +19,7 @@ public class ResourceLoader : MonoBehaviour
     }
 
     private bool loading;
+    // Keys do not contain folder.
     private Dictionary<string, AudioClip> audioClips;
 
     public void LoadResources()
@@ -56,5 +57,10 @@ public class ResourceLoader : MonoBehaviour
     public bool LoadComplete()
     {
         return !loading;
+    }
+
+    public AudioClip GetClip(string filenameWithoutFolder)
+    {
+        return audioClips[filenameWithoutFolder];
     }
 }
