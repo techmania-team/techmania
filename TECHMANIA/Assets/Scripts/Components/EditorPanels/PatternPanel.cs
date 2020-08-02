@@ -968,6 +968,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Playback
     private bool isPlaying;
+    private float scanlinePulseBeforePlaying;
 
     private void RefreshPlaybackPanel()
     {
@@ -982,11 +983,16 @@ public class PatternPanel : MonoBehaviour
         if (!resourceLoader.LoadComplete()) return;
         RefreshControls();
 
-        Navigation.GetCurrentPattern().PrepareForPlayback();
+        Pattern currentPattern = Navigation.GetCurrentPattern();
+
+        currentPattern.PrepareForPlayback();
+        scanlinePulseBeforePlaying = scanline.GetComponent<EditorElement>()
+            .floatPulse;
 
         backingTrackSource.clip = resourceLoader.GetClip(
-            Navigation.GetCurrentPattern().patternMetadata.backingTrack);
-        backingTrackSource.time = 0f;
+            currentPattern.patternMetadata.backingTrack);
+        backingTrackSource.time = currentPattern.PulseToTime(
+            (int)scanlinePulseBeforePlaying);
         backingTrackSource.Play();
     }
 
@@ -997,6 +1003,9 @@ public class PatternPanel : MonoBehaviour
         RefreshControls();
 
         backingTrackSource.Stop();
+        EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
+        scanlineElement.floatPulse = scanlinePulseBeforePlaying;
+        scanlineElement.Reposition();
     }
 
     public void UpdateScanlineDuringPlayback()
@@ -1013,6 +1022,25 @@ public class PatternPanel : MonoBehaviour
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
         scanlineElement.floatPulse = pulse;
         scanlineElement.Reposition();
+
+        // Scroll pattern to keep up.
+        float patternWidth = patternContainer.GetComponent<RectTransform>().rect.width;
+        float viewPortWidth = scrollRect.GetComponent<RectTransform>().rect.width;
+        if (patternWidth <= viewPortWidth) return;
+
+        float scanlinePosition = scanline.GetComponent<RectTransform>().anchoredPosition.x;
+
+        float xAtViewPortLeft = (patternWidth - viewPortWidth)
+            * scrollRect.horizontalNormalizedPosition;
+        float xAtViewPortRight = xAtViewPortLeft + viewPortWidth;
+        if (scanlinePosition < xAtViewPortLeft ||
+            scanlinePosition > xAtViewPortRight)
+        {
+            float normalizedPosition =
+                scanlinePosition / (patternWidth - viewPortWidth);
+            scrollRect.horizontalNormalizedPosition =
+                Mathf.Clamp01(normalizedPosition);    
+        }
     }
     #endregion
 }
