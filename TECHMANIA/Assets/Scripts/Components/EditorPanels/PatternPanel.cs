@@ -285,7 +285,7 @@ public class PatternPanel : MonoBehaviour
 
         if (isPlaying)
         {
-            UpdateScanlineDuringPlayback();
+            UpdatePlayback();
         }
     }
 
@@ -969,9 +969,10 @@ public class PatternPanel : MonoBehaviour
 
     #region Playback
     private bool isPlaying;
-    private float scanlinePulseBeforePlaying;
-    private DateTime playbackStartSystemTime;
-    private float playbackStartUnityTime;
+    private float playbackStartingPulse;
+    private float playbackStartingTime;
+    private DateTime systemTimeOnPlaybackStart;
+    private List<Queue<NoteWithSound>> notesInLanes;
 
     private void RefreshPlaybackPanel()
     {
@@ -989,20 +990,41 @@ public class PatternPanel : MonoBehaviour
         Pattern currentPattern = Navigation.GetCurrentPattern();
 
         currentPattern.PrepareForPlayback();
-        scanlinePulseBeforePlaying = scanline.GetComponent<EditorElement>()
+        playbackStartingPulse = scanline.GetComponent<EditorElement>()
             .floatPulse;
+        playbackStartingTime = currentPattern.PulseToTime((int)playbackStartingPulse);
+
+        // Put notes into queues, each corresponding to a lane.
+        notesInLanes = new List<Queue<NoteWithSound>>();
+        for (int i = 0; i < 4; i++)
+        {
+            notesInLanes.Add(new Queue<NoteWithSound>());
+        }
+        for (int pulse = 0; pulse <= sortedNoteObjects.GetMaxPulse(); pulse++)
+        {
+            List<GameObject> noteObjectsAtThisPulse =
+                sortedNoteObjects.GetAt(pulse);
+            if (noteObjectsAtThisPulse == null) continue;
+            foreach (GameObject o in noteObjectsAtThisPulse)
+            {
+                EditorElement e = o.GetComponent<EditorElement>();
+                notesInLanes[e.note.lane].Enqueue(new NoteWithSound()
+                {
+                    note = e.note,
+                    sound = e.sound
+                });
+            }
+        }
+
+        systemTimeOnPlaybackStart = DateTime.Now;
+        // There's a bit time between the start of this frame
+        // and when this method runs, so we keep time using
+        // system time to be slightly more accurate.
 
         backingTrackSource.clip = resourceLoader.GetClip(
             currentPattern.patternMetadata.backingTrack);
-        backingTrackSource.time = currentPattern.PulseToTime(
-            (int)scanlinePulseBeforePlaying);
+        backingTrackSource.time = playbackStartingTime;
         backingTrackSource.Play();
-
-        playbackStartSystemTime = DateTime.Now;
-        // There's a bit time between the start of this frame
-        // and when this method runs, so Time.time is slightly
-        // larger than DateTime.Now.
-        playbackStartUnityTime = Time.time;
     }
 
     public void StopPlayback()
@@ -1013,11 +1035,11 @@ public class PatternPanel : MonoBehaviour
 
         backingTrackSource.Stop();
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-        scanlineElement.floatPulse = scanlinePulseBeforePlaying;
+        scanlineElement.floatPulse = playbackStartingPulse;
         scanlineElement.Reposition();
     }
 
-    public void UpdateScanlineDuringPlayback()
+    public void UpdatePlayback()
     {
         if (!backingTrackSource.isPlaying)
         {
@@ -1026,21 +1048,16 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        // Elapsed time reported by AudioSource:
-        float time = backingTrackSource.time;
-        // Elapsed time reported by AudioSource, calculated from samples:
-        int samples = backingTrackSource.timeSamples;
-        float timeFromSamples = (float)samples / backingTrackSource.clip.frequency;
-        // Elapsed time reported by system:
-        float systemTime = (float)(DateTime.Now - playbackStartSystemTime).TotalSeconds;
-        // Elapsed time reported by Unity:
-        float unityTime = Time.time - playbackStartUnityTime;
+        // Calculate time.
+        float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
+        float playbackCurrentTime = playbackStartingTime + elapsedTime;
+        float playbackCurrentPulse = Navigation.GetCurrentPattern().TimeToPulse(playbackCurrentTime);
 
-        float pulse = Navigation.GetCurrentPattern().TimeToPulse(systemTime);
-        
         // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
+
+        // Move scanline.
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-        scanlineElement.floatPulse = pulse;
+        scanlineElement.floatPulse = playbackCurrentPulse;
         scanlineElement.Reposition();
 
         // Scroll pattern to keep up.

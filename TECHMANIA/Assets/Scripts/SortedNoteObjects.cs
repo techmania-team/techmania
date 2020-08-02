@@ -16,6 +16,11 @@ public class SortedNoteObjects
         list = new List<List<GameObject>>();
     }
 
+    public int GetMaxPulse()
+    {
+        return list.Count - 1;
+    }
+
     private int GetPulse(GameObject o)
     {
         return o.GetComponent<EditorElement>().note.pulse;
@@ -24,6 +29,12 @@ public class SortedNoteObjects
     private int GetLane(GameObject o)
     {
         return o.GetComponent<EditorElement>().note.lane;
+    }
+
+    public List<GameObject> GetAt(int pulse)
+    {
+        if (list.Count < pulse + 1) return null;
+        return list[pulse];
     }
 
     public GameObject GetAt(int pulse, int lane)
