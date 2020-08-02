@@ -287,6 +287,18 @@ public class PatternPanel : MonoBehaviour
         {
             UpdatePlayback();
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isPlaying)
+            {
+                StopPlayback();
+            }
+            else
+            {
+                StartPlayback();
+            }
+        }
     }
 
     public void MemoryToUI()
@@ -1000,7 +1012,9 @@ public class PatternPanel : MonoBehaviour
         {
             notesInLanes.Add(new Queue<NoteWithSound>());
         }
-        for (int pulse = 0; pulse <= sortedNoteObjects.GetMaxPulse(); pulse++)
+        for (int pulse = (int)playbackStartingPulse;
+            pulse <= sortedNoteObjects.GetMaxPulse();
+            pulse++)
         {
             List<GameObject> noteObjectsAtThisPulse =
                 sortedNoteObjects.GetAt(pulse);
@@ -1021,10 +1035,10 @@ public class PatternPanel : MonoBehaviour
         // and when this method runs, so we keep time using
         // system time to be slightly more accurate.
 
-        backingTrackSource.clip = resourceLoader.GetClip(
-            currentPattern.patternMetadata.backingTrack);
-        backingTrackSource.time = playbackStartingTime;
-        backingTrackSource.Play();
+        PlaySound(backingTrackSource,
+            resourceLoader.GetClip(
+                currentPattern.patternMetadata.backingTrack),
+            playbackStartingTime);
     }
 
     public void StopPlayback()
@@ -1055,6 +1069,22 @@ public class PatternPanel : MonoBehaviour
 
         // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
 
+        // Play keysounds if it's their time.
+        for (int i = 0; i < 4; i++)
+        {
+            if (notesInLanes[i].Count == 0) continue;
+            NoteWithSound nextNote = notesInLanes[i].Peek();
+            if (playbackCurrentTime >= nextNote.note.time)
+            {
+                AudioClip clip = resourceLoader.GetClip(nextNote.sound);
+                AudioSource source = keysoundSources[i];
+                float startTime = playbackCurrentTime - nextNote.note.time;
+                PlaySound(source, clip, startTime);
+
+                notesInLanes[i].Dequeue();
+            }
+        }
+
         // Move scanline.
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
         scanlineElement.floatPulse = playbackCurrentPulse;
@@ -1078,6 +1108,14 @@ public class PatternPanel : MonoBehaviour
             scrollRect.horizontalNormalizedPosition =
                 Mathf.Clamp01(normalizedPosition);    
         }
+    }
+
+    private void PlaySound(AudioSource source, AudioClip clip, float startTime)
+    {
+        int startSample = Mathf.FloorToInt(startTime * clip.frequency);
+        source.clip = clip;
+        source.timeSamples = startSample;
+        source.Play();
     }
     #endregion
 }
