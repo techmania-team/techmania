@@ -51,6 +51,10 @@ public class PatternPanel : MonoBehaviour
     public Button pasteButton;
     public Button deleteButton;
     public Text divisionsPerBeatDisplay;
+    public Text bpmEventDisplay;
+    public Button addBpmEventButton;
+    public Button modifyBpmEventButton;
+    public Button deleteBpmEventButton;
     public Text selectedKeysoundsDisplay;
     public Button modifySelectedKeysoundsButton;
     public Text upcomingKeysoundDisplay;
@@ -305,6 +309,7 @@ public class PatternPanel : MonoBehaviour
     {
         ResizeContainer();
         SpawnMarkersAndLines();
+        SpawnBpmEventMarkers();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
         RefreshControls();
@@ -329,6 +334,7 @@ public class PatternPanel : MonoBehaviour
 
         // Timing panel
         divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
+        UpdateBpmEventDisplay();
 
         // Keysounds panel
         UpdateSelectedKeysoundDisplay();
@@ -397,7 +403,14 @@ public class PatternPanel : MonoBehaviour
             EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
             scanlineElement.floatPulse = snappedCursorPulse;
             scanlineElement.Reposition();
+
+            UpdateBpmEventDisplay();
         }
+    }
+
+    private int ScanlinePulse()
+    {
+        return (int)scanline.GetComponent<EditorElement>().floatPulse;
     }
 
     public void ModifyDevisionsPerBeat(int direction)
@@ -904,8 +917,7 @@ public class PatternPanel : MonoBehaviour
         if (clipboard.Count == 0) return;
         if (isPlaying) return;
 
-        int scanlinePulse = Mathf.FloorToInt(
-            scanline.GetComponent<EditorElement>().floatPulse);
+        int scanlinePulse = ScanlinePulse();
         int deltaPulse = scanlinePulse - minPulseInClipboard;
 
         // Does the paste conflict with any existing note?
@@ -1116,6 +1128,130 @@ public class PatternPanel : MonoBehaviour
         source.clip = clip;
         source.timeSamples = startSample;
         source.Play();
+    }
+    #endregion
+
+    #region BPM Events
+    private BpmEvent GetBpmEventAtScanline()
+    {
+        int pulse = ScanlinePulse();
+        return Navigation.GetCurrentPattern().bpmEvents.Find((BpmEvent e) =>
+        {
+            return e.pulse == pulse;
+        });
+    }
+
+    private void UpdateBpmEventDisplay()
+    {
+        BpmEvent e = GetBpmEventAtScanline();
+        if (e == null)
+        {
+            bpmEventDisplay.text = "(None)";
+            addBpmEventButton.interactable = true;
+            modifyBpmEventButton.interactable = false;
+            deleteBpmEventButton.interactable = false;
+        }
+        else
+        {
+            bpmEventDisplay.text = e.bpm.ToString();
+            addBpmEventButton.interactable = false;
+            modifyBpmEventButton.interactable = true;
+            deleteBpmEventButton.interactable = true;
+        }
+    }
+
+    public void AddBpmEventAtScanline()
+    {
+        StartCoroutine(InnerAddBpmEvent());
+    }
+
+    private IEnumerator InnerAddBpmEvent()
+    {
+        InputDialog.Show("Change BPM to:", InputField.ContentType.DecimalNumber);
+        yield return new WaitUntil(() =>
+        {
+            return InputDialog.IsResolved();
+        });
+        if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
+        {
+            yield break;
+        }
+
+        int pulse = ScanlinePulse();
+        double bpm = Double.Parse(InputDialog.GetValue());
+
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentPattern().bpmEvents.Add(new BpmEvent()
+        {
+            pulse = pulse,
+            bpm = bpm,
+        });
+        Navigation.DoneWithChange();
+        SpawnBpmEventMarkers();
+        UpdateBpmEventDisplay();
+    }
+
+    public void ModifyBpmEventAtScanline()
+    {
+        StartCoroutine(InnerModifyBpmEvent());
+    }
+
+    private IEnumerator InnerModifyBpmEvent()
+    {
+        InputDialog.Show("Change BPM to:", InputField.ContentType.DecimalNumber);
+        yield return new WaitUntil(() =>
+        {
+            return InputDialog.IsResolved();
+        });
+        if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
+        {
+            yield break;
+        }
+
+        double bpm = Double.Parse(InputDialog.GetValue());
+
+        Navigation.PrepareForChange();
+        GetBpmEventAtScanline().bpm = bpm;
+        Navigation.DoneWithChange();
+        SpawnBpmEventMarkers();
+        UpdateBpmEventDisplay();
+    }
+
+    public void DeleteBpmEventAtScanline()
+    {
+        int pulse = ScanlinePulse();
+        Navigation.PrepareForChange();
+        Navigation.GetCurrentPattern().bpmEvents.RemoveAll((BpmEvent e) =>
+        {
+            return e.pulse == pulse;
+        });
+        Navigation.DoneWithChange();
+        SpawnBpmEventMarkers();
+        UpdateBpmEventDisplay();
+    }
+
+    private void SpawnBpmEventMarkers()
+    {
+        for (int i = 0; i < lineAndMarkerContainer.childCount; i++)
+        {
+            EditorElement element = lineAndMarkerContainer.GetChild(i)
+                .GetComponent<EditorElement>();
+            if (element.type == EditorElement.Type.BpmMarker)
+            {
+                Destroy(element.gameObject);
+            }
+        }
+
+        foreach (BpmEvent e in Navigation.GetCurrentPattern().bpmEvents)
+        {
+            GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
+            marker.GetComponentInChildren<Text>().text = $"BPM {e.bpm}";
+
+            EditorElement element = marker.GetComponent<EditorElement>();
+            element.type = EditorElement.Type.BpmMarker;
+            element.pulse = e.pulse;
+            element.Reposition();
+        }
     }
     #endregion
 }

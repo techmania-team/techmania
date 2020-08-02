@@ -190,7 +190,7 @@ public class TrackPanel : MonoBehaviour
     private IEnumerator InternalNewPattern()
     {
         // Get pattern name.
-        InputDialog.Show("Pattern name:");
+        InputDialog.Show("Pattern name:", InputField.ContentType.Standard);
         yield return new WaitUntil(() => { return InputDialog.IsResolved(); });
         if (InputDialog.GetResult() == InputDialog.Result.Cancelled)
         {

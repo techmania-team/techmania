@@ -1664,7 +1664,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 77035573}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1663307905}
+        m_MethodName: AddBpmEventAtScanline
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &77035573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4161,7 +4172,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 826860937}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1082776676}
@@ -7952,7 +7963,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1349029500}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1877369466}
@@ -9890,7 +9901,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1525249257}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1587451222}
@@ -10175,7 +10186,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1245917256}
   m_HandleRect: {fileID: 1245917255}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -12686,7 +12697,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1031796550}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1055451803}
@@ -13049,7 +13060,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 715341671}
   m_HandleRect: {fileID: 715341670}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -17105,7 +17116,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1707384996}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1060167604}
@@ -25566,7 +25577,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1522883363}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1663307905}
+        m_MethodName: DeleteBpmEventAtScanline
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1522883363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28624,6 +28646,10 @@ MonoBehaviour:
   pasteButton: {fileID: 454789751}
   deleteButton: {fileID: 865375418}
   divisionsPerBeatDisplay: {fileID: 867161112}
+  bpmEventDisplay: {fileID: 757444739}
+  addBpmEventButton: {fileID: 77035572}
+  modifyBpmEventButton: {fileID: 1875794421}
+  deleteBpmEventButton: {fileID: 1522883362}
   selectedKeysoundsDisplay: {fileID: 2056470341}
   modifySelectedKeysoundsButton: {fileID: 859890706}
   upcomingKeysoundDisplay: {fileID: 1841381987}
@@ -30959,7 +30985,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 354577371}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1809310654}
@@ -32205,7 +32231,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1875794422}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1663307905}
+        m_MethodName: ModifyBpmEventAtScanline
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1875794422
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,9 +16,9 @@ public class InputDialog : ModalDialog
         return instance;
     }
 
-    public static void Show(string prompt)
+    public static void Show(string prompt, InputField.ContentType contentType)
     {
-        GetInstance().InternalShow(prompt);
+        GetInstance().InternalShow(prompt, contentType);
     }
     public static bool IsResolved()
     {
@@ -55,12 +55,13 @@ public class InputDialog : ModalDialog
         }
     }
 
-    private void InternalShow(string prompt)
+    private void InternalShow(string prompt, InputField.ContentType contentType)
     {
         gameObject.SetActive(true);
         promptText.text = prompt;
         inputField.text = "";
         inputField.ActivateInputField();
+        inputField.contentType = contentType;
         resolved = false;
     }
 
