@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -969,6 +970,8 @@ public class PatternPanel : MonoBehaviour
     #region Playback
     private bool isPlaying;
     private float scanlinePulseBeforePlaying;
+    private DateTime playbackStartSystemTime;
+    private float playbackStartUnityTime;
 
     private void RefreshPlaybackPanel()
     {
@@ -994,6 +997,12 @@ public class PatternPanel : MonoBehaviour
         backingTrackSource.time = currentPattern.PulseToTime(
             (int)scanlinePulseBeforePlaying);
         backingTrackSource.Play();
+
+        playbackStartSystemTime = DateTime.Now;
+        // There's a bit time between the start of this frame
+        // and when this method runs, so Time.time is slightly
+        // larger than DateTime.Now.
+        playbackStartUnityTime = Time.time;
     }
 
     public void StopPlayback()
@@ -1017,8 +1026,19 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
+        // Elapsed time reported by AudioSource:
         float time = backingTrackSource.time;
-        float pulse = Navigation.GetCurrentPattern().TimeToPulse(time);
+        // Elapsed time reported by AudioSource, calculated from samples:
+        int samples = backingTrackSource.timeSamples;
+        float timeFromSamples = (float)samples / backingTrackSource.clip.frequency;
+        // Elapsed time reported by system:
+        float systemTime = (float)(DateTime.Now - playbackStartSystemTime).TotalSeconds;
+        // Elapsed time reported by Unity:
+        float unityTime = Time.time - playbackStartUnityTime;
+
+        float pulse = Navigation.GetCurrentPattern().TimeToPulse(systemTime);
+        
+        // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
         EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
         scanlineElement.floatPulse = pulse;
         scanlineElement.Reposition();
