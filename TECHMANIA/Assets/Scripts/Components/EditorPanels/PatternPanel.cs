@@ -44,6 +44,7 @@ public class PatternPanel : MonoBehaviour
     private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
+    public Button selectAllButton;
     public Button cutButton;
     public Button copyButton;
     public Button pasteButton;
@@ -299,10 +300,19 @@ public class PatternPanel : MonoBehaviour
     private void RefreshControls()
     {
         // Edit panel
+        selectAllButton.interactable = true;
         cutButton.interactable = selectedNoteObjects.Count > 0;
         copyButton.interactable = selectedNoteObjects.Count > 0;
         pasteButton.interactable = clipboard.Count > 0;
         deleteButton.interactable = selectedNoteObjects.Count > 0;
+        if (isPlaying)
+        {
+            selectAllButton.interactable = false;
+            cutButton.interactable = false;
+            copyButton.interactable = false;
+            pasteButton.interactable = false;
+            deleteButton.interactable = false;
+        }
 
         // Timing panel
         divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
@@ -511,6 +521,8 @@ public class PatternPanel : MonoBehaviour
 
     public void OnNoteObjectRightClick(GameObject o)
     {
+        if (isPlaying) return;
+
         // Delete note from pattern
         EditorElement e = o.GetComponent<EditorElement>();
         Navigation.PrepareForChange();
@@ -533,6 +545,8 @@ public class PatternPanel : MonoBehaviour
     private GameObject draggedNoteObject;
     private void OnNoteObjectBeginDrag(GameObject o)
     {
+        if (isPlaying) return;
+
         draggedNoteObject = o;
         lastSelectedNoteObjectWithoutShift = o;
         if (!selectedNoteObjects.Contains(o))
@@ -547,6 +561,8 @@ public class PatternPanel : MonoBehaviour
 
     private void OnNoteObjectDrag(Vector2 delta)
     {
+        if (isPlaying) return;
+
         foreach (GameObject o in selectedNoteObjects)
         {
             // This is only visual. Notes are only really moved
@@ -557,6 +573,8 @@ public class PatternPanel : MonoBehaviour
 
     private void OnNoteObjectEndDrag()
     {
+        if (isPlaying) return;
+
         // Calculate delta pulse and delta lane
         EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
         int oldPulse = element.note.pulse;
@@ -707,6 +725,11 @@ public class PatternPanel : MonoBehaviour
             selectedKeysoundsDisplay.text = "(Multiple)";
             modifySelectedKeysoundsButton.interactable = true;
         }
+
+        if (isPlaying)
+        {
+            modifySelectedKeysoundsButton.interactable = false;
+        }
     }
 
     public void ModifySelectedKeysounds()
@@ -840,6 +863,8 @@ public class PatternPanel : MonoBehaviour
     public void CutSelection()
     {
         if (selectedNoteObjects.Count == 0) return;
+        if (isPlaying) return;
+
         CopySelection();
         DeleteSelection();
     }
@@ -864,6 +889,7 @@ public class PatternPanel : MonoBehaviour
     public void PasteAtScanline()
     {
         if (clipboard.Count == 0) return;
+        if (isPlaying) return;
 
         int scanlinePulse = Mathf.FloorToInt(
             scanline.GetComponent<EditorElement>().floatPulse);
@@ -917,6 +943,7 @@ public class PatternPanel : MonoBehaviour
     public void DeleteSelection()
     {
         if (selectedNoteObjects.Count == 0) return;
+        if (isPlaying) return;
 
         // Delete notes from pattern.
         Navigation.PrepareForChange();
@@ -954,6 +981,8 @@ public class PatternPanel : MonoBehaviour
         isPlaying = true;
         if (!resourceLoader.LoadComplete()) return;
         RefreshControls();
+
+        Navigation.GetCurrentPattern().PrepareForPlayback();
 
         backingTrackSource.clip = resourceLoader.GetClip(
             Navigation.GetCurrentPattern().patternMetadata.backingTrack);
