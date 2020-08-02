@@ -116,6 +116,16 @@ public class PatternPanel : MonoBehaviour
         element.beat = beat;
     }
 
+    private void SpawnPulseBasedMarker(EditorElement.Type type, int pulse, string text)
+    {
+        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
+        marker.GetComponentInChildren<Text>().text = text;
+
+        EditorElement element = marker.GetComponent<EditorElement>();
+        element.type = type;
+        element.pulse = pulse;
+    }
+
     private void ResizeContainer()
     {
         RectTransform containerRect = patternContainer.GetComponent<RectTransform>();
@@ -132,6 +142,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         Pattern pattern = Navigation.GetCurrentPattern();
+        pattern.PrepareForTimeCalculation();
 
         // Scan based stuff
         for (int scan = 0; scan <= numScans; scan++)
@@ -146,8 +157,8 @@ public class PatternPanel : MonoBehaviour
         double secondsPerBeat = 60.0 / pattern.patternMetadata.initBpm;
         for (int beat = 0; beat < numScans * bps ; beat++)
         {
-            float time = (float)(secondsPerBeat * beat +
-                pattern.patternMetadata.firstBeatOffset);
+            int pulse = beat * Pattern.pulsesPerBeat;
+            float time = pattern.PulseToTime(pulse);
             int minute = Mathf.FloorToInt(time / 60f);
             time -= minute * 60f;
             int second = Mathf.FloorToInt(time);
@@ -159,6 +170,13 @@ public class PatternPanel : MonoBehaviour
                 beat, $"Beat {beat}");
             SpawnBeatBasedMarker(EditorElement.Type.TimeMarker,
                 beat, $"{minute}:{second:D2}.{milliSecond:D3}");
+        }
+
+        // Pulse based stuff
+        foreach (BpmEvent e in pattern.bpmEvents)
+        {
+            SpawnPulseBasedMarker(EditorElement.Type.BpmMarker,
+                e.pulse, $"BPM {e.bpm}");
         }
     }
     #endregion
@@ -309,7 +327,6 @@ public class PatternPanel : MonoBehaviour
     {
         ResizeContainer();
         SpawnMarkersAndLines();
-        SpawnBpmEventMarkers();
         SpawnExistingNotes();
         RepositionNeeded?.Invoke();
         RefreshControls();
@@ -1013,7 +1030,8 @@ public class PatternPanel : MonoBehaviour
 
         Pattern currentPattern = Navigation.GetCurrentPattern();
 
-        currentPattern.PrepareForPlayback();
+        currentPattern.PrepareForTimeCalculation();
+        currentPattern.CalculateTimeOfAllNotes();
         playbackStartingPulse = scanline.GetComponent<EditorElement>()
             .floatPulse;
         playbackStartingTime = currentPattern.PulseToTime((int)playbackStartingPulse);
@@ -1187,7 +1205,8 @@ public class PatternPanel : MonoBehaviour
             bpm = bpm,
         });
         Navigation.DoneWithChange();
-        SpawnBpmEventMarkers();
+        SpawnMarkersAndLines();
+        RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();
     }
 
@@ -1213,7 +1232,8 @@ public class PatternPanel : MonoBehaviour
         Navigation.PrepareForChange();
         GetBpmEventAtScanline().bpm = bpm;
         Navigation.DoneWithChange();
-        SpawnBpmEventMarkers();
+        SpawnMarkersAndLines();
+        RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();
     }
 
@@ -1226,32 +1246,9 @@ public class PatternPanel : MonoBehaviour
             return e.pulse == pulse;
         });
         Navigation.DoneWithChange();
-        SpawnBpmEventMarkers();
+        SpawnMarkersAndLines();
+        RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();
-    }
-
-    private void SpawnBpmEventMarkers()
-    {
-        for (int i = 0; i < lineAndMarkerContainer.childCount; i++)
-        {
-            EditorElement element = lineAndMarkerContainer.GetChild(i)
-                .GetComponent<EditorElement>();
-            if (element.type == EditorElement.Type.BpmMarker)
-            {
-                Destroy(element.gameObject);
-            }
-        }
-
-        foreach (BpmEvent e in Navigation.GetCurrentPattern().bpmEvents)
-        {
-            GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
-            marker.GetComponentInChildren<Text>().text = $"BPM {e.bpm}";
-
-            EditorElement element = marker.GetComponent<EditorElement>();
-            element.type = EditorElement.Type.BpmMarker;
-            element.pulse = e.pulse;
-            element.Reposition();
-        }
     }
     #endregion
 }

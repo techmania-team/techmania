@@ -175,10 +175,9 @@ public class Pattern
         channel.notes.Remove(n);
     }
 
-    // Fill the time fields of BPM events and notes.
-    // Also sorts BPM events by time.
-    // Only call TimeToPulse and PulseToTime after calling this.
-    public void PrepareForPlayback()
+    // Sort BPM events by pulse, then fill their time fields.
+    // Enables CalculateTimeOfAllNotes, TimeToPulse and PulseToTime.
+    public void PrepareForTimeCalculation()
     {
         bpmEvents.Sort((BpmEvent e1, BpmEvent e2) =>
         {
@@ -207,7 +206,10 @@ public class Pattern
             currentPulse = e.pulse;
             secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
         }
+    }
 
+    public void CalculateTimeOfAllNotes()
+    {
         foreach (SoundChannel c in soundChannels)
         {
             foreach (Note n in c.notes)
@@ -232,6 +234,7 @@ public class Pattern
                 referenceBpm = (float)e.bpm;
                 referenceTime = e.time;
                 referencePulse = e.pulse;
+                break;
             }
         }
 
@@ -255,6 +258,7 @@ public class Pattern
                 referenceBpm = (float)e.bpm;
                 referenceTime = e.time;
                 referencePulse = e.pulse;
+                break;
             }
         }
 
