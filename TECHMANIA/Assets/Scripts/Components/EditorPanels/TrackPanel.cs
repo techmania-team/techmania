@@ -49,7 +49,7 @@ public class TrackPanel : MonoBehaviour
 
     public void UIToMemory()
     {
-        TrackMetadata metadata = Navigation.GetCurrentTrack().trackMetadata;
+        TrackMetadata metadata = EditorNavigation.GetCurrentTrack().trackMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(ref metadata.title,
@@ -79,13 +79,13 @@ public class TrackPanel : MonoBehaviour
 
         if (madeChange)
         {
-            Navigation.DoneWithChange();
+            EditorNavigation.DoneWithChange();
         }
     }
 
     public void MemoryToUI()
     {
-        TrackMetadata metadata = Navigation.GetCurrentTrack().trackMetadata;
+        TrackMetadata metadata = EditorNavigation.GetCurrentTrack().trackMetadata;
 
         // Editing a InputField's text does not fire EndEdit events.
         title.text = metadata.title;
@@ -112,7 +112,7 @@ public class TrackPanel : MonoBehaviour
         RefreshPatternButtons();
 
         // Sort patterns.
-        Navigation.GetCurrentTrack().patterns.Sort((Pattern p1, Pattern p2) =>
+        EditorNavigation.GetCurrentTrack().patterns.Sort((Pattern p1, Pattern p2) =>
         {
             if (p1.patternMetadata.controlScheme != p2.patternMetadata.controlScheme)
             {
@@ -126,9 +126,9 @@ public class TrackPanel : MonoBehaviour
         });
 
         // Rebuild pattern list.
-        for (int i = 0; i < Navigation.GetCurrentTrack().patterns.Count; i++)
+        for (int i = 0; i < EditorNavigation.GetCurrentTrack().patterns.Count; i++)
         {
-            Pattern p = Navigation.GetCurrentTrack().patterns[i];
+            Pattern p = EditorNavigation.GetCurrentTrack().patterns[i];
 
             GameObject patternObject = Instantiate(patternTemplate);
             patternObject.name = "Pattern Panel";
@@ -204,9 +204,9 @@ public class TrackPanel : MonoBehaviour
         p.patternMetadata = new PatternMetadata();
         p.patternMetadata.patternName = name;
 
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentTrack().patterns.Add(p);
-        Navigation.DoneWithChange();
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentTrack().patterns.Add(p);
+        EditorNavigation.DoneWithChange();
 
         MemoryToUI();
     }
@@ -214,16 +214,16 @@ public class TrackPanel : MonoBehaviour
     public void DeletePattern()
     {
         // This is undoable, so no need for confirmation.
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentTrack().patterns.RemoveAt(selectedPatternIndex);
-        Navigation.DoneWithChange();
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentTrack().patterns.RemoveAt(selectedPatternIndex);
+        EditorNavigation.DoneWithChange();
         MemoryToUI();
     }
 
     public void Open()
     {
         if (selectedPatternIndex < 0) return;
-        Navigation.SetCurrentPattern(selectedPatternIndex);
-        Navigation.GoTo(Navigation.Location.PatternMetadata);
+        EditorNavigation.SetCurrentPattern(selectedPatternIndex);
+        EditorNavigation.GoTo(EditorNavigation.Location.PatternMetadata);
     }
 }

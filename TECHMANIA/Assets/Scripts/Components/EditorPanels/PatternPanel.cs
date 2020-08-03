@@ -141,7 +141,7 @@ public class PatternPanel : MonoBehaviour
             Destroy(lineAndMarkerContainer.GetChild(i).gameObject);
         }
 
-        Pattern pattern = Navigation.GetCurrentPattern();
+        Pattern pattern = EditorNavigation.GetCurrentPattern();
         pattern.PrepareForTimeCalculation();
 
         // Scan based stuff
@@ -208,11 +208,11 @@ public class PatternPanel : MonoBehaviour
         selectedNoteObjects = new HashSet<GameObject>();
 
         // For newly created patterns, there's no sound channel yet.
-        if (Navigation.GetCurrentPattern().soundChannels == null)
+        if (EditorNavigation.GetCurrentPattern().soundChannels == null)
         {
-            Navigation.GetCurrentPattern().CreateListsIfNull();
+            EditorNavigation.GetCurrentPattern().CreateListsIfNull();
         }
-        foreach (SoundChannel channel in Navigation.GetCurrentPattern().soundChannels)
+        foreach (SoundChannel channel in EditorNavigation.GetCurrentPattern().soundChannels)
         {
             foreach (Note n in channel.notes)
             {
@@ -385,13 +385,13 @@ public class PatternPanel : MonoBehaviour
 
         float cursorScan = pointInContainer.x / ScanWidth;
         float cursorBeat = cursorScan *
-            Navigation.GetCurrentPattern().patternMetadata.bps;
+            EditorNavigation.GetCurrentPattern().patternMetadata.bps;
         float cursorPulse = cursorBeat * Pattern.pulsesPerBeat;
         int pulsesPerDivision = Pattern.pulsesPerBeat / divisionsPerBeat;
         snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
             * pulsesPerDivision;
         float snappedScan = (float)snappedCursorPulse / Pattern.pulsesPerBeat
-            / Navigation.GetCurrentPattern().patternMetadata.bps;
+            / EditorNavigation.GetCurrentPattern().patternMetadata.bps;
         float snappedX = snappedScan * ScanWidth;
 
         const float kHeightAboveFirstLane = 80f;
@@ -474,9 +474,9 @@ public class PatternPanel : MonoBehaviour
         n.pulse = snappedCursorPulse;
         n.lane = snappedCursorLane;
         n.type = NoteType.Basic;
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().AddNote(n, sound);
-        Navigation.DoneWithChange();
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentPattern().AddNote(n, sound);
+        EditorNavigation.DoneWithChange();
 
         // Add note to UI
         SpawnNoteObject(n, sound);
@@ -572,9 +572,9 @@ public class PatternPanel : MonoBehaviour
 
         // Delete note from pattern
         EditorElement e = o.GetComponent<EditorElement>();
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
-        Navigation.DoneWithChange();
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
+        EditorNavigation.DoneWithChange();
 
         // Delete note from UI
         sortedNoteObjects.Delete(o);
@@ -631,7 +631,7 @@ public class PatternPanel : MonoBehaviour
 
         // Is the movement applicable to all notes?
         int minPulse = 0;
-        int pulsesPerScan = Navigation.GetCurrentPattern().patternMetadata.bps
+        int pulsesPerScan = EditorNavigation.GetCurrentPattern().patternMetadata.bps
             * Pattern.pulsesPerBeat;
         int maxPulse = numScans * pulsesPerScan;
         int minLane = 0;
@@ -679,7 +679,7 @@ public class PatternPanel : MonoBehaviour
             }
 
             // Apply move.
-            Navigation.PrepareForChange();
+            EditorNavigation.PrepareForChange();
             foreach (GameObject o in selectedNoteObjects)
             {
                 sortedNoteObjects.Delete(o);
@@ -691,7 +691,7 @@ public class PatternPanel : MonoBehaviour
                 n.lane += deltaLane;
                 sortedNoteObjects.Add(o);
             }
-            Navigation.DoneWithChange();
+            EditorNavigation.DoneWithChange();
         }
 
         foreach (GameObject o in selectedNoteObjects)
@@ -819,14 +819,14 @@ public class PatternPanel : MonoBehaviour
 
         // Apply new keysounds.
         List<string> newKeysounds = SelectKeysoundDialog.GetSelectedKeysounds();
-        Navigation.PrepareForChange();
+        EditorNavigation.PrepareForChange();
         for (int i = 0; i < selectionAsList.Count; i++)
         {
             int soundIndex = i % newKeysounds.Count;
             string newSound = newKeysounds[soundIndex];
 
             // Update pattern
-            Navigation.GetCurrentPattern().ModifyNoteKeysound(
+            EditorNavigation.GetCurrentPattern().ModifyNoteKeysound(
                 selectionAsList[i].note, selectionAsList[i].sound,
                 newSound);
 
@@ -835,7 +835,7 @@ public class PatternPanel : MonoBehaviour
             selectionAsList[i].GetComponentInChildren<Text>().text =
                 UIUtils.StripExtension(newSound);
         }
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
 
         RefreshControls();
     }
@@ -859,7 +859,7 @@ public class PatternPanel : MonoBehaviour
         Note lastNote = lastNoteObject.GetComponent<EditorElement>().note;
         int lastPulse = lastNote.pulse;
         int pulsesPerScan = Pattern.pulsesPerBeat *
-            Navigation.GetCurrentPattern().patternMetadata.bps;
+            EditorNavigation.GetCurrentPattern().patternMetadata.bps;
         int lastScan = lastPulse / pulsesPerScan;
         numScans = lastScan + 1;
 
@@ -942,7 +942,7 @@ public class PatternPanel : MonoBehaviour
         int deltaPulse = scanlinePulse - minPulseInClipboard;
 
         // Does the paste conflict with any existing note?
-        int pulsesPerScan = Navigation.GetCurrentPattern().patternMetadata.bps
+        int pulsesPerScan = EditorNavigation.GetCurrentPattern().patternMetadata.bps
             * Pattern.pulsesPerBeat;
         int maxPulse = numScans * pulsesPerScan;
         int addedScans = 0;
@@ -971,19 +971,19 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Paste.
-        Navigation.PrepareForChange();
+        EditorNavigation.PrepareForChange();
         foreach (NoteWithSound n in clipboard)
         {
             Note noteClone = n.note.Clone();
             noteClone.pulse += deltaPulse;
 
             // Add note to pattern.
-            Navigation.GetCurrentPattern().AddNote(noteClone, n.sound);
+            EditorNavigation.GetCurrentPattern().AddNote(noteClone, n.sound);
 
             // Add note to UI.
             SpawnNoteObject(noteClone, n.sound);
         }
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
     }
 
     public void DeleteSelection()
@@ -992,13 +992,13 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Delete notes from pattern.
-        Navigation.PrepareForChange();
+        EditorNavigation.PrepareForChange();
         foreach (GameObject o in selectedNoteObjects)
         {
             EditorElement e = o.GetComponent<EditorElement>();
-            Navigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
+            EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
         }
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
 
         // Delete notes from UI.
         foreach (GameObject o in selectedNoteObjects)
@@ -1032,7 +1032,7 @@ public class PatternPanel : MonoBehaviour
         if (!resourceLoader.LoadComplete()) return;
         RefreshControls();
 
-        Pattern currentPattern = Navigation.GetCurrentPattern();
+        Pattern currentPattern = EditorNavigation.GetCurrentPattern();
 
         currentPattern.PrepareForTimeCalculation();
         currentPattern.CalculateTimeOfAllNotes();
@@ -1099,7 +1099,7 @@ public class PatternPanel : MonoBehaviour
         // Calculate time.
         float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
         float playbackCurrentTime = playbackStartingTime + elapsedTime;
-        float playbackCurrentPulse = Navigation.GetCurrentPattern().TimeToPulse(playbackCurrentTime);
+        float playbackCurrentPulse = EditorNavigation.GetCurrentPattern().TimeToPulse(playbackCurrentTime);
 
         // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
 
@@ -1157,7 +1157,7 @@ public class PatternPanel : MonoBehaviour
     private BpmEvent GetBpmEventAtScanline()
     {
         int pulse = ScanlinePulse();
-        return Navigation.GetCurrentPattern().bpmEvents.Find((BpmEvent e) =>
+        return EditorNavigation.GetCurrentPattern().bpmEvents.Find((BpmEvent e) =>
         {
             return e.pulse == pulse;
         });
@@ -1204,13 +1204,13 @@ public class PatternPanel : MonoBehaviour
         if (bpm < Pattern.minBpm) bpm = Pattern.minBpm;
         if (bpm > Pattern.maxBpm) bpm = Pattern.maxBpm;
 
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().bpmEvents.Add(new BpmEvent()
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentPattern().bpmEvents.Add(new BpmEvent()
         {
             pulse = pulse,
             bpm = bpm,
         });
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
         SpawnMarkersAndLines();
         RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();
@@ -1237,9 +1237,9 @@ public class PatternPanel : MonoBehaviour
         if (bpm < Pattern.minBpm) bpm = Pattern.minBpm;
         if (bpm > Pattern.maxBpm) bpm = Pattern.maxBpm;
 
-        Navigation.PrepareForChange();
+        EditorNavigation.PrepareForChange();
         GetBpmEventAtScanline().bpm = bpm;
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
         SpawnMarkersAndLines();
         RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();
@@ -1248,12 +1248,12 @@ public class PatternPanel : MonoBehaviour
     public void DeleteBpmEventAtScanline()
     {
         int pulse = ScanlinePulse();
-        Navigation.PrepareForChange();
-        Navigation.GetCurrentPattern().bpmEvents.RemoveAll((BpmEvent e) =>
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentPattern().bpmEvents.RemoveAll((BpmEvent e) =>
         {
             return e.pulse == pulse;
         });
-        Navigation.DoneWithChange();
+        EditorNavigation.DoneWithChange();
         SpawnMarkersAndLines();
         RepositionNeeded?.Invoke();
         UpdateBpmEventDisplay();

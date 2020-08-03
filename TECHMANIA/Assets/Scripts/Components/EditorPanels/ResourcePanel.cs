@@ -59,7 +59,7 @@ public class ResourcePanel : MonoBehaviour
 
     public void Refresh()
     {
-        string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
+        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
 
         audioFiles = Paths.GetAllAudioFiles(folder);
         imageFiles = Paths.GetAllImageFiles(folder);
@@ -85,7 +85,7 @@ public class ResourcePanel : MonoBehaviour
 
     public void Import()
     {
-        string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
+        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
 
         foreach (string file in SFB.StandaloneFileBrowser.OpenFilePanel(
             "Select resource to import", "", "wav;*.png;*.mp4", multiselect: true))

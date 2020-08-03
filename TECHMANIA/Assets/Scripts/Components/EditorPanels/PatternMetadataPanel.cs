@@ -38,7 +38,7 @@ public class PatternMetadataPanel : MonoBehaviour
 
     public void UIToMemory()
     {
-        PatternMetadata metadata = Navigation.GetCurrentPattern().patternMetadata;
+        PatternMetadata metadata = EditorNavigation.GetCurrentPattern().patternMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(ref metadata.patternName,
@@ -52,7 +52,7 @@ public class PatternMetadataPanel : MonoBehaviour
         {
             if (!madeChange)
             {
-                Navigation.PrepareForChange();
+                EditorNavigation.PrepareForChange();
                 madeChange = true;
             }
             metadata.controlScheme = (ControlScheme)controlScheme.value;
@@ -72,13 +72,13 @@ public class PatternMetadataPanel : MonoBehaviour
 
         if (madeChange)
         {
-            Navigation.DoneWithChange();
+            EditorNavigation.DoneWithChange();
         }
     }
 
     public void MemoryToUI()
     {
-        PatternMetadata metadata = Navigation.GetCurrentPattern().patternMetadata;
+        PatternMetadata metadata = EditorNavigation.GetCurrentPattern().patternMetadata;
 
         nameInput.text = metadata.patternName;
         level.text = metadata.level.ToString();
@@ -99,6 +99,6 @@ public class PatternMetadataPanel : MonoBehaviour
 
     public void Edit()
     {
-        Navigation.GoTo(Navigation.Location.Pattern);
+        EditorNavigation.GoTo(EditorNavigation.Location.Pattern);
     }
 }

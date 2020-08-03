@@ -88,7 +88,7 @@ public class EditorElement : MonoBehaviour
 
     public void Reposition()
     {
-        int bps = Navigation.GetCurrentPattern().patternMetadata.bps;
+        int bps = EditorNavigation.GetCurrentPattern().patternMetadata.bps;
 
         float x = 0;
         switch (type)

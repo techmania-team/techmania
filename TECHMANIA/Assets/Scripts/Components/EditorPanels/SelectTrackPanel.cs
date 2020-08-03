@@ -217,7 +217,7 @@ public class SelectTrackPanel : MonoBehaviour
         {
             string path = $"{objectToTrack[selectedTrackObject].folder}\\{Paths.kTrackFilename}";
             Track track = TrackBase.LoadFromFile(path) as Track;
-            Navigation.SetCurrentTrack(track, path);
+            EditorNavigation.SetCurrentTrack(track, path);
         }
         catch (Exception e)
         {
@@ -225,6 +225,6 @@ public class SelectTrackPanel : MonoBehaviour
             return;
         }
 
-        Navigation.GoTo(Navigation.Location.Track);
+        EditorNavigation.GoTo(EditorNavigation.Location.Track);
     }
 }

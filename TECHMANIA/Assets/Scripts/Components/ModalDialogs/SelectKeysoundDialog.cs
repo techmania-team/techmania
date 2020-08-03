@@ -96,7 +96,7 @@ public class SelectKeysoundDialog : ModalDialog
         });
 
         // Build available list.
-        string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
+        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
         foreach (string file in Paths.GetAllAudioFiles(folder))
         {
             string filename = new FileInfo(file).Name;

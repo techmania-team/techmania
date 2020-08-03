@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Navigation : MonoBehaviour
+public class EditorNavigation : MonoBehaviour
 {
-    private static Navigation instance;
-    private static Navigation GetInstance()
+    private static EditorNavigation instance;
+    private static EditorNavigation GetInstance()
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<Canvas>().GetComponentInChildren<Navigation>();
+            instance = FindObjectOfType<Canvas>().GetComponentInChildren<EditorNavigation>();
         }
         return instance;
     }
@@ -81,7 +81,7 @@ public class Navigation : MonoBehaviour
 
     public static void SetCurrentTrack(Track track, string path)
     {
-        Navigation instance = GetInstance();
+        EditorNavigation instance = GetInstance();
         instance.currentTrack = track;
         instance.currentTrackPath = path;
         instance.dirty = false;
@@ -106,7 +106,7 @@ public class Navigation : MonoBehaviour
 
     public static Pattern GetCurrentPattern()
     {
-        Navigation instance = GetInstance();
+        EditorNavigation instance = GetInstance();
         return instance.currentTrack.patterns[instance.currentPatternIndex];
     }
 
@@ -114,7 +114,7 @@ public class Navigation : MonoBehaviour
     public static void PrepareForChange()
     {
         // Debug.Log("Cloning in-memory track.");
-        Navigation instance = GetInstance();
+        EditorNavigation instance = GetInstance();
         instance.dirty = true;
         instance.undoStack.Push(instance.currentTrack.Clone() as Track);
         instance.redoStack.Clear();

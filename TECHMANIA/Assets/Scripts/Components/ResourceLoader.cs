@@ -32,7 +32,7 @@ public class ResourceLoader : MonoBehaviour
         loading = true;
         audioClips = new Dictionary<string, AudioClip>();
 
-        string folder = new FileInfo(Navigation.GetCurrentTrackPath()).DirectoryName;
+        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
         foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
         {
             string uri = "file://" + file.Replace('\\', '/');

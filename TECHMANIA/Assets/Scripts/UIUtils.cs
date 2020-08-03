@@ -87,7 +87,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            Navigation.PrepareForChange();
+            EditorNavigation.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
@@ -110,7 +110,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            Navigation.PrepareForChange();
+            EditorNavigation.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
@@ -126,7 +126,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            Navigation.PrepareForChange();
+            EditorNavigation.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
