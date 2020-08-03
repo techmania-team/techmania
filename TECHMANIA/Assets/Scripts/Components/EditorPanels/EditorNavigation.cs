@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EditorNavigation : MonoBehaviour
@@ -147,7 +148,7 @@ public class EditorNavigation : MonoBehaviour
         switch (location)
         {
             case Location.SelectTrack:
-                Debug.LogError("There is no main menu to go to.");
+                SceneManager.LoadScene("Main Menu");
                 break;
             case Location.Track:
                 if (dirty)
