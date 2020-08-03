@@ -35,7 +35,7 @@ public class ResourceLoader : MonoBehaviour
         string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
         foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
         {
-            string uri = "file://" + file.Replace('\\', '/');
+            string uri = Paths.FilePathToUri(file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
                 file, AudioType.WAV);
             yield return request.SendWebRequest();

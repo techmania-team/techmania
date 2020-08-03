@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class UIUtils
 {
+    public const string kNone = "(None)";
+
     // Refreshes the option and value of dropdown so:
     // - The options are the file names (directory stripped) in newOptions
     // - The new value points to the same option as before the call if
@@ -13,7 +15,6 @@ public class UIUtils
     // - No events are fired
     public static void RefreshFilenameDropdown(Dropdown dropdown, List<string> newOptions)
     {
-        const string kNone = "(None)";
         string currentOption = dropdown.options[dropdown.value].text;
         int newValue = 0;
 

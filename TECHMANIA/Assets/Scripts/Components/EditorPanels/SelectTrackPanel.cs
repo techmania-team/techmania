@@ -87,6 +87,14 @@ public class SelectTrackPanel : MonoBehaviour
             trackObject.GetComponentInChildren<Text>().text = textOnObject;
             trackObject.SetActive(true);
 
+            // Load eyecatch image.
+            if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
+            {
+                string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
+                trackObject.GetComponentInChildren<ImageSelfLoader>().LoadImage(
+                    eyecatchPath);
+            }
+
             // Record mapping.
             objectToTrack.Add(trackObject, new TrackInFolder()
             {

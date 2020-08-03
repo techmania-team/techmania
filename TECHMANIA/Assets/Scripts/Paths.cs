@@ -74,5 +74,10 @@ public static class Paths
         return builder.ToString();
     }
 
+    public static string FilePathToUri(string fullPath)
+    {
+        return "file://" + fullPath.Replace('\\', '/');
+    }
+
     public const string kTrackFilename = "track.tech";
 }
