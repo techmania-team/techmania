@@ -43,7 +43,12 @@ public class ResourceLoader : MonoBehaviour
             AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
             if (clip == null)
             {
-                Debug.LogError(request.error);
+                MessageDialog.Show($"Could not load {file}.\n\nDetails:\n{request.error}");
+                yield break;
+            }
+            if (clip.loadState != AudioDataLoadState.Loaded)
+            {
+                MessageDialog.Show($"Could not load {file}.\n\nThe file may be corrupted, or be of an unsupported format.");
                 yield break;
             }
 

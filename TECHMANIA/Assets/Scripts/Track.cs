@@ -108,6 +108,12 @@ public class Pattern
     public List<SoundChannel> soundChannels;
 
     public const int pulsesPerBeat = 240;
+    public const int minLevel = 1;
+    public const int maxLevel = 12;
+    public const double minBpm = 1.0;
+    public const double maxBpm = 1000.0;
+    public const int minBps = 1;
+    public const int maxBps = 128;
 
     public void CreateListsIfNull()
     {

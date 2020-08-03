@@ -254,6 +254,15 @@ public class PatternPanel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isPlaying)
+        {
+            UpdatePlayback();
+        }
+        if (ModalDialog.IsAnyModalDialogActive())
+        {
+            return;
+        }
+
         if (Input.mouseScrollDelta.y != 0)
         {
             if (Input.GetKey(KeyCode.LeftControl) ||
@@ -303,11 +312,6 @@ public class PatternPanel : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Delete))
         {
             DeleteSelection();
-        }
-
-        if (isPlaying)
-        {
-            UpdatePlayback();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -1196,7 +1200,9 @@ public class PatternPanel : MonoBehaviour
         }
 
         int pulse = ScanlinePulse();
-        double bpm = Double.Parse(InputDialog.GetValue());
+        double bpm = double.Parse(InputDialog.GetValue());
+        if (bpm < Pattern.minBpm) bpm = Pattern.minBpm;
+        if (bpm > Pattern.maxBpm) bpm = Pattern.maxBpm;
 
         Navigation.PrepareForChange();
         Navigation.GetCurrentPattern().bpmEvents.Add(new BpmEvent()
@@ -1227,7 +1233,9 @@ public class PatternPanel : MonoBehaviour
             yield break;
         }
 
-        double bpm = Double.Parse(InputDialog.GetValue());
+        double bpm = double.Parse(InputDialog.GetValue());
+        if (bpm < Pattern.minBpm) bpm = Pattern.minBpm;
+        if (bpm > Pattern.maxBpm) bpm = Pattern.maxBpm;
 
         Navigation.PrepareForChange();
         GetBpmEventAtScanline().bpm = bpm;

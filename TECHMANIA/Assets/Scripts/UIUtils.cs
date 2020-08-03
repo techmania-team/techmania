@@ -32,6 +32,48 @@ public class UIUtils
         dropdown.SetValueWithoutNotify(newValue);
     }
 
+    public static void ClampInputField(InputField field, double min, double max)
+    {
+        double value = double.Parse(field.text);
+        bool clamped = false;
+        if (value < min)
+        {
+            clamped = true;
+            value = min;
+        }
+        if (value > max)
+        {
+            clamped = true;
+            value = max;
+        }
+        
+        if (clamped)
+        {
+            field.text = value.ToString();
+        }
+    }
+
+    public static void ClampInputField(InputField field, int min, int max)
+    {
+        int value = int.Parse(field.text);
+        bool clamped = false;
+        if (value < min)
+        {
+            clamped = true;
+            value = min;
+        }
+        if (value > max)
+        {
+            clamped = true;
+            value = max;
+        }
+
+        if (clamped)
+        {
+            field.text = value.ToString();
+        }
+    }
+
     // Update property to be newValue.
     // If the new value is different from the old one,
     // set madeChange to true.

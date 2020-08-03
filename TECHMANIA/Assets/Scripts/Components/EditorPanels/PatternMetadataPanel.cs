@@ -43,6 +43,7 @@ public class PatternMetadataPanel : MonoBehaviour
 
         UIUtils.UpdatePropertyInMemory(ref metadata.patternName,
             nameInput.text, ref madeChange);
+        UIUtils.ClampInputField(level, Pattern.minLevel, Pattern.maxLevel);
         UIUtils.UpdatePropertyInMemory(ref metadata.level,
             level.text, ref madeChange);
 
@@ -62,8 +63,10 @@ public class PatternMetadataPanel : MonoBehaviour
 
         UIUtils.UpdatePropertyInMemory(
             ref metadata.firstBeatOffset, firstBeatOffset.text, ref madeChange);
+        UIUtils.ClampInputField(initialBpm, Pattern.minBpm, Pattern.maxBpm);
         UIUtils.UpdatePropertyInMemory(
             ref metadata.initBpm, initialBpm.text, ref madeChange);
+        UIUtils.ClampInputField(initialBps, Pattern.minBps, Pattern.maxBps);
         UIUtils.UpdatePropertyInMemory(
             ref metadata.bps, initialBps.text, ref madeChange);
 

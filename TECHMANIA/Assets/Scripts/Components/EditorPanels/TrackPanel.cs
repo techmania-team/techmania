@@ -61,8 +61,10 @@ public class TrackPanel : MonoBehaviour
 
         UIUtils.UpdatePropertyInMemoryFromDropdown(
             ref metadata.previewTrack, previewTrack, ref madeChange);
+        UIUtils.ClampInputField(startTime, 0.0, double.MaxValue);
         UIUtils.UpdatePropertyInMemory(ref metadata.previewStartTime,
             startTime.text, ref madeChange);
+        UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
         UIUtils.UpdatePropertyInMemory(ref metadata.previewEndTime,
             endTime.text, ref madeChange);
 
