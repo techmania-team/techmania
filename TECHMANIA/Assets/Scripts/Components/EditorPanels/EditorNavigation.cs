@@ -17,7 +17,7 @@ public class EditorNavigation : MonoBehaviour
         return instance;
     }
 
-    public SelectTrackPanel selectTrackPanel;
+    public EditorSelectTrackPanel selectTrackPanel;
     public TrackPanel trackPanel;
     public ResourcePanel resourcePanel;
     public PatternMetadataPanel patternMetadataPanel;

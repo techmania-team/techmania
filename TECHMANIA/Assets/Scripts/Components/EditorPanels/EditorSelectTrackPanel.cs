@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectTrackPanel : MonoBehaviour
+public class EditorSelectTrackPanel : MonoBehaviour
 {
     public GridLayoutGroup trackGrid;
     public GameObject trackTemplate;
