@@ -25,6 +25,18 @@ public static class Paths
         return tracks;
     }
 
+    private static string GetDataFolder()
+    {
+        return System.Environment.GetFolderPath(
+            System.Environment.SpecialFolder.MyDocuments)
+            + "\\TECHMANIA";
+    }
+
+    public static string GetOptionsFilePath()
+    {
+        return GetDataFolder() + "\\options.json";
+    }
+
     private static List<string> GetAllMatchingFiles(string folder, List<string> patterns)
     {
         List<string> files = new List<string>();
