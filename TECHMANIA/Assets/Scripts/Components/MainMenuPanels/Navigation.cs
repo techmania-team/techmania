@@ -16,6 +16,7 @@ public class Navigation : MonoBehaviour
     }
 
     public MainMenuPanel mainMenuPanel;
+    public OptionsPanel optionsPanel;
 
     public Text backButtonText;
     public Text title;
@@ -32,6 +33,7 @@ public class Navigation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        OptionsPanel.ApplyOptionsOnStartUp();
         InternalGoTo(Location.MainMenu);
     }
 
@@ -75,6 +77,7 @@ public class Navigation : MonoBehaviour
     private void InternalGoTo(Location location)
     {
         mainMenuPanel.gameObject.SetActive(location == Location.MainMenu);
+        optionsPanel.gameObject.SetActive(location == Location.Options);
         this.location = location;
 
         RefreshNavigationPanel();

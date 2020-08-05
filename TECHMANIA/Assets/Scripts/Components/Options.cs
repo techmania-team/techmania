@@ -61,6 +61,21 @@ public class Options : OptionsBase
     public float musicVolume;
     public float keysoundVolume;
 
+    public Options()
+    {
+        version = kVersion;
+
+        width = 0;
+        height = 0;
+        refreshRate = 0;
+        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        vSync = false;
+
+        masterVolume = 1f;
+        musicVolume = 1f;
+        keysoundVolume = 1f;
+    }
+
     public void ApplyGraphicSettings()
     {
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);

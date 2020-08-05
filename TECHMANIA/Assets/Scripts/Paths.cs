@@ -27,9 +27,14 @@ public static class Paths
 
     private static string GetDataFolder()
     {
-        return System.Environment.GetFolderPath(
+        string folder = System.Environment.GetFolderPath(
             System.Environment.SpecialFolder.MyDocuments)
             + "\\TECHMANIA";
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+        return folder;
     }
 
     public static string GetOptionsFilePath()

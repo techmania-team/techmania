@@ -758,7 +758,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 192219797}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ToggleVsync
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &192219797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,6 +938,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenuPanel: {fileID: 2097091041}
+  optionsPanel: {fileID: 1342172743}
   backButtonText: {fileID: 115556579}
   title: {fileID: 49097923}
 --- !u!114 &209235696
@@ -1054,7 +1066,18 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: UIToMemory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &264571002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2019,10 +2042,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -2647,7 +2670,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 965875636}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ModifyResolution
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &965875636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2773,7 +2807,18 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: UIToMemory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1072166927
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,7 +3250,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1208326478}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ModifyResolution
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1208326478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3406,7 +3462,7 @@ GameObject:
   - component: {fileID: 1342172742}
   - component: {fileID: 1342172743}
   m_Layer: 5
-  m_Name: Options Menu
+  m_Name: Options Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3446,6 +3502,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c754492b3cae82c4db74196076cde615, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resolutionDisplay: {fileID: 1575300871}
+  fullscreenModeDisplay: {fileID: 1367417222}
+  vsyncDisplay: {fileID: 174815835}
+  masterVolumeSlider: {fileID: 237601556}
+  musicVolumeSlider: {fileID: 1412787790}
+  keysoundVolumeSlider: {fileID: 971119926}
+  masterAudioGroup: {fileID: 24300002, guid: 298a58fc432ca944bb9e34d1cc2a69f8, type: 2}
+  musicAudioGroup: {fileID: -2864112987103875249, guid: 298a58fc432ca944bb9e34d1cc2a69f8,
+    type: 2}
+  keysoundAudioGroup: {fileID: 4342414930539819087, guid: 298a58fc432ca944bb9e34d1cc2a69f8,
+    type: 2}
 --- !u!1 &1367417220
 GameObject:
   m_ObjectHideFlags: 0
@@ -3695,7 +3762,18 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: UIToMemory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1435942677
 GameObject:
   m_ObjectHideFlags: 0
@@ -3777,7 +3855,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1435942680}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ModifyFullscreenMode
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1435942680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3974,7 +4063,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1463533320}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ToggleVsync
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1463533320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4681,8 +4781,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2097091041}
-        m_MethodName: OnStartButtonClick
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: OnTouchscreenTestButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4810,7 +4910,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1773761489}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: ModifyFullscreenMode
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1773761489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4930,8 +5041,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2097091041}
-        m_MethodName: OnStartButtonClick
+      - m_Target: {fileID: 1342172743}
+        m_MethodName: OnApplyButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
