@@ -17,6 +17,7 @@ public class Navigation : MonoBehaviour
 
     public MainMenuPanel mainMenuPanel;
     public OptionsPanel optionsPanel;
+    public TouchscreenTestPanel touchscreenTestPanel;
 
     public Text backButtonText;
     public Text title;
@@ -78,6 +79,7 @@ public class Navigation : MonoBehaviour
     {
         mainMenuPanel.gameObject.SetActive(location == Location.MainMenu);
         optionsPanel.gameObject.SetActive(location == Location.Options);
+        touchscreenTestPanel.gameObject.SetActive(location == Location.TouchscreenTest);
         this.location = location;
 
         RefreshNavigationPanel();
