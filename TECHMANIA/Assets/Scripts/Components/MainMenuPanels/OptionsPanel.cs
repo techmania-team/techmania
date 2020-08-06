@@ -13,9 +13,7 @@ public class OptionsPanel : MonoBehaviour
     public Slider masterVolumeSlider;
     public Slider musicVolumeSlider;
     public Slider keysoundVolumeSlider;
-    public AudioMixerGroup masterAudioGroup;
-    public AudioMixerGroup musicAudioGroup;
-    public AudioMixerGroup keysoundAudioGroup;
+    public AudioMixer audioMixer;
 
     private Options options;
     private int resolutionIndex;
@@ -94,12 +92,14 @@ public class OptionsPanel : MonoBehaviour
     private float VolumeValueToDb(float volume)
     {
         // TODO: find better equation
-        return 0f - volume * 20f;
+        return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
     }
 
     public void ApplyVolume()
     {
-        // TODO: find out how to apply volume to AudioMixer
+        audioMixer.SetFloat("MasterVolume", VolumeValueToDb(options.masterVolume));
+        audioMixer.SetFloat("MusicVolume", VolumeValueToDb(options.musicVolume));
+        audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(options.keysoundVolume));
     }
 
     public void OnApplyButtonClick()
