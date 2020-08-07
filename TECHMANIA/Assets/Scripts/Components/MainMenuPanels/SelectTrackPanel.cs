@@ -20,6 +20,9 @@ public class SelectTrackPanel : MonoBehaviour
     private void OnEnable()
     {
         Refresh();
+
+        GameSetup.noFail = false;
+        GameSetup.autoPlay = false;
     }
 
     public void Refresh()
@@ -61,9 +64,8 @@ public class SelectTrackPanel : MonoBehaviour
             Track track = trackBase as Track;
 
             // Instantiate track representation.
-            GameObject trackObject = Instantiate(trackTemplate);
+            GameObject trackObject = Instantiate(trackTemplate, trackGrid.transform);
             trackObject.name = "Track Panel";
-            trackObject.transform.SetParent(trackGrid.transform);
             string textOnObject = $"<b>{track.trackMetadata.title}</b>\n" +
                 $"<size=16>{track.trackMetadata.artist}</size>";
             trackObject.GetComponentInChildren<Text>().text = textOnObject;
@@ -95,6 +97,8 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected virtual void OnClickTrackObject(GameObject o)
     {
-        Debug.Log("Clicked: " + o.name);
+        GameSetup.trackPath = $"{objectToTrack[o].folder}\\{Paths.kTrackFilename}";
+        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
+        SelectPatternDialog.Show();
     }
 }
