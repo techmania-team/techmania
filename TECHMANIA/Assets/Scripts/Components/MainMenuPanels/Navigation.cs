@@ -16,6 +16,7 @@ public class Navigation : MonoBehaviour
     }
 
     public MainMenuPanel mainMenuPanel;
+    public SelectTrackPanel selectTrackPanel;
     public OptionsPanel optionsPanel;
     public TouchscreenTestPanel touchscreenTestPanel;
 
@@ -78,6 +79,7 @@ public class Navigation : MonoBehaviour
     private void InternalGoTo(Location location)
     {
         mainMenuPanel.gameObject.SetActive(location == Location.MainMenu);
+        selectTrackPanel.gameObject.SetActive(location == Location.SelectTrack);
         optionsPanel.gameObject.SetActive(location == Location.Options);
         touchscreenTestPanel.gameObject.SetActive(location == Location.TouchscreenTest);
         this.location = location;
