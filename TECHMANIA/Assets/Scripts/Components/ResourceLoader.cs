@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,21 +20,23 @@ public class ResourceLoader : MonoBehaviour
     }
 
     private bool loading;
+    private bool error;
     // Keys do not contain folder.
     private Dictionary<string, AudioClip> audioClips;
 
-    public void LoadResources()
+    public void LoadResources(string trackPath)
     {
-        StartCoroutine(InnerLoadResources());
+        StartCoroutine(InnerLoadResources(trackPath));
     }
 
-    private IEnumerator InnerLoadResources()
+    private IEnumerator InnerLoadResources(string trackPath)
     {
         loading = true;
+        error = false;
         audioClips = new Dictionary<string, AudioClip>();
 
-        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
-        foreach (string file in Directory.EnumerateFiles(folder, "*.wav"))
+        string folder = new FileInfo(trackPath).DirectoryName;
+        foreach (string file in Paths.GetAllAudioFiles(folder))
         {
             string uri = Paths.FilePathToUri(file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
@@ -44,11 +47,13 @@ public class ResourceLoader : MonoBehaviour
             if (clip == null)
             {
                 MessageDialog.Show($"Could not load {file}.\n\nDetails:\n{request.error}");
+                error = true;
                 yield break;
             }
             if (clip.loadState != AudioDataLoadState.Loaded)
             {
                 MessageDialog.Show($"Could not load {file}.\n\nThe file may be corrupted, or be of an unsupported format.");
+                error = true;
                 yield break;
             }
 
@@ -62,6 +67,11 @@ public class ResourceLoader : MonoBehaviour
     public bool LoadComplete()
     {
         return !loading;
+    }
+
+    public bool AnyErrorOccurred()
+    {
+        return error;
     }
 
     public AudioClip GetClip(string filenameWithoutFolder)

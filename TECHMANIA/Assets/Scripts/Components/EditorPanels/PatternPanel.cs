@@ -233,7 +233,7 @@ public class PatternPanel : MonoBehaviour
         isPlaying = false;
 
         // MemoryToUI();
-        resourceLoader.LoadResources();
+        resourceLoader.LoadResources(EditorNavigation.GetCurrentTrackPath());
 
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
