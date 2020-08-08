@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SelectPatternDialog : ModalDialog
@@ -140,7 +141,7 @@ public class SelectPatternDialog : ModalDialog
     public void OnPlayButtonClick()
     {
         GameSetup.pattern = objectToPattern[selectedPatternObject];
-        Debug.LogError("There's no Game scene yet.");
+        SceneManager.LoadScene("Game");
     }
 
     public void OnNoFailToggleChange()

@@ -225,6 +225,7 @@ public class Pattern
         }
     }
 
+    // Works for negative times too.
     public float TimeToPulse(float time)
     {
         float referenceBpm = (float)patternMetadata.initBpm;
@@ -249,6 +250,7 @@ public class Pattern
         return referencePulse + (time - referenceTime) / secondsPerPulse;
     }
 
+    // Works for negative pulses too.
     public float PulseToTime(int pulse)
     {
         float referenceBpm = (float)patternMetadata.initBpm;
