@@ -112,18 +112,7 @@ public class TrackPanel : MonoBehaviour
         RefreshPatternButtons();
 
         // Sort patterns.
-        EditorNavigation.GetCurrentTrack().patterns.Sort((Pattern p1, Pattern p2) =>
-        {
-            if (p1.patternMetadata.controlScheme != p2.patternMetadata.controlScheme)
-            {
-                return (int)p1.patternMetadata.controlScheme -
-                    (int)p2.patternMetadata.controlScheme;
-            }
-            else
-            {
-                return p1.patternMetadata.level - p2.patternMetadata.level;
-            }
-        });
+        EditorNavigation.GetCurrentTrack().SortPatterns();
 
         // Rebuild pattern list.
         for (int i = 0; i < EditorNavigation.GetCurrentTrack().patterns.Count; i++)

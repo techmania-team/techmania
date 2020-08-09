@@ -66,6 +66,22 @@ public class Track : TrackBase
 
     public TrackMetadata trackMetadata;
     public List<Pattern> patterns;
+
+    public void SortPatterns()
+    {
+        patterns.Sort((Pattern p1, Pattern p2) =>
+        {
+            if (p1.patternMetadata.controlScheme != p2.patternMetadata.controlScheme)
+            {
+                return (int)p1.patternMetadata.controlScheme -
+                    (int)p2.patternMetadata.controlScheme;
+            }
+            else
+            {
+                return p1.patternMetadata.level - p2.patternMetadata.level;
+            }
+        });
+    }
 }
 
 [Serializable]

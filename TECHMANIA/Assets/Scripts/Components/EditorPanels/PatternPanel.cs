@@ -892,7 +892,7 @@ public class PatternPanel : MonoBehaviour
     {
         public Note note;
         public string sound;
-        public static NoteWithSound MakeFrom(GameObject o)
+        public static NoteWithSound MakeFromEditorElement(GameObject o)
         {
             EditorElement e = o.GetComponent<EditorElement>();
             return new NoteWithSound()
@@ -924,7 +924,7 @@ public class PatternPanel : MonoBehaviour
         minPulseInClipboard = int.MaxValue;
         foreach (GameObject o in selectedNoteObjects)
         {
-            NoteWithSound n = NoteWithSound.MakeFrom(o);
+            NoteWithSound n = NoteWithSound.MakeFromEditorElement(o);
             if (n.note.pulse < minPulseInClipboard)
             {
                 minPulseInClipboard = n.note.pulse;
