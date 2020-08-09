@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Scan : MonoBehaviour
 {
@@ -18,11 +19,13 @@ public class Scan : MonoBehaviour
     private void OnDestroy()
     {
         Game.ScanChanged -= OnScanChanged;
+        Game.ScanAboutToChange -= OnScanAboutToChange;
     }
 
     public void Initialize()
     {
         Game.ScanChanged += OnScanChanged;
+        Game.ScanAboutToChange += OnScanAboutToChange;
 
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
@@ -53,12 +56,34 @@ public class Scan : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
+        o.SetActive(false);
         noteObjects.Add(o);
+    }
+
+    private void OnScanAboutToChange(int scan)
+    {
+        if (scan == scanNumber)
+        {
+            // Activate.
+            foreach (GameObject o in noteObjects)
+            {
+                o.SetActive(true);
+                o.GetComponent<Image>().color = Color.white;
+            }
+        }
     }
 
     private void OnScanChanged(int scan)
     {
-
+        if (scan == scanNumber - 1)
+        {
+            // Prepare.
+            foreach (GameObject o in noteObjects)
+            {
+                o.SetActive(true);
+                o.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
+            }
+        }
     }
 
     public float FloatPulseToXPosition(float pulse)

@@ -33,6 +33,7 @@ public class Game : MonoBehaviour
 
     public static event UnityAction<float> FloatPulseChanged;
     public static event UnityAction<int> ScanChanged;
+    public static event UnityAction<int> ScanAboutToChange;
 
     private class NoteWithSound
     {
@@ -49,11 +50,18 @@ public class Game : MonoBehaviour
         }
         resourceLoader.LoadResources(GameSetup.trackPath);
 
-        
-
         // And now we wait for the resources to load.
         stopwatch = null;
         StartCoroutine(LoadAndStartGame());
+    }
+
+    // By default -3 / 2 = -1 because reasons. We want -2.
+    // This assumes b is positive.
+    private int RoundingDownIntDivision(int a, int b)
+    {
+        if (a % b == 0) return a / b;
+        if (a >= 0) return a / b;
+        return (a / b) - 1;
     }
 
     // Update is called once per frame
@@ -68,7 +76,7 @@ public class Game : MonoBehaviour
         float newTime = (float)stopwatch.Elapsed.TotalSeconds
             + initialTime;
         float floatPulse = GameSetup.pattern.TimeToPulse(newTime);
-        pulse = Mathf.FloorToInt(floatPulse);
+        int newPulse = Mathf.FloorToInt(floatPulse);
         int newScan = Mathf.FloorToInt(floatPulse / pulsesPerScan);
 
         if (time < 0f && newTime >= 0f)
@@ -78,9 +86,16 @@ public class Game : MonoBehaviour
             backingTrackSource.Play();
         }
         time = newTime;
+        // Fire ScanAboutToChange if we are 7/8 into the next scan.
+        if (RoundingDownIntDivision(pulse + pulsesPerScan / 8, pulsesPerScan) !=
+            RoundingDownIntDivision(newPulse + pulsesPerScan / 8, pulsesPerScan))
+        {
+            ScanAboutToChange?.Invoke(
+                (newPulse + pulsesPerScan / 8) / pulsesPerScan);
+        }
+        pulse = newPulse;
         if (newScan > scan)
         {
-            Debug.Log($"Starting scan {newScan} at {newTime}.");
             ScanChanged?.Invoke(newScan);
         }
         scan = newScan;
@@ -150,9 +165,11 @@ public class Game : MonoBehaviour
             scanObjects.Add(i, s);
         }
 
-        // Create note objects.
-        foreach (NoteWithSound n in sortedNotes)
+        // Create note objects. In reverse order, so earlier notes
+        // are drawn on the top.
+        for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
+            NoteWithSound n = sortedNotes[i];
             int scanOfN = n.note.pulse / pulsesPerScan;
             scanObjects[scanOfN].SpawnNoteObject(notePrefab, n.note, n.sound);
         }
@@ -163,7 +180,6 @@ public class Game : MonoBehaviour
         stopwatch = new Stopwatch();
         stopwatch.Start();
         time = initialTime;
-        Debug.Log($"Starting game at scan {scan}, time {initialTime}.");
 
         // Ensure that a ScanChanged event is fired at the first update.
         scan--;
