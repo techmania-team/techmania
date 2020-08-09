@@ -164,5 +164,8 @@ public class Game : MonoBehaviour
         stopwatch.Start();
         time = initialTime;
         Debug.Log($"Starting game at scan {scan}, time {initialTime}.");
+
+        // Ensure that a ScanChanged event is fired at the first update.
+        scan--;
     }
 }
