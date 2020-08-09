@@ -15,6 +15,8 @@ public class Navigation : MonoBehaviour
         return instance;
     }
 
+    public static bool goToSelectTrackPanelOnStart;
+
     public MainMenuPanel mainMenuPanel;
     public SelectTrackPanel selectTrackPanel;
     public OptionsPanel optionsPanel;
@@ -36,7 +38,13 @@ public class Navigation : MonoBehaviour
     void Start()
     {
         OptionsPanel.ApplyOptionsOnStartUp();
-        InternalGoTo(Location.MainMenu);
+        Location initialLocation = Location.MainMenu;
+        if (goToSelectTrackPanelOnStart)
+        {
+            initialLocation = Location.SelectTrack;
+            goToSelectTrackPanelOnStart = false;
+        }
+        InternalGoTo(initialLocation);
     }
 
     // Update is called once per frame

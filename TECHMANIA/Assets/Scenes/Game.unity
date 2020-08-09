@@ -672,8 +672,9 @@ GameObject:
   - component: {fileID: 264254376}
   - component: {fileID: 264254378}
   - component: {fileID: 264254377}
+  - component: {fileID: 264254379}
   m_Layer: 5
-  m_Name: Pause Menu
+  m_Name: Pause Dialog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -736,6 +737,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264254375}
   m_CullTransparentMesh: 0
+--- !u!114 &264254379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264254375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6b356cc35bcd445b1132048f525a6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolved: 0
 --- !u!1 &313279677
 GameObject:
   m_ObjectHideFlags: 0
@@ -1535,8 +1549,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: OK
+      - m_Target: {fileID: 264254379}
+        m_MethodName: OnRestartButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3643,8 +3657,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: OK
+      - m_Target: {fileID: 264254379}
+        m_MethodName: OnResumeButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4073,8 +4087,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: OK
+      - m_Target: {fileID: 264254379}
+        m_MethodName: OnQuitButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4290,7 +4304,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1950542530}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 589608923}
+        m_MethodName: OnPauseButtonClickOrTouch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1950542530
 MonoBehaviour:
   m_ObjectHideFlags: 0

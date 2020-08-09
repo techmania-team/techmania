@@ -17,8 +17,8 @@ public class Scanline : MonoBehaviour
 
         RectTransform rect = GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0f);
-        rect.anchorMin = new Vector2(0f, 0f);
-        rect.anchorMax = new Vector2(0f, 0f);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
 

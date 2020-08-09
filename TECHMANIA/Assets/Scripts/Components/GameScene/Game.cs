@@ -73,6 +73,16 @@ public class Game : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OnPauseButtonClickOrTouch();
+        }
+
+        UpdateTime();
+    }
+
+    private void UpdateTime()
+    {
         float newTime = (float)stopwatch.Elapsed.TotalSeconds
             + initialTime;
         float floatPulse = GameSetup.pattern.TimeToPulse(newTime);
@@ -183,5 +193,23 @@ public class Game : MonoBehaviour
 
         // Ensure that a ScanChanged event is fired at the first update.
         scan--;
+    }
+
+    public void OnPauseButtonClickOrTouch()
+    {
+        stopwatch.Stop();
+        backingTrackSource.Pause();
+        PauseDialog.Show();
+        StartCoroutine(ResumeGameAfterPauseDialogResolves());
+    }
+
+    private IEnumerator ResumeGameAfterPauseDialogResolves()
+    {
+        yield return new WaitUntil(() =>
+        {
+            return PauseDialog.IsResolved();
+        });
+        stopwatch.Start();
+        backingTrackSource.UnPause();
     }
 }
