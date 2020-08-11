@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -23,15 +24,21 @@ public class Game : MonoBehaviour
     [Header("Prefabs")]
     public GameObject notePrefab;
 
+    public const float kBreakThreshold = 0.15f;
+    public const float kGoodThreshold = 0.08f;
+    public const float kCoolThreshold = 0.06f;
+    public const float kMaxThreshold = 0.04f;
+    public const float kRainbowMaxThreshold = 0.02f;
+
     private Stopwatch stopwatch;
     private float initialTime;
-    private float time;
-    private int pulsesPerScan;
-    private int pulse;
-    private int scan;
+    public static float Time { get; private set; }
+    public static int PulsesPerScan { get; private set; }
+    public static float FloatPulse { get; private set; }
+    public static int Pulse { get; private set; }
+    public static int Scan { get; private set; }
     private int lastScan;
 
-    public static event UnityAction<float> FloatPulseChanged;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
 
@@ -50,9 +57,16 @@ public class Game : MonoBehaviour
         }
         resourceLoader.LoadResources(GameSetup.trackPath);
 
+        NoteObject.NoteResolved += OnNoteResolved;
+
         // And now we wait for the resources to load.
         stopwatch = null;
         StartCoroutine(LoadAndStartGame());
+    }
+
+    private void OnDestroy()
+    {
+        NoteObject.NoteResolved -= OnNoteResolved;
     }
 
     // By default -3 / 2 = -1 because reasons. We want -2.
@@ -85,32 +99,30 @@ public class Game : MonoBehaviour
     {
         float newTime = (float)stopwatch.Elapsed.TotalSeconds
             + initialTime;
-        float floatPulse = GameSetup.pattern.TimeToPulse(newTime);
-        int newPulse = Mathf.FloorToInt(floatPulse);
-        int newScan = Mathf.FloorToInt(floatPulse / pulsesPerScan);
+        FloatPulse = GameSetup.pattern.TimeToPulse(newTime);
+        int newPulse = Mathf.FloorToInt(FloatPulse);
+        int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
 
-        if (time < 0f && newTime >= 0f)
+        if (Time < 0f && newTime >= 0f)
         {
             backingTrackSource.timeSamples = Mathf.FloorToInt(
                 newTime * backingTrackSource.clip.frequency);
             backingTrackSource.Play();
         }
-        time = newTime;
+        Time = newTime;
         // Fire ScanAboutToChange if we are 7/8 into the next scan.
-        if (RoundingDownIntDivision(pulse + pulsesPerScan / 8, pulsesPerScan) !=
-            RoundingDownIntDivision(newPulse + pulsesPerScan / 8, pulsesPerScan))
+        if (RoundingDownIntDivision(Pulse + PulsesPerScan / 8, PulsesPerScan) !=
+            RoundingDownIntDivision(newPulse + PulsesPerScan / 8, PulsesPerScan))
         {
             ScanAboutToChange?.Invoke(
-                (newPulse + pulsesPerScan / 8) / pulsesPerScan);
+                (newPulse + PulsesPerScan / 8) / PulsesPerScan);
         }
-        pulse = newPulse;
-        if (newScan > scan)
+        Pulse = newPulse;
+        if (newScan > Scan)
         {
             ScanChanged?.Invoke(newScan);
         }
-        scan = newScan;
-
-        FloatPulseChanged.Invoke(floatPulse);
+        Scan = newScan;
     }
 
     private IEnumerator LoadAndStartGame()
@@ -122,22 +134,29 @@ public class Game : MonoBehaviour
         // Wait 1 more frame just in case.
         yield return null;
 
+        // Prepare for keyboard input if applicable.
+        if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Keys ||
+            GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.KM)
+        {
+            NoteObject.InitializeKeysForLane();
+        }
+
         // Calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
         GameSetup.pattern.CalculateTimeOfAllNotes();
         initialTime = (float)GameSetup.pattern.patternMetadata
             .firstBeatOffset;
-        pulse = 0;
-        scan = 0;
+        Pulse = 0;
+        Scan = 0;
 
         // Rewind till 1 scan before the backing track starts.
-        pulsesPerScan = Pattern.pulsesPerBeat *
+        PulsesPerScan = Pattern.pulsesPerBeat *
             GameSetup.pattern.patternMetadata.bps;
         while (initialTime >= 0f)
         {
-            scan--;
-            pulse -= pulsesPerScan;
-            initialTime = GameSetup.pattern.PulseToTime(pulse);
+            Scan--;
+            Pulse -= PulsesPerScan;
+            initialTime = GameSetup.pattern.PulseToTime(Pulse);
         }
 
         // Sort all notes by pulse.
@@ -158,11 +177,11 @@ public class Game : MonoBehaviour
             return n1.note.pulse - n2.note.pulse;
         });
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
-            pulsesPerScan;
+            PulsesPerScan;
 
         // Create scan objects.
         Dictionary<int, Scan> scanObjects = new Dictionary<int, Scan>();
-        for (int i = scan; i <= lastScan; i++)
+        for (int i = Scan; i <= lastScan; i++)
         {
             Transform parent = (i % 2 == 0) ? topScanContainer : bottomScanContainer;
             GameObject template = (i % 2 == 0) ? topScanTemplate : bottomScanTemplate;
@@ -180,7 +199,7 @@ public class Game : MonoBehaviour
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
-            int scanOfN = n.note.pulse / pulsesPerScan;
+            int scanOfN = n.note.pulse / PulsesPerScan;
             scanObjects[scanOfN].SpawnNoteObject(notePrefab, n.note, n.sound);
         }
 
@@ -189,10 +208,10 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.backingTrack);
         stopwatch = new Stopwatch();
         stopwatch.Start();
-        time = initialTime;
+        Time = initialTime;
 
         // Ensure that a ScanChanged event is fired at the first update.
-        scan--;
+        Scan--;
     }
 
     public void OnPauseButtonClickOrTouch()
@@ -211,5 +230,18 @@ public class Game : MonoBehaviour
         });
         stopwatch.Start();
         backingTrackSource.UnPause();
+    }
+
+    private void OnNoteResolved(NoteObject n, Judgement judge)
+    {
+        Debug.Log(judge);
+        n.gameObject.SetActive(false);
+
+        if (n.sound != "" && n.sound != UIUtils.kNone)
+        {
+            AudioClip clip = resourceLoader.GetClip(n.sound);
+            keysoundSources[n.note.lane].clip = clip;
+            keysoundSources[n.note.lane].Play();
+        }
     }
 }

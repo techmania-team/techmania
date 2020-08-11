@@ -8,7 +8,6 @@ public class Scanline : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
-    private int pulsesPerScan;
     private Scan scanRef;
 
     public void Initialize(Scan scanRef, float height)
@@ -21,21 +20,11 @@ public class Scanline : MonoBehaviour
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
-
-        pulsesPerScan = Pattern.pulsesPerBeat *
-            GameSetup.pattern.patternMetadata.bps;
-
-        Game.FloatPulseChanged += OnFloatPulseChanged;
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        Game.FloatPulseChanged -= OnFloatPulseChanged;
-    }
-
-    private void OnFloatPulseChanged(float pulse)
-    {
-        float x = scanRef.FloatPulseToXPosition(pulse);
+        float x = scanRef.FloatPulseToXPosition(Game.FloatPulse);
         GetComponent<RectTransform>().anchoredPosition = new Vector2(x, 0f);
     }
 }

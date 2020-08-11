@@ -8,11 +8,10 @@ public class Scan : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
-    public const float kSpaceBeforeScan = 0.15f;
-    public const float kSpaceAfterScan = 0.1f;
-    private int pulsesPerScan;
+    private const float kSpaceBeforeScan = 0.15f;
+    private const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
-    private float height;
+    private float scanHeight;
     private float laneHeight;
     private List<GameObject> noteObjects;
 
@@ -29,15 +28,13 @@ public class Scan : MonoBehaviour
 
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
-        height = rect.height;
-        laneHeight = height * 0.25f;
+        scanHeight = rect.height;
+        laneHeight = scanHeight * 0.25f;
         noteObjects = new List<GameObject>();
-        pulsesPerScan = Pattern.pulsesPerBeat *
-            GameSetup.pattern.patternMetadata.bps;
 
         Scanline scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
-        scanline.Initialize(this, height);
+        scanline.Initialize(this, scanHeight);
     }
 
     public void SpawnNoteObject(GameObject prefab, Note n, string sound)
@@ -48,7 +45,7 @@ public class Scan : MonoBehaviour
         noteObject.sound = sound;
 
         float x = FloatPulseToXPosition((float)n.pulse);
-        float y = height - n.lane * laneHeight;
+        float y = scanHeight - n.lane * laneHeight;
         RectTransform rect = o.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 1f);
         rect.anchorMin = Vector2.zero;
@@ -88,7 +85,8 @@ public class Scan : MonoBehaviour
 
     public float FloatPulseToXPosition(float pulse)
     {
-        float relativeNormalizedScan = pulse / pulsesPerScan - scanNumber;
+        float relativeNormalizedScan = pulse / Game.PulsesPerScan
+            - scanNumber;
         float normalizedX = Mathf.LerpUnclamped(
             kSpaceBeforeScan, 1f - kSpaceAfterScan,
             relativeNormalizedScan);
