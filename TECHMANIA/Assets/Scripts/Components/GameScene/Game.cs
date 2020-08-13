@@ -62,7 +62,7 @@ public class Game : MonoBehaviour
         }
         resourceLoader.LoadResources(GameSetup.trackPath);
 
-        // Input.simulateMouseWithTouches = false;
+        Input.simulateMouseWithTouches = false;
         NoteObject.NoteBreak += OnNoteBreak;
 
         // And now we wait for the resources to load.
