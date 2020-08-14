@@ -155,15 +155,18 @@ public class Game : MonoBehaviour
             scanObjects[scanOfN].SpawnNoteObject(notePrefab, n.note, n.sound);
         }
 
+        // Ensure that a ScanChanged event is fired at the first update.
+        Scan--;
+
+        // Miscellaneous initialization.
+        fingerInLane = new Dictionary<int, int>();
+
         // Play audio and start timer.
         backingTrackSource.clip = resourceLoader.GetClip(
             GameSetup.pattern.patternMetadata.backingTrack);
         stopwatch = new Stopwatch();
         stopwatch.Start();
         Time = initialTime;
-
-        // Ensure that a ScanChanged event is fired at the first update.
-        Scan--;
     }
 
     public static void InitializeKeysForLane()
@@ -269,18 +272,38 @@ public class Game : MonoBehaviour
         UpdateTime();
 
         ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
-        if (scheme == ControlScheme.KM && Input.GetMouseButtonDown(0))
+        if (scheme == ControlScheme.KM)
         {
-            Raycast(Input.mousePosition);
+            if (Input.GetMouseButtonDown(0))
+            {
+                OnFingerDown(0, Input.mousePosition);
+            }
+            else if (Input.GetMouseButton(0))
+            {
+                OnFingerMove(0, Input.mousePosition);
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                OnFingerUp(0);
+            }
         }
         else if (scheme == ControlScheme.Touch)
         {
             for (int i = 0; i < Input.touchCount; i++)
             {
                 Touch t = Input.GetTouch(i);
-                if (t.phase == TouchPhase.Began)
+                switch (t.phase)
                 {
-                    Raycast(t.position);
+                    case TouchPhase.Began:
+                        OnFingerDown(t.fingerId, t.position);
+                        break;
+                    case TouchPhase.Moved:
+                        OnFingerMove(t.fingerId, t.position);
+                        break;
+                    case TouchPhase.Canceled:
+                    case TouchPhase.Ended:
+                        OnFingerUp(t.fingerId);
+                        break;
                 }
             }
         }
@@ -316,7 +339,38 @@ public class Game : MonoBehaviour
         Scan = newScan;
     }
 
-    private void Raycast(Vector2 screenPosition)
+    #region Mouse/Finger Tracking
+    // In the context of mouse/finger tracking, the mouse
+    // cursor is treated as finger #0.
+    private Dictionary<int, int> fingerInLane;
+    private const int kOutsideAllLanes = -1;
+
+    private void OnFingerDown(int finger, Vector2 screenPosition)
+    {
+        List<RaycastResult> results = Raycast(screenPosition);
+        int lane = RaycastResultToLane(results);
+        fingerInLane.Add(finger, lane);
+        ProcessMouseOrFingerDown(results);
+    }
+
+    private void OnFingerMove(int finger, Vector2 screenPosition)
+    {
+        List<RaycastResult> results = Raycast(screenPosition);
+        int lane = RaycastResultToLane(results);
+        if (fingerInLane[finger] != lane)
+        {
+            // Finger moved to new lane. Treat as a down event.
+            ProcessMouseOrFingerDown(results);
+            fingerInLane[finger] = lane;
+        }
+    }
+
+    private void OnFingerUp(int finger)
+    {
+        fingerInLane.Remove(finger);
+    }
+
+    private List<RaycastResult> Raycast(Vector2 screenPosition)
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
         eventData.position = screenPosition;
@@ -324,6 +378,11 @@ public class Game : MonoBehaviour
         List<RaycastResult> results = new List<RaycastResult>();
         raycaster.Raycast(eventData, results);
 
+        return results;
+    }
+
+    private void ProcessMouseOrFingerDown(List<RaycastResult> results)
+    {
         foreach (RaycastResult r in results)
         {
             NoteObject n = r.gameObject.GetComponent<NoteObject>();
@@ -353,6 +412,21 @@ public class Game : MonoBehaviour
             }
         }
     }
+
+    private int RaycastResultToLane(List<RaycastResult> results)
+    {
+        foreach (RaycastResult r in results)
+        {
+            EmptyTouchReceiver receiver = r.gameObject.GetComponent<EmptyTouchReceiver>();
+            if (receiver != null)
+            {
+                return receiver.lane;
+            }
+        }
+
+        return kOutsideAllLanes;
+    }
+    #endregion
 
     private void HitNote(NoteObject n, float timeDifference)
     {
