@@ -10,19 +10,13 @@ public class VFXSpawner : MonoBehaviour
 
     private void SpawnPrefabAt(GameObject prefab, NoteObject note)
     {
-        Transform noteOriginalParent = note.transform.parent;
-        note.transform.parent = transform;
         float size = Scan.laneHeight * 3f;
 
         RectTransform rect = Instantiate(prefab, transform)
             .GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.zero;
-        rect.anchoredPosition = note.GetComponent<RectTransform>().anchoredPosition;
         rect.sizeDelta = new Vector2(size, size);
-
-        note.transform.parent = noteOriginalParent;
+        rect.position = note.transform.position;
     }
 
     public void SpawnExplosionBigAt(NoteObject note)
