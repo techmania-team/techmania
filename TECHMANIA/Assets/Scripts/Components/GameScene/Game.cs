@@ -27,6 +27,9 @@ public class Game : MonoBehaviour
     [Header("Prefabs")]
     public GameObject notePrefab;
 
+    [Header("VFX")]
+    public VFXSpawner vfxSpawner;
+
     public const float kBreakThreshold = 0.15f;
     public const float kGoodThreshold = 0.08f;
     public const float kCoolThreshold = 0.06f;
@@ -448,18 +451,22 @@ public class Game : MonoBehaviour
         if (absDifference <= kRainbowMaxThreshold)
         {
             judgement = Judgement.RainbowMax;
+            vfxSpawner.SpawnExplosionBigAt(n);
         }
         else if (absDifference <= kMaxThreshold)
         {
             judgement = Judgement.Max;
+            vfxSpawner.SpawnExplosionBigAt(n);
         }
         else if (absDifference <= kCoolThreshold)
         {
             judgement = Judgement.Cool;
+            vfxSpawner.SpawnExplosionMediumAt(n);
         }
         else if (absDifference <= kGoodThreshold)
         {
             judgement = Judgement.Good;
+            vfxSpawner.SpawnExplosionSmallAt(n);
         }
         else
         {

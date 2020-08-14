@@ -12,7 +12,7 @@ public class Scan : MonoBehaviour
     private const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
     private float scanHeight;
-    private float laneHeight;
+    public static float laneHeight { get; private set; }
     private List<GameObject> noteObjects;
 
     private void OnDestroy()
@@ -45,9 +45,9 @@ public class Scan : MonoBehaviour
         noteObject.sound = sound;
 
         float x = FloatPulseToXPosition((float)n.pulse);
-        float y = scanHeight - n.lane * laneHeight;
+        float y = scanHeight - (n.lane + 0.5f) * laneHeight;
         RectTransform rect = o.GetComponent<RectTransform>();
-        rect.pivot = new Vector2(0.5f, 1f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(x, y);
