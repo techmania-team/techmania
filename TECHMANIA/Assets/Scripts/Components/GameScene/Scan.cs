@@ -37,7 +37,7 @@ public class Scan : MonoBehaviour
         scanline.Initialize(this, scanHeight);
     }
 
-    public void SpawnNoteObject(GameObject prefab, Note n, string sound)
+    public NoteObject SpawnNoteObject(GameObject prefab, Note n, string sound)
     {
         GameObject o = Instantiate(prefab, transform);
         NoteObject noteObject = o.GetComponent<NoteObject>();
@@ -55,6 +55,8 @@ public class Scan : MonoBehaviour
 
         o.SetActive(false);
         noteObjects.Add(o);
+
+        return noteObject;
     }
 
     private void OnScanAboutToChange(int scan)

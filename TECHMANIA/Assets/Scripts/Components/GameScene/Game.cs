@@ -47,6 +47,9 @@ public class Game : MonoBehaviour
 
     private static List<List<KeyCode>> keysForLane;
 
+    // Each lane is sorted by pulse.
+    private List<LinkedList<NoteObject>> noteObjectsInLane;
+
     private class NoteWithSound
     {
         public Note note;
@@ -148,11 +151,21 @@ public class Game : MonoBehaviour
 
         // Create note objects. In reverse order, so earlier notes
         // are drawn on the top.
+        // Also organize them as linked lists, so empty hits can
+        // play the keysound of upcoming notes.
+        noteObjectsInLane = new List<LinkedList<NoteObject>>();
+        for (int i = 0; i < 4; i++)
+        {
+            noteObjectsInLane.Add(new LinkedList<NoteObject>());
+        }
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
             int scanOfN = n.note.pulse / PulsesPerScan;
-            scanObjects[scanOfN].SpawnNoteObject(notePrefab, n.note, n.sound);
+            NoteObject noteObject = scanObjects[scanOfN]
+                .SpawnNoteObject(notePrefab, n.note, n.sound);
+
+            noteObjectsInLane[n.note.lane].AddFirst(noteObject);
         }
 
         // Ensure that a ScanChanged event is fired at the first update.
@@ -466,7 +479,18 @@ public class Game : MonoBehaviour
 
     private void EmptyHit(int lane)
     {
-        Debug.Log("Empty hit on lane " + lane);
+        // Debug.Log("Empty hit on lane " + lane);
+        if (noteObjectsInLane[lane].Count > 0)
+        {
+            NoteObject upcomingNote = noteObjectsInLane[lane]
+                .First.Value;
+            if (upcomingNote.sound != "" && upcomingNote.sound != UIUtils.kNone)
+            {
+                AudioClip clip = resourceLoader.GetClip(upcomingNote.sound);
+                keysoundSources[lane].clip = clip;
+                keysoundSources[lane].Play();
+            }
+        }
     }
 
     private void OnNoteBreak(NoteObject n)
@@ -478,6 +502,7 @@ public class Game : MonoBehaviour
     private void ResolveNote(NoteObject n, Judgement judgement)
     {
         n.gameObject.SetActive(false);
+        noteObjectsInLane[n.note.lane].Remove(n);
     }
 
     #region Pausing
