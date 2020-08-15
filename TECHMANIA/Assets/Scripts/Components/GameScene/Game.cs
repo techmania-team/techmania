@@ -288,40 +288,53 @@ public class Game : MonoBehaviour
         UpdateTime();
 
         ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
-        if (scheme == ControlScheme.KM)
+        switch (scheme)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                OnFingerDown(0, Input.mousePosition);
-            }
-            else if (Input.GetMouseButton(0))
-            {
-                OnFingerMove(0, Input.mousePosition);
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                OnFingerUp(0);
-            }
-        }
-        else if (scheme == ControlScheme.Touch)
-        {
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                Touch t = Input.GetTouch(i);
-                switch (t.phase)
+            case ControlScheme.Touch:
+                for (int i = 0; i < Input.touchCount; i++)
                 {
-                    case TouchPhase.Began:
-                        OnFingerDown(t.fingerId, t.position);
-                        break;
-                    case TouchPhase.Moved:
-                        OnFingerMove(t.fingerId, t.position);
-                        break;
-                    case TouchPhase.Canceled:
-                    case TouchPhase.Ended:
-                        OnFingerUp(t.fingerId);
-                        break;
+                    Touch t = Input.GetTouch(i);
+                    switch (t.phase)
+                    {
+                        case TouchPhase.Began:
+                            OnFingerDown(t.fingerId, t.position);
+                            break;
+                        case TouchPhase.Moved:
+                            OnFingerMove(t.fingerId, t.position);
+                            break;
+                        case TouchPhase.Canceled:
+                        case TouchPhase.Ended:
+                            OnFingerUp(t.fingerId);
+                            break;
+                    }
                 }
-            }
+                break;
+            case ControlScheme.Keys:
+                for (int lane = 0; lane < 4; lane++)
+                {
+                    foreach (KeyCode key in keysForLane[lane])
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            OnKeyDownOnLane(lane);
+                        }
+                    }
+                }
+                break;
+            case ControlScheme.KM:
+                if (Input.GetMouseButtonDown(0))
+                {
+                    OnFingerDown(0, Input.mousePosition);
+                }
+                else if (Input.GetMouseButton(0))
+                {
+                    OnFingerMove(0, Input.mousePosition);
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    OnFingerUp(0);
+                }
+                break;
         }
     }
 
@@ -441,6 +454,31 @@ public class Game : MonoBehaviour
         }
 
         return kOutsideAllLanes;
+    }
+    #endregion
+
+    #region Keyboard
+    private void OnKeyDownOnLane(int lane)
+    {
+        if (noteObjectsInLane[lane].Count == 0)
+        {
+            EmptyHit(lane);
+            return;
+        }
+        NoteObject earliestNote = noteObjectsInLane[lane].First.Value;
+        float correctTime = earliestNote.note.time;
+        float difference = Time - correctTime;
+        if (Mathf.Abs(difference) > kBreakThreshold)
+        {
+            // The keystroke is too early or too late
+            // for this note. Ignore.
+            EmptyHit(lane);
+        }
+        else
+        {
+            // The keystroke lands on this note.
+            HitNote(earliestNote, difference);
+        }
     }
     #endregion
 
