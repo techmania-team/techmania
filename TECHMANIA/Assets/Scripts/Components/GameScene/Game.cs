@@ -29,6 +29,10 @@ public class Game : MonoBehaviour
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
+    public JudgementText judgementText;
+
+    public static int currentCombo { get; private set; }
+    public static int maxCombo { get; private set; }
 
     public const float kBreakThreshold = 0.15f;
     public const float kGoodThreshold = 0.08f;
@@ -99,7 +103,7 @@ public class Game : MonoBehaviour
             InitializeKeysForLane();
         }
 
-        // Calculations.
+        // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
         GameSetup.pattern.CalculateTimeOfAllNotes();
         initialTime = (float)GameSetup.pattern.patternMetadata
@@ -176,6 +180,8 @@ public class Game : MonoBehaviour
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
+        currentCombo = 0;
+        maxCombo = 0;
 
         // Play audio and start timer.
         backingTrackSource.clip = resourceLoader.GetClip(
@@ -548,6 +554,21 @@ public class Game : MonoBehaviour
     {
         n.gameObject.SetActive(false);
         noteObjectsInLane[n.note.lane].Remove(n);
+
+        if (judgement != Judgement.Miss &&
+            judgement != Judgement.Break)
+        {
+            currentCombo++;
+        }
+        else
+        {
+            currentCombo = 0;
+        }
+        if (currentCombo > maxCombo)
+        {
+            maxCombo = currentCombo;
+        }
+        judgementText.Show(n, judgement);
     }
 
     #region Pausing
