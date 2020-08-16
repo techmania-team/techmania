@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics;  // For stopwatch
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
+using Debug = UnityEngine.Debug;  // Not System.Diagnostics.Debug
 
 public class Game : MonoBehaviour
 {
@@ -31,6 +31,11 @@ public class Game : MonoBehaviour
     public VFXSpawner vfxSpawner;
     public JudgementText judgementText;
 
+    [Header("UI")]
+    public Text scoreText;
+    public Text maxComboText;
+
+    private Score score;
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
 
@@ -74,6 +79,7 @@ public class Game : MonoBehaviour
 
         Input.simulateMouseWithTouches = false;
         NoteObject.NoteBreak += OnNoteBreak;
+        score = new Score();
 
         // And now we wait for the resources to load.
         stopwatch = null;
@@ -182,6 +188,7 @@ public class Game : MonoBehaviour
         fingerInLane = new Dictionary<int, int>();
         currentCombo = 0;
         maxCombo = 0;
+        score.Initialize(sortedNotes.Count);
 
         // Play audio and start timer.
         backingTrackSource.clip = resourceLoader.GetClip(
@@ -292,7 +299,42 @@ public class Game : MonoBehaviour
         }
 
         UpdateTime();
+        HandleInput();
+        UpdateUI();
+    }
 
+    private void UpdateTime()
+    {
+        float newTime = (float)stopwatch.Elapsed.TotalSeconds
+            + initialTime;
+        FloatPulse = GameSetup.pattern.TimeToPulse(newTime);
+        int newPulse = Mathf.FloorToInt(FloatPulse);
+        int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
+
+        if (Time < 0f && newTime >= 0f)
+        {
+            backingTrackSource.timeSamples = Mathf.FloorToInt(
+                newTime * backingTrackSource.clip.frequency);
+            backingTrackSource.Play();
+        }
+        Time = newTime;
+        // Fire ScanAboutToChange if we are 7/8 into the next scan.
+        if (RoundingDownIntDivision(Pulse + PulsesPerScan / 8, PulsesPerScan) !=
+            RoundingDownIntDivision(newPulse + PulsesPerScan / 8, PulsesPerScan))
+        {
+            ScanAboutToChange?.Invoke(
+                (newPulse + PulsesPerScan / 8) / PulsesPerScan);
+        }
+        Pulse = newPulse;
+        if (newScan > Scan)
+        {
+            ScanChanged?.Invoke(newScan);
+        }
+        Scan = newScan;
+    }
+
+    private void HandleInput()
+    {
         ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
         switch (scheme)
         {
@@ -344,34 +386,10 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void UpdateTime()
+    private void UpdateUI()
     {
-        float newTime = (float)stopwatch.Elapsed.TotalSeconds
-            + initialTime;
-        FloatPulse = GameSetup.pattern.TimeToPulse(newTime);
-        int newPulse = Mathf.FloorToInt(FloatPulse);
-        int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
-
-        if (Time < 0f && newTime >= 0f)
-        {
-            backingTrackSource.timeSamples = Mathf.FloorToInt(
-                newTime * backingTrackSource.clip.frequency);
-            backingTrackSource.Play();
-        }
-        Time = newTime;
-        // Fire ScanAboutToChange if we are 7/8 into the next scan.
-        if (RoundingDownIntDivision(Pulse + PulsesPerScan / 8, PulsesPerScan) !=
-            RoundingDownIntDivision(newPulse + PulsesPerScan / 8, PulsesPerScan))
-        {
-            ScanAboutToChange?.Invoke(
-                (newPulse + PulsesPerScan / 8) / PulsesPerScan);
-        }
-        Pulse = newPulse;
-        if (newScan > Scan)
-        {
-            ScanChanged?.Invoke(newScan);
-        }
-        Scan = newScan;
+        scoreText.text = score.CurrentScore().ToString();
+        maxComboText.text = maxCombo.ToString();
     }
 
     #region Mouse/Finger Tracking
@@ -488,6 +506,7 @@ public class Game : MonoBehaviour
     }
     #endregion
 
+    #region Hitting Notes And Empty Hits
     private void HitNote(NoteObject n, float timeDifference)
     {
         Judgement judgement;
@@ -569,7 +588,10 @@ public class Game : MonoBehaviour
             maxCombo = currentCombo;
         }
         judgementText.Show(n, judgement);
+
+        score.LogNote(judgement);
     }
+    #endregion
 
     #region Pausing
     public void OnPauseButtonClickOrTouch()
