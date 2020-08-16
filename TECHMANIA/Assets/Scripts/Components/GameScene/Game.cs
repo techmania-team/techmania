@@ -144,8 +144,18 @@ public class Game : MonoBehaviour
         {
             return n1.note.pulse - n2.note.pulse;
         });
+
+        // Find last scan. Make sure it ends later than the backing
+        // track, so we don't cut the track short.
+        backingTrackSource.clip = resourceLoader.GetClip(
+            GameSetup.pattern.patternMetadata.backingTrack);
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
             PulsesPerScan;
+        while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
+            < backingTrackSource.clip.length)
+        {
+            lastScan++;
+        }
 
         // Create scan objects.
         Dictionary<int, Scan> scanObjects = new Dictionary<int, Scan>();
@@ -191,8 +201,7 @@ public class Game : MonoBehaviour
         score.Initialize(sortedNotes.Count);
 
         // Play audio and start timer.
-        backingTrackSource.clip = resourceLoader.GetClip(
-            GameSetup.pattern.patternMetadata.backingTrack);
+        
         stopwatch = new Stopwatch();
         stopwatch.Start();
         Time = initialTime;
@@ -331,6 +340,11 @@ public class Game : MonoBehaviour
             ScanChanged?.Invoke(newScan);
         }
         Scan = newScan;
+
+        if (Scan > lastScan)
+        {
+            SceneManager.LoadScene("Result");
+        }
     }
 
     private void HandleInput()
@@ -536,7 +550,6 @@ public class Game : MonoBehaviour
             judgement = Judgement.Miss;
         }
 
-        Debug.Log($"Hit note with {judgement}, time difference {timeDifference * 1000f} ms");
         ResolveNote(n, judgement);
 
         if (n.sound != "" && n.sound != UIUtils.kNone)
@@ -565,7 +578,6 @@ public class Game : MonoBehaviour
 
     private void OnNoteBreak(NoteObject n)
     {
-        Debug.Log("Break");
         ResolveNote(n, Judgement.Break);
     }
 
