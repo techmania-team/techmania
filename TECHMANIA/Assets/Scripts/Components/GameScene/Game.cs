@@ -35,7 +35,7 @@ public class Game : MonoBehaviour
     public Text scoreText;
     public Text maxComboText;
 
-    private Score score;
+    public static Score score { get; private set; }
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
 
