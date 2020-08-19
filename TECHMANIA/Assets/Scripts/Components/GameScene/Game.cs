@@ -39,11 +39,11 @@ public class Game : MonoBehaviour
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
 
-    public const float kBreakThreshold = 0.15f;
-    public const float kGoodThreshold = 0.08f;
-    public const float kCoolThreshold = 0.06f;
-    public const float kMaxThreshold = 0.04f;
-    public const float kRainbowMaxThreshold = 0.02f;
+    public const float kBreakThreshold = 0.3f;
+    public const float kGoodThreshold = 0.15f;
+    public const float kCoolThreshold = 0.1f;
+    public const float kMaxThreshold = 0.05f;
+    public const float kRainbowMaxThreshold = 0.03f;
 
     private Stopwatch stopwatch;
     private float initialTime;
