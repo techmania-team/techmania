@@ -15,11 +15,7 @@ Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab 
 * Undecided: online platform for pattern distribution
 
 ## How to play
-Stationary notes appear in 1 of 4 lanes, and a few scanlines scan back and forth across the screen. When a scanline passes the center of a note, do one of the following, according to the chosen control scheme:
-
-* Touch: touch the note.
-* Keys: press one of the keys corresponding to the lane.
-* KM: click the note.
+Refer to the [Wiki](https://github.com/macmillan333/techmania/wiki/How-to-play).
 
 ## Platform
 The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Due to the associated cost, and a lack of hardware, I do not target Android or iOS/iPadOS at the moment.
