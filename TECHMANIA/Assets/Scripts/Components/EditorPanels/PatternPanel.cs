@@ -223,7 +223,6 @@ public class PatternPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        numScans = 4;
         zoom = 100;
         divisionsPerBeat = 2;
         upcomingKeysounds = new List<string>();
@@ -231,6 +230,19 @@ public class PatternPanel : MonoBehaviour
         upcomingKeysoundIndex = 0;
         clipboard = new List<NoteWithSound>();
         isPlaying = false;
+
+        // Calculate initial number of scans.
+        int lastPulse = 0;
+        foreach (SoundChannel c in EditorNavigation.GetCurrentPattern().soundChannels)
+        {
+            foreach (Note n in c.notes)
+            {
+                if (n.pulse > lastPulse) lastPulse = n.pulse;
+            }
+        }
+        int pulsesPerScan = Pattern.pulsesPerBeat *
+            EditorNavigation.GetCurrentPattern().patternMetadata.bps;
+        numScans = lastPulse / pulsesPerScan + 1;
 
         // MemoryToUI();
         resourceLoader.LoadResources(EditorNavigation.GetCurrentTrackPath());
