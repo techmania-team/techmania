@@ -2,7 +2,7 @@
 A work-in-progress, open-source clone of a certain dead rhythm game, written in Unity. I believe this is legal; but I will do whatever I can to avoid any legal issues just in case, including not mentioning the name of the original game I'm cloning.
 
 ## Roadmap and Progress
-Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab for more detailed and more up-to-date information.
+Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab for more detailed and more up-to-date information. Head to [Releases](https://github.com/macmillan333/techmania/releases) to download the released versions.
 
 * Alpha: implement features
   * Alpha 1: minimal features *<-- We are here*
