@@ -5,8 +5,8 @@ A work-in-progress, open-source clone of a certain dead rhythm game, written in 
 Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab for more detailed and more up-to-date information. Head to [Releases](https://github.com/macmillan333/techmania/releases) to download the released versions.
 
 * Alpha: implement features
-  * Alpha 1: minimal features *<-- We are here*
-  * Alpha 2: more basic features
+  * Alpha 1: minimal features *<-- Released*
+  * Alpha 2: more basic features *<-- In progress*
   * Alpha 3: all note types
   * Alpha 4: quality-of-life features
 * Beta: bug fixes and minor improvements
