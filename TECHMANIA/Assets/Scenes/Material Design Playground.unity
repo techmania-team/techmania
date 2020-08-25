@@ -209,12 +209,12 @@ GameObject:
   - component: {fileID: 95712982}
   - component: {fileID: 95712981}
   m_Layer: 5
-  m_Name: Top Label Container
+  m_Name: Mini Label Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &95712980
 RectTransform:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 15, y: 0}
-  m_SizeDelta: {x: 0, y: 2}
+  m_SizeDelta: {x: 68.35, y: 2}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &95712981
 MonoBehaviour:
@@ -270,8 +270,8 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
 --- !u!114 &95712983
@@ -2688,7 +2688,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Label
+  m_text: Text Field
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 153f12d7a8e5ae848971f53d69f67300, type: 2}
   m_sharedMaterial: {fileID: 7794729484294060664, guid: 153f12d7a8e5ae848971f53d69f67300,
@@ -2758,10 +2758,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1753885010}
-    characterCount: 5
+    characterCount: 10
     spriteCount: 0
-    spaceCount: 0
-    wordCount: 1
+    spaceCount: 1
+    wordCount: 2
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -3108,8 +3108,9 @@ GameObject:
   - component: {fileID: 1902092537}
   - component: {fileID: 1902092536}
   - component: {fileID: 1902092535}
+  - component: {fileID: 1902092538}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: Text Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3269,6 +3270,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1902092533}
   m_CullTransparentMesh: 0
+--- !u!114 &1902092538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902092533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5d5d57431be9dd44b0376438dbf5da1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  miniLabelColor: {r: 1, g: 1, b: 1, a: 0.6}
+  labelColor: {r: 1, g: 1, b: 1, a: 0.6}
+  inputTextColor: {r: 1, g: 1, b: 1, a: 0.87058824}
+  disabledColor: {r: 1, g: 1, b: 1, a: 0.38039216}
+  miniLabelObject: {fileID: 95712979}
+  miniLabel: {fileID: 2083500566}
+  label: {fileID: 1753885010}
+  inputText: {fileID: 1444509088}
 --- !u!1 &1973973178
 GameObject:
   m_ObjectHideFlags: 0
@@ -3489,7 +3510,7 @@ GameObject:
   - component: {fileID: 2083500566}
   - component: {fileID: 2083500565}
   m_Layer: 5
-  m_Name: Top Label
+  m_Name: Mini Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3509,10 +3530,10 @@ RectTransform:
   m_Father: {fileID: 95712980}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -1}
+  m_SizeDelta: {x: 68.35, y: 28.81}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &2083500565
 MonoBehaviour:
@@ -3558,7 +3579,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.6}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
