@@ -42,7 +42,10 @@ public class MaterialTextField : MonoBehaviour
                 disabledColor;
         }
         interactable = newInteractable;
+    }
 
+    public void OnValueChanged()
+    {
         bool newEmptyText = text.text == "";
         if (newEmptyText != emptyText)
         {

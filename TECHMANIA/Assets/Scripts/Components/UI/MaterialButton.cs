@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MaterialButton : MonoBehaviour
+public class MaterialButton : MonoBehaviour,
+    ISelectHandler, IDeselectHandler, ISubmitHandler
 {
     public Color textColor;
     public Color disabledTextColor;
@@ -49,18 +50,6 @@ public class MaterialButton : MonoBehaviour
                 buttonColor : disabledButtonColor;
         }
         interactable = newInteractable;
-
-        bool newSelected = (EventSystem.current.currentSelectedGameObject == gameObject);
-        if (newSelected != selected)
-        {
-            selectedOutline.SetActive(newSelected);
-        }
-        selected = newSelected;
-
-        if (selected && Input.GetButtonDown("Submit"))
-        {
-            StartRippleAt(Vector2.zero);
-        }
     }
 
     public void StartRipple(BaseEventData data)
@@ -83,5 +72,25 @@ public class MaterialButton : MonoBehaviour
     {
         rippleRect.anchoredPosition = startPosition;
         rippleAnimator.SetTrigger("Activate");
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        selected = true;
+        selectedOutline.SetActive(selected);
+    }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        selected = false;
+        selectedOutline.SetActive(selected);
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        if (selected)
+        {
+            StartRippleAt(Vector2.zero);
+        }
     }
 }
