@@ -17,7 +17,7 @@ public class MaterialButton : MonoBehaviour,
 
     private Button button;
     private Image buttonImage;
-    private TextMeshProUGUI text;
+    private Graphic buttonContent;
     private RectTransform rippleRect;
     private RectTransform rippleParentRect;
     private Animator rippleAnimator;
@@ -29,8 +29,15 @@ public class MaterialButton : MonoBehaviour,
     {
         button = GetComponent<Button>();
         buttonImage = GetComponent<Image>();
-        text = GetComponentInChildren<TextMeshProUGUI>();
-        text.color = textColor;
+        foreach (Graphic g in GetComponentsInChildren<Graphic>())
+        {
+            if (g.transform != transform)
+            {
+                buttonContent = g;
+                break;
+            }
+        }
+        buttonContent.color = textColor;
         rippleAnimator = GetComponentInChildren<Animator>();
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
@@ -44,7 +51,7 @@ public class MaterialButton : MonoBehaviour,
         bool newInteractable = button.IsInteractable();
         if (newInteractable != interactable)
         {
-            text.color = newInteractable ?
+            buttonContent.color = newInteractable ?
                 textColor : disabledTextColor;
             buttonImage.color = newInteractable ?
                 buttonColor : disabledButtonColor;
