@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// DEPRECATED
 public class Navigation : MonoBehaviour
 {
     private static Navigation instance;

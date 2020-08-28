@@ -27,6 +27,12 @@ public class PanelTransitioner : MonoBehaviour
             Panel.current, to, direction));
     }
 
+    // Approach gets slower as t approaches 1.
+    private float Damp(float from, float to, float t)
+    {
+        return Mathf.Lerp(from, to, Mathf.Pow(t, 0.6f));
+    }
+
     private IEnumerator InternalTransitionTo(Panel from, Panel to,
         TransitionToPanel.Direction direction)
     {
@@ -55,7 +61,7 @@ public class PanelTransitioner : MonoBehaviour
             float progress = time / kLength;
             fromGroup.alpha = 1f - progress;
             fromRect.anchoredPosition = new Vector2(
-                Mathf.SmoothStep(0f, fromRectDestination, progress),
+                Damp(0f, fromRectDestination, progress),
                 0f);
             yield return null;
         }
@@ -69,7 +75,7 @@ public class PanelTransitioner : MonoBehaviour
             float progress = time / kLength;
             toGroup.alpha = progress;
             toRect.anchoredPosition = new Vector2(
-                Mathf.SmoothStep(toRectSource, 0f, progress),
+                Damp(toRectSource, 0f, progress),
                 0f);
             yield return null;
         }

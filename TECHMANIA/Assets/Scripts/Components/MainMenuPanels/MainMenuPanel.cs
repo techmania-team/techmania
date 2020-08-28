@@ -5,18 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuPanel : MonoBehaviour
 {
-    public void OnStartButtonClick()
-    {
-        Navigation.GoTo(Navigation.Location.SelectTrack);
-    }
-
     public void OnEditorButtonClick()
     {
-        SceneManager.LoadScene("Editor");
+        FindObjectOfType<Curtain>().TransitionToScene("Editor");
     }
 
-    public void OnOptionsButtonClick()
+    public void OnQuitButtonClick()
     {
-        Navigation.GoTo(Navigation.Location.Options);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TransitionToPanel : MonoBehaviour, IPointerClickHandler
+public class TransitionToPanel : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
     public Panel target;
     public enum Direction
@@ -13,8 +13,18 @@ public class TransitionToPanel : MonoBehaviour, IPointerClickHandler
     }
     public Direction targetAppearsFrom;
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void Invoke()
     {
         PanelTransitioner.TransitionTo(target, targetAppearsFrom);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Invoke();
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        Invoke();
     }
 }
