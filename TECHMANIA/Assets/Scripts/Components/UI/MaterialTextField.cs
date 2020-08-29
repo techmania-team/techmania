@@ -26,6 +26,7 @@ public class MaterialTextField : MonoBehaviour
         text = GetComponent<TMP_InputField>();
         interactable = true;
         emptyText = true;
+        miniLabelObject.SetActive(false);
     }
 
     // Update is called once per frame
