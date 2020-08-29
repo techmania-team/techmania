@@ -11,6 +11,7 @@ public class Panel : MonoBehaviour
     public static Panel current;
     public Selectable defaultSelectable;
     public TransitionToPanel backButton;
+    private GameObject selectedBeforeDisable;
 
     // Start is called before the first frame update
     void Start()
@@ -20,18 +21,23 @@ public class Panel : MonoBehaviour
 
     private void OnEnable()
     {
-        if (defaultSelectable != null &&
-            EventSystem.current.currentSelectedGameObject == null)
+        if (selectedBeforeDisable != null)
+        {
+            EventSystem.current.SetSelectedGameObject(selectedBeforeDisable);
+        }
+        else if (defaultSelectable != null)
         {
             EventSystem.current.SetSelectedGameObject(defaultSelectable.gameObject);
         }
     }
 
+    private void OnDisable()
+    {
+        selectedBeforeDisable = EventSystem.current.currentSelectedGameObject;
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && backButton != null)
-        {
-            backButton.Invoke();
-        }
+
     }
 }

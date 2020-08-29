@@ -1,50 +1,33 @@
-﻿using SFB;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class TestScript : MonoBehaviour
+public class TestScript : MonoBehaviour, ISubmitHandler, ICancelHandler
 {
     Text text;
+
+    public void OnCancel(BaseEventData eventData)
+    {
+        // Debug.Log("Cancel event received at " + gameObject.name);
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        // Debug.Log("Submit event received at " + gameObject.name);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        text = GetComponent<Text>();
-        Input.simulateMouseWithTouches = false;
-
-        // Use SFB to open/save files.
-        // string[] folders = StandaloneFileBrowser.OpenFolderPanel("", "", multiselect: false);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        string report = "";
-        // Working directory is the project folder when:
-        // - Running in editor
-        // - Running standalone from editor
-        report += $"Working directory: {System.IO.Directory.GetCurrentDirectory()}\n";
-        report += "\n";
-        report += $"Input.mousePresent: {Input.mousePresent}\n";
-        report += $"Input.mousePosition: {Input.mousePosition}\n";
-        report += $"Input.mouseScrollDelta: {Input.mouseScrollDelta}\n";
-        report += $"Mouse button held: left={Input.GetMouseButton(0)}, middle={Input.GetMouseButton(2)}, right={Input.GetMouseButton(1)}\n";
-        report += "\n";
-        report += $"Input.touchSupported: {Input.touchSupported}\n";
-        report += $"Input.touchPressureSupported: {Input.touchPressureSupported}\n";
-        report += $"Input.multiTouchEnabled: {Input.multiTouchEnabled}\n";
-        report += $"Input.stylusTouchSupported: {Input.stylusTouchSupported}\n";
-        report += "\n";
-        report += $"Total touches: {Input.touchCount}\n";
-        report += "\n";
-        for (int i = 0; i < Input.touchCount; i++)
-        {
-            report += $"Touch #{i}:\n";
-            Touch touch = Input.GetTouch(i);
-            report += $"Phase: {touch.phase} Position: {touch.position} Finger ID: {touch.fingerId}\n";
-            report += "\n";
-        }
-        text.text = report;
+        Debug.Log("IsExpanded: " + GetComponent<TMP_Dropdown>().IsExpanded);
     }
 }

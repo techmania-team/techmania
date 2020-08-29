@@ -6,6 +6,19 @@ using UnityEngine.UI;
 
 public class MaterialTextField : MonoBehaviour
 {
+    // These stop BackButtons from responding to the Cancel key.
+    public static bool editingAnyTextField;
+    // Events are processed earlier than components. Without this hack,
+    // when user presses cancel while editing a text field, the text
+    // field will set editingAnyTextField=false, and then BackButton
+    // will think the user is not editing any text field, and respond
+    // to the cancel key.
+    //
+    // With this hack, BackButton can realize that a text field ended
+    // its editing on the same frame user pressed cancel, and thus
+    // will not respond to the cancel key.
+    public static int frameOfLastEndEdit;
+
     public Color miniLabelColor;
     public Color labelColor;
     public Color inputTextColor;
@@ -20,6 +33,12 @@ public class MaterialTextField : MonoBehaviour
     private bool interactable;
     private bool emptyText;
 
+    static MaterialTextField()
+    {
+        editingAnyTextField = false;
+        frameOfLastEndEdit = -1;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +46,17 @@ public class MaterialTextField : MonoBehaviour
         interactable = true;
         emptyText = true;
         miniLabelObject.SetActive(false);
+
+        text.onSelect.AddListener((string s) =>
+        {
+            // Editing automatically starts when a text field gets focus.
+            editingAnyTextField = true;
+        });
+        text.onEndEdit.AddListener((string s) =>
+        {
+            editingAnyTextField = false;
+            frameOfLastEndEdit = Time.frameCount;
+        });
     }
 
     // Update is called once per frame
