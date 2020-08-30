@@ -27,6 +27,7 @@ public class BackButton : MonoBehaviour
             {
                 return;
             }
+            MenuSfx.instance.PlayBackSound();
             GetComponent<TransitionToPanel>()?.Invoke();
         }
     }

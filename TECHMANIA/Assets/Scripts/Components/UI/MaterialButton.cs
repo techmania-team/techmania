@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MaterialButton : MonoBehaviour,
-    ISelectHandler, IDeselectHandler, ISubmitHandler
+    ISelectHandler, IDeselectHandler, ISubmitHandler,
+    IPointerEnterHandler, IPointerDownHandler, IPointerClickHandler
 {
     public Color textColor;
     public Color disabledTextColor;
@@ -23,6 +24,7 @@ public class MaterialButton : MonoBehaviour,
     private Animator rippleAnimator;
     private bool interactable;
     private bool selected;
+    private bool isBackButton;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +45,7 @@ public class MaterialButton : MonoBehaviour,
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
         interactable = true;
         selected = false;
+        isBackButton = GetComponent<BackButton>() != null;
     }
 
     // Update is called once per frame
@@ -59,22 +62,6 @@ public class MaterialButton : MonoBehaviour,
         interactable = newInteractable;
     }
 
-    public void StartRipple(BaseEventData data)
-    {
-        if (!button.IsInteractable())
-        {
-            return;
-        }
-
-        Vector2 pointerPosition = (data as PointerEventData).position;
-        Vector2 rippleStartPosition;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            rippleParentRect, pointerPosition, null, out rippleStartPosition))
-        {
-            StartRippleAt(rippleStartPosition);
-        }
-    }
-
     private void StartRippleAt(Vector2 startPosition)
     {
         rippleRect.anchoredPosition = startPosition;
@@ -85,6 +72,12 @@ public class MaterialButton : MonoBehaviour,
     {
         selected = true;
         selectedOutline.SetActive(selected);
+
+        if (eventData is AxisEventData)
+        {
+            // Only play sound if selected with keyboard navigation.
+            MenuSfx.instance.PlaySelectSound();
+        }
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -98,6 +91,47 @@ public class MaterialButton : MonoBehaviour,
         if (selected)
         {
             StartRippleAt(Vector2.zero);
+            if (isBackButton)
+            {
+                MenuSfx.instance.PlayBackSound();
+            }
+            else
+            {
+                MenuSfx.instance.PlayClickSound();
+            }
+        }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (isBackButton)
+        {
+            MenuSfx.instance.PlayBackSound();
+        }
+        else
+        {
+            MenuSfx.instance.PlayClickSound();
+        }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        MenuSfx.instance.PlaySelectSound();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (!button.IsInteractable())
+        {
+            return;
+        }
+
+        Vector2 pointerPosition = (eventData as PointerEventData).position;
+        Vector2 rippleStartPosition;
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rippleParentRect, pointerPosition, null, out rippleStartPosition))
+        {
+            StartRippleAt(rippleStartPosition);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
-public class MaterialToggle : MonoBehaviour
+public class MaterialToggle : MonoBehaviour,
+    ISelectHandler, ISubmitHandler, IPointerEnterHandler, IPointerClickHandler
 {
     public Image track;
     public Image thumb;
@@ -44,5 +46,29 @@ public class MaterialToggle : MonoBehaviour
             toggle.isOn ? 1f : 0f, 1f);
         thumbRect.pivot = new Vector2(
             toggle.isOn ? 1f : 0f, 0.5f);
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        if (eventData is AxisEventData)
+        {
+            // Only play sound if selected with keyboard navigation.
+            MenuSfx.instance.PlaySelectSound();
+        }
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        MenuSfx.instance.PlayClickSound();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        MenuSfx.instance.PlaySelectSound();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        MenuSfx.instance.PlayClickSound();
     }
 }
