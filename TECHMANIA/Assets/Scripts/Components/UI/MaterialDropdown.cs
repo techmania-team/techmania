@@ -32,13 +32,9 @@ public class MaterialDropdown : MonoBehaviour
         if (expandedOnPreviousFrame != expanded)
         {
             anyDropdownExpanded = expanded;
-            Debug.Log("MaterialDropdown.anyDropdownExpanded is now " +
-                anyDropdownExpanded);
             if (!expanded)
             {
                 frameOfLastCollapse = Time.frameCount;
-                Debug.Log("MaterialDropdown.frameOfLastCollapse is now " +
-                    frameOfLastCollapse);
             }
         }
         expandedOnPreviousFrame = expanded;

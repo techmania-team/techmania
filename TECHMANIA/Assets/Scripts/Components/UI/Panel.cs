@@ -32,7 +32,7 @@ public class Panel : MonoBehaviour
 
     private void OnDisable()
     {
-        selectedBeforeDisable = EventSystem.current.currentSelectedGameObject;
+        selectedBeforeDisable = EventSystem.current?.currentSelectedGameObject;
     }
 
     private void Update()
