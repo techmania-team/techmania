@@ -10,7 +10,6 @@ public class Panel : MonoBehaviour
 {
     public static Panel current;
     public Selectable defaultSelectable;
-    public TransitionToPanel backButton;
     private GameObject selectedBeforeDisable;
 
     // Start is called before the first frame update
