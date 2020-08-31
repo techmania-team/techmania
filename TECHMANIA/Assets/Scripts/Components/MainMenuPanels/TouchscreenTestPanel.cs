@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,7 +48,7 @@ public class TouchscreenTestPanel : MonoBehaviour
                             fingerIndicator, transform);
                         indicator.GetComponent<RectTransform>()
                             .anchoredPosition = TouchPositionToAnchoredPosition(t.position);
-                        indicator.GetComponentInChildren<Text>()
+                        indicator.GetComponentInChildren<TextMeshProUGUI>()
                             .text = "Finger #" + t.fingerId;
                         fingerIdToIndicator.Add(t.fingerId, indicator);
                     }
