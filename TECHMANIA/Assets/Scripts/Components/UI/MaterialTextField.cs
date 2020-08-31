@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MaterialTextField : MonoBehaviour
+public class MaterialTextField : MonoBehaviour,
+    ISelectHandler,
+    IPointerEnterHandler, IPointerClickHandler
 {
     // These stop BackButtons from responding to the Cancel key.
     public static bool editingAnyTextField;
@@ -54,6 +57,8 @@ public class MaterialTextField : MonoBehaviour
         });
         text.onEndEdit.AddListener((string s) =>
         {
+            MenuSfx.instance.PlayClickSound();
+
             editingAnyTextField = false;
             frameOfLastEndEdit = Time.frameCount;
         });
@@ -84,5 +89,24 @@ public class MaterialTextField : MonoBehaviour
             miniLabelObject.SetActive(!newEmptyText);
         }
         emptyText = newEmptyText;
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        if (eventData is AxisEventData)
+        {
+            // Only play sound if selected with keyboard navigation.
+            MenuSfx.instance.PlaySelectSound();
+        }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        MenuSfx.instance.PlaySelectSound();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        MenuSfx.instance.PlayClickSound();
     }
 }

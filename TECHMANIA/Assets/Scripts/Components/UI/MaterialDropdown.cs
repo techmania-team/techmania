@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MaterialDropdown : MonoBehaviour
+public class MaterialDropdown : MonoBehaviour,
+    ISelectHandler, IPointerEnterHandler
 {
     // Refer to comments on MaterialTextField.frameOfEndEdit.
     public static bool anyDropdownExpanded;
@@ -32,11 +34,45 @@ public class MaterialDropdown : MonoBehaviour
         if (expandedOnPreviousFrame != expanded)
         {
             anyDropdownExpanded = expanded;
-            if (!expanded)
+            if (expanded)
             {
-                frameOfLastCollapse = Time.frameCount;
+                OnExpand();
+            }
+            else
+            {
+                OnCollapse();
             }
         }
         expandedOnPreviousFrame = expanded;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!expandedOnPreviousFrame)
+        {
+            // PointerEnter covers all items when the dropdown
+            // is expanded. We don't want that.
+            MenuSfx.instance.PlaySelectSound();
+        }
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        if (eventData is AxisEventData)
+        {
+            // Only play sound if selected with keyboard navigation.
+            MenuSfx.instance.PlaySelectSound();
+        }
+    }
+
+    public void OnExpand()
+    {
+        MenuSfx.instance.PlayClickSound();
+    }
+
+    public void OnCollapse()
+    {
+        MenuSfx.instance.PlayClickSound();
+        frameOfLastCollapse = Time.frameCount;
     }
 }
