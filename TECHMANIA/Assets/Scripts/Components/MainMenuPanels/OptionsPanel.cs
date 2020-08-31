@@ -1,21 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class OptionsPanel : MonoBehaviour
 {
-    public Text resolutionDisplay;
-    public Text fullscreenModeDisplay;
-    public Text vsyncDisplay;
+    public TMP_Dropdown resolutionDropdown;
+    public TMP_Dropdown fullscreenDropdown;
+    public Toggle vSyncToggle;
     public Slider masterVolumeSlider;
     public Slider musicVolumeSlider;
     public Slider keysoundVolumeSlider;
+    public Slider sfxVolumeSlider;
     public AudioMixer audioMixer;
 
     private Options options;
+    // Make a backup of all available resolutions at startup, because
+    // Screen.resolutions may change at runtime. I have no idea why.
+    private List<Resolution> resolutions;
     private int resolutionIndex;
 
     public static void ApplyOptionsOnStartUp()
@@ -40,27 +45,28 @@ public class OptionsPanel : MonoBehaviour
             options = new Options();
         }
 
-        // Find resolutionIndex.
+        // Find all resolutions, as well as resolutionIndex.
+        resolutions = new List<Resolution>();
         resolutionIndex = -1;
         for (int i = 0; i < Screen.resolutions.Length; i++)
         {
             Resolution r = Screen.resolutions[i];
+            resolutions.Add(r);
             if (r.width == options.width &&
                 r.height == options.height &&
                 r.refreshRate == options.refreshRate)
             {
                 resolutionIndex = i;
-                break;
             }
         }
 
         if (resolutionIndex == -1)
         {
             // Restore default resolution.
-            resolutionIndex = Screen.resolutions.Length - 1;
-            options.width = Screen.resolutions[resolutionIndex].width;
-            options.height = Screen.resolutions[resolutionIndex].height;
-            options.refreshRate = Screen.resolutions[resolutionIndex].refreshRate;
+            resolutionIndex = resolutions.Count - 1;
+            options.width = resolutions[resolutionIndex].width;
+            options.height = resolutions[resolutionIndex].height;
+            options.refreshRate = resolutions[resolutionIndex].refreshRate;
         }
     }
 
@@ -72,26 +78,78 @@ public class OptionsPanel : MonoBehaviour
 
     private void MemoryToUI()
     {
-        resolutionDisplay.text = Screen.resolutions[resolutionIndex].ToString();
-        fullscreenModeDisplay.text = options.fullScreenMode.ToString();
-        vsyncDisplay.text = options.vSync ? "Yes" : "No";
+        resolutionDropdown.ClearOptions();
+        foreach (Resolution r in resolutions)
+        {
+            resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(r.ToString()));
+        }
+        if (resolutions.Count > 1)
+        {
+            // I believe there's a bug in TMP_Dropdown 2.1.1:
+            // SetValueWithoutNotify(0) clears the label, even if the
+            // 0-st option is not empty.
+            //
+            // Setting a non-0 value works around it.
+            resolutionDropdown.SetValueWithoutNotify(1);
+        }
+        resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
+
+        fullscreenDropdown.ClearOptions();
+        foreach (FullScreenMode m in System.Enum.GetValues(typeof(FullScreenMode)))
+        {
+            fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(m.ToString()));
+        }
+        fullscreenDropdown.SetValueWithoutNotify(1);
+        fullscreenDropdown.SetValueWithoutNotify((int)options.fullScreenMode);
+
+        vSyncToggle.SetIsOnWithoutNotify(options.vSync);
+
         masterVolumeSlider.SetValueWithoutNotify(options.masterVolume);
         musicVolumeSlider.SetValueWithoutNotify(options.musicVolume);
         keysoundVolumeSlider.SetValueWithoutNotify(options.keysoundVolume);
+        sfxVolumeSlider.SetValueWithoutNotify(options.sfxVolume);
     }
 
-    public void UIToMemory()
+    #region Graphics
+    public void DumpResolutions()
+    {
+        string report = $"Resolutions: (total {resolutions.Count})\n";
+        foreach (Resolution r in resolutions)
+        {
+            report += r.ToString() + "\n";
+        }
+        Debug.Log(report);
+    }
+
+    public void OnGraphicsOptionsUpdated()
+    {
+        resolutionIndex = resolutionDropdown.value;
+        options.width = resolutions[resolutionIndex].width;
+        options.height = resolutions[resolutionIndex].height;
+        options.refreshRate = resolutions[resolutionIndex].refreshRate;
+
+        options.fullScreenMode = (FullScreenMode)fullscreenDropdown.value;
+        options.vSync = vSyncToggle.isOn;
+
+        options.ApplyGraphicSettings();
+        options.SaveToFile(Paths.GetOptionsFilePath());
+    }
+    #endregion
+
+    #region Volume
+    public void OnVolumeOptionsUpdated()
     {
         options.masterVolume = masterVolumeSlider.value;
         options.musicVolume = musicVolumeSlider.value;
         options.keysoundVolume = keysoundVolumeSlider.value;
+        options.sfxVolume = sfxVolumeSlider.value;
 
         ApplyVolume();
+        options.SaveToFile(Paths.GetOptionsFilePath());
     }
 
     private float VolumeValueToDb(float volume)
     {
-        // TODO: find better equation
         return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
     }
 
@@ -100,48 +158,7 @@ public class OptionsPanel : MonoBehaviour
         audioMixer.SetFloat("MasterVolume", VolumeValueToDb(options.masterVolume));
         audioMixer.SetFloat("MusicVolume", VolumeValueToDb(options.musicVolume));
         audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(options.keysoundVolume));
+        audioMixer.SetFloat("SfxVolume", VolumeValueToDb(options.sfxVolume));
     }
-
-    public void OnApplyButtonClick()
-    {
-        options.width = Screen.resolutions[resolutionIndex].width;
-        options.height = Screen.resolutions[resolutionIndex].height;
-        options.refreshRate = Screen.resolutions[resolutionIndex].refreshRate;
-        options.ApplyGraphicSettings();
-        options.SaveToFile(Paths.GetOptionsFilePath());
-    }
-
-    public void OnTouchscreenTestButtonClick()
-    {
-        Navigation.GoTo(Navigation.Location.TouchscreenTest);
-    }
-
-    public void ModifyResolution(int direction)
-    {
-        resolutionIndex += direction;
-        if (resolutionIndex < 0) resolutionIndex += Screen.resolutions.Length;
-        if (resolutionIndex >= Screen.resolutions.Length)
-        {
-            resolutionIndex -= Screen.resolutions.Length;
-        }
-        MemoryToUI();
-    }
-
-    public void ModifyFullscreenMode(int direction)
-    {
-        int modeAsInt = (int)options.fullScreenMode;
-        int numberOfModes = System.Enum.GetValues(typeof(FullScreenMode)).Length;
-        modeAsInt += direction;
-        if (modeAsInt < 0) modeAsInt += numberOfModes;
-        if (modeAsInt >= numberOfModes) modeAsInt -= numberOfModes;
-
-        options.fullScreenMode = (FullScreenMode)modeAsInt;
-        MemoryToUI();
-    }
-
-    public void ToggleVsync()
-    {
-        options.vSync = !options.vSync;
-        MemoryToUI();
-    }
+    #endregion
 }

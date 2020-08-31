@@ -60,6 +60,7 @@ public class Options : OptionsBase
     public float masterVolume;
     public float musicVolume;
     public float keysoundVolume;
+    public float sfxVolume;
 
     public Options()
     {
@@ -74,6 +75,7 @@ public class Options : OptionsBase
         masterVolume = 1f;
         musicVolume = 1f;
         keysoundVolume = 1f;
+        sfxVolume = 1f;
     }
 
     public void ApplyGraphicSettings()
