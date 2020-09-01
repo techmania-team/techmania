@@ -2260,6 +2260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd4e68c091478ce489f9947acf12c3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sfxSource: {fileID: 963091173}
 --- !u!114 &612381308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3269,6 +3270,12 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8111477515770818489, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
     type: 3}
   m_PrefabInstance: {fileID: 921283142}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &963091173 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 7444396662201917479, guid: 4d115738bd294424e9531ad79e1a76b9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1875217456}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &965085611
 GameObject:

@@ -6,15 +6,11 @@ public class MainMenuPanel : MonoBehaviour
 {
     public void OnEditorButtonClick()
     {
-        FindObjectOfType<Curtain>().TransitionToScene("Editor");
+        FindObjectOfType<Curtain>().DrawCurtainThenGoToScene("Editor");
     }
 
     public void OnQuitButtonClick()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        FindObjectOfType<Curtain>().DrawCurtainThenQuit();
     }
 }
