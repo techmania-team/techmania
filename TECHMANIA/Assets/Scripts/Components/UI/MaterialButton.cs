@@ -116,7 +116,10 @@ public class MaterialButton : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        MenuSfx.instance.PlaySelectSound();
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        {
+            MenuSfx.instance.PlaySelectSound();
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)

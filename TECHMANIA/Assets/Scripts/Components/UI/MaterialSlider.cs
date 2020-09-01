@@ -8,7 +8,10 @@ public class MaterialSlider : MonoBehaviour,
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
-        MenuSfx.instance.PlaySelectSound();
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        {
+            MenuSfx.instance.PlaySelectSound();
+        }
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -22,13 +25,10 @@ public class MaterialSlider : MonoBehaviour,
 
     public void OnMove(AxisEventData eventData)
     {
-        if (eventData is AxisEventData)
+        MoveDirection dir = eventData.moveDir;
+        if (dir == MoveDirection.Left || dir == MoveDirection.Right)
         {
-            MoveDirection dir = (eventData as AxisEventData).moveDir;
-            if (dir == MoveDirection.Left || dir == MoveDirection.Right)
-            {
-                MenuSfx.instance.PlaySelectSound();
-            }
+            MenuSfx.instance.PlaySelectSound();
         }
     }
 }

@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
 public class MaterialToggle : MonoBehaviour,
-    ISelectHandler, ISubmitHandler, IPointerEnterHandler, IPointerClickHandler
+    ISelectHandler, ISubmitHandler,
+    IPointerEnterHandler, IPointerClickHandler
 {
     public Image track;
     public Image thumb;
@@ -70,7 +71,10 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        MenuSfx.instance.PlaySelectSound();
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        {
+            MenuSfx.instance.PlaySelectSound();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

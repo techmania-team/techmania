@@ -5,7 +5,7 @@ using UnityEngine;
 public class PanelTransitioner : MonoBehaviour
 {
     private static PanelTransitioner instance;
-    private static bool transitioning;
+    public static bool transitioning { get; private set; }
 
     static PanelTransitioner()
     {

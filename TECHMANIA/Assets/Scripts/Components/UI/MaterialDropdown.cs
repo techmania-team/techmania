@@ -52,7 +52,10 @@ public class MaterialDropdown : MonoBehaviour,
         {
             // PointerEnter covers all items when the dropdown
             // is expanded. We don't want that.
-            MenuSfx.instance.PlaySelectSound();
+            if (eventData.pointerId < 0)
+            {
+                MenuSfx.instance.PlaySelectSound();
+            }
         }
     }
 

@@ -102,7 +102,10 @@ public class MaterialTextField : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        MenuSfx.instance.PlaySelectSound();
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        {
+            MenuSfx.instance.PlaySelectSound();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
