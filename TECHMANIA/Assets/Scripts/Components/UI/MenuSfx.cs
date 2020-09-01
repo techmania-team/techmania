@@ -7,6 +7,7 @@ public class MenuSfx : MonoBehaviour
     public AudioClip select;
     public AudioClip click;
     public AudioClip back;
+    public AudioClip gameStart;
 
     public static MenuSfx instance { get; private set; }
 
@@ -34,6 +35,12 @@ public class MenuSfx : MonoBehaviour
     public void PlayBackSound()
     {
         source.clip = back;
+        source.Play();
+    }
+
+    public void PlayGameStartSound()
+    {
+        source.clip = gameStart;
         source.Play();
     }
 }
