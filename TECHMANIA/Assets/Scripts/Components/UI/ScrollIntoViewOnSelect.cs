@@ -49,8 +49,6 @@ public class ScrollIntoViewOnSelect : MonoBehaviour, ISelectHandler
             scrollRect.verticalNormalizedPosition =
                 (minY - contentMinY) / (contentHeight - viewPortHeight);
         }
-
-        // throw new System.NotImplementedException();
     }
 
     private void GetMinMaxY(RectTransform r, out float minY, out float maxY)
