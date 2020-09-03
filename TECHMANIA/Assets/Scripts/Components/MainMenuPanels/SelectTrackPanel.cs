@@ -75,7 +75,7 @@ public class SelectTrackPanel : MonoBehaviour
             if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
             {
                 string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-                trackObject.GetComponentInChildren<ImageSelfLoader>().LoadImage(
+                trackObject.GetComponentInChildren<EyecatchSelfLoader>().LoadImage(
                     eyecatchPath);
             }
 

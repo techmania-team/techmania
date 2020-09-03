@@ -56,7 +56,7 @@ public class SelectPatternDialog : ModalDialog
         if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
         {
             string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-            eyecatchImage.GetComponent<ImageSelfLoader>().LoadImage(
+            eyecatchImage.GetComponent<EyecatchSelfLoader>().LoadImage(
                 eyecatchPath);
         }
         string textOnObject = $"<b>{track.trackMetadata.title}</b>";
