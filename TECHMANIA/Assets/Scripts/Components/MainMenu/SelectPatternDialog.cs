@@ -1,54 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SelectPatternDialog : ModalDialog
+public class SelectPatternDialog : MonoBehaviour
 {
-    private static SelectPatternDialog instance;
-    private static SelectPatternDialog GetInstance()
-    {
-        if (instance == null)
-        {
-            instance = FindObjectOfType<Canvas>().GetComponentInChildren<SelectPatternDialog>(includeInactive: true);
-        }
-        return instance;
-    }
-
-    public static void Show()
-    {
-        GetInstance().InternalShow();
-    }
-    public static bool IsResolved()
-    {
-        return GetInstance().resolved;
-    }
-
-    public Image eyecatchImage;
-    public Text titleText;
+    public EyecatchSelfLoader eyecatchImage;
+    public TextMeshProUGUI genreText;
+    public TextMeshProUGUI titleText;
+    public TextMeshProUGUI artistText;
     public VerticalLayoutGroup patternList;
     public GameObject patternTemplate;
-    public Toggle noFailToggle;
-    public Toggle autoPlayToggle;
+    public GameObject noPatternText;
+    public Button backButton;
     public Button playButton;
 
     private Dictionary<GameObject, Pattern> objectToPattern;
     private GameObject selectedPatternObject;
 
-    private void Update()
+    public void Show()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            OnBackButtonClick();
-        }
-    }
-
-    private void InternalShow()
-    {
-        resolved = false;
-        gameObject.SetActive(true);
+        GetComponent<Dialog>().FadeIn();
 
         // Show track metadata.
         Track track = GameSetup.track;
@@ -56,20 +32,15 @@ public class SelectPatternDialog : ModalDialog
         if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
         {
             string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-            eyecatchImage.GetComponent<EyecatchSelfLoader>().LoadImage(
-                eyecatchPath);
+            eyecatchImage.LoadImage(eyecatchPath);
         }
-        string textOnObject = $"<b>{track.trackMetadata.title}</b>";
-        if (track.trackMetadata.genre != "")
+        else
         {
-            textOnObject = $"<size=20>{track.trackMetadata.genre}</size>\n"
-                + textOnObject;
+            eyecatchImage.NoImage();
         }
-        if (track.trackMetadata.artist != "")
-        {
-            textOnObject = textOnObject + $"\n<size=20>{track.trackMetadata.artist}</size>";
-        }
-        titleText.text = textOnObject;
+        genreText.text = track.trackMetadata.genre;
+        titleText.text = track.trackMetadata.title;
+        artistText.text = track.trackMetadata.artist;
 
         // Remove all patterns from list, except for template.
         for (int i = 0; i < patternList.transform.childCount; i++)
@@ -82,16 +53,20 @@ public class SelectPatternDialog : ModalDialog
         // Rebuild pattern list.
         objectToPattern = new Dictionary<GameObject, Pattern>();
         selectedPatternObject = null;
+        GameObject firstObject = null;
         foreach (Pattern p in track.patterns)
         {
             // Instantiate pattern representation.
             GameObject patternObject = Instantiate(patternTemplate, patternList.transform);
-            patternObject.name = "Pattern";
-            string displayName = $"{p.patternMetadata.controlScheme} / " +
-                $"{p.patternMetadata.level} / " +
-                $"{p.patternMetadata.patternName}";
-            patternObject.GetComponentInChildren<Text>().text = displayName;
+            patternObject.name = "Pattern Radio Button";
+            patternObject.GetComponent<PatternRadioButton>().Initialize(
+                p.patternMetadata);
             patternObject.SetActive(true);
+            if (firstObject == null)
+            {
+                firstObject = patternObject;
+                EventSystem.current.SetSelectedGameObject(firstObject);
+            }
 
             // Record mapping.
             objectToPattern.Add(patternObject, p);
@@ -104,9 +79,12 @@ public class SelectPatternDialog : ModalDialog
         }
 
         // Other UI elements.
-        noFailToggle.SetIsOnWithoutNotify(GameSetup.noFail);
-        autoPlayToggle.SetIsOnWithoutNotify(GameSetup.autoPlay);
         RefreshPlayButton();
+        noPatternText.SetActive(objectToPattern.Count == 0);
+        if (firstObject == null)
+        {
+            EventSystem.current.SetSelectedGameObject(backButton.gameObject);
+        }
     }
 
     private void RefreshPlayButton()
@@ -118,7 +96,7 @@ public class SelectPatternDialog : ModalDialog
     {
         if (selectedPatternObject != null)
         {
-            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(false);
+            selectedPatternObject.GetComponent<MaterialRadioButton>().SetIsOn(false);
         }
         if (!objectToPattern.ContainsKey(o))
         {
@@ -127,30 +105,14 @@ public class SelectPatternDialog : ModalDialog
         else
         {
             selectedPatternObject = o;
-            selectedPatternObject.transform.Find("Selection").gameObject.SetActive(true);
+            selectedPatternObject.GetComponent<MaterialRadioButton>().SetIsOn(true);
         }
         RefreshPlayButton();
-    }
-
-    public void OnBackButtonClick()
-    {
-        resolved = true;
-        gameObject.SetActive(false);
     }
 
     public void OnPlayButtonClick()
     {
         GameSetup.pattern = objectToPattern[selectedPatternObject];
-        SceneManager.LoadScene("Game");
-    }
-
-    public void OnNoFailToggleChange()
-    {
-        GameSetup.noFail = noFailToggle.isOn;
-    }
-
-    public void OnAutoPlayToggleChange()
-    {
-        GameSetup.autoPlay = autoPlayToggle.isOn;
+        FindObjectOfType<Curtain>().DrawCurtainThenGoToScene("Game");
     }
 }

@@ -20,27 +20,30 @@ public class MenuSfx : MonoBehaviour
         source = GetComponent<AudioSource>();
     }
 
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip == null) return;
+        source.clip = clip;
+        source.Play();
+    }
+
     public void PlaySelectSound()
     {
-        source.clip = select;
-        source.Play();
+        PlaySound(select);
     }
 
     public void PlayClickSound()
     {
-        source.clip = click;
-        source.Play();
+        PlaySound(click);
     }
 
     public void PlayBackSound()
     {
-        source.clip = back;
-        source.Play();
+        PlaySound(back);
     }
 
     public void PlayGameStartSound()
     {
-        source.clip = gameStart;
-        source.Play();
+        PlaySound(gameStart);
     }
 }

@@ -9,17 +9,19 @@ public class Panel : MonoBehaviour
 {
     public static Panel current;
     public Selectable defaultSelectable;
+    [Tooltip("Set to true if the panel reconstructs objects on enable.")]
     public bool restoreSelectableOnEnable;
     private GameObject selectedBeforeDisable;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (current == null) current = this;
+        selectedBeforeDisable = null;
     }
 
     private void OnEnable()
     {
+        current = this;
         if (restoreSelectableOnEnable && selectedBeforeDisable != null)
         {
             EventSystem.current.SetSelectedGameObject(selectedBeforeDisable);
@@ -36,10 +38,5 @@ public class Panel : MonoBehaviour
         {
             selectedBeforeDisable = EventSystem.current?.currentSelectedGameObject;
         }
-    }
-
-    private void Update()
-    {
-
     }
 }

@@ -11,6 +11,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject noTrackText;
+    public SelectPatternDialog selectPatternDialog;
 
     protected class TrackInFolder
     {
@@ -101,6 +102,6 @@ public class SelectTrackPanel : MonoBehaviour
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
         GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
-        SelectPatternDialog.Show();
+        selectPatternDialog.Show();
     }
 }

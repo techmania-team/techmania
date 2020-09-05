@@ -28,7 +28,6 @@ public class MaterialCard : MonoBehaviour,
         rippleAnimator = GetComponentInChildren<Animator>();
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
-        selected = false;
     }
 
     // Update is called once per frame
@@ -63,11 +62,8 @@ public class MaterialCard : MonoBehaviour,
 
     public void OnSubmit(BaseEventData eventData)
     {
-        if (selected)
-        {
-            StartRippleAt(Vector2.zero);
-            MenuSfx.instance.PlayClickSound();
-        }
+        StartRippleAt(Vector2.zero);
+        MenuSfx.instance.PlayClickSound();
     }
 
     public void OnPointerClick(PointerEventData eventData)

@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Panel transition code is intentionally outside of panels, so that:
+// * we can have a singleton;
+// * coroutines don't stop when a panel is diabled.
+//
+// In contrast, dialog transition is done by itself, because it only
+// needs to manipulate itself.
 public class PanelTransitioner : MonoBehaviour
 {
     private static PanelTransitioner instance;
@@ -28,7 +34,7 @@ public class PanelTransitioner : MonoBehaviour
     }
 
     // Approach gets slower as t approaches 1.
-    private float Damp(float from, float to, float t)
+    public static float Damp(float from, float to, float t)
     {
         return Mathf.Lerp(from, to, Mathf.Pow(t, 0.6f));
     }
@@ -37,6 +43,7 @@ public class PanelTransitioner : MonoBehaviour
         TransitionToPanel.Direction direction)
     {
         transitioning = true;
+
         CanvasGroup fromGroup = from.GetComponent<CanvasGroup>();
         RectTransform fromRect = from.GetComponent<RectTransform>();
         CanvasGroup toGroup = to.GetComponent<CanvasGroup>();
@@ -83,6 +90,5 @@ public class PanelTransitioner : MonoBehaviour
         toRect.anchoredPosition = Vector2.zero;
 
         transitioning = false;
-        Panel.current = to;
     }
 }

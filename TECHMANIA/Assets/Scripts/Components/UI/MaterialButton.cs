@@ -15,6 +15,8 @@ public class MaterialButton : MonoBehaviour,
     public Color disabledButtonColor;
 
     public GameObject selectedOutline;
+    public bool useClickSoundOverride;
+    public AudioClip clickSoundOverride;
 
     private Button button;
     private Image buttonImage;
@@ -44,7 +46,6 @@ public class MaterialButton : MonoBehaviour,
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
         interactable = true;
-        selected = false;
         isBackButton = GetComponent<BackButton>() != null;
     }
 
@@ -88,22 +89,32 @@ public class MaterialButton : MonoBehaviour,
 
     public void OnSubmit(BaseEventData eventData)
     {
-        if (selected)
+        StartRippleAt(Vector2.zero);
+
+        if (useClickSoundOverride)
         {
-            StartRippleAt(Vector2.zero);
-            if (isBackButton)
-            {
-                MenuSfx.instance.PlayBackSound();
-            }
-            else
-            {
-                MenuSfx.instance.PlayClickSound();
-            }
+            MenuSfx.instance.PlaySound(clickSoundOverride);
+            return;
+        }
+
+        if (isBackButton)
+        {
+            MenuSfx.instance.PlayBackSound();
+        }
+        else
+        {
+            MenuSfx.instance.PlayClickSound();
         }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (useClickSoundOverride)
+        {
+            MenuSfx.instance.PlaySound(clickSoundOverride);
+            return;
+        }
+
         if (isBackButton)
         {
             MenuSfx.instance.PlayBackSound();
@@ -118,7 +129,10 @@ public class MaterialButton : MonoBehaviour,
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData))
         {
-            MenuSfx.instance.PlaySelectSound();
+            if (interactable)
+            {
+                MenuSfx.instance.PlaySelectSound();
+            }
         }
     }
 
