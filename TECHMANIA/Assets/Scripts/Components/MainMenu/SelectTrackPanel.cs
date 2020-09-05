@@ -3,40 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SelectTrackPanel : MonoBehaviour
 {
     public GridLayoutGroup trackGrid;
-    public GameObject trackTemplate;
+    public GameObject trackCardTemplate;
+    public GameObject noTrackText;
 
     protected class TrackInFolder
     {
         public string folder;
         public Track track;
     }
-    protected Dictionary<GameObject, TrackInFolder> objectToTrack;
+    protected Dictionary<GameObject, TrackInFolder> cardToTrack;
 
     private void OnEnable()
     {
         Refresh();
-
-        GameSetup.noFail = false;
-        GameSetup.autoPlay = false;
     }
 
     public void Refresh()
     {
-        // Remove all tracks from grid, except for template.
+        // Remove all objects from grid, except for template.
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
-            GameObject track = trackGrid.transform.GetChild(i).gameObject;
-            if (track == trackTemplate) continue;
-            Destroy(track);
+            GameObject o = trackGrid.transform.GetChild(i).gameObject;
+            if (o == trackCardTemplate) continue;
+            Destroy(o);
         }
 
         // Rebuild track list.
-        objectToTrack = new Dictionary<GameObject, TrackInFolder>();
+        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
+        GameObject firstCard = null;
         foreach (string dir in Directory.EnumerateDirectories(
             Paths.GetTrackFolder()))
         {
@@ -63,41 +63,43 @@ public class SelectTrackPanel : MonoBehaviour
             }
             Track track = trackBase as Track;
 
-            // Instantiate track representation.
-            GameObject trackObject = Instantiate(trackTemplate, trackGrid.transform);
-            trackObject.name = "Track Panel";
-            string textOnObject = $"<b>{track.trackMetadata.title}</b>\n" +
-                $"<size=16>{track.trackMetadata.artist}</size>";
-            trackObject.GetComponentInChildren<Text>().text = textOnObject;
-            trackObject.SetActive(true);
-
-            // Load eyecatch image.
+            // Instantiate card.
+            GameObject card = Instantiate(trackCardTemplate, trackGrid.transform);
+            card.name = "Track Card";
+            string eyecatchPath = "";
             if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
             {
-                string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-                trackObject.GetComponentInChildren<EyecatchSelfLoader>().LoadImage(
-                    eyecatchPath);
+                eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
+            }
+            card.SetActive(true);
+            card.GetComponent<TrackCard>().Initialize(
+                eyecatchPath, track.trackMetadata.title, track.trackMetadata.artist);
+            if (firstCard == null)
+            {
+                firstCard = card;
+                EventSystem.current.SetSelectedGameObject(firstCard);
             }
 
             // Record mapping.
-            objectToTrack.Add(trackObject, new TrackInFolder()
+            cardToTrack.Add(card, new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
 
             // Bind click event.
-            // TODO: double click to open?
-            trackObject.GetComponent<Button>().onClick.AddListener(() =>
+            card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickTrackObject(trackObject);
+                OnClickCard(card);
             });
         }
+
+        noTrackText.SetActive(cardToTrack.Count == 0);
     }
 
-    protected virtual void OnClickTrackObject(GameObject o)
+    protected virtual void OnClickCard(GameObject o)
     {
-        GameSetup.trackPath = $"{objectToTrack[o].folder}\\{Paths.kTrackFilename}";
+        GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
         GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
         SelectPatternDialog.Show();
     }

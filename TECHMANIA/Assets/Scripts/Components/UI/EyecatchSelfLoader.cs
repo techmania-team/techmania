@@ -10,14 +10,6 @@ public class EyecatchSelfLoader : MonoBehaviour
     public GameObject progressIndicator;
     public GameObject noImageIndicator;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        image.gameObject.SetActive(false);
-        progressIndicator.SetActive(true);
-        noImageIndicator.SetActive(false);
-    }
-
     public void LoadImage(string fullPath)
     {
         StartCoroutine(InnerLoadImage(fullPath));

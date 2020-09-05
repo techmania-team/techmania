@@ -26,13 +26,13 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         openButton.interactable = selectedTrackObject != null;
     }
 
-    protected override void OnClickTrackObject(GameObject trackObject)
+    protected override void OnClickCard(GameObject trackObject)
     {
         if (selectedTrackObject != null)
         {
             selectedTrackObject.transform.Find("Selection").gameObject.SetActive(false);
         }
-        if (!objectToTrack.ContainsKey(trackObject))
+        if (!cardToTrack.ContainsKey(trackObject))
         {
             selectedTrackObject = null;
         }
@@ -101,7 +101,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
     private IEnumerator InternalDelete()
     {
-        TrackInFolder trackInFolder = objectToTrack[selectedTrackObject];
+        TrackInFolder trackInFolder = cardToTrack[selectedTrackObject];
         string title = trackInFolder.track.trackMetadata.title;
         string path = trackInFolder.folder;
         ConfirmDialog.Show($"Deleting {title}. This will permanently " +
@@ -132,7 +132,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         // Reload track from disk, just in case.
         try
         {
-            string path = $"{objectToTrack[selectedTrackObject].folder}\\{Paths.kTrackFilename}";
+            string path = $"{cardToTrack[selectedTrackObject].folder}\\{Paths.kTrackFilename}";
             Track track = TrackBase.LoadFromFile(path) as Track;
             EditorNavigation.SetCurrentTrack(track, path);
         }

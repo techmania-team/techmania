@@ -9,6 +9,7 @@ public class Panel : MonoBehaviour
 {
     public static Panel current;
     public Selectable defaultSelectable;
+    public bool restoreSelectableOnEnable;
     private GameObject selectedBeforeDisable;
 
     // Start is called before the first frame update
@@ -19,7 +20,7 @@ public class Panel : MonoBehaviour
 
     private void OnEnable()
     {
-        if (selectedBeforeDisable != null)
+        if (restoreSelectableOnEnable && selectedBeforeDisable != null)
         {
             EventSystem.current.SetSelectedGameObject(selectedBeforeDisable);
         }
@@ -31,7 +32,10 @@ public class Panel : MonoBehaviour
 
     private void OnDisable()
     {
-        selectedBeforeDisable = EventSystem.current?.currentSelectedGameObject;
+        if (restoreSelectableOnEnable)
+        {
+            selectedBeforeDisable = EventSystem.current?.currentSelectedGameObject;
+        }
     }
 
     private void Update()

@@ -39,25 +39,24 @@ public class ScrollingText : MonoBehaviour
 
     private IEnumerator Scroll()
     {
-        const float kUnitPerSecond = 300f;
-        float length = textWidth / kUnitPerSecond;
+        const float kScrollTime = 2f;
         const float kWaitTime = 2f;
 
         while (true)
         {
             ScrollTo(0f);
             yield return new WaitForSeconds(kWaitTime);
-            for (float time = 0; time < length; time += Time.deltaTime)
+            for (float time = 0; time < kScrollTime; time += Time.deltaTime)
             {
-                float progress = time / length;
+                float progress = time / kScrollTime;
                 ScrollTo(progress);
                 yield return null;
             }
             ScrollTo(1f);
             yield return new WaitForSeconds(kWaitTime);
-            for (float time = 0; time < length; time += Time.deltaTime)
+            for (float time = 0; time < kScrollTime; time += Time.deltaTime)
             {
-                float progress = 1f - time / length;
+                float progress = 1f - time / kScrollTime;
                 ScrollTo(progress);
                 yield return null;
             }
