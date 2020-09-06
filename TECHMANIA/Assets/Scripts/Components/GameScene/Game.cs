@@ -33,6 +33,8 @@ public class Game : MonoBehaviour
     public JudgementText judgementText;
 
     [Header("UI")]
+    public GameObject topBar;
+    public GameObject middleFeverBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public Dialog pauseDialog;
@@ -49,6 +51,7 @@ public class Game : MonoBehaviour
 
     private Stopwatch stopwatch;
     private float initialTime;
+    private bool loading;
     public static float Time { get; private set; }
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
@@ -82,6 +85,9 @@ public class Game : MonoBehaviour
         Input.simulateMouseWithTouches = false;
         NoteObject.NoteBreak += OnNoteBreak;
         score = new Score();
+        loading = true;
+        topBar.SetActive(false);
+        middleFeverBar.SetActive(false);
 
         // And now we wait for the resources to load.
         stopwatch = null;
@@ -207,6 +213,11 @@ public class Game : MonoBehaviour
         stopwatch = new Stopwatch();
         stopwatch.Start();
         Time = initialTime;
+
+        // Loading complete.
+        loading = false;
+        topBar.SetActive(true);
+        middleFeverBar.SetActive(true);
     }
 
     public static void InitializeKeysForLane()
@@ -295,6 +306,7 @@ public class Game : MonoBehaviour
         return (a / b) - 1;
     }
 
+    #region Update
     // Update is called once per frame
     void Update()
     {
@@ -304,7 +316,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        if (!IsPaused() && Input.GetKeyDown(KeyCode.Escape))
+        if (!IsPaused() && !loading && Input.GetKeyDown(KeyCode.Escape))
         {
             OnPauseButtonClickOrTouch();
         }
@@ -412,6 +424,7 @@ public class Game : MonoBehaviour
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
     }
+    #endregion
 
     #region Mouse/Finger Tracking
     // In the context of mouse/finger tracking, the mouse
