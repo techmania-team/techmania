@@ -423,7 +423,24 @@ public class Game : MonoBehaviour
     {
         List<RaycastResult> results = Raycast(screenPosition);
         int lane = RaycastResultToLane(results);
-        fingerInLane.Add(finger, lane);
+        if (fingerInLane.ContainsKey(finger) &&
+            fingerInLane[finger] == kOutsideAllLanes)
+        {
+            // Special case: when player clicks the pause button,
+            // we receive a FingerDown but no FingerUp, because
+            // events are not processed during pause. When user
+            // resumes game later, the first FingerDown will
+            // result in an error because the finger is already
+            // down.
+            //
+            // To work around that, we suppress this error if
+            // the finger is previously in lane -1.
+            fingerInLane[finger] = lane;
+        }
+        else
+        {
+            fingerInLane.Add(finger, lane);
+        }
         ProcessMouseOrFingerDown(results);
     }
 
