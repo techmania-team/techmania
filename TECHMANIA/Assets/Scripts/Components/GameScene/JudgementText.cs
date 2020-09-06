@@ -1,19 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class JudgementText : MonoBehaviour
 {
+    public Texture rainbowTexture;
+    public Color maxColor;
+    public Color feverMaxColor;
+    public Color coolColor;
+    public Color goodColor;
+    public Color missColor;
+    public Color breakColor;
+
     private const float kStayTime = 2f;
     private float remainingTime;
-    private Text text;
+    private TextMeshProUGUI text;
 
     // Start is called before the first frame update
     void Start()
     {
-        text = GetComponentInChildren<Text>();
+        text = GetComponentInChildren<TextMeshProUGUI>();
         text.text = "";
     }
 
@@ -50,46 +59,37 @@ public class JudgementText : MonoBehaviour
         {
             display += " " + Game.currentCombo;
         }
+
         if (judgement == Judgement.RainbowMax)
         {
-            display = MakeRainbowText(display);
+            // https://forum.unity.com/threads/change-textmesh-pro-face-texture-with-script.679912/
+            text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,
+                rainbowTexture);
+            text.color = Color.white;
+        }
+        else
+        {
+            text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,
+                null);
+            switch (judgement)
+            {
+                case Judgement.Max:
+                    text.color = maxColor;
+                    break;
+                case Judgement.Cool:
+                    text.color = coolColor;
+                    break;
+                case Judgement.Good:
+                    text.color = goodColor;
+                    break;
+                case Judgement.Miss:
+                    text.color = missColor;
+                    break;
+                case Judgement.Break:
+                    text.color = breakColor;
+                    break;
+            }
         }
         text.text = display;
-
-        switch (judgement)
-        {
-            case Judgement.Max:
-                text.color = Color.green;
-                break;
-            case Judgement.Cool:
-                text.color = Color.magenta;
-                break;
-            case Judgement.Good:
-                text.color = Color.blue;
-                break;
-            case Judgement.Miss:
-                text.color = new Color(0.5f, 0f, 0.5f);
-                break;
-            case Judgement.Break:
-                text.color = Color.red;
-                break;
-        }
-    }
-
-    private string MakeRainbowText(string original)
-    {
-        StringBuilder builder = new StringBuilder();
-        List<string> colorNames = new List<string>()
-        {
-            "red",
-            "green",
-            "blue"
-        };
-        for (int i = 0; i < original.Length; i++)
-        {
-            string c = colorNames[i % colorNames.Count];
-            builder.Append($"<color={c}>{original[i]}</color>");
-        }
-        return builder.ToString();
     }
 }
