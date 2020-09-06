@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;  // For stopwatch
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -32,8 +33,9 @@ public class Game : MonoBehaviour
     public JudgementText judgementText;
 
     [Header("UI")]
-    public Text scoreText;
-    public Text maxComboText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI maxComboText;
+    public Dialog pauseDialog;
 
     public static Score score { get; private set; }
     public static int currentCombo { get; private set; }
@@ -302,7 +304,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!IsPaused() && Input.GetKeyDown(KeyCode.Escape))
         {
             OnPauseButtonClickOrTouch();
         }
@@ -343,12 +345,17 @@ public class Game : MonoBehaviour
 
         if (Scan > lastScan)
         {
-            SceneManager.LoadScene("Result");
+            Curtain.DrawCurtainThenGoToScene("Result");
         }
     }
 
     private void HandleInput()
     {
+        if (IsPaused())
+        {
+            return;
+        }
+
         ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
         switch (scheme)
         {
@@ -606,11 +613,17 @@ public class Game : MonoBehaviour
     #endregion
 
     #region Pausing
+    public bool IsPaused()
+    {
+        return pauseDialog.gameObject.activeSelf;
+    }
+
     public void OnPauseButtonClickOrTouch()
     {
         stopwatch.Stop();
         backingTrackSource.Pause();
-        PauseDialog.Show();
+        pauseDialog.FadeIn();
+        MenuSfx.instance.PlayPauseSound();
         StartCoroutine(ResumeGameAfterPauseDialogResolves());
     }
 
@@ -618,7 +631,7 @@ public class Game : MonoBehaviour
     {
         yield return new WaitUntil(() =>
         {
-            return PauseDialog.IsResolved();
+            return !IsPaused();
         });
         stopwatch.Start();
         backingTrackSource.UnPause();

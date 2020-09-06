@@ -23,16 +23,18 @@ public class Curtain : MonoBehaviour
         
     }
 
-    public void DrawCurtainThenGoToScene(string name)
+    public static void DrawCurtainThenGoToScene(string name)
     {
-        StopAllCoroutines();
-        StartCoroutine(InternalDrawCurtainThenGoToScene(name));
+        Curtain c = FindObjectOfType<Curtain>();
+        c.StopAllCoroutines();
+        c.StartCoroutine(c.InternalDrawCurtainThenGoToScene(name));
     }
 
-    public void DrawCurtainThenQuit()
+    public static void DrawCurtainThenQuit()
     {
-        StopAllCoroutines();
-        StartCoroutine(InternalDrawCurtainThenQuit());
+        Curtain c = FindObjectOfType<Curtain>();
+        c.StopAllCoroutines();
+        c.StartCoroutine(c.InternalDrawCurtainThenQuit());
     }
 
     private IEnumerator InternalOpenCurtain()

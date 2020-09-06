@@ -113,6 +113,6 @@ public class SelectPatternDialog : MonoBehaviour
     public void OnPlayButtonClick()
     {
         GameSetup.pattern = objectToPattern[selectedPatternObject];
-        FindObjectOfType<Curtain>().DrawCurtainThenGoToScene("Game");
+        Curtain.DrawCurtainThenGoToScene("Game");
     }
 }

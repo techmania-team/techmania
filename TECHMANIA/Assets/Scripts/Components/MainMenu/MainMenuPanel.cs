@@ -6,11 +6,11 @@ public class MainMenuPanel : MonoBehaviour
 {
     public void OnEditorButtonClick()
     {
-        FindObjectOfType<Curtain>().DrawCurtainThenGoToScene("Editor");
+        Curtain.DrawCurtainThenGoToScene("Editor");
     }
 
     public void OnQuitButtonClick()
     {
-        FindObjectOfType<Curtain>().DrawCurtainThenQuit();
+        Curtain.DrawCurtainThenQuit();
     }
 }

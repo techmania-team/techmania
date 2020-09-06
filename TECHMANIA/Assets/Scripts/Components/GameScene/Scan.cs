@@ -99,4 +99,18 @@ public class Scan : MonoBehaviour
 
         return normalizedX * screenWidth;
     }
+
+    public float FloatScanToXPosition(float scan)
+    {
+        float relativeScan = scan - scanNumber;
+        float normalizedX = Mathf.LerpUnclamped(
+            kSpaceBeforeScan, 1f - kSpaceAfterScan,
+            relativeScan);
+        if (scanNumber % 2 != 0)
+        {
+            normalizedX = 1f - normalizedX;
+        }
+
+        return normalizedX * screenWidth;
+    }
 }

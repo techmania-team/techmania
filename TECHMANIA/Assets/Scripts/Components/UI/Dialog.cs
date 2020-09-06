@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Dialog : MonoBehaviour
 {
+    public GameObject defaultSelected;
+
     private CanvasGroup previousGroup;
     private GameObject previousSelected;
     private CanvasGroup currentGroup;
@@ -67,6 +69,11 @@ public class Dialog : MonoBehaviour
         currentGroup.alpha = 1f;
         rect.anchoredPosition = Vector2.zero;
         transitioning = false;
+
+        if (defaultSelected != null)
+        {
+            EventSystem.current.SetSelectedGameObject(defaultSelected);
+        }
     }
 
     private IEnumerator InternalFadeOut()
