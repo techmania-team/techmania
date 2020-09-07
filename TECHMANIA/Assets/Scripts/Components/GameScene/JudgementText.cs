@@ -15,36 +15,21 @@ public class JudgementText : MonoBehaviour
     public Color missColor;
     public Color breakColor;
 
-    private const float kStayTime = 2f;
-    private float remainingTime;
     private TextMeshProUGUI text;
+    private Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
         text = GetComponentInChildren<TextMeshProUGUI>();
+        animator = text.GetComponent<Animator>();
         text.text = "";
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (remainingTime > 0f)
-        {
-            remainingTime -= Time.deltaTime;
-            if (remainingTime <= 0f)
-            {
-                text.text = "";
-            }
-        }
     }
 
     public void Show(NoteObject n, Judgement judgement)
     {
         transform.position = n.transform.position;
-        remainingTime = kStayTime;
 
-        // text.text = judgement.ToString() + " " + Game.currentCombo;
         string display = "";
         switch (judgement)
         {
@@ -65,7 +50,7 @@ public class JudgementText : MonoBehaviour
             // https://forum.unity.com/threads/change-textmesh-pro-face-texture-with-script.679912/
             text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,
                 rainbowTexture);
-            text.color = Color.white;
+            text.faceColor = Color.white;
         }
         else
         {
@@ -74,22 +59,23 @@ public class JudgementText : MonoBehaviour
             switch (judgement)
             {
                 case Judgement.Max:
-                    text.color = maxColor;
+                    text.faceColor = maxColor;
                     break;
                 case Judgement.Cool:
-                    text.color = coolColor;
+                    text.faceColor = coolColor;
                     break;
                 case Judgement.Good:
-                    text.color = goodColor;
+                    text.faceColor = goodColor;
                     break;
                 case Judgement.Miss:
-                    text.color = missColor;
+                    text.faceColor = missColor;
                     break;
                 case Judgement.Break:
-                    text.color = breakColor;
+                    text.faceColor = breakColor;
                     break;
             }
         }
         text.text = display;
+        animator.SetTrigger("Activate");
     }
 }
