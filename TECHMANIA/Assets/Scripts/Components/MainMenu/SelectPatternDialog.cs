@@ -29,15 +29,7 @@ public class SelectPatternDialog : MonoBehaviour
         // Show track metadata.
         Track track = GameSetup.track;
         string dir = new FileInfo(GameSetup.trackPath).DirectoryName;
-        if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
-        {
-            string eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-            eyecatchImage.LoadImage(eyecatchPath);
-        }
-        else
-        {
-            eyecatchImage.NoImage();
-        }
+        eyecatchImage.LoadImage(dir, track.trackMetadata);
         genreText.text = track.trackMetadata.genre;
         titleText.text = track.trackMetadata.title;
         artistText.text = track.trackMetadata.artist;

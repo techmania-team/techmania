@@ -10,16 +10,24 @@ public class EyecatchSelfLoader : MonoBehaviour
     public GameObject progressIndicator;
     public GameObject noImageIndicator;
 
-    public void LoadImage(string fullPath)
-    {
-        StartCoroutine(InnerLoadImage(fullPath));
-    }
-
-    public void NoImage()
+    private void NoImage()
     {
         image.gameObject.SetActive(false);
         progressIndicator.SetActive(false);
         noImageIndicator.SetActive(true);
+    }
+
+    public void LoadImage(string folder, TrackMetadata t)
+    {
+        if (t.eyecatchImage != UIUtils.kNone)
+        {
+            string fullPath = folder + "\\" + t.eyecatchImage;
+            StartCoroutine(InnerLoadImage(fullPath));
+        }
+        else
+        {
+            NoImage();
+        }
     }
 
     private IEnumerator InnerLoadImage(string fullPath)

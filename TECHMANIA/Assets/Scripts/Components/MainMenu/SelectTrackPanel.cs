@@ -67,14 +67,9 @@ public class SelectTrackPanel : MonoBehaviour
             // Instantiate card.
             GameObject card = Instantiate(trackCardTemplate, trackGrid.transform);
             card.name = "Track Card";
-            string eyecatchPath = "";
-            if (track.trackMetadata.eyecatchImage != UIUtils.kNone)
-            {
-                eyecatchPath = dir + "\\" + track.trackMetadata.eyecatchImage;
-            }
             card.SetActive(true);
             card.GetComponent<TrackCard>().Initialize(
-                eyecatchPath, track.trackMetadata.title, track.trackMetadata.artist);
+                dir, track.trackMetadata);
             if (firstCard == null)
             {
                 firstCard = card;

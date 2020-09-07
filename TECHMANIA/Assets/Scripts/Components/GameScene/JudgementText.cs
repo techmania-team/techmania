@@ -50,6 +50,8 @@ public class JudgementText : MonoBehaviour
             // https://forum.unity.com/threads/change-textmesh-pro-face-texture-with-script.679912/
             text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,
                 rainbowTexture);
+            // Cannot set color: Animator will control that in order
+            // to set alpha.
             text.faceColor = Color.white;
         }
         else

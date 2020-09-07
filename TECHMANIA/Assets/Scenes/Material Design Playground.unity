@@ -177,7 +177,7 @@ PrefabInstance:
     - target: {fileID: 3034328191725606141, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606141, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
@@ -336,22 +336,23 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Type scale\n\nHeadline 4: Open Sans, Regular\n\tSpec: size 34px, letter
-    spacing 0.25px\n\tActual: size 44, character spacing 2\nHeadline 6: Open Sans,
-    Regular\n\tSpec: size 20px, letter spacing 0.15px\n\tActual: size 28px, character
-    spacing 1.2\nSubtitle 1: Open Sans, Regular, used for text in Text Fields and
-    Dropdowns\n\tSpec: size 16px, letter spacing 0.15px\n\tActual: size 22, character
-    spacing 1.2\nBody: Lato, Regular\n\tSpec: size 17px, letter spacing 0.5px\n\tActual:
-    size 24, character spacing 2\nButton: Lato, Regular\n\tSpec: size 15px, character
-    spacing 1.25px, all caps\n\tActual: size 20, character spaging 10, all caps\nCaption:
-    Lato, Regular, used for mini labels in Text Fields, and tooltips\n\tSpec: size
-    13px, letter spacing 0.4px\n\tActual: size 16, letter spacing 3.2\nOverline:
-    Lato, Regular\n\tSpec: size 10px, letter spacing 1.5px, all caps\n\tActual: size
-    14, letter spacing 12, all caps\n\nHeadline: largest text on screen, reserved
-    for short, important text or numerals.\nSubtitles: smaller than headlines, reserved
-    for medium-emphasis text that is shorter in length.\nBody: used for long-form
-    writing.\nCaption and overline: used sparingly to annotate imagery or introduce
-    a headline."
+  m_Text: "Type scale\n\nHeadline 1: Open Sans, Light\n\tSpec: size 95px, letter
+    spacing -1.5px\n\tActual: size 128, character spacing -1.5\nHeadline 4: Open
+    Sans, Regular\n\tSpec: size 34px, letter spacing 0.25px\n\tActual: size 44, character
+    spacing 2\nHeadline 6: Open Sans, Regular\n\tSpec: size 20px, letter spacing
+    0.15px\n\tActual: size 28px, character spacing 1.2\nSubtitle 1: Open Sans, Regular,
+    used for text in Text Fields and Dropdowns\n\tSpec: size 16px, letter spacing
+    0.15px\n\tActual: size 22, character spacing 1.2\nBody: Lato, Regular\n\tSpec:
+    size 17px, letter spacing 0.5px\n\tActual: size 24, character spacing 2\nButton:
+    Lato, Regular\n\tSpec: size 15px, character spacing 1.25px, all caps\n\tActual:
+    size 20, character spaging 10, all caps\nCaption: Lato, Regular, used for mini
+    labels in Text Fields, and tooltips\n\tSpec: size 13px, letter spacing 0.4px\n\tActual:
+    size 16, letter spacing 3.2\nOverline: Lato, Regular\n\tSpec: size 10px, letter
+    spacing 1.5px, all caps\n\tActual: size 14, letter spacing 12, all caps\n\nHeadline:
+    largest text on screen, reserved for short, important text or numerals.\nSubtitles:
+    smaller than headlines, reserved for medium-emphasis text that is shorter in
+    length.\nBody: used for long-form writing.\nCaption and overline: used sparingly
+    to annotate imagery or introduce a headline."
 --- !u!222 &405295090
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -471,6 +472,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 7333737503585416876}
   - {fileID: 1926221401}
   - {fileID: 8918641785754399293}
   - {fileID: 708656428}
@@ -1258,7 +1260,7 @@ PrefabInstance:
     - target: {fileID: 1245099087148297895, guid: 33b4b15bd20c4b54ca7e7498057d7225,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1245099087148297895, guid: 33b4b15bd20c4b54ca7e7498057d7225,
         type: 3}
@@ -1908,6 +1910,125 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
+--- !u!1001 &2188462568574328022
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 957001709}
+    m_Modifications:
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -326
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905956753094978171, guid: 76d0bcdb17f32b949a6ca090864205c7,
+        type: 3}
+      propertyPath: m_Name
+      value: Headline 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 76d0bcdb17f32b949a6ca090864205c7, type: 3}
 --- !u!1001 &2200906331781091769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1953,7 +2074,7 @@ PrefabInstance:
     - target: {fileID: 7299862028387148676, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7299862028387148676, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
@@ -2611,7 +2732,7 @@ PrefabInstance:
     - target: {fileID: 718694571794500548, guid: dda3c230703f70d4599bc6dcf8e0a63e,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 718694571794500548, guid: dda3c230703f70d4599bc6dcf8e0a63e,
         type: 3}
@@ -2829,6 +2950,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07ee9ca45a9964f47b902078d0c137c7, type: 3}
+--- !u!224 &7333737503585416876 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8905956753094978170, guid: 76d0bcdb17f32b949a6ca090864205c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2188462568574328022}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7444396661549663022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3118,7 +3245,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -3242,7 +3369,7 @@ PrefabInstance:
     - target: {fileID: 6024100903353481884, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481884, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
