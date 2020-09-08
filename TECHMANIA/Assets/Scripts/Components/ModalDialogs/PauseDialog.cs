@@ -12,7 +12,7 @@ public class PauseDialog : MonoBehaviour
 
     public void OnQuitButtonClick()
     {
-        Navigation.goToSelectTrackPanelOnStart = true;
+        WelcomeMat.skipToTrackSelect = true;
         Curtain.DrawCurtainThenGoToScene("Main Menu");
     }
 }

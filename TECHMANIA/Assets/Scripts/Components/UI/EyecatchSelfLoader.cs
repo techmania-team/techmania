@@ -36,6 +36,13 @@ public class EyecatchSelfLoader : MonoBehaviour
             Paths.FilePathToUri(fullPath), nonReadable: true);
         yield return request.SendWebRequest();
         
+        if (request.isNetworkError || request.isHttpError)
+        {
+            Debug.LogError("UnityWebRequest reports an error: " + request.error);
+            NoImage();
+            yield break;
+        }
+        
         Texture texture = DownloadHandlerTexture.GetContent(request);
         if (texture == null)
         {

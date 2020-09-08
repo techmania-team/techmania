@@ -9,11 +9,13 @@ public class Curtain : MonoBehaviour
     public AudioSource sfxSource;
 
     private Image image;
+    private bool transitioning;
 
     // Start is called before the first frame update
     void Start()
     {
         image = GetComponent<Image>();
+        transitioning = false;
         StartCoroutine(InternalOpenCurtain());
     }
 
@@ -26,6 +28,8 @@ public class Curtain : MonoBehaviour
     public static void DrawCurtainThenGoToScene(string name)
     {
         Curtain c = FindObjectOfType<Curtain>();
+        if (c.transitioning) return;
+        c.transitioning = true;
         c.StopAllCoroutines();
         c.StartCoroutine(c.InternalDrawCurtainThenGoToScene(name));
     }
@@ -33,6 +37,8 @@ public class Curtain : MonoBehaviour
     public static void DrawCurtainThenQuit()
     {
         Curtain c = FindObjectOfType<Curtain>();
+        if (c.transitioning) return;
+        c.transitioning = true;
         c.StopAllCoroutines();
         c.StartCoroutine(c.InternalDrawCurtainThenQuit());
     }

@@ -8,17 +8,41 @@ using UnityEngine.UI;
 public class WelcomeMat : MonoBehaviour
 {
     public GameObject mainMenuButtons;
+    public GameObject selectTrackPanel;
     public Selectable firstSelectable;
+
+    public static bool skipToTrackSelect;
 
     private CanvasGroup group;
     private bool receivedInput;
+
+    static WelcomeMat()
+    {
+        skipToTrackSelect = false;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         group = GetComponent<CanvasGroup>();
-        receivedInput = false;
-        StartCoroutine(SlowBlink());
+
+        if (skipToTrackSelect)
+        {
+            skipToTrackSelect = false;
+
+            // Immediately show menu and go to select track panel.
+            mainMenuButtons.SetActive(true);
+            gameObject.SetActive(false);
+            GetComponentInParent<Panel>().defaultSelectable = firstSelectable;
+            GetComponentInParent<Panel>().gameObject.SetActive(false);
+
+            selectTrackPanel.SetActive(true);
+        }
+        else
+        {
+            receivedInput = false;
+            StartCoroutine(SlowBlink());
+        }
     }
 
     // Update is called once per frame
