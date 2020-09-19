@@ -76,6 +76,11 @@ public class OptionsPanel : MonoBehaviour
         MemoryToUI();
     }
 
+    private void OnDisable()
+    {
+        options.SaveToFile(Paths.GetOptionsFilePath());
+    }
+
     private void MemoryToUI()
     {
         resolutionDropdown.ClearOptions();
@@ -132,7 +137,6 @@ public class OptionsPanel : MonoBehaviour
         options.vSync = vSyncToggle.isOn;
 
         options.ApplyGraphicSettings();
-        options.SaveToFile(Paths.GetOptionsFilePath());
     }
     #endregion
 
@@ -145,7 +149,6 @@ public class OptionsPanel : MonoBehaviour
         options.sfxVolume = sfxVolumeSlider.value;
 
         ApplyVolume();
-        options.SaveToFile(Paths.GetOptionsFilePath());
     }
 
     private float VolumeValueToDb(float volume)
