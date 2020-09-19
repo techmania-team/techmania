@@ -11,6 +11,16 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;  // Not System.Diagnostics.Debug
 
+public enum Judgement
+{
+    RainbowMax,
+    Max,
+    Cool,
+    Good,
+    Miss,
+    Break
+}
+
 public class Game : MonoBehaviour
 {
     [Header("Scans")]
@@ -64,7 +74,11 @@ public class Game : MonoBehaviour
 
     private static List<List<KeyCode>> keysForLane;
 
-    // Each lane is sorted by pulse.
+    // Each lane is sorted by pulse. Resolved notes are removed
+    // from the corresponding linked list. This makes it easy to
+    // find the upcoming note in each lane, and in turn:
+    // - play keysounds on empty hits
+    // - check the Break condition on upcoming notes
     private List<LinkedList<NoteObject>> noteObjectsInLane;
 
     private class NoteWithSound
@@ -83,7 +97,6 @@ public class Game : MonoBehaviour
         resourceLoader.LoadResources(GameSetup.trackPath);
 
         Input.simulateMouseWithTouches = false;
-        NoteObject.NoteBreak += OnNoteBreak;
         score = new Score();
         loading = true;
         topBar.SetActive(false);
@@ -97,7 +110,6 @@ public class Game : MonoBehaviour
     private void OnDestroy()
     {
         Input.simulateMouseWithTouches = true;
-        NoteObject.NoteBreak -= OnNoteBreak;
     }
 
     #region Initialization
@@ -209,7 +221,6 @@ public class Game : MonoBehaviour
         score.Initialize(sortedNotes.Count);
 
         // Play audio and start timer.
-        
         stopwatch = new Stopwatch();
         stopwatch.Start();
         Time = initialTime;
@@ -354,6 +365,17 @@ public class Game : MonoBehaviour
             ScanChanged?.Invoke(newScan);
         }
         Scan = newScan;
+
+        // Check for Break on upcoming notes in each lane.
+        foreach (LinkedList<NoteObject> lane in noteObjectsInLane)
+        {
+            if (lane.Count == 0) continue;
+            NoteObject upcomingNote = lane.First.Value;
+            if (Time > upcomingNote.note.time + kBreakThreshold)
+            {
+                ResolveNote(upcomingNote, Judgement.Break);
+            }
+        }
 
         if (Scan > lastScan)
         {
@@ -611,11 +633,6 @@ public class Game : MonoBehaviour
                 keysoundSources[lane].Play();
             }
         }
-    }
-
-    private void OnNoteBreak(NoteObject n)
-    {
-        ResolveNote(n, Judgement.Break);
     }
 
     private void ResolveNote(NoteObject n, Judgement judgement)
