@@ -1041,7 +1041,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
         isPlaying = true;
-        if (!resourceLoader.LoadComplete()) return;
+        // if (!resourceLoader.LoadComplete()) return;
         RefreshControls();
 
         Pattern currentPattern = EditorNavigation.GetCurrentPattern();

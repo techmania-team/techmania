@@ -3,26 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private bool loading;
-    private bool error;
     // Keys do not contain folder.
     private Dictionary<string, AudioClip> audioClips;
+
+    // Argument is error message, if any.
+    public static event UnityAction<string> LoadComplete;
 
     public void LoadResources(string trackPath)
     {
@@ -31,8 +21,6 @@ public class ResourceLoader : MonoBehaviour
 
     private IEnumerator InnerLoadResources(string trackPath)
     {
-        loading = true;
-        error = false;
         audioClips = new Dictionary<string, AudioClip>();
 
         string folder = new FileInfo(trackPath).DirectoryName;
@@ -46,14 +34,15 @@ public class ResourceLoader : MonoBehaviour
             AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
             if (clip == null)
             {
-                // MessageDialog.Show($"Could not load {file}.\n\nDetails:\n{request.error}");
-                error = true;
+                string error = $"Could not load {file}:\n\n{request.error}";
+                LoadComplete?.Invoke(error);
                 yield break;
             }
             if (clip.loadState != AudioDataLoadState.Loaded)
             {
-                // MessageDialog.Show($"Could not load {file}.\n\nThe file may be corrupted, or be of an unsupported format.");
-                error = true;
+                string error = $"Could not load {file}.\n\n" +
+                    "The file may be corrupted, or be of an unsupported format.";
+                LoadComplete?.Invoke(error);
                 yield break;
             }
 
@@ -61,17 +50,8 @@ public class ResourceLoader : MonoBehaviour
             Debug.Log("Loaded: " + file);
         }
 
-        loading = false;
-    }
-
-    public bool LoadComplete()
-    {
-        return !loading;
-    }
-
-    public bool AnyErrorOccurred()
-    {
-        return error;
+        yield return null;  // Wait 1 more frame just in case
+        LoadComplete?.Invoke(null);
     }
 
     public AudioClip GetClip(string filenameWithoutFolder)

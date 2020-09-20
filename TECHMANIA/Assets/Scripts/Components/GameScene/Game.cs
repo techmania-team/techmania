@@ -48,6 +48,7 @@ public class Game : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public Dialog pauseDialog;
+    public MessageDialog messageDialog;
 
     public static Score score { get; private set; }
     public static int currentCombo { get; private set; }
@@ -74,7 +75,8 @@ public class Game : MonoBehaviour
 
     private static List<List<KeyCode>> keysForLane;
 
-    // Each lane is sorted by pulse. Resolved notes are removed
+    // Each linked list represents one lane; each lane is
+    // sorted by pulse. Resolved notes are removed
     // from the corresponding linked list. This makes it easy to
     // find the upcoming note in each lane, and in turn:
     // - play keysounds on empty hits
@@ -94,8 +96,6 @@ public class Game : MonoBehaviour
         {
             SceneManager.LoadScene("Main Menu");
         }
-        resourceLoader.LoadResources(GameSetup.trackPath);
-
         Input.simulateMouseWithTouches = false;
         score = new Score();
         loading = true;
@@ -104,23 +104,27 @@ public class Game : MonoBehaviour
 
         // And now we wait for the resources to load.
         stopwatch = null;
-        StartCoroutine(LoadAndStartGame());
+        ResourceLoader.LoadComplete += OnLoadComplete;
+        resourceLoader.LoadResources(GameSetup.trackPath);
     }
 
     private void OnDestroy()
     {
         Input.simulateMouseWithTouches = true;
+        Dialog.DialogClosed -= OnDialogClosed;
     }
 
     #region Initialization
-    private IEnumerator LoadAndStartGame()
+    private void OnLoadComplete(string error)
     {
-        yield return new WaitUntil(() =>
+        ResourceLoader.LoadComplete -= OnLoadComplete;
+        if (error != null)
         {
-            return resourceLoader.LoadComplete();
-        });
-        // Wait 1 more frame just in case.
-        yield return null;
+            // Handle error.
+            Dialog.DialogClosed += OnDialogClosed;
+            messageDialog.Show(error);
+            return;
+        }
 
         // Prepare for keyboard input if applicable.
         if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Keys ||
@@ -671,17 +675,23 @@ public class Game : MonoBehaviour
         backingTrackSource.Pause();
         pauseDialog.FadeIn();
         MenuSfx.instance.PlayPauseSound();
-        StartCoroutine(ResumeGameAfterPauseDialogResolves());
+        Dialog.DialogClosed += OnDialogClosed;
     }
 
-    private IEnumerator ResumeGameAfterPauseDialogResolves()
+    private void OnDialogClosed(GameObject o)
     {
-        yield return new WaitUntil(() =>
+        if (o == pauseDialog.gameObject)
         {
-            return !IsPaused();
-        });
-        stopwatch.Start();
-        backingTrackSource.UnPause();
+            Dialog.DialogClosed -= OnDialogClosed;
+            stopwatch.Start();
+            backingTrackSource.UnPause();
+        }
+        if (o == messageDialog.gameObject)
+        {
+            Dialog.DialogClosed -= OnDialogClosed;
+            WelcomeMat.skipToTrackSelect = true;
+            Curtain.DrawCurtainThenGoToScene("Main Menu");
+        }
     }
     #endregion
 }

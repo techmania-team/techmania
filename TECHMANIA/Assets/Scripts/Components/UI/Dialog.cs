@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class Dialog : MonoBehaviour
@@ -11,6 +12,8 @@ public class Dialog : MonoBehaviour
     private GameObject previousSelected;
     private CanvasGroup currentGroup;
     private bool transitioning;
+
+    public static event UnityAction<GameObject> DialogClosed;
 
     // Start is called before the first frame update
     void Start()
@@ -98,6 +101,7 @@ public class Dialog : MonoBehaviour
         previousGroup.interactable = true;
         EventSystem.current.SetSelectedGameObject(previousSelected);
         transitioning = false;
+        DialogClosed?.Invoke(gameObject);
         gameObject.SetActive(false);
     }
 }
