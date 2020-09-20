@@ -10,8 +10,10 @@ public class SelectTrackPanel : MonoBehaviour
 {
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
+    public GameObject errorCardTemplate;
     public GameObject noTrackText;
     public SelectPatternDialog selectPatternDialog;
+    public MessageDialog messageDialog;
 
     protected class TrackInFolder
     {
@@ -19,6 +21,7 @@ public class SelectTrackPanel : MonoBehaviour
         public Track track;
     }
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
+    protected Dictionary<GameObject, string> cardToError;
 
     private void OnEnable()
     {
@@ -32,11 +35,13 @@ public class SelectTrackPanel : MonoBehaviour
         {
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
             if (o == trackCardTemplate) continue;
+            if (o == errorCardTemplate) continue;
             Destroy(o);
         }
 
         // Rebuild track list.
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
+        cardToError = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
         foreach (string dir in Directory.EnumerateDirectories(
             Paths.GetTrackFolder()))
@@ -50,44 +55,70 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Attempt to load track.
             TrackBase trackBase = null;
+            string error = null;
             try
             {
                 trackBase = TrackBase.LoadFromFile(possibleTrackFile);
+                if (!(trackBase is Track))
+                {
+                    error = "The track was created in an old version and is no longer supported.";
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                continue;
+                error = e.Message;
             }
-            if (!(trackBase is Track))
-            {
-                continue;
-            }
-            Track track = trackBase as Track;
 
-            // Instantiate card.
-            GameObject card = Instantiate(trackCardTemplate, trackGrid.transform);
-            card.name = "Track Card";
-            card.SetActive(true);
-            card.GetComponent<TrackCard>().Initialize(
-                dir, track.trackMetadata);
+            GameObject card = null;
+            if (error == null)
+            {
+                Track track = trackBase as Track;
+
+                // Instantiate card.
+                card = Instantiate(trackCardTemplate, trackGrid.transform);
+                card.name = "Track Card";
+                card.SetActive(true);
+                card.GetComponent<TrackCard>().Initialize(
+                    dir, track.trackMetadata);
+
+                // Record mapping.
+                cardToTrack.Add(card, new TrackInFolder()
+                {
+                    folder = dir,
+                    track = track
+                });
+
+                // Bind click event.
+                card.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    OnClickCard(card);
+                });
+            }
+            else
+            {
+                error = $"An error occurred when loading {possibleTrackFile}:\n\n"
+                    + error;
+
+                // Instantiate card.
+                card = Instantiate(errorCardTemplate, trackGrid.transform);
+                card.name = "Error Card";
+                card.SetActive(true);
+
+                // Record mapping.
+                cardToError.Add(card, error);
+
+                // Bind click event.
+                card.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    OnClickErrorCard(card);
+                });
+            }
+
             if (firstCard == null)
             {
                 firstCard = card;
                 EventSystem.current.SetSelectedGameObject(firstCard);
             }
-
-            // Record mapping.
-            cardToTrack.Add(card, new TrackInFolder()
-            {
-                folder = dir,
-                track = track
-            });
-
-            // Bind click event.
-            card.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                OnClickCard(card);
-            });
         }
 
         noTrackText.SetActive(cardToTrack.Count == 0);
@@ -98,5 +129,11 @@ public class SelectTrackPanel : MonoBehaviour
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
         GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
         selectPatternDialog.Show();
+    }
+
+    protected virtual void OnClickErrorCard(GameObject o)
+    {
+        string error = cardToError[o];
+        messageDialog.Show(error);
     }
 }

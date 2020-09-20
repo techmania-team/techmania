@@ -99,7 +99,7 @@ public class ResourcePanel : MonoBehaviour
             }
             catch (Exception e)
             {
-                MessageDialog.Show(e.Message);
+                // MessageDialog.Show(e.Message);
                 return;
             }
         }

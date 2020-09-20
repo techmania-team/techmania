@@ -963,7 +963,7 @@ public class PatternPanel : MonoBehaviour
             int newPulse = n.note.pulse + deltaPulse;
             if (sortedNoteObjects.HasAt(newPulse, n.note.lane))
             {
-                MessageDialog.Show("Cannot paste here because some pasted notes would overwrite existing notes.");
+                // MessageDialog.Show("Cannot paste here because some pasted notes would overwrite existing notes.");
                 return;
             }
             while (newPulse >= maxPulse)

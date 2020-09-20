@@ -244,7 +244,7 @@ public class EditorNavigation : MonoBehaviour
         }
         catch (Exception e)
         {
-            MessageDialog.Show(e.Message);
+            // MessageDialog.Show(e.Message);
         }
         RefreshNavigationPanel();
     }

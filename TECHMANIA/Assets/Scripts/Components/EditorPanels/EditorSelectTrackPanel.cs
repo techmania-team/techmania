@@ -73,7 +73,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            MessageDialog.Show(e.Message);
+            // MessageDialog.Show(e.Message);
             yield break;
         }
 
@@ -86,7 +86,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            MessageDialog.Show(e.Message);
+            // MessageDialog.Show(e.Message);
             yield break;
         }
 
@@ -119,7 +119,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            MessageDialog.Show(e.Message);
+            // MessageDialog.Show(e.Message);
         }
 
         Refresh();
@@ -138,7 +138,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            MessageDialog.Show(e.Message);
+            // MessageDialog.Show(e.Message);
             return;
         }
 
