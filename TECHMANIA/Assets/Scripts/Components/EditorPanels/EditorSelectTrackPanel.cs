@@ -8,45 +8,26 @@ using UnityEngine.UI;
 
 public class EditorSelectTrackPanel : SelectTrackPanel
 {
-    public Button deleteButton;
-    public Button openButton;
-
-    private GameObject selectedTrackObject;
-
     private void OnEnable()
     {
         Refresh();
-        selectedTrackObject = null;
-        RefreshButtons();
     }
 
-    private void RefreshButtons()
+    protected override bool ShowNewTrackCard()
     {
-        deleteButton.interactable = selectedTrackObject != null;
-        openButton.interactable = selectedTrackObject != null;
+        return true;
     }
 
-    protected override void OnClickCard(GameObject trackObject)
+    protected override void OnClickCard(GameObject o)
     {
-        if (selectedTrackObject != null)
-        {
-            selectedTrackObject.transform.Find("Selection").gameObject.SetActive(false);
-        }
-        if (!cardToTrack.ContainsKey(trackObject))
-        {
-            selectedTrackObject = null;
-        }
-        else
-        {
-            selectedTrackObject = trackObject;
-            selectedTrackObject.transform.Find("Selection").gameObject.SetActive(true);
-        }
-        RefreshButtons();
+        GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
+        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
+        // TODO: move to next panel
     }
 
-    public void New()
+    protected override void OnClickNewTrackCard()
     {
-        StartCoroutine(InternalNew());
+        // TODO: show "new track" dialog
     }
 
     private IEnumerator InternalNew()
@@ -93,15 +74,10 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         Refresh();
     }
 
-    public void Delete()
-    {
-        if (selectedTrackObject == null) return;
-        StartCoroutine(InternalDelete());
-    }
-
+    // TODO: move this to track setup
     private IEnumerator InternalDelete()
     {
-        TrackInFolder trackInFolder = cardToTrack[selectedTrackObject];
+        TrackInFolder trackInFolder = null; // cardToTrack[selectedTrackObject];
         string title = trackInFolder.track.trackMetadata.title;
         string path = trackInFolder.folder;
         ConfirmDialog.Show($"Deleting {title}. This will permanently " +
@@ -123,25 +99,5 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
 
         Refresh();
-    }
-
-    public void Open()
-    {
-        if (selectedTrackObject == null) return;
-
-        // Reload track from disk, just in case.
-        try
-        {
-            string path = $"{cardToTrack[selectedTrackObject].folder}\\{Paths.kTrackFilename}";
-            Track track = TrackBase.LoadFromFile(path) as Track;
-            EditorNavigation.SetCurrentTrack(track, path);
-        }
-        catch (Exception e)
-        {
-            // MessageDialog.Show(e.Message);
-            return;
-        }
-
-        EditorNavigation.GoTo(EditorNavigation.Location.Track);
     }
 }

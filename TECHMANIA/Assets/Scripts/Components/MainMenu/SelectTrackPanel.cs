@@ -11,6 +11,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
+    public GameObject newTrackCard;
     public GameObject noTrackText;
     public SelectPatternDialog selectPatternDialog;
     public MessageDialog messageDialog;
@@ -28,14 +29,15 @@ public class SelectTrackPanel : MonoBehaviour
         Refresh();
     }
 
-    public void Refresh()
+    protected void Refresh()
     {
-        // Remove all objects from grid, except for template.
+        // Remove all objects from grid, except for templates.
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
+            if (o == newTrackCard) continue;
             Destroy(o);
         }
 
@@ -117,11 +119,32 @@ public class SelectTrackPanel : MonoBehaviour
             if (firstCard == null)
             {
                 firstCard = card;
-                EventSystem.current.SetSelectedGameObject(firstCard);
             }
         }
 
-        noTrackText.SetActive(cardToTrack.Count == 0);
+        if (ShowNewTrackCard())
+        {
+            newTrackCard.transform.SetAsLastSibling();
+            newTrackCard.SetActive(true);
+            newTrackCard.GetComponent<Button>().onClick.RemoveAllListeners();
+            newTrackCard.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                OnClickNewTrackCard();
+            });
+
+            if (firstCard == null)
+            {
+                firstCard = newTrackCard;
+            }
+        }
+
+        EventSystem.current.SetSelectedGameObject(firstCard);
+        noTrackText.SetActive(firstCard == null);
+    }
+
+    protected virtual bool ShowNewTrackCard()
+    {
+        return false;
     }
 
     protected virtual void OnClickCard(GameObject o)
@@ -131,9 +154,15 @@ public class SelectTrackPanel : MonoBehaviour
         selectPatternDialog.Show();
     }
 
-    protected virtual void OnClickErrorCard(GameObject o)
+    private void OnClickErrorCard(GameObject o)
     {
         string error = cardToError[o];
         messageDialog.Show(error);
+    }
+
+    protected virtual void OnClickNewTrackCard()
+    {
+        throw new NotImplementedException(
+            "SelectTrackPanel in the game scene should not show the New Track card.");
     }
 }

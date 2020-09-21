@@ -127,7 +127,6 @@ public class TrackPanel : MonoBehaviour
             patternObject.GetComponentInChildren<Text>().text = textOnObject;
             patternObject.SetActive(true);
 
-            // TODO: double click to open?
             int copyOfI = i;
             patternObject.GetComponent<Button>().onClick.AddListener(() =>
             {
