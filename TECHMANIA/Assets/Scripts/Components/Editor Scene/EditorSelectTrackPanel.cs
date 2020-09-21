@@ -24,7 +24,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
         GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
-        // TODO: go to next panel
+        GetComponent<TransitionToPanel>().Invoke();
     }
 
     protected override void OnClickNewTrackCard()
@@ -71,7 +71,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
         GameSetup.trackPath = filename;
         GameSetup.track = track;
-        // TODO: go to next panel
+        GetComponent<TransitionToPanel>().Invoke();
 
         Refresh();
     }
