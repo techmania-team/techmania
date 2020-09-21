@@ -17,13 +17,11 @@ public class BackButton : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (MaterialTextField.editingAnyTextField ||
-                MaterialTextField.frameOfLastEndEdit == Time.frameCount)
+            if (MaterialTextField.IsEditingAnyTextField())
             {
                 return;
             }
-            if (MaterialDropdown.anyDropdownExpanded ||
-                MaterialDropdown.frameOfLastCollapse == Time.frameCount)
+            if (MaterialDropdown.IsEditingAnyDropdown())
             {
                 return;
             }

@@ -10,7 +10,7 @@ public class MaterialTextField : MonoBehaviour,
     IPointerEnterHandler, IPointerClickHandler
 {
     // These stop BackButtons from responding to the Cancel key.
-    public static bool editingAnyTextField;
+    private static bool editingAnyTextField;
     // Events are processed earlier than components. Without this hack,
     // when user presses cancel while editing a text field, the text
     // field will set editingAnyTextField=false, and then BackButton
@@ -20,7 +20,13 @@ public class MaterialTextField : MonoBehaviour,
     // With this hack, BackButton can realize that a text field ended
     // its editing on the same frame user pressed cancel, and thus
     // will not respond to the cancel key.
-    public static int frameOfLastEndEdit;
+    private static int frameOfLastEndEdit;
+
+    public static bool IsEditingAnyTextField()
+    {
+        return editingAnyTextField ||
+            frameOfLastEndEdit == Time.frameCount;
+    }
 
     public Color miniLabelColor;
     public Color labelColor;
@@ -57,7 +63,7 @@ public class MaterialTextField : MonoBehaviour,
         });
         text.onEndEdit.AddListener((string s) =>
         {
-            MenuSfx.instance.PlayClickSound();
+            // MenuSfx.instance.PlayClickSound();
 
             editingAnyTextField = false;
             frameOfLastEndEdit = Time.frameCount;

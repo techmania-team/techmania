@@ -90,9 +90,7 @@ public class TrackMetadata
     // Text stuff.
 
     public string title;
-    public string subtitle;
     public string artist;
-    public List<string> subArtists;
     public string genre;
 
     // In track select screen.
@@ -306,6 +304,7 @@ public class PatternMetadata
     public string patternName;
     public int level;
     public ControlScheme controlScheme;
+    public string author;
 
     // The backing track played in game.
     // This always plays from the beginning.
@@ -336,7 +335,6 @@ public class SoundChannel
     public string name;
     // Notes using this sound.
     public List<Note> notes;
-    public List<DragNote> dragNotes;
 }
 
 [Serializable]
@@ -344,10 +342,11 @@ public enum NoteType
 {
     Basic,
     ChainHead,
-    Chain,
+    ChainNode,
     HoldStart,
     HoldEnd,
-    Drag,
+    DragHead,
+    DragNode,
     RepeatHead,
     RepeatHeadHold,
     Repeat,
@@ -373,17 +372,4 @@ public class Note
             type = this.type
         };
     }
-}
-
-[Serializable]
-public class DragNotePath
-{
-    public int lane;
-    public int pulse;
-}
-
-[Serializable]
-public class DragNote : Note
-{
-    public List<DragNotePath> path;
 }

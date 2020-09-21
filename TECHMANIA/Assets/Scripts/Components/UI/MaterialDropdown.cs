@@ -8,8 +8,14 @@ public class MaterialDropdown : MonoBehaviour,
     ISelectHandler, IPointerEnterHandler
 {
     // Refer to comments on MaterialTextField.frameOfEndEdit.
-    public static bool anyDropdownExpanded;
-    public static int frameOfLastCollapse;
+    private static bool anyDropdownExpanded;
+    private static int frameOfLastCollapse;
+
+    public static bool IsEditingAnyDropdown()
+    {
+        return anyDropdownExpanded ||
+            frameOfLastCollapse == Time.frameCount;
+    }
 
     private TMP_Dropdown dropdown;
     private bool expandedOnPreviousFrame;

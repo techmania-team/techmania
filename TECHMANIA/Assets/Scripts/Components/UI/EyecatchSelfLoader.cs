@@ -38,7 +38,8 @@ public class EyecatchSelfLoader : MonoBehaviour
         
         if (request.isNetworkError || request.isHttpError)
         {
-            Debug.LogError("UnityWebRequest reports an error: " + request.error);
+            Debug.LogError($"UnityWebRequest reports an error when loading {fullPath}:"
+                + request.error);
             NoImage();
             yield break;
         }

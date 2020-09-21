@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class EditorSelectTrackPanel : SelectTrackPanel
 {
+    public NewTrackDialog newTrackDialog;
+
     private void OnEnable()
     {
         Refresh();
@@ -22,31 +24,25 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
         GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
-        // TODO: move to next panel
+        // TODO: go to next panel
     }
 
     protected override void OnClickNewTrackCard()
     {
-        // TODO: show "new track" dialog
+        newTrackDialog.GetComponent<Dialog>().FadeIn();
+        NewTrackDialog.CreateButtonClicked += OnCreateButtonClicked;
     }
 
-    private IEnumerator InternalNew()
+    private void OnCreateButtonClicked(string title, string artist)
     {
-        // Get title and artist.
-        NewTrackDialog.Show();
-        yield return new WaitUntil(() => { return NewTrackDialog.IsResolved(); });
-        if (NewTrackDialog.GetResult() == NewTrackDialog.Result.Cancelled)
-        {
-            yield break;
-        }
-        string title = NewTrackDialog.GetTitle();
-        string artist = NewTrackDialog.GetArtist();
+        NewTrackDialog.CreateButtonClicked -= OnCreateButtonClicked;
+
+        // Attempt to create track directory. Contains timestamp
+        // so collisions are very unlikely.
         string filteredTitle = Paths.FilterString(title);
         string filteredArtist = Paths.FilterString(artist);
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        // Create new directory. Contains timestamp so collisions are
-        // very unlikely.
         string newDir = $"{Paths.GetTrackFolder()}\\{filteredArtist} - {filteredTitle} - {timestamp}";
         try
         {
@@ -54,8 +50,9 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            // MessageDialog.Show(e.Message);
-            yield break;
+            messageDialog.Show($"An error occurred when " +
+                $"creating {newDir}:\n\n{e.Message}");
+            return;
         }
 
         // Create empty track.
@@ -67,9 +64,14 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            // MessageDialog.Show(e.Message);
-            yield break;
+            messageDialog.Show($"An error occurred when " +
+                $"writing to {filename}:\n\n{e.Message}");
+            return;
         }
+
+        GameSetup.trackPath = filename;
+        GameSetup.track = track;
+        // TODO: go to next panel
 
         Refresh();
     }
