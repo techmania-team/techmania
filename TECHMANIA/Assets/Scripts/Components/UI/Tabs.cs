@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Tabs : MonoBehaviour
@@ -8,16 +9,19 @@ public class Tabs : MonoBehaviour
     public Transform tabButtons;
     public Transform tabContents;
 
-    private int currentTab;
+    public int CurrentTab { get; private set; }
+
+    // This is fired from buttons only, not on startup.
+    public static event UnityAction<int> tabChanged;
 
     // Start is called before the first frame update
     void Start()
     {
-        currentTab = 0;
+        CurrentTab = 0;
         for (int t = 0; t < tabButtons.childCount; t++)
         {
-            ToggleTabButtonBar(t, t == currentTab);
-            ToggleTabContent(t, t == currentTab);
+            ToggleTabButtonBar(t, t == CurrentTab);
+            ToggleTabContent(t, t == CurrentTab);
 
             int tCopy = t;
             tabButtons.GetChild(t).GetComponent<Button>().onClick.AddListener(() =>
@@ -39,11 +43,13 @@ public class Tabs : MonoBehaviour
 
     private void SetTab(int t)
     {
-        ToggleTabButtonBar(currentTab, false);
+        ToggleTabButtonBar(CurrentTab, false);
         ToggleTabButtonBar(t, true);
-        ToggleTabContent(currentTab, false);
+        ToggleTabContent(CurrentTab, false);
         ToggleTabContent(t, true);
 
-        currentTab = t;
+        CurrentTab = t;
+
+        tabChanged?.Invoke(t);
     }
 }

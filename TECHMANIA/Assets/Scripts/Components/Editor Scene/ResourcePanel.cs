@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+// TODO: deprecate this.
 public class ResourcePanel : MonoBehaviour
 {
     private static ResourcePanel instance;
@@ -59,51 +60,11 @@ public class ResourcePanel : MonoBehaviour
 
     public void Refresh()
     {
-        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
-
-        audioFiles = Paths.GetAllAudioFiles(folder);
-        imageFiles = Paths.GetAllImageFiles(folder);
-        videoFiles = Paths.GetAllVideoFiles(folder);
-        string listText = "";
-
-        foreach (string file in audioFiles)
-        {
-            listText += new FileInfo(file).Name + "\n";
-        }
-        foreach (string file in imageFiles)
-        {
-            listText += new FileInfo(file).Name + "\n";
-        }
-        foreach (string file in videoFiles)
-        {
-            listText += new FileInfo(file).Name + "\n";
-        }
-
-        list.text = listText.TrimEnd('\n');
         resourceRefreshed?.Invoke();
     }
 
     public void Import()
     {
-        string folder = new FileInfo(EditorNavigation.GetCurrentTrackPath()).DirectoryName;
-
-        foreach (string file in SFB.StandaloneFileBrowser.OpenFilePanel(
-            "Select resource to import", "", "wav;*.png;*.mp4", multiselect: true))
-        {
-            FileInfo fileInfo = new FileInfo(file);
-            if (fileInfo.DirectoryName == folder) continue;
-
-            try
-            {
-                File.Copy(file, $"{folder}\\{fileInfo.Name}", overwrite: true);
-            }
-            catch (Exception e)
-            {
-                // MessageDialog.Show(e.Message);
-                return;
-            }
-        }
-
-        Refresh();
+        
     }
 }

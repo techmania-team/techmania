@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class EditorSelectTrackPanel : SelectTrackPanel
 {
     public NewTrackDialog newTrackDialog;
+    public Panel trackSetupPanel;
 
     private void OnEnable()
     {
@@ -22,9 +23,10 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
     protected override void OnClickCard(GameObject o)
     {
-        GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
-        GetComponent<TransitionToPanel>().Invoke();
+        EditorContext.Reset();
+        EditorContext.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
+        EditorContext.track = TrackBase.LoadFromFile(EditorContext.trackPath) as Track;
+        PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
     }
 
     protected override void OnClickNewTrackCard()
@@ -69,9 +71,10 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        GameSetup.trackPath = filename;
-        GameSetup.track = track;
-        GetComponent<TransitionToPanel>().Invoke();
+        EditorContext.Reset();
+        EditorContext.trackPath = filename;
+        EditorContext.track = track;
+        PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
 
         Refresh();
     }

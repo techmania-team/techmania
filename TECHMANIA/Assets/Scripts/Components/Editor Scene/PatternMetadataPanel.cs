@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+// TODO: deprecate this.
 public class PatternMetadataPanel : MonoBehaviour
 {
     public InputField nameInput;

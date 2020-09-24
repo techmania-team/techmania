@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+// TODO: deprecate this.
 public class EditorNavigation : MonoBehaviour
 {
     private static EditorNavigation instance;
@@ -58,22 +59,6 @@ public class EditorNavigation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                Save();
-            }
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                Undo();
-            }
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                Redo();
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             GoBack();
