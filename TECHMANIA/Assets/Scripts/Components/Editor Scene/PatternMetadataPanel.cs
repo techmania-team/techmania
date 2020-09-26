@@ -85,7 +85,7 @@ public class PatternMetadataPanel : MonoBehaviour
         level.text = metadata.level.ToString();
         controlScheme.SetValueWithoutNotify((int)metadata.controlScheme);
 
-        UIUtils.MemoryToDropdown(metadata.backingTrack, backingTrack);
+        // UIUtils.MemoryToDropdown(metadata.backingTrack, backingTrack);
 
         firstBeatOffset.text = metadata.firstBeatOffset.ToString();
         initialBpm.text = metadata.initBpm.ToString();
@@ -94,7 +94,7 @@ public class PatternMetadataPanel : MonoBehaviour
 
     public void RefreshDropdowns()
     {
-        UIUtils.RefreshFilenameDropdown(backingTrack, ResourcePanel.GetAudioFiles());
+        // UIUtils.RefreshFilenameDropdown(backingTrack, ResourcePanel.GetAudioFiles());
         MemoryToUI();
     }
 

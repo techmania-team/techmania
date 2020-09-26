@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TrackSetupPanel : MonoBehaviour
 {
@@ -40,6 +41,9 @@ public class TrackSetupPanel : MonoBehaviour
         {
             case 0:
                 RefreshResourcesTab();
+                break;
+            case 1:
+                RefreshMetadataTab();
                 break;
         }
     }
@@ -93,9 +97,9 @@ public class TrackSetupPanel : MonoBehaviour
 
     #region Resources tab
     [Header("Resources tab")]
-    public TextMeshProUGUI audioFilesList;
-    public TextMeshProUGUI imageFilesList;
-    public TextMeshProUGUI videoFilesList;
+    public TextMeshProUGUI audioFilesDisplay;
+    public TextMeshProUGUI imageFilesDisplay;
+    public TextMeshProUGUI videoFilesDisplay;
 
     public void OnImportButtonClick()
     {
@@ -137,12 +141,89 @@ public class TrackSetupPanel : MonoBehaviour
     public void RefreshResourcesTab()
     {
         string trackFolder = EditorContext.trackFolder;
-        audioFilesList.text = CondenseFileList(
+        audioFilesDisplay.text = CondenseFileList(
             Paths.GetAllAudioFiles(trackFolder));
-        imageFilesList.text = CondenseFileList(
+        imageFilesDisplay.text = CondenseFileList(
             Paths.GetAllImageFiles(trackFolder));
-        videoFilesList.text = CondenseFileList(
+        videoFilesDisplay.text = CondenseFileList(
             Paths.GetAllVideoFiles(trackFolder));
     }
+    #endregion
+
+    #region Metadata tab
+    [Header("Metadata tab")]
+    public TMP_InputField trackTitle;
+    public TMP_InputField artist;
+    public TMP_InputField genre;
+    public TMP_Dropdown eyecatchImage;
+    public TMP_Dropdown previewTrack;
+    public TMP_InputField startTime;
+    public TMP_InputField endTime;
+    public TMP_Dropdown backgroundImage;
+    public TMP_Dropdown backgroundVideo;
+    public TMP_InputField bgaOffset;
+
+    private List<string> audioFilesCache;
+    private List<string> imageFilesCache;
+    private List<string> videoFilesCache;
+
+    public void RefreshMetadataTab()
+    {
+        TrackMetadata metadata = EditorContext.track.trackMetadata;
+        audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
+        imageFilesCache = Paths.GetAllImageFiles(EditorContext.trackFolder);
+        videoFilesCache = Paths.GetAllVideoFiles(EditorContext.trackFolder);
+
+        trackTitle.SetTextWithoutNotify(metadata.title);
+        artist.SetTextWithoutNotify(metadata.artist);
+        genre.SetTextWithoutNotify(metadata.genre);
+
+        UIUtils.MemoryToDropdown(eyecatchImage,
+            metadata.eyecatchImage, imageFilesCache);
+        UIUtils.MemoryToDropdown(previewTrack,
+            metadata.previewTrack, audioFilesCache);
+        startTime.SetTextWithoutNotify(metadata.previewStartTime.ToString());
+        endTime.SetTextWithoutNotify(metadata.previewEndTime.ToString());
+
+        UIUtils.MemoryToDropdown(backgroundImage,
+            metadata.backImage, imageFilesCache);
+        UIUtils.MemoryToDropdown(backgroundVideo,
+            metadata.bga, videoFilesCache);
+        bgaOffset.SetTextWithoutNotify(metadata.bgaOffset.ToString());
+
+        foreach (TMP_InputField field in new List<TMP_InputField>()
+        {
+            trackTitle,
+            artist,
+            genre,
+            startTime,
+            endTime,
+            bgaOffset
+        })
+        {
+            field.GetComponent<MaterialTextField>().RefreshMiniLabel();
+        }
+    }
+
+    public void OnMetadataUpdated()
+    {
+        
+    }
+
+    public void OnEyecatchUpdated()
+    {
+
+    }
+
+    public void OnPlayPreviewButtonClick()
+    {
+
+    }
+
+    public void OnDeleteTrackButtonClick()
+    {
+
+    }
+
     #endregion
 }

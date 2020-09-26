@@ -75,7 +75,7 @@ public class TrackPanel : MonoBehaviour
             ref metadata.backImage, backgroundImage, ref madeChange);
         UIUtils.UpdatePropertyInMemoryFromDropdown(
             ref metadata.bga, backgroundVideo, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(ref metadata.bgaStartTime,
+        UIUtils.UpdatePropertyInMemory(ref metadata.bgaOffset,
             videoStartTime.text, ref madeChange);
 
         if (madeChange)
@@ -87,20 +87,6 @@ public class TrackPanel : MonoBehaviour
     public void MemoryToUI()
     {
         TrackMetadata metadata = EditorNavigation.GetCurrentTrack().trackMetadata;
-
-        // Editing a InputField's text does not fire EndEdit events.
-        title.text = metadata.title;
-        artist.text = metadata.artist;
-        genre.text = metadata.genre;
-
-        UIUtils.MemoryToDropdown(metadata.previewTrack, previewTrack);
-        startTime.text = metadata.previewStartTime.ToString();
-        endTime.text = metadata.previewEndTime.ToString();
-
-        UIUtils.MemoryToDropdown(metadata.eyecatchImage, eyecatchImage);
-        UIUtils.MemoryToDropdown(metadata.backImage, backgroundImage);
-        UIUtils.MemoryToDropdown(metadata.bga, backgroundVideo);
-        videoStartTime.text = metadata.bgaStartTime.ToString();
 
         // Remove all patterns from pattern list, except for template.
         for (int i = 0; i < patternList.transform.childCount; i++)
@@ -138,10 +124,6 @@ public class TrackPanel : MonoBehaviour
 
     public void RefreshDropdowns()
     {
-        UIUtils.RefreshFilenameDropdown(previewTrack, ResourcePanel.GetAudioFiles());
-        UIUtils.RefreshFilenameDropdown(eyecatchImage, ResourcePanel.GetImageFiles());
-        UIUtils.RefreshFilenameDropdown(backgroundImage, ResourcePanel.GetImageFiles());
-        UIUtils.RefreshFilenameDropdown(backgroundVideo, ResourcePanel.GetVideoFiles());
         MemoryToUI();
     }
 

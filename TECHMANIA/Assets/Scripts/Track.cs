@@ -111,7 +111,7 @@ public class TrackMetadata
     // If empty, will show background image
     public string bga;
     // Play BGA from this time.
-    public double bgaStartTime;
+    public double bgaOffset;
 }
 
 [Serializable]

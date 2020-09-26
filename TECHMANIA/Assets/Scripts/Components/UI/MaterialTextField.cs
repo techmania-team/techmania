@@ -53,8 +53,8 @@ public class MaterialTextField : MonoBehaviour,
     {
         text = GetComponent<TMP_InputField>();
         interactable = true;
-        emptyText = true;
-        miniLabelObject.SetActive(false);
+        emptyText = text.text == "";
+        RefreshMiniLabel();
 
         text.onSelect.AddListener((string s) =>
         {
@@ -88,13 +88,18 @@ public class MaterialTextField : MonoBehaviour,
 
     public void OnValueChanged()
     {
-        bool newEmptyText = text.text == "";
-        if (newEmptyText != emptyText)
+        bool emptyTextBackup = emptyText;
+        emptyText = text.text == "";
+        if (emptyTextBackup != emptyText)
         {
-            miniLabel.text = label.text;
-            miniLabelObject.SetActive(!newEmptyText);
+            RefreshMiniLabel();
         }
-        emptyText = newEmptyText;
+    }
+
+    public void RefreshMiniLabel()
+    {
+        miniLabel.text = label.text;
+        miniLabelObject.SetActive(!emptyText);
     }
 
     public void OnSelect(BaseEventData eventData)

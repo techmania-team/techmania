@@ -1,37 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIUtils
 {
     public const string kNone = "(None)";
-
-    // Refreshes the option and value of dropdown so:
-    // - The options are the file names (directory stripped) in newOptions
-    // - The new value points to the same option as before the call if
-    //   there is one; "(None)" otherwise
-    // - No events are fired
-    public static void RefreshFilenameDropdown(Dropdown dropdown, List<string> newOptions)
-    {
-        string currentOption = dropdown.options[dropdown.value].text;
-        int newValue = 0;
-
-        dropdown.options.Clear();
-        dropdown.options.Add(new Dropdown.OptionData(kNone));
-        for (int i = 0; i < newOptions.Count; i++)
-        {
-            string name = new FileInfo(newOptions[i]).Name;
-            if (currentOption == name)
-            {
-                newValue = i + 1;
-            }
-            dropdown.options.Add(new Dropdown.OptionData(name));
-        }
-
-        dropdown.SetValueWithoutNotify(newValue);
-    }
 
     public static void ClampInputField(InputField field, double min, double max)
     {
@@ -133,18 +109,29 @@ public class UIUtils
         property = newValue;
     }
 
-    public static void MemoryToDropdown(string value, Dropdown dropdown)
+    // Refreshes the option and value of dropdown so:
+    // - The options are the file names (directory stripped) in allOptions
+    // - The new value points to currentOption if it as among allOptions;
+    //   "(None)" otherwise
+    // - No events are fired
+    public static void MemoryToDropdown(TMP_Dropdown dropdown,
+        string currentOption, List<string> allOptions)
     {
-        int option = 0;
-        for (int i = 0; i < dropdown.options.Count; i++)
+        int value = 0;
+
+        dropdown.options.Clear();
+        dropdown.options.Add(new TMP_Dropdown.OptionData(kNone));
+        for (int i = 0; i < allOptions.Count; i++)
         {
-            if (dropdown.options[i].text == value)
+            string name = new FileInfo(allOptions[i]).Name;
+            if (currentOption == name)
             {
-                option = i;
-                break;
+                value = i + 1;
             }
+            dropdown.options.Add(new TMP_Dropdown.OptionData(name));
         }
-        dropdown.SetValueWithoutNotify(option);
+
+        dropdown.SetValueWithoutNotify(value);
     }
 
     public const string kEmptyKeysoundDisplayText = "(None)";
