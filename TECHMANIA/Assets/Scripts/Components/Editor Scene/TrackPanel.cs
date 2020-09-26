@@ -50,38 +50,7 @@ public class TrackPanel : MonoBehaviour
 
     public void UIToMemory()
     {
-        TrackMetadata metadata = EditorNavigation.GetCurrentTrack().trackMetadata;
-        bool madeChange = false;
-
-        UIUtils.UpdatePropertyInMemory(ref metadata.title,
-            title.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(ref metadata.artist,
-            artist.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(ref metadata.genre,
-            genre.text, ref madeChange);
-
-        UIUtils.UpdatePropertyInMemoryFromDropdown(
-            ref metadata.previewTrack, previewTrack, ref madeChange);
-        UIUtils.ClampInputField(startTime, 0.0, double.MaxValue);
-        UIUtils.UpdatePropertyInMemory(ref metadata.previewStartTime,
-            startTime.text, ref madeChange);
-        UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
-        UIUtils.UpdatePropertyInMemory(ref metadata.previewEndTime,
-            endTime.text, ref madeChange);
-
-        UIUtils.UpdatePropertyInMemoryFromDropdown(
-            ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
-        UIUtils.UpdatePropertyInMemoryFromDropdown(
-            ref metadata.backImage, backgroundImage, ref madeChange);
-        UIUtils.UpdatePropertyInMemoryFromDropdown(
-            ref metadata.bga, backgroundVideo, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(ref metadata.bgaOffset,
-            videoStartTime.text, ref madeChange);
-
-        if (madeChange)
-        {
-            EditorNavigation.DoneWithChange();
-        }
+        
     }
 
     public void MemoryToUI()

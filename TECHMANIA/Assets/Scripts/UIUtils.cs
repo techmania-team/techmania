@@ -9,7 +9,7 @@ public class UIUtils
 {
     public const string kNone = "(None)";
 
-    public static void ClampInputField(InputField field, double min, double max)
+    public static void ClampInputField(TMP_InputField field, double min, double max)
     {
         double value = double.Parse(field.text);
         bool clamped = false;
@@ -30,7 +30,7 @@ public class UIUtils
         }
     }
 
-    public static void ClampInputField(InputField field, int min, int max)
+    public static void ClampInputField(TMP_InputField field, int min, int max)
     {
         int value = int.Parse(field.text);
         bool clamped = false;
@@ -64,17 +64,10 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorNavigation.PrepareForChange();
+            EditorContext.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
-    }
-
-    public static void UpdatePropertyInMemoryFromDropdown(ref string property,
-        Dropdown dropdown, ref bool madeChange)
-    {
-        UpdatePropertyInMemory(ref property,
-            dropdown.options[dropdown.value].text, ref madeChange);
     }
 
     public static void UpdatePropertyInMemory(ref double property,
@@ -87,7 +80,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorNavigation.PrepareForChange();
+            EditorContext.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
@@ -103,10 +96,17 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorNavigation.PrepareForChange();
+            EditorContext.PrepareForChange();
             madeChange = true;
         }
         property = newValue;
+    }
+
+    public static void UpdatePropertyInMemory(ref string property,
+        TMP_Dropdown dropdown, ref bool madeChange)
+    {
+        UpdatePropertyInMemory(ref property,
+            dropdown.options[dropdown.value].text, ref madeChange);
     }
 
     // Refreshes the option and value of dropdown so:

@@ -155,6 +155,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField trackTitle;
     public TMP_InputField artist;
     public TMP_InputField genre;
+    public EyecatchSelfLoader eyecatchPreview;
     public TMP_Dropdown eyecatchImage;
     public TMP_Dropdown previewTrack;
     public TMP_InputField startTime;
@@ -203,16 +204,55 @@ public class TrackSetupPanel : MonoBehaviour
         {
             field.GetComponent<MaterialTextField>().RefreshMiniLabel();
         }
+
+        RefreshEyecatchPreview();
     }
 
     public void OnMetadataUpdated()
     {
-        
+        TrackMetadata metadata = EditorContext.track.trackMetadata;
+        bool madeChange = false;
+
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.title, trackTitle.text, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.artist, artist.text, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.genre, genre.text, ref madeChange);
+
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.previewTrack, previewTrack, ref madeChange);
+        UIUtils.ClampInputField(startTime, 0.0, double.MaxValue);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.previewStartTime, startTime.text, ref madeChange);
+        UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.previewEndTime, endTime.text, ref madeChange);
+
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.backImage, backgroundImage, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.bga, backgroundVideo, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.bgaOffset, bgaOffset.text, ref madeChange);
+
+        if (madeChange)
+        {
+            EditorContext.DoneWithChange();
+        }
     }
 
     public void OnEyecatchUpdated()
     {
+        RefreshEyecatchPreview();
+    }
 
+    public void RefreshEyecatchPreview()
+    {
+        eyecatchPreview.LoadImage(EditorContext.trackFolder,
+            EditorContext.track.trackMetadata);
     }
 
     public void OnPlayPreviewButtonClick()
