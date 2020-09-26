@@ -47,7 +47,7 @@ public class Game : MonoBehaviour
     public GameObject middleFeverBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
-    public Dialog pauseDialog;
+    public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
 
     public static Score score { get; private set; }
@@ -111,18 +111,25 @@ public class Game : MonoBehaviour
     private void OnDestroy()
     {
         Input.simulateMouseWithTouches = true;
-        Dialog.DialogClosed -= OnDialogClosed;
     }
 
     #region Initialization
+    private void ReportError(string message)
+    {
+        messageDialog.Show(message, closeCallback: () =>
+        {
+            WelcomeMat.skipToTrackSelect = true;
+            Curtain.DrawCurtainThenGoToScene("Main Menu");
+        });
+    }
+
     private void OnLoadComplete(string error)
     {
         ResourceLoader.LoadComplete -= OnLoadComplete;
         if (error != null)
         {
             // Handle error.
-            Dialog.DialogClosed += OnDialogClosed;
-            messageDialog.Show(error);
+            ReportError(error);
             return;
         }
 
@@ -171,8 +178,16 @@ public class Game : MonoBehaviour
 
         // Find last scan. Make sure it ends later than the backing
         // track, so we don't cut the track short.
-        backingTrackSource.clip = resourceLoader.GetClip(
-            GameSetup.pattern.patternMetadata.backingTrack);
+        try
+        {
+            backingTrackSource.clip = resourceLoader.GetClip(
+                GameSetup.pattern.patternMetadata.backingTrack);
+        }
+        catch (KeyNotFoundException)
+        {
+            ReportError($"Backing track {GameSetup.pattern.patternMetadata.backingTrack} is not found.");
+            return;
+        }
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
             PulsesPerScan;
         while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
@@ -673,25 +688,12 @@ public class Game : MonoBehaviour
     {
         stopwatch.Stop();
         backingTrackSource.Pause();
-        pauseDialog.FadeIn();
-        MenuSfx.instance.PlayPauseSound();
-        Dialog.DialogClosed += OnDialogClosed;
-    }
-
-    private void OnDialogClosed(GameObject o)
-    {
-        if (o == pauseDialog.gameObject)
+        pauseDialog.Show(closeCallback: () =>
         {
-            Dialog.DialogClosed -= OnDialogClosed;
             stopwatch.Start();
             backingTrackSource.UnPause();
-        }
-        if (o == messageDialog.gameObject)
-        {
-            Dialog.DialogClosed -= OnDialogClosed;
-            WelcomeMat.skipToTrackSelect = true;
-            Curtain.DrawCurtainThenGoToScene("Main Menu");
-        }
+        });
+        MenuSfx.instance.PlayPauseSound();
     }
     #endregion
 }

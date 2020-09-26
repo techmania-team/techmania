@@ -11,13 +11,19 @@ public class NewTrackDialog : MonoBehaviour
     public TMP_InputField titleField;
     public TMP_InputField artistField;
 
-    public static event UnityAction<string, string> CreateButtonClicked;
-
-    // Intentionally not responding to the Enter or Tab keys because
+    // Intentionally not responding to the Enter key because
     // it's an effing nightmare.
+
+    private UnityAction<string, string> createCallback;
+
+    public void Show(UnityAction<string, string> createCallback)
+    {
+        this.createCallback = createCallback;
+        GetComponent<Dialog>().FadeIn();
+    }
 
     public void OnCreateButtonClick()
     {
-        CreateButtonClicked?.Invoke(titleField.text, artistField.text);
+        createCallback?.Invoke(titleField.text, artistField.text);
     }
 }

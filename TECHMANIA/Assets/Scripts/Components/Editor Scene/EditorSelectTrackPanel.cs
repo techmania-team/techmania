@@ -31,14 +31,14 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
     protected override void OnClickNewTrackCard()
     {
-        newTrackDialog.GetComponent<Dialog>().FadeIn();
-        NewTrackDialog.CreateButtonClicked += OnCreateButtonClicked;
+        newTrackDialog.Show(createCallback: (string title, string artist) =>
+        {
+            OnCreateButtonClick(title, artist);
+        });
     }
 
-    private void OnCreateButtonClicked(string title, string artist)
+    private void OnCreateButtonClick(string title, string artist)
     {
-        NewTrackDialog.CreateButtonClicked -= OnCreateButtonClicked;
-
         // Attempt to create track directory. Contains timestamp
         // so collisions are very unlikely.
         string filteredTitle = Paths.FilterString(title);
@@ -75,8 +75,6 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         EditorContext.trackPath = filename;
         EditorContext.track = track;
         PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
-
-        Refresh();
     }
 
     // TODO: move this to track setup
