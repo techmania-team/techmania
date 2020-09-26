@@ -10,34 +10,40 @@ public class TrackSetupPanel : MonoBehaviour
     public MessageDialog messageDialog;
     public Tabs tabs;
 
+    #region Refreshing
     private void OnEnable()
     {
-        Tabs.tabChanged += OnTabChanged;
-        OnTabChanged(tabs.CurrentTab);
+        Tabs.tabChanged += Refresh;
+        EditorContext.StateUpdated += Refresh;
+        EditorContext.DirtynessUpdated += RefreshTitle;
+        Refresh();
     }
 
     private void OnDisable()
     {
-        Tabs.tabChanged -= OnTabChanged;
+        Tabs.tabChanged -= Refresh;
+        EditorContext.StateUpdated -= Refresh;
+        EditorContext.DirtynessUpdated -= RefreshTitle;
     }
 
     private void OnApplicationFocus(bool focus)
     {
         if (focus)
         {
-            OnTabChanged(tabs.CurrentTab);
+            Refresh();
         }
     }
 
-    private void OnTabChanged(int tab)
+    private void Refresh()
     {
-        switch (tab)
+        switch (tabs.CurrentTab)
         {
             case 0:
                 RefreshResourcesTab();
                 break;
         }
     }
+    #endregion
 
     #region Top bar
     [Header("Top bar")]
@@ -56,6 +62,13 @@ public class TrackSetupPanel : MonoBehaviour
     public void Redo()
     {
         EditorContext.Redo();
+    }
+
+    private void RefreshTitle(bool dirty)
+    {
+        string titleText = title.text.TrimEnd('*');
+        if (dirty) titleText = titleText + '*';
+        title.text = titleText;
     }
 
     void Update()

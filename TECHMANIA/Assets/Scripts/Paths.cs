@@ -52,7 +52,7 @@ public static class Paths
                 files.Add(file);
             }
         }
-        return files;
+        return new List<string>(NumericSort.Sort(files));
     }
 
     public static List<string> GetAllAudioFiles(string folder)

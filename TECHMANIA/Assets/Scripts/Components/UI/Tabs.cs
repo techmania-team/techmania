@@ -12,7 +12,7 @@ public class Tabs : MonoBehaviour
     public int CurrentTab { get; private set; }
 
     // This is fired from buttons only, not on startup.
-    public static event UnityAction<int> tabChanged;
+    public static event UnityAction tabChanged;
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +50,6 @@ public class Tabs : MonoBehaviour
 
         CurrentTab = t;
 
-        tabChanged?.Invoke(t);
+        tabChanged?.Invoke();
     }
 }
