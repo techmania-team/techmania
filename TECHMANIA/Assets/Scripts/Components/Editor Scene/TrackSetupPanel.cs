@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public class TrackSetupPanel : MonoBehaviour
 {
-    public Panel editorSelectTrackPanel;
     public MessageDialog messageDialog;
+    public ConfirmDialog confirmDialog;
     public Tabs tabs;
 
     #region Refreshing
@@ -59,11 +59,6 @@ public class TrackSetupPanel : MonoBehaviour
     public TextMeshProUGUI title;
     public Button undoButton;
     public Button redoButton;
-
-    public void OnBackButtonClick()
-    {
-        PanelTransitioner.TransitionTo(editorSelectTrackPanel, TransitionToPanel.Direction.Left);
-    }
 
     public void Save()
     {
@@ -280,7 +275,15 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnDeleteTrackButtonClick()
     {
-
+        confirmDialog.Show(
+            $"This will permanently delete \"{EditorContext.trackFolder}\" and every file in it. Continue?",
+            "delete",
+            "cancel",
+            () =>
+            {
+                Directory.Delete(EditorContext.trackFolder, recursive: true);
+                GetComponentInChildren<TransitionToPanelWhenNotDirty>().ForceTransition();
+            });
     }
 
     #endregion

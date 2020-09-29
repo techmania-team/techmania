@@ -7,18 +7,6 @@ using UnityEngine.UI;
 // TODO: deprecate this.
 public class TrackPanel : MonoBehaviour
 {
-    [Header("Metadata")]
-    public InputField title;
-    public InputField artist;
-    public InputField genre;
-    public Dropdown previewTrack;
-    public InputField startTime;
-    public InputField endTime;
-    public Dropdown eyecatchImage;
-    public Dropdown backgroundImage;
-    public Dropdown backgroundVideo;
-    public InputField videoStartTime;
-
     [Header("Patterns")]
     public VerticalLayoutGroup patternList;
     public GameObject patternTemplate;

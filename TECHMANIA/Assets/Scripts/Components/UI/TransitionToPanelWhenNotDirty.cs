@@ -17,12 +17,17 @@ public class TransitionToPanelWhenNotDirty : TransitionToPanel
                 "cancel",
                 () =>
                 {
-                    PanelTransitioner.TransitionTo(target, targetAppearsFrom);
+                    ForceTransition();
                 });
         }
         else
         {
-            PanelTransitioner.TransitionTo(target, targetAppearsFrom);
+            ForceTransition();
         }
+    }
+
+    public void ForceTransition()
+    {
+        PanelTransitioner.TransitionTo(target, targetAppearsFrom);
     }
 }

@@ -138,7 +138,7 @@ public class EditorNavigation : MonoBehaviour
             case Location.Track:
                 if (dirty)
                 {
-                    StartCoroutine(ConfirmCloseTrackWithoutSave());
+                    
                 }
                 else
                 {
@@ -152,20 +152,6 @@ public class EditorNavigation : MonoBehaviour
                 GoTo(Location.PatternMetadata);
                 break;
         }
-    }
-
-    private IEnumerator ConfirmCloseTrackWithoutSave()
-    {
-        // ConfirmDialog.Show("Returning to track list without saving. " +
-        //     "All unsaved changes will be lost. Continue?");
-        // yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
-        // if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
-        {
-            yield break;
-        }
-
-        dirty = false;
-        GoTo(Location.SelectTrack);
     }
 
     public static void GoTo(Location location)
