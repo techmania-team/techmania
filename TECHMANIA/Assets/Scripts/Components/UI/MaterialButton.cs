@@ -109,6 +109,11 @@ public class MaterialButton : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!interactable)
+        {
+            return;
+        }
+
         if (useClickSoundOverride)
         {
             MenuSfx.instance.PlaySound(clickSoundOverride);
@@ -138,12 +143,12 @@ public class MaterialButton : MonoBehaviour,
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!button.IsInteractable())
+        if (!interactable)
         {
             return;
         }
 
-        Vector2 pointerPosition = (eventData as PointerEventData).position;
+        Vector2 pointerPosition = eventData.position;
         Vector2 rippleStartPosition;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rippleParentRect, pointerPosition, null, out rippleStartPosition))

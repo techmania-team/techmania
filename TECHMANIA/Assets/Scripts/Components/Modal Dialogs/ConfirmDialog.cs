@@ -1,71 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class ConfirmDialog : ModalDialog
+public class ConfirmDialog : MonoBehaviour
 {
-    private static ConfirmDialog instance;
-    private static ConfirmDialog GetInstance()
+    public TextMeshProUGUI message;
+    public TextMeshProUGUI confirmButtonText;
+    public TextMeshProUGUI cancelButtonText;
+
+    private UnityAction confirmCallback;
+
+    public void Show(string message,
+        string confirmButtonText,
+        string cancelButtonText,
+        UnityAction confirmCallback)
     {
-        if (instance == null)
-        {
-            instance = FindObjectOfType<Canvas>().GetComponentInChildren<ConfirmDialog>(includeInactive: true);
-        }
-        return instance;
+        this.message.text = message;
+        this.confirmButtonText.text = confirmButtonText;
+        this.cancelButtonText.text = cancelButtonText;
+        this.confirmCallback = confirmCallback;
+        GetComponent<Dialog>().FadeIn();
     }
 
-    public static void Show(string message)
+    public void OnConfirmButtonClick()
     {
-        GetInstance().InternalShow(message);
-    }
-    public static bool IsResolved()
-    {
-        return GetInstance().resolved;
-    }
-    public static Result GetResult()
-    {
-        return GetInstance().result;
-    }
-
-    public Text messageText;
-    public enum Result
-    {
-        Cancelled,
-        OK
-    }
-    private Result result;
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            OK();
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cancel();
-        }
-    }
-
-    private void InternalShow(string message)
-    {
-        gameObject.SetActive(true);
-        messageText.text = message;
-        resolved = false;
-    }
-
-    public void OK()
-    {
-        resolved = true;
-        result = Result.OK;
-        gameObject.SetActive(false);
-    }
-
-    public void Cancel()
-    {
-        resolved = true;
-        result = Result.Cancelled;
-        gameObject.SetActive(false);
+        confirmCallback?.Invoke();
     }
 }

@@ -13,7 +13,7 @@ public class TransitionToPanel : MonoBehaviour, IPointerClickHandler, ISubmitHan
     }
     public Direction targetAppearsFrom;
 
-    public void Invoke()
+    public virtual void Invoke()
     {
         PanelTransitioner.TransitionTo(target, targetAppearsFrom);
     }

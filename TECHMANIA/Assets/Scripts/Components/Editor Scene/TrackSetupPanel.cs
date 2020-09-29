@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class TrackSetupPanel : MonoBehaviour
 {
+    public Panel editorSelectTrackPanel;
     public MessageDialog messageDialog;
     public Tabs tabs;
 
@@ -17,7 +18,10 @@ public class TrackSetupPanel : MonoBehaviour
         Tabs.tabChanged += Refresh;
         EditorContext.StateUpdated += Refresh;
         EditorContext.DirtynessUpdated += RefreshTitle;
+        EditorContext.UndoRedoStackUpdated += RefreshUndoRedoButtons;
         Refresh();
+        RefreshTitle(EditorContext.Dirty);
+        RefreshUndoRedoButtons();
     }
 
     private void OnDisable()
@@ -25,6 +29,7 @@ public class TrackSetupPanel : MonoBehaviour
         Tabs.tabChanged -= Refresh;
         EditorContext.StateUpdated -= Refresh;
         EditorContext.DirtynessUpdated -= RefreshTitle;
+        EditorContext.UndoRedoStackUpdated -= RefreshUndoRedoButtons;
     }
 
     private void OnApplicationFocus(bool focus)
@@ -52,6 +57,13 @@ public class TrackSetupPanel : MonoBehaviour
     #region Top bar
     [Header("Top bar")]
     public TextMeshProUGUI title;
+    public Button undoButton;
+    public Button redoButton;
+
+    public void OnBackButtonClick()
+    {
+        PanelTransitioner.TransitionTo(editorSelectTrackPanel, TransitionToPanel.Direction.Left);
+    }
 
     public void Save()
     {
@@ -73,6 +85,12 @@ public class TrackSetupPanel : MonoBehaviour
         string titleText = title.text.TrimEnd('*');
         if (dirty) titleText = titleText + '*';
         title.text = titleText;
+    }
+
+    private void RefreshUndoRedoButtons()
+    {
+        undoButton.interactable = EditorContext.CanUndo();
+        redoButton.interactable = EditorContext.CanRedo();
     }
 
     void Update()

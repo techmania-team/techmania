@@ -156,10 +156,10 @@ public class EditorNavigation : MonoBehaviour
 
     private IEnumerator ConfirmCloseTrackWithoutSave()
     {
-        ConfirmDialog.Show("Returning to track list without saving. " +
-            "All unsaved changes will be lost. Continue?");
-        yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
-        if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
+        // ConfirmDialog.Show("Returning to track list without saving. " +
+        //     "All unsaved changes will be lost. Continue?");
+        // yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
+        // if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
         {
             yield break;
         }

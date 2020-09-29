@@ -83,11 +83,11 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         TrackInFolder trackInFolder = null; // cardToTrack[selectedTrackObject];
         string title = trackInFolder.track.trackMetadata.title;
         string path = trackInFolder.folder;
-        ConfirmDialog.Show($"Deleting {title}. This will permanently " +
-            $"delele \"{path}\" and everything in it. Are you sure?");
-        yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
+        // ConfirmDialog.Show($"Deleting {title}. This will permanently " +
+        //     $"delele \"{path}\" and everything in it. Are you sure?");
+        // yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
 
-        if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
+        // if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
         {
             yield break;
         }
