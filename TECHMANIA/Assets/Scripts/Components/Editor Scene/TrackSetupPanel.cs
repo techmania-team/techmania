@@ -176,6 +176,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_Dropdown backgroundImage;
     public TMP_Dropdown backgroundVideo;
     public TMP_InputField bgaOffset;
+    public PreviewTrackPlayer previewTrackPlayer;
 
     private List<string> audioFilesCache;
     private List<string> imageFilesCache;
@@ -270,7 +271,12 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnPlayPreviewButtonClick()
     {
-
+        previewTrackPlayer.Play(
+            EditorContext.trackFolder,
+            EditorContext.track.trackMetadata.previewTrack,
+            EditorContext.track.trackMetadata.previewStartTime,
+            EditorContext.track.trackMetadata.previewEndTime,
+            loop: false);
     }
 
     public void OnDeleteTrackButtonClick()

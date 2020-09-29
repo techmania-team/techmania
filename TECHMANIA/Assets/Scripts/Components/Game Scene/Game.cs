@@ -368,6 +368,7 @@ public class Game : MonoBehaviour
         {
             backingTrackSource.timeSamples = Mathf.FloorToInt(
                 newTime * backingTrackSource.clip.frequency);
+            backingTrackSource.loop = false;
             backingTrackSource.Play();
         }
         Time = newTime;
