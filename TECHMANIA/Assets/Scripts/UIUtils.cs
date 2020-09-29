@@ -105,8 +105,14 @@ public class UIUtils
     public static void UpdatePropertyInMemory(ref string property,
         TMP_Dropdown dropdown, ref bool madeChange)
     {
+        string newValueString = dropdown.options[dropdown.value].text;
+        if (newValueString == kNone &&
+            dropdown.value == 0)
+        {
+            newValueString = "";
+        }
         UpdatePropertyInMemory(ref property,
-            dropdown.options[dropdown.value].text, ref madeChange);
+            newValueString, ref madeChange);
     }
 
     // Refreshes the option and value of dropdown so:
@@ -132,6 +138,7 @@ public class UIUtils
         }
 
         dropdown.SetValueWithoutNotify(value);
+        dropdown.RefreshShownValue();
     }
 
     public const string kEmptyKeysoundDisplayText = "(None)";

@@ -630,7 +630,7 @@ public class Game : MonoBehaviour
 
         ResolveNote(n, judgement);
 
-        if (n.sound != "" && n.sound != UIUtils.kNone)
+        if (n.sound != "")
         {
             AudioClip clip = resourceLoader.GetClip(n.sound);
             keysoundSources[n.note.lane].clip = clip;
@@ -645,7 +645,7 @@ public class Game : MonoBehaviour
         {
             NoteObject upcomingNote = noteObjectsInLane[lane]
                 .First.Value;
-            if (upcomingNote.sound != "" && upcomingNote.sound != UIUtils.kNone)
+            if (upcomingNote.sound != "")
             {
                 AudioClip clip = resourceLoader.GetClip(upcomingNote.sound);
                 keysoundSources[lane].clip = clip;

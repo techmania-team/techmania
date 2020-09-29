@@ -19,7 +19,7 @@ public class EyecatchSelfLoader : MonoBehaviour
 
     public void LoadImage(string folder, TrackMetadata t)
     {
-        if (t.eyecatchImage != UIUtils.kNone)
+        if (t.eyecatchImage != "")
         {
             string fullPath = folder + "\\" + t.eyecatchImage;
             StartCoroutine(InnerLoadImage(fullPath));
