@@ -12,12 +12,7 @@ public class ResultsPanel : MonoBehaviour
     public EyecatchSelfLoader eyecatch;
     public TextMeshProUGUI trackTitle;
     public TextMeshProUGUI trackArtist;
-    public Image patternControlIcon;
-    public TextMeshProUGUI patternLevel;
-    public TextMeshProUGUI patternName;
-    public Sprite touchIcon;
-    public Sprite keysIcon;
-    public Sprite kmIcon;
+    public PatternBanner patternBanner;
 
     [Header("Tallies")]
     public TextMeshProUGUI rainbowMax;
@@ -48,20 +43,7 @@ public class ResultsPanel : MonoBehaviour
         trackArtist.text = track.artist;
 
         PatternMetadata pattern = GameSetup.pattern.patternMetadata;
-        switch (pattern.controlScheme)
-        {
-            case ControlScheme.Touch:
-                patternControlIcon.sprite = touchIcon;
-                break;
-            case ControlScheme.Keys:
-                patternControlIcon.sprite = keysIcon;
-                break;
-            case ControlScheme.KM:
-                patternControlIcon.sprite = kmIcon;
-                break;
-        }
-        patternLevel.text = pattern.level.ToString();
-        patternName.text = pattern.patternName;
+        patternBanner.Initialize(pattern);
 
         // Tallies
         rainbowMax.text = Game.score.notesPerJudgement[Judgement.RainbowMax].ToString();
