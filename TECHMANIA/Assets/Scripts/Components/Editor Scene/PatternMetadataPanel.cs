@@ -15,28 +15,6 @@ public class PatternMetadataPanel : MonoBehaviour
     public InputField initialBpm;
     public InputField initialBps;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnEnable()
-    {
-        ResourcePanel.resourceRefreshed += RefreshDropdowns;
-    }
-
-    private void OnDisable()
-    {
-        ResourcePanel.resourceRefreshed -= RefreshDropdowns;
-    }
-
     public void UIToMemory()
     {
         PatternMetadata metadata = EditorNavigation.GetCurrentPattern().patternMetadata;
@@ -75,31 +53,5 @@ public class PatternMetadataPanel : MonoBehaviour
         {
             EditorNavigation.DoneWithChange();
         }
-    }
-
-    public void MemoryToUI()
-    {
-        PatternMetadata metadata = EditorNavigation.GetCurrentPattern().patternMetadata;
-
-        nameInput.text = metadata.patternName;
-        level.text = metadata.level.ToString();
-        controlScheme.SetValueWithoutNotify((int)metadata.controlScheme);
-
-        // UIUtils.MemoryToDropdown(metadata.backingTrack, backingTrack);
-
-        firstBeatOffset.text = metadata.firstBeatOffset.ToString();
-        initialBpm.text = metadata.initBpm.ToString();
-        initialBps.text = metadata.bps.ToString();
-    }
-
-    public void RefreshDropdowns()
-    {
-        // UIUtils.RefreshFilenameDropdown(backingTrack, ResourcePanel.GetAudioFiles());
-        MemoryToUI();
-    }
-
-    public void Edit()
-    {
-        EditorNavigation.GoTo(EditorNavigation.Location.Pattern);
     }
 }

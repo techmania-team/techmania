@@ -35,7 +35,6 @@ public class MaterialRadioButton : MonoBehaviour,
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
         selected = false;
-        on = false;
         UpdateColor();
     }
 

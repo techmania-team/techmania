@@ -117,13 +117,13 @@ public class EditorNavigation : MonoBehaviour
         switch (location)
         {
             case Location.Track:
-                trackPanel.RefreshDropdowns();
+                // trackPanel.RefreshDropdowns();
                 break;
             case Location.PatternMetadata:
-                patternMetadataPanel.RefreshDropdowns();
+                // patternMetadataPanel.RefreshDropdowns();
                 break;
             case Location.Pattern:
-                patternPanel.MemoryToUI();
+                // patternPanel.MemoryToUI();
                 break;
         }
     }

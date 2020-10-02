@@ -76,31 +76,4 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         EditorContext.track = track;
         PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
     }
-
-    // TODO: move this to track setup
-    private IEnumerator InternalDelete()
-    {
-        TrackInFolder trackInFolder = null; // cardToTrack[selectedTrackObject];
-        string title = trackInFolder.track.trackMetadata.title;
-        string path = trackInFolder.folder;
-        // ConfirmDialog.Show($"Deleting {title}. This will permanently " +
-        //     $"delele \"{path}\" and everything in it. Are you sure?");
-        // yield return new WaitUntil(() => { return ConfirmDialog.IsResolved(); });
-
-        // if (ConfirmDialog.GetResult() == ConfirmDialog.Result.Cancelled)
-        {
-            yield break;
-        }
-
-        try
-        {
-            Directory.Delete(path, recursive: true);
-        }
-        catch (Exception e)
-        {
-            // MessageDialog.Show(e.Message);
-        }
-
-        Refresh();
-    }
 }

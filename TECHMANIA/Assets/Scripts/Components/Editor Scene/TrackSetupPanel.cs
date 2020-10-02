@@ -16,9 +16,11 @@ public class TrackSetupPanel : MonoBehaviour
     private void OnEnable()
     {
         Tabs.tabChanged += Refresh;
-        EditorContext.StateUpdated += Refresh;
+        EditorContext.UndoneOrRedone += Refresh;
         EditorContext.DirtynessUpdated += RefreshTitle;
         EditorContext.UndoRedoStackUpdated += RefreshUndoRedoButtons;
+        PatternRadioList.SelectedPatternChanged += SelectedPatternChanged;
+        selectedPattern = null;
         Refresh();
         RefreshTitle(EditorContext.Dirty);
         RefreshUndoRedoButtons();
@@ -27,9 +29,10 @@ public class TrackSetupPanel : MonoBehaviour
     private void OnDisable()
     {
         Tabs.tabChanged -= Refresh;
-        EditorContext.StateUpdated -= Refresh;
+        EditorContext.UndoneOrRedone -= Refresh;
         EditorContext.DirtynessUpdated -= RefreshTitle;
         EditorContext.UndoRedoStackUpdated -= RefreshUndoRedoButtons;
+        PatternRadioList.SelectedPatternChanged -= SelectedPatternChanged;
     }
 
     private void OnApplicationFocus(bool focus)
@@ -49,6 +52,9 @@ public class TrackSetupPanel : MonoBehaviour
                 break;
             case 1:
                 RefreshMetadataTab();
+                break;
+            case 2:
+                RefreshPatternsTab();
                 break;
         }
     }
@@ -292,5 +298,141 @@ public class TrackSetupPanel : MonoBehaviour
             });
     }
 
+    #endregion
+
+    #region Patterns tab
+    [Header("Patterns tab")]
+    public PatternRadioList patternList;
+    public GameObject patternMetadata;
+    public GameObject noPatternSelectedNotice;
+    public TMP_InputField patternName;
+    public TMP_InputField patternAuthor;
+    public TMP_Dropdown controlScheme;
+    public TMP_InputField patternLevel;
+    public TMP_Dropdown patternBackingTrack;
+    public TMP_InputField firstBeatOffset;
+    public TMP_InputField initialBpm;
+    public TMP_InputField bps;
+
+    // Keep a reference to the selected pattern, so we can
+    // re-select it when the pattern list refreshes.
+    private Pattern selectedPattern;
+
+    private void RefreshPatternsTab()
+    {
+        audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
+        RefreshPatternList();
+        RefreshPatternMetadata();
+    }
+
+    private void RefreshPatternList()
+    {
+        patternList.InitializeAndReturnFirstPatternObject(
+            EditorContext.track, selectedPattern);
+    }
+
+    private void RefreshPatternMetadata()
+    {
+        patternMetadata.SetActive(selectedPattern != null);
+        noPatternSelectedNotice.SetActive(selectedPattern == null);
+        if (selectedPattern == null) return;
+
+        PatternMetadata m = selectedPattern.patternMetadata;
+        patternName.SetTextWithoutNotify(m.patternName);
+        patternAuthor.SetTextWithoutNotify(m.author);
+        controlScheme.SetValueWithoutNotify((int)m.controlScheme);
+        patternLevel.SetTextWithoutNotify(m.level.ToString());
+
+        UIUtils.MemoryToDropdown(patternBackingTrack,
+            m.backingTrack, audioFilesCache);
+
+        firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
+        initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
+        bps.SetTextWithoutNotify(m.bps.ToString());
+
+        foreach (TMP_InputField field in new List<TMP_InputField>()
+        {
+            patternName,
+            patternAuthor,
+            patternLevel,
+            firstBeatOffset,
+            initialBpm,
+            bps
+        })
+        {
+            field.GetComponent<MaterialTextField>().RefreshMiniLabel();
+        }
+    }
+
+    private void SelectedPatternChanged(Pattern newSelection)
+    {
+        selectedPattern = newSelection;
+        RefreshPatternMetadata();
+    }
+
+    public void OnPatternMetadataChanged()
+    {
+        PatternMetadata m = selectedPattern.patternMetadata;
+        bool madeChange = false;
+
+        UIUtils.UpdatePropertyInMemory(ref m.patternName,
+            patternName.text, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(ref m.author,
+            patternAuthor.text, ref madeChange);
+        UIUtils.ClampInputField(patternLevel,
+            Pattern.minLevel, Pattern.maxLevel);
+        UIUtils.UpdatePropertyInMemory(ref m.level,
+            patternLevel.text, ref madeChange);
+
+        // Special handling for control scheme
+        if ((int)m.controlScheme != controlScheme.value)
+        {
+            if (!madeChange)
+            {
+                EditorContext.PrepareForChange();
+                madeChange = true;
+            }
+            m.controlScheme = (ControlScheme)controlScheme.value;
+        }
+
+        UIUtils.UpdatePropertyInMemory(ref m.backingTrack,
+            patternBackingTrack, ref madeChange);
+
+        UIUtils.UpdatePropertyInMemory(
+            ref m.firstBeatOffset, firstBeatOffset.text, ref madeChange);
+        UIUtils.ClampInputField(initialBpm, Pattern.minBpm, Pattern.maxBpm);
+        UIUtils.UpdatePropertyInMemory(
+            ref m.initBpm, initialBpm.text, ref madeChange);
+        UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
+        UIUtils.UpdatePropertyInMemory(
+            ref m.bps, bps.text, ref madeChange);
+
+        if (madeChange)
+        {
+            EditorContext.track.SortPatterns();
+            EditorContext.DoneWithChange();
+            RefreshPatternList();
+        }
+    }
+
+    public void OnNewPatternButtonClick()
+    {
+
+    }
+
+    public void OnDeletePatternButtonClick()
+    {
+
+    }
+
+    public void OnDuplicatePatternButtonClick()
+    {
+
+    }
+
+    public void OnOpenPatternButtonClick()
+    {
+
+    }
     #endregion
 }

@@ -28,7 +28,7 @@ public class EditorContext : MonoBehaviour
 
     public static event UnityAction<bool> DirtynessUpdated;
     public static event UnityAction UndoRedoStackUpdated;
-    public static event UnityAction StateUpdated;
+    public static event UnityAction UndoneOrRedone;
 
     public static void Reset()
     {
@@ -76,7 +76,7 @@ public class EditorContext : MonoBehaviour
         track = undoStack.Pop();
         Dirty = true;
         DirtynessUpdated?.Invoke(Dirty);
-        StateUpdated?.Invoke();
+        UndoneOrRedone?.Invoke();
         UndoRedoStackUpdated?.Invoke();
     }
 
@@ -87,7 +87,7 @@ public class EditorContext : MonoBehaviour
         track = redoStack.Pop();
         Dirty = true;
         DirtynessUpdated?.Invoke(Dirty);
-        StateUpdated?.Invoke();
+        UndoneOrRedone?.Invoke();
         UndoRedoStackUpdated?.Invoke();
     }
 }
