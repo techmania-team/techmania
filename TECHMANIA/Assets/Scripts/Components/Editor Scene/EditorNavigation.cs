@@ -21,8 +21,8 @@ public class EditorNavigation : MonoBehaviour
 
     public EditorSelectTrackPanel selectTrackPanel;
     public TrackPanel trackPanel;
-    public ResourcePanel resourcePanel;
-    public PatternMetadataPanel patternMetadataPanel;
+    // public ResourcePanel resourcePanel;
+    // public PatternMetadataPanel patternMetadataPanel;
     public PatternPanel patternPanel;
 
     public Text backButtonText;
@@ -163,9 +163,9 @@ public class EditorNavigation : MonoBehaviour
     {
         selectTrackPanel.gameObject.SetActive(location == Location.SelectTrack);
         trackPanel.gameObject.SetActive(location == Location.Track);
-        resourcePanel.gameObject.SetActive(location == Location.Track ||
-            location == Location.PatternMetadata);
-        patternMetadataPanel.gameObject.SetActive(location == Location.PatternMetadata);
+        // resourcePanel.gameObject.SetActive(location == Location.Track ||
+        //     location == Location.PatternMetadata);
+        // patternMetadataPanel.gameObject.SetActive(location == Location.PatternMetadata);
         patternPanel.gameObject.SetActive(location == Location.Pattern);
         this.location = location;
 

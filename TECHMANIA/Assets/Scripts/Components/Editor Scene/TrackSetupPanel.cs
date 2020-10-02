@@ -417,12 +417,27 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnNewPatternButtonClick()
     {
+        Pattern p = new Pattern();
+        p.patternMetadata = new PatternMetadata();
+        p.patternMetadata.patternName = "New pattern";
 
+        EditorContext.PrepareForChange();
+        EditorContext.track.patterns.Add(p);
+        EditorContext.track.SortPatterns();
+        EditorContext.DoneWithChange();
+
+        RefreshPatternList();
     }
 
     public void OnDeletePatternButtonClick()
     {
+        // This is undoable, so no need for confirmation.
+        EditorContext.PrepareForChange();
+        EditorContext.track.patterns.Remove(selectedPattern);
+        EditorContext.DoneWithChange();
 
+        selectedPattern = null;
+        RefreshPatternList();
     }
 
     public void OnDuplicatePatternButtonClick()
