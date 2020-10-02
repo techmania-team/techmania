@@ -85,13 +85,21 @@ public class Track : TrackBase
         });
     }
 
+    // Returns -1 if not found.
+    public int FindPatternIndexByGuid(string guid)
+    {
+        for (int i = 0; i < patterns.Count; i++)
+        {
+            if (patterns[i].patternMetadata.guid == guid) return i;
+        }
+        return -1;
+    }
+
     public Pattern FindPatternByGuid(string guid)
     {
-        foreach (Pattern p in patterns)
-        {
-            if (p.patternMetadata.guid == guid) return p;
-        }
-        return null;
+        int index = FindPatternIndexByGuid(guid);
+        if (index < 0) return null;
+        return patterns[index];
     }
 }
 

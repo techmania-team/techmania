@@ -313,6 +313,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField firstBeatOffset;
     public TMP_InputField initialBpm;
     public TMP_InputField bps;
+    public TransitionToPanel transitionToPatternPanel;
 
     // Keep a reference to the selected pattern, so we can
     // re-select it when the pattern list refreshes.
@@ -456,7 +457,12 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnOpenPatternButtonClick()
     {
+        int index = EditorContext.track.FindPatternIndexByGuid(
+            selectedPattern.patternMetadata.guid);
+        if (index < 0) return;
+        EditorContext.patternIndex = index;
 
+        transitionToPatternPanel.Invoke();
     }
     #endregion
 }
