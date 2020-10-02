@@ -84,6 +84,15 @@ public class Track : TrackBase
             }
         });
     }
+
+    public Pattern FindPatternByGuid(string guid)
+    {
+        foreach (Pattern p in patterns)
+        {
+            if (p.patternMetadata.guid == guid) return p;
+        }
+        return null;
+    }
 }
 
 [Serializable]
@@ -136,8 +145,6 @@ public class Pattern
     public Pattern()
     {
         patternMetadata = new PatternMetadata();
-        patternMetadata.guid = Guid.NewGuid().ToString();
-        patternMetadata.patternName = "New pattern";
         bpmEvents = new List<BpmEvent>();
         soundChannels = new List<SoundChannel>();
     }
@@ -340,6 +347,15 @@ public class PatternMetadata
     public double initBpm;
     // BPS: beats per scan.
     public int bps;
+
+    public PatternMetadata()
+    {
+        guid = Guid.NewGuid().ToString();
+        patternName = "New pattern";
+        level = Pattern.minLevel;
+        initBpm = Pattern.minBpm;
+        bps = Pattern.minBps;
+    }
 }
 
 [Serializable]

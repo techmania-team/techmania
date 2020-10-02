@@ -316,11 +316,19 @@ public class TrackSetupPanel : MonoBehaviour
 
     // Keep a reference to the selected pattern, so we can
     // re-select it when the pattern list refreshes.
+    //
+    // However this reference will be invalidated upon undo/redo.
+    // Must refresh it upon undo/redo.
     private Pattern selectedPattern;
 
     private void RefreshPatternsTab()
     {
         audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
+        if (selectedPattern != null)
+        {
+            selectedPattern = EditorContext.track.FindPatternByGuid(
+                selectedPattern.patternMetadata.guid);
+        }
         RefreshPatternList();
         RefreshPatternMetadata();
     }
