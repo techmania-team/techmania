@@ -417,12 +417,8 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnNewPatternButtonClick()
     {
-        Pattern p = new Pattern();
-        p.patternMetadata = new PatternMetadata();
-        p.patternMetadata.patternName = "New pattern";
-
         EditorContext.PrepareForChange();
-        EditorContext.track.patterns.Add(p);
+        EditorContext.track.patterns.Add(new Pattern());
         EditorContext.track.SortPatterns();
         EditorContext.DoneWithChange();
 
@@ -442,7 +438,12 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnDuplicatePatternButtonClick()
     {
+        EditorContext.PrepareForChange();
+        EditorContext.track.patterns.Add(selectedPattern.CloneWithDifferentGuid());
+        EditorContext.track.SortPatterns();
+        EditorContext.DoneWithChange();
 
+        RefreshPatternList();
     }
 
     public void OnOpenPatternButtonClick()

@@ -31,6 +31,7 @@ public class TrackBase
         }
     }
 
+    // The clone will retain the same Guid.
     public TrackBase Clone()
     {
         return Deserialize(Serialize());
@@ -59,6 +60,7 @@ public class Track : TrackBase
     {
         version = kVersion;
         trackMetadata = new TrackMetadata();
+        trackMetadata.guid = Guid.NewGuid().ToString();
         trackMetadata.title = title;
         trackMetadata.artist = artist;
         patterns = new List<Pattern>();
@@ -87,6 +89,8 @@ public class Track : TrackBase
 [Serializable]
 public class TrackMetadata
 {
+    public string guid;
+
     // Text stuff.
 
     public string title;
@@ -128,6 +132,23 @@ public class Pattern
     public const double maxBpm = 1000.0;
     public const int minBps = 1;
     public const int maxBps = 128;
+
+    public Pattern()
+    {
+        patternMetadata = new PatternMetadata();
+        patternMetadata.guid = Guid.NewGuid().ToString();
+        patternMetadata.patternName = "New pattern";
+        bpmEvents = new List<BpmEvent>();
+        soundChannels = new List<SoundChannel>();
+    }
+
+    public Pattern CloneWithDifferentGuid()
+    {
+        string json = UnityEngine.JsonUtility.ToJson(this, prettyPrint: false);
+        Pattern clone = UnityEngine.JsonUtility.FromJson<Pattern>(json);
+        clone.patternMetadata.guid = Guid.NewGuid().ToString();
+        return clone;
+    }
 
     public void CreateListsIfNull()
     {
@@ -301,6 +322,8 @@ public enum ControlScheme
 [Serializable]
 public class PatternMetadata
 {
+    public string guid;
+
     public string patternName;
     public int level;
     public ControlScheme controlScheme;
