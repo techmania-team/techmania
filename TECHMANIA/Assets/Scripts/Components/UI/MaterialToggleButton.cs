@@ -8,9 +8,9 @@ public class MaterialToggleButton : MonoBehaviour,
     ISelectHandler, IDeselectHandler, ISubmitHandler,
     IPointerEnterHandler, IPointerDownHandler, IPointerClickHandler
 {
-    public Image icon;
-    public Color iconOffColor;
-    public Color iconOnColor;
+    public Graphic targetGraphic;
+    public Color graphicOffColor;
+    public Color graphicOnColor;
     public Image toggleOverlay;
     public Color toggleOverlayOffColor;
     public Color toggleOverlayOnColor;
@@ -50,7 +50,7 @@ public class MaterialToggleButton : MonoBehaviour,
 
     private void UpdateAppearance()
     {
-        icon.color = on ? iconOnColor : iconOffColor;
+        targetGraphic.color = on ? graphicOnColor : graphicOffColor;
         toggleOverlay.color = on ? toggleOverlayOnColor : toggleOverlayOffColor;
     }
 
