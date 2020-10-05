@@ -15,12 +15,12 @@ public class MaterialToggleButton : MonoBehaviour,
     public Color toggleOverlayOffColor;
     public Color toggleOverlayOnColor;
     public GameObject selectedOutline;
+    public bool playSelectSound;
 
     private Button button;
     private RectTransform rippleRect;
     private RectTransform rippleParentRect;
     private Animator rippleAnimator;
-    private bool interactable;
     private bool selected;
     private bool on;
 
@@ -31,20 +31,13 @@ public class MaterialToggleButton : MonoBehaviour,
         rippleAnimator = GetComponentInChildren<Animator>();
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
-        interactable = true;
         on = false;
         UpdateAppearance();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetIsOn(bool on)
     {
-        interactable = button.IsInteractable();
-    }
-
-    public void Toggle()
-    {
-        on = !on;
+        this.on = on;
         UpdateAppearance();
     }
 
@@ -66,7 +59,7 @@ public class MaterialToggleButton : MonoBehaviour,
         selected = true;
         selectedOutline.SetActive(selected);
 
-        if (eventData is AxisEventData)
+        if (eventData is AxisEventData && playSelectSound)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -87,7 +80,7 @@ public class MaterialToggleButton : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!interactable)
+        if (!button.IsInteractable())
         {
             return;
         }
@@ -99,7 +92,7 @@ public class MaterialToggleButton : MonoBehaviour,
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData))
         {
-            if (interactable)
+            if (button.IsInteractable() && playSelectSound)
             {
                 MenuSfx.instance.PlaySelectSound();
             }
@@ -108,7 +101,7 @@ public class MaterialToggleButton : MonoBehaviour,
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!interactable)
+        if (!button.IsInteractable())
         {
             return;
         }
