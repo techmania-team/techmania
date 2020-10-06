@@ -83,8 +83,8 @@ public class PatternPanel : MonoBehaviour
         GameObject line = Instantiate(template, lineAndMarkerContainer);
 
         EditorElement element = line.GetComponent<EditorElement>();
-        element.type = EditorElement.Type.Line;
-        element.scan = scan;
+        // element.type = EditorElement.Type.Line;
+        // element.scan = scan;
     }
 
     private void SpawnDottedLine(int beat, GameObject template)
@@ -92,7 +92,7 @@ public class PatternPanel : MonoBehaviour
         GameObject line = Instantiate(template, lineAndMarkerContainer);
 
         EditorElement element = line.GetComponent<EditorElement>();
-        element.type = EditorElement.Type.DottedLine;
+        // element.type = EditorElement.Type.DottedLine;
         element.beat = beat;
     }
     
@@ -103,7 +103,7 @@ public class PatternPanel : MonoBehaviour
 
         EditorElement element = marker.GetComponent<EditorElement>();
         element.type = type;
-        element.scan = scan;
+        // element.scan = scan;
     }
 
     private void SpawnBeatBasedMarker(EditorElement.Type type, int beat, string text)
@@ -148,8 +148,8 @@ public class PatternPanel : MonoBehaviour
         for (int scan = 0; scan <= numScans; scan++)
         {
             SpawnLine(scan, lineTemplate);
-            SpawnScanBasedMarker(EditorElement.Type.ScanMarker,
-                scan, $"Scan {scan}");
+            // SpawnScanBasedMarker(EditorElement.Type.ScanMarker,
+            //     scan, $"Scan {scan}");
         }
 
         // Beat based stuff
@@ -168,8 +168,8 @@ public class PatternPanel : MonoBehaviour
             SpawnDottedLine(beat, dottedLineTemplate);
             SpawnBeatBasedMarker(EditorElement.Type.BeatMarker,
                 beat, $"Beat {beat}");
-            SpawnBeatBasedMarker(EditorElement.Type.TimeMarker,
-                beat, $"{minute}:{second:D2}.{milliSecond:D3}");
+            // SpawnBeatBasedMarker(EditorElement.Type.TimeMarker,
+            //     beat, $"{minute}:{second:D2}.{milliSecond:D3}");
         }
 
         // Pulse based stuff

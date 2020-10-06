@@ -11,14 +11,8 @@ public class EditorElement : MonoBehaviour
 {
     public enum Type
     {
-        // Position expressed in scans
-        Line,
-        ScanMarker,
-
         // Position expressed in beats
-        DottedLine,
         BeatMarker,
-        TimeMarker,
 
         // Position expressed in pulses
         BpmMarker,
@@ -31,8 +25,6 @@ public class EditorElement : MonoBehaviour
         Note
     }
     public Type type;
-    [HideInInspector]
-    public int scan;
     [HideInInspector]
     public int beat;
     [HideInInspector]
@@ -62,18 +54,6 @@ public class EditorElement : MonoBehaviour
     public static event UnityAction<Vector2> Drag;
     public static event UnityAction EndDrag;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnEnable()
     {
         PatternPanel.RepositionNeeded += Reposition;
@@ -90,55 +70,41 @@ public class EditorElement : MonoBehaviour
     {
         int bps = EditorNavigation.GetCurrentPattern().patternMetadata.bps;
 
-        float x = 0;
+        float scan = 0f;
         switch (type)
         {
-            case Type.Line:
-            case Type.ScanMarker:
-                x = PatternPanel.ScanWidth * scan;
-                break;
-            case Type.DottedLine:
             case Type.BeatMarker:
-            case Type.TimeMarker:
                 {
-                    float scan = (float)beat / bps;
-                    x = PatternPanel.ScanWidth * scan;
+                    scan = (float)beat / bps;
+                    
                 }
                 break;
             case Type.BpmMarker:
                 {
                     float beat = (float)pulse / Pattern.pulsesPerBeat;
-                    float scan = beat / bps;
-                    x = PatternPanel.ScanWidth * scan;
+                    scan = beat / bps;
                 }
                 break;
             case Type.Scanline:
                 {
                     float beat = floatPulse / Pattern.pulsesPerBeat;
-                    float scan = beat / bps;
-                    x = PatternPanel.ScanWidth * scan;
+                    scan = beat / bps;
                 }
                 break;
             case Type.Note:
                 {
                     float beat = (float)note.pulse / Pattern.pulsesPerBeat;
-                    float scan = beat / bps;
-                    x = PatternPanel.ScanWidth * scan;
+                    scan = beat / bps;
                 }
                 break;
         }
+        float x = PatternPanel.ScanWidth * scan;
 
         float y = 0;
         switch (type)
         {
-            case Type.ScanMarker:
-                y = scanMarkerY;
-                break;
             case Type.BeatMarker:
                 y = beatMarkerY;
-                break;
-            case Type.TimeMarker:
-                y = timeMarkerY;
                 break;
             case Type.BpmMarker:
                 y = bpmMarkerY;
@@ -157,15 +123,7 @@ public class EditorElement : MonoBehaviour
         RectTransform rect = GetComponent<RectTransform>();
         switch (type)
         {
-            case Type.Line:
-            case Type.DottedLine:
-                rect.anchorMin = new Vector2(0f, 0f);
-                rect.anchorMax = new Vector2(0f, 1f);
-                rect.anchoredPosition = new Vector2(x, 0.5f);
-                break;
-            case Type.ScanMarker:
             case Type.BeatMarker:
-            case Type.TimeMarker:
             case Type.BpmMarker:
             case Type.Scanline:
             case Type.Note:
