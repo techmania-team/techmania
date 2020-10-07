@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -40,14 +41,6 @@ public class EditorElement : MonoBehaviour
     [HideInInspector]
     public string sound;
 
-    private const float scanMarkerY = 0f;
-    private const float beatMarkerY = -20f;
-    private const float timeMarkerY = -40f;
-    private const float bpmMarkerY = -60f;
-    private const float containerHeight = 480f;
-    private const float laneHeight = 100f;
-    private const float firstLaneY = -80f - laneHeight * 0.5f;
-
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
     public static event UnityAction<GameObject> BeginDrag;
@@ -57,18 +50,18 @@ public class EditorElement : MonoBehaviour
     private void OnEnable()
     {
         PatternPanel.RepositionNeeded += Reposition;
-        PatternPanel.SelectionChanged += UpdateSelection;
+        // PatternPanel.SelectionChanged += UpdateSelection;
     }
 
     private void OnDisable()
     {
         PatternPanel.RepositionNeeded -= Reposition;
-        PatternPanel.SelectionChanged -= UpdateSelection;
+        // PatternPanel.SelectionChanged -= UpdateSelection;
     }
 
     public void Reposition()
     {
-        int bps = EditorNavigation.GetCurrentPattern().patternMetadata.bps;
+        int bps = EditorContext.Pattern.patternMetadata.bps;
 
         float scan = 0f;
         switch (type)
@@ -76,7 +69,6 @@ public class EditorElement : MonoBehaviour
             case Type.BeatMarker:
                 {
                     scan = (float)beat / bps;
-                    
                 }
                 break;
             case Type.BpmMarker:
@@ -101,23 +93,9 @@ public class EditorElement : MonoBehaviour
         float x = PatternPanel.ScanWidth * scan;
 
         float y = 0;
-        switch (type)
+        if (type == Type.Note)
         {
-            case Type.BeatMarker:
-                y = beatMarkerY;
-                break;
-            case Type.BpmMarker:
-                y = bpmMarkerY;
-                break;
-            case Type.Scanline:
-                y = -containerHeight;
-                break;
-            case Type.Note:
-                y = firstLaneY - laneHeight * note.lane;
-                break;
-            default:
-                // Not supported yet
-                break;
+            y = -PatternPanel.LaneHeight * (note.lane + 0.5f);
         }
 
         RectTransform rect = GetComponent<RectTransform>();
@@ -126,13 +104,14 @@ public class EditorElement : MonoBehaviour
             case Type.BeatMarker:
             case Type.BpmMarker:
             case Type.Scanline:
+                rect.anchoredPosition = new Vector2(x, 0f);
+                break;
             case Type.Note:
-                rect.anchorMin = new Vector2(0f, 1f);
-                rect.anchorMax = new Vector2(0f, 1f);
                 rect.anchoredPosition = new Vector2(x, y);
+                rect.sizeDelta = new Vector2(
+                    PatternPanel.LaneHeight, PatternPanel.LaneHeight);
                 break;
             default:
-                // Not supported yet
                 break;
         }
     }
@@ -182,4 +161,39 @@ public class EditorElement : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         EndDrag?.Invoke();
     }
+
+    #region Text
+    public void SetTimeDisplay()
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        int scan = beat / bps;
+        int beatInScan = beat % bps;
+
+        int pulse = beat * Pattern.pulsesPerBeat;
+        float time = EditorContext.Pattern.PulseToTime(pulse);
+        int minute = Mathf.FloorToInt(time / 60f);
+        time -= minute * 60f;
+        int second = Mathf.FloorToInt(time);
+        time -= second;
+        int milliSecond = Mathf.FloorToInt(time * 1000f);
+
+        SetText($"{scan}-{beatInScan}\n{minute}:{second:D2}.{milliSecond:D3}");
+    }
+
+    public void SetBpmText(double bpm)
+    {
+        SetText($"BPM={bpm}");
+    }
+
+    public void SetKeysoundText()
+    {
+        SetText(UIUtils.StripExtension(sound));
+    }
+
+    private void SetText(string s)
+    {
+        GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
+            .text = s;
+    }
+    #endregion
 }
