@@ -46,11 +46,6 @@ public class PatternPanelBackup : MonoBehaviour
     private HashSet<GameObject> selectedNoteObjects;
 
     [Header("UI and options")]
-    public Button selectAllButton;
-    public Button cutButton;
-    public Button copyButton;
-    public Button pasteButton;
-    public Button deleteButton;
     public Text divisionsPerBeatDisplay;
     public Text bpmEventDisplay;
     public Button addBpmEventButton;
@@ -79,147 +74,25 @@ public class PatternPanelBackup : MonoBehaviour
     private int snappedCursorLane;
 
     #region Spawning Markers and Lines
-    private void SpawnLine(int scan, GameObject template)
-    {
-        GameObject line = Instantiate(template, lineAndMarkerContainer);
-
-        EditorElement element = line.GetComponent<EditorElement>();
-        // element.type = EditorElement.Type.Line;
-        // element.scan = scan;
-    }
-
-    private void SpawnDottedLine(int beat, GameObject template)
-    {
-        GameObject line = Instantiate(template, lineAndMarkerContainer);
-
-        EditorElement element = line.GetComponent<EditorElement>();
-        // element.type = EditorElement.Type.DottedLine;
-        element.beat = beat;
-    }
-    
-    private void SpawnScanBasedMarker(EditorElement.Type type, int scan, string text)
-    {
-        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
-        marker.GetComponentInChildren<Text>().text = text;
-
-        EditorElement element = marker.GetComponent<EditorElement>();
-        element.type = type;
-        // element.scan = scan;
-    }
-
-    private void SpawnBeatBasedMarker(EditorElement.Type type, int beat, string text)
-    {
-        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
-        marker.GetComponentInChildren<Text>().text = text;
-
-        EditorElement element = marker.GetComponent<EditorElement>();
-        element.type = type;
-        element.beat = beat;
-    }
-
-    private void SpawnPulseBasedMarker(EditorElement.Type type, int pulse, string text)
-    {
-        GameObject marker = Instantiate(markerTemplate, lineAndMarkerContainer);
-        marker.GetComponentInChildren<Text>().text = text;
-
-        EditorElement element = marker.GetComponent<EditorElement>();
-        element.type = type;
-        element.pulse = pulse;
-    }
-
     private void ResizeContainer()
     {
-        RectTransform containerRect = patternContainer.GetComponent<RectTransform>();
-        containerRect.sizeDelta = new Vector3(
-            containerWidth,
-            containerRect.sizeDelta.y);
+        // Deleted
     }
 
     private void SpawnMarkersAndLines()
     {
-        for (int i = 0; i < lineAndMarkerContainer.childCount; i++)
-        {
-            Destroy(lineAndMarkerContainer.GetChild(i).gameObject);
-        }
-
-        Pattern pattern = EditorNavigation.GetCurrentPattern();
-        pattern.PrepareForTimeCalculation();
-
-        // Scan based stuff
-        for (int scan = 0; scan <= numScans; scan++)
-        {
-            SpawnLine(scan, lineTemplate);
-            // SpawnScanBasedMarker(EditorElement.Type.ScanMarker,
-            //     scan, $"Scan {scan}");
-        }
-
-        // Beat based stuff
-        int bps = pattern.patternMetadata.bps;
-        double secondsPerBeat = 60.0 / pattern.patternMetadata.initBpm;
-        for (int beat = 0; beat < numScans * bps ; beat++)
-        {
-            int pulse = beat * Pattern.pulsesPerBeat;
-            float time = pattern.PulseToTime(pulse);
-            int minute = Mathf.FloorToInt(time / 60f);
-            time -= minute * 60f;
-            int second = Mathf.FloorToInt(time);
-            time -= second;
-            int milliSecond = Mathf.FloorToInt(time * 1000f);
-
-            SpawnDottedLine(beat, dottedLineTemplate);
-            SpawnBeatBasedMarker(EditorElement.Type.BeatMarker,
-                beat, $"Beat {beat}");
-            // SpawnBeatBasedMarker(EditorElement.Type.TimeMarker,
-            //     beat, $"{minute}:{second:D2}.{milliSecond:D3}");
-        }
-
-        // Pulse based stuff
-        foreach (BpmEvent e in pattern.bpmEvents)
-        {
-            SpawnPulseBasedMarker(EditorElement.Type.BpmMarker,
-                e.pulse, $"BPM {e.bpm}");
-        }
+        // Deleted
     }
     #endregion
 
     private void SpawnNoteObject(Note n, string sound)
     {
-        GameObject noteObject = Instantiate(basicNote, noteObjectContainer);
-        noteObject.GetComponentInChildren<Text>().text =
-            UIUtils.StripExtension(sound);
-
-        EditorElement element = noteObject.GetComponent<EditorElement>();
-        element.type = EditorElement.Type.Note;
-        element.note = n;
-        element.sound = sound;
-        element.Reposition();
-
-        sortedNoteObjects.Add(noteObject);
+        // Deleted
     }
 
     private void SpawnExistingNotes()
     {
-        for (int i = 0; i < noteObjectContainer.childCount; i++)
-        {
-            Destroy(noteObjectContainer.GetChild(i).gameObject);
-        }
-
-        sortedNoteObjects = new SortedNoteObjects();
-        lastSelectedNoteObjectWithoutShift = null;
-        selectedNoteObjects = new HashSet<GameObject>();
-
-        // For newly created patterns, there's no sound channel yet.
-        if (EditorNavigation.GetCurrentPattern().soundChannels == null)
-        {
-            EditorNavigation.GetCurrentPattern().CreateListsIfNull();
-        }
-        foreach (SoundChannel channel in EditorNavigation.GetCurrentPattern().soundChannels)
-        {
-            foreach (Note n in channel.notes)
-            {
-                SpawnNoteObject(n, channel.name);
-            }
-        }
+        // Deleted
     }
 
     private void OnEnable()
@@ -232,36 +105,17 @@ public class PatternPanelBackup : MonoBehaviour
         clipboard = new List<NoteWithSound>();
         isPlaying = false;
 
-        // Calculate initial number of scans.
-        int lastPulse = 0;
-        foreach (SoundChannel c in EditorNavigation.GetCurrentPattern().soundChannels)
-        {
-            foreach (Note n in c.notes)
-            {
-                if (n.pulse > lastPulse) lastPulse = n.pulse;
-            }
-        }
-        int pulsesPerScan = Pattern.pulsesPerBeat *
-            EditorNavigation.GetCurrentPattern().patternMetadata.bps;
-        numScans = lastPulse / pulsesPerScan + 1;
+        // Deleted
 
         // MemoryToUI();
         resourceLoader.LoadResources(EditorNavigation.GetCurrentTrackPath());
 
-        EditorElement.LeftClicked += OnNoteObjectLeftClick;
-        EditorElement.RightClicked += OnNoteObjectRightClick;
-        EditorElement.BeginDrag += OnNoteObjectBeginDrag;
-        EditorElement.Drag += OnNoteObjectDrag;
-        EditorElement.EndDrag += OnNoteObjectEndDrag;
+        // Deleted
     }
 
     private void OnDisable()
     {
-        EditorElement.LeftClicked -= OnNoteObjectLeftClick;
-        EditorElement.RightClicked -= OnNoteObjectRightClick;
-        EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
-        EditorElement.Drag -= OnNoteObjectDrag;
-        EditorElement.EndDrag -= OnNoteObjectEndDrag;
+        // Deleted
     }
 
     // Update is called once per frame
@@ -278,26 +132,7 @@ public class PatternPanelBackup : MonoBehaviour
 
         if (Input.mouseScrollDelta.y != 0)
         {
-            if (Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl))
-            {
-                // Adjust zoom
-                zoom += Mathf.FloorToInt(Input.mouseScrollDelta.y * 10f);
-                zoom = Mathf.Clamp(zoom, 10, 500);
-                // Debug.Log($"zoom={zoom} ScanLength={ScanLength}");
-                float horizontal = scrollRect.horizontalNormalizedPosition;
-
-                ResizeContainer();
-                RepositionNeeded?.Invoke();
-
-                scrollRect.horizontalNormalizedPosition = horizontal;
-            }
-            else
-            {
-                // Scroll
-                scrollRect.horizontalNormalizedPosition +=
-                    Input.mouseScrollDelta.y * 0.05f;
-            }
+            // Deleted
         }
 
         SnapCursorAndScanline();
@@ -351,21 +186,6 @@ public class PatternPanelBackup : MonoBehaviour
 
     private void RefreshControls()
     {
-        // Edit panel
-        selectAllButton.interactable = true;
-        cutButton.interactable = selectedNoteObjects.Count > 0;
-        copyButton.interactable = selectedNoteObjects.Count > 0;
-        pasteButton.interactable = clipboard.Count > 0;
-        deleteButton.interactable = selectedNoteObjects.Count > 0;
-        if (isPlaying)
-        {
-            selectAllButton.interactable = false;
-            cutButton.interactable = false;
-            copyButton.interactable = false;
-            pasteButton.interactable = false;
-            deleteButton.interactable = false;
-        }
-
         // Timing panel
         divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
         UpdateBpmEventDisplay();
@@ -380,66 +200,7 @@ public class PatternPanelBackup : MonoBehaviour
 
     private void SnapCursorAndScanline()
     {
-        if (Input.mousePosition.x < 0 ||
-            Input.mousePosition.x > Screen.width ||
-            Input.mousePosition.y < 0 ||
-            Input.mousePosition.y > Screen.height)
-        {
-            cursor.SetActive(false);
-            return;
-        }
-
-        Vector2 pointInContainer;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            patternContainer.GetComponent<RectTransform>(),
-            Input.mousePosition,
-            cam: null,
-            out pointInContainer);
-
-        float cursorScan = pointInContainer.x / ScanWidth;
-        float cursorBeat = cursorScan *
-            EditorNavigation.GetCurrentPattern().patternMetadata.bps;
-        float cursorPulse = cursorBeat * Pattern.pulsesPerBeat;
-        int pulsesPerDivision = Pattern.pulsesPerBeat / divisionsPerBeat;
-        snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
-            * pulsesPerDivision;
-        float snappedScan = (float)snappedCursorPulse / Pattern.pulsesPerBeat
-            / EditorNavigation.GetCurrentPattern().patternMetadata.bps;
-        float snappedX = snappedScan * ScanWidth;
-
-        const float kHeightAboveFirstLane = 80f;
-
-        snappedCursorLane = Mathf.FloorToInt((pointInContainer.y + kHeightAboveFirstLane)
-            / -100f);
-        float snappedY = -130f - 100f * snappedCursorLane;
-
-        if (snappedX >= 0f &&
-            snappedX <= containerWidth &&
-            snappedCursorLane >= 0 &&
-            snappedCursorLane <= 3)
-        {
-            cursor.SetActive(true);
-            cursor.GetComponent<RectTransform>().anchoredPosition =
-                new Vector2(snappedX, snappedY);
-        }
-        else
-        {
-            cursor.SetActive(false);
-        }
-
-        if (snappedX >= 0f &&
-            snappedX <= containerWidth &&
-            pointInContainer.y <= 0f &&
-            pointInContainer.y >= -kHeightAboveFirstLane &&
-            Input.GetMouseButton(0))
-        {
-            // Move scanline to cursor
-            EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-            scanlineElement.floatPulse = snappedCursorPulse;
-            scanlineElement.Reposition();
-
-            UpdateBpmEventDisplay();
-        }
+        // Deleted
     }
 
     private int ScanlinePulse()
@@ -449,20 +210,7 @@ public class PatternPanelBackup : MonoBehaviour
 
     public void ModifyDevisionsPerBeat(int direction)
     {
-        do
-        {
-            divisionsPerBeat += direction;
-            if (divisionsPerBeat <= 0 && direction < 0)
-            {
-                divisionsPerBeat = Pattern.pulsesPerBeat;
-            }
-            if (divisionsPerBeat > Pattern.pulsesPerBeat && direction > 0)
-            {
-                divisionsPerBeat = 1;
-            }
-        }
-        while (Pattern.pulsesPerBeat % divisionsPerBeat != 0);
-        RefreshControls();
+        // Deleted
     }
 
     public void OnClickPatternContainer(BaseEventData eventData)
@@ -499,105 +247,21 @@ public class PatternPanelBackup : MonoBehaviour
     #region Left and Right click on note objects
     public void OnNoteObjectLeftClick(GameObject o)
     {
-        bool shift = Input.GetKey(KeyCode.LeftShift) ||
-            Input.GetKey(KeyCode.RightShift);
-        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl);
-        if (shift)
-        {
-            if (lastSelectedNoteObjectWithoutShift == null)
-            {
-                lastSelectedNoteObjectWithoutShift = sortedNoteObjects.GetFirst();
-            }
-            List<GameObject> range = sortedNoteObjects.GetRange(
-                    lastSelectedNoteObjectWithoutShift, o);
-            if (ctrl)
-            {
-                // Add [prev, o] to current selection.
-                foreach (GameObject oInRange in range)
-                {
-                    selectedNoteObjects.Add(oInRange);
-                }
-            }
-            else  // !ctrl
-            {
-                // Overwrite current selection with [prev, o].
-                selectedNoteObjects.Clear();
-                foreach (GameObject oInRange in range)
-                {
-                    selectedNoteObjects.Add(oInRange);
-                }
-            }
-        }
-        else  // !shift
-        {
-            lastSelectedNoteObjectWithoutShift = o;
-            if (ctrl)
-            {
-                // Toggle o in current selection.
-                ToggleSelection(o);
-            }
-            else  // !ctrl
-            {
-                if (selectedNoteObjects.Count > 1)
-                {
-                    selectedNoteObjects.Clear();
-                    selectedNoteObjects.Add(o);
-                }
-                else if (selectedNoteObjects.Count == 1)
-                {
-                    if (selectedNoteObjects.Contains(o))
-                    {
-                        selectedNoteObjects.Remove(o);
-                    }
-                    else
-                    {
-                        selectedNoteObjects.Clear();
-                        selectedNoteObjects.Add(o);
-                    }
-                }
-                else  // Count == 0
-                {
-                    selectedNoteObjects.Add(o);
-                }
-            }
-        }
-
-        SelectionChanged?.Invoke(selectedNoteObjects);
+        // Deleted
         RefreshControls();
     }
 
     private void ToggleSelection(GameObject o)
     {
-        if (selectedNoteObjects.Contains(o))
-        {
-            selectedNoteObjects.Remove(o);
-        }
-        else
-        {
-            selectedNoteObjects.Add(o);
-        }
+        // Deleted
     }
 
     public void OnNoteObjectRightClick(GameObject o)
     {
         if (isPlaying) return;
-
-        // Delete note from pattern
-        EditorElement e = o.GetComponent<EditorElement>();
-        EditorNavigation.PrepareForChange();
-        EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
-        EditorNavigation.DoneWithChange();
-
-        // Delete note from UI
-        sortedNoteObjects.Delete(o);
-        if (lastSelectedNoteObjectWithoutShift == o)
-        {
-            lastSelectedNoteObjectWithoutShift = null;
-        }
-        selectedNoteObjects.Remove(o);
+        // Deleted
         RefreshControls();
-        Destroy(o);
+        // Deleted
     }
     #endregion
 

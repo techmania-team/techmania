@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
@@ -26,6 +27,7 @@ public class EditorElement : MonoBehaviour
         Note
     }
     public Type type;
+    public Image selectionOverlay;
     [HideInInspector]
     public int beat;
     [HideInInspector]
@@ -50,13 +52,13 @@ public class EditorElement : MonoBehaviour
     private void OnEnable()
     {
         PatternPanel.RepositionNeeded += Reposition;
-        // PatternPanel.SelectionChanged += UpdateSelection;
+        PatternPanel.SelectionChanged += UpdateSelection;
     }
 
     private void OnDisable()
     {
         PatternPanel.RepositionNeeded -= Reposition;
-        // PatternPanel.SelectionChanged -= UpdateSelection;
+        PatternPanel.SelectionChanged -= UpdateSelection;
     }
 
     public void Reposition()
@@ -119,9 +121,11 @@ public class EditorElement : MonoBehaviour
     private void UpdateSelection(HashSet<GameObject> selection)
     {
         if (type != Type.Note) return;
-        GetComponent<Image>().enabled = selection.Contains(gameObject);
+        if (selectionOverlay == null) return;
+        selectionOverlay.enabled = selection.Contains(gameObject);
     }
 
+    #region Event Relay
     public void OnPointerClick(BaseEventData eventData)
     {
         if (type != Type.Note) return;
@@ -161,6 +165,7 @@ public class EditorElement : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         EndDrag?.Invoke();
     }
+    #endregion
 
     #region Text
     public void SetTimeDisplay()

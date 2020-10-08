@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PatternPanel : MonoBehaviour
@@ -9,10 +12,11 @@ public class PatternPanel : MonoBehaviour
     [Header("Workspace")]
     public ScrollRect workspace;
     public RectTransform workspaceContent;
-    public RectTransform scanline;
+    public EditorElement scanline;
 
     [Header("Lanes")]
     public RectTransform hiddenLaneBackground;
+    public RectTransform header;
     public RectTransform laneDividerParent;
 
     [Header("Markers")]
@@ -23,15 +27,24 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Notes")]
     public Transform noteContainer;
+    public EditorElement noteCursor;
     public GameObject basicNotePrefab;
     public GameObject hiddenNotePrefab;
 
+    [Header("UI And Options")]
+    public TextMeshProUGUI beatSnapDividerDisplay;
+
+    #region Internal Data Structures
     // All note objects sorted by pulse. This allows fast lookups
     // of whether any location is occupied when moving notes.
     //
     // This data structure must be updated alongside
     // EditorContext.Pattern at all times.
     private SortedNoteObjects sortedNoteObjects;
+
+    private GameObject lastSelectedNoteObjectWithoutShift;
+    private HashSet<GameObject> selectedNoteObjects;
+    #endregion
 
     #region Vertical Spacing
     public static int PlayableLanes
@@ -79,8 +92,9 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Events
+    #region Outward Events
     public static event UnityAction RepositionNeeded;
+    public static event UnityAction<HashSet<GameObject>> SelectionChanged;
     #endregion
 
     private void OnEnable()
@@ -94,20 +108,277 @@ public class PatternPanel : MonoBehaviour
         zoom = 100;
         beatSnapDivisor = 2;
 
+        // Scanline
+        scanline.floatPulse = 0f;
+        scanline.Reposition();
+
+        // UI
+        UpdateBeatSnapDivisorDisplay();
+
         Refresh();
         EditorContext.UndoneOrRedone += Refresh;
+        EditorElement.LeftClicked += OnNoteObjectLeftClick;
+        EditorElement.RightClicked += OnNoteObjectRightClick;
+        // EditorElement.BeginDrag += OnNoteObjectBeginDrag;
+        // EditorElement.Drag += OnNoteObjectDrag;
+        // EditorElement.EndDrag += OnNoteObjectEndDrag;
     }
 
     private void OnDisable()
     {
         EditorContext.UndoneOrRedone -= Refresh;
+        EditorElement.LeftClicked -= OnNoteObjectLeftClick;
+        EditorElement.RightClicked -= OnNoteObjectRightClick;
+        // EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
+        // EditorElement.Drag -= OnNoteObjectDrag;
+        // EditorElement.EndDrag -= OnNoteObjectEndDrag;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        bool mouseInWorkspace = RectTransformUtility.RectangleContainsScreenPoint(
+            workspace.GetComponent<RectTransform>(),
+            Input.mousePosition);
+        bool mouseInHeader = RectTransformUtility.RectangleContainsScreenPoint(
+            header, Input.mousePosition);
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            HandleMouseScroll(Input.mouseScrollDelta.y,
+                mouseInWorkspace);
+        }
+
+        if (mouseInWorkspace && !mouseInHeader)
+        {
+            noteCursor.gameObject.SetActive(true);
+            SnapNoteCursor();
+        }
+        else
+        {
+            noteCursor.gameObject.SetActive(false);
+        }
+
+        if (Input.GetMouseButton(0) && mouseInHeader)
+        {
+            MoveScanlineToMouse();
+        }
     }
+
+    #region Mouse and Keyboard Update
+    private void HandleMouseScroll(float y, bool mouseInWorkspace)
+    {
+        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
+                Input.GetKey(KeyCode.RightControl);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+
+        // Is the cursor inside the workspace?
+        if (mouseInWorkspace && !alt)
+        {
+            if (ctrl)
+            {
+                // Adjust zoom
+                zoom += Mathf.FloorToInt(y * 5f);
+                zoom = Mathf.Clamp(zoom, 10, 500);
+                float horizontal = workspace.horizontalNormalizedPosition;
+                ResizeWorkspace();
+                RepositionNeeded?.Invoke();
+                workspace.horizontalNormalizedPosition = horizontal;
+            }
+            else
+            {
+                // Scroll workspace
+                workspace.horizontalNormalizedPosition += y * 0.05f;
+                workspace.horizontalNormalizedPosition =
+                    Mathf.Clamp01(workspace.horizontalNormalizedPosition);
+            }
+        }
+
+        // Alt+scroll to change beat snap divisor
+        if (alt)
+        {
+            OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
+        }
+    }
+
+    private void SnapNoteCursor()
+    {
+        Vector2 pointInContainer;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            noteContainer.GetComponent<RectTransform>(),
+            Input.mousePosition,
+            cam: null,
+            out pointInContainer);
+
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float cursorScan = pointInContainer.x / ScanWidth;
+        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
+        int snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
+            * pulsesPerDivision;
+
+        int snappedLane = Mathf.FloorToInt(-pointInContainer.y / LaneHeight);
+
+        noteCursor.note = new Note();
+        noteCursor.note.pulse = snappedCursorPulse;
+        noteCursor.note.lane = snappedLane;
+        noteCursor.Reposition();
+    }
+
+    private void MoveScanlineToMouse()
+    {
+        Vector2 pointInHeader;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            header, Input.mousePosition,
+            cam: null, out pointInHeader);
+
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float cursorScan = pointInHeader.x / ScanWidth;
+        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
+        int snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
+            * pulsesPerDivision;
+
+        scanline.floatPulse = snappedCursorPulse;
+        scanline.Reposition();
+    }
+    #endregion
+
+    #region Event Handler
+    public void OnNoteContainerClick(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        if ((eventData as PointerEventData).button !=
+            PointerEventData.InputButton.Left)
+        {
+            return;
+        }
+    }
+
+    public void OnNoteObjectLeftClick(GameObject o)
+    {
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        if (shift)
+        {
+            if (lastSelectedNoteObjectWithoutShift == null)
+            {
+                lastSelectedNoteObjectWithoutShift = sortedNoteObjects.GetFirst();
+            }
+            List<GameObject> range = sortedNoteObjects.GetRange(
+                    lastSelectedNoteObjectWithoutShift, o);
+            if (ctrl)
+            {
+                // Add [prev, o] to current selection.
+                foreach (GameObject oInRange in range)
+                {
+                    selectedNoteObjects.Add(oInRange);
+                }
+            }
+            else  // !ctrl
+            {
+                // Overwrite current selection with [prev, o].
+                selectedNoteObjects.Clear();
+                foreach (GameObject oInRange in range)
+                {
+                    selectedNoteObjects.Add(oInRange);
+                }
+            }
+        }
+        else  // !shift
+        {
+            lastSelectedNoteObjectWithoutShift = o;
+            if (ctrl)
+            {
+                // Toggle o in current selection.
+                ToggleSelection(o);
+            }
+            else  // !ctrl
+            {
+                if (selectedNoteObjects.Count > 1)
+                {
+                    selectedNoteObjects.Clear();
+                    selectedNoteObjects.Add(o);
+                }
+                else if (selectedNoteObjects.Count == 1)
+                {
+                    if (selectedNoteObjects.Contains(o))
+                    {
+                        selectedNoteObjects.Remove(o);
+                    }
+                    else
+                    {
+                        selectedNoteObjects.Clear();
+                        selectedNoteObjects.Add(o);
+                    }
+                }
+                else  // Count == 0
+                {
+                    selectedNoteObjects.Add(o);
+                }
+            }
+        }
+
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    private void ToggleSelection(GameObject o)
+    {
+        if (selectedNoteObjects.Contains(o))
+        {
+            selectedNoteObjects.Remove(o);
+        }
+        else
+        {
+            selectedNoteObjects.Add(o);
+        }
+    }
+
+    public void OnNoteObjectRightClick(GameObject o)
+    {
+        // Delete note from pattern
+        EditorElement e = o.GetComponent<EditorElement>();
+        EditorNavigation.PrepareForChange();
+        EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
+        EditorNavigation.DoneWithChange();
+
+        // Delete note from UI
+        sortedNoteObjects.Delete(o);
+        if (lastSelectedNoteObjectWithoutShift == o)
+        {
+            lastSelectedNoteObjectWithoutShift = null;
+        }
+        selectedNoteObjects.Remove(o);
+        Destroy(o);
+    }
+    #endregion
+
+    #region UI
+    public void OnBeatSnapDivisorChanged(int direction)
+    {
+        do
+        {
+            beatSnapDivisor += direction;
+            if (beatSnapDivisor <= 0 && direction < 0)
+            {
+                beatSnapDivisor = Pattern.pulsesPerBeat;
+            }
+            if (beatSnapDivisor > Pattern.pulsesPerBeat && direction > 0)
+            {
+                beatSnapDivisor = 1;
+            }
+        }
+        while (Pattern.pulsesPerBeat % beatSnapDivisor != 0);
+        UpdateBeatSnapDivisorDisplay();
+    }
+
+    private void UpdateBeatSnapDivisorDisplay()
+    {
+        beatSnapDividerDisplay.text = beatSnapDivisor.ToString();
+    }
+    #endregion
 
     private void Refresh()
     {
@@ -152,6 +423,7 @@ public class PatternPanel : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
         for (int scan = 0; scan < numScans; scan++)
         {
@@ -171,7 +443,6 @@ public class PatternPanel : MonoBehaviour
             }
         }
 
-        EditorContext.Pattern.PrepareForTimeCalculation();
         foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
         {
             GameObject marker = Instantiate(bpmMarkerTemplate, markerContainer);
@@ -200,10 +471,11 @@ public class PatternPanel : MonoBehaviour
             Destroy(noteContainer.GetChild(i).gameObject);
         }
         sortedNoteObjects = new SortedNoteObjects();
+        lastSelectedNoteObjectWithoutShift = null;
+        selectedNoteObjects = new HashSet<GameObject>();
 
         // For newly created patterns, there's no sound channel yet.
         EditorContext.Pattern.CreateListsIfNull();
-
         foreach (SoundChannel channel in EditorContext.Pattern.soundChannels)
         {
             foreach (Note n in channel.notes)
