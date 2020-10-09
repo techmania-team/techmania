@@ -278,6 +278,11 @@ public class PatternPanel : MonoBehaviour
 
         // Add note to UI
         SpawnNoteObject(n, sound);
+        if (UpdateNumScans())
+        {
+            DestroyAndRespawnAllMarkers();
+            ResizeWorkspace();
+        }
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -377,6 +382,12 @@ public class PatternPanel : MonoBehaviour
         }
         selectedNoteObjects.Remove(o);
         Destroy(o);
+
+        if (UpdateNumScans())
+        {
+            DestroyAndRespawnAllMarkers();
+            ResizeWorkspace();
+        }
     }
     #endregion
 
@@ -433,19 +444,24 @@ public class PatternPanel : MonoBehaviour
         ResizeWorkspace();
     }
 
-    private void UpdateNumScans()
+    // Returns whether the number changed.
+    private bool UpdateNumScans()
     {
+        int numScansBackup = numScans;
+
         GameObject o = sortedNoteObjects.GetLast();
         if (o == null)
         {
             numScans = 1;
-            return;
+            return numScans != numScansBackup;
         }
 
         int lastPulse = o.GetComponent<EditorElement>().note.pulse;
         int lastScan = lastPulse / Pattern.pulsesPerBeat
             / EditorContext.Pattern.patternMetadata.bps;
         numScans = lastScan + 2;  // 1 empty scan at the end
+
+        return numScans != numScansBackup;
     }
 
     private void ResizeWorkspace()
@@ -453,6 +469,8 @@ public class PatternPanel : MonoBehaviour
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
             workspaceContent.sizeDelta.y);
+        workspace.horizontalNormalizedPosition =
+                Mathf.Clamp01(workspace.horizontalNormalizedPosition);
     }
     #endregion
 
