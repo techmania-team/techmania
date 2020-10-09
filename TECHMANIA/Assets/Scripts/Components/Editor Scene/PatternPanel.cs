@@ -162,7 +162,7 @@ public class PatternPanel : MonoBehaviour
             noteCursor.gameObject.SetActive(false);
         }
 
-        if (Input.GetMouseButton(0) && mouseInHeader)
+        if (Input.GetMouseButton(0) && mouseInWorkspace && mouseInHeader)
         {
             MoveScanlineToMouse();
         }
@@ -193,7 +193,7 @@ public class PatternPanel : MonoBehaviour
             else
             {
                 // Scroll workspace
-                workspace.horizontalNormalizedPosition += y * 0.05f;
+                workspace.horizontalNormalizedPosition += y * 5f / zoom;
                 workspace.horizontalNormalizedPosition =
                     Mathf.Clamp01(workspace.horizontalNormalizedPosition);
             }
@@ -258,7 +258,7 @@ public class PatternPanel : MonoBehaviour
         {
             return;
         }
-        if (noteCursor.gameObject.activeSelf) return;
+        if (!noteCursor.gameObject.activeSelf) return;
         if (sortedNoteObjects.HasAt(
             noteCursor.note.pulse, noteCursor.note.lane))
         {
@@ -411,7 +411,6 @@ public class PatternPanel : MonoBehaviour
         DestroyAndRespawnExistingNotes();
         UpdateNumScans();
         DestroyAndRespawnAllMarkers();
-        RepositionNeeded?.Invoke();
         ResizeWorkspace();
     }
 
@@ -459,6 +458,7 @@ public class PatternPanel : MonoBehaviour
             EditorElement element = marker.GetComponent<EditorElement>();
             element.beat = scan * bps;
             element.SetTimeDisplay();
+            element.Reposition();
 
             for (int beat = 1; beat < bps; beat++)
             {
@@ -467,6 +467,7 @@ public class PatternPanel : MonoBehaviour
                 element = marker.GetComponent<EditorElement>();
                 element.beat = scan * bps + beat;
                 element.SetTimeDisplay();
+                element.Reposition();
             }
         }
 
@@ -477,6 +478,7 @@ public class PatternPanel : MonoBehaviour
             EditorElement element = marker.GetComponent<EditorElement>();
             element.pulse = e.pulse;
             element.SetBpmText(e.bpm);
+            element.Reposition();
         }
     }
 
@@ -487,6 +489,7 @@ public class PatternPanel : MonoBehaviour
         noteObject.note = n;
         noteObject.sound = sound;
         noteObject.SetKeysoundText();
+        noteObject.Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
     }
