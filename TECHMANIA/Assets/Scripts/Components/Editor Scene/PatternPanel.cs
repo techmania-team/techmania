@@ -104,7 +104,7 @@ public class PatternPanel : MonoBehaviour
         // TODO: save this to game options and load from disk
 
         // Vertical spacing
-        HiddenLanes = 8;
+        HiddenLanes = 4;
         Canvas.ForceUpdateCanvases();
         AllLaneTotalHeight = laneDividerParent.rect.height;
 
@@ -403,6 +403,25 @@ public class PatternPanel : MonoBehaviour
     {
         beatSnapDividerDisplay.text = beatSnapDivisor.ToString();
     }
+
+    public void OnHiddenLaneNumberChanged(int newValue)
+    {
+        HiddenLanes = newValue * 4;
+
+        // Update background
+        hiddenLaneBackground.anchorMin = Vector2.zero;
+        hiddenLaneBackground.anchorMax = new Vector2(
+            1f, (float)HiddenLanes / TotalLanes);
+
+        // Update lane dividers
+        for (int i = 0; i < laneDividerParent.childCount; i++)
+        {
+            laneDividerParent.GetChild(i).gameObject.SetActive(
+                i < TotalLanes);
+        }
+
+        RepositionNeeded?.Invoke();
+    }
     #endregion
 
     #region Refreshing
@@ -484,7 +503,12 @@ public class PatternPanel : MonoBehaviour
 
     private void SpawnNoteObject(Note n, string sound)
     {
-        EditorElement noteObject = Instantiate(basicNotePrefab,
+        GameObject prefab = basicNotePrefab;
+        if (n.lane >= PlayableLanes)
+        {
+            prefab = hiddenNotePrefab;
+        }
+        EditorElement noteObject = Instantiate(prefab,
             noteContainer).GetComponent<EditorElement>();
         noteObject.note = n;
         noteObject.sound = sound;
