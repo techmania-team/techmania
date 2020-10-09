@@ -17,21 +17,15 @@ public class TrackSetupPanel : MonoBehaviour
     {
         Tabs.tabChanged += Refresh;
         EditorContext.UndoneOrRedone += Refresh;
-        EditorContext.DirtynessUpdated += RefreshTitle;
-        EditorContext.UndoRedoStackUpdated += RefreshUndoRedoButtons;
         PatternRadioList.SelectedPatternChanged += SelectedPatternChanged;
         selectedPattern = null;
         Refresh();
-        RefreshTitle(EditorContext.Dirty);
-        RefreshUndoRedoButtons();
     }
 
     private void OnDisable()
     {
         Tabs.tabChanged -= Refresh;
         EditorContext.UndoneOrRedone -= Refresh;
-        EditorContext.DirtynessUpdated -= RefreshTitle;
-        EditorContext.UndoRedoStackUpdated -= RefreshUndoRedoButtons;
         PatternRadioList.SelectedPatternChanged -= SelectedPatternChanged;
     }
 
@@ -56,60 +50,6 @@ public class TrackSetupPanel : MonoBehaviour
             case 2:
                 RefreshPatternsTab();
                 break;
-        }
-    }
-    #endregion
-
-    #region Top bar
-    [Header("Top bar")]
-    public TextMeshProUGUI title;
-    public Button undoButton;
-    public Button redoButton;
-
-    public void Save()
-    {
-        EditorContext.Save();
-    }
-
-    public void Undo()
-    {
-        EditorContext.Undo();
-    }
-
-    public void Redo()
-    {
-        EditorContext.Redo();
-    }
-
-    private void RefreshTitle(bool dirty)
-    {
-        string titleText = title.text.TrimEnd('*');
-        if (dirty) titleText = titleText + '*';
-        title.text = titleText;
-    }
-
-    private void RefreshUndoRedoButtons()
-    {
-        undoButton.interactable = EditorContext.CanUndo();
-        redoButton.interactable = EditorContext.CanRedo();
-    }
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                Save();
-            }
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                Undo();
-            }
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                Redo();
-            }
         }
     }
     #endregion

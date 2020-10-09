@@ -33,6 +33,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("UI And Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
+    public KeysoundSideSheet keysoundSheet;
 
     #region Internal Data Structures
     // All note objects sorted by pulse. This allows fast lookups
@@ -97,8 +98,11 @@ public class PatternPanel : MonoBehaviour
     public static event UnityAction<HashSet<GameObject>> SelectionChanged;
     #endregion
 
+    #region MonoBehavior APIs
     private void OnEnable()
     {
+        // TODO: save this to game options and load from disk
+
         // Vertical spacing
         HiddenLanes = 8;
         Canvas.ForceUpdateCanvases();
@@ -163,6 +167,7 @@ public class PatternPanel : MonoBehaviour
             MoveScanlineToMouse();
         }
     }
+    #endregion
 
     #region Mouse and Keyboard Update
     private void HandleMouseScroll(float y, bool mouseInWorkspace)
@@ -244,7 +249,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Event Handler
+    #region Events From Workspace
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
@@ -253,6 +258,26 @@ public class PatternPanel : MonoBehaviour
         {
             return;
         }
+        if (noteCursor.gameObject.activeSelf) return;
+        if (sortedNoteObjects.HasAt(
+            noteCursor.note.pulse, noteCursor.note.lane))
+        {
+            return;
+        }
+
+        // Add note to pattern
+        string sound = keysoundSheet.UpcomingKeysound();
+        keysoundSheet.AdvanceUpcoming();
+        Note n = new Note();
+        n.pulse = noteCursor.note.pulse;
+        n.lane = noteCursor.note.lane;
+        n.type = NoteType.Basic;
+        EditorContext.PrepareForChange();
+        EditorContext.Pattern.AddNote(n, sound);
+        EditorContext.DoneWithChange();
+
+        // Add note to UI
+        SpawnNoteObject(n, sound);
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -340,9 +365,9 @@ public class PatternPanel : MonoBehaviour
     {
         // Delete note from pattern
         EditorElement e = o.GetComponent<EditorElement>();
-        EditorNavigation.PrepareForChange();
-        EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
-        EditorNavigation.DoneWithChange();
+        EditorContext.PrepareForChange();
+        EditorContext.Pattern.DeleteNote(e.note, e.sound);
+        EditorContext.DoneWithChange();
 
         // Delete note from UI
         sortedNoteObjects.Delete(o);
@@ -355,7 +380,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region UI
+    #region Events From UI
     public void OnBeatSnapDivisorChanged(int direction)
     {
         do
@@ -380,6 +405,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
+    #region Refreshing
     private void Refresh()
     {
         DestroyAndRespawnExistingNotes();
@@ -410,6 +436,7 @@ public class PatternPanel : MonoBehaviour
             WorkspaceContentWidth,
             workspaceContent.sizeDelta.y);
     }
+    #endregion
 
     #region Spawning
     private void DestroyAndRespawnAllMarkers()

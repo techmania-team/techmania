@@ -97,11 +97,7 @@ public class PatternPanelBackup : MonoBehaviour
 
     private void OnEnable()
     {
-        zoom = 100;
-        divisionsPerBeat = 2;
-        upcomingKeysounds = new List<string>();
-        upcomingKeysounds.Add("");
-        upcomingKeysoundIndex = 0;
+        // Deleted
         clipboard = new List<NoteWithSound>();
         isPlaying = false;
 
@@ -215,33 +211,7 @@ public class PatternPanelBackup : MonoBehaviour
 
     public void OnClickPatternContainer(BaseEventData eventData)
     {
-        if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button !=
-            PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-        if (!cursor.activeSelf) return;
-        if (sortedNoteObjects.HasAt(
-            snappedCursorPulse, snappedCursorLane))
-        {
-            return;
-        }
-
-        // Add note to pattern
-        string sound = upcomingKeysounds[upcomingKeysoundIndex];
-        upcomingKeysoundIndex = (upcomingKeysoundIndex + 1) % upcomingKeysounds.Count;
-        Note n = new Note();
-        n.pulse = snappedCursorPulse;
-        n.lane = snappedCursorLane;
-        n.type = NoteType.Basic;
-        EditorNavigation.PrepareForChange();
-        EditorNavigation.GetCurrentPattern().AddNote(n, sound);
-        EditorNavigation.DoneWithChange();
-
-        // Add note to UI
-        SpawnNoteObject(n, sound);
-        UpdateUpcomingKeysoundDisplay();
+        // Deleted
     }
 
     #region Left and Right click on note objects
