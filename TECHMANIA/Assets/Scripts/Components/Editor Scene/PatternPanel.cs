@@ -594,6 +594,47 @@ public class PatternPanel : MonoBehaviour
         noteObject.Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
+
+        // Binary search the appropriate sibling index of
+        // new note, so all notes are drawn from right to left.
+        //
+        // More specifically, we are looking for the smallest-index
+        // sibling that's located on the left of the new note.
+        if (noteContainer.childCount == 1) return;
+        float targetX = noteObject.transform.position.x;
+        int first = 0;
+        int last = noteContainer.childCount - 2;
+        while (true)
+        {
+            float firstX = noteContainer.GetChild(first).position.x;
+            float lastX = noteContainer.GetChild(last).position.x;
+            if (firstX <= targetX)
+            {
+                noteObject.transform.SetSiblingIndex(first);
+                return;
+            }
+            if (lastX >= targetX)
+            {
+                noteObject.transform.SetSiblingIndex(last + 1);
+                return;
+            }
+            // Now we know for sure that lastX < targetX < firstX.
+            int middle = (first + last) / 2;
+            float middleX = noteContainer.GetChild(middle).position.x;
+            if (middleX == targetX)
+            {
+                noteObject.transform.SetSiblingIndex(middle);
+                return;
+            }
+            if (middleX < targetX)
+            {
+                last = middle - 1;
+            }
+            else  // middleX > targetX
+            {
+                first = middle + 1;
+            }
+        }
     }
 
     private void DestroyAndRespawnExistingNotes()
