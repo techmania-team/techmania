@@ -133,30 +133,7 @@ public class PatternPanelBackup : MonoBehaviour
 
         SnapCursorAndScanline();
 
-        if (Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl))
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                SelectAll();
-            }
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                CutSelection();
-            }
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                CopySelection();
-            }
-            if (Input.GetKeyDown(KeyCode.V))
-            {
-                PasteAtScanline();
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Delete))
-        {
-            DeleteSelection();
-        }
+        // Deleted
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -182,16 +159,7 @@ public class PatternPanelBackup : MonoBehaviour
 
     private void RefreshControls()
     {
-        // Timing panel
-        divisionsPerBeatDisplay.text = divisionsPerBeat.ToString();
-        UpdateBpmEventDisplay();
-
-        // Keysounds panel
-        UpdateSelectedKeysoundDisplay();
-        UpdateUpcomingKeysoundDisplay();
-
-        // Playback panel
-        RefreshPlaybackPanel();
+        // Deleted
     }
 
     private void SnapCursorAndScanline()
@@ -218,7 +186,6 @@ public class PatternPanelBackup : MonoBehaviour
     public void OnNoteObjectLeftClick(GameObject o)
     {
         // Deleted
-        RefreshControls();
     }
 
     private void ToggleSelection(GameObject o)
@@ -229,8 +196,6 @@ public class PatternPanelBackup : MonoBehaviour
     public void OnNoteObjectRightClick(GameObject o)
     {
         if (isPlaying) return;
-        // Deleted
-        RefreshControls();
         // Deleted
     }
     #endregion
@@ -526,13 +491,7 @@ public class PatternPanelBackup : MonoBehaviour
     #region Edit
     public void SelectAll()
     {
-        selectedNoteObjects.Clear();
-        for (int i = 0; i < noteObjectContainer.childCount; i++)
-        {
-            selectedNoteObjects.Add(noteObjectContainer.GetChild(i).gameObject);
-        }
-        SelectionChanged?.Invoke(selectedNoteObjects);
-        RefreshControls();
+        // Deleted
     }
 
     private class NoteWithSound
@@ -556,106 +515,28 @@ public class PatternPanelBackup : MonoBehaviour
     private int minPulseInClipboard;
     public void CutSelection()
     {
-        if (selectedNoteObjects.Count == 0) return;
+        // Deleted
         if (isPlaying) return;
-
-        CopySelection();
-        DeleteSelection();
+        // Deleted
     }
 
     public void CopySelection()
     {
-        if (selectedNoteObjects.Count == 0) return;
-
-        clipboard.Clear();
-        minPulseInClipboard = int.MaxValue;
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            NoteWithSound n = NoteWithSound.MakeFromEditorElement(o);
-            if (n.note.pulse < minPulseInClipboard)
-            {
-                minPulseInClipboard = n.note.pulse;
-            }
-            clipboard.Add(n);
-        }
+        // Deleted
     }
 
     public void PasteAtScanline()
     {
-        if (clipboard.Count == 0) return;
+        // Deleted
         if (isPlaying) return;
-
-        int scanlinePulse = ScanlinePulse();
-        int deltaPulse = scanlinePulse - minPulseInClipboard;
-
-        // Does the paste conflict with any existing note?
-        int pulsesPerScan = EditorNavigation.GetCurrentPattern().patternMetadata.bps
-            * Pattern.pulsesPerBeat;
-        int maxPulse = numScans * pulsesPerScan;
-        int addedScans = 0;
-        foreach (NoteWithSound n in clipboard)
-        {
-            int newPulse = n.note.pulse + deltaPulse;
-            if (sortedNoteObjects.HasAt(newPulse, n.note.lane))
-            {
-                // MessageDialog.Show("Cannot paste here because some pasted notes would overwrite existing notes.");
-                return;
-            }
-            while (newPulse >= maxPulse)
-            {
-                addedScans++;
-                maxPulse += pulsesPerScan;
-            }
-        }
-
-        // OK to paste. Add scans if needed.
-        if (addedScans > 0)
-        {
-            numScans += addedScans;
-            ResizeContainer();
-            SpawnMarkersAndLines();
-            RepositionNeeded?.Invoke();
-        }
-
-        // Paste.
-        EditorNavigation.PrepareForChange();
-        foreach (NoteWithSound n in clipboard)
-        {
-            Note noteClone = n.note.Clone();
-            noteClone.pulse += deltaPulse;
-
-            // Add note to pattern.
-            EditorNavigation.GetCurrentPattern().AddNote(noteClone, n.sound);
-
-            // Add note to UI.
-            SpawnNoteObject(noteClone, n.sound);
-        }
-        EditorNavigation.DoneWithChange();
+        // Deleted
     }
 
     public void DeleteSelection()
     {
-        if (selectedNoteObjects.Count == 0) return;
+        // Deleted
         if (isPlaying) return;
-
-        // Delete notes from pattern.
-        EditorNavigation.PrepareForChange();
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            EditorElement e = o.GetComponent<EditorElement>();
-            EditorNavigation.GetCurrentPattern().DeleteNote(e.note, e.sound);
-        }
-        EditorNavigation.DoneWithChange();
-
-        // Delete notes from UI.
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            sortedNoteObjects.Delete(o);
-            Destroy(o);
-        }
-        lastSelectedNoteObjectWithoutShift = null;
-        selectedNoteObjects.Clear();
-        RefreshControls();
+        // Deleted
     }
     #endregion
 
