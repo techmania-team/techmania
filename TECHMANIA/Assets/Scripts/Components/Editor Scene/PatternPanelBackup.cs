@@ -205,111 +205,19 @@ public class PatternPanelBackup : MonoBehaviour
     private void OnNoteObjectBeginDrag(GameObject o)
     {
         if (isPlaying) return;
-
-        draggedNoteObject = o;
-        lastSelectedNoteObjectWithoutShift = o;
-        if (!selectedNoteObjects.Contains(o))
-        {
-            selectedNoteObjects.Clear();
-            selectedNoteObjects.Add(o);
-
-            SelectionChanged?.Invoke(selectedNoteObjects);
-            RefreshControls();
-        }
+        // Deleted
     }
 
     private void OnNoteObjectDrag(Vector2 delta)
     {
         if (isPlaying) return;
-
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            // This is only visual. Notes are only really moved
-            // in EndDrag.
-            o.GetComponent<RectTransform>().anchoredPosition += delta;
-        }
+        // Deleted
     }
 
     private void OnNoteObjectEndDrag()
     {
         if (isPlaying) return;
-
-        // Calculate delta pulse and delta lane
-        EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
-        int oldPulse = element.note.pulse;
-        int oldLane = element.note.lane;
-        int deltaPulse = snappedCursorPulse - oldPulse;
-        int deltaLane = snappedCursorLane - oldLane;
-
-        // Is the movement applicable to all notes?
-        int minPulse = 0;
-        int pulsesPerScan = EditorNavigation.GetCurrentPattern().patternMetadata.bps
-            * Pattern.pulsesPerBeat;
-        int maxPulse = numScans * pulsesPerScan;
-        int minLane = 0;
-        int maxLane = 3;
-        bool movable = true;
-        int addedScans = 0;
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            Note n = o.GetComponent<EditorElement>().note;
-            int newPulse = n.pulse + deltaPulse;
-            int newLane = n.lane + deltaLane;
-
-            if (sortedNoteObjects.HasAt(newPulse, newLane))
-            {
-                GameObject collision = sortedNoteObjects.GetAt(newPulse, newLane);
-                if (!selectedNoteObjects.Contains(collision))
-                {
-                    movable = false;
-                    break;
-                }
-            }
-            if (newPulse < minPulse ||
-                newLane < minLane ||
-                newLane > maxLane)
-            {
-                movable = false;
-                break;
-            }
-            while (newPulse >= maxPulse)
-            {
-                addedScans++;
-                maxPulse += pulsesPerScan;
-            }
-        }
-
-        if (movable)
-        {
-            // Add scans if needed.
-            if (addedScans > 0)
-            {
-                numScans += addedScans;
-                ResizeContainer();
-                SpawnMarkersAndLines();
-                RepositionNeeded?.Invoke();
-            }
-
-            // Apply move.
-            EditorNavigation.PrepareForChange();
-            foreach (GameObject o in selectedNoteObjects)
-            {
-                sortedNoteObjects.Delete(o);
-            }
-            foreach (GameObject o in selectedNoteObjects)
-            {
-                Note n = o.GetComponent<EditorElement>().note;
-                n.pulse += deltaPulse;
-                n.lane += deltaLane;
-                sortedNoteObjects.Add(o);
-            }
-            EditorNavigation.DoneWithChange();
-        }
-
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            o.GetComponent<EditorElement>().Reposition();
-        }
+        // Deleted
     }
     #endregion
 

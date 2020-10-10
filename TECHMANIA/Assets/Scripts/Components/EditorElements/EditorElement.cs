@@ -39,7 +39,7 @@ public class EditorElement : MonoBehaviour
 
     // Specific to notes
     [HideInInspector]
-    public Note note;
+    public Note note;  // Typically a reference to a note in EditorContext.Pattern.
     [HideInInspector]
     public string sound;
 

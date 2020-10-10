@@ -148,9 +148,9 @@ public class PatternPanel : MonoBehaviour
         EditorContext.UndoneOrRedone += Refresh;
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
-        // EditorElement.BeginDrag += OnNoteObjectBeginDrag;
-        // EditorElement.Drag += OnNoteObjectDrag;
-        // EditorElement.EndDrag += OnNoteObjectEndDrag;
+        EditorElement.BeginDrag += OnNoteObjectBeginDrag;
+        EditorElement.Drag += OnNoteObjectDrag;
+        EditorElement.EndDrag += OnNoteObjectEndDrag;
     }
 
     private void OnDisable()
@@ -158,9 +158,9 @@ public class PatternPanel : MonoBehaviour
         EditorContext.UndoneOrRedone -= Refresh;
         EditorElement.LeftClicked -= OnNoteObjectLeftClick;
         EditorElement.RightClicked -= OnNoteObjectRightClick;
-        // EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
-        // EditorElement.Drag -= OnNoteObjectDrag;
-        // EditorElement.EndDrag -= OnNoteObjectEndDrag;
+        EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
+        EditorElement.Drag -= OnNoteObjectDrag;
+        EditorElement.EndDrag -= OnNoteObjectEndDrag;
     }
 
     // Update is called once per frame
@@ -486,6 +486,109 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
+    #region Dragging And Dropping Notes
+    private GameObject draggedNoteObject;
+    private void OnNoteObjectBeginDrag(GameObject o)
+    {
+        draggedNoteObject = o;
+        lastSelectedNoteObjectWithoutShift = o;
+        if (!selectedNoteObjects.Contains(o))
+        {
+            selectedNoteObjects.Clear();
+            selectedNoteObjects.Add(o);
+
+            SelectionChanged?.Invoke(selectedNoteObjects);
+        }
+    }
+
+    private void OnNoteObjectDrag(Vector2 delta)
+    {
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            // This is only visual. Notes are only really moved
+            // in EndDrag.
+            o.GetComponent<RectTransform>().anchoredPosition += delta;
+        }
+    }
+
+    private void OnNoteObjectEndDrag()
+    {
+        // Calculate delta pulse and delta lane
+        EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
+        int oldPulse = element.note.pulse;
+        int oldLane = element.note.lane;
+        int deltaPulse = noteCursor.note.pulse - oldPulse;
+        int deltaLane = noteCursor.note.lane - oldLane;
+
+        // Is the movement applicable to all notes?
+        // Movement will fail if:
+        // - there's collision with existing notes,
+        // - notes would go out of playable & hidden lanes, or
+        // - notes would have negative pulses.
+        bool movable = true;
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            Note n = o.GetComponent<EditorElement>().note;
+            int newPulse = n.pulse + deltaPulse;
+            int newLane = n.lane + deltaLane;
+
+            if (sortedNoteObjects.HasAt(newPulse, newLane))
+            {
+                GameObject collision = sortedNoteObjects.GetAt(newPulse, newLane);
+                if (!selectedNoteObjects.Contains(collision))
+                {
+                    movable = false;
+                    break;
+                }
+            }
+            if (newPulse < 0)
+            {
+                movable = false;
+                break;
+            }
+            if (newLane < 0 || newLane >= TotalLanes)
+            {
+                movable = false;
+                break;
+            }
+        }
+
+        if (movable)
+        {
+            // Apply move. We need to delete and respawn note
+            // objects, because they may have been moved between
+            // playable and hidden lanes.
+            EditorContext.PrepareForChange();
+            HashSet<GameObject> replacedSelection = new HashSet<GameObject>();
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                sortedNoteObjects.Delete(o);
+            }
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                Note n = o.GetComponent<EditorElement>().note;
+                n.pulse += deltaPulse;
+                n.lane += deltaLane;
+                GameObject newO = SpawnNoteObject(
+                    n, o.GetComponent<EditorElement>().sound);
+                Destroy(o);
+                replacedSelection.Add(newO);
+            }
+            EditorContext.DoneWithChange();
+            selectedNoteObjects = replacedSelection;
+            SelectionChanged?.Invoke(selectedNoteObjects);
+
+            // Add scans if needed.
+            UpdateNumScansAndRelatedUI();
+        }
+
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            o.GetComponent<EditorElement>().Reposition();
+        }
+    }
+    #endregion
+
     #region Refreshing
     private void Refresh()
     {
@@ -579,7 +682,7 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void SpawnNoteObject(Note n, string sound)
+    private GameObject SpawnNoteObject(Note n, string sound)
     {
         GameObject prefab = basicNotePrefab;
         if (n.lane >= PlayableLanes)
@@ -600,7 +703,10 @@ public class PatternPanel : MonoBehaviour
         //
         // More specifically, we are looking for the smallest-index
         // sibling that's located on the left of the new note.
-        if (noteContainer.childCount == 1) return;
+        if (noteContainer.childCount == 1)
+        {
+            return noteObject.gameObject;
+        }
         float targetX = noteObject.transform.position.x;
         int first = 0;
         int last = noteContainer.childCount - 2;
@@ -611,12 +717,12 @@ public class PatternPanel : MonoBehaviour
             if (firstX <= targetX)
             {
                 noteObject.transform.SetSiblingIndex(first);
-                return;
+                break;
             }
             if (lastX >= targetX)
             {
                 noteObject.transform.SetSiblingIndex(last + 1);
-                return;
+                break;
             }
             // Now we know for sure that lastX < targetX < firstX.
             int middle = (first + last) / 2;
@@ -624,7 +730,7 @@ public class PatternPanel : MonoBehaviour
             if (middleX == targetX)
             {
                 noteObject.transform.SetSiblingIndex(middle);
-                return;
+                break;
             }
             if (middleX < targetX)
             {
@@ -635,6 +741,8 @@ public class PatternPanel : MonoBehaviour
                 first = middle + 1;
             }
         }
+
+        return noteObject.gameObject;
     }
 
     private void DestroyAndRespawnExistingNotes()
