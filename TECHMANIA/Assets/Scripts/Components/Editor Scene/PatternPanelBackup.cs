@@ -158,7 +158,6 @@ public class PatternPanelBackup : MonoBehaviour
 
     public void OnNoteObjectRightClick(GameObject o)
     {
-        if (isPlaying) return;
         // Deleted
     }
     #endregion
@@ -167,19 +166,16 @@ public class PatternPanelBackup : MonoBehaviour
     private GameObject draggedNoteObject;
     private void OnNoteObjectBeginDrag(GameObject o)
     {
-        if (isPlaying) return;
         // Deleted
     }
 
     private void OnNoteObjectDrag(Vector2 delta)
     {
-        if (isPlaying) return;
         // Deleted
     }
 
     private void OnNoteObjectEndDrag()
     {
-        if (isPlaying) return;
         // Deleted
     }
     #endregion
@@ -212,8 +208,6 @@ public class PatternPanelBackup : MonoBehaviour
     public void CutSelection()
     {
         // Deleted
-        if (isPlaying) return;
-        // Deleted
     }
 
     public void CopySelection()
@@ -224,14 +218,10 @@ public class PatternPanelBackup : MonoBehaviour
     public void PasteAtScanline()
     {
         // Deleted
-        if (isPlaying) return;
-        // Deleted
     }
 
     public void DeleteSelection()
     {
-        // Deleted
-        if (isPlaying) return;
         // Deleted
     }
     #endregion

@@ -182,7 +182,10 @@ public class PatternPanel : MonoBehaviour
             noteCursor.gameObject.SetActive(false);
         }
 
-        if (Input.GetMouseButton(0) && mouseInWorkspace && mouseInHeader)
+        if (Input.GetMouseButton(0) &&
+            mouseInWorkspace &&
+            mouseInHeader &&
+            !isPlaying)
         {
             MoveScanlineToMouse();
         }
@@ -322,6 +325,7 @@ public class PatternPanel : MonoBehaviour
         {
             return;
         }
+        if (isPlaying) return;
 
         // Add note to pattern
         string sound = keysoundSheet.UpcomingKeysound();
@@ -422,6 +426,8 @@ public class PatternPanel : MonoBehaviour
 
     public void OnNoteObjectRightClick(GameObject o)
     {
+        if (isPlaying) return;
+
         // Delete note from pattern
         EditorElement e = o.GetComponent<EditorElement>();
         EditorContext.PrepareForChange();
@@ -485,6 +491,8 @@ public class PatternPanel : MonoBehaviour
 
     public void OnScanlinePositionSliderValueChanged(float newValue)
     {
+        if (isPlaying) return;
+
         int totalPulses = numScans
             * EditorContext.Pattern.patternMetadata.bps
             * Pattern.pulsesPerBeat;
@@ -499,6 +507,8 @@ public class PatternPanel : MonoBehaviour
     private GameObject draggedNoteObject;
     private void OnNoteObjectBeginDrag(GameObject o)
     {
+        if (isPlaying) return;
+
         draggedNoteObject = o;
         lastSelectedNoteObjectWithoutShift = o;
         if (!selectedNoteObjects.Contains(o))
@@ -512,6 +522,8 @@ public class PatternPanel : MonoBehaviour
 
     private void OnNoteObjectDrag(Vector2 delta)
     {
+        if (isPlaying) return;
+
         foreach (GameObject o in selectedNoteObjects)
         {
             // This is only visual. Notes are only really moved
@@ -522,6 +534,8 @@ public class PatternPanel : MonoBehaviour
 
     private void OnNoteObjectEndDrag()
     {
+        if (isPlaying) return;
+
         // Calculate delta pulse and delta lane
         EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
         int oldPulse = element.note.pulse;
@@ -856,6 +870,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (clipboard == null) return;
         if (clipboard.Count == 0) return;
+        if (isPlaying) return;
 
         int scanlinePulse = (int)scanline.floatPulse;
         int deltaPulse = scanlinePulse - minPulseInClipboard;
@@ -894,6 +909,7 @@ public class PatternPanel : MonoBehaviour
     public void DeleteSelection()
     {
         if (selectedNoteObjects.Count == 0) return;
+        if (isPlaying) return;
 
         // Delete notes from pattern.
         EditorContext.PrepareForChange();
@@ -944,17 +960,18 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void UpdatePlayAndStopButtons()
+    private void UpdateUIOnPlaybackStartOrStop()
     {
         playButton.SetActive(!isPlaying);
         stopButton.SetActive(isPlaying);
+        scanlinePositionSlider.interactable = !isPlaying;
     }
 
     public void StartPlayback()
     {
         if (isPlaying) return;
         isPlaying = true;
-        UpdatePlayAndStopButtons();
+        UpdateUIOnPlaybackStartOrStop();
 
         Pattern pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
@@ -1000,7 +1017,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (!isPlaying) return;
         isPlaying = false;
-        UpdatePlayAndStopButtons();
+        UpdateUIOnPlaybackStartOrStop();
 
         backingTrackSource.Stop();
         scanline.floatPulse = playbackStartingPulse;
