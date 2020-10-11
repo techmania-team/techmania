@@ -31,9 +31,16 @@ public class PatternPanel : MonoBehaviour
     public GameObject basicNotePrefab;
     public GameObject hiddenNotePrefab;
 
+    [Header("Audio")]
+    public ResourceLoader resourceLoader;
+    public AudioSource backingTrackSource;
+    public List<AudioSource> keysoundSources;
+
     [Header("UI And Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
     public KeysoundSideSheet keysoundSheet;
+    public GameObject playButton;
+    public GameObject stopButton;
     public Slider scanlinePositionSlider;
     public MessageDialog messageDialog;
 
@@ -74,49 +81,21 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Vertical Spacing
-    public static int PlayableLanes
-    {
-        get
-        {
-            return 4;
-        }
-    }
+    public static int PlayableLanes => 4;
     public static int HiddenLanes { get; private set; }
-    public static int TotalLanes
-    {
-        get
-        {
-            return PlayableLanes + HiddenLanes;
-        }
-    }
+    public const int MaxHiddenLanes = 8;
+    public static int TotalLanes => PlayableLanes + HiddenLanes;
+    public static int MaxTotalLanes => PlayableLanes + MaxHiddenLanes;
     public static float AllLaneTotalHeight { get; private set; }
-    public static float LaneHeight
-    {
-        get
-        {
-            return AllLaneTotalHeight / TotalLanes;
-        }
-    }
+    public static float LaneHeight => AllLaneTotalHeight / TotalLanes;
     #endregion
 
     #region Horizontal Spacing
     private int numScans;
     private static int zoom;
     private int beatSnapDivisor;
-    public static float ScanWidth
-    {
-        get
-        {
-            return 10f * zoom;
-        }
-    }
-    private float WorkspaceContentWidth
-    {
-        get
-        {
-            return numScans * ScanWidth;
-        }
-    }
+    public static float ScanWidth => 10f * zoom;
+    private float WorkspaceContentWidth => numScans * ScanWidth;
     #endregion
 
     #region Outward Events
@@ -145,6 +124,12 @@ public class PatternPanel : MonoBehaviour
         // UI
         UpdateBeatSnapDivisorDisplay();
 
+        // Playback
+        playButton.GetComponent<Button>().interactable = false;
+        resourceLoader.LoadResources(EditorContext.trackPath,
+            loadCompleteCallback: OnResourceLoadComplete);
+        isPlaying = false;
+
         Refresh();
         EditorContext.UndoneOrRedone += Refresh;
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
@@ -167,6 +152,10 @@ public class PatternPanel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isPlaying)
+        {
+            UpdatePlayback();
+        }
         if (messageDialog.gameObject.activeSelf)
         {
             return;
@@ -303,6 +292,17 @@ public class PatternPanel : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Delete))
         {
             DeleteSelection();
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isPlaying)
+            {
+                StopPlayback();
+            }
+            else
+            {
+                StartPlayback();
+            }
         }
     }
     #endregion
@@ -651,6 +651,7 @@ public class PatternPanel : MonoBehaviour
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float scanlineNormalizedPosition = scanline.floatPulse /
             (numScans * bps * Pattern.pulsesPerBeat);
+       
         scanlinePositionSlider.SetValueWithoutNotify(scanlineNormalizedPosition);
     }
     #endregion
@@ -912,6 +913,148 @@ public class PatternPanel : MonoBehaviour
         lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects.Clear();
         UpdateNumScansAndRelatedUI();
+    }
+    #endregion
+
+    #region Playback
+    // During playback, the following features are disabled:
+    // TODO: implement these.
+    // - Adding or deleting notes, including by clicking, dragging
+    //   and cut/copy/paste
+    // - Applying note types and/or keysounds to selection, if
+    //   specified in options
+    // - Moving the scanline, including by clicking the header
+    //   and dragging the scanline position slider.
+    private bool isPlaying;
+    private float playbackStartingPulse;
+    private float playbackStartingTime;
+    private DateTime systemTimeOnPlaybackStart;
+    private List<Queue<NoteWithSound>> notesInLanes;
+
+    private void OnResourceLoadComplete(string error)
+    {
+        if (error == null)
+        {
+            playButton.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            messageDialog.Show(error + "\n\n" +
+                "You can continue to edit this pattern, but playback and preview will be disabled.");
+        }
+    }
+
+    private void UpdatePlayAndStopButtons()
+    {
+        playButton.SetActive(!isPlaying);
+        stopButton.SetActive(isPlaying);
+    }
+
+    public void StartPlayback()
+    {
+        if (isPlaying) return;
+        isPlaying = true;
+        UpdatePlayAndStopButtons();
+
+        Pattern pattern = EditorContext.Pattern;
+        pattern.PrepareForTimeCalculation();
+        pattern.CalculateTimeOfAllNotes();
+        playbackStartingPulse = scanline.floatPulse;
+        playbackStartingTime = pattern.PulseToTime((int)playbackStartingPulse);
+
+        // Put notes into queues, each corresponding to a lane.
+        // Use MaxTotalLanes instead of TotalLanes, so that, for
+        // example, when user sets hidden lanes to 4, lanes
+        // 8~11 are still played.
+        notesInLanes = new List<Queue<NoteWithSound>>();
+        for (int i = 0; i < MaxTotalLanes; i++)
+        {
+            notesInLanes.Add(new Queue<NoteWithSound>());
+        }
+        for (int pulse = (int)playbackStartingPulse;
+            pulse <= sortedNoteObjects.GetMaxPulse();
+            pulse++)
+        {
+            List<GameObject> noteObjectsAtThisPulse =
+                sortedNoteObjects.GetAt(pulse);
+            if (noteObjectsAtThisPulse == null) continue;
+            foreach (GameObject o in noteObjectsAtThisPulse)
+            {
+                EditorElement e = o.GetComponent<EditorElement>();
+                notesInLanes[e.note.lane].Enqueue(new NoteWithSound()
+                {
+                    note = e.note,
+                    sound = e.sound
+                });
+            }
+        }
+
+        systemTimeOnPlaybackStart = DateTime.Now;
+        PlaySound(backingTrackSource,
+            resourceLoader.GetClip(
+                pattern.patternMetadata.backingTrack),
+            playbackStartingTime);
+    }
+
+    public void StopPlayback()
+    {
+        if (!isPlaying) return;
+        isPlaying = false;
+        UpdatePlayAndStopButtons();
+
+        backingTrackSource.Stop();
+        scanline.floatPulse = playbackStartingPulse;
+        scanline.Reposition();
+        ScrollScanlineIntoView();
+        RefreshScanlinePositionSlider();
+    }
+
+    public void UpdatePlayback()
+    {
+        // Calculate time.
+        float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
+        float playbackCurrentTime = playbackStartingTime + elapsedTime;
+        float playbackCurrentPulse = EditorContext.Pattern.TimeToPulse(playbackCurrentTime);
+
+        // Stop playback after the last scan.
+        int totalPulses = numScans * EditorContext.Pattern.patternMetadata.bps * Pattern.pulsesPerBeat;
+        if (playbackCurrentPulse > totalPulses)
+        {
+            StopPlayback();
+            return;
+        }
+
+        // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
+
+        // Play keysounds if it's their time.
+        for (int i = 0; i < notesInLanes.Count; i++)
+        {
+            if (notesInLanes[i].Count == 0) continue;
+            NoteWithSound nextNote = notesInLanes[i].Peek();
+            if (playbackCurrentTime >= nextNote.note.time)
+            {
+                AudioClip clip = resourceLoader.GetClip(nextNote.sound);
+                AudioSource source = keysoundSources[i];
+                float startTime = playbackCurrentTime - nextNote.note.time;
+                PlaySound(source, clip, startTime);
+
+                notesInLanes[i].Dequeue();
+            }
+        }
+
+        // Move scanline.
+        scanline.floatPulse = playbackCurrentPulse;
+        scanline.Reposition();
+        ScrollScanlineIntoView();
+        RefreshScanlinePositionSlider();
+    }
+
+    private void PlaySound(AudioSource source, AudioClip clip, float startTime)
+    {
+        int startSample = Mathf.FloorToInt(startTime * clip.frequency);
+        source.clip = clip;
+        source.timeSamples = startSample;
+        source.Play();
     }
     #endregion
 

@@ -104,8 +104,8 @@ public class Game : MonoBehaviour
 
         // And now we wait for the resources to load.
         stopwatch = null;
-        ResourceLoader.LoadComplete += OnLoadComplete;
-        resourceLoader.LoadResources(GameSetup.trackPath);
+        resourceLoader.LoadResources(GameSetup.trackPath,
+            loadCompleteCallback: OnLoadComplete);
     }
 
     private void OnDestroy()
@@ -125,7 +125,6 @@ public class Game : MonoBehaviour
 
     private void OnLoadComplete(string error)
     {
-        ResourceLoader.LoadComplete -= OnLoadComplete;
         if (error != null)
         {
             // Handle error.

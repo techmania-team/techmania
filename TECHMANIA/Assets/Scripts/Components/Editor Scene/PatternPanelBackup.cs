@@ -98,15 +98,6 @@ public class PatternPanelBackup : MonoBehaviour
     private void OnEnable()
     {
         // Deleted
-        clipboard = new List<NoteWithSound>();
-        isPlaying = false;
-
-        // Deleted
-
-        // MemoryToUI();
-        resourceLoader.LoadResources(EditorNavigation.GetCurrentTrackPath());
-
-        // Deleted
     }
 
     private void OnDisable()
@@ -117,35 +108,7 @@ public class PatternPanelBackup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isPlaying)
-        {
-            UpdatePlayback();
-        }
-        if (ModalDialog.IsAnyModalDialogActive())
-        {
-            return;
-        }
-
-        if (Input.mouseScrollDelta.y != 0)
-        {
-            // Deleted
-        }
-
-        SnapCursorAndScanline();
-
         // Deleted
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (isPlaying)
-            {
-                StopPlayback();
-            }
-            else
-            {
-                StartPlayback();
-            }
-        }
     }
 
     public void MemoryToUI()
@@ -221,18 +184,6 @@ public class PatternPanelBackup : MonoBehaviour
     }
     #endregion
 
-    #region Scans
-    public void AddScan()
-    {
-        // Deleted
-    }
-
-    public void TrimTrailingScans()
-    {
-        // Deleted
-    }
-    #endregion
-
     #region Edit
     public void SelectAll()
     {
@@ -294,135 +245,27 @@ public class PatternPanelBackup : MonoBehaviour
 
     private void RefreshPlaybackPanel()
     {
-        playButton.SetActive(!isPlaying);
-        stopButton.SetActive(isPlaying);
+        // Deleted
     }
 
     public void StartPlayback()
     {
-        if (isPlaying) return;
-        isPlaying = true;
-        // if (!resourceLoader.LoadComplete()) return;
-        RefreshControls();
-
-        Pattern currentPattern = EditorNavigation.GetCurrentPattern();
-
-        currentPattern.PrepareForTimeCalculation();
-        currentPattern.CalculateTimeOfAllNotes();
-        playbackStartingPulse = scanline.GetComponent<EditorElement>()
-            .floatPulse;
-        playbackStartingTime = currentPattern.PulseToTime((int)playbackStartingPulse);
-
-        // Put notes into queues, each corresponding to a lane.
-        notesInLanes = new List<Queue<NoteWithSound>>();
-        for (int i = 0; i < 4; i++)
-        {
-            notesInLanes.Add(new Queue<NoteWithSound>());
-        }
-        for (int pulse = (int)playbackStartingPulse;
-            pulse <= sortedNoteObjects.GetMaxPulse();
-            pulse++)
-        {
-            List<GameObject> noteObjectsAtThisPulse =
-                sortedNoteObjects.GetAt(pulse);
-            if (noteObjectsAtThisPulse == null) continue;
-            foreach (GameObject o in noteObjectsAtThisPulse)
-            {
-                EditorElement e = o.GetComponent<EditorElement>();
-                notesInLanes[e.note.lane].Enqueue(new NoteWithSound()
-                {
-                    note = e.note,
-                    sound = e.sound
-                });
-            }
-        }
-
-        systemTimeOnPlaybackStart = DateTime.Now;
-        // There's a bit time between the start of this frame
-        // and when this method runs, so we keep time using
-        // system time to be slightly more accurate.
-
-        PlaySound(backingTrackSource,
-            resourceLoader.GetClip(
-                currentPattern.patternMetadata.backingTrack),
-            playbackStartingTime);
+        // Deleted
     }
 
     public void StopPlayback()
     {
-        if (!isPlaying) return;
-        isPlaying = false;
-        RefreshControls();
-
-        backingTrackSource.Stop();
-        EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-        scanlineElement.floatPulse = playbackStartingPulse;
-        scanlineElement.Reposition();
+        // Deleted
     }
 
     public void UpdatePlayback()
     {
-        if (!backingTrackSource.isPlaying)
-        {
-            isPlaying = false;
-            RefreshControls();
-            return;
-        }
-
-        // Calculate time.
-        float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
-        float playbackCurrentTime = playbackStartingTime + elapsedTime;
-        float playbackCurrentPulse = EditorNavigation.GetCurrentPattern().TimeToPulse(playbackCurrentTime);
-
-        // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
-
-        // Play keysounds if it's their time.
-        for (int i = 0; i < 4; i++)
-        {
-            if (notesInLanes[i].Count == 0) continue;
-            NoteWithSound nextNote = notesInLanes[i].Peek();
-            if (playbackCurrentTime >= nextNote.note.time)
-            {
-                AudioClip clip = resourceLoader.GetClip(nextNote.sound);
-                AudioSource source = keysoundSources[i];
-                float startTime = playbackCurrentTime - nextNote.note.time;
-                PlaySound(source, clip, startTime);
-
-                notesInLanes[i].Dequeue();
-            }
-        }
-
-        // Move scanline.
-        EditorElement scanlineElement = scanline.GetComponent<EditorElement>();
-        scanlineElement.floatPulse = playbackCurrentPulse;
-        scanlineElement.Reposition();
-
-        // Scroll pattern to keep up.
-        float patternWidth = patternContainer.GetComponent<RectTransform>().rect.width;
-        float viewPortWidth = scrollRect.GetComponent<RectTransform>().rect.width;
-        if (patternWidth <= viewPortWidth) return;
-
-        float scanlinePosition = scanline.GetComponent<RectTransform>().anchoredPosition.x;
-
-        float xAtViewPortLeft = (patternWidth - viewPortWidth)
-            * scrollRect.horizontalNormalizedPosition;
-        float xAtViewPortRight = xAtViewPortLeft + viewPortWidth;
-        if (scanlinePosition < xAtViewPortLeft ||
-            scanlinePosition > xAtViewPortRight)
-        {
-            float normalizedPosition =
-                scanlinePosition / (patternWidth - viewPortWidth);
-            scrollRect.horizontalNormalizedPosition =
-                Mathf.Clamp01(normalizedPosition);    
-        }
+        // Deleted
     }
 
     private void PlaySound(AudioSource source, AudioClip clip, float startTime)
     {
-        int startSample = Mathf.FloorToInt(startTime * clip.frequency);
-        source.clip = clip;
-        source.timeSamples = startSample;
-        source.Play();
+        // Deleted
     }
     #endregion
 

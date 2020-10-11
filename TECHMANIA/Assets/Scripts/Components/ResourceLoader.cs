@@ -10,12 +10,12 @@ public class ResourceLoader : MonoBehaviour
 {
     // Keys do not contain folder.
     private Dictionary<string, AudioClip> audioClips;
+    private UnityAction<string> loadCompleteCallback;
 
-    // Argument is error message, if any.
-    public static event UnityAction<string> LoadComplete;
-
-    public void LoadResources(string trackPath)
+    public void LoadResources(string trackPath,
+        UnityAction<string> loadCompleteCallback)
     {
+        this.loadCompleteCallback = loadCompleteCallback;
         StartCoroutine(InnerLoadResources(trackPath));
     }
 
@@ -35,14 +35,14 @@ public class ResourceLoader : MonoBehaviour
             if (clip == null)
             {
                 string error = $"Could not load {file}:\n\n{request.error}";
-                LoadComplete?.Invoke(error);
+                loadCompleteCallback?.Invoke(error);
                 yield break;
             }
             if (clip.loadState != AudioDataLoadState.Loaded)
             {
                 string error = $"Could not load {file}.\n\n" +
                     "The file may be corrupted, or be of an unsupported format.";
-                LoadComplete?.Invoke(error);
+                loadCompleteCallback?.Invoke(error);
                 yield break;
             }
 
@@ -51,7 +51,7 @@ public class ResourceLoader : MonoBehaviour
         }
 
         yield return null;  // Wait 1 more frame just in case
-        LoadComplete?.Invoke(null);
+        loadCompleteCallback?.Invoke(null);
     }
 
     public AudioClip GetClip(string filenameWithoutFolder)
