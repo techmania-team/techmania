@@ -48,12 +48,14 @@ public class EditorElement : MonoBehaviour
     {
         PatternPanel.RepositionNeeded += Reposition;
         PatternPanel.SelectionChanged += UpdateSelection;
+        PatternPanel.KeysoundVisibilityChanged += SetKeysoundVisibility;
     }
 
     private void OnDisable()
     {
         PatternPanel.RepositionNeeded -= Reposition;
         PatternPanel.SelectionChanged -= UpdateSelection;
+        PatternPanel.KeysoundVisibilityChanged -= SetKeysoundVisibility;
     }
 
     public void Reposition()
@@ -159,6 +161,13 @@ public class EditorElement : MonoBehaviour
     #endregion
 
     #region Text
+    public void SetKeysoundVisibility(bool visible)
+    {
+        if (type != Type.Note) return;
+        GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
+            .gameObject.SetActive(visible);
+    }
+
     public void SetTimeDisplay()
     {
         int bps = EditorContext.Pattern.patternMetadata.bps;

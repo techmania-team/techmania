@@ -36,8 +36,14 @@ public class PatternPanel : MonoBehaviour
     public AudioSource backingTrackSource;
     public List<AudioSource> keysoundSources;
 
-    [Header("UI And Options")]
+    [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
+    public TMP_Dropdown hiddenLanesDropdown;
+    public Toggle applyNoteTypeToSelectionToggle;
+    public Toggle applyKeysoundToSelectionToggle;
+    public Toggle showKeysoundToggle;
+
+    [Header("UI")]
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
     public GameObject stopButton;
@@ -101,13 +107,12 @@ public class PatternPanel : MonoBehaviour
     #region Outward Events
     public static event UnityAction RepositionNeeded;
     public static event UnityAction<HashSet<GameObject>> SelectionChanged;
+    public static event UnityAction<bool> KeysoundVisibilityChanged;
     #endregion
 
     #region MonoBehavior APIs
     private void OnEnable()
     {
-        // TODO: save this to game options and load from disk
-
         // Vertical spacing
         HiddenLanes = 4;
         Canvas.ForceUpdateCanvases();
@@ -121,7 +126,7 @@ public class PatternPanel : MonoBehaviour
         scanline.floatPulse = 0f;
         scanline.Reposition();
 
-        // UI
+        // UI and options
         UpdateBeatSnapDivisorDisplay();
 
         // Playback
@@ -131,6 +136,7 @@ public class PatternPanel : MonoBehaviour
         isPlaying = false;
 
         Refresh();
+        OnKeysoundVisibilityChanged(showKeysoundToggle.isOn);
         EditorContext.UndoneOrRedone += Refresh;
         EditorElement.LeftClicked += OnNoteObjectLeftClick;
         EditorElement.RightClicked += OnNoteObjectRightClick;
@@ -446,7 +452,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Events From UI
+    #region UI Events And Updates
     public void OnBeatSnapDivisorChanged(int direction)
     {
         do
@@ -500,6 +506,11 @@ public class PatternPanel : MonoBehaviour
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
         scanline.Reposition();
         ScrollScanlineIntoView();
+    }
+
+    public void OnKeysoundVisibilityChanged(bool visible)
+    {
+        KeysoundVisibilityChanged?.Invoke(visible);
     }
     #endregion
 

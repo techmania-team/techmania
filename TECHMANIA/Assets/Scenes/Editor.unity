@@ -3662,6 +3662,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1301018624}
     m_Modifications:
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4485,15 +4490,15 @@ PrefabInstance:
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 340
+      value: 460
       objectReference: {fileID: 0}
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: 'When you click a note type / keysound,
+      value: 'If turned on, whenever you click a note type or keysound,
 
-        apply them to any note
-        you selected.'
+        they
+        will be applied to any note(s) currently selected.'
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -5131,6 +5136,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &340067587 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+    type: 3}
+  m_PrefabInstance: {fileID: 1851550118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b743370ac3e4ec2a1668f5455a8ef8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &347240839 stripped
@@ -9297,7 +9314,7 @@ GameObject:
   - component: {fileID: 601432424}
   - component: {fileID: 601432423}
   m_Layer: 5
-  m_Name: Keysound Overlay
+  m_Name: Show Keysound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9380,6 +9397,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1301018624}
     m_Modifications:
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11756,6 +11778,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4da8dfb80ff67bf4a9b55d391ef79719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &813921501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+    type: 3}
+  m_PrefabInstance: {fileID: 260641142}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &833039414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12053,6 +12087,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 835191687}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &835792819 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+    type: 3}
+  m_PrefabInstance: {fileID: 1870087211}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &843827643
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12703,6 +12749,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &902104009 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+    type: 3}
+  m_PrefabInstance: {fileID: 605100987}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &903616122 stripped
@@ -16265,6 +16323,10 @@ MonoBehaviour:
   - {fileID: 440707366}
   - {fileID: 440707364}
   beatSnapDividerDisplay: {fileID: 689014187}
+  hiddenLanesDropdown: {fileID: 340067587}
+  applyNoteTypeToSelectionToggle: {fileID: 813921501}
+  applyKeysoundToSelectionToggle: {fileID: 902104009}
+  showKeysoundToggle: {fileID: 835792819}
   keysoundSheet: {fileID: 1706930105}
   playButton: {fileID: 779846809}
   stopButton: {fileID: 1126855693}
@@ -22038,7 +22100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1868862643
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22070,6 +22132,36 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 601432422}
     m_Modifications:
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1278721976}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: OnKeysoundVisibilityChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -24425,7 +24517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2879772478285548849
 RectTransform:
   m_ObjectHideFlags: 0
