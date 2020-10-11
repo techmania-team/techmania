@@ -225,7 +225,7 @@ public class PatternPanel : MonoBehaviour
             else
             {
                 // Scroll workspace
-                workspace.horizontalNormalizedPosition += y * 5f / zoom;
+                workspace.horizontalNormalizedPosition += y * 100f / WorkspaceContentWidth;
                 workspace.horizontalNormalizedPosition =
                     Mathf.Clamp01(workspace.horizontalNormalizedPosition);
             }
@@ -506,7 +506,7 @@ public class PatternPanel : MonoBehaviour
         foreach (GameObject o in selectedNoteObjects)
         {
             // This is only visual. Notes are only really moved
-            // in EndDrag.
+            // in OnNoteObjectEndDrag.
             o.GetComponent<RectTransform>().anchoredPosition += delta;
         }
     }
@@ -651,23 +651,29 @@ public class PatternPanel : MonoBehaviour
 
         EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
+        List<KeyValuePair<Transform, EditorElement.Type>> allMarkers =
+            new List<KeyValuePair<Transform, EditorElement.Type>>();
         for (int scan = 0; scan < numScans; scan++)
         {
             GameObject marker = Instantiate(scanMarkerTemplate, markerContainer);
             marker.SetActive(true);  // This calls OnEnabled
             EditorElement element = marker.GetComponent<EditorElement>();
-            element.beat = scan * bps;
+            element.pulse = scan * bps * Pattern.pulsesPerBeat;
             element.SetTimeDisplay();
             element.Reposition();
+            allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
+                marker.transform, element.type));
 
             for (int beat = 1; beat < bps; beat++)
             {
                 marker = Instantiate(beatMarkerTemplate, markerContainer);
                 marker.SetActive(true);
                 element = marker.GetComponent<EditorElement>();
-                element.beat = scan * bps + beat;
+                element.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
                 element.SetTimeDisplay();
                 element.Reposition();
+                allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
+                    marker.transform, element.type));
             }
         }
 
@@ -679,6 +685,26 @@ public class PatternPanel : MonoBehaviour
             element.pulse = e.pulse;
             element.SetBpmText(e.bpm);
             element.Reposition();
+            allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
+                marker.transform, element.type));
+        }
+
+        // Sort all markers so they are drawn from left to right.
+        allMarkers.Sort((
+            KeyValuePair<Transform, EditorElement.Type> p1,
+            KeyValuePair<Transform, EditorElement.Type> p2) =>
+        {
+            float deltaX = p1.Key.position.x - p2.Key.position.x;
+            if (deltaX < 0) return -1;
+            if (deltaX > 0) return 1;
+            // At the same position, BPM markers should be drawn later.
+            if (p1.Value == EditorElement.Type.BpmMarker) return 1;
+            if (p2.Value == EditorElement.Type.BpmMarker) return -1;
+            return 0;
+        });
+        for (int i = 0; i < allMarkers.Count; i++)
+        {
+            allMarkers[i].Key.SetSiblingIndex(i);
         }
     }
 

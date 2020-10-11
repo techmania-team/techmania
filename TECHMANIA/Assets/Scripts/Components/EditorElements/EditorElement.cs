@@ -8,15 +8,14 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// Elements include lines, markers and notes.
+// EditorElement refers to anything that can position themselves
+// inside the workspace.
 public class EditorElement : MonoBehaviour
 {
     public enum Type
     {
-        // Position expressed in beats
-        BeatMarker,
-
         // Position expressed in pulses
+        BeatMarker,
         BpmMarker,
 
         // Position expressed in floatPulses
@@ -29,13 +28,9 @@ public class EditorElement : MonoBehaviour
     public Type type;
     public Image selectionOverlay;
     [HideInInspector]
-    public int beat;
-    [HideInInspector]
     public int pulse;
     [HideInInspector]
     public float floatPulse;
-    [HideInInspector]
-    public int lane;
 
     // Specific to notes
     [HideInInspector]
@@ -69,10 +64,6 @@ public class EditorElement : MonoBehaviour
         switch (type)
         {
             case Type.BeatMarker:
-                {
-                    scan = (float)beat / bps;
-                }
-                break;
             case Type.BpmMarker:
                 {
                     float beat = (float)pulse / Pattern.pulsesPerBeat;
@@ -171,10 +162,10 @@ public class EditorElement : MonoBehaviour
     public void SetTimeDisplay()
     {
         int bps = EditorContext.Pattern.patternMetadata.bps;
+        int beat = pulse / Pattern.pulsesPerBeat;
         int scan = beat / bps;
         int beatInScan = beat % bps;
 
-        int pulse = beat * Pattern.pulsesPerBeat;
         float time = EditorContext.Pattern.PulseToTime(pulse);
         int minute = Mathf.FloorToInt(time / 60f);
         time -= minute * 60f;
