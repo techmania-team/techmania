@@ -34,6 +34,7 @@ public class PatternPanel : MonoBehaviour
     [Header("UI And Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
     public KeysoundSideSheet keysoundSheet;
+    public Slider scanlinePositionSlider;
     public MessageDialog messageDialog;
 
     #region Internal Data Structures
@@ -250,9 +251,7 @@ public class PatternPanel : MonoBehaviour
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInContainer.x / ScanWidth;
         float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
-        int snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
-            * pulsesPerDivision;
+        int snappedCursorPulse = SnapPulse(cursorPulse);
 
         int snappedLane = Mathf.FloorToInt(-pointInContainer.y / LaneHeight);
 
@@ -272,12 +271,11 @@ public class PatternPanel : MonoBehaviour
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInHeader.x / ScanWidth;
         float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
-        int snappedCursorPulse = Mathf.RoundToInt(cursorPulse / pulsesPerDivision)
-            * pulsesPerDivision;
+        int snappedCursorPulse = SnapPulse(cursorPulse);
 
         scanline.floatPulse = snappedCursorPulse;
         scanline.Reposition();
+        RefreshScanlinePositionSlider();
     }
 
     private void HandleKeyboardShortcuts()
@@ -484,6 +482,17 @@ public class PatternPanel : MonoBehaviour
 
         RepositionNeeded?.Invoke();
     }
+
+    public void OnScanlinePositionSliderValueChanged(float newValue)
+    {
+        int totalPulses = numScans
+            * EditorContext.Pattern.patternMetadata.bps
+            * Pattern.pulsesPerBeat;
+        float scanlineRawPulse = totalPulses * newValue;
+        scanline.floatPulse = SnapPulse(scanlineRawPulse);
+        scanline.Reposition();
+        ScrollScanlineIntoView();
+    }
     #endregion
 
     #region Dragging And Dropping Notes
@@ -596,6 +605,7 @@ public class PatternPanel : MonoBehaviour
         UpdateNumScans();
         DestroyAndRespawnAllMarkers();
         ResizeWorkspace();
+        RefreshScanlinePositionSlider();
     }
 
     // Returns whether the number changed.
@@ -634,6 +644,14 @@ public class PatternPanel : MonoBehaviour
             workspaceContent.sizeDelta.y);
         workspace.horizontalNormalizedPosition =
                 Mathf.Clamp01(workspace.horizontalNormalizedPosition);
+    }
+
+    private void RefreshScanlinePositionSlider()
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float scanlineNormalizedPosition = scanline.floatPulse /
+            (numScans * bps * Pattern.pulsesPerBeat);
+        scanlinePositionSlider.SetValueWithoutNotify(scanlineNormalizedPosition);
     }
     #endregion
 
@@ -894,6 +912,51 @@ public class PatternPanel : MonoBehaviour
         lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects.Clear();
         UpdateNumScansAndRelatedUI();
+    }
+    #endregion
+
+    #region Utilities
+    private int SnapPulse(float rawPulse)
+    {
+        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
+        int snappedPulse = Mathf.RoundToInt(rawPulse / pulsesPerDivision)
+            * pulsesPerDivision;
+        return snappedPulse;
+    }
+
+    private void ScrollScanlineIntoView()
+    {
+        float viewPortWidth = workspace.GetComponent<RectTransform>().rect.width;
+        if (WorkspaceContentWidth <= viewPortWidth) return;
+
+        float scanlinePosition = scanline.GetComponent<RectTransform>().anchoredPosition.x;
+
+        float xAtViewPortLeft = (WorkspaceContentWidth - viewPortWidth)
+            * workspace.horizontalNormalizedPosition;
+        float xAtViewPortRight = xAtViewPortLeft + viewPortWidth;
+
+        if (scanlinePosition >= xAtViewPortLeft &&
+            scanlinePosition < xAtViewPortRight)
+        {
+            // No need to scroll.
+            return;
+        }
+
+        float desiredXAtLeft;
+        if (scanlinePosition < xAtViewPortLeft)
+        {
+            // Scrolling left: put scanline at right side.
+            desiredXAtLeft = scanlinePosition - viewPortWidth * 0.8f;
+        }
+        else
+        {
+            // Scrolling right: put scanline at left side.
+            desiredXAtLeft = scanlinePosition - viewPortWidth * 0.2f;
+        }
+        float normalizedPosition =
+            desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
+        workspace.horizontalNormalizedPosition =
+            Mathf.Clamp01(normalizedPosition);
     }
     #endregion
 }

@@ -2492,10 +2492,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   selectionOverlay: {fileID: 0}
-  beat: 0
   pulse: 0
   floatPulse: 0
-  lane: 0
   note:
     lane: 0
     pulse: 0
@@ -14047,10 +14045,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   selectionOverlay: {fileID: 0}
-  beat: 0
   pulse: 0
   floatPulse: 0
-  lane: 0
   note:
     lane: 0
     pulse: 0
@@ -14089,10 +14085,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   selectionOverlay: {fileID: 0}
-  beat: 0
   pulse: 0
   floatPulse: 0
-  lane: 0
   note:
     lane: 0
     pulse: 0
@@ -14359,6 +14353,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1114461274 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1400868636}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1132606551
@@ -16085,6 +16091,7 @@ MonoBehaviour:
     type: 3}
   beatSnapDividerDisplay: {fileID: 689014187}
   keysoundSheet: {fileID: 1706930105}
+  scanlinePositionSlider: {fileID: 1114461274}
   messageDialog: {fileID: 8369197524032551023}
 --- !u!1 &1285017186
 GameObject:
@@ -16799,12 +16806,52 @@ PrefabInstance:
     - target: {fileID: 1435648447848774669, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.62
+      value: 0.395
       objectReference: {fileID: 0}
     - target: {fileID: 1435648447848774669, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_WholeNumbers
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_Value
+      value: 0.395
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1278721976}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnScanlinePositionSliderValueChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448433131218, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
@@ -16914,17 +16961,17 @@ PrefabInstance:
     - target: {fileID: 1435648448433131219, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
       propertyPath: m_Name
-      value: Slider
+      value: Scanline Position Slider
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448497276587, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.62
+      value: 0.395
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448497276587, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.62
+      value: 0.395
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448497276587, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
@@ -19605,10 +19652,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 3
   selectionOverlay: {fileID: 0}
-  beat: 0
   pulse: 0
   floatPulse: 0
-  lane: 0
   note:
     lane: 0
     pulse: 0
@@ -21815,7 +21860,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1868862643
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23064,7 +23109,7 @@ PrefabInstance:
     - target: {fileID: 8111477514760104170, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8111477514760104171, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
         type: 3}
@@ -24307,7 +24352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2879772478285548849
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24992,10 +25037,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   selectionOverlay: {fileID: 0}
-  beat: 0
   pulse: 0
   floatPulse: 0
-  lane: 0
   note:
     lane: 0
     pulse: 0
