@@ -49,6 +49,8 @@ public class PatternPanel : MonoBehaviour
     public GameObject stopButton;
     public Slider scanlinePositionSlider;
     public MessageDialog messageDialog;
+    public BpmEventDialog bpmEventDialog;
+    public Dialog shortcutDialog;
 
     #region Internal Data Structures
     // All note objects sorted by pulse. This allows fast lookups
@@ -162,7 +164,9 @@ public class PatternPanel : MonoBehaviour
         {
             UpdatePlayback();
         }
-        if (messageDialog.gameObject.activeSelf)
+        if (messageDialog.gameObject.activeSelf ||
+            bpmEventDialog.gameObject.activeSelf ||
+            shortcutDialog.gameObject.activeSelf)
         {
             return;
         }
@@ -476,6 +480,50 @@ public class PatternPanel : MonoBehaviour
         beatSnapDividerDisplay.text = beatSnapDivisor.ToString();
     }
 
+    public void OnBpmEventButtonClick()
+    {
+        int scanlineIntPulse = (int)scanline.floatPulse;
+        BpmEvent currentEvent = EditorContext.Pattern.bpmEvents.
+            Find((BpmEvent e) =>
+        {
+            return e.pulse == scanlineIntPulse;
+        });
+        bpmEventDialog.Show(currentEvent, (double? newBpm) =>
+        {
+            if (currentEvent == null && newBpm == null)
+            {
+                // No change.
+                return;
+            }
+            if (currentEvent != null && newBpm.HasValue &&
+                currentEvent.bpm == newBpm.Value)
+            {
+                // No change.
+                return;
+            }
+
+            EditorContext.PrepareForChange();
+            // Delete event.
+            EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
+            {
+                return e.pulse == scanlineIntPulse;
+            });
+            // Add event if there is one.
+            if (newBpm.HasValue)
+            {
+                EditorContext.Pattern.bpmEvents.Add(new BpmEvent()
+                {
+                    pulse = scanlineIntPulse,
+                    bpm = newBpm.Value
+                });
+            }
+            EditorContext.DoneWithChange();
+
+            DestroyAndRespawnAllMarkers();
+            RepositionNeeded?.Invoke();
+        });
+    }
+
     public void OnHiddenLaneNumberChanged(int newValue)
     {
         HiddenLanes = newValue * 4;
@@ -493,6 +541,11 @@ public class PatternPanel : MonoBehaviour
         }
 
         RepositionNeeded?.Invoke();
+    }
+
+    public void OnShortcutButtonClick()
+    {
+        shortcutDialog.FadeIn();
     }
 
     public void OnScanlinePositionSliderValueChanged(float newValue)
