@@ -998,11 +998,10 @@ public class PatternPanel : MonoBehaviour
 
     #region Playback
     // During playback, the following features are disabled:
-    // TODO: implement these.
     // - Adding or deleting notes, including by clicking, dragging
     //   and cut/copy/paste
     // - Applying note types and/or keysounds to selection, if
-    //   specified in options
+    //   specified in options (TODO: implement)
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
     private bool isPlaying;
