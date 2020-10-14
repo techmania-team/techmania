@@ -56,6 +56,13 @@ public class ResourceLoader : MonoBehaviour
 
     public AudioClip GetClip(string filenameWithoutFolder)
     {
-        return audioClips[filenameWithoutFolder];
+        if (audioClips.ContainsKey(filenameWithoutFolder))
+        {
+            return audioClips[filenameWithoutFolder];
+        }
+        else
+        {
+            return null;
+        }
     }
 }

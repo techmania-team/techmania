@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,7 +38,8 @@ public class Scan : MonoBehaviour
         scanline.Initialize(this, scanHeight);
     }
 
-    public NoteObject SpawnNoteObject(GameObject prefab, Note n, string sound)
+    public NoteObject SpawnNoteObject(GameObject prefab, Note n, string sound,
+        bool hidden)
     {
         GameObject o = Instantiate(prefab, transform);
         NoteObject noteObject = o.GetComponent<NoteObject>();
@@ -52,6 +54,8 @@ public class Scan : MonoBehaviour
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
+
+        if (hidden) o.GetComponent<Image>().enabled = false;
 
         o.SetActive(false);
         noteObjects.Add(o);

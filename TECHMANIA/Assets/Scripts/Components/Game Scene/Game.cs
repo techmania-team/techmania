@@ -54,6 +54,7 @@ public class Game : MonoBehaviour
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
 
+    private const int kPlayableLanes = 4;
     public const float kBreakThreshold = 0.3f;
     public const float kGoodThreshold = 0.15f;
     public const float kCoolThreshold = 0.1f;
@@ -189,10 +190,13 @@ public class Game : MonoBehaviour
         }
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
             PulsesPerScan;
-        while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
-            < backingTrackSource.clip.length)
+        if (backingTrackSource.clip != null)
         {
-            lastScan++;
+            while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
+            < backingTrackSource.clip.length)
+            {
+                lastScan++;
+            }
         }
 
         // Create scan objects.
@@ -215,17 +219,18 @@ public class Game : MonoBehaviour
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
         noteObjectsInLane = new List<LinkedList<NoteObject>>();
-        for (int i = 0; i < 4; i++)
-        {
-            noteObjectsInLane.Add(new LinkedList<NoteObject>());
-        }
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
             int scanOfN = n.note.pulse / PulsesPerScan;
+            bool hidden = n.note.lane >= kPlayableLanes;
             NoteObject noteObject = scanObjects[scanOfN]
-                .SpawnNoteObject(notePrefab, n.note, n.sound);
+                .SpawnNoteObject(notePrefab, n.note, n.sound, hidden);
 
+            while (noteObjectsInLane.Count <= n.note.lane)
+            {
+                noteObjectsInLane.Add(new LinkedList<NoteObject>());
+            }
             noteObjectsInLane[n.note.lane].AddFirst(noteObject);
         }
 
@@ -238,7 +243,7 @@ public class Game : MonoBehaviour
         maxCombo = 0;
         score.Initialize(sortedNotes.Count);
 
-        // Play audio and start timer.
+        // Start timer. Backing track will start when timer hits 0.
         stopwatch = new Stopwatch();
         stopwatch.Start();
         Time = initialTime;
@@ -357,20 +362,21 @@ public class Game : MonoBehaviour
 
     private void UpdateTime()
     {
-        float newTime = (float)stopwatch.Elapsed.TotalSeconds
-            + initialTime;
-        FloatPulse = GameSetup.pattern.TimeToPulse(newTime);
+        float oldTime = Time;
+        Time = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
+        FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         int newPulse = Mathf.FloorToInt(FloatPulse);
         int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
 
-        if (Time < 0f && newTime >= 0f)
+        // Play backing track if timer hits 0.
+        if (oldTime < 0f && Time >= 0f && backingTrackSource.clip != null)
         {
             backingTrackSource.timeSamples = Mathf.FloorToInt(
-                newTime * backingTrackSource.clip.frequency);
+                Time * backingTrackSource.clip.frequency);
             backingTrackSource.loop = false;
             backingTrackSource.Play();
         }
-        Time = newTime;
+
         // Fire ScanAboutToChange if we are 7/8 into the next scan.
         if (RoundingDownIntDivision(Pulse + PulsesPerScan / 8, PulsesPerScan) !=
             RoundingDownIntDivision(newPulse + PulsesPerScan / 8, PulsesPerScan))
@@ -385,14 +391,31 @@ public class Game : MonoBehaviour
         }
         Scan = newScan;
 
-        // Check for Break on upcoming notes in each lane.
-        foreach (LinkedList<NoteObject> lane in noteObjectsInLane)
+        // Play sounds of hidden notes.
+        for (int laneIndex = 0; laneIndex < noteObjectsInLane.Count; laneIndex++)
         {
+            LinkedList<NoteObject> lane = noteObjectsInLane[laneIndex];
             if (lane.Count == 0) continue;
             NoteObject upcomingNote = lane.First.Value;
-            if (Time > upcomingNote.note.time + kBreakThreshold)
+
+            if (laneIndex < kPlayableLanes)
             {
-                ResolveNote(upcomingNote, Judgement.Break);
+                // Check for Break on upcoming notes in each playable lane.
+                if (Time > upcomingNote.note.time + kBreakThreshold)
+                {
+                    ResolveNote(upcomingNote, Judgement.Break);
+                }
+            }
+            else
+            {
+                // Play keyounds of upcoming notes in each hidden lane.
+                if (oldTime < upcomingNote.note.time &&
+                    Time >= upcomingNote.note.time)
+                {
+                    PlayKeysound(upcomingNote);
+                    upcomingNote.gameObject.SetActive(false);
+                    lane.RemoveFirst();
+                }
             }
         }
 
@@ -630,12 +653,7 @@ public class Game : MonoBehaviour
 
         ResolveNote(n, judgement);
 
-        if (n.sound != "")
-        {
-            AudioClip clip = resourceLoader.GetClip(n.sound);
-            keysoundSources[n.note.lane].clip = clip;
-            keysoundSources[n.note.lane].Play();
-        }
+        PlayKeysound(n);
     }
 
     private void EmptyHit(int lane)
@@ -645,12 +663,7 @@ public class Game : MonoBehaviour
         {
             NoteObject upcomingNote = noteObjectsInLane[lane]
                 .First.Value;
-            if (upcomingNote.sound != "")
-            {
-                AudioClip clip = resourceLoader.GetClip(upcomingNote.sound);
-                keysoundSources[lane].clip = clip;
-                keysoundSources[lane].Play();
-            }
+            PlayKeysound(upcomingNote);
         }
     }
 
@@ -675,6 +688,15 @@ public class Game : MonoBehaviour
         judgementText.Show(n, judgement);
 
         score.LogNote(judgement);
+    }
+
+    private void PlayKeysound(NoteObject n)
+    {
+        if (n.sound == "") return;
+
+        AudioClip clip = resourceLoader.GetClip(n.sound);
+        keysoundSources[n.note.lane].clip = clip;
+        keysoundSources[n.note.lane].Play();
     }
     #endregion
 

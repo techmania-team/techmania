@@ -1187,6 +1187,8 @@ public class PatternPanel : MonoBehaviour
 
     private void PlaySound(AudioSource source, AudioClip clip, float startTime)
     {
+        if (clip == null) return;
+
         int startSample = Mathf.FloorToInt(startTime * clip.frequency);
         source.clip = clip;
         source.timeSamples = startSample;

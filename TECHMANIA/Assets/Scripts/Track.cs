@@ -342,6 +342,7 @@ public class PatternMetadata
     public string patternName;
     public int level;
     public ControlScheme controlScheme;
+    public int lanes;  // Currently unused
     public string author;
 
     // The backing track played in game.
