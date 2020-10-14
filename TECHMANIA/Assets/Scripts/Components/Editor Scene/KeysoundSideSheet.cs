@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class KeysoundSideSheet : MonoBehaviour
     public GameObject showKeysoundSheetButton;
     public GameObject closeButton;
     public TextMeshProUGUI upcomingKeysoundDisplay;
+
+    public static event UnityAction<List<string>> selectedKeysoundsUpdated;
 
     // The following lists have the same length.
     private List<string> audioFilesNoFolder;
@@ -30,10 +33,7 @@ public class KeysoundSideSheet : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            AdvanceUpcoming();
-        }
+
     }
 
     public void Initialize()
@@ -221,6 +221,17 @@ public class KeysoundSideSheet : MonoBehaviour
                 break;
             }
         }
+
+        // Fire event on the updated selection list.
+        List<string> selectedList = new List<string>();
+        for (int i = 0; i < selected.Count; i++)
+        {
+            if (selected[i])
+            {
+                selectedList.Add(audioFilesNoFolder[i]);
+            }
+        }
+        selectedKeysoundsUpdated?.Invoke(selectedList);
 
         Refresh();
     }

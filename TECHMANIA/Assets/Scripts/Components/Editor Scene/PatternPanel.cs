@@ -145,6 +145,7 @@ public class PatternPanel : MonoBehaviour
         EditorElement.BeginDrag += OnNoteObjectBeginDrag;
         EditorElement.Drag += OnNoteObjectDrag;
         EditorElement.EndDrag += OnNoteObjectEndDrag;
+        KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
     }
 
     private void OnDisable()
@@ -155,6 +156,7 @@ public class PatternPanel : MonoBehaviour
         EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
         EditorElement.Drag -= OnNoteObjectDrag;
         EditorElement.EndDrag -= OnNoteObjectEndDrag;
+        KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
     }
 
     // Update is called once per frame
@@ -351,6 +353,22 @@ public class PatternPanel : MonoBehaviour
         // Add note to UI
         SpawnNoteObject(n, sound);
         UpdateNumScansAndRelatedUI();
+    }
+
+    public void OnNoteContainerDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData p = eventData as PointerEventData;
+        if (p.button != PointerEventData.InputButton.Middle) return;
+
+        float viewPortWidth = workspace.GetComponent<RectTransform>().rect.width;
+        if (WorkspaceContentWidth < viewPortWidth) return;
+        float horizontal = workspace.horizontalNormalizedPosition *
+            (WorkspaceContentWidth - viewPortWidth);
+        horizontal -= p.delta.x;
+        workspace.horizontalNormalizedPosition = Mathf.Clamp01(
+            horizontal /
+            (WorkspaceContentWidth - viewPortWidth));
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -564,6 +582,44 @@ public class PatternPanel : MonoBehaviour
     public void OnKeysoundVisibilityChanged(bool visible)
     {
         KeysoundVisibilityChanged?.Invoke(visible);
+    }
+
+    private void OnSelectedKeysoundsUpdated(List<string> keysounds)
+    {
+        if (selectedNoteObjects == null ||
+            selectedNoteObjects.Count == 0) return;
+        if (!applyKeysoundToSelectionToggle.isOn) return;
+        if (keysounds.Count == 0)
+        {
+            keysounds.Add("");
+        }
+
+        // Sort selected note objects, first by pulse, then by lane.
+        List<EditorElement> sortedSelection = new List<EditorElement>();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            sortedSelection.Add(o.GetComponent<EditorElement>());
+        }
+        sortedSelection.Sort((EditorElement e1, EditorElement e2) =>
+        {
+            Note n1 = e1.note;
+            Note n2 = e2.note;
+            if (n1.pulse != n2.pulse) return n1.pulse - n2.pulse;
+            return n1.lane - n2.lane;
+        });
+
+        // Apply keysound.
+        EditorContext.PrepareForChange();
+        int keysoundIndex = 0;
+        foreach (EditorElement e in sortedSelection)
+        {
+            EditorContext.Pattern.ModifyNoteKeysound(
+                e.note, e.sound, keysounds[keysoundIndex]);
+            e.sound = keysounds[keysoundIndex];
+            e.SetKeysoundText();
+            keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
+        }
+        EditorContext.DoneWithChange();
     }
     #endregion
 
