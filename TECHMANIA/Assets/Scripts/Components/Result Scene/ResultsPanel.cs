@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class ResultsPanel : MonoBehaviour
 {
+    public TextMeshProUGUI title;
+
     [Header("Track and Pattern")]
     public EyecatchSelfLoader eyecatch;
     public TextMeshProUGUI trackTitle;
@@ -35,6 +37,8 @@ public class ResultsPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        title.text = Game.score.stageFailed ? "Stage Failed" : "Stage Clear";
+
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
         eyecatch.LoadImage(new FileInfo(GameSetup.trackPath).DirectoryName,
@@ -65,6 +69,7 @@ public class ResultsPanel : MonoBehaviour
         if (score > 200000) rank = "B";
         if (score > 250000) rank = "A";
         if (score > 290000) rank = "S";
+        if (Game.score.stageFailed) rank = "F";
         rankText.text = rank;
 
         // Medals

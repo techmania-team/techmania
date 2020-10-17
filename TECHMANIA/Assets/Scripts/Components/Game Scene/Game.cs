@@ -50,6 +50,7 @@ public class Game : MonoBehaviour
     public RectTransform hpBar;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
+    public GameObject stageFailedScreen;
 
     public static Score score { get; private set; }
     public static int currentCombo { get; private set; }
@@ -355,6 +356,12 @@ public class Game : MonoBehaviour
         if (stopwatch == null)
         {
             // Game not started yet.
+            return;
+        }
+
+        if (stageFailedScreen.activeSelf)
+        {
+            // Stage failed; ignore all input.
             return;
         }
 
@@ -694,7 +701,11 @@ public class Game : MonoBehaviour
             hp -= kHpLoss;
             if (hp <= 0)
             {
-                // TODO: Game over.
+                // Stage failed.
+                score.stageFailed = true;
+                stopwatch.Stop();
+                backingTrackSource.Stop();
+                StartCoroutine(StageFailedSequence());
             }
         }
         if (currentCombo > maxCombo)
@@ -713,6 +724,13 @@ public class Game : MonoBehaviour
         AudioClip clip = resourceLoader.GetClip(n.sound);
         keysoundSources[n.note.lane].clip = clip;
         keysoundSources[n.note.lane].Play();
+    }
+
+    private IEnumerator StageFailedSequence()
+    {
+        stageFailedScreen.SetActive(true);
+        yield return new WaitForSeconds(4f);
+        Curtain.DrawCurtainThenGoToScene("Result");
     }
     #endregion
 

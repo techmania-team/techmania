@@ -6,6 +6,7 @@ public class Score
 {
     private int totalNotes;
     public Dictionary<Judgement, int> notesPerJudgement { get; private set; }
+    public bool stageFailed;
     public int totalFeverBonus { get; private set; }
     private int oneTimeFeverBonus;
     private bool feverActive;
@@ -18,6 +19,7 @@ public class Score
         {
             notesPerJudgement.Add(j, 0);
         }
+        stageFailed = false;
         totalFeverBonus = 0;
         oneTimeFeverBonus = 0;
         feverActive = false;
