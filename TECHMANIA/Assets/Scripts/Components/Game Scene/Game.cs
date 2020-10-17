@@ -219,11 +219,13 @@ public class Game : MonoBehaviour
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
         noteObjectsInLane = new List<LinkedList<NoteObject>>();
+        int numPlayableNotes = 0;
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
             int scanOfN = n.note.pulse / PulsesPerScan;
             bool hidden = n.note.lane >= kPlayableLanes;
+            if (!hidden) numPlayableNotes++;
             NoteObject noteObject = scanObjects[scanOfN]
                 .SpawnNoteObject(notePrefab, n.note, n.sound, hidden);
 
@@ -241,7 +243,7 @@ public class Game : MonoBehaviour
         fingerInLane = new Dictionary<int, int>();
         currentCombo = 0;
         maxCombo = 0;
-        score.Initialize(sortedNotes.Count);
+        score.Initialize(numPlayableNotes);
 
         // Start timer. Backing track will start when timer hits 0.
         stopwatch = new Stopwatch();

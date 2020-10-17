@@ -219,9 +219,7 @@ public class TrackSetupPanel : MonoBehaviour
     {
         previewTrackPlayer.Play(
             EditorContext.trackFolder,
-            EditorContext.track.trackMetadata.previewTrack,
-            EditorContext.track.trackMetadata.previewStartTime,
-            EditorContext.track.trackMetadata.previewEndTime,
+            EditorContext.track.trackMetadata,
             loop: false);
     }
 

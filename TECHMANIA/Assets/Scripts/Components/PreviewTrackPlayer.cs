@@ -16,19 +16,21 @@ public class PreviewTrackPlayer : MonoBehaviour
     }
 
     public void Play(string trackFolder,
-        string previewTrackFilename,
-        double startTime, double endTime,
+        TrackMetadata trackMetadata,
         bool loop)
     {
-        if (previewTrackFilename == "" ||
-            previewTrackFilename == null)
+        if (trackMetadata.previewTrack == "" ||
+            trackMetadata.previewTrack == null)
         {
             return;
         }
 
         StopAllCoroutines();
-        StartCoroutine(InnerPlay(trackFolder, previewTrackFilename,
-            startTime, endTime, loop));
+        StartCoroutine(InnerPlay(trackFolder,
+            trackMetadata.previewTrack,
+            trackMetadata.previewStartTime,
+            trackMetadata.previewEndTime,
+            loop));
     }
 
     private IEnumerator InnerPlay(string trackFolder,
