@@ -63,36 +63,53 @@ public class PreviewTrackPlayer : MonoBehaviour
         float previewLength = (float)endTime - (float)startTime;
 
         source.clip = clip;
-        source.loop = loop;
+        source.loop = false;
         source.volume = 0f;
-        source.time = (float)startTime;
-        source.Play();
-
         float fadeLength = 1f;
         if (fadeLength > previewLength * 0.5f)
         {
             fadeLength = previewLength * 0.5f;
         }
-        for (float time = 0f; time < fadeLength; time += Time.deltaTime)
+
+        int numLoops = loop ? int.MaxValue : 1;
+        for (int i = 0; i < numLoops; i++)
         {
-            float progress = time / fadeLength;
-            source.volume = progress;
-            yield return null;
+            source.time = (float)startTime;
+            source.Play();
+            
+            for (float time = 0f; time < fadeLength; time += Time.deltaTime)
+            {
+                float progress = time / fadeLength;
+                source.volume = progress;
+                yield return null;
+            }
+            source.volume = 1f;
+            yield return new WaitForSeconds(previewLength - fadeLength * 2f);
+            for (float time = 0f; time < fadeLength; time += Time.deltaTime)
+            {
+                float progress = time / fadeLength;
+                source.volume = 1f - progress;
+                yield return null;
+            }
+            source.volume = 0f;
         }
-        source.volume = 1f;
-        yield return new WaitForSeconds(previewLength - fadeLength * 2f);
-        for (float time = 0f; time < fadeLength; time += Time.deltaTime)
-        {
-            float progress = time / fadeLength;
-            source.volume = 1f - progress;
-            yield return null;
-        }
-        source.volume = 0f;
-        source.Stop();
     }
 
     public void Stop()
     {
+        StopAllCoroutines();
+        StartCoroutine(InnerStop());
+    }
+
+    private IEnumerator InnerStop()
+    {
+        if (source.volume == 0f) yield break;
+
+        for (; source.volume > 0f; source.volume -= Time.deltaTime * 5f)
+        {
+            yield return null;
+        }
+        source.volume = 0f;
         source.Stop();
     }
 }

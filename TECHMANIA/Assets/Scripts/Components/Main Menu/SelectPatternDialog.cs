@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class SelectPatternDialog : MonoBehaviour
 {
     public EyecatchSelfLoader eyecatchImage;
+    public PreviewTrackPlayer previewPlayer;
     public TextMeshProUGUI genreText;
     public TextMeshProUGUI titleText;
     public TextMeshProUGUI artistText;
@@ -40,6 +41,10 @@ public class SelectPatternDialog : MonoBehaviour
             firstObject = backButton.gameObject;
         }
         EventSystem.current.SetSelectedGameObject(firstObject);
+
+        // Play preview.
+        previewPlayer.Play(dir, GameSetup.track.trackMetadata,
+            loop: true);
     }
 
     private void OnEnable()
@@ -50,6 +55,7 @@ public class SelectPatternDialog : MonoBehaviour
     private void OnDisable()
     {
         PatternRadioList.SelectedPatternChanged -= OnSelectedPatternObjectChanged;
+        previewPlayer.Stop();
     }
 
     private void RefreshPlayButton()
