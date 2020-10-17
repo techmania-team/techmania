@@ -1,6 +1,10 @@
 # TECHMANIA
 A work-in-progress, open-source clone of a certain dead rhythm game, written in Unity. I believe this is legal; but I will do whatever I can to avoid any legal issues just in case, including not mentioning the name of the original game I'm cloning.
 
+## Licensing
+All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
+* Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
+
 ## Roadmap and Progress
 Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab for more detailed and more up-to-date information. Head to [Releases](https://github.com/macmillan333/techmania/releases) to download the released versions.
 
