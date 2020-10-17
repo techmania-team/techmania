@@ -7879,6 +7879,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1627659313}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1633107320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 440707365, guid: f943b11608b40564fa4fccdfe23334c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1275601373}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfaf2f14b828a154eaedd55353744fec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1656530528
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9472,6 +9484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eyecatchImage: {fileID: 151574107}
+  previewPlayer: {fileID: 1633107320}
   genreText: {fileID: 368048500}
   titleText: {fileID: 1061490527}
   artistText: {fileID: 712108976}

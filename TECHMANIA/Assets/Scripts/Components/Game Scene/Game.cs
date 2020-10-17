@@ -47,19 +47,24 @@ public class Game : MonoBehaviour
     public GameObject middleFeverBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
+    public RectTransform hpBar;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
 
     public static Score score { get; private set; }
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
+    private int hp;
 
     private const int kPlayableLanes = 4;
-    public const float kBreakThreshold = 0.3f;
-    public const float kGoodThreshold = 0.15f;
-    public const float kCoolThreshold = 0.1f;
-    public const float kMaxThreshold = 0.05f;
-    public const float kRainbowMaxThreshold = 0.03f;
+    private const float kBreakThreshold = 0.3f;
+    private const float kGoodThreshold = 0.15f;
+    private const float kCoolThreshold = 0.1f;
+    private const float kMaxThreshold = 0.05f;
+    private const float kRainbowMaxThreshold = 0.03f;
+    private const int kMaxHp = 1000;
+    private const int kHpLoss = 50;
+    private const int kHpRecovery = 4;
 
     private Stopwatch stopwatch;
     private float initialTime;
@@ -244,6 +249,7 @@ public class Game : MonoBehaviour
         currentCombo = 0;
         maxCombo = 0;
         score.Initialize(numPlayableNotes);
+        hp = kMaxHp;
 
         // Start timer. Backing track will start when timer hits 0.
         stopwatch = new Stopwatch();
@@ -393,7 +399,6 @@ public class Game : MonoBehaviour
         }
         Scan = newScan;
 
-        // Play sounds of hidden notes.
         for (int laneIndex = 0; laneIndex < noteObjectsInLane.Count; laneIndex++)
         {
             LinkedList<NoteObject> lane = noteObjectsInLane[laneIndex];
@@ -487,6 +492,8 @@ public class Game : MonoBehaviour
 
     private void UpdateUI()
     {
+        hpBar.anchorMax = new Vector2(
+            (float)hp / kMaxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
     }
@@ -678,10 +685,17 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             currentCombo++;
+            hp += kHpRecovery;
+            if (hp >= kMaxHp) hp = kMaxHp;
         }
         else
         {
             currentCombo = 0;
+            hp -= kHpLoss;
+            if (hp <= 0)
+            {
+                // TODO: Game over.
+            }
         }
         if (currentCombo > maxCombo)
         {
