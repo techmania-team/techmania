@@ -48,6 +48,7 @@ public class Game : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
+    public FeverButton feverButton;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -56,6 +57,15 @@ public class Game : MonoBehaviour
     public static int currentCombo { get; private set; }
     public static int maxCombo { get; private set; }
     private int hp;
+
+    private enum FeverState
+    {
+        Idle,  // Accummulates with MAXes
+        Ready,  // No longer accummulates, awaiting activation
+        Active  // Decreases with time
+    }
+    private FeverState feverState;
+    private float feverAmount;
 
     private const int kPlayableLanes = 4;
     private const float kBreakThreshold = 0.3f;
@@ -89,6 +99,7 @@ public class Game : MonoBehaviour
     // - play keysounds on empty hits
     // - check the Break condition on upcoming notes
     private List<LinkedList<NoteObject>> noteObjectsInLane;
+    private int numPlayableNotes;
 
     private class NoteWithSound
     {
@@ -225,7 +236,7 @@ public class Game : MonoBehaviour
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
         noteObjectsInLane = new List<LinkedList<NoteObject>>();
-        int numPlayableNotes = 0;
+        numPlayableNotes = 0;
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
@@ -251,6 +262,8 @@ public class Game : MonoBehaviour
         maxCombo = 0;
         score.Initialize(numPlayableNotes);
         hp = kMaxHp;
+        feverState = FeverState.Idle;
+        feverAmount = 0f;
 
         // Start timer. Backing track will start when timer hits 0.
         stopwatch = new Stopwatch();
@@ -694,6 +707,21 @@ public class Game : MonoBehaviour
             currentCombo++;
             hp += kHpRecovery;
             if (hp >= kMaxHp) hp = kMaxHp;
+
+            if (feverState == FeverState.Idle &&
+                (judgement == Judgement.RainbowMax ||
+                 judgement == Judgement.Max))
+            {
+                feverAmount += 8f / numPlayableNotes;
+                if (feverAmount > 1f) feverAmount = 1f;
+                feverButton.SetAmount(feverAmount);
+
+                if (feverAmount == 1f)
+                {
+                    feverState = FeverState.Ready;
+                    feverButton.SetReady(true);
+                }
+            }
         }
         else
         {
@@ -707,13 +735,28 @@ public class Game : MonoBehaviour
                 backingTrackSource.Stop();
                 StartCoroutine(StageFailedSequence());
             }
+
+            if (feverState == FeverState.Idle ||
+                feverState == FeverState.Ready)
+            {
+                if (judgement == Judgement.Miss)
+                {
+                    feverAmount *= 0.75f;
+                }
+                else  // Break
+                {
+                    feverAmount *= 0.5f;
+                }
+                feverButton.SetAmount(feverAmount);
+                feverState = FeverState.Idle;
+                feverButton.SetReady(false);
+            }
         }
         if (currentCombo > maxCombo)
         {
             maxCombo = currentCombo;
         }
         judgementText.Show(n, judgement);
-
         score.LogNote(judgement);
     }
 
