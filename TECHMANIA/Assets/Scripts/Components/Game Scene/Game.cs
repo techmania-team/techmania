@@ -46,6 +46,8 @@ public class Game : MonoBehaviour
     public GameObject middleFeverBar;
     public RectTransform middleFeverBarFilling;
     public GameObject middleFeverText;
+    public TextMeshProUGUI feverBonusText;
+    public Animator feverBonusAnimator;
     public RectTransform feverButtonFilling;
     public TextMeshProUGUI feverInstruction;
     public Animator feverButtonAnimator;
@@ -584,7 +586,8 @@ public class Game : MonoBehaviour
             feverTimer = null;
             feverState = FeverState.Idle;
             int feverBonus = score.FeverOff();
-            // TODO: Show Fever Bonus
+            feverBonusText.text = "FEVER BONUS   +" + feverBonus;
+            feverBonusAnimator.SetTrigger("Show");
         }
     }
     #endregion
