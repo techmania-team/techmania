@@ -2074,6 +2074,8 @@ MonoBehaviour:
   middleFeverBar: {fileID: 232393021}
   middleFeverBarFilling: {fileID: 763286716}
   middleFeverText: {fileID: 594379611}
+  feverBonusText: {fileID: 2065839960}
+  feverBonusAnimator: {fileID: 2065839958}
   feverButtonFilling: {fileID: 398474815}
   feverInstruction: {fileID: 1426725377}
   feverButtonAnimator: {fileID: 841831962}
@@ -6639,6 +6641,11 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2100000, guid: cc6fb55dd2d71724bb194f185baf438e, type: 2}
+    - target: {fileID: 7299862028387148678, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
 --- !u!224 &2065839956 stripped
@@ -6672,6 +6679,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2065839960 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7299862028387148678, guid: ab430c3b23fa3a046b8a0af014a2f552,
+    type: 3}
+  m_PrefabInstance: {fileID: 2065839955}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2065839957}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2138215789
 GameObject:
   m_ObjectHideFlags: 0
