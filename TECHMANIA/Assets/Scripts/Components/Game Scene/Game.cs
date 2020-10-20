@@ -65,14 +65,14 @@ public class Game : MonoBehaviour
     public static int maxCombo { get; private set; }
     private int hp;
 
-    private enum FeverState
+    public enum FeverState
     {
         Idle,  // Accummulates with MAXes
         Ready,  // No longer accummulates, awaiting activation
         Active  // Decreases with time
     }
-    private FeverState feverState;
-    private float feverAmount;
+    public static FeverState feverState { get; private set; }
+    public static float feverAmount { get; private set; }
 
     private const int kPlayableLanes = 4;
     private const float kBreakThreshold = 0.3f;
@@ -563,6 +563,7 @@ public class Game : MonoBehaviour
     {
         if (feverState != FeverState.Ready) return;
         feverState = FeverState.Active;
+        score.FeverOn();
         feverSoundSource.Play();
         feverTimer = new Stopwatch();
         // Technically, keyboard-induced activations start
@@ -582,6 +583,8 @@ public class Game : MonoBehaviour
             feverTimer.Stop();
             feverTimer = null;
             feverState = FeverState.Idle;
+            int feverBonus = score.FeverOff();
+            // TODO: Show Fever Bonus
         }
     }
     #endregion

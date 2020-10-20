@@ -45,7 +45,16 @@ public class JudgementText : MonoBehaviour
             display += " " + Game.currentCombo;
         }
 
-        if (judgement == Judgement.RainbowMax)
+        if (Game.feverState == Game.FeverState.Active &&
+            (judgement == Judgement.RainbowMax ||
+             judgement == Judgement.Max))
+        {
+            text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,
+                null);
+            text.faceColor = feverMaxColor;
+        }
+        else if (judgement == Judgement.RainbowMax &&
+            Game.feverState != Game.FeverState.Active)
         {
             // https://forum.unity.com/threads/change-textmesh-pro-face-texture-with-script.679912/
             text.fontSharedMaterial.SetTexture(ShaderUtilities.ID_FaceTex,

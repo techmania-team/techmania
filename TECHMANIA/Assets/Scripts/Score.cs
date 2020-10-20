@@ -2,23 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Notes on FEVER:
-//
-// Accumulation
-//
-// Fever += 8/(numPlayableNotes) on RMAX and MAX
-// No change on COOL and GOOD
-// Fever *= 0.75 on MISS
-// Fever *= 0.5 on BREAK
-//
-// Duration: 10 seconds
-//
-// UI
-//
-// Before activation: top bar says "FEVER OFF", middle bar says nothing
-// Ready: top bar pulses and alternates "FEVER" and "TOUCH",
-//        middle bar says "FEVER"
-// Activate: same as before activation
 public class Score
 {
     private int totalNotes;
