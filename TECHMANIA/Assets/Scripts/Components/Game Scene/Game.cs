@@ -42,13 +42,20 @@ public class Game : MonoBehaviour
     public VFXSpawner vfxSpawner;
     public JudgementText judgementText;
 
-    [Header("UI")]
-    public GameObject topBar;
+    [Header("UI - Fever")]
     public GameObject middleFeverBar;
+    public RectTransform middleFeverBarFilling;
+    public GameObject middleFeverText;
+    public RectTransform feverButtonFilling;
+    public TextMeshProUGUI feverInstruction;
+    public Animator feverButtonAnimator;
+    public AudioSource feverSoundSource;
+
+    [Header("UI - Other")]
+    public GameObject topBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
-    public FeverButton feverButton;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -78,6 +85,7 @@ public class Game : MonoBehaviour
     private const int kHpRecovery = 4;
 
     private Stopwatch stopwatch;
+    private Stopwatch feverTimer;
     private float initialTime;
     private bool loading;
     public static float Time { get; private set; }
@@ -264,6 +272,16 @@ public class Game : MonoBehaviour
         hp = kMaxHp;
         feverState = FeverState.Idle;
         feverAmount = 0f;
+        switch (GameSetup.pattern.patternMetadata.controlScheme)
+        {
+            case ControlScheme.Touch:
+                feverInstruction.text = "TOUCH";
+                break;
+            case ControlScheme.Keys:
+            case ControlScheme.KM:
+                feverInstruction.text = "PRESS SPACE";
+                break;
+        }
 
         // Start timer. Backing track will start when timer hits 0.
         stopwatch = new Stopwatch();
@@ -378,12 +396,23 @@ public class Game : MonoBehaviour
             return;
         }
 
-        if (!IsPaused() && !loading && Input.GetKeyDown(KeyCode.Escape))
+        if (!IsPaused() && !loading)
         {
-            OnPauseButtonClickOrTouch();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                OnPauseButtonClickOrTouch();
+            }
+            if (Input.GetKeyDown(KeyCode.Space) ||
+                Input.GetKeyDown(KeyCode.Backspace) ||
+                Input.GetKeyDown(KeyCode.Keypad0) ||
+                Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OnFeverButtonPointerDown();
+            }
         }
 
         UpdateTime();
+        UpdateFever();
         HandleInput();
         UpdateUI();
     }
@@ -512,10 +541,48 @@ public class Game : MonoBehaviour
 
     private void UpdateUI()
     {
+        // Fever
+        feverButtonFilling.anchorMax = new Vector2(feverAmount, 1f);
+        feverButtonAnimator.SetBool("Fever Ready", feverState == FeverState.Ready);
+        middleFeverBarFilling.anchorMin = new Vector2(
+            0.5f - feverAmount * 0.5f, 0f);
+        middleFeverBarFilling.anchorMax = new Vector2(
+            0.5f + feverAmount * 0.5f, 1f);
+        middleFeverText.SetActive(feverState == FeverState.Ready);
+
+        // Other
         hpBar.anchorMax = new Vector2(
             (float)hp / kMaxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
+    }
+    #endregion
+
+    #region Fever
+    public void OnFeverButtonPointerDown()
+    {
+        if (feverState != FeverState.Ready) return;
+        feverState = FeverState.Active;
+        feverSoundSource.Play();
+        feverTimer = new Stopwatch();
+        // Technically, keyboard-induced activations start
+        // later in the frame (during Update()) than
+        // pointer-down-induced ones (during event handling).
+        // This shouldn't cause any problems though?
+        feverTimer.Start();
+    }
+
+    private void UpdateFever()
+    {
+        if (feverState != FeverState.Active) return;
+        feverAmount = 1f - (float)feverTimer.Elapsed.TotalSeconds * 0.1f;
+        if (feverAmount < 0f)
+        {
+            feverAmount = 0f;
+            feverTimer.Stop();
+            feverTimer = null;
+            feverState = FeverState.Idle;
+        }
     }
     #endregion
 
@@ -713,13 +780,10 @@ public class Game : MonoBehaviour
                  judgement == Judgement.Max))
             {
                 feverAmount += 8f / numPlayableNotes;
-                if (feverAmount > 1f) feverAmount = 1f;
-                feverButton.SetAmount(feverAmount);
-
-                if (feverAmount == 1f)
+                if (feverAmount >= 1f)
                 {
                     feverState = FeverState.Ready;
-                    feverButton.SetReady(true);
+                    feverAmount = 1f;
                 }
             }
         }
@@ -747,9 +811,7 @@ public class Game : MonoBehaviour
                 {
                     feverAmount *= 0.5f;
                 }
-                feverButton.SetAmount(feverAmount);
                 feverState = FeverState.Idle;
-                feverButton.SetReady(false);
             }
         }
         if (currentCombo > maxCombo)
@@ -786,10 +848,12 @@ public class Game : MonoBehaviour
     public void OnPauseButtonClickOrTouch()
     {
         stopwatch.Stop();
+        feverTimer?.Stop();
         backingTrackSource.Pause();
         pauseDialog.Show(closeCallback: () =>
         {
             stopwatch.Start();
+            feverTimer?.Start();
             backingTrackSource.UnPause();
         });
         MenuSfx.instance.PlayPauseSound();
