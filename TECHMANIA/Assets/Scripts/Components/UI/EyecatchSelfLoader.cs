@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -23,7 +24,7 @@ public class EyecatchSelfLoader : MonoBehaviour
             t.eyecatchImage != "")
         {
             string fullPath = folder + "\\" + t.eyecatchImage;
-            StartCoroutine(InnerLoadImage(fullPath));
+            ResourceLoader.LoadImage(fullPath, OnLoadImageComplete);
         }
         else
         {
@@ -31,42 +32,16 @@ public class EyecatchSelfLoader : MonoBehaviour
         }
     }
 
-    private IEnumerator InnerLoadImage(string fullPath)
+    private void OnLoadImageComplete(Sprite sprite, string error)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(
-            Paths.FilePathToUri(fullPath), nonReadable: true);
-        yield return request.SendWebRequest();
-        
-        if (request.isNetworkError || request.isHttpError)
+        if (!gameObject.activeInHierarchy) return;
+        if (sprite == null)
         {
-            Debug.LogError($"UnityWebRequest reports an error when loading {fullPath}:"
-                + request.error);
             NoImage();
-            yield break;
-        }
-        
-        Texture texture = DownloadHandlerTexture.GetContent(request);
-        if (texture == null)
-        {
-            Debug.LogError($"Could not load {fullPath}. Details: {request.error}");
-            NoImage();
-            yield break;
-        }
-        Texture2D t2d = texture as Texture2D;
-        if (t2d == null)
-        {
-            Debug.LogError($"{fullPath} did not load as Texture2D.");
-            NoImage();
-            yield break;
+            return;
         }
 
-        int width = t2d.width;
-        int height = t2d.height;
-        Sprite sprite = Sprite.Create(t2d,
-            new Rect(0f, 0f, width, height),
-            new Vector2(width * 0.5f, height * 0.5f));
         image.sprite = sprite;
-
         image.gameObject.SetActive(true);
         progressIndicator.SetActive(false);
         noImageIndicator.SetActive(false);
