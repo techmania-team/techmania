@@ -132,8 +132,9 @@ public class Game : MonoBehaviour
 
         // And now we wait for the resources to load.
         stopwatch = null;
-        resourceLoader.LoadResources(GameSetup.trackPath,
-            loadCompleteCallback: OnLoadComplete);
+        resourceLoader.LoadAudioResources(GameSetup.trackFolder,
+            GameSetup.pattern,
+            loadAudioCompleteCallback: OnLoadAudioComplete);
     }
 
     private void OnDestroy()
@@ -142,7 +143,7 @@ public class Game : MonoBehaviour
     }
 
     #region Initialization
-    private void ReportError(string message)
+    private void ReportFatalError(string message)
     {
         messageDialog.Show(message, closeCallback: () =>
         {
@@ -151,12 +152,12 @@ public class Game : MonoBehaviour
         });
     }
 
-    private void OnLoadComplete(string error)
+    private void OnLoadAudioComplete(string error)
     {
         if (error != null)
         {
             // Handle error.
-            ReportError(error);
+            ReportFatalError(error);
             return;
         }
 
@@ -212,7 +213,7 @@ public class Game : MonoBehaviour
         }
         catch (KeyNotFoundException)
         {
-            ReportError($"Backing track {GameSetup.pattern.patternMetadata.backingTrack} is not found.");
+            ReportFatalError($"Backing track {GameSetup.pattern.patternMetadata.backingTrack} is not found.");
             return;
         }
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
@@ -570,7 +571,9 @@ public class Game : MonoBehaviour
         feverTimer = new Stopwatch();
         // Technically, keyboard-induced activations start
         // later in the frame (during Update()) than
-        // pointer-down-induced ones (during event handling).
+        // pointer-down-induced ones (during event handling), so
+        // the latter may last a few more milliseconds.
+        //
         // This shouldn't cause any problems though?
         feverTimer.Start();
     }

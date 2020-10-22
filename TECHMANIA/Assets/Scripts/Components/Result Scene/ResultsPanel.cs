@@ -41,8 +41,7 @@ public class ResultsPanel : MonoBehaviour
 
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
-        eyecatch.LoadImage(new FileInfo(GameSetup.trackPath).DirectoryName,
-            track);
+        eyecatch.LoadImage(GameSetup.trackFolder, track);
         trackTitle.text = track.title;
         trackArtist.text = track.artist;
 

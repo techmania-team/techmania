@@ -10,21 +10,41 @@ public class ResourceLoader : MonoBehaviour
 {
     // Keys do not contain folder.
     private Dictionary<string, AudioClip> audioClips;
-    private UnityAction<string> loadCompleteCallback;
+    private UnityAction<string> loadAudioCompleteCallback;
 
-    public void LoadResources(string trackPath,
-        UnityAction<string> loadCompleteCallback)
+    // Load all audio files in the given path.
+    public void LoadAudioResources(string trackFolder,
+        UnityAction<string> loadAudioCompleteCallback)
     {
-        this.loadCompleteCallback = loadCompleteCallback;
-        StartCoroutine(InnerLoadResources(trackPath));
+        this.loadAudioCompleteCallback = loadAudioCompleteCallback;
+        StartCoroutine(InnerLoadAudioResources(
+            Paths.GetAllAudioFiles(trackFolder)));
     }
 
-    private IEnumerator InnerLoadResources(string trackPath)
+    // Load the backing track and all keysounds of the given
+    // pattern.
+    public void LoadAudioResources(string trackFolder,
+        Pattern pattern, UnityAction<string> loadAudioCompleteCallback)
+    {
+        this.loadAudioCompleteCallback = loadAudioCompleteCallback;
+        List<string> filenames = new List<string>();
+        if (pattern.patternMetadata.backingTrack != null &&
+            pattern.patternMetadata.backingTrack != "")
+        {
+            filenames.Add(trackFolder + "\\" + pattern.patternMetadata.backingTrack);
+        }
+        foreach (SoundChannel channel in pattern.soundChannels)
+        {
+            filenames.Add(trackFolder + "\\" + channel.name);
+        }
+        StartCoroutine(InnerLoadAudioResources(filenames));
+    }
+
+    private IEnumerator InnerLoadAudioResources(List<string> filenameWithFolder)
     {
         audioClips = new Dictionary<string, AudioClip>();
 
-        string folder = new FileInfo(trackPath).DirectoryName;
-        foreach (string file in Paths.GetAllAudioFiles(folder))
+        foreach (string file in filenameWithFolder)
         {
             // string uri = Paths.FilePathToUri(file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
@@ -35,14 +55,14 @@ public class ResourceLoader : MonoBehaviour
             if (clip == null)
             {
                 string error = $"Could not load {file}:\n\n{request.error}";
-                loadCompleteCallback?.Invoke(error);
+                loadAudioCompleteCallback?.Invoke(error);
                 yield break;
             }
             if (clip.loadState != AudioDataLoadState.Loaded)
             {
                 string error = $"Could not load {file}.\n\n" +
                     "The file may be corrupted, or be of an unsupported format.";
-                loadCompleteCallback?.Invoke(error);
+                loadAudioCompleteCallback?.Invoke(error);
                 yield break;
             }
 
@@ -51,7 +71,7 @@ public class ResourceLoader : MonoBehaviour
         }
 
         yield return null;  // Wait 1 more frame just in case
-        loadCompleteCallback?.Invoke(null);
+        loadAudioCompleteCallback?.Invoke(null);
     }
 
     public AudioClip GetClip(string filenameWithoutFolder)

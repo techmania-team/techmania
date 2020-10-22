@@ -133,8 +133,8 @@ public class PatternPanel : MonoBehaviour
 
         // Playback
         playButton.GetComponent<Button>().interactable = false;
-        resourceLoader.LoadResources(EditorContext.trackPath,
-            loadCompleteCallback: OnResourceLoadComplete);
+        resourceLoader.LoadAudioResources(EditorContext.trackFolder,
+            loadAudioCompleteCallback: OnResourceLoadComplete);
         isPlaying = false;
 
         Refresh();

@@ -24,8 +24,7 @@ public class SelectPatternDialog : MonoBehaviour
 
         // Show track metadata.
         Track track = GameSetup.track;
-        string dir = new FileInfo(GameSetup.trackPath).DirectoryName;
-        eyecatchImage.LoadImage(dir, track.trackMetadata);
+        eyecatchImage.LoadImage(GameSetup.trackFolder, track.trackMetadata);
         genreText.text = track.trackMetadata.genre;
         titleText.text = track.trackMetadata.title;
         artistText.text = track.trackMetadata.artist;
@@ -43,7 +42,8 @@ public class SelectPatternDialog : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(firstObject);
 
         // Play preview.
-        previewPlayer.Play(dir, GameSetup.track.trackMetadata,
+        previewPlayer.Play(GameSetup.trackFolder,
+            GameSetup.track.trackMetadata,
             loop: true);
     }
 
