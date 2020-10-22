@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using Debug = UnityEngine.Debug;  // Not System.Diagnostics.Debug
 
 public enum Judgement
@@ -23,6 +24,11 @@ public enum Judgement
 
 public class Game : MonoBehaviour
 {
+    [Header("Background")]
+    public Image backgroundImage;
+    public VideoPlayer videoPlayer;
+    public Image brightnessCover;
+
     [Header("Scans")]
     public GraphicRaycaster raycaster;
     public Transform topScanContainer;
@@ -129,8 +135,16 @@ public class Game : MonoBehaviour
         topBar.SetActive(false);
         middleFeverBar.SetActive(false);
 
-        // And now we wait for the resources to load.
+        // Start the loading sequence.
         stopwatch = null;
+        if (GameSetup.track.trackMetadata.backImage != null &&
+            GameSetup.track.trackMetadata.backImage != "")
+        {
+            string fullPath = GameSetup.trackFolder + "\\" +
+                GameSetup.track.trackMetadata.backImage;
+            ResourceLoader.LoadImage(fullPath,
+                OnImageLoadComplete);
+        }
         ResourceLoader.CacheAudioResources(GameSetup.trackFolder,
             GameSetup.pattern,
             cacheAudioCompleteCallback: OnLoadAudioComplete);
@@ -149,6 +163,19 @@ public class Game : MonoBehaviour
             WelcomeMat.skipToTrackSelect = true;
             Curtain.DrawCurtainThenGoToScene("Main Menu");
         });
+    }
+
+    private void OnImageLoadComplete(Sprite sprite, string error)
+    {
+        if (sprite != null)
+        {
+            backgroundImage.sprite = sprite;
+            backgroundImage.color = Color.white;
+        }
+        else
+        {
+            backgroundImage.color = Color.clear;
+        }
     }
 
     private void OnLoadAudioComplete(string error)
@@ -417,6 +444,26 @@ public class Game : MonoBehaviour
         UpdateFever();
         HandleInput();
         UpdateUI();
+        UpdateBrightness();
+    }
+
+    private void UpdateBrightness()
+    {
+        float a = brightnessCover.color.a;
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            a -= 0.1f;
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            a += 0.1f;
+        }
+        a = Mathf.Clamp01(a);
+        brightnessCover.color = new Color(
+            brightnessCover.color.r,
+            brightnessCover.color.g,
+            brightnessCover.color.b,
+            a);
     }
 
     private void UpdateTime()
