@@ -32,7 +32,6 @@ public class PatternPanel : MonoBehaviour
     public GameObject hiddenNotePrefab;
 
     [Header("Audio")]
-    public ResourceLoader resourceLoader;
     public AudioSource backingTrackSource;
     public List<AudioSource> keysoundSources;
 
@@ -133,8 +132,8 @@ public class PatternPanel : MonoBehaviour
 
         // Playback
         playButton.GetComponent<Button>().interactable = false;
-        resourceLoader.LoadAudioResources(EditorContext.trackFolder,
-            loadAudioCompleteCallback: OnResourceLoadComplete);
+        ResourceLoader.CacheAudioResources(EditorContext.trackFolder,
+            cacheAudioCompleteCallback: OnResourceLoadComplete);
         isPlaying = false;
 
         Refresh();
@@ -1127,7 +1126,7 @@ public class PatternPanel : MonoBehaviour
 
         systemTimeOnPlaybackStart = DateTime.Now;
         PlaySound(backingTrackSource,
-            resourceLoader.GetClip(
+            ResourceLoader.GetCachedClip(
                 pattern.patternMetadata.backingTrack),
             playbackStartingTime);
     }
@@ -1169,7 +1168,7 @@ public class PatternPanel : MonoBehaviour
             NoteWithSound nextNote = notesInLanes[i].Peek();
             if (playbackCurrentTime >= nextNote.note.time)
             {
-                AudioClip clip = resourceLoader.GetClip(nextNote.sound);
+                AudioClip clip = ResourceLoader.GetCachedClip(nextNote.sound);
                 AudioSource source = keysoundSources[i];
                 float startTime = playbackCurrentTime - nextNote.note.time;
                 PlaySound(source, clip, startTime);

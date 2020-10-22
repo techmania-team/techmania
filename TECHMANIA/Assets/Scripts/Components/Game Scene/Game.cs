@@ -31,7 +31,6 @@ public class Game : MonoBehaviour
     public GameObject bottomScanTemplate;
 
     [Header("Audio")]
-    public ResourceLoader resourceLoader;
     public AudioSource backingTrackSource;
     public List<AudioSource> keysoundSources;
 
@@ -132,9 +131,9 @@ public class Game : MonoBehaviour
 
         // And now we wait for the resources to load.
         stopwatch = null;
-        resourceLoader.LoadAudioResources(GameSetup.trackFolder,
+        ResourceLoader.CacheAudioResources(GameSetup.trackFolder,
             GameSetup.pattern,
-            loadAudioCompleteCallback: OnLoadAudioComplete);
+            cacheAudioCompleteCallback: OnLoadAudioComplete);
     }
 
     private void OnDestroy()
@@ -208,7 +207,7 @@ public class Game : MonoBehaviour
         // track, so we don't cut the track short.
         try
         {
-            backingTrackSource.clip = resourceLoader.GetClip(
+            backingTrackSource.clip = ResourceLoader.GetCachedClip(
                 GameSetup.pattern.patternMetadata.backingTrack);
         }
         catch (KeyNotFoundException)
@@ -835,7 +834,7 @@ public class Game : MonoBehaviour
     {
         if (n.sound == "") return;
 
-        AudioClip clip = resourceLoader.GetClip(n.sound);
+        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
         keysoundSources[n.note.lane].clip = clip;
         keysoundSources[n.note.lane].Play();
     }

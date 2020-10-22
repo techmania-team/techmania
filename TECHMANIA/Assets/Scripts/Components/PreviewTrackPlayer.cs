@@ -38,22 +38,20 @@ public class PreviewTrackPlayer : MonoBehaviour
         double startTime, double endTime,
         bool loop)
     {
+        // We could use ResourceLoader.LoadAudio, but this creates
+        // problems when the user stops preview track playback
+        // before the loading completes.
         string filename = trackFolder + "\\" + previewTrackFilename;
         UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
                 filename, AudioType.WAV);
         yield return request.SendWebRequest();
 
-        AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
+        AudioClip clip;
+        string error;
+        ResourceLoader.GetAudioClipFromWebRequest(
+            request, out clip, out error);
         if (clip == null)
         {
-            string error = $"Could not load {filename}:\n\n{request.error}";
-            messageDialog?.Show(error);
-            yield break;
-        }
-        if (clip.loadState != AudioDataLoadState.Loaded)
-        {
-            string error = $"Could not load {filename}.\n\n" +
-                "The file may be corrupted, or be of an unsupported format.";
             messageDialog?.Show(error);
             yield break;
         }
