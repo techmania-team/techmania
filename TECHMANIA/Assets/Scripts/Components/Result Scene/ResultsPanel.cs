@@ -82,7 +82,7 @@ public class ResultsPanel : MonoBehaviour
             if (Game.score.notesPerJudgement[Judgement.Cool] == 0 &&
                 Game.score.notesPerJudgement[Judgement.Good] == 0)
             {
-                if (Game.score.notesPerJudgement[Judgement.Max] == 0)
+                if (score == 300000)
                 {
                     medalText.text = "ABSOLUTE PERFECT";
                 }

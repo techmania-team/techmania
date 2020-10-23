@@ -34,7 +34,10 @@ public class ResourceLoader : MonoBehaviour
         List<string> filenames = new List<string>();
         foreach (SoundChannel channel in pattern.soundChannels)
         {
-            filenames.Add(trackFolder + "\\" + channel.name);
+            if (channel.name != "")
+            {
+                filenames.Add(trackFolder + "\\" + channel.name);
+            }
         }
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
@@ -50,6 +53,7 @@ public class ResourceLoader : MonoBehaviour
         foreach (string file in filenameWithFolder)
         {
             // string uri = Paths.FilePathToUri(file);
+            Debug.Log("Loading: " + file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
                 file, AudioType.WAV);
             yield return request.SendWebRequest();

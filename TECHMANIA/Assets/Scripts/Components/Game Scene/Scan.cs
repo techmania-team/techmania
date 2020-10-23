@@ -55,7 +55,11 @@ public class Scan : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
-        if (hidden) o.GetComponent<Image>().enabled = false;
+        if (hidden)
+        {
+            o.GetComponent<Image>().enabled = false;
+            o.GetComponent<NoteObject>().enabled = false;
+        }
 
         o.SetActive(false);
         noteObjects.Add(o);
