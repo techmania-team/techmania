@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class EyecatchSelfLoader : MonoBehaviour
