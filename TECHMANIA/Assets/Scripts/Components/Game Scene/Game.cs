@@ -134,20 +134,10 @@ public class Game : MonoBehaviour
         loading = true;
         topBar.SetActive(false);
         middleFeverBar.SetActive(false);
-
-        // Start the loading sequence.
         stopwatch = null;
-        if (GameSetup.track.trackMetadata.backImage != null &&
-            GameSetup.track.trackMetadata.backImage != "")
-        {
-            string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.track.trackMetadata.backImage;
-            ResourceLoader.LoadImage(fullPath,
-                OnImageLoadComplete);
-        }
-        ResourceLoader.CacheAudioResources(GameSetup.trackFolder,
-            GameSetup.pattern,
-            cacheAudioCompleteCallback: OnLoadAudioComplete);
+
+        // Start the load sequence.
+        StartCoroutine(LoadSequence());
     }
 
     private void OnDestroy()
@@ -165,28 +155,103 @@ public class Game : MonoBehaviour
         });
     }
 
-    private void OnImageLoadComplete(Sprite sprite, string error)
+    private bool backgroundImageLoaded;
+    private bool backingTrackLoaded;
+    private bool keysoundsLoaded;
+    private IEnumerator LoadSequence()
     {
-        if (sprite != null)
+        // Step 1: load background image, if any. This makes the
+        // loading screen not too dull.
+        if (GameSetup.track.trackMetadata.backImage != null &&
+            GameSetup.track.trackMetadata.backImage != "")
         {
-            backgroundImage.sprite = sprite;
-            backgroundImage.color = Color.white;
+            string fullPath = GameSetup.trackFolder + "\\" +
+                GameSetup.track.trackMetadata.backImage;
+            backgroundImageLoaded = false;
+            ResourceLoader.LoadImage(fullPath,
+                OnImageLoadComplete);
+            yield return new WaitUntil(() => backgroundImageLoaded);
         }
-        else
+
+        // Step 2: load backing track, if any. This allows calculating
+        // the number of scans.
+        if (GameSetup.pattern.patternMetadata.backingTrack != null &&
+            GameSetup.pattern.patternMetadata.backingTrack != "")
         {
-            backgroundImage.color = Color.clear;
+            string fullPath = GameSetup.trackFolder + "\\" +
+                GameSetup.pattern.patternMetadata.backingTrack;
+            backingTrackSource.clip = null;
+            backingTrackLoaded = false;
+            ResourceLoader.LoadAudio(fullPath,
+                OnBackingTrackLoadComplete);
+            yield return new WaitUntil(() => backingTrackLoaded);
         }
+
+        // Step 3: load keysounds, if any.
+        keysoundsLoaded = false;
+        ResourceLoader.CacheSoundChannels(GameSetup.trackFolder,
+            GameSetup.pattern,
+            OnKeysoundLoadComplete);
+        yield return new WaitUntil(() => keysoundsLoaded);
+
+        // Step 4: load BGA, if any.
+        if (GameSetup.track.trackMetadata.bga != null &&
+            GameSetup.track.trackMetadata.bga != "")
+        {
+            string fullPath = GameSetup.trackFolder + "\\" +
+                GameSetup.track.trackMetadata.bga;
+            videoPlayer.url = fullPath;
+            videoPlayer.errorReceived += VideoPlayerErrorReceived;
+            videoPlayer.Prepare();
+            yield return new WaitUntil(() => videoPlayer.isPrepared);
+        }
+
+        // Step 5: initialize pattern. This sadly cannot be done
+        // asynchronously.
+        InitializePattern();
+
+        // Loading complete.
+        loading = false;
+        topBar.SetActive(true);
+        middleFeverBar.SetActive(true);
+
+        // Start timer. Backing track will start when timer hits 0;
+        // BGA will start when timer hits bgaOffset.
+        stopwatch = new Stopwatch();
+        stopwatch.Start();
+        Time = initialTime;
     }
 
-    private void OnLoadAudioComplete(string error)
+    private void OnImageLoadComplete(Sprite sprite, string error)
     {
         if (error != null)
         {
-            // Handle error.
+            backgroundImage.color = Color.clear;
             ReportFatalError(error);
             return;
         }
 
+        backgroundImage.sprite = sprite;
+        backgroundImage.color = Color.white;
+        backgroundImage.GetComponent<AspectRatioFitter>().aspectRatio =
+            (float)sprite.rect.width / sprite.rect.height;
+        backgroundImageLoaded = true;
+    }
+
+    private void OnBackingTrackLoadComplete(AudioClip clip, string error)
+    {
+        if (error != null)
+        {
+            ReportFatalError(error);
+            return;
+        }
+
+        backingTrackSource.clip = clip;
+        backingTrackLoaded = true;
+    }
+
+    private void InitializePattern()
+    {
         // Prepare for keyboard input if applicable.
         if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Keys ||
             GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.KM)
@@ -232,16 +297,6 @@ public class Game : MonoBehaviour
 
         // Find last scan. Make sure it ends later than the backing
         // track, so we don't cut the track short.
-        try
-        {
-            backingTrackSource.clip = ResourceLoader.GetCachedClip(
-                GameSetup.pattern.patternMetadata.backingTrack);
-        }
-        catch (KeyNotFoundException)
-        {
-            ReportFatalError($"Backing track {GameSetup.pattern.patternMetadata.backingTrack} is not found.");
-            return;
-        }
         lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
             PulsesPerScan;
         if (backingTrackSource.clip != null)
@@ -311,16 +366,6 @@ public class Game : MonoBehaviour
                 feverInstruction.text = "PRESS SPACE";
                 break;
         }
-
-        // Start timer. Backing track will start when timer hits 0.
-        stopwatch = new Stopwatch();
-        stopwatch.Start();
-        Time = initialTime;
-
-        // Loading complete.
-        loading = false;
-        topBar.SetActive(true);
-        middleFeverBar.SetActive(true);
     }
 
     public static void InitializeKeysForLane()
@@ -397,6 +442,22 @@ public class Game : MonoBehaviour
             KeyCode.Keypad2,
             KeyCode.Keypad3
         });
+    }
+
+    private void OnKeysoundLoadComplete(string error)
+    {
+        if (error != null)
+        {
+            ReportFatalError(error);
+            return;
+        }
+
+        keysoundsLoaded = true;
+    }
+
+    private void VideoPlayerErrorReceived(VideoPlayer player, string error)
+    {
+        ReportFatalError($"Could not load {player.url}:\n\n{error}");
     }
     #endregion
 

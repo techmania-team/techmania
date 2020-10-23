@@ -27,17 +27,11 @@ public class ResourceLoader : MonoBehaviour
             cacheAudioCompleteCallback));
     }
 
-    // Cache the backing track and all keysounds of the given
-    // pattern.
-    public static void CacheAudioResources(string trackFolder,
+    // Cache all keysounds of the given pattern.
+    public static void CacheSoundChannels(string trackFolder,
         Pattern pattern, UnityAction<string> cacheAudioCompleteCallback)
     {
         List<string> filenames = new List<string>();
-        if (pattern.patternMetadata.backingTrack != null &&
-            pattern.patternMetadata.backingTrack != "")
-        {
-            filenames.Add(trackFolder + "\\" + pattern.patternMetadata.backingTrack);
-        }
         foreach (SoundChannel channel in pattern.soundChannels)
         {
             filenames.Add(trackFolder + "\\" + channel.name);
@@ -158,7 +152,7 @@ public class ResourceLoader : MonoBehaviour
         if (request.isNetworkError || request.isHttpError)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"An error occurred when loading {fullPath}: {request.error}");
+                $"Could not load {fullPath}:\n\n{request.error}");
             yield break;
         }
 
@@ -166,7 +160,7 @@ public class ResourceLoader : MonoBehaviour
         if (texture == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"An error occurred when loading {fullPath}: {request.error}");
+                $"Could not load {fullPath}:\n\n{request.error}");
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
