@@ -27,6 +27,7 @@ public class Game : MonoBehaviour
     [Header("Background")]
     public Image backgroundImage;
     public VideoPlayer videoPlayer;
+    public RawImage bga;
     public Image brightnessCover;
 
     [Header("Scans")]
@@ -172,6 +173,10 @@ public class Game : MonoBehaviour
                 OnImageLoadComplete);
             yield return new WaitUntil(() => backgroundImageLoaded);
         }
+        else
+        {
+            backgroundImage.color = Color.clear;
+        }
 
         // Step 2: load backing track, if any. This allows calculating
         // the number of scans.
@@ -204,6 +209,12 @@ public class Game : MonoBehaviour
             videoPlayer.errorReceived += VideoPlayerErrorReceived;
             videoPlayer.Prepare();
             yield return new WaitUntil(() => videoPlayer.isPrepared);
+            videoPlayer.errorReceived -= VideoPlayerErrorReceived;
+            PrepareVideoPlayer();
+        }
+        else
+        {
+            bga.color = Color.clear;
         }
 
         // Step 5: initialize pattern. This sadly cannot be done
@@ -368,7 +379,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    public static void InitializeKeysForLane()
+    private void InitializeKeysForLane()
     {
         keysForLane = new List<List<KeyCode>>();
         keysForLane.Add(new List<KeyCode>()
@@ -457,7 +468,21 @@ public class Game : MonoBehaviour
 
     private void VideoPlayerErrorReceived(VideoPlayer player, string error)
     {
+        videoPlayer.errorReceived -= VideoPlayerErrorReceived;
         ReportFatalError($"Could not load {player.url}:\n\n{error}");
+    }
+
+    private void PrepareVideoPlayer()
+    {
+        RenderTexture renderTexture = new RenderTexture(
+            (int)videoPlayer.width,
+            (int)videoPlayer.height,
+            depth: 0);
+        videoPlayer.targetTexture = renderTexture;
+        bga.texture = renderTexture;
+        bga.color = Color.white;
+        bga.GetComponent<AspectRatioFitter>().aspectRatio =
+            (float)videoPlayer.width / videoPlayer.height;
     }
     #endregion
 
@@ -542,6 +567,16 @@ public class Game : MonoBehaviour
                 Time * backingTrackSource.clip.frequency);
             backingTrackSource.loop = false;
             backingTrackSource.Play();
+        }
+
+        // Play bga if timer hits bgaOffset.
+        if (oldTime < GameSetup.track.trackMetadata.bgaOffset &&
+            Time >= GameSetup.track.trackMetadata.bgaOffset &&
+            GameSetup.track.trackMetadata.bga != null &&
+            GameSetup.track.trackMetadata.bga != "")
+        {
+            videoPlayer.time = Time - GameSetup.track.trackMetadata.bgaOffset;
+            videoPlayer.Play();
         }
 
         // Fire ScanAboutToChange if we are 7/8 into the next scan.
@@ -966,11 +1001,13 @@ public class Game : MonoBehaviour
         stopwatch.Stop();
         feverTimer?.Stop();
         backingTrackSource.Pause();
+        if (videoPlayer.isPrepared) videoPlayer.Pause();
         pauseDialog.Show(closeCallback: () =>
         {
             stopwatch.Start();
             feverTimer?.Start();
             backingTrackSource.UnPause();
+            if (videoPlayer.isPrepared) videoPlayer.Play();
         });
         MenuSfx.instance.PlayPauseSound();
     }
