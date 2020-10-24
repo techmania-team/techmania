@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -52,9 +53,8 @@ public class ResourceLoader : MonoBehaviour
 
         foreach (string file in filenameWithFolder)
         {
-            // string uri = Paths.FilePathToUri(file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-                file, AudioType.WAV);
+                Paths.FilePathToUri(file), AudioType.WAV);
             yield return request.SendWebRequest();
 
             AudioClip clip;
@@ -102,7 +102,7 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
         UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-            fullPath, AudioType.WAV);
+            Paths.FilePathToUri(fullPath), AudioType.WAV);
         yield return request.SendWebRequest();
 
         AudioClip clip;

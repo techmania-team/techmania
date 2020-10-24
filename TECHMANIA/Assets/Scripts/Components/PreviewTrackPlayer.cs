@@ -48,7 +48,7 @@ public class PreviewTrackPlayer : MonoBehaviour
         // before the loading completes.
         string filename = trackFolder + "\\" + previewTrackFilename;
         UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-                filename, AudioType.WAV);
+            Paths.FilePathToUri(filename), AudioType.WAV);
         yield return request.SendWebRequest();
 
         AudioClip clip;
