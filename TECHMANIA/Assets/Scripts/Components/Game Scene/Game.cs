@@ -626,6 +626,11 @@ public class Game : MonoBehaviour
 
         if (Scan > lastScan)
         {
+            if (feverState == FeverState.Active)
+            {
+                feverState = FeverState.Idle;
+                score.FeverOff();
+            }
             Curtain.DrawCurtainThenGoToScene("Result");
         }
     }
