@@ -19,9 +19,13 @@ public class PreviewTrackPlayer : MonoBehaviour
         TrackMetadata trackMetadata,
         bool loop)
     {
-        Debug.Log("Playing preview track: " + trackMetadata.previewTrack);
         if (trackMetadata.previewTrack == "" ||
             trackMetadata.previewTrack == null)
+        {
+            return;
+        }
+        if (trackMetadata.previewStartTime >=
+            trackMetadata.previewEndTime)
         {
             return;
         }

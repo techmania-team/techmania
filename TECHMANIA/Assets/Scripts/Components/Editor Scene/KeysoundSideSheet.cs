@@ -26,16 +26,6 @@ public class KeysoundSideSheet : MonoBehaviour
     private int upcomingIndex;
     private int lastSelectedIndexWithoutShift;
 
-    private void Start()
-    {
-        Initialize();
-    }
-
-    private void Update()
-    {
-
-    }
-
     public void Initialize()
     {
         // Remove all keysound buttons, except for template.

@@ -129,6 +129,7 @@ public class PatternPanel : MonoBehaviour
 
         // UI and options
         UpdateBeatSnapDivisorDisplay();
+        keysoundSheet.Initialize();
 
         // Playback
         playButton.GetComponent<Button>().interactable = false;
