@@ -216,6 +216,10 @@ public class Pattern
         }
 
         oldChannel.notes.Remove(n);
+        if (oldChannel.notes.Count == 0)
+        {
+            soundChannels.Remove(oldChannel);
+        }
         newChannel.notes.Add(n);
     }
 
@@ -229,6 +233,10 @@ public class Pattern
                 $"Sound channel {sound} not found in pattern when deleting.");
         }
         channel.notes.Remove(n);
+        if (channel.notes.Count == 0)
+        {
+            soundChannels.Remove(channel);
+        }
     }
 
     // Sort BPM events by pulse, then fill their time fields.
