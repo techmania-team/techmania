@@ -62,28 +62,70 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnImportButtonClick()
     {
+        string[] sources = SFB.StandaloneFileBrowser.OpenFilePanel(
+            "Select resource to import", "", "wav;*.png;*.mp4", multiselect: true);
         string trackFolder = EditorContext.trackFolder;
 
-        foreach (string source in SFB.StandaloneFileBrowser.OpenFilePanel(
-            "Select resource to import", "", "wav;*.png;*.mp4", multiselect: true))
+        List<Tuple<string, string>> pairs = new List<Tuple<string, string>>();
+        List<string> filesToBeOverwritten = new List<string>();
+        foreach (string source in sources)
         {
             FileInfo fileInfo = new FileInfo(source);
             if (fileInfo.DirectoryName == trackFolder) continue;
             string destination = $"{trackFolder}\\{fileInfo.Name}";
 
+            if (File.Exists(destination))
+            {
+                filesToBeOverwritten.Add(fileInfo.Name);
+            }
+            pairs.Add(new Tuple<string, string>(source, destination));
+        }
+
+        if (filesToBeOverwritten.Count > 0)
+        {
+            string fileList = "";
+            for (int i = 0; i < filesToBeOverwritten.Count; i++)
+            {
+                if (i == 10)
+                {
+                    fileList += $"... and {filesToBeOverwritten.Count - 10} more.\n";
+                    break;
+                }
+                else
+                {
+                    fileList += filesToBeOverwritten[i] + "\n";
+                }
+            }
+            confirmDialog.Show(
+                $"The following files will be overwritten. Continue?\n\n{fileList}\nIf you choose to cancel, no file will be copied.",
+                "overwrite", "cancel", () =>
+                {
+                    StartCopy(pairs);
+                });
+        }
+        else
+        {
+            StartCopy(pairs);
+        }
+    }
+
+    private void StartCopy(List<Tuple<string, string>> pairs)
+    {
+        foreach (Tuple<string, string> pair in pairs)
+        {
             try
             {
-                File.Copy(source, destination, overwrite: true);
+                File.Copy(pair.Item1, pair.Item2, overwrite: true);
             }
             catch (Exception e)
             {
                 messageDialog.Show(
-                    $"An error occurred when copying {source} to {destination}:\n\n"
+                    $"An error occurred when copying {pair.Item1} to {pair.Item2}:\n\n"
                     + e.Message);
-                return;
+                break;
             }
         }
-
+        
         RefreshResourcesTab();
     }
 
