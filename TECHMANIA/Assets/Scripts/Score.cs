@@ -58,6 +58,8 @@ public class Score
 
     public int CurrentScore()
     {
+        if (totalNotes == 0) return 0;
+
         // Rainbow Max = 300,000 / totalNotes
         // Max = Rainbow Max - 1
         // Cool = Rainbow Max * 0.7

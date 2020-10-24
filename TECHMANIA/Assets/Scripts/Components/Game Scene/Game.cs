@@ -308,8 +308,12 @@ public class Game : MonoBehaviour
 
         // Find last scan. Make sure it ends later than the backing
         // track, so we don't cut the track short.
-        lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
-            PulsesPerScan;
+        lastScan = 0;
+        if (sortedNotes.Count > 0)
+        {
+            lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
+                PulsesPerScan;
+        }
         if (backingTrackSource.clip != null)
         {
             while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
@@ -469,7 +473,7 @@ public class Game : MonoBehaviour
     private void VideoPlayerErrorReceived(VideoPlayer player, string error)
     {
         videoPlayer.errorReceived -= VideoPlayerErrorReceived;
-        ReportFatalError($"Could not load {player.url}:\n\n{error}");
+        ReportFatalError(error);  // VideoPlayer's error message includes URL
     }
 
     private void PrepareVideoPlayer()

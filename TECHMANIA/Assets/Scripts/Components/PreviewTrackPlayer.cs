@@ -19,6 +19,7 @@ public class PreviewTrackPlayer : MonoBehaviour
         TrackMetadata trackMetadata,
         bool loop)
     {
+        Debug.Log("Playing preview track: " + trackMetadata.previewTrack);
         if (trackMetadata.previewTrack == "" ||
             trackMetadata.previewTrack == null)
         {
@@ -52,6 +53,9 @@ public class PreviewTrackPlayer : MonoBehaviour
             request, out clip, out error);
         if (clip == null)
         {
+            // When called from SelectPatternDialog, messageDialog
+            // is intentionally set to null because we don't support
+            // showing 2 dialogs at the same time.
             messageDialog?.Show(error);
             yield break;
         }
