@@ -53,7 +53,6 @@ public class ResourceLoader : MonoBehaviour
         foreach (string file in filenameWithFolder)
         {
             // string uri = Paths.FilePathToUri(file);
-            Debug.Log("Loading: " + file);
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
                 file, AudioType.WAV);
             yield return request.SendWebRequest();
@@ -119,9 +118,16 @@ public class ResourceLoader : MonoBehaviour
     public static void GetAudioClipFromWebRequest(UnityWebRequest request,
         out AudioClip clip, out string error)
     {
+        string fullPath = request.uri.LocalPath;
+        if (request.isHttpError || request.isNetworkError)
+        {
+            clip = null;
+            error = $"Could not load {fullPath}:\n\n{request.error}";
+            return;
+        }
         clip = DownloadHandlerAudioClip.GetContent(request);
         error = null;
-        string fullPath = request.uri.LocalPath;
+
         if (clip == null)
         {
             error = $"Could not load {fullPath}:\n\n{request.error}";
