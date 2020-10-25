@@ -10,8 +10,8 @@ Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab 
 
 * Alpha: implement features
   * Alpha 1: minimal features *<-- Released*
-  * Alpha 2: more basic features *<-- In progress*
-  * Alpha 3: all note types
+  * Alpha 2: more basic features *<-- Released*
+  * Alpha 3: all note types *<-- In progress*
   * Alpha 4: quality-of-life features
 * Beta: bug fixes and minor improvements
 * Release: backwards compatibility becomes necessary
