@@ -619,6 +619,7 @@ public class PatternPanel : MonoBehaviour
                 e.note, e.sound, keysounds[keysoundIndex]);
             e.sound = keysounds[keysoundIndex];
             e.SetKeysoundText();
+            e.SetKeysoundVisibility(showKeysoundToggle.isOn);
             keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
         }
         EditorContext.DoneWithChange();
@@ -875,6 +876,7 @@ public class PatternPanel : MonoBehaviour
         noteObject.note = n;
         noteObject.sound = sound;
         noteObject.SetKeysoundText();
+        noteObject.SetKeysoundVisibility(showKeysoundToggle.isOn);
         noteObject.Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
