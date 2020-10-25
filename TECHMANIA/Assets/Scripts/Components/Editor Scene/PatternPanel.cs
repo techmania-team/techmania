@@ -115,7 +115,8 @@ public class PatternPanel : MonoBehaviour
     private void OnEnable()
     {
         // Vertical spacing
-        HiddenLanes = 4;
+        HiddenLanes = int.Parse(
+            hiddenLanesDropdown.options[hiddenLanesDropdown.value].text);
         Canvas.ForceUpdateCanvases();
         AllLaneTotalHeight = laneDividerParent.rect.height;
 
