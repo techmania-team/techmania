@@ -151,6 +151,7 @@ public class PatternPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        StopPlayback();
         EditorContext.UndoneOrRedone -= Refresh;
         EditorElement.LeftClicked -= OnNoteObjectLeftClick;
         EditorElement.RightClicked -= OnNoteObjectRightClick;
@@ -1090,6 +1091,7 @@ public class PatternPanel : MonoBehaviour
     public void StartPlayback()
     {
         if (isPlaying) return;
+        if (!playButton.GetComponent<Button>().interactable) return;
         isPlaying = true;
         UpdateUIOnPlaybackStartOrStop();
 
@@ -1136,6 +1138,7 @@ public class PatternPanel : MonoBehaviour
     public void StopPlayback()
     {
         if (!isPlaying) return;
+        if (!stopButton.GetComponent<Button>().interactable) return;
         isPlaying = false;
         UpdateUIOnPlaybackStartOrStop();
 
