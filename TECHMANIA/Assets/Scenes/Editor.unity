@@ -2810,6 +2810,7 @@ GameObject:
   - component: {fileID: 183698688}
   - component: {fileID: 183698690}
   - component: {fileID: 183698691}
+  - component: {fileID: 183698689}
   m_Layer: 5
   m_Name: Bpm Marker Template
   m_TagString: Untagged
@@ -2839,6 +2840,18 @@ RectTransform:
   m_AnchoredPosition: {x: 600, y: 0}
   m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &183698689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183698687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f17d363559091419cda49ede53523a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &183698690
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2856,18 +2869,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 183698687}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d428c04a4b3324d9f75745f81ad52b, type: 3}
+  m_Script: {fileID: 11500000, guid: 3eb79e9ad35d6cd49830e1759edac7de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
-  selectionOverlay: {fileID: 0}
   pulse: 0
-  floatPulse: 0
-  note:
-    lane: 0
-    pulse: 0
-    type: 0
-  sound: 
 --- !u!1001 &188658281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15159,6 +15164,7 @@ GameObject:
   - component: {fileID: 1081096705}
   - component: {fileID: 1081096707}
   - component: {fileID: 1081096706}
+  - component: {fileID: 1081096709}
   - component: {fileID: 1081096708}
   m_Layer: 5
   m_Name: Scanline
@@ -15232,18 +15238,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1081096704}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d428c04a4b3324d9f75745f81ad52b, type: 3}
+  m_Script: {fileID: 11500000, guid: a9f17d363559091419cda49ede53523a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
-  selectionOverlay: {fileID: 0}
-  pulse: 0
+--- !u!114 &1081096709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081096704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a075ff831535a7b41951a0e334536531, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   floatPulse: 0
-  note:
-    lane: 0
-    pulse: 0
-    type: 0
-  sound: 
 --- !u!1 &1082905766
 GameObject:
   m_ObjectHideFlags: 0
@@ -15255,6 +15265,7 @@ GameObject:
   - component: {fileID: 1026308912}
   - component: {fileID: 1082905769}
   - component: {fileID: 1082905768}
+  - component: {fileID: 1082905770}
   - component: {fileID: 1082905767}
   m_Layer: 5
   m_Name: Beat Marker Template
@@ -15272,18 +15283,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1082905766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d428c04a4b3324d9f75745f81ad52b, type: 3}
+  m_Script: {fileID: 11500000, guid: a9f17d363559091419cda49ede53523a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  selectionOverlay: {fileID: 0}
-  pulse: 0
-  floatPulse: 0
-  note:
-    lane: 0
-    pulse: 0
-    type: 0
-  sound: 
 --- !u!114 &1082905768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15321,6 +15323,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1082905766}
   m_CullTransparentMesh: 0
+--- !u!114 &1082905770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082905766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3eb79e9ad35d6cd49830e1759edac7de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pulse: 0
 --- !u!1 &1086321725
 GameObject:
   m_ObjectHideFlags: 0
@@ -17273,7 +17288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   workspace: {fileID: 1994110755}
   workspaceContent: {fileID: 1994110754}
-  scanline: {fileID: 1081096708}
+  scanline: {fileID: 1081096709}
   hiddenLaneBackground: {fileID: 690073689}
   header: {fileID: 957256983}
   laneDividerParent: {fileID: 268069218}
@@ -17282,7 +17297,7 @@ MonoBehaviour:
   beatMarkerTemplate: {fileID: 1082905766}
   bpmMarkerTemplate: {fileID: 183698687}
   noteContainer: {fileID: 796827511}
-  noteCursor: {fileID: 1669463549}
+  noteCursor: {fileID: 1669463551}
   basicNotePrefab: {fileID: 6915570976975822383, guid: 714aff4aaeb177b4095f064e865c1f03,
     type: 3}
   hiddenNotePrefab: {fileID: 1708566256020214363, guid: 1ecb5b5d5762aff418b88c68405986c6,
@@ -21787,6 +21802,8 @@ GameObject:
   - component: {fileID: 1669463546}
   - component: {fileID: 1669463548}
   - component: {fileID: 1669463547}
+  - component: {fileID: 1669463551}
+  - component: {fileID: 1669463550}
   - component: {fileID: 1669463549}
   m_Layer: 5
   m_Name: Note Cursor
@@ -21860,13 +21877,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1669463545}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d428c04a4b3324d9f75745f81ad52b, type: 3}
+  m_Script: {fileID: 11500000, guid: a9f17d363559091419cda49ede53523a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 3
+--- !u!114 &1669463550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669463545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a0faf644bfe2ec459a8c8f9751d0058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   selectionOverlay: {fileID: 0}
-  pulse: 0
-  floatPulse: 0
+--- !u!114 &1669463551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669463545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153a7f1c972350145bc6be4cfb22bfc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   note:
     lane: 0
     pulse: 0
@@ -27485,27 +27523,6 @@ RectTransform:
   m_AnchoredPosition: {x: 500, y: 0}
   m_SizeDelta: {x: 2, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6411691591710588390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6411691591710588394}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d428c04a4b3324d9f75745f81ad52b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  selectionOverlay: {fileID: 0}
-  pulse: 0
-  floatPulse: 0
-  note:
-    lane: 0
-    pulse: 0
-    type: 0
-  sound: 
 --- !u!222 &6411691591710588391
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27525,7 +27542,8 @@ GameObject:
   - component: {fileID: 6411691591710588389}
   - component: {fileID: 6411691591710588391}
   - component: {fileID: 6411691591710588388}
-  - component: {fileID: 6411691591710588390}
+  - component: {fileID: 6411691591710588396}
+  - component: {fileID: 6411691591710588395}
   m_Layer: 5
   m_Name: Scan Marker Template
   m_TagString: Untagged
@@ -27533,6 +27551,31 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &6411691591710588395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6411691591710588394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f17d363559091419cda49ede53523a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6411691591710588396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6411691591710588394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3eb79e9ad35d6cd49830e1759edac7de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pulse: 0
 --- !u!1001 &6954324395572550542
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ public class PatternPanel : MonoBehaviour
     [Header("Workspace")]
     public ScrollRect workspace;
     public RectTransform workspaceContent;
-    public EditorElement scanline;
+    public ScanlineInEditor scanline;
 
     [Header("Lanes")]
     public RectTransform hiddenLaneBackground;
@@ -27,7 +27,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Notes")]
     public Transform noteContainer;
-    public EditorElement noteCursor;
+    public NoteObject noteCursor;
     public GameObject basicNotePrefab;
     public GameObject hiddenNotePrefab;
 
@@ -66,13 +66,13 @@ public class PatternPanel : MonoBehaviour
     {
         public Note note;
         public string sound;
-        public static NoteWithSound FromEditorElement(GameObject o)
+        public static NoteWithSound FromNoteObject(GameObject o)
         {
-            EditorElement e = o.GetComponent<EditorElement>();
+            NoteObject n = o.GetComponent<NoteObject>();
             return new NoteWithSound()
             {
-                note = e.note.Clone(),
-                sound = e.sound
+                note = n.note,
+                sound = n.sound
             };
         }
     }
@@ -126,7 +126,7 @@ public class PatternPanel : MonoBehaviour
 
         // Scanline
         scanline.floatPulse = 0f;
-        scanline.Reposition();
+        scanline.GetComponent<SelfPositioner>().Reposition();
 
         // UI and options
         UpdateBeatSnapDivisorDisplay();
@@ -141,11 +141,11 @@ public class PatternPanel : MonoBehaviour
         Refresh();
         OnKeysoundVisibilityChanged(showKeysoundToggle.isOn);
         EditorContext.UndoneOrRedone += Refresh;
-        EditorElement.LeftClicked += OnNoteObjectLeftClick;
-        EditorElement.RightClicked += OnNoteObjectRightClick;
-        EditorElement.BeginDrag += OnNoteObjectBeginDrag;
-        EditorElement.Drag += OnNoteObjectDrag;
-        EditorElement.EndDrag += OnNoteObjectEndDrag;
+        NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
+        NoteInEditor.RightClicked += OnNoteObjectRightClick;
+        NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
+        NoteInEditor.Drag += OnNoteObjectDrag;
+        NoteInEditor.EndDrag += OnNoteObjectEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
     }
 
@@ -153,11 +153,11 @@ public class PatternPanel : MonoBehaviour
     {
         StopPlayback();
         EditorContext.UndoneOrRedone -= Refresh;
-        EditorElement.LeftClicked -= OnNoteObjectLeftClick;
-        EditorElement.RightClicked -= OnNoteObjectRightClick;
-        EditorElement.BeginDrag -= OnNoteObjectBeginDrag;
-        EditorElement.Drag -= OnNoteObjectDrag;
-        EditorElement.EndDrag -= OnNoteObjectEndDrag;
+        NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
+        NoteInEditor.RightClicked -= OnNoteObjectRightClick;
+        NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
+        NoteInEditor.Drag -= OnNoteObjectDrag;
+        NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
     }
 
@@ -264,7 +264,7 @@ public class PatternPanel : MonoBehaviour
         noteCursor.note = new Note();
         noteCursor.note.pulse = snappedCursorPulse;
         noteCursor.note.lane = snappedLane;
-        noteCursor.Reposition();
+        noteCursor.GetComponent<SelfPositioner>().Reposition();
     }
 
     private void MoveScanlineToMouse()
@@ -280,7 +280,7 @@ public class PatternPanel : MonoBehaviour
         int snappedCursorPulse = SnapPulse(cursorPulse);
 
         scanline.floatPulse = snappedCursorPulse;
-        scanline.Reposition();
+        scanline.GetComponent<SelfPositioner>().Reposition();
         RefreshScanlinePositionSlider();
     }
 
@@ -459,9 +459,9 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Delete note from pattern
-        EditorElement e = o.GetComponent<EditorElement>();
+        NoteObject n = o.GetComponent<NoteObject>();
         EditorContext.PrepareForChange();
-        EditorContext.Pattern.DeleteNote(e.note, e.sound);
+        EditorContext.Pattern.DeleteNote(n.note, n.sound);
         EditorContext.DoneWithChange();
 
         // Delete note from UI
@@ -577,7 +577,7 @@ public class PatternPanel : MonoBehaviour
             * Pattern.pulsesPerBeat;
         float scanlineRawPulse = totalPulses * newValue;
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
-        scanline.Reposition();
+        scanline.GetComponent<SelfPositioner>().Reposition();
         ScrollScanlineIntoView();
     }
 
@@ -597,12 +597,12 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Sort selected note objects, first by pulse, then by lane.
-        List<EditorElement> sortedSelection = new List<EditorElement>();
+        List<NoteObject> sortedSelection = new List<NoteObject>();
         foreach (GameObject o in selectedNoteObjects)
         {
-            sortedSelection.Add(o.GetComponent<EditorElement>());
+            sortedSelection.Add(o.GetComponent<NoteObject>());
         }
-        sortedSelection.Sort((EditorElement e1, EditorElement e2) =>
+        sortedSelection.Sort((NoteObject e1, NoteObject e2) =>
         {
             Note n1 = e1.note;
             Note n2 = e2.note;
@@ -613,13 +613,13 @@ public class PatternPanel : MonoBehaviour
         // Apply keysound.
         EditorContext.PrepareForChange();
         int keysoundIndex = 0;
-        foreach (EditorElement e in sortedSelection)
+        foreach (NoteObject n in sortedSelection)
         {
             EditorContext.Pattern.ModifyNoteKeysound(
-                e.note, e.sound, keysounds[keysoundIndex]);
-            e.sound = keysounds[keysoundIndex];
-            e.SetKeysoundText();
-            e.SetKeysoundVisibility(showKeysoundToggle.isOn);
+                n.note, n.sound, keysounds[keysoundIndex]);
+            n.sound = keysounds[keysoundIndex];
+            n.GetComponent<NoteInEditor>().SetKeysoundText();
+            n.GetComponent<NoteInEditor>().SetKeysoundVisibility(showKeysoundToggle.isOn);
             keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
         }
         EditorContext.DoneWithChange();
@@ -660,9 +660,9 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Calculate delta pulse and delta lane
-        EditorElement element = draggedNoteObject.GetComponent<EditorElement>();
-        int oldPulse = element.note.pulse;
-        int oldLane = element.note.lane;
+        NoteObject noteObject = draggedNoteObject.GetComponent<NoteObject>();
+        int oldPulse = noteObject.note.pulse;
+        int oldLane = noteObject.note.lane;
         int deltaPulse = noteCursor.note.pulse - oldPulse;
         int deltaLane = noteCursor.note.lane - oldLane;
 
@@ -674,7 +674,7 @@ public class PatternPanel : MonoBehaviour
         bool movable = true;
         foreach (GameObject o in selectedNoteObjects)
         {
-            Note n = o.GetComponent<EditorElement>().note;
+            Note n = o.GetComponent<NoteObject>().note;
             int newPulse = n.pulse + deltaPulse;
             int newLane = n.lane + deltaLane;
 
@@ -712,11 +712,11 @@ public class PatternPanel : MonoBehaviour
             }
             foreach (GameObject o in selectedNoteObjects)
             {
-                Note n = o.GetComponent<EditorElement>().note;
+                Note n = o.GetComponent<NoteObject>().note;
                 n.pulse += deltaPulse;
                 n.lane += deltaLane;
                 GameObject newO = SpawnNoteObject(
-                    n, o.GetComponent<EditorElement>().sound);
+                    n, o.GetComponent<NoteObject>().sound);
                 Destroy(o);
                 replacedSelection.Add(newO);
             }
@@ -730,7 +730,7 @@ public class PatternPanel : MonoBehaviour
 
         foreach (GameObject o in selectedNoteObjects)
         {
-            o.GetComponent<EditorElement>().Reposition();
+            o.GetComponent<SelfPositioner>().Reposition();
         }
     }
     #endregion
@@ -757,7 +757,7 @@ public class PatternPanel : MonoBehaviour
             return numScans != numScansBackup;
         }
 
-        int lastPulse = o.GetComponent<EditorElement>().note.pulse;
+        int lastPulse = o.GetComponent<NoteObject>().note.pulse;
         int lastScan = lastPulse / Pattern.pulsesPerBeat
             / EditorContext.Pattern.patternMetadata.bps;
         numScans = lastScan + 2;  // 1 empty scan at the end
@@ -794,6 +794,12 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Spawning
+    private enum MarkerPriority
+    {
+        Bpm,
+        Other
+    }
+
     private void DestroyAndRespawnAllMarkers()
     {
         for (int i = 0; i < markerContainer.childCount; i++)
@@ -807,29 +813,30 @@ public class PatternPanel : MonoBehaviour
 
         EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        List<KeyValuePair<Transform, EditorElement.Type>> allMarkers =
-            new List<KeyValuePair<Transform, EditorElement.Type>>();
+        // Value in KeyValuePairs is priority: 1 for BPM events, 0 for others.
+        List<KeyValuePair<Transform, MarkerPriority>> allMarkers =
+            new List<KeyValuePair<Transform, MarkerPriority>>();
         for (int scan = 0; scan < numScans; scan++)
         {
             GameObject marker = Instantiate(scanMarkerTemplate, markerContainer);
             marker.SetActive(true);  // This calls OnEnabled
-            EditorElement element = marker.GetComponent<EditorElement>();
-            element.pulse = scan * bps * Pattern.pulsesPerBeat;
-            element.SetTimeDisplay();
-            element.Reposition();
-            allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
-                marker.transform, element.type));
+            Marker m = marker.GetComponent<Marker>();
+            m.pulse = scan * bps * Pattern.pulsesPerBeat;
+            m.SetTimeDisplay();
+            m.GetComponent<SelfPositioner>().Reposition();
+            allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
+                marker.transform, MarkerPriority.Other));
 
             for (int beat = 1; beat < bps; beat++)
             {
                 marker = Instantiate(beatMarkerTemplate, markerContainer);
                 marker.SetActive(true);
-                element = marker.GetComponent<EditorElement>();
-                element.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
-                element.SetTimeDisplay();
-                element.Reposition();
-                allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
-                    marker.transform, element.type));
+                m = marker.GetComponent<Marker>();
+                m.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
+                m.SetTimeDisplay();
+                m.GetComponent<SelfPositioner>().Reposition();
+                allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
+                marker.transform, MarkerPriority.Other));
             }
         }
 
@@ -837,25 +844,25 @@ public class PatternPanel : MonoBehaviour
         {
             GameObject marker = Instantiate(bpmMarkerTemplate, markerContainer);
             marker.SetActive(true);
-            EditorElement element = marker.GetComponent<EditorElement>();
-            element.pulse = e.pulse;
-            element.SetBpmText(e.bpm);
-            element.Reposition();
-            allMarkers.Add(new KeyValuePair<Transform, EditorElement.Type>(
-                marker.transform, element.type));
+            Marker m = marker.GetComponent<Marker>();
+            m.pulse = e.pulse;
+            m.SetBpmText(e.bpm);
+            m.GetComponent<SelfPositioner>().Reposition();
+            allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
+                marker.transform, MarkerPriority.Bpm));
         }
 
         // Sort all markers so they are drawn from left to right.
         allMarkers.Sort((
-            KeyValuePair<Transform, EditorElement.Type> p1,
-            KeyValuePair<Transform, EditorElement.Type> p2) =>
+            KeyValuePair<Transform, MarkerPriority> p1,
+            KeyValuePair<Transform, MarkerPriority> p2) =>
         {
             float deltaX = p1.Key.position.x - p2.Key.position.x;
             if (deltaX < 0) return -1;
             if (deltaX > 0) return 1;
             // At the same position, BPM markers should be drawn later.
-            if (p1.Value == EditorElement.Type.BpmMarker) return 1;
-            if (p2.Value == EditorElement.Type.BpmMarker) return -1;
+            if (p1.Value == MarkerPriority.Bpm) return 1;
+            if (p2.Value == MarkerPriority.Bpm) return -1;
             return 0;
         });
         for (int i = 0; i < allMarkers.Count; i++)
@@ -871,13 +878,13 @@ public class PatternPanel : MonoBehaviour
         {
             prefab = hiddenNotePrefab;
         }
-        EditorElement noteObject = Instantiate(prefab,
-            noteContainer).GetComponent<EditorElement>();
+        NoteObject noteObject = Instantiate(prefab,
+            noteContainer).GetComponent<NoteObject>();
         noteObject.note = n;
         noteObject.sound = sound;
-        noteObject.SetKeysoundText();
-        noteObject.SetKeysoundVisibility(showKeysoundToggle.isOn);
-        noteObject.Reposition();
+        noteObject.GetComponent<NoteInEditor>().SetKeysoundText();
+        noteObject.GetComponent<NoteInEditor>().SetKeysoundVisibility(showKeysoundToggle.isOn);
+        noteObject.GetComponent<SelfPositioner>().Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
 
@@ -981,7 +988,7 @@ public class PatternPanel : MonoBehaviour
         minPulseInClipboard = int.MaxValue;
         foreach (GameObject o in selectedNoteObjects)
         {
-            NoteWithSound n = NoteWithSound.FromEditorElement(o);
+            NoteWithSound n = NoteWithSound.FromNoteObject(o);
             if (n.note.pulse < minPulseInClipboard)
             {
                 minPulseInClipboard = n.note.pulse;
@@ -1039,7 +1046,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.PrepareForChange();
         foreach (GameObject o in selectedNoteObjects)
         {
-            EditorElement e = o.GetComponent<EditorElement>();
+            NoteObject e = o.GetComponent<NoteObject>();
             EditorContext.Pattern.DeleteNote(e.note, e.sound);
         }
         EditorContext.DoneWithChange();
@@ -1121,12 +1128,8 @@ public class PatternPanel : MonoBehaviour
             if (noteObjectsAtThisPulse == null) continue;
             foreach (GameObject o in noteObjectsAtThisPulse)
             {
-                EditorElement e = o.GetComponent<EditorElement>();
-                notesInLanes[e.note.lane].Enqueue(new NoteWithSound()
-                {
-                    note = e.note,
-                    sound = e.sound
-                });
+                NoteObject n = o.GetComponent<NoteObject>();
+                notesInLanes[n.note.lane].Enqueue(NoteWithSound.FromNoteObject(o));
             }
         }
 
@@ -1146,7 +1149,7 @@ public class PatternPanel : MonoBehaviour
 
         backingTrackSource.Stop();
         scanline.floatPulse = playbackStartingPulse;
-        scanline.Reposition();
+        scanline.GetComponent<SelfPositioner>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
     }
@@ -1186,7 +1189,7 @@ public class PatternPanel : MonoBehaviour
 
         // Move scanline.
         scanline.floatPulse = playbackCurrentPulse;
-        scanline.Reposition();
+        scanline.GetComponent<SelfPositioner>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
     }

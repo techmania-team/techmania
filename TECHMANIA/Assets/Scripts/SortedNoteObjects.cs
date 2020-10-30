@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// A list of lists of GameObjects, each with an EditorElement.
+// A list of lists of GameObjects, each with a NoteObject.
 // Outer list is sorted and indexed by pulse; inner list is
 // not sorted, and may be empty, null, or nonexistant.
 //
@@ -25,12 +25,12 @@ public class SortedNoteObjects
 
     private int GetPulse(GameObject o)
     {
-        return o.GetComponent<EditorElement>().note.pulse;
+        return o.GetComponent<NoteObject>().note.pulse;
     }
 
     private int GetLane(GameObject o)
     {
-        return o.GetComponent<EditorElement>().note.lane;
+        return o.GetComponent<NoteObject>().note.lane;
     }
 
     public List<GameObject> GetAt(int pulse)
