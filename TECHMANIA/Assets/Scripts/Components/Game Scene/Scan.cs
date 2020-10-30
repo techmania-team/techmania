@@ -14,7 +14,7 @@ public class Scan : MonoBehaviour
     private float screenWidth;
     private float scanHeight;
     public static float laneHeight { get; private set; }
-    private List<GameObject> noteObjects;
+    private List<NoteAppearance> noteAppearances;
 
     private void OnDestroy()
     {
@@ -31,7 +31,7 @@ public class Scan : MonoBehaviour
         screenWidth = rect.width;
         scanHeight = rect.height;
         laneHeight = scanHeight * 0.25f;
-        noteObjects = new List<GameObject>();
+        noteAppearances = new List<NoteAppearance>();
 
         Scanline scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
@@ -42,6 +42,7 @@ public class Scan : MonoBehaviour
         bool hidden)
     {
         GameObject o = Instantiate(prefab, transform);
+
         NoteObject noteObject = o.GetComponent<NoteObject>();
         noteObject.note = n;
         noteObject.sound = sound;
@@ -55,14 +56,9 @@ public class Scan : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
-        if (hidden)
-        {
-            o.GetComponent<Image>().enabled = false;
-            o.GetComponent<NoteObject>().enabled = false;
-        }
-
-        o.SetActive(false);
-        noteObjects.Add(o);
+        NoteAppearance appearance = o.GetComponent<NoteAppearance>();
+        appearance.SetHidden(hidden);
+        noteAppearances.Add(appearance);
 
         return noteObject;
     }
@@ -71,11 +67,9 @@ public class Scan : MonoBehaviour
     {
         if (scan == scanNumber)
         {
-            // Activate.
-            foreach (GameObject o in noteObjects)
+            foreach (NoteAppearance o in noteAppearances)
             {
-                o.SetActive(true);
-                o.GetComponent<Image>().color = Color.white;
+                o.Activate();
             }
         }
     }
@@ -84,11 +78,9 @@ public class Scan : MonoBehaviour
     {
         if (scan == scanNumber - 1)
         {
-            // Prepare.
-            foreach (GameObject o in noteObjects)
+            foreach (NoteAppearance o in noteAppearances)
             {
-                o.SetActive(true);
-                o.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
+                o.Prepare();
             }
         }
     }
@@ -100,20 +92,6 @@ public class Scan : MonoBehaviour
         float normalizedX = Mathf.LerpUnclamped(
             kSpaceBeforeScan, 1f - kSpaceAfterScan,
             relativeNormalizedScan);
-        if (scanNumber % 2 != 0)
-        {
-            normalizedX = 1f - normalizedX;
-        }
-
-        return normalizedX * screenWidth;
-    }
-
-    public float FloatScanToXPosition(float scan)
-    {
-        float relativeScan = scan - scanNumber;
-        float normalizedX = Mathf.LerpUnclamped(
-            kSpaceBeforeScan, 1f - kSpaceAfterScan,
-            relativeScan);
         if (scanNumber % 2 != 0)
         {
             normalizedX = 1f - normalizedX;

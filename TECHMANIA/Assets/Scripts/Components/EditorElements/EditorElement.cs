@@ -10,6 +10,12 @@ using UnityEngine.UI;
 
 // EditorElement refers to anything that can position themselves
 // inside the workspace.
+//
+// This does the following (TODO: split the reposition thing into separate class)
+// - Reposition GameObject
+// - Store reference to Note and sound
+// - Relay click and drag events
+// - Control appearance
 public class EditorElement : MonoBehaviour
 {
     public enum Type

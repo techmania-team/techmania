@@ -925,7 +925,7 @@ public class Game : MonoBehaviour
 
     private void ResolveNote(NoteObject n, Judgement judgement)
     {
-        n.gameObject.SetActive(false);
+        n.GetComponent<NoteAppearance>().Resolve();
         noteObjectsInLane[n.note.lane].Remove(n);
 
         if (judgement != Judgement.Miss &&
