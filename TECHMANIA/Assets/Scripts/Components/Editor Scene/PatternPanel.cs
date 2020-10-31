@@ -31,6 +31,8 @@ public class PatternPanel : MonoBehaviour
     public Transform noteContainer;
     public NoteObject noteCursor;
     public GameObject basicNotePrefab;
+    public GameObject chainHeadPrefab;
+    public GameObject chainNodePrefab;
     public GameObject hiddenNotePrefab;
 
     [Header("Audio")]
@@ -45,6 +47,7 @@ public class PatternPanel : MonoBehaviour
     public Toggle showKeysoundToggle;
 
     [Header("UI")]
+    public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
     public GameObject stopButton;
@@ -82,6 +85,8 @@ public class PatternPanel : MonoBehaviour
     // patterns.
     private List<NoteWithSound> clipboard;
     private int minPulseInClipboard;
+
+    private NoteType noteType;
     #endregion
 
     #region Vertical Spacing
@@ -126,6 +131,7 @@ public class PatternPanel : MonoBehaviour
         scanline.GetComponent<SelfPositioner>().Reposition();
 
         // UI and options
+        noteType = NoteType.Basic;
         UpdateBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
 
@@ -558,6 +564,16 @@ public class PatternPanel : MonoBehaviour
         }
 
         RepositionNeeded?.Invoke();
+    }
+
+    public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
+    {
+        noteType = clickedButton.type;
+        foreach (NoteTypeButton b in noteTypeButtons)
+        {
+            b.GetComponent<MaterialToggleButton>().SetIsOn(
+                b == clickedButton);
+        }
     }
 
     public void OnShortcutButtonClick()
