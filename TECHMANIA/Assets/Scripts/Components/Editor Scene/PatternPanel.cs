@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class PatternPanel : MonoBehaviour
 {
+    public RectTransform rootCanvas;
+
     [Header("Workspace")]
     public ScrollRect workspace;
     public RectTransform workspaceContent;
@@ -362,7 +364,7 @@ public class PatternPanel : MonoBehaviour
         if (WorkspaceContentWidth < viewPortWidth) return;
         float horizontal = workspace.horizontalNormalizedPosition *
             (WorkspaceContentWidth - viewPortWidth);
-        horizontal -= p.delta.x;
+        horizontal -= p.delta.x / rootCanvas.localScale.x;
         workspace.horizontalNormalizedPosition = Mathf.Clamp01(
             horizontal /
             (WorkspaceContentWidth - viewPortWidth));
@@ -641,6 +643,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectDrag(Vector2 delta)
     {
         if (isPlaying) return;
+        delta /= rootCanvas.localScale.x;
 
         foreach (GameObject o in selectedNoteObjects)
         {
