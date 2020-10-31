@@ -746,11 +746,6 @@ public class PatternPanel : MonoBehaviour
         int numScansBackup = numScans;
 
         int lastPulse = sortedNoteObjects.GetMaxPulse();
-        if (lastPulse < 0)
-        {
-            numScans = 1;
-            return numScans != numScansBackup;
-        }
         int lastScan = lastPulse / Pattern.pulsesPerBeat
             / EditorContext.Pattern.patternMetadata.bps;
         numScans = lastScan + 2;  // 1 empty scan at the end
