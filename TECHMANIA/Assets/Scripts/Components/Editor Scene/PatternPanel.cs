@@ -350,7 +350,7 @@ public class PatternPanel : MonoBehaviour
         Note n = new Note();
         n.pulse = noteCursor.note.pulse;
         n.lane = noteCursor.note.lane;
-        n.type = NoteType.Basic;
+        n.type = noteType;
         EditorContext.PrepareForChange();
         EditorContext.Pattern.AddNote(n, sound);
         EditorContext.DoneWithChange();
@@ -880,10 +880,28 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject SpawnNoteObject(Note n, string sound)
     {
-        GameObject prefab = basicNotePrefab;
+        GameObject prefab = null;
         if (n.lane >= PlayableLanes)
         {
             prefab = hiddenNotePrefab;
+        }
+        else
+        {
+            switch (n.type)
+            {
+                case NoteType.Basic:
+                    prefab = basicNotePrefab;
+                    break;
+                case NoteType.ChainHead:
+                    prefab = chainHeadPrefab;
+                    break;
+                case NoteType.ChainNode:
+                    prefab = chainNodePrefab;
+                    break;
+                default:
+                    Debug.LogError("Unsupported (yet) note type: " + n.type);
+                    break;
+            }
         }
         NoteObject noteObject = Instantiate(prefab,
             noteContainer).GetComponent<NoteObject>();
