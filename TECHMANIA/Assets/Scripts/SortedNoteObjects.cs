@@ -3,22 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// A list of lists of GameObjects, each with a NoteObject.
-// Outer list is sorted and indexed by pulse; inner list is
-// not sorted, and may be empty, null, or nonexistant.
+// GameObjects organized in a very peculiar way so that adding,
+// querying, deleting and enumerating can all be done at a
+// hopefully reasonable speed. Specifically,
+// - Adding/deleting a note costs O(logn)
+// - Querying a note costs O(1)
+// - Enumerating notes costs O(logn) to begin, then O(1) for each note
+// where n is the number of pulses.
 //
 // This class does not interact with Notes in any way.
 public class SortedNoteObjects
 {
-    private List<List<GameObject>> list;
+    // private List<List<GameObject>> list;
+
+    // Key: pulse
+    // Value: notes on this pulse
+    // Pairs with empty values should not exist.
+    private Dictionary<int, List<GameObject>> pulseToNotes;
+    // The set of all keys in pulseToNotes, organized as a sorted
+    // set so they can be enumerated in order.
+    private SortedSet<int> populatedPulses;
+    
     public SortedNoteObjects()
     {
-        list = new List<List<GameObject>>();
+        pulseToNotes = new Dictionary<int, List<GameObject>>();
+        populatedPulses = new SortedSet<int>();
     }
 
+    // Returns -1 if empty.
     public int GetMaxPulse()
     {
-        return list.Count - 1;
+        if (populatedPulses.Count == 0) return -1;
+        return populatedPulses.Max;
     }
 
     private int GetPulse(GameObject o)
@@ -33,15 +49,14 @@ public class SortedNoteObjects
 
     public List<GameObject> GetAt(int pulse)
     {
-        if (list.Count < pulse + 1) return null;
-        return list[pulse];
+        if (!pulseToNotes.ContainsKey(pulse)) return null;
+        return pulseToNotes[pulse];
     }
 
     public GameObject GetAt(int pulse, int lane)
     {
-        if (list.Count < pulse + 1) return null;
-        if (list[pulse] == null) return null;
-        return list[pulse].Find((GameObject o) =>
+        if (!pulseToNotes.ContainsKey(pulse)) return null;
+        return GetAt(pulse).Find((GameObject o) =>
         {
             return GetLane(o) == lane;
         });
@@ -59,11 +74,11 @@ public class SortedNoteObjects
         int minLane = Mathf.Min(firstLane, lastLane);
         int maxLane = Mathf.Max(firstLane, lastLane);
 
-        for (int pulse = minPulse; pulse <= maxPulse; pulse++)
+        foreach (int pulse in populatedPulses.GetViewBetween(minPulse, maxPulse))
         {
-            if (list.Count < pulse + 1) continue;
-            if (list[pulse] == null) continue;
-            foreach (GameObject o in list[pulse])
+            List<GameObject> potentialObjects = GetAt(pulse);
+            if (potentialObjects == null) continue;
+            foreach (GameObject o in potentialObjects)
             {
                 int lane = GetLane(o);
                 if (lane >= minLane && lane <= maxLane)
@@ -78,24 +93,21 @@ public class SortedNoteObjects
 
     public GameObject GetFirst()
     {
-        for (int pulse = 0; pulse < list.Count; pulse++)
-        {
-            if (list[pulse] == null) continue;
-            if (list[pulse].Count == 0) continue;
-            return list[pulse][0];
-        }
-        return null;
-    }
+        if (populatedPulses.Count == 0) return null;
+        List<GameObject> objects = GetAt(populatedPulses.Min);
 
-    public GameObject GetLast()
-    {
-        for (int pulse = list.Count - 1; pulse >= 0; pulse--)
+        GameObject first = objects[0];
+        int minLane = GetLane(first);
+        for (int i = 1; i < objects.Count; i++)
         {
-            if (list[pulse] == null) continue;
-            if (list[pulse].Count == 0) continue;
-            return list[pulse][0];
+            int lane = GetLane(objects[i]);
+            if (lane < minLane)
+            {
+                first = objects[i];
+                minLane = lane;
+            }
         }
-        return null;
+        return first;
     }
 
     public bool HasAt(int pulse, int lane)
@@ -106,30 +118,24 @@ public class SortedNoteObjects
     public void Add(GameObject o)
     {
         int pulse = GetPulse(o);
-        while (list.Count < pulse + 1)
+        if (!pulseToNotes.ContainsKey(pulse))
         {
-            list.Add(null);
+            pulseToNotes.Add(pulse, new List<GameObject>());
+            populatedPulses.Add(pulse);
         }
-        if (list[pulse] == null)
-        {
-            list[pulse] = new List<GameObject>();
-        }
-        list[pulse].Add(o);
+        pulseToNotes[pulse].Add(o);
     }
 
     // No-op if not found.
     public void Delete(GameObject o)
     {
         int pulse = GetPulse(o);
-        if (list.Count < pulse + 1) return;
-        list[pulse].Remove(o);
-    }
-
-    // No-op if no note exists at (pulse, lane).
-    public void DeleteAt(int pulse, int lane)
-    {
-        GameObject o = GetAt(pulse, lane);
-        if (o == null) return;
-        list[pulse].Remove(o);
+        if (!pulseToNotes.ContainsKey(pulse)) return;
+        pulseToNotes[pulse].Remove(o);
+        if (pulseToNotes[pulse].Count == 0)
+        {
+            pulseToNotes.Remove(pulse);
+            populatedPulses.Remove(pulse);
+        }
     }
 }

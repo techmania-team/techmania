@@ -391,6 +391,8 @@ public class SoundChannel
     public string name;
     // Notes using this sound.
     public List<Note> notes;
+    public List<HoldNote> holdNotes;
+    public List<DragNote> dragNotes;
 }
 
 [Serializable]
@@ -399,15 +401,12 @@ public enum NoteType
     Basic,
     ChainHead,
     ChainNode,
-    HoldStart,
-    HoldEnd,
-    DragHead,
-    DragNode,
+    Hold,
+    Drag,
     RepeatHead,
     RepeatHeadHold,
     Repeat,
-    RepeatHoldStart,
-    RepeatHoldEnd,
+    RepeatHold
 }
 
 [Serializable]
@@ -428,6 +427,22 @@ public class Note
             type = this.type
         };
     }
+}
+
+public class HoldNote : Note
+{
+    public int duration;  // in pulses
+}
+
+public class DragNode
+{
+    public int lane;  // relative to note
+    public int pulse;  // relative to note
+}
+
+public class DragNote : Note
+{
+    public List<DragNode> nodes;
 }
 
 // Not intended to be serialized. Different from NoteObject,

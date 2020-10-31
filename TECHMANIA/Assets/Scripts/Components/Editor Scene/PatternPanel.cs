@@ -52,8 +52,8 @@ public class PatternPanel : MonoBehaviour
     public Dialog shortcutDialog;
 
     #region Internal Data Structures
-    // All note objects sorted by pulse. This allows fast lookups
-    // of whether any location is occupied when moving notes.
+    // All note objects organized in a way that makes editor
+    // operations efficient.
     //
     // This data structure must be updated alongside
     // EditorContext.Pattern at all times.
@@ -745,14 +745,12 @@ public class PatternPanel : MonoBehaviour
     {
         int numScansBackup = numScans;
 
-        GameObject o = sortedNoteObjects.GetLast();
-        if (o == null)
+        int lastPulse = sortedNoteObjects.GetMaxPulse();
+        if (lastPulse < 0)
         {
             numScans = 1;
             return numScans != numScansBackup;
         }
-
-        int lastPulse = o.GetComponent<NoteObject>().note.pulse;
         int lastScan = lastPulse / Pattern.pulsesPerBeat
             / EditorContext.Pattern.patternMetadata.bps;
         numScans = lastScan + 2;  // 1 empty scan at the end
