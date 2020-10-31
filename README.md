@@ -12,9 +12,9 @@ Head to the [Project](https://github.com/macmillan333/techmania/projects/1) tab 
   * Alpha 1: minimal features *<-- Released*
   * Alpha 2: more basic features *<-- Released*
   * Alpha 3: all note types *<-- In progress*
-  * Alpha 4: quality-of-life features
-* Beta: bug fixes and minor improvements
-* Release: backwards compatibility becomes necessary
+  * Alpha 4 (0.1): quality-of-life features
+* 0.2 and upwards: bug fixes and minor improvements
+* 1.0: backwards compatibility becomes necessary
 * Undecided: HTML5 support
 * Undecided: online platform for pattern distribution
 
