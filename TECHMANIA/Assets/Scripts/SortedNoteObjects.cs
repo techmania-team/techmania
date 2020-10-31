@@ -8,8 +8,6 @@ using UnityEngine;
 // not sorted, and may be empty, null, or nonexistant.
 //
 // This class does not interact with Notes in any way.
-//
-// TODO: make this a list of NoteObjects instead of GameObjects.
 public class SortedNoteObjects
 {
     private List<List<GameObject>> list;

@@ -429,3 +429,12 @@ public class Note
         };
     }
 }
+
+// Not intended to be serialized. Different from NoteObject,
+// this class does not derive from MonoBehavior, so it's much
+// lighter.
+public class NoteWithSound
+{
+    public Note note;
+    public string sound;
+}

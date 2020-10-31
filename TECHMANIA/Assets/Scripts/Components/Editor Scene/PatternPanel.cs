@@ -62,19 +62,14 @@ public class PatternPanel : MonoBehaviour
     private GameObject lastSelectedNoteObjectWithoutShift;
     private HashSet<GameObject> selectedNoteObjects;
 
-    private class NoteWithSound
+    private NoteWithSound ConvertToNoteWithSound(GameObject o)
     {
-        public Note note;
-        public string sound;
-        public static NoteWithSound FromNoteObject(GameObject o)
+        NoteObject n = o.GetComponent<NoteObject>();
+        return new NoteWithSound()
         {
-            NoteObject n = o.GetComponent<NoteObject>();
-            return new NoteWithSound()
-            {
-                note = n.note,
-                sound = n.sound
-            };
-        }
+            note = n.note,
+            sound = n.sound
+        };
     }
     // Clipboard stores notes and sounds instead of GameObjects,
     // so we are free of Unity stuff such as MonoBehaviors and
@@ -988,7 +983,7 @@ public class PatternPanel : MonoBehaviour
         minPulseInClipboard = int.MaxValue;
         foreach (GameObject o in selectedNoteObjects)
         {
-            NoteWithSound n = NoteWithSound.FromNoteObject(o);
+            NoteWithSound n = ConvertToNoteWithSound(o);
             if (n.note.pulse < minPulseInClipboard)
             {
                 minPulseInClipboard = n.note.pulse;
@@ -1075,6 +1070,14 @@ public class PatternPanel : MonoBehaviour
     private float playbackStartingPulse;
     private float playbackStartingTime;
     private DateTime systemTimeOnPlaybackStart;
+
+    // Each queue represents one lane; each lane is sorted by pulse.
+    // Played notes are popped from the corresponding queue. This
+    // makes it easy to tell if it's time to play the next note
+    // in each lane.
+    //
+    // This data structure is only used for playback, so it's not
+    // defined in the Internal Data Structures region.
     private List<Queue<NoteWithSound>> notesInLanes;
 
     private void OnResourceLoadComplete(string error)
@@ -1129,7 +1132,7 @@ public class PatternPanel : MonoBehaviour
             foreach (GameObject o in noteObjectsAtThisPulse)
             {
                 NoteObject n = o.GetComponent<NoteObject>();
-                notesInLanes[n.note.lane].Enqueue(NoteWithSound.FromNoteObject(o));
+                notesInLanes[n.note.lane].Enqueue(ConvertToNoteWithSound(o));
             }
         }
 

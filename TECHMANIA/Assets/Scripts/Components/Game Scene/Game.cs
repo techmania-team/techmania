@@ -117,12 +117,6 @@ public class Game : MonoBehaviour
     private List<LinkedList<NoteObject>> noteObjectsInLane;
     private int numPlayableNotes;
 
-    private class NoteWithSound
-    {
-        public Note note;
-        public string sound;
-    }
-
     // Start is called before the first frame update
     void Start()
     {
