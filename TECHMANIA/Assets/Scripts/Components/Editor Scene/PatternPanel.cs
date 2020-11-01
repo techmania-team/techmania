@@ -545,7 +545,6 @@ public class PatternPanel : MonoBehaviour
             EditorContext.DoneWithChange();
 
             DestroyAndRespawnAllMarkers();
-            RepositionNeeded?.Invoke();
         });
     }
 
@@ -884,6 +883,12 @@ public class PatternPanel : MonoBehaviour
         {
             allMarkers[i].Key.SetSiblingIndex(i);
         }
+
+        foreach (KeyValuePair<Transform, MarkerPriority> pair in allMarkers)
+        {
+            SelfPositioner positioner = pair.Key.GetComponent<SelfPositioner>();
+            positioner.Reposition();
+        }
     }
 
     private GameObject SpawnNoteObject(Note n, string sound)
@@ -1084,8 +1089,6 @@ public class PatternPanel : MonoBehaviour
 
         // OK to paste. Add scans if needed.
         UpdateNumScansAndRelatedUI();
-        RepositionNeeded?.Invoke();
-        AdjustAllPathsAndTrails();
 
         // Paste.
         EditorContext.PrepareForChange();
