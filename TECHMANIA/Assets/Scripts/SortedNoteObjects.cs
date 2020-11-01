@@ -119,6 +119,7 @@ public class SortedNoteObjects
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
         int pivotPulse = GetPulse(pivot);
+        if (pivotPulse == populatedPulses.Min) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             populatedPulses.Min, pivotPulse - 1)
             .Reverse())
@@ -147,6 +148,7 @@ public class SortedNoteObjects
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
         int pivotPulse = GetPulse(pivot);
+        if (pivotPulse == populatedPulses.Max) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             pivotPulse + 1, populatedPulses.Max))
         {

@@ -358,7 +358,8 @@ public class PatternPanel : MonoBehaviour
         EditorContext.DoneWithChange();
 
         // Add note to UI
-        SpawnNoteObject(n, sound);
+        GameObject newNote = SpawnNoteObject(n, sound);
+        AdjustPathOrTrail(newNote);
         UpdateNumScansAndRelatedUI();
     }
 
@@ -739,6 +740,7 @@ public class PatternPanel : MonoBehaviour
                 GameObject newO = SpawnNoteObject(
                     n, o.GetComponent<NoteObject>().sound);
                 Destroy(o);
+                AdjustPathOrTrail(newO);
                 replacedSelection.Add(newO);
             }
             EditorContext.DoneWithChange();
@@ -891,6 +893,7 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    // This will call Reposition on the new object.
     private GameObject SpawnNoteObject(Note n, string sound)
     {
         GameObject prefab = null;
@@ -997,6 +1000,51 @@ public class PatternPanel : MonoBehaviour
         AdjustAllPathsAndTrails();
     }
 
+    private void AdjustPathOrTrail(GameObject o)
+    {
+        NoteObject n = o.GetComponent<NoteObject>();
+        if (n.note.lane < 0 || n.note.lane >= PlayableLanes) return;
+        switch (n.note.type)
+        {
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+                {
+                    HashSet<NoteType> types = new HashSet<NoteType>()
+                        { NoteType.ChainHead, NoteType.ChainNode };
+                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+
+                    if (n.note.type == NoteType.ChainNode && prev != null)
+                    {
+                        o.GetComponent<NoteInEditor>().PointPathToward(
+                            prev.GetComponent<RectTransform>());
+                        if (prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+                        {
+                            prev.GetComponent<NoteInEditor>().TurnNoteImageToward(
+                                o.GetComponent<RectTransform>());
+                        }
+                    }
+                    if (next != null &&
+                        next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
+                    {
+                        next.GetComponent<NoteInEditor>().PointPathToward(
+                            o.GetComponent<RectTransform>());
+                        if (n.note.type == NoteType.ChainHead)
+                        {
+                            o.GetComponent<NoteInEditor>().TurnNoteImageToward(
+                                next.GetComponent<RectTransform>());
+                        }
+                    }
+                }
+                break;
+            // TODO: other cases.
+            default:
+                break;
+        }
+    }
+
     private void AdjustAllPathsAndTrails()
     {
         // Adjust the paths of chain nodes.
@@ -1101,7 +1149,8 @@ public class PatternPanel : MonoBehaviour
             EditorContext.Pattern.AddNote(noteClone, n.sound);
 
             // Add note to UI.
-            SpawnNoteObject(noteClone, n.sound);
+            GameObject newNote = SpawnNoteObject(noteClone, n.sound);
+            AdjustPathOrTrail(newNote);
         }
         EditorContext.DoneWithChange();
     }
