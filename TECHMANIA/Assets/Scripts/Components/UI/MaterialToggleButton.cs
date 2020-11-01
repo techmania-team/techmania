@@ -32,7 +32,6 @@ public class MaterialToggleButton : MonoBehaviour,
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
         rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
         on = false;
-        UpdateAppearance();
     }
 
     public void SetIsOn(bool on)

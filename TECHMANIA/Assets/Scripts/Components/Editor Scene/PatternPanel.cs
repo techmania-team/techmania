@@ -132,6 +132,7 @@ public class PatternPanel : MonoBehaviour
 
         // UI and options
         noteType = NoteType.Basic;
+        UpdateNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
 
@@ -230,6 +231,7 @@ public class PatternPanel : MonoBehaviour
                 float horizontal = workspace.horizontalNormalizedPosition;
                 ResizeWorkspace();
                 RepositionNeeded?.Invoke();
+                AdjustAllPathsAndTrails();
                 workspace.horizontalNormalizedPosition = horizontal;
             }
             else
@@ -564,15 +566,21 @@ public class PatternPanel : MonoBehaviour
         }
 
         RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
     }
 
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         noteType = clickedButton.type;
+        UpdateNoteTypeButtons();
+    }
+
+    private void UpdateNoteTypeButtons()
+    {
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
-                b == clickedButton);
+                b.type == noteType);
         }
     }
 
@@ -900,6 +908,7 @@ public class PatternPanel : MonoBehaviour
                     break;
                 default:
                     Debug.LogError("Unsupported (yet) note type: " + n.type);
+                    prefab = basicNotePrefab;
                     break;
             }
         }
@@ -979,6 +988,37 @@ public class PatternPanel : MonoBehaviour
                 SpawnNoteObject(n, channel.name);
             }
         }
+
+        AdjustAllPathsAndTrails();
+    }
+
+    private void AdjustAllPathsAndTrails()
+    {
+        // Adjust the paths of chain nodes.
+        List<GameObject> chainHeadsAndNodes = sortedNoteObjects.
+            GetAllNotesOfType(new HashSet<NoteType>()
+            { NoteType.ChainHead, NoteType.ChainNode},
+            minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+        GameObject previous = null;
+        foreach (GameObject o in chainHeadsAndNodes)
+        {
+            NoteObject n = o.GetComponent<NoteObject>();
+            if (n.note.type == NoteType.ChainNode)
+            {
+                n.GetComponent<NoteInEditor>().PointPathToward(
+                    previous.GetComponent<RectTransform>());
+                if (previous.GetComponent<NoteObject>().note.type ==
+                    NoteType.ChainHead)
+                {
+                    previous.GetComponent<NoteInEditor>().TurnNoteImageToward(
+                        o.GetComponent<RectTransform>());
+                }
+            }
+            previous = o;
+        }
+
+        // TODO: also repeat notes.
+        // TODO: also adjust the trails of hold notes.
     }
     #endregion
 
@@ -1045,6 +1085,7 @@ public class PatternPanel : MonoBehaviour
         // OK to paste. Add scans if needed.
         UpdateNumScansAndRelatedUI();
         RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
 
         // Paste.
         EditorContext.PrepareForChange();
