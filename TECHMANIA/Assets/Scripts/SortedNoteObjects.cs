@@ -45,9 +45,10 @@ public class SortedNoteObjects
         return o.GetComponent<NoteObject>().note.lane;
     }
 
+    // Returns empty list of no note is at given pulse.
     public List<GameObject> GetAt(int pulse)
     {
-        if (!pulseToNotes.ContainsKey(pulse)) return null;
+        if (!pulseToNotes.ContainsKey(pulse)) return new List<GameObject>();
         return pulseToNotes[pulse];
     }
 
@@ -74,9 +75,7 @@ public class SortedNoteObjects
 
         foreach (int pulse in populatedPulses.GetViewBetween(minPulse, maxPulse))
         {
-            List<GameObject> potentialObjects = GetAt(pulse);
-            if (potentialObjects == null) continue;
-            foreach (GameObject o in potentialObjects)
+            foreach (GameObject o in GetAt(pulse))
             {
                 int lane = GetLane(o);
                 if (lane >= minLane && lane <= maxLane)

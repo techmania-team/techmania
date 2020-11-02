@@ -53,6 +53,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject playButton;
     public GameObject stopButton;
     public Slider scanlinePositionSlider;
+    public Snackbar snackbar;
     public MessageDialog messageDialog;
     public BpmEventDialog bpmEventDialog;
     public Dialog shortcutDialog;
@@ -347,7 +348,30 @@ public class PatternPanel : MonoBehaviour
         }
         if (isPlaying) return;
 
-        // Add note to pattern
+        // Can we add a note here?
+        bool canPlaceNote = true;
+        string invalidReason = "";
+        if (noteType == NoteType.ChainHead || noteType == NoteType.ChainNode)
+        {
+            foreach (GameObject o in sortedNoteObjects.GetAt(noteCursor.note.pulse))
+            {
+                Note note = o.GetComponent<NoteObject>().note;
+                if (note.type != NoteType.ChainHead &&
+                    note.type != NoteType.ChainNode) continue;
+                if (note.lane < 0 || note.lane >= PlayableLanes) continue;
+
+                canPlaceNote = false;
+                invalidReason = "Cannot place note here because no two Chain notes can occupy the same time.";
+                break;
+            }
+        }
+        if (!canPlaceNote)
+        {
+            snackbar.Show(invalidReason);
+            return;
+        }
+
+        // Add note to pattern.
         string sound = keysoundSheet.UpcomingKeysound();
         keysoundSheet.AdvanceUpcoming();
         Note n = new Note();
@@ -358,7 +382,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.Pattern.AddNote(n, sound);
         EditorContext.DoneWithChange();
 
-        // Add note to UI
+        // Add note to UI.
         GameObject newNote = SpawnNoteObject(n, sound);
         AdjustPathOrTrailAround(newNote);
         UpdateNumScansAndRelatedUI();
@@ -1279,10 +1303,7 @@ public class PatternPanel : MonoBehaviour
             pulse <= sortedNoteObjects.GetMaxPulse();
             pulse++)
         {
-            List<GameObject> noteObjectsAtThisPulse =
-                sortedNoteObjects.GetAt(pulse);
-            if (noteObjectsAtThisPulse == null) continue;
-            foreach (GameObject o in noteObjectsAtThisPulse)
+            foreach (GameObject o in sortedNoteObjects.GetAt(pulse))
             {
                 NoteObject n = o.GetComponent<NoteObject>();
                 notesInLanes[n.note.lane].Enqueue(ConvertToNoteWithSound(o));
