@@ -29,6 +29,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Notes")]
     public Transform noteContainer;
+    public Transform noteCemetary;
     public NoteObject noteCursor;
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
@@ -359,7 +360,7 @@ public class PatternPanel : MonoBehaviour
 
         // Add note to UI
         GameObject newNote = SpawnNoteObject(n, sound);
-        AdjustPathOrTrail(newNote);
+        AdjustPathOrTrailAround(newNote);
         UpdateNumScansAndRelatedUI();
     }
 
@@ -471,6 +472,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.DoneWithChange();
 
         // Delete note from UI
+        AdjustPathBeforeDeleting(o);
         sortedNoteObjects.Delete(o);
         if (lastSelectedNoteObjectWithoutShift == o)
         {
@@ -728,20 +730,32 @@ public class PatternPanel : MonoBehaviour
             // playable and hidden lanes.
             EditorContext.PrepareForChange();
             HashSet<GameObject> replacedSelection = new HashSet<GameObject>();
+            List<NoteWithSound> noteWithSounds = new List<NoteWithSound>();
             foreach (GameObject o in selectedNoteObjects)
             {
+                AdjustPathBeforeDeleting(o);
                 sortedNoteObjects.Delete(o);
-            }
-            foreach (GameObject o in selectedNoteObjects)
-            {
-                Note n = o.GetComponent<NoteObject>().note;
-                n.pulse += deltaPulse;
-                n.lane += deltaLane;
-                GameObject newO = SpawnNoteObject(
-                    n, o.GetComponent<NoteObject>().sound);
+
+                NoteWithSound noteWithSound = new NoteWithSound()
+                {
+                    note = o.GetComponent<NoteObject>().note,
+                    sound = o.GetComponent<NoteObject>().sound
+                };
+                noteWithSound.note.pulse += deltaPulse;
+                noteWithSound.note.lane += deltaLane;
+                noteWithSounds.Add(noteWithSound);
+
+                // Destroy doesn't immedialy destroy, so we move the note
+                // to the cemetary so as to not interfere with the
+                // binary searches when spawning new notes.
+                o.transform.SetParent(noteCemetary);
                 Destroy(o);
-                AdjustPathOrTrail(newO);
+            }
+            foreach (NoteWithSound n in noteWithSounds)
+            {
+                GameObject newO = SpawnNoteObject(n.note, n.sound);
                 replacedSelection.Add(newO);
+                AdjustPathOrTrailAround(newO);
             }
             EditorContext.DoneWithChange();
             selectedNoteObjects = replacedSelection;
@@ -1000,7 +1014,9 @@ public class PatternPanel : MonoBehaviour
         AdjustAllPathsAndTrails();
     }
 
-    private void AdjustPathOrTrail(GameObject o)
+    // This may modify o, the same-type note before o, and/or
+    // the same-type note after o.
+    private void AdjustPathOrTrailAround(GameObject o)
     {
         NoteObject n = o.GetComponent<NoteObject>();
         if (n.note.lane < 0 || n.note.lane >= PlayableLanes) return;
@@ -1016,26 +1032,45 @@ public class PatternPanel : MonoBehaviour
                     GameObject next = sortedNoteObjects.GetClosestNoteAfter(
                         o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
 
-                    if (n.note.type == NoteType.ChainNode && prev != null)
+                    if (n.note.type == NoteType.ChainNode)
                     {
-                        o.GetComponent<NoteInEditor>().PointPathToward(
-                            prev.GetComponent<RectTransform>());
-                        if (prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
-                        {
-                            prev.GetComponent<NoteInEditor>().TurnNoteImageToward(
-                                o.GetComponent<RectTransform>());
-                        }
+                        o.GetComponent<NoteInEditor>().PointPathToward(prev);
                     }
                     if (next != null &&
                         next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
                     {
-                        next.GetComponent<NoteInEditor>().PointPathToward(
-                            o.GetComponent<RectTransform>());
-                        if (n.note.type == NoteType.ChainHead)
-                        {
-                            o.GetComponent<NoteInEditor>().TurnNoteImageToward(
-                                next.GetComponent<RectTransform>());
-                        }
+                        next.GetComponent<NoteInEditor>().PointPathToward(o);
+                    }
+                }
+                break;
+            // TODO: other cases.
+            default:
+                break;
+        }
+    }
+
+    // This may modify o, the same-type note before o, and/or
+    // the same-type note after o.
+    private void AdjustPathBeforeDeleting(GameObject o)
+    {
+        NoteObject n = o.GetComponent<NoteObject>();
+        if (n.note.lane < 0 || n.note.lane >= PlayableLanes) return;
+        switch (n.note.type)
+        {
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+                {
+                    HashSet<NoteType> types = new HashSet<NoteType>()
+                        { NoteType.ChainHead, NoteType.ChainNode };
+                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+
+                    if (next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
+                    {
+                        next.GetComponent<NoteInEditor>()
+                            .PointPathToward(prev);
                     }
                 }
                 break;
@@ -1058,14 +1093,7 @@ public class PatternPanel : MonoBehaviour
             NoteObject n = o.GetComponent<NoteObject>();
             if (n.note.type == NoteType.ChainNode)
             {
-                n.GetComponent<NoteInEditor>().PointPathToward(
-                    previous.GetComponent<RectTransform>());
-                if (previous.GetComponent<NoteObject>().note.type ==
-                    NoteType.ChainHead)
-                {
-                    previous.GetComponent<NoteInEditor>().TurnNoteImageToward(
-                        o.GetComponent<RectTransform>());
-                }
+                n.GetComponent<NoteInEditor>().PointPathToward(previous);
             }
             previous = o;
         }
@@ -1150,7 +1178,7 @@ public class PatternPanel : MonoBehaviour
 
             // Add note to UI.
             GameObject newNote = SpawnNoteObject(noteClone, n.sound);
-            AdjustPathOrTrail(newNote);
+            AdjustPathOrTrailAround(newNote);
         }
         EditorContext.DoneWithChange();
     }
@@ -1172,6 +1200,7 @@ public class PatternPanel : MonoBehaviour
         // Delete notes from UI.
         foreach (GameObject o in selectedNoteObjects)
         {
+            AdjustPathBeforeDeleting(o);
             sortedNoteObjects.Delete(o);
             Destroy(o);
         }

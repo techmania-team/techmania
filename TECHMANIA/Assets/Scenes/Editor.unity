@@ -349,6 +349,41 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 35467188}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &40211840
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 40211841}
+  m_Layer: 5
+  m_Name: Note Cemetary
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &40211841
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40211840}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 316070892}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1001 &43200049
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5295,6 +5330,7 @@ RectTransform:
   - {fileID: 1081096705}
   - {fileID: 1669463546}
   - {fileID: 796827511}
+  - {fileID: 40211841}
   m_Father: {fileID: 1994110754}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -17829,6 +17865,7 @@ MonoBehaviour:
   beatMarkerTemplate: {fileID: 1082905766}
   bpmMarkerTemplate: {fileID: 183698687}
   noteContainer: {fileID: 796827511}
+  noteCemetary: {fileID: 40211841}
   noteCursor: {fileID: 1669463551}
   basicNotePrefab: {fileID: 6915570976975822383, guid: 714aff4aaeb177b4095f064e865c1f03,
     type: 3}

@@ -88,27 +88,30 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Note Attachments
-    public void TurnNoteImageToward(RectTransform nextNote)
+    public void PointPathToward(GameObject target)
     {
-        Vector2 cur = GetComponent<RectTransform>().anchoredPosition;
-        Vector2 next = nextNote.anchoredPosition;
-        float angleInRadian = Mathf.Atan2(next.y - cur.y,
-            next.x - cur.x);
-        noteImage.localRotation = Quaternion.Euler(0f, 0f,
-            angleInRadian * Mathf.Rad2Deg);
-    }
-
-    public void PointPathToward(RectTransform prevNote)
-    {
-        Vector2 prev = prevNote.anchoredPosition;
-        Vector2 cur = GetComponent<RectTransform>().anchoredPosition;
-        float distance = Vector2.Distance(prev, cur);
-        float angleInRadian = Mathf.Atan2(cur.y - prev.y,
-            cur.x - prev.x);
+        float distance = 0f;
+        float angleInRadian = 0f;
+        if (target != null)
+        {
+            Vector2 targetPos = target.GetComponent<RectTransform>()
+            .anchoredPosition;
+            Vector2 selfPos = GetComponent<RectTransform>().anchoredPosition;
+            distance = Vector2.Distance(targetPos, selfPos);
+            angleInRadian = Mathf.Atan2(selfPos.y - targetPos.y,
+                selfPos.x - targetPos.x);
+        }
 
         pathToPreviousNote.sizeDelta = new Vector2(distance, 0f);
         pathToPreviousNote.localRotation = Quaternion.Euler(0f, 0f,
             angleInRadian * Mathf.Rad2Deg);
+
+        if (target != null &&
+            target.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+        {
+            target.GetComponent<NoteInEditor>().noteImage.localRotation =
+                Quaternion.Euler(0f, 0f, angleInRadian * Mathf.Rad2Deg);
+        }
     }
     #endregion
 }
