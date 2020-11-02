@@ -1067,7 +1067,8 @@ public class PatternPanel : MonoBehaviour
                     GameObject next = sortedNoteObjects.GetClosestNoteAfter(
                         o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
 
-                    if (next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
+                    if (next != null &&
+                        next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
                     {
                         next.GetComponent<NoteInEditor>()
                             .PointPathToward(prev);
