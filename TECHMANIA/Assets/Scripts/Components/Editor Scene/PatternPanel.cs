@@ -348,44 +348,20 @@ public class PatternPanel : MonoBehaviour
         }
         if (isPlaying) return;
 
-        // Can we add a note here?
-        bool canPlaceNote = true;
-        string invalidReason = "";
-        if (noteType == NoteType.ChainHead || noteType == NoteType.ChainNode)
-        {
-            foreach (GameObject o in sortedNoteObjects.GetAt(noteCursor.note.pulse))
-            {
-                Note note = o.GetComponent<NoteObject>().note;
-                if (note.type != NoteType.ChainHead &&
-                    note.type != NoteType.ChainNode) continue;
-                if (note.lane < 0 || note.lane >= PlayableLanes) continue;
-
-                canPlaceNote = false;
-                invalidReason = "Cannot place note here because no two Chain notes can occupy the same time.";
-                break;
-            }
-        }
-        if (!canPlaceNote)
+        string invalidReason;
+        if (!CanAddNote(noteType, noteCursor.note.pulse,
+            noteCursor.note.lane, out invalidReason))
         {
             snackbar.Show(invalidReason);
             return;
         }
 
-        // Add note to pattern.
         string sound = keysoundSheet.UpcomingKeysound();
         keysoundSheet.AdvanceUpcoming();
-        Note n = new Note();
-        n.pulse = noteCursor.note.pulse;
-        n.lane = noteCursor.note.lane;
-        n.type = noteType;
         EditorContext.PrepareForChange();
-        EditorContext.Pattern.AddNote(n, sound);
+        AddNote(noteType, noteCursor.note.pulse,
+            noteCursor.note.lane, sound);
         EditorContext.DoneWithChange();
-
-        // Add note to UI.
-        GameObject newNote = SpawnNoteObject(n, sound);
-        AdjustPathOrTrailAround(newNote);
-        UpdateNumScansAndRelatedUI();
     }
 
     public void OnNoteContainerDrag(BaseEventData eventData)
@@ -489,22 +465,10 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
 
-        // Delete note from pattern
-        NoteObject n = o.GetComponent<NoteObject>();
         EditorContext.PrepareForChange();
-        EditorContext.Pattern.DeleteNote(n.note, n.sound);
-        EditorContext.DoneWithChange();
-
-        // Delete note from UI
-        AdjustPathBeforeDeleting(o);
-        sortedNoteObjects.Delete(o);
-        if (lastSelectedNoteObjectWithoutShift == o)
-        {
-            lastSelectedNoteObjectWithoutShift = null;
-        }
         selectedNoteObjects.Remove(o);
-        Destroy(o);
-        UpdateNumScansAndRelatedUI();
+        DeleteNote(o);
+        EditorContext.DoneWithChange();
     }
     #endregion
 
@@ -707,42 +671,30 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
 
-        // Calculate delta pulse and delta lane
+        // Calculate delta pulse and delta lane.
         NoteObject noteObject = draggedNoteObject.GetComponent<NoteObject>();
         int oldPulse = noteObject.note.pulse;
         int oldLane = noteObject.note.lane;
         int deltaPulse = noteCursor.note.pulse - oldPulse;
         int deltaLane = noteCursor.note.lane - oldLane;
 
-        // Is the movement applicable to all notes?
-        // Movement will fail if:
-        // - there's collision with existing notes,
-        // - notes would go out of playable & hidden lanes, or
-        // - notes would have negative pulses.
+        // Is the move valid?
         bool movable = true;
+        string invalidReason = "";
+        HashSet<GameObject> selectionAsSet =
+            new HashSet<GameObject>(selectedNoteObjects);
         foreach (GameObject o in selectedNoteObjects)
         {
             Note n = o.GetComponent<NoteObject>().note;
             int newPulse = n.pulse + deltaPulse;
             int newLane = n.lane + deltaLane;
 
-            if (sortedNoteObjects.HasAt(newPulse, newLane))
-            {
-                GameObject collision = sortedNoteObjects.GetAt(newPulse, newLane);
-                if (!selectedNoteObjects.Contains(collision))
-                {
-                    movable = false;
-                    break;
-                }
-            }
-            if (newPulse < 0)
+            if (!CanAddNote(n.type, newPulse, newLane,
+                ignoredExistingNotes: selectionAsSet,
+                out invalidReason))
             {
                 movable = false;
-                break;
-            }
-            if (newLane < 0 || newLane >= TotalLanes)
-            {
-                movable = false;
+                snackbar.Show(invalidReason);
                 break;
             }
         }
@@ -754,39 +706,21 @@ public class PatternPanel : MonoBehaviour
             // playable and hidden lanes.
             EditorContext.PrepareForChange();
             HashSet<GameObject> replacedSelection = new HashSet<GameObject>();
-            List<NoteWithSound> noteWithSounds = new List<NoteWithSound>();
             foreach (GameObject o in selectedNoteObjects)
             {
-                AdjustPathBeforeDeleting(o);
-                sortedNoteObjects.Delete(o);
+                NoteObject n = o.GetComponent<NoteObject>();
+                NoteType type = n.note.type;
+                int pulse = n.note.pulse + deltaPulse;
+                int lane = n.note.lane + deltaLane;
+                string sound = n.sound;
 
-                NoteWithSound noteWithSound = new NoteWithSound()
-                {
-                    note = o.GetComponent<NoteObject>().note,
-                    sound = o.GetComponent<NoteObject>().sound
-                };
-                noteWithSound.note.pulse += deltaPulse;
-                noteWithSound.note.lane += deltaLane;
-                noteWithSounds.Add(noteWithSound);
-
-                // Destroy doesn't immedialy destroy, so we move the note
-                // to the cemetary so as to not interfere with the
-                // binary searches when spawning new notes.
-                o.transform.SetParent(noteCemetary);
-                Destroy(o);
-            }
-            foreach (NoteWithSound n in noteWithSounds)
-            {
-                GameObject newO = SpawnNoteObject(n.note, n.sound);
-                replacedSelection.Add(newO);
-                AdjustPathOrTrailAround(newO);
+                DeleteNote(o);
+                GameObject movedNote = AddNote(type, pulse, lane, sound);
+                replacedSelection.Add(movedNote);
             }
             EditorContext.DoneWithChange();
             selectedNoteObjects = replacedSelection;
             SelectionChanged?.Invoke(selectedNoteObjects);
-
-            // Add scans if needed.
-            UpdateNumScansAndRelatedUI();
         }
 
         foreach (GameObject o in selectedNoteObjects)
@@ -1097,6 +1031,11 @@ public class PatternPanel : MonoBehaviour
                         next.GetComponent<NoteInEditor>()
                             .PointPathToward(prev);
                     }
+                    else if (prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+                    {
+                        prev.GetComponent<NoteInEditor>()
+                            .ResetNoteImageRotation();
+                    }
                 }
                 break;
             // TODO: other cases.
@@ -1125,6 +1064,107 @@ public class PatternPanel : MonoBehaviour
 
         // TODO: also repeat notes.
         // TODO: also adjust the trails of hold notes.
+    }
+    #endregion
+
+    #region Pattern Modification
+    private bool CanAddNote(NoteType type, int pulse, int lane,
+        out string reason)
+    {
+        return CanAddNote(type, pulse, lane, null, out reason);
+    }
+
+    private bool CanAddNote(NoteType type, int pulse, int lane,
+        HashSet<GameObject> ignoredExistingNotes,
+        out string reason)
+    {
+        if (ignoredExistingNotes == null)
+        {
+            ignoredExistingNotes = new HashSet<GameObject>();
+        }
+
+        if (pulse < 0)
+        {
+            reason = "Cannot place notes before scan 0.";
+            return false;
+        }
+        if (lane < 0)
+        {
+            reason = "Cannot place notes above the topmost lane.";
+            return false;
+        }
+        if (lane >= TotalLanes)
+        {
+            reason = "Cannot place notes below the bottommost lane.";
+            return false;
+        }
+        GameObject noteAtSamePulseAndLane = sortedNoteObjects.GetAt(pulse, lane);
+        if (noteAtSamePulseAndLane != null &&
+            !ignoredExistingNotes.Contains(noteAtSamePulseAndLane))
+        {
+            reason = "Cannot place notes on top of an existing note.";
+            return false;
+        }
+        if (type == NoteType.ChainHead || type == NoteType.ChainNode)
+        {
+            foreach (GameObject noteAtPulse in sortedNoteObjects.GetAt(pulse))
+            {
+                if (ignoredExistingNotes.Contains(noteAtPulse))
+                {
+                    continue;
+                }
+                NoteObject noteObject = noteAtPulse.GetComponent<NoteObject>();
+                if (noteObject.note.type == NoteType.ChainHead ||
+                    noteObject.note.type == NoteType.ChainNode)
+                {
+                    reason = "No two Chain Notes may occupy the same timepoint.";
+                    return false;
+                }
+            }
+        }
+        reason = null;
+        return true;
+    }
+
+    private GameObject AddNote(NoteType type, int pulse, int lane, string sound)
+    {
+        // Add to pattern.
+        Note n = new Note()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane
+        };
+        EditorContext.Pattern.AddNote(n, sound);
+
+        // Add to UI.
+        GameObject newNote = SpawnNoteObject(n, sound);
+        AdjustPathOrTrailAround(newNote);
+        UpdateNumScansAndRelatedUI();
+        return newNote;
+    }
+
+    // Cannot remove o from selectedNoteObjects because the
+    // caller may be enumerating that list.
+    private void DeleteNote(GameObject o)
+    {
+        // Delete from pattern.
+        NoteObject n = o.GetComponent<NoteObject>();
+        EditorContext.Pattern.DeleteNote(n.note, n.sound);
+
+        // Delete from UI.
+        AdjustPathBeforeDeleting(o);
+        sortedNoteObjects.Delete(o);
+        if (lastSelectedNoteObjectWithoutShift == o)
+        {
+            lastSelectedNoteObjectWithoutShift = null;
+        }
+        // Destroy doesn't immedialy destroy, so we move the note
+        // to the cemetary so as to not interfere with the
+        // binary searches when spawning new notes on the same frame.
+        o.transform.SetParent(noteCemetary);
+        Destroy(o);
+        UpdateNumScansAndRelatedUI();
     }
     #endregion
 
@@ -1177,33 +1217,27 @@ public class PatternPanel : MonoBehaviour
         int scanlinePulse = (int)scanline.floatPulse;
         int deltaPulse = scanlinePulse - minPulseInClipboard;
 
-        // Does the paste conflict with any existing note?
+        // Can we paste here?
+        string invalidReason = "";
         foreach (NoteWithSound n in clipboard)
         {
             int newPulse = n.note.pulse + deltaPulse;
-            if (sortedNoteObjects.HasAt(newPulse, n.note.lane))
+            if (!CanAddNote(n.note.type, newPulse,
+                n.note.lane, out invalidReason))
             {
-                messageDialog.Show("Cannot paste here because some pasted notes would overwrite existing notes.");
+                snackbar.Show(invalidReason);
                 return;
             }
         }
-
-        // OK to paste. Add scans if needed.
-        UpdateNumScansAndRelatedUI();
 
         // Paste.
         EditorContext.PrepareForChange();
         foreach (NoteWithSound n in clipboard)
         {
+            int newPulse = n.note.pulse + deltaPulse;
             Note noteClone = n.note.Clone();
-            noteClone.pulse += deltaPulse;
-
-            // Add note to pattern.
-            EditorContext.Pattern.AddNote(noteClone, n.sound);
-
-            // Add note to UI.
-            GameObject newNote = SpawnNoteObject(noteClone, n.sound);
-            AdjustPathOrTrailAround(newNote);
+            AddNote(n.note.type, newPulse,
+                n.note.lane, n.sound);
         }
         EditorContext.DoneWithChange();
     }
@@ -1217,21 +1251,10 @@ public class PatternPanel : MonoBehaviour
         EditorContext.PrepareForChange();
         foreach (GameObject o in selectedNoteObjects)
         {
-            NoteObject e = o.GetComponent<NoteObject>();
-            EditorContext.Pattern.DeleteNote(e.note, e.sound);
+            DeleteNote(o);
         }
-        EditorContext.DoneWithChange();
-
-        // Delete notes from UI.
-        foreach (GameObject o in selectedNoteObjects)
-        {
-            AdjustPathBeforeDeleting(o);
-            sortedNoteObjects.Delete(o);
-            Destroy(o);
-        }
-        lastSelectedNoteObjectWithoutShift = null;
         selectedNoteObjects.Clear();
-        UpdateNumScansAndRelatedUI();
+        EditorContext.DoneWithChange();
     }
     #endregion
 

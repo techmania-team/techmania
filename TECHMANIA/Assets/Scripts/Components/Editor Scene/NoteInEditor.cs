@@ -88,6 +88,11 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Note Attachments
+    public void ResetNoteImageRotation()
+    {
+        noteImage.localRotation = Quaternion.identity;
+    }
+
     public void PointPathToward(GameObject target)
     {
         float distance = 0f;
