@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class NoteInEditor : MonoBehaviour
 {
+    public Sprite hiddenSprite;
     public Image selectionOverlay;
     public RectTransform noteImage;
     public RectTransform pathToPreviousNote;
@@ -28,6 +29,11 @@ public class NoteInEditor : MonoBehaviour
     {
         PatternPanel.SelectionChanged -= UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged -= SetKeysoundVisibility;
+    }
+
+    public void UseHiddenSprite()
+    {
+        noteImage.GetComponent<Image>().sprite = hiddenSprite;
     }
 
     private void UpdateSelection(HashSet<GameObject> selection)

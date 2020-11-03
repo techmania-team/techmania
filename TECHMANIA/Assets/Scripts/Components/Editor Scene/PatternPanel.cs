@@ -34,7 +34,6 @@ public class PatternPanel : MonoBehaviour
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
-    public GameObject hiddenNotePrefab;
 
     [Header("Audio")]
     public AudioSource backingTrackSource;
@@ -869,35 +868,31 @@ public class PatternPanel : MonoBehaviour
     private GameObject SpawnNoteObject(Note n, string sound)
     {
         GameObject prefab = null;
-        if (n.lane >= PlayableLanes)
+        switch (n.type)
         {
-            prefab = hiddenNotePrefab;
+            case NoteType.Basic:
+                prefab = basicNotePrefab;
+                break;
+            case NoteType.ChainHead:
+                prefab = chainHeadPrefab;
+                break;
+            case NoteType.ChainNode:
+                prefab = chainNodePrefab;
+                break;
+            default:
+                Debug.LogError("Unsupported (yet) note type: " + n.type);
+                prefab = basicNotePrefab;
+                break;
         }
-        else
-        {
-            switch (n.type)
-            {
-                case NoteType.Basic:
-                    prefab = basicNotePrefab;
-                    break;
-                case NoteType.ChainHead:
-                    prefab = chainHeadPrefab;
-                    break;
-                case NoteType.ChainNode:
-                    prefab = chainNodePrefab;
-                    break;
-                default:
-                    Debug.LogError("Unsupported (yet) note type: " + n.type);
-                    prefab = basicNotePrefab;
-                    break;
-            }
-        }
+
         NoteObject noteObject = Instantiate(prefab,
             noteContainer).GetComponent<NoteObject>();
         noteObject.note = n;
         noteObject.sound = sound;
-        noteObject.GetComponent<NoteInEditor>().SetKeysoundText();
-        noteObject.GetComponent<NoteInEditor>().SetKeysoundVisibility(showKeysoundToggle.isOn);
+        NoteInEditor noteInEditor = noteObject.GetComponent<NoteInEditor>();
+        noteInEditor.SetKeysoundText();
+        noteInEditor.SetKeysoundVisibility(showKeysoundToggle.isOn);
+        if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
         noteObject.GetComponent<SelfPositioner>().Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
@@ -1031,7 +1026,8 @@ public class PatternPanel : MonoBehaviour
                         next.GetComponent<NoteInEditor>()
                             .PointPathToward(prev);
                     }
-                    else if (prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+                    else if (prev != null &&
+                        prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
                     {
                         prev.GetComponent<NoteInEditor>()
                             .ResetNoteImageRotation();
