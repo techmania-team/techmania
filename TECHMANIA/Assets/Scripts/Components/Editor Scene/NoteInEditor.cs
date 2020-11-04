@@ -99,6 +99,19 @@ public class NoteInEditor : MonoBehaviour
         noteImage.localRotation = Quaternion.identity;
     }
 
+    public void KeepPathInPlaceWhileNoteBeingDragged(
+        Vector2 noteMovement)
+    {
+        if (pathToPreviousNote == null) return;
+        pathToPreviousNote.anchoredPosition -= noteMovement;
+    }
+
+    public void ResetPathPosition()
+    {
+        if (pathToPreviousNote == null) return;
+        pathToPreviousNote.anchoredPosition = Vector2.zero;
+    }
+
     public void PointPathToward(GameObject target)
     {
         float distance = 0f;

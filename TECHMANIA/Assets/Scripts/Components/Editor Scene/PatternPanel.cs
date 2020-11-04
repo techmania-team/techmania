@@ -663,6 +663,7 @@ public class PatternPanel : MonoBehaviour
             // This is only visual. Notes are only really moved
             // in OnNoteObjectEndDrag.
             o.GetComponent<RectTransform>().anchoredPosition += delta;
+            o.GetComponent<NoteInEditor>().KeepPathInPlaceWhileNoteBeingDragged(delta);
         }
     }
 
@@ -705,17 +706,27 @@ public class PatternPanel : MonoBehaviour
             // playable and hidden lanes.
             EditorContext.PrepareForChange();
             HashSet<GameObject> replacedSelection = new HashSet<GameObject>();
+            List<NoteWithSound> movedNotes = new List<NoteWithSound>();
             foreach (GameObject o in selectedNoteObjects)
             {
                 NoteObject n = o.GetComponent<NoteObject>();
-                NoteType type = n.note.type;
-                int pulse = n.note.pulse + deltaPulse;
-                int lane = n.note.lane + deltaLane;
-                string sound = n.sound;
+                NoteWithSound movedNote = new NoteWithSound()
+                {
+                    note = n.note.Clone(),
+                    sound = n.sound
+                };
+                movedNote.note.pulse += deltaPulse;
+                movedNote.note.lane += deltaLane;
+                movedNotes.Add(movedNote);
 
                 DeleteNote(o);
-                GameObject movedNote = AddNote(type, pulse, lane, sound);
-                replacedSelection.Add(movedNote);
+            }
+            foreach (NoteWithSound movedNote in movedNotes)
+            { 
+                GameObject o = AddNote(movedNote.note.type,
+                    movedNote.note.pulse, movedNote.note.lane,
+                    movedNote.sound);
+                replacedSelection.Add(o);
             }
             EditorContext.DoneWithChange();
             selectedNoteObjects = replacedSelection;
@@ -725,6 +736,7 @@ public class PatternPanel : MonoBehaviour
         foreach (GameObject o in selectedNoteObjects)
         {
             o.GetComponent<SelfPositioner>().Reposition();
+            o.GetComponent<NoteInEditor>().ResetPathPosition();
         }
     }
     #endregion
@@ -1124,6 +1136,8 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject AddNote(NoteType type, int pulse, int lane, string sound)
     {
+        Debug.Log("Adding a note at pulse " + pulse);
+
         // Add to pattern.
         Note n = new Note()
         {
@@ -1147,6 +1161,8 @@ public class PatternPanel : MonoBehaviour
         // Delete from pattern.
         NoteObject n = o.GetComponent<NoteObject>();
         EditorContext.Pattern.DeleteNote(n.note, n.sound);
+
+        Debug.Log("Deleting a note at pulse " + n.note.pulse);
 
         // Delete from UI.
         AdjustPathBeforeDeleting(o);
