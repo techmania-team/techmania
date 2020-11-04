@@ -164,6 +164,7 @@ public class SortedNoteObjects
         return null;
     }
 
+    // Returns notes are sorted by pulse; order within pulse undefined.
     public List<GameObject> GetAllNotesOfType(HashSet<NoteType> types,
         int minLaneInclusive, int maxLaneInclusive)
     {

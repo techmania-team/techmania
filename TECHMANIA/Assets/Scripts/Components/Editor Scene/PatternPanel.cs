@@ -34,6 +34,8 @@ public class PatternPanel : MonoBehaviour
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
+    public GameObject repeatHeadPrefab;
+    public GameObject repeatNotePrefab;
 
     [Header("Audio")]
     public AudioSource backingTrackSource;
@@ -891,6 +893,12 @@ public class PatternPanel : MonoBehaviour
             case NoteType.ChainNode:
                 prefab = chainNodePrefab;
                 break;
+            case NoteType.RepeatHead:
+                prefab = repeatHeadPrefab;
+                break;
+            case NoteType.Repeat:
+                prefab = repeatNotePrefab;
+                break;
             default:
                 Debug.LogError("Unsupported (yet) note type: " + n.type);
                 prefab = basicNotePrefab;
@@ -1008,6 +1016,27 @@ public class PatternPanel : MonoBehaviour
                     }
                 }
                 break;
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                {
+                    HashSet<NoteType> types = new HashSet<NoteType>()
+                        { NoteType.RepeatHead, NoteType.Repeat };
+                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+
+                    if (n.note.type == NoteType.Repeat)
+                    {
+                        o.GetComponent<NoteInEditor>().PointPathToward(prev);
+                    }
+                    if (next != null &&
+                        next.GetComponent<NoteObject>().note.type == NoteType.Repeat)
+                    {
+                        next.GetComponent<NoteInEditor>().PointPathToward(o);
+                    }
+                }
+                break;
             // TODO: other cases.
             default:
                 break;
@@ -1046,6 +1075,30 @@ public class PatternPanel : MonoBehaviour
                     }
                 }
                 break;
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                {
+                    HashSet<NoteType> types = new HashSet<NoteType>()
+                        { NoteType.RepeatHead, NoteType.Repeat };
+                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+
+                    if (next != null &&
+                        next.GetComponent<NoteObject>().note.type == NoteType.Repeat)
+                    {
+                        next.GetComponent<NoteInEditor>()
+                            .PointPathToward(prev);
+                    }
+                    else if (prev != null &&
+                        prev.GetComponent<NoteObject>().note.type == NoteType.RepeatHead)
+                    {
+                        prev.GetComponent<NoteInEditor>()
+                            .ResetNoteImageRotation();
+                    }
+                }
+                break;
             // TODO: other cases.
             default:
                 break;
@@ -1059,18 +1112,35 @@ public class PatternPanel : MonoBehaviour
             GetAllNotesOfType(new HashSet<NoteType>()
             { NoteType.ChainHead, NoteType.ChainNode},
             minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
-        GameObject previous = null;
+        GameObject previousChain = null;
         foreach (GameObject o in chainHeadsAndNodes)
         {
             NoteObject n = o.GetComponent<NoteObject>();
             if (n.note.type == NoteType.ChainNode)
             {
-                n.GetComponent<NoteInEditor>().PointPathToward(previous);
+                n.GetComponent<NoteInEditor>().PointPathToward(previousChain);
             }
-            previous = o;
+            previousChain = o;
         }
 
-        // TODO: also repeat notes.
+        // Adjust the paths of repeat notes.
+        List<GameObject> repeatHeadsAndNotes = sortedNoteObjects.
+            GetAllNotesOfType(new HashSet<NoteType>()
+            { NoteType.RepeatHead, NoteType.Repeat},
+            minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+        List<GameObject> previousRepeat = new List<GameObject>();
+        for (int i = 0; i < PlayableLanes; i++) previousRepeat.Add(null);
+        foreach (GameObject o in repeatHeadsAndNotes)
+        {
+            NoteObject n = o.GetComponent<NoteObject>();
+            if (n.note.type == NoteType.Repeat)
+            {
+                n.GetComponent<NoteInEditor>().PointPathToward(
+                    previousRepeat[n.note.lane]);
+            }
+            previousRepeat[n.note.lane] = o;
+        }
+
         // TODO: also adjust the trails of hold notes.
     }
     #endregion
@@ -1136,8 +1206,6 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject AddNote(NoteType type, int pulse, int lane, string sound)
     {
-        Debug.Log("Adding a note at pulse " + pulse);
-
         // Add to pattern.
         Note n = new Note()
         {
@@ -1161,8 +1229,6 @@ public class PatternPanel : MonoBehaviour
         // Delete from pattern.
         NoteObject n = o.GetComponent<NoteObject>();
         EditorContext.Pattern.DeleteNote(n.note, n.sound);
-
-        Debug.Log("Deleting a note at pulse " + n.note.pulse);
 
         // Delete from UI.
         AdjustPathBeforeDeleting(o);
