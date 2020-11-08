@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4054705613244149693}
   - component: {fileID: 3932102073616739230}
   - component: {fileID: 482831254054150370}
+  - component: {fileID: 8897704152764969151}
   m_Layer: 5
   m_Name: Duration Adjust Handle
   m_TagString: Untagged
@@ -30,7 +31,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6946963096180992976}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 1, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
@@ -74,6 +75,64 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8897704152764969151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614318933768463200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnDurationHandleBeginDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 5
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnDurationHandleDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnDurationHandleEndDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1978132811206931866
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +219,7 @@ GameObject:
   - component: {fileID: 2568608580471285620}
   - component: {fileID: 3629767224747522239}
   m_Layer: 5
-  m_Name: Hold Trail
+  m_Name: Duration Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,6 +237,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3562246314304161781}
+  - {fileID: 3199398030895847007}
   - {fileID: 4054705613244149693}
   m_Father: {fileID: 6915570976975822382}
   m_RootOrder: 1
@@ -185,7 +245,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50.3, y: 0}
+  m_SizeDelta: {x: 95.8, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2568608580471285620
 CanvasRenderer:
@@ -257,7 +317,6 @@ RectTransform:
   m_Children:
   - {fileID: 1978132811206931861}
   - {fileID: 6946963096180992976}
-  - {fileID: 3199398030895847007}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -304,9 +363,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hiddenSprite: {fileID: 21300000, guid: 9004f6d3fd5a4b8469bcdd10a856dc81, type: 3}
+  hiddenTrailSprite: {fileID: 21300000, guid: 1ce09847bc2bffd468a3f714e19eeae6, type: 3}
   selectionOverlay: {fileID: 1978132811206931860}
   noteImage: {fileID: 3199398030895847007}
   pathToPreviousNote: {fileID: 0}
+  durationTrail: {fileID: 6946963096180992976}
 --- !u!114 &5565332570737286772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,17 +406,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8548661654324046788}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 6915570976975822382}
-  m_RootOrder: 2
+  m_Father: {fileID: 6946963096180992976}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3495884700192280871
 CanvasRenderer:
@@ -537,7 +598,7 @@ PrefabInstance:
     - target: {fileID: 3034328191725606141, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 10
+      value: 10.000015
       objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606141, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}

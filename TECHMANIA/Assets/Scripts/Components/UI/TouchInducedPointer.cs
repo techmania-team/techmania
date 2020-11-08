@@ -5,26 +5,25 @@ using UnityEngine.EventSystems;
 
 public class TouchInducedPointer : MonoBehaviour
 {
-    // When using touch controls, at least with Unity Remote on my
-    // iPad, Unity seems to move a fictional mouse pointer after
-    // touches. This always happens 1 frame after a touch exit,
-    // and is not affected by Input.simulateMouseWithTouches.
+    // When using touch controls, at least on my Dell touch monitor,
+    // each touch generates 1 PointerClick event, as well as 2
+    // PointerEnter events, once on touch start, once 1 frame after
+    // touch end. We don't want either of these events to play the
+    // select sound - each touch should play one click sound and
+    // that's it.
     //
-    // This phantom pointer creates unwanted PointerEnter events,
-    // and I can't find a way to tell these PointerEnter events from
-    // actual PointerEnter events, because they both claim to be
-    // from pointer #-1 (left mouse button).
-    //
-    // This class is a reluctant workaround, by recording the position
-    // of the last touch exit. All UI components should ignore
-    // pointer events happening at this exact position.
+    // This class is somewhat able to tell touch-induced PointerEnter
+    // events from mouse-incuded ones, using some heuristic
+    // methods. It's ugly, but it works... for now.
 
-    public static Vector2 lastTouchExitPosition { get; private set; }
+    private static int lastTouchExitFrameNumber;
+    private static Vector2 lastRejectedPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        lastTouchExitPosition = Vector2.zero;
+        lastTouchExitFrameNumber = -2;
+        lastRejectedPosition = Vector2.zero;
     }
 
     // Update is called once per frame
@@ -36,14 +35,39 @@ public class TouchInducedPointer : MonoBehaviour
             if (t.phase == TouchPhase.Ended ||
                 t.phase == TouchPhase.Canceled)
             {
-                lastTouchExitPosition = t.position;
+                lastTouchExitFrameNumber = Time.frameCount;
+                break;
             }
         }
     }
 
     public static bool EventIsFromActualMouse(PointerEventData eventData)
     {
-        return eventData.pointerId < 0 &&
-            eventData.position != lastTouchExitPosition;
+        // If the event thinks it's eligible for click, it's
+        // probably from a touch.
+        if (eventData.eligibleForClick)
+        {
+            Reject(eventData);
+            return false;
+        }
+
+        // If the event happens exactly 1 frame after the last touch
+        // exit event, it's probably from a touch.
+        if (Time.frameCount == lastTouchExitFrameNumber + 1)
+        {
+            Reject(eventData);
+            return false;
+        }
+
+        // If the event happens at exactly the same position as the
+        // last rejected event, it's probably from a touch.
+        if (eventData.position == lastRejectedPosition) return false;
+
+        return true;
+    }
+
+    private static void Reject(PointerEventData eventData)
+    {
+        lastRejectedPosition = eventData.position;
     }
 }

@@ -9,15 +9,20 @@ using UnityEngine.UI;
 public class NoteInEditor : MonoBehaviour
 {
     public Sprite hiddenSprite;
+    public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
     public RectTransform noteImage;
     public RectTransform pathToPreviousNote;
+    public RectTransform durationTrail;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
     public static event UnityAction<GameObject> BeginDrag;
     public static event UnityAction<Vector2> Drag;
     public static event UnityAction EndDrag;
+    public static event UnityAction<GameObject> DurationHandleBeginDrag;
+    public static event UnityAction<Vector2> DurationHandleDrag;
+    public static event UnityAction DurationHandleEndDrag;
 
     private void OnEnable()
     {
@@ -55,7 +60,7 @@ public class NoteInEditor : MonoBehaviour
             .text = UIUtils.StripExtension(noteObject.sound);
     }
 
-    #region Event Relay
+    #region Event Relay From Note Image
     public void OnPointerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
@@ -93,7 +98,28 @@ public class NoteInEditor : MonoBehaviour
     }
     #endregion
 
-    #region Note Attachments
+    #region Event Relay From Duration Handle
+    public void OnDurationHandleBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        DurationHandleBeginDrag?.Invoke(gameObject);
+    }
+
+    public void OnDurationHandleDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        DurationHandleDrag?.Invoke(pointerData.delta);
+    }
+
+    public void OnDurationHandleEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        DurationHandleEndDrag?.Invoke();
+    }
+    #endregion
+
+    #region Note Image and Path
     public void ResetNoteImageRotation()
     {
         noteImage.localRotation = Quaternion.identity;
@@ -137,5 +163,8 @@ public class NoteInEditor : MonoBehaviour
                 Quaternion.Euler(0f, 0f, angleInRadian * Mathf.Rad2Deg);
         }
     }
+    #endregion
+
+    #region Duration Trail
     #endregion
 }
