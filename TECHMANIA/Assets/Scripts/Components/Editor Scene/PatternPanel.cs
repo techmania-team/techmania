@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,6 +37,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject chainNodePrefab;
     public GameObject repeatHeadPrefab;
     public GameObject repeatNotePrefab;
+    public GameObject holdNotePrefab;
 
     [Header("Audio")]
     public AudioSource backingTrackSource;
@@ -350,6 +352,8 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         string invalidReason;
+        // No need to call CanAddHoldNote here because hold notes'
+        // duration is flexible.
         if (!CanAddNote(noteType, noteCursor.note.pulse,
             noteCursor.note.lane, out invalidReason))
         {
@@ -360,8 +364,27 @@ public class PatternPanel : MonoBehaviour
         string sound = keysoundSheet.UpcomingKeysound();
         keysoundSheet.AdvanceUpcoming();
         EditorContext.PrepareForChange();
-        AddNote(noteType, noteCursor.note.pulse,
-            noteCursor.note.lane, sound);
+        switch (noteType)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                AddNote(noteType, noteCursor.note.pulse,
+                    noteCursor.note.lane, sound);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                AddHoldNote(noteType, noteCursor.note.pulse,
+                    noteCursor.note.lane, duration: null, sound);
+                break;
+            case NoteType.Drag:
+                // TODO: handle this case.
+                break;
+        }
+        
         EditorContext.DoneWithChange();
     }
 
@@ -691,11 +714,33 @@ public class PatternPanel : MonoBehaviour
             int newPulse = n.pulse + deltaPulse;
             int newLane = n.lane + deltaLane;
 
-            if (!CanAddNote(n.type, newPulse, newLane,
-                ignoredExistingNotes: selectionAsSet,
-                out invalidReason))
+            switch (n.type)
             {
-                movable = false;
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    movable = movable && CanAddNote(n.type,
+                        newPulse, newLane,
+                        ignoredExistingNotes: selectionAsSet,
+                        out invalidReason);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    movable = movable && CanAddHoldNote(n.type,
+                        newPulse, newLane, (n as HoldNote).duration,
+                        ignoredExistingNotes: selectionAsSet,
+                        out invalidReason);
+                    break;
+                case NoteType.Drag:
+                    // TODO: handle this case.
+                    break;
+            }
+
+            if (!movable)
+            {
                 snackbar.Show(invalidReason);
                 break;
             }
@@ -724,10 +769,33 @@ public class PatternPanel : MonoBehaviour
                 DeleteNote(o);
             }
             foreach (NoteWithSound movedNote in movedNotes)
-            { 
-                GameObject o = AddNote(movedNote.note.type,
-                    movedNote.note.pulse, movedNote.note.lane,
-                    movedNote.sound);
+            {
+                GameObject o = null;
+                switch (movedNote.note.type)
+                {
+                    case NoteType.Basic:
+                    case NoteType.ChainHead:
+                    case NoteType.ChainNode:
+                    case NoteType.RepeatHead:
+                    case NoteType.Repeat:
+                        o = AddNote(movedNote.note.type,
+                            movedNote.note.pulse,
+                            movedNote.note.lane,
+                            movedNote.sound);
+                        break;
+                    case NoteType.Hold:
+                    case NoteType.RepeatHeadHold:
+                    case NoteType.RepeatHold:
+                        o = AddHoldNote(movedNote.note.type,
+                            movedNote.note.pulse,
+                            movedNote.note.lane,
+                            (movedNote.note as HoldNote).duration,
+                            movedNote.sound);
+                        break;
+                    case NoteType.Drag:
+                        // TODO: handle this case.
+                        break;
+                }
                 replacedSelection.Add(o);
             }
             EditorContext.DoneWithChange();
@@ -899,6 +967,9 @@ public class PatternPanel : MonoBehaviour
             case NoteType.Repeat:
                 prefab = repeatNotePrefab;
                 break;
+            case NoteType.Hold:
+                prefab = holdNotePrefab;
+                break;
             default:
                 Debug.LogError("Unsupported (yet) note type: " + n.type);
                 prefab = basicNotePrefab;
@@ -982,6 +1053,14 @@ public class PatternPanel : MonoBehaviour
             {
                 SpawnNoteObject(n, channel.name);
             }
+            foreach (HoldNote n in channel.holdNotes)
+            {
+                SpawnNoteObject(n, channel.name);
+            }
+            foreach (DragNote n in channel.dragNotes)
+            {
+                SpawnNoteObject(n, channel.name);
+            }
         }
 
         AdjustAllPathsAndTrails();
@@ -992,12 +1071,12 @@ public class PatternPanel : MonoBehaviour
     private void AdjustPathOrTrailAround(GameObject o)
     {
         NoteObject n = o.GetComponent<NoteObject>();
-        if (n.note.lane < 0 || n.note.lane >= PlayableLanes) return;
         switch (n.note.type)
         {
             case NoteType.ChainHead:
             case NoteType.ChainNode:
                 {
+                    if (n.note.lane < 0 || n.note.lane >= PlayableLanes) break;
                     HashSet<NoteType> types = new HashSet<NoteType>()
                         { NoteType.ChainHead, NoteType.ChainNode };
                     GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
@@ -1019,6 +1098,7 @@ public class PatternPanel : MonoBehaviour
             case NoteType.RepeatHead:
             case NoteType.Repeat:
                 {
+                    if (n.note.lane < 0 || n.note.lane >= PlayableLanes) break;
                     HashSet<NoteType> types = new HashSet<NoteType>()
                         { NoteType.RepeatHead, NoteType.Repeat };
                     GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
@@ -1037,7 +1117,18 @@ public class PatternPanel : MonoBehaviour
                     }
                 }
                 break;
-            // TODO: other cases.
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                {
+                    o.GetComponent<NoteInEditor>().ResetTrail();
+                }
+                break;
+            case NoteType.Drag:
+                {
+                    // TODO: handle this case.
+                }
+                break;
             default:
                 break;
         }
@@ -1141,7 +1232,17 @@ public class PatternPanel : MonoBehaviour
             previousRepeat[n.note.lane] = o;
         }
 
-        // TODO: also adjust the trails of hold notes.
+        // Adjust the trails of hold notes.
+        List<GameObject> holdNotes = sortedNoteObjects.
+            GetAllNotesOfType(new HashSet<NoteType>()
+            { NoteType.Hold, NoteType.RepeatHeadHold, NoteType.RepeatHold},
+            minLaneInclusive: 0, maxLaneInclusive: TotalLanes - 1);
+        foreach (GameObject o in holdNotes)
+        {
+            o.GetComponent<NoteInEditor>().ResetTrail();
+        }
+
+        // TODO: also redraw drag notes.
     }
     #endregion
 
@@ -1161,6 +1262,7 @@ public class PatternPanel : MonoBehaviour
             ignoredExistingNotes = new HashSet<GameObject>();
         }
 
+        // Boundary check.
         if (pulse < 0)
         {
             reason = "Cannot place notes before scan 0.";
@@ -1176,6 +1278,8 @@ public class PatternPanel : MonoBehaviour
             reason = "Cannot place notes below the bottommost lane.";
             return false;
         }
+
+        // Overlap check.
         GameObject noteAtSamePulseAndLane = sortedNoteObjects.GetAt(pulse, lane);
         if (noteAtSamePulseAndLane != null &&
             !ignoredExistingNotes.Contains(noteAtSamePulseAndLane))
@@ -1183,6 +1287,8 @@ public class PatternPanel : MonoBehaviour
             reason = "Cannot place notes on top of an existing note.";
             return false;
         }
+
+        // Chain check.
         if (type == NoteType.ChainHead || type == NoteType.ChainNode)
         {
             foreach (GameObject noteAtPulse in sortedNoteObjects.GetAt(pulse))
@@ -1200,19 +1306,80 @@ public class PatternPanel : MonoBehaviour
                 }
             }
         }
+
+        // Hold check.
+        GameObject holdNoteBeforePivot = sortedNoteObjects.GetClosestNoteBefore(pulse,
+            new HashSet<NoteType>()
+            {
+                NoteType.Hold,
+                NoteType.RepeatHeadHold,
+                NoteType.RepeatHold
+            }, minLaneInclusive: lane, maxLaneInclusive: lane);
+        if (holdNoteBeforePivot != null && !ignoredExistingNotes.Contains(holdNoteBeforePivot))
+        {
+            HoldNote holdNote = holdNoteBeforePivot.GetComponent<NoteObject>().note as HoldNote;
+            if (holdNote.pulse + holdNote.duration >= pulse)
+            {
+                reason = "Notes cannot be covered by Hold Notes.";
+                return false;
+            }
+        }
+            
         reason = null;
         return true;
     }
 
-    private GameObject AddNote(NoteType type, int pulse, int lane, string sound)
+    private bool CanAddHoldNote(NoteType type, int pulse, int lane,
+        int duration, HashSet<GameObject> ignoredExistingNotes,
+        out string reason)
+    {
+        if (ignoredExistingNotes == null)
+        {
+            ignoredExistingNotes = new HashSet<GameObject>();
+        }
+        if (!CanAddNote(type, pulse, lane, ignoredExistingNotes,
+            out reason))
+        {
+            return false;
+        }
+
+        // Additional check for hold notes.
+        GameObject noteAfterPivot = sortedNoteObjects.GetClosestNoteAfter(
+            pulse, types: null,
+            minLaneInclusive: lane,
+            maxLaneInclusive: lane);
+        if (noteAfterPivot != null && !ignoredExistingNotes.Contains(noteAfterPivot))
+        {
+            if (pulse + duration >= noteAfterPivot.GetComponent<NoteObject>().note.pulse)
+            {
+                reason = "Hold Notes cannot cover other notes.";
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int HoldNoteDefaultDuration(int pulse, int lane)
+    {
+        GameObject noteAfterPivot = sortedNoteObjects.GetClosestNoteAfter(
+            pulse, types: null,
+            minLaneInclusive: lane,
+            maxLaneInclusive: lane);
+        if (noteAfterPivot != null)
+        {
+            int nextPulse = noteAfterPivot.GetComponent<NoteObject>().note.pulse;
+            if (nextPulse - pulse <= Pattern.pulsesPerBeat)
+            {
+                return nextPulse - pulse - 1;
+            }
+        }
+        return Pattern.pulsesPerBeat;
+    }
+
+    private GameObject FinishAddNote(Note n, string sound)
     {
         // Add to pattern.
-        Note n = new Note()
-        {
-            type = type,
-            pulse = pulse,
-            lane = lane
-        };
         EditorContext.Pattern.AddNote(n, sound);
 
         // Add to UI.
@@ -1220,6 +1387,35 @@ public class PatternPanel : MonoBehaviour
         AdjustPathOrTrailAround(newNote);
         UpdateNumScansAndRelatedUI();
         return newNote;
+    }
+
+    private GameObject AddNote(NoteType type, int pulse, int lane,
+        string sound)
+    {
+        Note n = new Note()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane
+        };
+        return FinishAddNote(n, sound);
+    }
+
+    private GameObject AddHoldNote(NoteType type, int pulse, int lane,
+        int? duration, string sound)
+    {
+        if (!duration.HasValue)
+        {
+            duration = HoldNoteDefaultDuration(pulse, lane);
+        }
+        HoldNote n = new HoldNote()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane,
+            duration = duration.Value
+        };
+        return FinishAddNote(n, sound);
     }
 
     // Cannot remove o from selectedNoteObjects because the
@@ -1296,12 +1492,35 @@ public class PatternPanel : MonoBehaviour
         int deltaPulse = scanlinePulse - minPulseInClipboard;
 
         // Can we paste here?
+        bool pastable = true;
         string invalidReason = "";
         foreach (NoteWithSound n in clipboard)
         {
             int newPulse = n.note.pulse + deltaPulse;
-            if (!CanAddNote(n.note.type, newPulse,
-                n.note.lane, out invalidReason))
+            switch (n.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    pastable = CanAddNote(n.note.type, newPulse,
+                        n.note.lane, out invalidReason);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    pastable = CanAddHoldNote(n.note.type,
+                        newPulse, n.note.lane,
+                        (n.note as HoldNote).duration,
+                        ignoredExistingNotes: null,
+                        out invalidReason);
+                    break;
+                case NoteType.Drag:
+                    // TODO: handle this case.
+                    break;
+            }
+            if (!pastable)
             {
                 snackbar.Show(invalidReason);
                 return;
@@ -1313,9 +1532,27 @@ public class PatternPanel : MonoBehaviour
         foreach (NoteWithSound n in clipboard)
         {
             int newPulse = n.note.pulse + deltaPulse;
-            Note noteClone = n.note.Clone();
-            AddNote(n.note.type, newPulse,
-                n.note.lane, n.sound);
+            switch (n.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    AddNote(n.note.type, newPulse,
+                        n.note.lane, n.sound);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    AddHoldNote(n.note.type, newPulse,
+                        n.note.lane, (n.note as HoldNote).duration,
+                        n.sound);
+                    break;
+                case NoteType.Drag:
+                    // TODO: handle this case.
+                    break;
+            }
         }
         EditorContext.DoneWithChange();
     }

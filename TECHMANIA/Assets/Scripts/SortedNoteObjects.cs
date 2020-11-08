@@ -109,7 +109,7 @@ public class SortedNoteObjects
 
     // Of all the notes that are:
     // - before o in time (exclusive)
-    // - of one of the specified types
+    // - of one of the specified types (any type if types is null)
     // - between lanes minLaneInclusive and maxLaneInclusive
     // Find and return the one closest to o. If there are
     // multiple such notes on the same pulse, which one to return
@@ -118,6 +118,12 @@ public class SortedNoteObjects
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
         int pivotPulse = GetPulse(pivot);
+        return GetClosestNoteBefore(pivotPulse, types, minLaneInclusive, maxLaneInclusive);
+    }
+
+    public GameObject GetClosestNoteBefore(int pivotPulse,
+        HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
+    {
         if (pivotPulse == populatedPulses.Min) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             populatedPulses.Min, pivotPulse - 1)
@@ -125,7 +131,8 @@ public class SortedNoteObjects
         {
             foreach (GameObject o in pulseToNotes[pulse])
             {
-                if (!types.Contains(
+                if (types != null &&
+                    !types.Contains(
                     o.GetComponent<NoteObject>().note.type)) continue;
                 int lane = GetLane(o);
                 if (lane < minLaneInclusive) continue;
@@ -138,7 +145,7 @@ public class SortedNoteObjects
 
     // Of all the notes that are:
     // - after o in time (exclusive)
-    // - of one of the specified types
+    // - of one of the specified types (any type if types is null)
     // - between lanes minLaneInclusive and maxLaneInclusive
     // Find and return the one closest to o. If there are
     // multiple such notes on the same pulse, which one to return
@@ -147,13 +154,20 @@ public class SortedNoteObjects
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
         int pivotPulse = GetPulse(pivot);
+        return GetClosestNoteAfter(pivotPulse, types, minLaneInclusive, maxLaneInclusive);
+    }
+
+    public GameObject GetClosestNoteAfter(int pivotPulse,
+        HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
+    {
         if (pivotPulse == populatedPulses.Max) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             pivotPulse + 1, populatedPulses.Max))
         {
             foreach (GameObject o in pulseToNotes[pulse])
             {
-                if (!types.Contains(
+                if (types != null &&
+                    !types.Contains(
                     o.GetComponent<NoteObject>().note.type)) continue;
                 int lane = GetLane(o);
                 if (lane < minLaneInclusive) continue;

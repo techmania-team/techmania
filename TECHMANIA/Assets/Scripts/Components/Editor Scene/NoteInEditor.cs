@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,6 +15,7 @@ public class NoteInEditor : MonoBehaviour
     public RectTransform noteImage;
     public RectTransform pathToPreviousNote;
     public RectTransform durationTrail;
+    public RectTransform invisibleTrail;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
@@ -39,6 +41,7 @@ public class NoteInEditor : MonoBehaviour
     public void UseHiddenSprite()
     {
         noteImage.GetComponent<Image>().sprite = hiddenSprite;
+        durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
     }
 
     private void UpdateSelection(HashSet<GameObject> selection)
@@ -166,5 +169,29 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Duration Trail
+    public void ResetTrail()
+    {
+        int duration = (GetComponent<NoteObject>().note as HoldNote).duration;
+        float width = duration * (PatternPanel.ScanWidth /
+            EditorContext.Pattern.patternMetadata.bps /
+            Pattern.pulsesPerBeat);
+        durationTrail.sizeDelta = new Vector2(width, 0f);
+        invisibleTrail.sizeDelta = new Vector2(width, 0f);
+
+        ToggleNoteImageTransparency();
+    }
+
+    // Only visual; does not affect note duration.
+    public void ResizeTrail(float delta)
+    {
+        durationTrail.sizeDelta += new Vector2(delta, 0f);
+        invisibleTrail.sizeDelta += new Vector2(delta, 0f);
+        ToggleNoteImageTransparency();
+    }
+
+    private void ToggleNoteImageTransparency()
+    {
+        // TODO: make note image transparent if trails are too short.
+    }
     #endregion
 }

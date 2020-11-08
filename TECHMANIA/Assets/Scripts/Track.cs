@@ -190,10 +190,20 @@ public class Pattern
         {
             channel = new SoundChannel();
             channel.name = sound;
-            channel.notes = new List<Note>();
             soundChannels.Add(channel);
         }
-        channel.notes.Add(n);
+        if (n is HoldNote)
+        {
+            channel.holdNotes.Add(n as HoldNote);
+        }
+        else if (n is DragNote)
+        {
+            channel.dragNotes.Add(n as DragNote);
+        }
+        else
+        {
+            channel.notes.Add(n);
+        }
     }
 
     public void ModifyNoteKeysound(Note n, string oldSound, string newSound)
@@ -211,16 +221,30 @@ public class Pattern
         {
             newChannel = new SoundChannel();
             newChannel.name = newSound;
-            newChannel.notes = new List<Note>();
             soundChannels.Add(newChannel);
         }
 
-        oldChannel.notes.Remove(n);
-        if (oldChannel.notes.Count == 0)
+        if (n is HoldNote)
+        {
+            oldChannel.holdNotes.Remove(n as HoldNote);
+            newChannel.holdNotes.Add(n as HoldNote);
+        }
+        else if (n is DragNote)
+        {
+            oldChannel.dragNotes.Remove(n as DragNote);
+            newChannel.dragNotes.Add(n as DragNote);
+        }
+        else
+        {
+            oldChannel.notes.Remove(n);
+            newChannel.notes.Add(n);
+        }
+        if (oldChannel.notes.Count +
+            oldChannel.holdNotes.Count +
+            oldChannel.dragNotes.Count == 0)
         {
             soundChannels.Remove(oldChannel);
         }
-        newChannel.notes.Add(n);
     }
 
     public void DeleteNote(Note n, string sound)
@@ -232,8 +256,23 @@ public class Pattern
             throw new Exception(
                 $"Sound channel {sound} not found in pattern when deleting.");
         }
-        channel.notes.Remove(n);
-        if (channel.notes.Count == 0)
+
+        if (n is HoldNote)
+        {
+            channel.holdNotes.Remove(n as HoldNote);
+        }
+        else if (n is DragNote)
+        {
+            channel.dragNotes.Remove(n as DragNote);
+        }
+        else
+        {
+            channel.notes.Remove(n);
+        }
+
+        if (channel.notes.Count +
+            channel.holdNotes.Count +
+            channel.dragNotes.Count == 0)
         {
             soundChannels.Remove(channel);
         }
@@ -277,6 +316,14 @@ public class Pattern
         foreach (SoundChannel c in soundChannels)
         {
             foreach (Note n in c.notes)
+            {
+                n.time = PulseToTime(n.pulse);
+            }
+            foreach (Note n in c.holdNotes)
+            {
+                n.time = PulseToTime(n.pulse);
+            }
+            foreach (Note n in c.dragNotes)
             {
                 n.time = PulseToTime(n.pulse);
             }
@@ -393,6 +440,13 @@ public class SoundChannel
     public List<Note> notes;
     public List<HoldNote> holdNotes;
     public List<DragNote> dragNotes;
+
+    public SoundChannel()
+    {
+        notes = new List<Note>();
+        holdNotes = new List<HoldNote>();
+        dragNotes = new List<DragNote>();
+    }
 }
 
 [Serializable]
@@ -420,6 +474,35 @@ public class Note
 
     public Note Clone()
     {
+        if (this is HoldNote)
+        {
+            return new HoldNote()
+            {
+                type = this.type,
+                lane = this.lane,
+                pulse = this.pulse,
+                duration = (this as HoldNote).duration
+            };
+        }
+        if (this is DragNote)
+        {
+            DragNote clone = new DragNote()
+            {
+                type = this.type,
+                lane = this.lane,
+                pulse = this.pulse,
+                nodes = new List<DragNode>()
+            };
+            foreach (DragNode node in (this as DragNote).nodes)
+            {
+                clone.nodes.Add(new DragNode()
+                {
+                    lane = node.lane,
+                    pulse = node.pulse
+                });
+            }
+            return clone;
+        }
         return new Note()
         {
             lane = this.lane,

@@ -294,6 +294,22 @@ public class Game : MonoBehaviour
                     sound = c.name
                 });
             }
+            foreach (Note n in c.holdNotes)
+            {
+                sortedNotes.Add(new NoteWithSound()
+                {
+                    note = n,
+                    sound = c.name
+                });
+            }
+            foreach (Note n in c.dragNotes)
+            {
+                sortedNotes.Add(new NoteWithSound()
+                {
+                    note = n,
+                    sound = c.name
+                });
+            }
         }
         sortedNotes.Sort((NoteWithSound n1, NoteWithSound n2) =>
         {
