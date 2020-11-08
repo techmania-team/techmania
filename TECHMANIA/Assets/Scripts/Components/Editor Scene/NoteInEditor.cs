@@ -41,7 +41,10 @@ public class NoteInEditor : MonoBehaviour
     public void UseHiddenSprite()
     {
         noteImage.GetComponent<Image>().sprite = hiddenSprite;
-        durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
+        if (durationTrail != null)
+        {
+            durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
+        }
     }
 
     private void UpdateSelection(HashSet<GameObject> selection)

@@ -39,7 +39,8 @@ public class TrackBase
 
     public void SaveToFile(string path)
     {
-        System.IO.File.WriteAllText(path, Serialize());
+        string serialized = Serialize();
+        System.IO.File.WriteAllText(path, serialized);
     }
 
     public static TrackBase LoadFromFile(string path)
@@ -512,17 +513,20 @@ public class Note
     }
 }
 
+[Serializable]
 public class HoldNote : Note
 {
     public int duration;  // in pulses
 }
 
+[Serializable]
 public class DragNode
 {
     public int lane;  // relative to note
     public int pulse;  // relative to note
 }
 
+[Serializable]
 public class DragNote : Note
 {
     public List<DragNode> nodes;
