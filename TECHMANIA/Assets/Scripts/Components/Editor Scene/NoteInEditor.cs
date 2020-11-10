@@ -16,6 +16,7 @@ public class NoteInEditor : MonoBehaviour
     public RectTransform pathToPreviousNote;
     public RectTransform durationTrail;
     public RectTransform invisibleTrail;
+    public Texture2D horizontalResizeCursor;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
@@ -23,13 +24,14 @@ public class NoteInEditor : MonoBehaviour
     public static event UnityAction<Vector2> Drag;
     public static event UnityAction EndDrag;
     public static event UnityAction<GameObject> DurationHandleBeginDrag;
-    public static event UnityAction<Vector2> DurationHandleDrag;
+    public static event UnityAction<float> DurationHandleDrag;
     public static event UnityAction DurationHandleEndDrag;
 
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged += SetKeysoundVisibility;
+        resizeCursorState = 0;
     }
 
     private void OnDisable()
@@ -105,9 +107,43 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Event Relay From Duration Handle
+    private int resizeCursorState;
+    private void UseResizeCursor()
+    {
+        resizeCursorState++;
+        if (resizeCursorState > 0)
+        {
+            UnityEngine.Cursor.SetCursor(horizontalResizeCursor,
+                new Vector2(64f, 64f), CursorMode.Auto);
+        }
+    }
+
+    private void UseDefaultCursor()
+    {
+        resizeCursorState--;
+        if (resizeCursorState <= 0)
+        {
+            UnityEngine.Cursor.SetCursor(null,
+                Vector2.zero, CursorMode.Auto);
+        }
+    }
+
+    public void OnDurationHandlePointerEnter(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        UseResizeCursor();
+    }
+
+    public void OnDurationHandlePointerExit(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        UseDefaultCursor();
+    }
+
     public void OnDurationHandleBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        UseResizeCursor();
         DurationHandleBeginDrag?.Invoke(gameObject);
     }
 
@@ -115,12 +151,13 @@ public class NoteInEditor : MonoBehaviour
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        DurationHandleDrag?.Invoke(pointerData.delta);
+        DurationHandleDrag?.Invoke(pointerData.delta.x);
     }
 
     public void OnDurationHandleEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        UseDefaultCursor();
         DurationHandleEndDrag?.Invoke();
     }
     #endregion
@@ -184,17 +221,36 @@ public class NoteInEditor : MonoBehaviour
         ToggleNoteImageTransparency();
     }
 
+    public void RecordTrailActualLength()
+    {
+        trailActualLength = durationTrail.sizeDelta.x;
+    }
+
+    // During adjustment, this is the trail's "backend" length,
+    // which may become negative; shown length is capped at 0.
+    // Both lengths are only visual.
+    private float trailActualLength;
     // Only visual; does not affect note duration.
     public void ResizeTrail(float delta)
     {
-        durationTrail.sizeDelta += new Vector2(delta, 0f);
-        invisibleTrail.sizeDelta += new Vector2(delta, 0f);
+        trailActualLength += delta;
+        float trailVisualLength = Mathf.Max(0f, trailActualLength);
+        durationTrail.sizeDelta = new Vector2(trailVisualLength, 0f);
+        invisibleTrail.sizeDelta = new Vector2(trailVisualLength, 0f);
         ToggleNoteImageTransparency();
     }
 
     private void ToggleNoteImageTransparency()
     {
-        // TODO: make note image transparent if trails are too short.
+        if (invisibleTrail.sizeDelta.x <
+            GetComponent<RectTransform>().sizeDelta.x * 0.5f)
+        {
+            noteImage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.3f);
+        }
+        else
+        {
+            noteImage.GetComponent<Image>().color = Color.white;
+        }
     }
     #endregion
 }

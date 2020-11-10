@@ -328,6 +328,36 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnDurationHandlePointerEnter
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnDurationHandlePointerExit
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &7067945452773045117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,6 +459,8 @@ MonoBehaviour:
   pathToPreviousNote: {fileID: 0}
   durationTrail: {fileID: 6946963096180992976}
   invisibleTrail: {fileID: 8612231453128468451}
+  horizontalResizeCursor: {fileID: 2800000, guid: 91837d070b287444ba2b4c6e70e04993,
+    type: 3}
 --- !u!114 &5565332570737286772
 MonoBehaviour:
   m_ObjectHideFlags: 0

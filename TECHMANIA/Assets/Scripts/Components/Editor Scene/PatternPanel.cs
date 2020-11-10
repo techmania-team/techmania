@@ -155,6 +155,9 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
         NoteInEditor.Drag += OnNoteObjectDrag;
         NoteInEditor.EndDrag += OnNoteObjectEndDrag;
+        NoteInEditor.DurationHandleBeginDrag += OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
+        NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
     }
 
@@ -167,6 +170,9 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
         NoteInEditor.Drag -= OnNoteObjectDrag;
         NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
+        NoteInEditor.DurationHandleBeginDrag -= OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
+        NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
     }
 
@@ -808,6 +814,58 @@ public class PatternPanel : MonoBehaviour
             o.GetComponent<SelfPositioner>().Reposition();
             o.GetComponent<NoteInEditor>().ResetPathPosition();
         }
+    }
+    #endregion
+
+    #region Hold Note Duration
+    private List<GameObject> holdNotesBeingAdjusted;
+    private void OnDurationHandleBeginDrag(GameObject note)
+    {
+        if (isPlaying) return;
+
+        holdNotesBeingAdjusted = new List<GameObject>();
+        if (selectedNoteObjects.Contains(note))
+        {
+            // Adjust all hold notes in the selection.
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                NoteType noteType = o.GetComponent<NoteObject>().note.type;
+                if (noteType == NoteType.Hold ||
+                    noteType == NoteType.RepeatHeadHold ||
+                    noteType == NoteType.RepeatHold)
+                {
+                    holdNotesBeingAdjusted.Add(o);
+                }
+            }
+        }
+        else
+        {
+            // Adjust only the dragged note and ignore selection.
+            holdNotesBeingAdjusted.Add(note);
+        }
+
+        foreach (GameObject o in holdNotesBeingAdjusted)
+        {
+            o.GetComponent<NoteInEditor>().RecordTrailActualLength();
+        }
+    }
+
+    private void OnDurationHandleDrag(float delta)
+    {
+        if (isPlaying) return;
+        delta /= rootCanvas.localScale.x;
+
+        foreach (GameObject o in holdNotesBeingAdjusted)
+        {
+            // This is only visual; duration is only really changed
+            // in OnDurationHandleEndDrag.
+            o.GetComponent<NoteInEditor>().ResizeTrail(delta);
+        }
+    }
+
+    private void OnDurationHandleEndDrag()
+    {
+        if (isPlaying) return;
     }
     #endregion
 
