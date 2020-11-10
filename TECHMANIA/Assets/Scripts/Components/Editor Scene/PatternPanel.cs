@@ -817,8 +817,9 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Hold Note Duration
+    #region Hold Note Duration Adjustment
     private List<GameObject> holdNotesBeingAdjusted;
+    private GameObject initialHoldNoteBeingAdjusted;
     private void OnDurationHandleBeginDrag(GameObject note)
     {
         if (isPlaying) return;
@@ -843,6 +844,7 @@ public class PatternPanel : MonoBehaviour
             // Adjust only the dragged note and ignore selection.
             holdNotesBeingAdjusted.Add(note);
         }
+        initialHoldNoteBeingAdjusted = note;
 
         foreach (GameObject o in holdNotesBeingAdjusted)
         {
@@ -859,13 +861,60 @@ public class PatternPanel : MonoBehaviour
         {
             // This is only visual; duration is only really changed
             // in OnDurationHandleEndDrag.
-            o.GetComponent<NoteInEditor>().ResizeTrail(delta);
+            o.GetComponent<NoteInEditor>().AdjustTrailLength(delta);
         }
     }
 
     private void OnDurationHandleEndDrag()
     {
         if (isPlaying) return;
+
+        int oldDuration = (initialHoldNoteBeingAdjusted.
+            GetComponent<NoteObject>().note as HoldNote).duration;
+        int newDuration = noteCursor.note.pulse -
+            initialHoldNoteBeingAdjusted.GetComponent<NoteObject>().
+            note.pulse;
+        int deltaDuration = newDuration - oldDuration;
+
+        // Is the adjustment valid?
+        bool adjustable = true;
+        foreach (GameObject o in holdNotesBeingAdjusted)
+        {
+            HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+            oldDuration = holdNote.duration;
+            newDuration = oldDuration + deltaDuration;
+            if (newDuration <= 0)
+            {
+                snackbar.Show("Hold Notes cannot have zero length.");
+                adjustable = false;
+                break;
+            }
+            if (HoldNoteCoversAnotherNote(holdNote.pulse, holdNote.lane,
+                newDuration, ignoredExistingNotes: null))
+            {
+                snackbar.Show("Hold Notes cannot cover other notes.");
+                adjustable = false;
+                break;
+            }
+        }
+
+        if (adjustable)
+        {
+            // Apply adjustment. No need to delete and respawn notes
+            // this time.
+            EditorContext.PrepareForChange();
+            foreach (GameObject o in holdNotesBeingAdjusted)
+            {
+                HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+                holdNote.duration += deltaDuration;
+            }
+            EditorContext.DoneWithChange();
+        }
+
+        foreach (GameObject o in holdNotesBeingAdjusted)
+        {
+            o.GetComponent<NoteInEditor>().ResetTrail();
+        }
     }
     #endregion
 
@@ -1402,6 +1451,25 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Additional check for hold notes.
+        if (HoldNoteCoversAnotherNote(pulse, lane, duration,
+            ignoredExistingNotes))
+        {
+            reason = "Hold Notes cannot cover other notes.";
+            return false;
+        }
+
+        return true;
+    }
+
+    // Ignores notes at (pulse, lane), if any.
+    private bool HoldNoteCoversAnotherNote(int pulse, int lane, int duration,
+        HashSet<GameObject> ignoredExistingNotes)
+    {
+        if (ignoredExistingNotes == null)
+        {
+            ignoredExistingNotes = new HashSet<GameObject>();
+        }
+
         GameObject noteAfterPivot = sortedNoteObjects.GetClosestNoteAfter(
             pulse, types: null,
             minLaneInclusive: lane,
@@ -1410,12 +1478,11 @@ public class PatternPanel : MonoBehaviour
         {
             if (pulse + duration >= noteAfterPivot.GetComponent<NoteObject>().note.pulse)
             {
-                reason = "Hold Notes cannot cover other notes.";
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     private int HoldNoteDefaultDuration(int pulse, int lane)

@@ -231,7 +231,7 @@ public class NoteInEditor : MonoBehaviour
     // Both lengths are only visual.
     private float trailActualLength;
     // Only visual; does not affect note duration.
-    public void ResizeTrail(float delta)
+    public void AdjustTrailLength(float delta)
     {
         trailActualLength += delta;
         float trailVisualLength = Mathf.Max(0f, trailActualLength);
@@ -245,7 +245,7 @@ public class NoteInEditor : MonoBehaviour
         if (invisibleTrail.sizeDelta.x <
             GetComponent<RectTransform>().sizeDelta.x * 0.5f)
         {
-            noteImage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.3f);
+            noteImage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.38f);
         }
         else
         {
