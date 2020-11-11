@@ -1186,68 +1186,74 @@ public class PatternPanel : MonoBehaviour
     private void AdjustPathOrTrailAround(GameObject o)
     {
         NoteObject n = o.GetComponent<NoteObject>();
-        switch (n.note.type)
+
+        if (n.note.type == NoteType.ChainHead ||
+            n.note.type == NoteType.ChainNode)
         {
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-                {
-                    if (n.note.lane < 0 || n.note.lane >= PlayableLanes) break;
-                    HashSet<NoteType> types = new HashSet<NoteType>()
+            if (n.note.lane >= 0 && n.note.lane < PlayableLanes)
+            {
+                HashSet<NoteType> types = new HashSet<NoteType>()
                         { NoteType.ChainHead, NoteType.ChainNode };
-                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
-                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                    o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                    o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
 
-                    if (n.note.type == NoteType.ChainNode)
-                    {
-                        o.GetComponent<NoteInEditor>().PointPathToward(prev);
-                    }
-                    if (next != null &&
-                        next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
-                    {
-                        next.GetComponent<NoteInEditor>().PointPathToward(o);
-                    }
-                }
-                break;
-            case NoteType.RepeatHead:
-            case NoteType.Repeat:
+                if (n.note.type == NoteType.ChainNode)
                 {
-                    if (n.note.lane < 0 || n.note.lane >= PlayableLanes) break;
-                    HashSet<NoteType> types = new HashSet<NoteType>()
-                        { NoteType.RepeatHead, NoteType.Repeat };
-                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
-                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
-
-                    if (n.note.type == NoteType.Repeat)
-                    {
-                        o.GetComponent<NoteInEditor>().PointPathToward(prev);
-                    }
-                    if (next != null &&
-                        next.GetComponent<NoteObject>().note.type == NoteType.Repeat)
-                    {
-                        next.GetComponent<NoteInEditor>().PointPathToward(o);
-                    }
+                    o.GetComponent<NoteInEditor>().PointPathToward(prev);
                 }
-                break;
-            case NoteType.Hold:
-            case NoteType.RepeatHeadHold:
-            case NoteType.RepeatHold:
+                if (next != null &&
+                    next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
                 {
-                    o.GetComponent<NoteInEditor>().ResetTrail();
-                    // TODO: also adjust path for RepeatHeadHold/RepeatHold.
+                    next.GetComponent<NoteInEditor>().PointPathToward(o);
                 }
-                break;
-            case NoteType.Drag:
-                {
-                    // TODO: handle this case.
-                }
-                break;
-            default:
-                break;
+            }
         }
+
+        if (n.note.type == NoteType.RepeatHead ||
+            n.note.type == NoteType.RepeatHeadHold ||
+            n.note.type == NoteType.Repeat ||
+            n.note.type == NoteType.RepeatHold)
+        {
+            if (n.note.lane >= 0 && n.note.lane < PlayableLanes)
+            {
+                HashSet<NoteType> types = new HashSet<NoteType>()
+                    { NoteType.RepeatHead,
+                    NoteType.RepeatHeadHold,
+                    NoteType.Repeat,
+                    NoteType.RepeatHold};
+                GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
+                    o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+                GameObject next = sortedNoteObjects.GetClosestNoteAfter(
+                    o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+
+                if (n.note.type == NoteType.Repeat ||
+                    n.note.type == NoteType.RepeatHold)
+                {
+                    o.GetComponent<NoteInEditor>().PointPathToward(prev);
+                }
+                
+                if (next != null)
+                {
+                    NoteType nextType = next.GetComponent<NoteObject>().note.type;
+                    if (nextType == NoteType.Repeat ||
+                        nextType == NoteType.RepeatHold)
+                    {
+                        next.GetComponent<NoteInEditor>().PointPathToward(o);
+                    }
+                }
+            }
+        }
+
+        if (n.note.type == NoteType.Hold ||
+            n.note.type == NoteType.RepeatHeadHold ||
+            n.note.type == NoteType.RepeatHold)
+        {
+            o.GetComponent<NoteInEditor>().ResetTrail();
+        }
+
+        // TODO: handle drag notes.
     }
 
     // This may modify o, the same-type note before o, and/or
@@ -1283,30 +1289,32 @@ public class PatternPanel : MonoBehaviour
                 }
                 break;
             case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
             case NoteType.Repeat:
+            case NoteType.RepeatHold:
                 {
                     HashSet<NoteType> types = new HashSet<NoteType>()
-                        { NoteType.RepeatHead, NoteType.Repeat };
+                        { NoteType.RepeatHead,
+                        NoteType.RepeatHeadHold,
+                        NoteType.Repeat,
+                        NoteType.RepeatHold};
                     GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
                         o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
                     GameObject next = sortedNoteObjects.GetClosestNoteAfter(
                         o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
 
-                    if (next != null &&
-                        next.GetComponent<NoteObject>().note.type == NoteType.Repeat)
+                    if (next != null)
                     {
-                        next.GetComponent<NoteInEditor>()
-                            .PointPathToward(prev);
-                    }
-                    else if (prev != null &&
-                        prev.GetComponent<NoteObject>().note.type == NoteType.RepeatHead)
-                    {
-                        prev.GetComponent<NoteInEditor>()
-                            .ResetNoteImageRotation();
+                        NoteType nextType = next.GetComponent<NoteObject>().note.type;
+                        if (nextType == NoteType.Repeat ||
+                            nextType == NoteType.RepeatHold)
+                        {
+                            next.GetComponent<NoteInEditor>()
+                                .PointPathToward(prev);
+                        }
                     }
                 }
                 break;
-            // TODO: other cases.
             default:
                 break;
         }
