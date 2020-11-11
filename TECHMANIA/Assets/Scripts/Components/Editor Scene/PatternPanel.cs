@@ -595,6 +595,74 @@ public class PatternPanel : MonoBehaviour
     {
         noteType = clickedButton.type;
         UpdateNoteTypeButtons();
+
+        // Apply to selection if asked to.
+        if (!applyNoteTypeToSelectionToggle.isOn) return;
+        if (isPlaying) return;
+        if (selectedNoteObjects.Count == 0) return;
+
+        HashSet<GameObject> newSelection = new HashSet<GameObject>();
+        EditorContext.PrepareForChange();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            NoteObject n = o.GetComponent<NoteObject>();
+            int pulse = n.note.pulse;
+            int lane = n.note.lane;
+            string sound = n.sound;
+
+            GameObject newObject = null;
+            string invalidReason = "";
+            switch (noteType)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    if (!CanAddNote(noteType, pulse, lane,
+                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        out invalidReason))
+                    {
+                        snackbar.Show(invalidReason);
+                        break;
+                    }
+                    DeleteNote(o);
+                    newObject = AddNote(noteType, pulse, lane, sound);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    // No need to call CanAddHoldNote because
+                    // duration is flexible.
+                    if (!CanAddNote(noteType, pulse, lane,
+                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        out invalidReason))
+                    {
+                        snackbar.Show(invalidReason);
+                        break;
+                    }
+                    DeleteNote(o);
+                    newObject = AddHoldNote(noteType, pulse, lane,
+                        duration: null, sound);
+                    break;
+                case NoteType.Drag:
+                    // TODO: handle this case.
+                    break;
+            }
+
+            if (newObject != null)
+            {
+                newSelection.Add(newObject);
+            }
+            else
+            {
+                newSelection.Add(o);
+            }
+        }
+        EditorContext.DoneWithChange();
+
+        selectedNoteObjects = newSelection;
+        SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
     private void UpdateNoteTypeButtons()
@@ -634,6 +702,7 @@ public class PatternPanel : MonoBehaviour
         if (selectedNoteObjects == null ||
             selectedNoteObjects.Count == 0) return;
         if (!applyKeysoundToSelectionToggle.isOn) return;
+        if (isPlaying) return;
         if (keysounds.Count == 0)
         {
             keysounds.Add("");
@@ -1724,7 +1793,7 @@ public class PatternPanel : MonoBehaviour
     // - Adding or deleting notes, including by clicking, dragging
     //   and cut/copy/paste
     // - Applying note types and/or keysounds to selection, if
-    //   specified in options (TODO: implement)
+    //   specified in options
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
     private bool isPlaying;
