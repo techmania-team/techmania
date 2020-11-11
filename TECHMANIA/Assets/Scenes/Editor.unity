@@ -17886,7 +17886,11 @@ MonoBehaviour:
     type: 3}
   repeatHeadPrefab: {fileID: 6915570976975822383, guid: 908d0d4109c7fe44389abc635f4c0e60,
     type: 3}
+  repeatHeadHoldPrefab: {fileID: 6915570976975822383, guid: 6e0a2f5462a5d704aa7ad739e01ec7a6,
+    type: 3}
   repeatNotePrefab: {fileID: 6915570976975822383, guid: 77170dfb5fce1ab449e6270f3a431334,
+    type: 3}
+  repeatHoldPrefab: {fileID: 6915570976975822383, guid: 605aed8ea99d93948832f5e7e6a9d46e,
     type: 3}
   holdNotePrefab: {fileID: 6915570976975822383, guid: 2fc3a1d9c1219004bab39ddc82219bde,
     type: 3}
@@ -22707,6 +22711,8 @@ MonoBehaviour:
   pathToPreviousNote: {fileID: 0}
   durationTrail: {fileID: 0}
   invisibleTrail: {fileID: 0}
+  horizontalResizeCursor: {fileID: 0}
+  transparentNoteImageWhenTrailTooShort: 0
 --- !u!114 &1669463551
 MonoBehaviour:
   m_ObjectHideFlags: 0

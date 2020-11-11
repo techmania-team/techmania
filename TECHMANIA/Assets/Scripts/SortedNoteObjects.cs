@@ -124,7 +124,7 @@ public class SortedNoteObjects
     public GameObject GetClosestNoteBefore(int pivotPulse,
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
-        if (pivotPulse == populatedPulses.Min) return null;
+        if (pivotPulse <= populatedPulses.Min) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             populatedPulses.Min, pivotPulse - 1)
             .Reverse())
@@ -160,7 +160,7 @@ public class SortedNoteObjects
     public GameObject GetClosestNoteAfter(int pivotPulse,
         HashSet<NoteType> types, int minLaneInclusive, int maxLaneInclusive)
     {
-        if (pivotPulse == populatedPulses.Max) return null;
+        if (pivotPulse >= populatedPulses.Max) return null;
         foreach (int pulse in populatedPulses.GetViewBetween(
             pivotPulse + 1, populatedPulses.Max))
         {

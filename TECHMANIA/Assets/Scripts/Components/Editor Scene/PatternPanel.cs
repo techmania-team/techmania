@@ -36,7 +36,9 @@ public class PatternPanel : MonoBehaviour
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
     public GameObject repeatHeadPrefab;
+    public GameObject repeatHeadHoldPrefab;
     public GameObject repeatNotePrefab;
+    public GameObject repeatHoldPrefab;
     public GameObject holdNotePrefab;
 
     [Header("Audio")]
@@ -1071,8 +1073,14 @@ public class PatternPanel : MonoBehaviour
             case NoteType.RepeatHead:
                 prefab = repeatHeadPrefab;
                 break;
+            case NoteType.RepeatHeadHold:
+                prefab = repeatHeadHoldPrefab;
+                break;
             case NoteType.Repeat:
                 prefab = repeatNotePrefab;
+                break;
+            case NoteType.RepeatHold:
+                prefab = repeatHoldPrefab;
                 break;
             case NoteType.Hold:
                 prefab = holdNotePrefab;
@@ -1229,6 +1237,7 @@ public class PatternPanel : MonoBehaviour
             case NoteType.RepeatHold:
                 {
                     o.GetComponent<NoteInEditor>().ResetTrail();
+                    // TODO: also adjust path for RepeatHeadHold/RepeatHold.
                 }
                 break;
             case NoteType.Drag:
@@ -1324,14 +1333,18 @@ public class PatternPanel : MonoBehaviour
         // Adjust the paths of repeat notes.
         List<GameObject> repeatHeadsAndNotes = sortedNoteObjects.
             GetAllNotesOfType(new HashSet<NoteType>()
-            { NoteType.RepeatHead, NoteType.Repeat},
+                { NoteType.RepeatHead,
+                NoteType.Repeat,
+                NoteType.RepeatHeadHold,
+                NoteType.RepeatHold},
             minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
         List<GameObject> previousRepeat = new List<GameObject>();
         for (int i = 0; i < PlayableLanes; i++) previousRepeat.Add(null);
         foreach (GameObject o in repeatHeadsAndNotes)
         {
             NoteObject n = o.GetComponent<NoteObject>();
-            if (n.note.type == NoteType.Repeat)
+            if (n.note.type == NoteType.Repeat ||
+                n.note.type == NoteType.RepeatHold)
             {
                 n.GetComponent<NoteInEditor>().PointPathToward(
                     previousRepeat[n.note.lane]);

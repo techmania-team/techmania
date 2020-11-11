@@ -17,6 +17,7 @@ public class NoteInEditor : MonoBehaviour
     public RectTransform durationTrail;
     public RectTransform invisibleTrail;
     public Texture2D horizontalResizeCursor;
+    public bool transparentNoteImageWhenTrailTooShort;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
@@ -107,7 +108,7 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Event Relay From Duration Handle
-    private int resizeCursorState;
+    private static int resizeCursorState;
     private void UseResizeCursor()
     {
         resizeCursorState++;
@@ -242,6 +243,8 @@ public class NoteInEditor : MonoBehaviour
 
     private void ToggleNoteImageTransparency()
     {
+        if (!transparentNoteImageWhenTrailTooShort) return;
+
         if (invisibleTrail.sizeDelta.x <
             GetComponent<RectTransform>().sizeDelta.x * 0.5f)
         {
