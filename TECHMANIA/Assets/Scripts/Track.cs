@@ -479,9 +479,9 @@ public class Note
         {
             return new HoldNote()
             {
-                type = this.type,
-                lane = this.lane,
-                pulse = this.pulse,
+                type = type,
+                lane = lane,
+                pulse = pulse,
                 duration = (this as HoldNote).duration
             };
         }
@@ -489,26 +489,22 @@ public class Note
         {
             DragNote clone = new DragNote()
             {
-                type = this.type,
-                lane = this.lane,
-                pulse = this.pulse,
+                type = type,
+                lane = lane,
+                pulse = pulse,
                 nodes = new List<DragNode>()
             };
             foreach (DragNode node in (this as DragNote).nodes)
             {
-                clone.nodes.Add(new DragNode()
-                {
-                    lane = node.lane,
-                    pulse = node.pulse
-                });
+                clone.nodes.Add(node.Clone());
             }
             return clone;
         }
         return new Note()
         {
-            lane = this.lane,
-            pulse = this.pulse,
-            type = this.type
+            lane = lane,
+            pulse = pulse,
+            type = type
         };
     }
 }
@@ -520,16 +516,124 @@ public class HoldNote : Note
 }
 
 [Serializable]
+public class IntPoint
+{
+    public int lane;
+    public int pulse;
+
+    public IntPoint(int pulse, int lane)
+    {
+        this.pulse = pulse;
+        this.lane = lane;
+    }
+
+    public IntPoint Clone()
+    {
+        return new IntPoint(pulse, lane);
+    }
+
+    public FloatPoint ToFloatPoint()
+    {
+        return new FloatPoint(pulse, lane);
+    }
+}
+
+[Serializable]
+public class FloatPoint
+{
+    public float lane;
+    public float pulse;
+
+    public FloatPoint(float pulse, float lane)
+    {
+        this.pulse = pulse;
+        this.lane = lane;
+    }
+
+    public FloatPoint Clone()
+    {
+        return new FloatPoint(pulse, lane);
+    }
+
+    public static FloatPoint operator+(
+        FloatPoint left, FloatPoint right)
+    {
+        return new FloatPoint(left.pulse + right.pulse,
+            left.lane + right.lane);
+    }
+
+    public static FloatPoint operator*(float coeff,
+        FloatPoint point)
+    {
+        return new FloatPoint(coeff * point.pulse,
+            coeff * point.lane);
+    }
+}
+
+[Serializable]
 public class DragNode
 {
-    public int lane;  // relative to note
-    public int pulse;  // relative to note
+    // Relative to DragNote
+    public IntPoint anchor;
+    // Relative to anchor
+    public FloatPoint controlBefore;
+    // Relative to anchor
+    public FloatPoint controlAfter;
+
+    public DragNode Clone()
+    {
+        return new DragNode()
+        {
+            anchor = anchor.Clone(),
+            controlBefore = controlBefore.Clone(),
+            controlAfter = controlAfter.Clone()
+        };
+    }
 }
 
 [Serializable]
 public class DragNote : Note
 {
+    // There must be at least 2 nodes, with nodes[0]
+    // describing the note head.
+    // controlBefore of the first node and controlAfter
+    // of the last node are ignored.
     public List<DragNode> nodes;
+
+    public DragNote()
+    {
+        nodes = new List<DragNode>();
+    }
+
+    public List<FloatPoint> Interpolate()
+    {
+        List<FloatPoint> result = new List<FloatPoint>();
+        result.Add(nodes[0].anchor.ToFloatPoint());
+        const int numSteps = 50;
+        for (int i = 0; i < nodes.Count - 1; i++)
+        {
+            FloatPoint p0 = nodes[i].anchor.ToFloatPoint();
+            FloatPoint p1 = p0 + nodes[i].controlAfter;
+            FloatPoint p3 = nodes[i + 1].anchor.ToFloatPoint();
+            FloatPoint p2 = p3 + nodes[i + 1].controlBefore;
+            for (int step = 1; step <= numSteps; step++)
+            {
+                float t = (float)step / numSteps;
+
+                float coeff0 = (1f - t) * (1f - t) * (1f - t);
+                float coeff1 = 3f * (1f - t) * (1f - t) * t;
+                float coeff2 = 3f * (1f - t) * t * t;
+                float coeff3 = t * t * t;
+
+                result.Add(coeff0 * p0 +
+                    coeff1 * p1 +
+                    coeff2 * p2 +
+                    coeff3 * p3);
+            }
+        }
+
+        return result;
+    }
 }
 
 // Not intended to be serialized. Different from NoteObject,
