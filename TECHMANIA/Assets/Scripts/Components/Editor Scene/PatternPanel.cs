@@ -40,6 +40,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject repeatNotePrefab;
     public GameObject repeatHoldPrefab;
     public GameObject holdNotePrefab;
+    public GameObject dragNotePrefab;
 
     [Header("Audio")]
     public AudioSource backingTrackSource;
@@ -360,8 +361,8 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         string invalidReason;
-        // No need to call CanAddHoldNote here because hold notes'
-        // duration is flexible.
+        // No need to call CanAddHoldNote or CanAddDragNote here
+        // because durations and curves are flexible.
         if (!CanAddNote(noteType, noteCursor.note.pulse,
             noteCursor.note.lane, out invalidReason))
         {
@@ -389,7 +390,10 @@ public class PatternPanel : MonoBehaviour
                     noteCursor.note.lane, duration: null, sound);
                 break;
             case NoteType.Drag:
-                // TODO: handle this case.
+                AddDragNote(noteCursor.note.pulse,
+                    noteCursor.note.lane,
+                    nodes: null,
+                    sound);
                 break;
         }
         
@@ -646,7 +650,18 @@ public class PatternPanel : MonoBehaviour
                         duration: null, sound);
                     break;
                 case NoteType.Drag:
-                    // TODO: handle this case.
+                    // No need to call CanAddDragNote because
+                    // curve is flexible.
+                    if (!CanAddNote(noteType, pulse, lane,
+                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        out invalidReason))
+                    {
+                        snackbar.Show(invalidReason);
+                        break;
+                    }
+                    DeleteNote(o);
+                    newObject = AddDragNote(pulse, lane,
+                        nodes: null, sound);
                     break;
             }
 
@@ -812,7 +827,10 @@ public class PatternPanel : MonoBehaviour
                         out invalidReason);
                     break;
                 case NoteType.Drag:
-                    // TODO: handle this case.
+                    movable = movable && CanAddDragNote(
+                        newPulse, newLane, (n as DragNote).nodes,
+                        ignoredExistingNotes: selectionAsSet,
+                        out invalidReason);
                     break;
             }
 
@@ -870,7 +888,11 @@ public class PatternPanel : MonoBehaviour
                             movedNote.sound);
                         break;
                     case NoteType.Drag:
-                        // TODO: handle this case.
+                        o = AddDragNote(
+                            movedNote.note.pulse,
+                            movedNote.note.lane,
+                            (movedNote.note as DragNote).nodes,
+                            movedNote.sound);
                         break;
                 }
                 replacedSelection.Add(o);
@@ -1154,8 +1176,11 @@ public class PatternPanel : MonoBehaviour
             case NoteType.Hold:
                 prefab = holdNotePrefab;
                 break;
+            case NoteType.Drag:
+                prefab = dragNotePrefab;
+                break;
             default:
-                Debug.LogError("Unsupported (yet) note type: " + n.type);
+                Debug.LogError("Unknown note type: " + n.type);
                 prefab = basicNotePrefab;
                 break;
         }
@@ -1322,7 +1347,10 @@ public class PatternPanel : MonoBehaviour
             o.GetComponent<NoteInEditor>().ResetTrail();
         }
 
-        // TODO: handle drag notes.
+        if (n.note.type == NoteType.Drag)
+        {
+            o.GetComponent<NoteInEditor>().ResetCurve();
+        }
     }
 
     // This may modify o, the same-type note before o, and/or
@@ -1433,13 +1461,23 @@ public class PatternPanel : MonoBehaviour
         List<GameObject> holdNotes = sortedNoteObjects.
             GetAllNotesOfType(new HashSet<NoteType>()
             { NoteType.Hold, NoteType.RepeatHeadHold, NoteType.RepeatHold},
-            minLaneInclusive: 0, maxLaneInclusive: TotalLanes - 1);
+            minLaneInclusive: 0,
+            maxLaneInclusive: TotalLanes - 1);
         foreach (GameObject o in holdNotes)
         {
             o.GetComponent<NoteInEditor>().ResetTrail();
         }
 
-        // TODO: also redraw drag notes.
+        // Draw curves of drag notes.
+        List<GameObject> dragNotes = sortedNoteObjects.
+            GetAllNotesOfType(new HashSet<NoteType>()
+            { NoteType.Drag },
+            minLaneInclusive: 0,
+            maxLaneInclusive: TotalLanes - 1);
+        foreach (GameObject o in dragNotes)
+        {
+            o.GetComponent<NoteInEditor>().ResetCurve();
+        }
     }
     #endregion
 
@@ -1551,8 +1589,36 @@ public class PatternPanel : MonoBehaviour
         return true;
     }
 
+    private bool CanAddDragNote(int pulse, int lane,
+        List<DragNode> nodes,
+        HashSet<GameObject> ignoredExistingNotes,
+        out string reason)
+    {
+        if (ignoredExistingNotes == null)
+        {
+            ignoredExistingNotes = new HashSet<GameObject>();
+        }
+        if (!CanAddNote(NoteType.Drag, pulse, lane,
+            ignoredExistingNotes,
+            out reason))
+        {
+            return false;
+        }
+
+        // Additional check for hold notes.
+        if (DragNoteCoversAnotherNote(pulse, lane, nodes,
+            ignoredExistingNotes))
+        {
+            reason = "Drag Notes cannot cover other notes.";
+            return false;
+        }
+
+        return true;
+    }
+
     // Ignores notes at (pulse, lane), if any.
-    private bool HoldNoteCoversAnotherNote(int pulse, int lane, int duration,
+    private bool HoldNoteCoversAnotherNote(int pulse, int lane,
+        int duration,
         HashSet<GameObject> ignoredExistingNotes)
     {
         if (ignoredExistingNotes == null)
@@ -1564,9 +1630,38 @@ public class PatternPanel : MonoBehaviour
             pulse, types: null,
             minLaneInclusive: lane,
             maxLaneInclusive: lane);
-        if (noteAfterPivot != null && !ignoredExistingNotes.Contains(noteAfterPivot))
+        if (noteAfterPivot != null &&
+            !ignoredExistingNotes.Contains(noteAfterPivot))
         {
             if (pulse + duration >= noteAfterPivot.GetComponent<NoteObject>().note.pulse)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Ignores notes at (pulse, lane), if any.
+    private bool DragNoteCoversAnotherNote(int pulse, int lane,
+        List<DragNode> nodes,
+        HashSet<GameObject> ignoredExistingNotes)
+    {
+        if (ignoredExistingNotes == null)
+        {
+            ignoredExistingNotes = new HashSet<GameObject>();
+        }
+
+        // For now we only check anchors.
+        for (int i = 1; i < nodes.Count; i++)
+        {
+            int anchorPulse = pulse + nodes[i].anchor.pulse;
+            int anchorLane = lane + nodes[i].anchor.lane;
+            GameObject existingNote = sortedNoteObjects.GetAt(
+                anchorPulse, anchorLane);
+
+            if (existingNote != null &&
+                !ignoredExistingNotes.Contains(existingNote))
             {
                 return true;
             }
@@ -1629,6 +1724,37 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             duration = duration.Value
+        };
+        return FinishAddNote(n, sound);
+    }
+
+    private GameObject AddDragNote(int pulse, int lane,
+        List<DragNode> nodes, string sound)
+    {
+        if (nodes == null)
+        {
+            nodes = new List<DragNode>();
+            int relativePulseOfLastNode = 
+                HoldNoteDefaultDuration(pulse, lane);
+            nodes.Add(new DragNode()
+            {
+                anchor = new IntPoint(0, 0),
+                controlBefore = new FloatPoint(0f, 0f),
+                controlAfter = new FloatPoint(0f, 0f)
+            });
+            nodes.Add(new DragNode()
+            {
+                anchor = new IntPoint(relativePulseOfLastNode, 0),
+                controlBefore = new FloatPoint(0f, 0f),
+                controlAfter = new FloatPoint(0f, 0f)
+            });
+        }
+        DragNote n = new DragNote()
+        {
+            type = NoteType.Drag,
+            pulse = pulse,
+            lane = lane,
+            nodes = nodes
         };
         return FinishAddNote(n, sound);
     }
@@ -1732,7 +1858,10 @@ public class PatternPanel : MonoBehaviour
                         out invalidReason);
                     break;
                 case NoteType.Drag:
-                    // TODO: handle this case.
+                    pastable = CanAddDragNote(newPulse, n.note.lane,
+                        (n.note as DragNote).nodes,
+                        ignoredExistingNotes: null,
+                        out invalidReason);
                     break;
             }
             if (!pastable)
@@ -1765,7 +1894,9 @@ public class PatternPanel : MonoBehaviour
                         n.sound);
                     break;
                 case NoteType.Drag:
-                    // TODO: handle this case.
+                    AddDragNote(newPulse, n.note.lane,
+                        (n.note as DragNote).nodes,
+                        n.sound);
                     break;
             }
         }

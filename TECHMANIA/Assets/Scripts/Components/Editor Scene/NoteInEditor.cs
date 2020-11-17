@@ -19,6 +19,10 @@ public class NoteInEditor : MonoBehaviour
     public Texture2D horizontalResizeCursor;
     public bool transparentNoteImageWhenTrailTooShort;
 
+    [Header("Drag Note")]
+    public Sprite hiddenCurveSprite;
+    public CurvedImage curvedImage;
+
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
     public static event UnityAction<GameObject> BeginDrag;
@@ -47,6 +51,10 @@ public class NoteInEditor : MonoBehaviour
         if (durationTrail != null)
         {
             durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
+        }
+        if (curvedImage != null)
+        {
+            curvedImage.sprite = hiddenCurveSprite;
         }
     }
 
@@ -254,6 +262,31 @@ public class NoteInEditor : MonoBehaviour
         {
             noteImage.GetComponent<Image>().color = Color.white;
         }
+    }
+    #endregion
+
+    #region Curve
+    // All positions relative to note head.
+    public List<Vector2> PointsOnCurve { get; private set; }
+    public void ResetCurve()
+    {
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
+        PointsOnCurve = new List<Vector2>();
+
+        float pulseWidth = PatternPanel.ScanWidth /
+            EditorContext.Pattern.patternMetadata.bps /
+            Pattern.pulsesPerBeat;
+        foreach (FloatPoint p in dragNote.Interpolate())
+        {
+            Vector2 pointOnCurve = new Vector2(
+                p.pulse * pulseWidth,
+                p.lane * PatternPanel.LaneHeight);
+            PointsOnCurve.Add(pointOnCurve);
+        }
+        // TODO: do we need to smooth these points?
+
+        curvedImage.SetVerticesDirty();
     }
     #endregion
 }

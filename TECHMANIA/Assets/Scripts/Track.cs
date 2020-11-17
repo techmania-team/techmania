@@ -605,6 +605,8 @@ public class DragNote : Note
         nodes = new List<DragNode>();
     }
 
+    // Returns a list of points on the bezier curve defined by
+    // this note. All points are relative to the note head.
     public List<FloatPoint> Interpolate()
     {
         List<FloatPoint> result = new List<FloatPoint>();
