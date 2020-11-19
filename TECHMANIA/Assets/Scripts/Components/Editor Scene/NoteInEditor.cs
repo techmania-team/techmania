@@ -22,6 +22,10 @@ public class NoteInEditor : MonoBehaviour
     [Header("Drag Note")]
     public Sprite hiddenCurveSprite;
     public CurvedImage curvedImage;
+    public RectTransform newAnchorReceiverContainer;
+    public GameObject newAnchorReceiverTemplate;
+    public RectTransform anchorContainer;
+    public GameObject anchorTemplate;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
@@ -286,7 +290,103 @@ public class NoteInEditor : MonoBehaviour
         }
         // TODO: do we need to smooth these points?
 
+        // Draw curve.
         curvedImage.SetVerticesDirty();
+
+        // Draw new anchor receivers. Reuse them if applicable.
+        for (int i = 0;
+            i < newAnchorReceiverContainer.childCount;
+            i++)
+        {
+            newAnchorReceiverContainer.GetChild(i).gameObject
+                .SetActive(false);
+        }
+        if (newAnchorReceiverTemplate.transform.GetSiblingIndex()
+            != 0)
+        {
+            newAnchorReceiverTemplate.transform.SetAsFirstSibling();
+        }
+        for (int i = 0; i < PointsOnCurve.Count - 1; i++)
+        {
+            int childIndex = i + 1;
+            while (newAnchorReceiverContainer.childCount - 1
+                < childIndex)
+            {
+                Instantiate(
+                    newAnchorReceiverTemplate,
+                    parent: newAnchorReceiverContainer);
+            }
+            RectTransform receiver = 
+                newAnchorReceiverContainer.GetChild(childIndex)
+                .GetComponent<RectTransform>();
+            receiver.gameObject.SetActive(true);
+            receiver.anchoredPosition = PointsOnCurve[i];
+
+            Vector2 toNextPoint =
+                PointsOnCurve[i + 1] - PointsOnCurve[i];
+            receiver.sizeDelta = new Vector2(
+                toNextPoint.magnitude, receiver.sizeDelta.y);
+            float angle = Mathf.Atan2(-toNextPoint.y,
+                -toNextPoint.x);
+            receiver.localRotation = Quaternion.Euler(0f, 0f,
+                angle * Mathf.Rad2Deg);
+        }
+
+        // Draw anchors and control points.
+        for (int i = 0; i < anchorContainer.childCount; i++)
+        {
+            if (anchorContainer.GetChild(i).gameObject !=
+                anchorTemplate)
+            {
+                Destroy(anchorContainer.GetChild(i));
+            }
+        }
+        for (int i = 0; i < dragNote.nodes.Count; i++)
+        {
+            DragNode dragNode = dragNote.nodes[i];
+
+            GameObject anchor = Instantiate(anchorTemplate,
+                parent: anchorContainer);
+            anchor.SetActive(true);
+            anchor.GetComponent<RectTransform>().anchoredPosition
+                = new Vector2(
+                    dragNode.anchor.pulse * pulseWidth,
+                    dragNode.anchor.lane * PatternPanel.LaneHeight);
+
+            Vector2 controlPointLeftPosition = new Vector2(
+                dragNode.controlBefore.pulse * pulseWidth,
+                dragNode.controlBefore.lane * PatternPanel.LaneHeight);
+            anchor.GetComponent<DragNoteAnchor>().controlPointLeft
+                .GetComponent<RectTransform>().anchoredPosition
+                = controlPointLeftPosition;
+            RectTransform pathToLeft = anchor
+                .GetComponent<DragNoteAnchor>()
+                .pathToControlPointLeft;
+            pathToLeft.sizeDelta = new Vector2(
+                controlPointLeftPosition.magnitude,
+                pathToLeft.sizeDelta.y);
+            pathToLeft.localRotation = Quaternion.Euler(
+                0f, 0f, Mathf.Atan2(
+                    -controlPointLeftPosition.y,
+                    -controlPointLeftPosition.x) * Mathf.Rad2Deg);
+
+            Vector2 controlPointRightPosition = new Vector2(
+                dragNode.controlAfter.pulse * pulseWidth,
+                dragNode.controlAfter.lane * PatternPanel.LaneHeight);
+            anchor.GetComponent<DragNoteAnchor>().controlPointRight
+                .GetComponent<RectTransform>().anchoredPosition
+                = controlPointRightPosition;
+            RectTransform pathToRight = anchor
+                .GetComponent<DragNoteAnchor>()
+                .pathToControlPointRight;
+            pathToRight.sizeDelta = new Vector2(
+                controlPointRightPosition.magnitude,
+                pathToRight.sizeDelta.y);
+            pathToRight.localRotation = Quaternion.Euler(
+                0f, 0f, Mathf.Atan2(
+                    -controlPointRightPosition.y,
+                    -controlPointRightPosition.x) * Mathf.Rad2Deg);
+        }
     }
     #endregion
 }
