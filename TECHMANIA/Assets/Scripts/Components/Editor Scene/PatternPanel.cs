@@ -161,6 +161,12 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag += OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
+        NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
+        NoteInEditor.AnchorDrag += OnAnchorDrag;
+        NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
+        NoteInEditor.ControlPointBeginDrag += OnControlPointBeginDrag;
+        NoteInEditor.ControlPointDrag += OnControlPointDrag;
+        NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
     }
 
@@ -176,6 +182,12 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag -= OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
+        NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
+        NoteInEditor.AnchorDrag -= OnAnchorDrag;
+        NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
+        NoteInEditor.ControlPointBeginDrag -= OnControlPointBeginDrag;
+        NoteInEditor.ControlPointDrag -= OnControlPointDrag;
+        NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
     }
 
@@ -1011,6 +1023,51 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
+    #region Drag Notes
+    private GameObject draggedAnchor;
+    private void OnAnchorBeginDrag(GameObject anchor)
+    {
+        if (isPlaying) return;
+        draggedAnchor = anchor;
+    }
+
+    private void OnAnchorDrag(Vector2 delta)
+    {
+        if (isPlaying) return;
+        delta /= rootCanvas.localScale.x;
+        draggedAnchor.GetComponent<RectTransform>().anchoredPosition 
+            += delta;
+    }
+
+    private void OnAnchorEndDrag()
+    {
+        if (isPlaying) return;
+    }
+
+    private GameObject draggedControlPoint;
+    private int draggedControlPointIndex;
+    private void OnControlPointBeginDrag(GameObject controlPoint,
+        int controlPointIndex)
+    {
+        if (isPlaying) return;
+        draggedControlPoint = controlPoint;
+        draggedControlPointIndex = controlPointIndex;
+    }
+
+    private void OnControlPointDrag(Vector2 delta)
+    {
+        if (isPlaying) return;
+        delta /= rootCanvas.localScale.x;
+        draggedControlPoint.GetComponent<RectTransform>()
+            .anchoredPosition += delta;
+    }
+
+    private void OnControlPointEndDrag()
+    {
+        if (isPlaying) return;
+    }
+    #endregion
+
     #region Refreshing
     private void Refresh()
     {
@@ -1350,6 +1407,8 @@ public class PatternPanel : MonoBehaviour
         if (n.note.type == NoteType.Drag)
         {
             o.GetComponent<NoteInEditor>().ResetCurve();
+            o.GetComponent<NoteInEditor>()
+                .ResetAnchorsAndControlPoints();
         }
     }
 
@@ -1477,6 +1536,8 @@ public class PatternPanel : MonoBehaviour
         foreach (GameObject o in dragNotes)
         {
             o.GetComponent<NoteInEditor>().ResetCurve();
+            o.GetComponent<NoteInEditor>()
+                .ResetAnchorsAndControlPoints();
         }
     }
     #endregion

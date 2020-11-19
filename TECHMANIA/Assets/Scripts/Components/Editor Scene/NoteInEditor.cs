@@ -29,12 +29,24 @@ public class NoteInEditor : MonoBehaviour
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
+
     public static event UnityAction<GameObject> BeginDrag;
     public static event UnityAction<Vector2> Drag;
     public static event UnityAction EndDrag;
+
     public static event UnityAction<GameObject> DurationHandleBeginDrag;
     public static event UnityAction<float> DurationHandleDrag;
     public static event UnityAction DurationHandleEndDrag;
+
+    // GameObject is the anchor being dragged, not this.gameObject.
+    public static event UnityAction<GameObject> AnchorBeginDrag;
+    public static event UnityAction<Vector2> AnchorDrag;
+    public static event UnityAction AnchorEndDrag;
+    // GameObject is the control point being dragged, not
+    // this.gameObject. int is control point index (0 or 1).
+    public static event UnityAction<GameObject, int> ControlPointBeginDrag;
+    public static event UnityAction<Vector2> ControlPointDrag;
+    public static event UnityAction ControlPointEndDrag;
 
     private void OnEnable()
     {
@@ -175,6 +187,62 @@ public class NoteInEditor : MonoBehaviour
     }
     #endregion
 
+    #region Event Relay From Curve
+    public void OnAnchorBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        AnchorBeginDrag?.Invoke(pointerData.pointerDrag);
+    }
+
+    public void OnAnchorDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        AnchorDrag?.Invoke(pointerData.delta);
+    }
+
+    public void OnAnchorEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        AnchorEndDrag?.Invoke();
+    }
+
+    public void OnControlPointBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+
+        GameObject dragging = pointerData.pointerDrag;
+        int controlPointIndex = -1;
+        DragNoteAnchor anchor = dragging
+            .GetComponentInParent<DragNoteAnchor>();
+        if (anchor.controlPointLeft == dragging)
+        {
+            controlPointIndex = 0;
+        }
+        else if (anchor.controlPointRight == dragging)
+        {
+            controlPointIndex = 1;
+        }
+        Debug.Log("controlPointIndex: " + controlPointIndex);
+        ControlPointBeginDrag?.Invoke(dragging, controlPointIndex);
+    }
+
+    public void OnControlPointDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        ControlPointDrag?.Invoke(pointerData.delta);
+    }
+
+    public void OnControlPointEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        ControlPointEndDrag?.Invoke();
+    }
+    #endregion
+
     #region Note Image and Path
     public void ResetNoteImageRotation()
     {
@@ -272,6 +340,9 @@ public class NoteInEditor : MonoBehaviour
     #region Curve
     // All positions relative to note head.
     public List<Vector2> PointsOnCurve { get; private set; }
+
+    // This does not render anchors and control points; call
+    // ResetAnchorsAndControlPoints for that.
     public void ResetCurve()
     {
         DragNote dragNote = GetComponent<NoteObject>().note
@@ -331,8 +402,16 @@ public class NoteInEditor : MonoBehaviour
             receiver.localRotation = Quaternion.Euler(0f, 0f,
                 angle * Mathf.Rad2Deg);
         }
+    }
 
-        // Draw anchors and control points.
+    public void ResetAnchorsAndControlPoints()
+    {
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
+        float pulseWidth = PatternPanel.ScanWidth /
+            EditorContext.Pattern.patternMetadata.bps /
+            Pattern.pulsesPerBeat;
+
         for (int i = 0; i < anchorContainer.childCount; i++)
         {
             if (anchorContainer.GetChild(i).gameObject !=
@@ -348,6 +427,7 @@ public class NoteInEditor : MonoBehaviour
             GameObject anchor = Instantiate(anchorTemplate,
                 parent: anchorContainer);
             anchor.SetActive(true);
+            anchor.GetComponent<DragNoteAnchor>().anchorIndex = i;
             anchor.GetComponent<RectTransform>().anchoredPosition
                 = new Vector2(
                     dragNode.anchor.pulse * pulseWidth,

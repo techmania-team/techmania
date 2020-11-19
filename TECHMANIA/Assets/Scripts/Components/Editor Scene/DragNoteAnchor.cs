@@ -8,4 +8,6 @@ public class DragNoteAnchor : MonoBehaviour
     public GameObject controlPointRight;
     public RectTransform pathToControlPointLeft;
     public RectTransform pathToControlPointRight;
+    [HideInInspector]
+    public int anchorIndex;
 }
