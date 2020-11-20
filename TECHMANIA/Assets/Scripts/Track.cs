@@ -589,6 +589,13 @@ public class DragNode
             controlAfter = controlAfter.Clone()
         };
     }
+
+    public void CopyFrom(DragNode other)
+    {
+        anchor = other.anchor;
+        controlBefore = other.controlBefore;
+        controlAfter = other.controlAfter;
+    }
 }
 
 [Serializable]

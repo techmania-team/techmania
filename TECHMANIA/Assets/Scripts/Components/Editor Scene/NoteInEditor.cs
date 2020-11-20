@@ -188,6 +188,21 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Event Relay From Curve
+    /* Controls on new anchor receiver:
+     * - Drag: add anchor and set initial control points
+     *   (symmetric)
+     * 
+     * On anchor:
+     * - Drag: move
+     * - Right click: delete
+     * - Alt-drag: reset control points (symmetric)
+     * 
+     * On control point:
+     * - Drag: move (opposite point, if exists and linked,
+     *   will rotate)
+     * - Right click: delete
+     * - Alt-drag: break link with opposite point and then move
+     */
     public void OnAnchorBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
@@ -225,7 +240,6 @@ public class NoteInEditor : MonoBehaviour
         {
             controlPointIndex = 1;
         }
-        Debug.Log("controlPointIndex: " + controlPointIndex);
         ControlPointBeginDrag?.Invoke(dragging, controlPointIndex);
     }
 
@@ -397,27 +411,24 @@ public class NoteInEditor : MonoBehaviour
                 PointsOnCurve[i + 1] - PointsOnCurve[i];
             receiver.sizeDelta = new Vector2(
                 toNextPoint.magnitude, receiver.sizeDelta.y);
-            float angle = Mathf.Atan2(-toNextPoint.y,
-                -toNextPoint.x);
+            float angle = Mathf.Atan2(toNextPoint.y,
+                toNextPoint.x);
             receiver.localRotation = Quaternion.Euler(0f, 0f,
                 angle * Mathf.Rad2Deg);
         }
     }
 
-    public void ResetAnchorsAndControlPoints()
+    public void ResetAllAnchorsAndControlPoints()
     {
         DragNote dragNote = GetComponent<NoteObject>().note
             as DragNote;
-        float pulseWidth = PatternPanel.ScanWidth /
-            EditorContext.Pattern.patternMetadata.bps /
-            Pattern.pulsesPerBeat;
 
         for (int i = 0; i < anchorContainer.childCount; i++)
         {
             if (anchorContainer.GetChild(i).gameObject !=
                 anchorTemplate)
             {
-                Destroy(anchorContainer.GetChild(i));
+                Destroy(anchorContainer.GetChild(i).gameObject);
             }
         }
         for (int i = 0; i < dragNote.nodes.Count; i++)
@@ -430,43 +441,51 @@ public class NoteInEditor : MonoBehaviour
             anchor.GetComponent<DragNoteAnchor>().anchorIndex = i;
             anchor.GetComponent<RectTransform>().anchoredPosition
                 = new Vector2(
-                    dragNode.anchor.pulse * pulseWidth,
+                    dragNode.anchor.pulse * PatternPanel.PulseWidth,
                     dragNode.anchor.lane * PatternPanel.LaneHeight);
 
             Vector2 controlPointLeftPosition = new Vector2(
-                dragNode.controlBefore.pulse * pulseWidth,
+                dragNode.controlBefore.pulse * PatternPanel.PulseWidth,
                 dragNode.controlBefore.lane * PatternPanel.LaneHeight);
             anchor.GetComponent<DragNoteAnchor>().controlPointLeft
                 .GetComponent<RectTransform>().anchoredPosition
                 = controlPointLeftPosition;
-            RectTransform pathToLeft = anchor
-                .GetComponent<DragNoteAnchor>()
-                .pathToControlPointLeft;
-            pathToLeft.sizeDelta = new Vector2(
-                controlPointLeftPosition.magnitude,
-                pathToLeft.sizeDelta.y);
-            pathToLeft.localRotation = Quaternion.Euler(
-                0f, 0f, Mathf.Atan2(
-                    -controlPointLeftPosition.y,
-                    -controlPointLeftPosition.x) * Mathf.Rad2Deg);
 
             Vector2 controlPointRightPosition = new Vector2(
-                dragNode.controlAfter.pulse * pulseWidth,
+                dragNode.controlAfter.pulse * PatternPanel.PulseWidth,
                 dragNode.controlAfter.lane * PatternPanel.LaneHeight);
             anchor.GetComponent<DragNoteAnchor>().controlPointRight
                 .GetComponent<RectTransform>().anchoredPosition
                 = controlPointRightPosition;
-            RectTransform pathToRight = anchor
-                .GetComponent<DragNoteAnchor>()
-                .pathToControlPointRight;
-            pathToRight.sizeDelta = new Vector2(
-                controlPointRightPosition.magnitude,
-                pathToRight.sizeDelta.y);
-            pathToRight.localRotation = Quaternion.Euler(
-                0f, 0f, Mathf.Atan2(
-                    -controlPointRightPosition.y,
-                    -controlPointRightPosition.x) * Mathf.Rad2Deg);
+
+            ResetPathsToControlPoints(
+                anchor.GetComponent<DragNoteAnchor>());
         }
+    }
+
+    public void ResetPathsToControlPoints(DragNoteAnchor anchor)
+    {
+        Vector2 leftPosition = anchor.controlPointLeft
+            .GetComponent<RectTransform>().anchoredPosition;
+        RectTransform pathToLeft = anchor.pathToControlPointLeft;
+        pathToLeft.sizeDelta = new Vector2(
+            leftPosition.magnitude,
+            pathToLeft.sizeDelta.y);
+        pathToLeft.localRotation = Quaternion.Euler(0f, 0f,
+            Mathf.Atan2(
+                leftPosition.y,
+                leftPosition.x) * Mathf.Rad2Deg);
+
+        Vector2 rightPosition = anchor.controlPointRight
+            .GetComponent<RectTransform>().anchoredPosition;
+        RectTransform pathToRight = anchor.pathToControlPointRight;
+        pathToRight.sizeDelta = new Vector2(
+            rightPosition.magnitude,
+            pathToRight.sizeDelta.y);
+        pathToRight.localRotation = Quaternion.Euler(0f, 0f,
+            Mathf.Atan2(
+                rightPosition.y,
+                rightPosition.x) * Mathf.Rad2Deg);
     }
     #endregion
 }

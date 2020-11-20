@@ -112,6 +112,15 @@ public class PatternPanel : MonoBehaviour
     private static int zoom;
     private int beatSnapDivisor;
     public static float ScanWidth => 10f * zoom;
+    public static float PulseWidth
+    {
+        get
+        {
+            return ScanWidth /
+                EditorContext.Pattern.patternMetadata.bps /
+                Pattern.pulsesPerBeat;
+        }
+    }
     private float WorkspaceContentWidth => numScans * ScanWidth;
     #endregion
 
@@ -1025,6 +1034,8 @@ public class PatternPanel : MonoBehaviour
 
     #region Drag Notes
     private GameObject draggedAnchor;
+    private DragNode draggedDragNode;
+    private DragNode draggedDragNodeClone;
     private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
@@ -1052,6 +1063,13 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
         draggedControlPoint = controlPoint;
         draggedControlPointIndex = controlPointIndex;
+
+        int anchorIndex = draggedControlPoint
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        draggedDragNode = (draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote)
+            .nodes[anchorIndex];
+        draggedDragNodeClone = draggedDragNode.Clone();
     }
 
     private void OnControlPointDrag(Vector2 delta)
@@ -1060,11 +1078,37 @@ public class PatternPanel : MonoBehaviour
         delta /= rootCanvas.localScale.x;
         draggedControlPoint.GetComponent<RectTransform>()
             .anchoredPosition += delta;
+        draggedControlPoint.GetComponentInParent<NoteInEditor>()
+            .ResetPathsToControlPoints(draggedControlPoint
+                .GetComponentInParent<DragNoteAnchor>());
+
+        Vector2 newPosition = draggedControlPoint
+            .GetComponent<RectTransform>()
+            .anchoredPosition;
+        FloatPoint newPoint = new FloatPoint(
+            pulse: newPosition.x / PulseWidth,
+            lane: newPosition.y / LaneHeight);
+        if (draggedControlPointIndex == 0)
+        {
+            draggedDragNode.controlBefore = newPoint;
+        }
+        else if (draggedControlPointIndex == 1)
+        {
+            draggedDragNode.controlAfter = newPoint;
+        }
+        draggedControlPoint.GetComponentInParent<NoteInEditor>()
+            .ResetCurve();
     }
 
     private void OnControlPointEndDrag()
     {
         if (isPlaying) return;
+
+        DragNode cloneAtEndDrag = draggedDragNode.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeClone);
+        EditorContext.PrepareForChange();
+        draggedDragNode.CopyFrom(cloneAtEndDrag);
+        EditorContext.DoneWithChange();
     }
     #endregion
 
@@ -1408,7 +1452,7 @@ public class PatternPanel : MonoBehaviour
         {
             o.GetComponent<NoteInEditor>().ResetCurve();
             o.GetComponent<NoteInEditor>()
-                .ResetAnchorsAndControlPoints();
+                .ResetAllAnchorsAndControlPoints();
         }
     }
 
@@ -1537,7 +1581,7 @@ public class PatternPanel : MonoBehaviour
         {
             o.GetComponent<NoteInEditor>().ResetCurve();
             o.GetComponent<NoteInEditor>()
-                .ResetAnchorsAndControlPoints();
+                .ResetAllAnchorsAndControlPoints();
         }
     }
     #endregion
