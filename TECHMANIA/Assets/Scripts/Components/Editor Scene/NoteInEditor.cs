@@ -367,7 +367,7 @@ public class NoteInEditor : MonoBehaviour
         {
             Vector2 pointOnCurve = new Vector2(
                 p.pulse * PatternPanel.PulseWidth,
-                p.lane * PatternPanel.LaneHeight);
+                -p.lane * PatternPanel.LaneHeight);
             PointsOnCurve.Add(pointOnCurve);
         }
         // TODO: do we need to smooth these points?
@@ -439,7 +439,7 @@ public class NoteInEditor : MonoBehaviour
             anchor.GetComponent<RectTransform>().anchoredPosition
                 = new Vector2(
                     dragNode.anchor.pulse * PatternPanel.PulseWidth,
-                    dragNode.anchor.lane * PatternPanel.LaneHeight);
+                    -dragNode.anchor.lane * PatternPanel.LaneHeight);
 
             for (int control = 0; control < 2; control++)
             {
@@ -447,7 +447,7 @@ public class NoteInEditor : MonoBehaviour
                     dragNode.GetControlPoint(control);
                 Vector2 position = new Vector2(
                     point.pulse * PatternPanel.PulseWidth,
-                    point.lane * PatternPanel.LaneHeight);
+                    -point.lane * PatternPanel.LaneHeight);
                 anchor.GetComponent<DragNoteAnchor>()
                     .GetControlPoint(control)
                     .GetComponent<RectTransform>()

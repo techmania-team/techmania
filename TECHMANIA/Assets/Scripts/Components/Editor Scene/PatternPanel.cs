@@ -1039,15 +1039,33 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
-        draggedAnchor = anchor;
+        draggedAnchor = anchor
+            .GetComponentInParent<DragNoteAnchor>().gameObject;
+        int anchorIndex = anchor
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        draggedDragNode = (anchor
+            .GetComponentInParent<NoteObject>().note as DragNote)
+            .nodes[anchorIndex];
     }
 
     private void OnAnchorDrag(Vector2 delta)
     {
         if (isPlaying) return;
         delta /= rootCanvas.localScale.x;
-        draggedAnchor.GetComponent<RectTransform>().anchoredPosition 
-            += delta;
+
+        Note noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
+        draggedDragNode.anchor.pulse = noteCursor.note.pulse
+            - noteHead.pulse;
+        draggedDragNode.anchor.lane = noteCursor.note.lane
+            - noteHead.lane;
+        draggedAnchor.GetComponent<RectTransform>().anchoredPosition
+            = new Vector2(
+                draggedDragNode.anchor.pulse * PulseWidth,
+                -draggedDragNode.anchor.lane * LaneHeight);
+
+        NoteInEditor noteInEditor = draggedAnchor
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
     }
 
     private void OnAnchorEndDrag()
@@ -1084,7 +1102,7 @@ public class PatternPanel : MonoBehaviour
             .anchoredPosition;
         FloatPoint newPoint = new FloatPoint(
             pulse: newPosition.x / PulseWidth,
-            lane: newPosition.y / LaneHeight);
+            lane: -newPosition.y / LaneHeight);
         draggedDragNode.SetControlPoint(draggedControlPointIndex,
             newPoint);
 
@@ -1108,18 +1126,19 @@ public class PatternPanel : MonoBehaviour
                 otherPosition.magnitude * Mathf.Sin(angle));
             FloatPoint otherPoint = new FloatPoint(
                 pulse: otherPosition.x / PulseWidth,
-                lane: otherPosition.y / LaneHeight);
+                lane: -otherPosition.y / LaneHeight);
 
             otherTransform.anchoredPosition = otherPosition;
             draggedDragNode.SetControlPoint(otherIndex,
                 otherPoint);
         }
 
-        draggedControlPoint.GetComponentInParent<NoteInEditor>()
-            .ResetPathsToControlPoints(draggedControlPoint
-                .GetComponentInParent<DragNoteAnchor>());
-        draggedControlPoint.GetComponentInParent<NoteInEditor>()
-            .ResetCurve();
+        NoteInEditor noteInEditor = draggedControlPoint
+                .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetPathsToControlPoints(
+            draggedControlPoint
+            .GetComponentInParent<DragNoteAnchor>());
+        noteInEditor.ResetCurve();
     }
 
     private void OnControlPointEndDrag()
