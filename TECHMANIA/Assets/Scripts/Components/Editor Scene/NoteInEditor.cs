@@ -363,13 +363,10 @@ public class NoteInEditor : MonoBehaviour
             as DragNote;
         PointsOnCurve = new List<Vector2>();
 
-        float pulseWidth = PatternPanel.ScanWidth /
-            EditorContext.Pattern.patternMetadata.bps /
-            Pattern.pulsesPerBeat;
         foreach (FloatPoint p in dragNote.Interpolate())
         {
             Vector2 pointOnCurve = new Vector2(
-                p.pulse * pulseWidth,
+                p.pulse * PatternPanel.PulseWidth,
                 p.lane * PatternPanel.LaneHeight);
             PointsOnCurve.Add(pointOnCurve);
         }
@@ -444,19 +441,18 @@ public class NoteInEditor : MonoBehaviour
                     dragNode.anchor.pulse * PatternPanel.PulseWidth,
                     dragNode.anchor.lane * PatternPanel.LaneHeight);
 
-            Vector2 controlPointLeftPosition = new Vector2(
-                dragNode.controlBefore.pulse * PatternPanel.PulseWidth,
-                dragNode.controlBefore.lane * PatternPanel.LaneHeight);
-            anchor.GetComponent<DragNoteAnchor>().controlPointLeft
-                .GetComponent<RectTransform>().anchoredPosition
-                = controlPointLeftPosition;
-
-            Vector2 controlPointRightPosition = new Vector2(
-                dragNode.controlAfter.pulse * PatternPanel.PulseWidth,
-                dragNode.controlAfter.lane * PatternPanel.LaneHeight);
-            anchor.GetComponent<DragNoteAnchor>().controlPointRight
-                .GetComponent<RectTransform>().anchoredPosition
-                = controlPointRightPosition;
+            for (int control = 0; control < 2; control++)
+            {
+                FloatPoint point =
+                    dragNode.GetControlPoint(control);
+                Vector2 position = new Vector2(
+                    point.pulse * PatternPanel.PulseWidth,
+                    point.lane * PatternPanel.LaneHeight);
+                anchor.GetComponent<DragNoteAnchor>()
+                    .GetControlPoint(control)
+                    .GetComponent<RectTransform>()
+                    .anchoredPosition = position;
+            }
 
             ResetPathsToControlPoints(
                 anchor.GetComponent<DragNoteAnchor>());
@@ -465,27 +461,20 @@ public class NoteInEditor : MonoBehaviour
 
     public void ResetPathsToControlPoints(DragNoteAnchor anchor)
     {
-        Vector2 leftPosition = anchor.controlPointLeft
-            .GetComponent<RectTransform>().anchoredPosition;
-        RectTransform pathToLeft = anchor.pathToControlPointLeft;
-        pathToLeft.sizeDelta = new Vector2(
-            leftPosition.magnitude,
-            pathToLeft.sizeDelta.y);
-        pathToLeft.localRotation = Quaternion.Euler(0f, 0f,
-            Mathf.Atan2(
-                leftPosition.y,
-                leftPosition.x) * Mathf.Rad2Deg);
-
-        Vector2 rightPosition = anchor.controlPointRight
-            .GetComponent<RectTransform>().anchoredPosition;
-        RectTransform pathToRight = anchor.pathToControlPointRight;
-        pathToRight.sizeDelta = new Vector2(
-            rightPosition.magnitude,
-            pathToRight.sizeDelta.y);
-        pathToRight.localRotation = Quaternion.Euler(0f, 0f,
-            Mathf.Atan2(
-                rightPosition.y,
-                rightPosition.x) * Mathf.Rad2Deg);
+        for (int control = 0; control < 2; control++)
+        {
+            Vector2 position = anchor.GetControlPoint(control)
+                .GetComponent<RectTransform>().anchoredPosition;
+            RectTransform path = anchor
+                .GetPathToControlPoint(control);
+            path.sizeDelta = new Vector2(
+                position.magnitude,
+                path.sizeDelta.y);
+            path.localRotation = Quaternion.Euler(0f, 0f,
+                Mathf.Atan2(
+                    position.y, position.x)
+                * Mathf.Rad2Deg);
+        }
     }
     #endregion
 }

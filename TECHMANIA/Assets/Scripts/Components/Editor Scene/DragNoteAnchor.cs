@@ -10,4 +10,20 @@ public class DragNoteAnchor : MonoBehaviour
     public RectTransform pathToControlPointRight;
     [HideInInspector]
     public int anchorIndex;
+
+    public GameObject GetControlPoint(int index)
+    {
+        if (index == 0)
+            return controlPointLeft;
+        else
+            return controlPointRight;
+    }
+
+    public RectTransform GetPathToControlPoint(int index)
+    {
+        if (index == 0)
+            return pathToControlPointLeft;
+        else
+            return pathToControlPointRight;
+    }
 }

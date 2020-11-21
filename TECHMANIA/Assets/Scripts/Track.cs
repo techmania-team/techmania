@@ -576,25 +576,41 @@ public class DragNode
     // Relative to DragNote
     public IntPoint anchor;
     // Relative to anchor
-    public FloatPoint controlBefore;
+    public FloatPoint controlLeft;
     // Relative to anchor
-    public FloatPoint controlAfter;
+    public FloatPoint controlRight;
+
+    public FloatPoint GetControlPoint(int index)
+    {
+        if (index == 0)
+            return controlLeft;
+        else
+            return controlRight;
+    }
+
+    public void SetControlPoint(int index, FloatPoint p)
+    {
+        if (index == 0)
+            controlLeft = p;
+        else
+            controlRight = p;
+    }
 
     public DragNode Clone()
     {
         return new DragNode()
         {
             anchor = anchor.Clone(),
-            controlBefore = controlBefore.Clone(),
-            controlAfter = controlAfter.Clone()
+            controlLeft = controlLeft.Clone(),
+            controlRight = controlRight.Clone()
         };
     }
 
     public void CopyFrom(DragNode other)
     {
         anchor = other.anchor;
-        controlBefore = other.controlBefore;
-        controlAfter = other.controlAfter;
+        controlLeft = other.controlLeft;
+        controlRight = other.controlRight;
     }
 }
 
@@ -622,9 +638,9 @@ public class DragNote : Note
         for (int i = 0; i < nodes.Count - 1; i++)
         {
             FloatPoint p0 = nodes[i].anchor.ToFloatPoint();
-            FloatPoint p1 = p0 + nodes[i].controlAfter;
+            FloatPoint p1 = p0 + nodes[i].controlRight;
             FloatPoint p3 = nodes[i + 1].anchor.ToFloatPoint();
-            FloatPoint p2 = p3 + nodes[i + 1].controlBefore;
+            FloatPoint p2 = p3 + nodes[i + 1].controlLeft;
             for (int step = 1; step <= numSteps; step++)
             {
                 float t = (float)step / numSteps;

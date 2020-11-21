@@ -1078,9 +1078,6 @@ public class PatternPanel : MonoBehaviour
         delta /= rootCanvas.localScale.x;
         draggedControlPoint.GetComponent<RectTransform>()
             .anchoredPosition += delta;
-        draggedControlPoint.GetComponentInParent<NoteInEditor>()
-            .ResetPathsToControlPoints(draggedControlPoint
-                .GetComponentInParent<DragNoteAnchor>());
 
         Vector2 newPosition = draggedControlPoint
             .GetComponent<RectTransform>()
@@ -1088,14 +1085,39 @@ public class PatternPanel : MonoBehaviour
         FloatPoint newPoint = new FloatPoint(
             pulse: newPosition.x / PulseWidth,
             lane: newPosition.y / LaneHeight);
-        if (draggedControlPointIndex == 0)
+        draggedDragNode.SetControlPoint(draggedControlPointIndex,
+            newPoint);
+
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (!alt && newPosition.sqrMagnitude > 0f)
         {
-            draggedDragNode.controlBefore = newPoint;
+            // Rotate opposing control point.
+            int otherIndex = 1 - draggedControlPointIndex;
+            RectTransform otherTransform = draggedControlPoint
+                .GetComponentInParent<DragNoteAnchor>()
+                .GetControlPoint(otherIndex)
+                .GetComponent<RectTransform>();
+            Vector2 otherPosition = otherTransform
+                .anchoredPosition;
+
+            float angle = Mathf.Atan2(newPosition.y, newPosition.x);
+            angle += Mathf.PI;
+            otherPosition = new Vector2(
+                otherPosition.magnitude * Mathf.Cos(angle),
+                otherPosition.magnitude * Mathf.Sin(angle));
+            FloatPoint otherPoint = new FloatPoint(
+                pulse: otherPosition.x / PulseWidth,
+                lane: otherPosition.y / LaneHeight);
+
+            otherTransform.anchoredPosition = otherPosition;
+            draggedDragNode.SetControlPoint(otherIndex,
+                otherPoint);
         }
-        else if (draggedControlPointIndex == 1)
-        {
-            draggedDragNode.controlAfter = newPoint;
-        }
+
+        draggedControlPoint.GetComponentInParent<NoteInEditor>()
+            .ResetPathsToControlPoints(draggedControlPoint
+                .GetComponentInParent<DragNoteAnchor>());
         draggedControlPoint.GetComponentInParent<NoteInEditor>()
             .ResetCurve();
     }
@@ -1106,6 +1128,20 @@ public class PatternPanel : MonoBehaviour
 
         DragNode cloneAtEndDrag = draggedDragNode.Clone();
         draggedDragNode.CopyFrom(draggedDragNodeClone);
+
+        // Are the control points' current position valid?
+        bool valid = cloneAtEndDrag.GetControlPoint(0).pulse <= 0f
+            && cloneAtEndDrag.GetControlPoint(1).pulse >= 0f;
+        if (!valid)
+        {
+            snackbar.Show("Left and Right Control Points must stay on the respective sides of the Anchor Point.");
+            NoteInEditor noteInEditor = draggedControlPoint
+                .GetComponentInParent<NoteInEditor>();
+            noteInEditor.ResetCurve();
+            noteInEditor.ResetAllAnchorsAndControlPoints();
+            return;
+        }
+
         EditorContext.PrepareForChange();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
         EditorContext.DoneWithChange();
@@ -1844,14 +1880,14 @@ public class PatternPanel : MonoBehaviour
             nodes.Add(new DragNode()
             {
                 anchor = new IntPoint(0, 0),
-                controlBefore = new FloatPoint(0f, 0f),
-                controlAfter = new FloatPoint(0f, 0f)
+                controlLeft = new FloatPoint(0f, 0f),
+                controlRight = new FloatPoint(0f, 0f)
             });
             nodes.Add(new DragNode()
             {
                 anchor = new IntPoint(relativePulseOfLastNode, 0),
-                controlBefore = new FloatPoint(0f, 0f),
-                controlAfter = new FloatPoint(0f, 0f)
+                controlLeft = new FloatPoint(0f, 0f),
+                controlRight = new FloatPoint(0f, 0f)
             });
         }
         DragNote n = new DragNote()
