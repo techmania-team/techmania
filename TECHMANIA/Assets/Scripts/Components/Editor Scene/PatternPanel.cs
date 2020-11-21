@@ -1039,18 +1039,25 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
+
         draggedAnchor = anchor
             .GetComponentInParent<DragNoteAnchor>().gameObject;
+        if (draggedAnchor.GetComponentInParent<DragNoteAnchor>()
+            .anchorIndex == 0) return;
+        
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
         draggedDragNode = (anchor
             .GetComponentInParent<NoteObject>().note as DragNote)
             .nodes[anchorIndex];
+        draggedDragNodeClone = draggedDragNode.Clone();
     }
 
     private void OnAnchorDrag(Vector2 delta)
     {
         if (isPlaying) return;
+        if (draggedAnchor.GetComponentInParent<DragNoteAnchor>()
+            .anchorIndex == 0) return;
         delta /= rootCanvas.localScale.x;
 
         Note noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
@@ -1071,6 +1078,59 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorEndDrag()
     {
         if (isPlaying) return;
+        if (draggedAnchor.GetComponentInParent<DragNoteAnchor>()
+            .anchorIndex == 0) return;
+
+        DragNode cloneAtEndDrag = draggedDragNode.Clone();
+        // Temporarily restore pre-drag data for snapshotting.
+        draggedDragNode.CopyFrom(draggedDragNodeClone);
+
+        // Is the anchor's current position valid?
+        DragNote dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        int anchorIndex = draggedAnchor
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        string invalidReason = "";
+
+        // Check 1: anchors are still in order.
+        bool anchorsInOrder = cloneAtEndDrag.anchor.pulse >
+            dragNote.nodes[anchorIndex - 1].anchor.pulse;
+        if (anchorIndex < dragNote.nodes.Count - 1)
+        {
+            anchorsInOrder = anchorsInOrder &&
+                cloneAtEndDrag.anchor.pulse <
+                dragNote.nodes[anchorIndex + 1].anchor.pulse;
+        }
+        if (!anchorsInOrder)
+        {
+            invalidReason = "Anchors must flow from left to right.";
+        }
+
+        // Check 2: anchor is at a valid place for notes.
+        string invalidPositionReason;
+        bool validPosition = CanAddNote(NoteType.Basic,
+            cloneAtEndDrag.anchor.pulse + dragNote.pulse,
+            cloneAtEndDrag.anchor.lane + dragNote.lane,
+            out invalidPositionReason);
+        if (!validPosition)
+        {
+            invalidReason = "Anchors cannot be placed on top of or inside other notes.";
+        }
+        
+        bool valid = anchorsInOrder && validPosition;
+        if (!valid)
+        {
+            snackbar.Show(invalidReason);
+            NoteInEditor noteInEditor = draggedAnchor
+                .GetComponentInParent<NoteInEditor>();
+            noteInEditor.ResetCurve();
+            noteInEditor.ResetAllAnchorsAndControlPoints();
+            return;
+        }
+
+        EditorContext.PrepareForChange();
+        draggedDragNode.CopyFrom(cloneAtEndDrag);
+        EditorContext.DoneWithChange();
     }
 
     private GameObject draggedControlPoint;
@@ -1146,6 +1206,7 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         DragNode cloneAtEndDrag = draggedDragNode.Clone();
+        // Temporarily restore pre-drag data for snapshotting.
         draggedDragNode.CopyFrom(draggedDragNodeClone);
 
         // Are the control points' current position valid?
