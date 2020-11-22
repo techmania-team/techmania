@@ -189,19 +189,17 @@ public class NoteInEditor : MonoBehaviour
 
     #region Event Relay From Curve
     /* Controls on new anchor receiver:
-     * - Drag: add anchor and set initial control points
-     *   (symmetric)
+     * - Click: add anchor (TODO)
      * 
      * On anchor:
      * - Drag: move
-     * - Right click: delete
-     * - Alt-drag: reset control points (symmetric)
+     * - Right click: delete (TODO)
+     * - Ctrl-drag: reset control points (symmetric) (TODO)
      * 
      * On control point:
-     * - Drag: move (opposite point, if exists and linked,
-     *   will rotate)
-     * - Right click: delete
-     * - Alt-drag: break link with opposite point and then move
+     * - Drag: move and rotate opposite point
+     * - Right click: delete (TODO)
+     * - Alt-drag: move without rotating opposite point
      */
     public void OnAnchorBeginDrag(BaseEventData eventData)
     {
@@ -371,6 +369,13 @@ public class NoteInEditor : MonoBehaviour
             PointsOnCurve.Add(pointOnCurve);
         }
         // TODO: do we need to smooth these points?
+
+        // Rotate note head.
+        float noteHeadAngle = Mathf.Atan2(
+            PointsOnCurve[1].y - PointsOnCurve[0].y,
+            PointsOnCurve[1].x - PointsOnCurve[0].x);
+        noteImage.localRotation = Quaternion.Euler(0f, 0f,
+            noteHeadAngle * Mathf.Rad2Deg);
 
         // Draw curve.
         curvedImage.SetVerticesDirty();
