@@ -448,20 +448,27 @@ public class NoteInEditor : MonoBehaviour
 
             for (int control = 0; control < 2; control++)
             {
-                FloatPoint point =
-                    dragNode.GetControlPoint(control);
-                Vector2 position = new Vector2(
-                    point.pulse * PatternPanel.PulseWidth,
-                    -point.lane * PatternPanel.LaneHeight);
-                anchor.GetComponent<DragNoteAnchor>()
-                    .GetControlPoint(control)
-                    .GetComponent<RectTransform>()
-                    .anchoredPosition = position;
+                ResetControlPointPosition(dragNode,
+                    anchor, control);
             }
 
             ResetPathsToControlPoints(
                 anchor.GetComponent<DragNoteAnchor>());
         }
+    }
+
+    public void ResetControlPointPosition(DragNode dragNode,
+        GameObject anchor,
+        int index)
+    {
+        FloatPoint point = dragNode.GetControlPoint(index);
+        Vector2 position = new Vector2(
+            point.pulse * PatternPanel.PulseWidth,
+            -point.lane * PatternPanel.LaneHeight);
+        anchor.GetComponent<DragNoteAnchor>()
+            .GetControlPoint(index)
+            .GetComponent<RectTransform>()
+            .anchoredPosition = position;
     }
 
     public void ResetPathsToControlPoints(DragNoteAnchor anchor)
