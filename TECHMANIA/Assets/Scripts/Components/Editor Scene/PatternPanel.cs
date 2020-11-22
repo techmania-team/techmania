@@ -170,9 +170,11 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag += OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
+        NoteInEditor.AnchorRightClicked += OnAnchorRightClicked;
         NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag += OnAnchorDrag;
         NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
+        NoteInEditor.ControlPointRightClicked += OnControlPointRightClicked;
         NoteInEditor.ControlPointBeginDrag += OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag += OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
@@ -191,9 +193,11 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag -= OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
+        NoteInEditor.AnchorRightClicked -= OnAnchorRightClicked;
         NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag -= OnAnchorDrag;
         NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
+        NoteInEditor.ControlPointRightClicked -= OnControlPointRightClicked;
         NoteInEditor.ControlPointBeginDrag -= OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag -= OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
@@ -1038,6 +1042,11 @@ public class PatternPanel : MonoBehaviour
     private DragNode draggedDragNodeClone;
     private bool ctrlHeldOnAnchorBeginDrag;
     private Vector2 mousePositionRelativeToDraggedAnchor;
+    private void OnAnchorRightClicked(GameObject anchor)
+    {
+
+    }
+
     private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
@@ -1221,6 +1230,28 @@ public class PatternPanel : MonoBehaviour
         EditorContext.PrepareForChange();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
         EditorContext.DoneWithChange();
+    }
+
+    private void OnControlPointRightClicked(GameObject controlPoint,
+        int controlPointIndex)
+    {
+        if (isPlaying) return;
+
+        int anchorIndex = controlPoint
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        DragNode node = (controlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote)
+            .nodes[anchorIndex];
+
+        EditorContext.PrepareForChange();
+        node.SetControlPoint(controlPointIndex,
+            new FloatPoint(0f, 0f));
+        EditorContext.DoneWithChange();
+
+        NoteInEditor noteInEditor = controlPoint
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
     }
 
     private GameObject draggedControlPoint;

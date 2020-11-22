@@ -26,4 +26,12 @@ public class DragNoteAnchor : MonoBehaviour
         else
             return pathToControlPointRight;
     }
+
+    public int GetControlPointIndex(GameObject controlPoint)
+    {
+        if (controlPoint == controlPointLeft)
+            return 0;
+        else
+            return 1;
+    }
 }

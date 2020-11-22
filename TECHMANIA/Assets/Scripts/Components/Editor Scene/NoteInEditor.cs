@@ -39,11 +39,13 @@ public class NoteInEditor : MonoBehaviour
     public static event UnityAction DurationHandleEndDrag;
 
     // GameObject is the anchor being dragged, not this.gameObject.
+    public static event UnityAction<GameObject> AnchorRightClicked;
     public static event UnityAction<GameObject> AnchorBeginDrag;
     public static event UnityAction<Vector2> AnchorDrag;
     public static event UnityAction AnchorEndDrag;
     // GameObject is the control point being dragged, not
     // this.gameObject. int is control point index (0 or 1).
+    public static event UnityAction<GameObject, int> ControlPointRightClicked;
     public static event UnityAction<GameObject, int> ControlPointBeginDrag;
     public static event UnityAction<Vector2> ControlPointDrag;
     public static event UnityAction ControlPointEndDrag;
@@ -194,13 +196,19 @@ public class NoteInEditor : MonoBehaviour
      * On anchor:
      * - Drag: move
      * - Right click: delete (TODO)
-     * - Ctrl-drag: reset control points (symmetric) (TODO)
+     * - Ctrl-drag: reset control points (symmetric)
      * 
      * On control point:
      * - Drag: move and rotate opposite point
      * - Right click: delete (TODO)
      * - Alt-drag: move without rotating opposite point
      */
+
+    public void OnAnchorClick(BaseEventData eventData)
+    {
+
+    }
+
     public void OnAnchorBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
@@ -221,23 +229,32 @@ public class NoteInEditor : MonoBehaviour
         AnchorEndDrag?.Invoke();
     }
 
+    public void OnControlPointClick(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        if (pointerData.button != 
+            PointerEventData.InputButton.Right) return;
+
+        GameObject clicked = pointerData.pointerPress;
+        DragNoteAnchor anchor = clicked
+            .GetComponentInParent<DragNoteAnchor>();
+        int controlPointIndex = anchor
+            .GetControlPointIndex(clicked);
+        ControlPointRightClicked?.Invoke(
+            clicked, controlPointIndex);
+    }
+
     public void OnControlPointBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
 
         GameObject dragging = pointerData.pointerDrag;
-        int controlPointIndex = -1;
         DragNoteAnchor anchor = dragging
             .GetComponentInParent<DragNoteAnchor>();
-        if (anchor.controlPointLeft == dragging)
-        {
-            controlPointIndex = 0;
-        }
-        else if (anchor.controlPointRight == dragging)
-        {
-            controlPointIndex = 1;
-        }
+        int controlPointIndex = anchor
+            .GetControlPointIndex(dragging);
         ControlPointBeginDrag?.Invoke(dragging, controlPointIndex);
     }
 
