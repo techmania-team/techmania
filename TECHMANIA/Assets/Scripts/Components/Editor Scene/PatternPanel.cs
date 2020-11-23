@@ -170,6 +170,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag += OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
+        NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked += OnAnchorRightClicked;
         NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag += OnAnchorDrag;
@@ -193,6 +194,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleBeginDrag -= OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
+        NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked -= OnAnchorRightClicked;
         NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag -= OnAnchorDrag;
@@ -1037,6 +1039,44 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Drag Notes
+    private void OnAnchorReceiverClicked(GameObject note)
+    {
+        DragNote dragNote = note.GetComponent<NoteObject>()
+            .note as DragNote;
+        IntPoint newAnchor = new IntPoint(
+            noteCursor.note.pulse - dragNote.pulse,
+            noteCursor.note.lane - dragNote.lane);
+
+        // Is there an existing anchor at the same pulse?
+        if (dragNote.nodes.Find((DragNode node) =>
+        {
+            return node.anchor.pulse == newAnchor.pulse;
+        }) != null)
+        {
+            snackbar.Show("The Anchor you are trying to add is too close to an existing Anchor.");
+            return;
+        }
+
+        DragNode newNode = new DragNode()
+        {
+            anchor = newAnchor,
+            controlLeft = new FloatPoint(0f, 0f),
+            controlRight = new FloatPoint(0f, 0f)
+        };
+        EditorContext.PrepareForChange();
+        dragNote.nodes.Add(newNode);
+        dragNote.nodes.Sort((DragNode node1, DragNode node2) =>
+        {
+            return node1.anchor.pulse - node2.anchor.pulse;
+        });
+        EditorContext.DoneWithChange();
+
+        NoteInEditor noteInEditor = note
+            .GetComponent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
+    }
+
     private GameObject draggedAnchor;
     private DragNode draggedDragNode;
     private DragNode draggedDragNodeClone;
@@ -1044,7 +1084,31 @@ public class PatternPanel : MonoBehaviour
     private Vector2 mousePositionRelativeToDraggedAnchor;
     private void OnAnchorRightClicked(GameObject anchor)
     {
+        int anchorIndex = anchor
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
 
+        if (anchorIndex == 0)
+        {
+            snackbar.Show("Cannot delete the first Anchor in each Drag Note.");
+            return;
+        }
+
+        DragNote dragNote = anchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        if (dragNote.nodes.Count == 2)
+        {
+            snackbar.Show("Drag Notes must contain at least 2 Anchors.");
+            return;
+        }
+
+        EditorContext.PrepareForChange();
+        dragNote.nodes.RemoveAt(anchorIndex);
+        EditorContext.DoneWithChange();
+
+        NoteInEditor noteInEditor = anchor
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
     }
 
     private void OnAnchorBeginDrag(GameObject anchor)

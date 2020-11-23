@@ -418,6 +418,7 @@ GameObject:
   - component: {fileID: 6204624284304649014}
   - component: {fileID: 7587965508216217759}
   - component: {fileID: 4698659424309545681}
+  - component: {fileID: 6127811067062351774}
   m_Layer: 5
   m_Name: Template
   m_TagString: Untagged
@@ -481,6 +482,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6127811067062351774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4309255764326499893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3849278891309320951}
+          m_MethodName: OnAnchorReceiverClick
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &4435161166670361497
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,7 +520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3685183525656269851}
   m_Layer: 5
-  m_Name: New Anchor Receiver
+  m_Name: Anchor Receiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -963,8 +992,8 @@ MonoBehaviour:
   transparentNoteImageWhenTrailTooShort: 1
   hiddenCurveSprite: {fileID: 21300000, guid: ff01f03feea82214b81fbd071f8cfa67, type: 3}
   curvedImage: {fileID: 1961221960409530346}
-  newAnchorReceiverContainer: {fileID: 3685183525656269851}
-  newAnchorReceiverTemplate: {fileID: 4309255764326499893}
+  anchorReceiverContainer: {fileID: 3685183525656269851}
+  anchorReceiverTemplate: {fileID: 4309255764326499893}
   anchorContainer: {fileID: 6780454689481885451}
   anchorTemplate: {fileID: 6801832108791033183}
 --- !u!114 &5565332570737286772

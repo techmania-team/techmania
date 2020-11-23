@@ -22,8 +22,8 @@ public class NoteInEditor : MonoBehaviour
     [Header("Drag Note")]
     public Sprite hiddenCurveSprite;
     public CurvedImage curvedImage;
-    public RectTransform newAnchorReceiverContainer;
-    public GameObject newAnchorReceiverTemplate;
+    public RectTransform anchorReceiverContainer;
+    public GameObject anchorReceiverTemplate;
     public RectTransform anchorContainer;
     public GameObject anchorTemplate;
 
@@ -38,6 +38,7 @@ public class NoteInEditor : MonoBehaviour
     public static event UnityAction<float> DurationHandleDrag;
     public static event UnityAction DurationHandleEndDrag;
 
+    public static event UnityAction<GameObject> AnchorReceiverClicked;
     // GameObject is the anchor being dragged, not this.gameObject.
     public static event UnityAction<GameObject> AnchorRightClicked;
     public static event UnityAction<GameObject> AnchorBeginDrag;
@@ -191,7 +192,7 @@ public class NoteInEditor : MonoBehaviour
 
     #region Event Relay From Curve
     /* Controls on new anchor receiver:
-     * - Click: add anchor (TODO)
+     * - Click: add anchor
      * 
      * On anchor:
      * - Drag: move
@@ -200,13 +201,28 @@ public class NoteInEditor : MonoBehaviour
      * 
      * On control point:
      * - Drag: move and rotate opposite point
-     * - Right click: delete (TODO)
+     * - Right click: delete
      * - Alt-drag: move without rotating opposite point
      */
 
+    public void OnAnchorReceiverClick(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        if (pointerData.button !=
+            PointerEventData.InputButton.Left) return;
+
+        AnchorReceiverClicked?.Invoke(gameObject);
+    }
+
     public void OnAnchorClick(BaseEventData eventData)
     {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerData = eventData as PointerEventData;
+        if (pointerData.button !=
+            PointerEventData.InputButton.Right) return;
 
+        AnchorRightClicked?.Invoke(pointerData.pointerPress);
     }
 
     public void OnAnchorBeginDrag(BaseEventData eventData)
@@ -399,29 +415,29 @@ public class NoteInEditor : MonoBehaviour
 
         // Draw new anchor receivers. Reuse them if applicable.
         for (int i = 0;
-            i < newAnchorReceiverContainer.childCount;
+            i < anchorReceiverContainer.childCount;
             i++)
         {
-            newAnchorReceiverContainer.GetChild(i).gameObject
+            anchorReceiverContainer.GetChild(i).gameObject
                 .SetActive(false);
         }
-        if (newAnchorReceiverTemplate.transform.GetSiblingIndex()
+        if (anchorReceiverTemplate.transform.GetSiblingIndex()
             != 0)
         {
-            newAnchorReceiverTemplate.transform.SetAsFirstSibling();
+            anchorReceiverTemplate.transform.SetAsFirstSibling();
         }
         for (int i = 0; i < PointsOnCurve.Count - 1; i++)
         {
             int childIndex = i + 1;
-            while (newAnchorReceiverContainer.childCount - 1
+            while (anchorReceiverContainer.childCount - 1
                 < childIndex)
             {
                 Instantiate(
-                    newAnchorReceiverTemplate,
-                    parent: newAnchorReceiverContainer);
+                    anchorReceiverTemplate,
+                    parent: anchorReceiverContainer);
             }
             RectTransform receiver = 
-                newAnchorReceiverContainer.GetChild(childIndex)
+                anchorReceiverContainer.GetChild(childIndex)
                 .GetComponent<RectTransform>();
             receiver.gameObject.SetActive(true);
             receiver.anchoredPosition = PointsOnCurve[i];
