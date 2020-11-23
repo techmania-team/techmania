@@ -79,8 +79,19 @@ public class NoteInEditor : MonoBehaviour
 
     private void UpdateSelection(HashSet<GameObject> selection)
     {
-        if (selectionOverlay == null) return;
-        selectionOverlay.enabled = selection.Contains(gameObject);
+        bool selected = selection.Contains(gameObject);
+        if (selectionOverlay != null)
+        {
+            selectionOverlay.enabled = selected;
+        }
+        if (anchorReceiverContainer != null)
+        {
+            anchorReceiverContainer.gameObject.SetActive(selected);
+        }
+        if (anchorContainer != null)
+        {
+            anchorContainer.gameObject.SetActive(selected);
+        }
     }
 
     public void SetKeysoundVisibility(bool visible)
@@ -191,20 +202,6 @@ public class NoteInEditor : MonoBehaviour
     #endregion
 
     #region Event Relay From Curve
-    /* Controls on new anchor receiver:
-     * - Click: add anchor
-     * 
-     * On anchor:
-     * - Drag: move
-     * - Right click: delete (TODO)
-     * - Ctrl-drag: reset control points (symmetric)
-     * 
-     * On control point:
-     * - Drag: move and rotate opposite point
-     * - Right click: delete
-     * - Alt-drag: move without rotating opposite point
-     */
-
     public void OnAnchorReceiverClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
