@@ -14,21 +14,6 @@ public class NoteInEditor : MonoBehaviour
     public Image selectionOverlay;
     public RectTransform noteImage;
 
-    /* The game scene and editor handle paths differently. In the
-     * editor, all Chain Nodes and Repeat Notes draw a path
-     * towards the previous Chain Head/Node or Repeat Head/Note.
-     * This is slightly easier for coding, since we can tell whether
-     * we should draw that path simply by looking at the note's
-     * type: Chain Heads and Repeat Heads don't draw paths, Chain
-     * Nodes and Repeat Notes do.
-     * 
-     * In the game scene however, Chain Heads and Chain Nodes both
-     * draw a path towards the next Chain Node, not the previous.
-     * For Repeat Notes, the last Repeat Note draws a path
-     * towards the Repeat Head and that's it. In both cases we do
-     * this so that notes being resolved will take the correct
-     * visual elements away with it.
-     */
     public RectTransform pathToPreviousNote;
     public RectTransform durationTrail;
     public RectTransform invisibleTrail;

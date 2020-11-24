@@ -25,12 +25,13 @@ public class NoteAppearance : MonoBehaviour
     public Image noteImage;
     public GameObject feverOverlay;
     [Header("Chain")]
-    public RectTransform pathToNextChainNode;
+    public RectTransform pathToPreviousNote;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
     private bool hidden;
 
+    #region State Interfaces
     public void SetHidden(bool hidden)
     {
         this.hidden = hidden;
@@ -53,6 +54,7 @@ public class NoteAppearance : MonoBehaviour
         state = State.Resolved;
         UpdateState();
     }
+    #endregion
 
     private void Start()
     {
@@ -67,6 +69,7 @@ public class NoteAppearance : MonoBehaviour
         UpdateState();
     }
 
+    #region Update
     private void Update()
     {
         if (hidden) return;
@@ -103,44 +106,120 @@ public class NoteAppearance : MonoBehaviour
         }
     }
 
+    private NoteType GetNoteType()
+    {
+        return GetComponent<NoteObject>().note.type;
+    }
+
     private void UpdateState()
     {
         // Is the note image visible and targetable?
         if (hidden)
         {
-            noteImage.enabled = false;
-        }
-        else
-        {
-            switch (state)
+            noteImage.gameObject.SetActive(false);
+            if (pathToPreviousNote != null)
             {
-                case State.Inactive:
-                case State.Resolved:
-                    noteImage.enabled = false;
-                    if (feverOverlayImage)
-                    {
-                        feverOverlayImage.enabled = false;
-                    }
-                    break;
-                case State.Prepare:
-                    noteImage.enabled = true;
+                pathToPreviousNote.gameObject.SetActive(false);
+            }
+            return;
+        }
+
+        switch (state)
+        {
+            case State.Inactive:
+            case State.Resolved:
+                noteImage.gameObject.SetActive(false);
+                if (nextChainNode != null)
+                {
+                    nextChainNode.GetComponent<NoteAppearance>()
+                        .TogglePathToPreviousNote(false);
+                }
+                if (feverOverlayImage)
+                {
+                    feverOverlayImage.enabled = false;
+                }
+                break;
+            case State.Prepare:
+                // TODO: Only the following should be transparent:
+                // - Basic Note
+                // - Trail of Hold Note
+                // - Curve
+                noteImage.gameObject.SetActive(true);
+                if (GetNoteType() == NoteType.Basic)
+                {
                     noteImage.color = new Color(1f, 1f, 1f, 0.5f);
-                    noteImage.raycastTarget = false;
-                    if (feverOverlayImage)
-                    {
-                        feverOverlayImage.enabled = true;
-                    }
-                    break;
-                case State.Active:
-                    noteImage.enabled = true;
-                    noteImage.color = Color.white;
-                    noteImage.raycastTarget = true;
-                    if (feverOverlayImage)
-                    {
-                        feverOverlayImage.enabled = true;
-                    }
-                    break;
+                }
+                if (nextChainNode != null)
+                {
+                    nextChainNode.GetComponent<NoteAppearance>()
+                        .TogglePathToPreviousNote(true);
+                }
+                if (feverOverlayImage)
+                {
+                    feverOverlayImage.enabled = true;
+                }
+                break;
+            case State.Active:
+                noteImage.gameObject.SetActive(true);
+                noteImage.color = Color.white;
+                if (nextChainNode != null)
+                {
+                    nextChainNode.GetComponent<NoteAppearance>()
+                        .TogglePathToPreviousNote(true);
+                }
+                if (feverOverlayImage)
+                {
+                    feverOverlayImage.enabled = true;
+                }
+                break;
+        }
+    }
+    #endregion
+
+    #region Path, Trail and Curve
+    /* A little complication here is that, to achieve the correct
+     * draw order, each Chain Node draws a path to its previous
+     * Chain Head/Node, the same way as in the editor.
+     * However, when a Chain Head/Node gets resolved, it should
+     * also take away the path pointing to it. Therefore, it's
+     * necessary for each Chain Head/Node to be aware of, and
+     * eventually control, the next Chain Node.
+     */
+    private GameObject nextChainNode;
+    public void SetNextChainNode(NoteObject nextChainNode)
+    {
+        this.nextChainNode = null;
+        if (nextChainNode != null)
+        {
+            this.nextChainNode = nextChainNode.gameObject;
+            nextChainNode.GetComponent<NoteAppearance>()
+                .PointPathTowards(GetComponent<RectTransform>());
+            if (GetNoteType() == NoteType.ChainHead)
+            {
+                UIUtils.RotateToward(
+                    noteImage.GetComponent<RectTransform>(),
+                    selfPos: GetComponent<RectTransform>()
+                        .anchoredPosition,
+                    targetPos: nextChainNode
+                        .GetComponent<RectTransform>()
+                        .anchoredPosition);
             }
         }
     }
+
+    private void PointPathTowards(RectTransform previousNote)
+    {
+        if (pathToPreviousNote == null) return;
+        UIUtils.PointToward(pathToPreviousNote,
+            selfPos: GetComponent<RectTransform>().anchoredPosition,
+            targetPos: previousNote
+                .GetComponent<RectTransform>().anchoredPosition);
+    }
+
+    private void TogglePathToPreviousNote(bool active)
+    {
+        if (pathToPreviousNote == null) return;
+        pathToPreviousNote.gameObject.SetActive(active);
+    }
+    #endregion
 }

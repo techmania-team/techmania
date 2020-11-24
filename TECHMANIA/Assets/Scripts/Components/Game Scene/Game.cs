@@ -356,20 +356,53 @@ public class Game : MonoBehaviour
         // play the keysound of upcoming notes.
         noteObjectsInLane = new List<LinkedList<NoteObject>>();
         numPlayableNotes = 0;
+        NoteObject nextChainNode = null;
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
             int scanOfN = n.note.pulse / PulsesPerScan;
             bool hidden = n.note.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
+
+            GameObject prefab = null;
+            switch (n.note.type)
+            {
+                case NoteType.Basic:
+                    prefab = basicNotePrefab;
+                    break;
+                case NoteType.ChainHead:
+                    prefab = chainHeadPrefab;
+                    break;
+                case NoteType.ChainNode:
+                    prefab = chainNodePrefab;
+                    break;
+            }
             NoteObject noteObject = scanObjects[scanOfN]
-                .SpawnNoteObject(basicNotePrefab, n.note, n.sound, hidden);
+                .SpawnNoteObject(prefab, n.note, n.sound, hidden);
 
             while (noteObjectsInLane.Count <= n.note.lane)
             {
                 noteObjectsInLane.Add(new LinkedList<NoteObject>());
             }
             noteObjectsInLane[n.note.lane].AddFirst(noteObject);
+
+            if (!hidden)
+            {
+                if (n.note.type == NoteType.ChainHead ||
+                    n.note.type == NoteType.ChainNode)
+                {
+                    noteObject.GetComponent<NoteAppearance>()
+                        .SetNextChainNode(nextChainNode);
+                }
+                if (n.note.type == NoteType.ChainHead)
+                {
+                    nextChainNode = null;
+                }
+                else if (n.note.type == NoteType.ChainNode)
+                {
+                    nextChainNode = noteObject;
+                }
+            }
         }
 
         // Ensure that a ScanChanged event is fired at the first update.
