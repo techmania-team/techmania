@@ -42,7 +42,9 @@ public class Game : MonoBehaviour
     public List<AudioSource> keysoundSources;
 
     [Header("Prefabs")]
-    public GameObject notePrefab;
+    public GameObject basicNotePrefab;
+    public GameObject chainHeadPrefab;
+    public GameObject chainNodePrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -361,7 +363,7 @@ public class Game : MonoBehaviour
             bool hidden = n.note.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
             NoteObject noteObject = scanObjects[scanOfN]
-                .SpawnNoteObject(notePrefab, n.note, n.sound, hidden);
+                .SpawnNoteObject(basicNotePrefab, n.note, n.sound, hidden);
 
             while (noteObjectsInLane.Count <= n.note.lane)
             {

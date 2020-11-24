@@ -146,4 +146,40 @@ public class UIUtils
     {
         return filename.Replace(".wav", "");
     }
+
+    public static void RotateToward(RectTransform self,
+        Vector2 selfPos, Vector2 targetPos)
+    {
+        float angleInRadian = Mathf.Atan2(targetPos.y - selfPos.y,
+            targetPos.x - selfPos.x);
+        self.localRotation = Quaternion.Euler(0f, 0f,
+            angleInRadian * Mathf.Rad2Deg);
+    }
+
+    public static void RotateToward(RectTransform self,
+        RectTransform target)
+    {
+        Vector2 selfPos = self.anchoredPosition;
+        Vector2 targetPos = target.anchoredPosition;
+        RotateToward(self, selfPos, targetPos);
+    }
+
+    public static void PointToward(RectTransform self,
+        Vector2 selfPos, Vector2 targetPos)
+    {
+        float distance = Vector2.Distance(selfPos, targetPos);
+        float angleInRadian = Mathf.Atan2(targetPos.y - selfPos.y,
+            targetPos.x - selfPos.x);
+        self.sizeDelta = new Vector2(distance, self.sizeDelta.y);
+        self.localRotation = Quaternion.Euler(0f, 0f,
+            angleInRadian * Mathf.Rad2Deg);
+    }
+
+    public static void PointToward(RectTransform self,
+        RectTransform target)
+    {
+        Vector2 selfPos = self.anchoredPosition;
+        Vector2 targetPos = target.anchoredPosition;
+        PointToward(self, selfPos, targetPos);
+    }
 }

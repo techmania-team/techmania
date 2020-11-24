@@ -13,6 +13,22 @@ public class NoteInEditor : MonoBehaviour
     public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
     public RectTransform noteImage;
+
+    /* The game scene and editor handle paths differently. In the
+     * editor, all Chain Nodes and Repeat Notes draw a path
+     * towards the previous Chain Head/Node or Repeat Head/Note.
+     * This is slightly easier for coding, since we can tell whether
+     * we should draw that path simply by looking at the note's
+     * type: Chain Heads and Repeat Heads don't draw paths, Chain
+     * Nodes and Repeat Notes do.
+     * 
+     * In the game scene however, Chain Heads and Chain Nodes both
+     * draw a path towards the next Chain Node, not the previous.
+     * For Repeat Notes, the last Repeat Note draws a path
+     * towards the Repeat Head and that's it. In both cases we do
+     * this so that notes being resolved will take the correct
+     * visual elements away with it.
+     */
     public RectTransform pathToPreviousNote;
     public RectTransform durationTrail;
     public RectTransform invisibleTrail;
@@ -306,27 +322,30 @@ public class NoteInEditor : MonoBehaviour
 
     public void PointPathToward(GameObject target)
     {
-        float distance = 0f;
-        float angleInRadian = 0f;
         if (target != null)
         {
-            Vector2 targetPos = target.GetComponent<RectTransform>()
-            .anchoredPosition;
-            Vector2 selfPos = GetComponent<RectTransform>().anchoredPosition;
-            distance = Vector2.Distance(targetPos, selfPos);
-            angleInRadian = Mathf.Atan2(selfPos.y - targetPos.y,
-                selfPos.x - targetPos.x);
+            UIUtils.PointToward(self: pathToPreviousNote,
+                selfPos: GetComponent<RectTransform>()
+                    .anchoredPosition,
+                targetPos: target.GetComponent<RectTransform>()
+                    .anchoredPosition);
+        }
+        else
+        {
+            pathToPreviousNote.sizeDelta = Vector2.zero;
+            pathToPreviousNote.localRotation = Quaternion.identity;
         }
 
-        pathToPreviousNote.sizeDelta = new Vector2(distance, 0f);
-        pathToPreviousNote.localRotation = Quaternion.Euler(0f, 0f,
-            angleInRadian * Mathf.Rad2Deg);
-
         if (target != null &&
-            target.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+            target.GetComponent<NoteObject>().note.type
+                == NoteType.ChainHead)
         {
-            target.GetComponent<NoteInEditor>().noteImage.localRotation =
-                Quaternion.Euler(0f, 0f, angleInRadian * Mathf.Rad2Deg);
+            UIUtils.RotateToward(
+                self: target.GetComponent<NoteInEditor>().noteImage,
+                selfPos: target.GetComponent<RectTransform>()
+                    .anchoredPosition,
+                targetPos: GetComponent<RectTransform>()
+                    .anchoredPosition);
         }
     }
     #endregion
@@ -401,11 +420,9 @@ public class NoteInEditor : MonoBehaviour
         // TODO: do we need to smooth these points?
 
         // Rotate note head.
-        float noteHeadAngle = Mathf.Atan2(
-            PointsOnCurve[1].y - PointsOnCurve[0].y,
-            PointsOnCurve[1].x - PointsOnCurve[0].x);
-        noteImage.localRotation = Quaternion.Euler(0f, 0f,
-            noteHeadAngle * Mathf.Rad2Deg);
+        UIUtils.RotateToward(self: noteImage,
+            selfPos: PointsOnCurve[0],
+            targetPos: PointsOnCurve[1]);
 
         // Draw curve.
         curvedImage.SetVerticesDirty();
@@ -433,20 +450,15 @@ public class NoteInEditor : MonoBehaviour
                     anchorReceiverTemplate,
                     parent: anchorReceiverContainer);
             }
-            RectTransform receiver = 
+            RectTransform receiver =
                 anchorReceiverContainer.GetChild(childIndex)
                 .GetComponent<RectTransform>();
             receiver.gameObject.SetActive(true);
             receiver.anchoredPosition = PointsOnCurve[i];
 
-            Vector2 toNextPoint =
-                PointsOnCurve[i + 1] - PointsOnCurve[i];
-            receiver.sizeDelta = new Vector2(
-                toNextPoint.magnitude, receiver.sizeDelta.y);
-            float angle = Mathf.Atan2(toNextPoint.y,
-                toNextPoint.x);
-            receiver.localRotation = Quaternion.Euler(0f, 0f,
-                angle * Mathf.Rad2Deg);
+            UIUtils.PointToward(receiver,
+                selfPos: PointsOnCurve[i],
+                targetPos: PointsOnCurve[i + 1]);
         }
     }
 
@@ -509,13 +521,9 @@ public class NoteInEditor : MonoBehaviour
                 .GetComponent<RectTransform>().anchoredPosition;
             RectTransform path = anchor
                 .GetPathToControlPoint(control);
-            path.sizeDelta = new Vector2(
-                position.magnitude,
-                path.sizeDelta.y);
-            path.localRotation = Quaternion.Euler(0f, 0f,
-                Mathf.Atan2(
-                    position.y, position.x)
-                * Mathf.Rad2Deg);
+            UIUtils.PointToward(path,
+                selfPos: Vector2.zero,
+                targetPos: position);
         }
     }
     #endregion
