@@ -819,7 +819,8 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
-            NoteObject n = r.gameObject.GetComponent<NoteObject>();
+            NoteObject n = r.gameObject
+                .GetComponentInParent<NoteObject>();
             if (n != null)
             {
                 float correctTime = n.note.time;

@@ -145,7 +145,7 @@ public class PatternPanel : MonoBehaviour
 
         // Scanline
         scanline.floatPulse = 0f;
-        scanline.GetComponent<SelfPositioner>().Reposition();
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
 
         // UI and options
         noteType = NoteType.Basic;
@@ -310,7 +310,7 @@ public class PatternPanel : MonoBehaviour
         noteCursor.note = new Note();
         noteCursor.note.pulse = snappedCursorPulse;
         noteCursor.note.lane = snappedLane;
-        noteCursor.GetComponent<SelfPositioner>().Reposition();
+        noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
     }
 
     private void MoveScanlineToMouse()
@@ -326,7 +326,7 @@ public class PatternPanel : MonoBehaviour
         int snappedCursorPulse = SnapPulse(cursorPulse);
 
         scanline.floatPulse = snappedCursorPulse;
-        scanline.GetComponent<SelfPositioner>().Reposition();
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         RefreshScanlinePositionSlider();
     }
 
@@ -730,7 +730,7 @@ public class PatternPanel : MonoBehaviour
             * Pattern.pulsesPerBeat;
         float scanlineRawPulse = totalPulses * newValue;
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
-        scanline.GetComponent<SelfPositioner>().Reposition();
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
     }
 
@@ -931,7 +931,7 @@ public class PatternPanel : MonoBehaviour
 
         foreach (GameObject o in selectedNoteObjects)
         {
-            o.GetComponent<SelfPositioner>().Reposition();
+            o.GetComponent<SelfPositionerInEditor>().Reposition();
             o.GetComponent<NoteInEditor>().ResetPathPosition();
         }
     }
@@ -1494,7 +1494,7 @@ public class PatternPanel : MonoBehaviour
             Marker m = marker.GetComponent<Marker>();
             m.pulse = scan * bps * Pattern.pulsesPerBeat;
             m.SetTimeDisplay();
-            m.GetComponent<SelfPositioner>().Reposition();
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
             allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Other));
 
@@ -1505,7 +1505,7 @@ public class PatternPanel : MonoBehaviour
                 m = marker.GetComponent<Marker>();
                 m.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
                 m.SetTimeDisplay();
-                m.GetComponent<SelfPositioner>().Reposition();
+                m.GetComponent<SelfPositionerInEditor>().Reposition();
                 allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Other));
             }
@@ -1518,7 +1518,7 @@ public class PatternPanel : MonoBehaviour
             Marker m = marker.GetComponent<Marker>();
             m.pulse = e.pulse;
             m.SetBpmText(e.bpm);
-            m.GetComponent<SelfPositioner>().Reposition();
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
             allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Bpm));
         }
@@ -1543,7 +1543,7 @@ public class PatternPanel : MonoBehaviour
 
         foreach (KeyValuePair<Transform, MarkerPriority> pair in allMarkers)
         {
-            SelfPositioner positioner = pair.Key.GetComponent<SelfPositioner>();
+            SelfPositionerInEditor positioner = pair.Key.GetComponent<SelfPositionerInEditor>();
             positioner.Reposition();
         }
     }
@@ -1595,7 +1595,7 @@ public class PatternPanel : MonoBehaviour
         noteInEditor.SetKeysoundText();
         noteInEditor.SetKeysoundVisibility(showKeysoundToggle.isOn);
         if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
-        noteObject.GetComponent<SelfPositioner>().Reposition();
+        noteObject.GetComponent<SelfPositionerInEditor>().Reposition();
 
         sortedNoteObjects.Add(noteObject.gameObject);
 
@@ -2416,7 +2416,7 @@ public class PatternPanel : MonoBehaviour
 
         backingTrackSource.Stop();
         scanline.floatPulse = playbackStartingPulse;
-        scanline.GetComponent<SelfPositioner>().Reposition();
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
     }
@@ -2456,7 +2456,7 @@ public class PatternPanel : MonoBehaviour
 
         // Move scanline.
         scanline.floatPulse = playbackCurrentPulse;
-        scanline.GetComponent<SelfPositioner>().Reposition();
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
     }

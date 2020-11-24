@@ -4,7 +4,7 @@ using UnityEngine;
 
 // Shared by notes and markers, this component positions
 // the GameObject at the appropriate position in the workspace.
-public class SelfPositioner : MonoBehaviour
+public class SelfPositionerInEditor : MonoBehaviour
 {
     private void OnEnable()
     {

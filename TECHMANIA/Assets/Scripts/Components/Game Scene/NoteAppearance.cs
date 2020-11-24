@@ -9,6 +9,8 @@ using UnityEngine.UI;
 // when a held down click/touch enters another lane, Game can
 // handle that has a new click/touch. This is necessary for chain
 // notes.
+//
+// TODO: Add a Playing state for notes with a duration.
 public class NoteAppearance : MonoBehaviour
 {
     private enum State
@@ -20,7 +22,11 @@ public class NoteAppearance : MonoBehaviour
     }
     private State state;
 
-    private Image image;
+    public Image noteImage;
+    public GameObject feverOverlay;
+    [Header("Chain")]
+    public RectTransform pathToNextChainNode;
+
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
     private bool hidden;
@@ -50,9 +56,12 @@ public class NoteAppearance : MonoBehaviour
 
     private void Start()
     {
-        image = GetComponent<Image>();
-        feverOverlayAnimator = GetComponentInChildren<Animator>();
-        feverOverlayImage = feverOverlayAnimator.GetComponent<Image>();
+        if (feverOverlay != null)
+        {
+            feverOverlayAnimator =
+                feverOverlay.GetComponent<Animator>();
+            feverOverlayImage = feverOverlay.GetComponent<Image>();
+        }
 
         state = State.Inactive;
         UpdateState();
@@ -63,6 +72,14 @@ public class NoteAppearance : MonoBehaviour
         if (hidden) return;
         if (state == State.Inactive || state == State.Resolved) return;
 
+        if (feverOverlay != null)
+        {
+            UpdateFeverOverlay();
+        }
+    }
+
+    private void UpdateFeverOverlay()
+    {
         if (Game.feverState == Game.FeverState.Active)
         {
             if (!feverOverlayAnimator.enabled)
@@ -91,7 +108,7 @@ public class NoteAppearance : MonoBehaviour
         // Is the note image visible and targetable?
         if (hidden)
         {
-            image.enabled = false;
+            noteImage.enabled = false;
         }
         else
         {
@@ -99,20 +116,29 @@ public class NoteAppearance : MonoBehaviour
             {
                 case State.Inactive:
                 case State.Resolved:
-                    image.enabled = false;
-                    feverOverlayImage.enabled = false;
+                    noteImage.enabled = false;
+                    if (feverOverlayImage)
+                    {
+                        feverOverlayImage.enabled = false;
+                    }
                     break;
                 case State.Prepare:
-                    image.enabled = true;
-                    image.color = new Color(1f, 1f, 1f, 0.5f);
-                    image.raycastTarget = false;
-                    feverOverlayImage.enabled = true;
+                    noteImage.enabled = true;
+                    noteImage.color = new Color(1f, 1f, 1f, 0.5f);
+                    noteImage.raycastTarget = false;
+                    if (feverOverlayImage)
+                    {
+                        feverOverlayImage.enabled = true;
+                    }
                     break;
                 case State.Active:
-                    image.enabled = true;
-                    image.color = Color.white;
-                    image.raycastTarget = true;
-                    feverOverlayImage.enabled = true;
+                    noteImage.enabled = true;
+                    noteImage.color = Color.white;
+                    noteImage.raycastTarget = true;
+                    if (feverOverlayImage)
+                    {
+                        feverOverlayImage.enabled = true;
+                    }
                     break;
             }
         }

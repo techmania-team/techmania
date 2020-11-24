@@ -4,6 +4,10 @@ using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
 
+// TODO: When spawning hold notes that cross scans, Game should
+// spawn extensions for those notes, in the appropriate scan(s).
+// NoteAppearance of the hold note should be aware of, and control,
+// these extensions.
 public class Scan : MonoBehaviour
 {
     [HideInInspector]
