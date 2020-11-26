@@ -116,6 +116,10 @@ public class Game : MonoBehaviour
     // find the upcoming note in each lane, and in turn:
     // - play keysounds on empty hits
     // - check the Break condition on upcoming notes
+    //
+    // TODO: make seperate lists for mouse and keyboard notes in KM.
+    // This ensures we can play the correct empty hit sounds for
+    // each input.
     private List<LinkedList<NoteObject>> noteObjectsInLane;
     private int numPlayableNotes;
 
@@ -687,6 +691,49 @@ public class Game : MonoBehaviour
             return;
         }
 
+        // Input handling gets a bit complicated so here's a graph.
+        //
+        // Touch/KM                Keys/KM           Timer
+        // --------                -------           -----
+        // OnFingerDown/Move[0]    OnKeyDown[1]      UpdateTime[2]
+        //     |                       |                 |
+        // ProcessMouseOrFingerDown    |                 |
+        //     |                       |                 |
+        //     -------------------------                 |
+        //                |                              |
+        //             HitNote                           |
+        //              |   |                            |
+        //              |   ------------------------------
+        //              |                 |
+        //        EnterOngoing        ResolveNote
+        //
+        // [0] mouse is considered finger #0; finger moving between
+        // lanes will cause a new finger down event.
+        // [1] takes a lane number in Keys, works on any lane in KM.
+        // [2] the timer will resolve notes as Breaks when the
+        // time window to play them has completely passed.
+        //
+        //
+        //
+        // Parallel to the above is the handling of ongoing notes.
+        //
+        // Touch/KM           Keys/KM         Update
+        // --------           -------         ------
+        // OnFingerHeld       OnKeyHeld[2]    UpdateOngoingNotes[1]
+        //      |                 |                    |
+        //      -------------------                    |
+        //              |                              |
+        //        HitOngoingNote[0]                    |
+        //              |                              |
+        //              --------------------------------
+        //                              |
+        //                         ResolveNote
+        //
+        // [0] marks the note as being hit on the current frame, or
+        // resolves the note if its duration has passed.
+        // [1] after all input is handled, any ongoing note not
+        // marked on the current frame will be resolved as Misses.
+        // [2] takes a lane number in Keys, works on any lane in KM.
         ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
         switch (scheme)
         {
@@ -701,6 +748,10 @@ public class Game : MonoBehaviour
                             break;
                         case TouchPhase.Moved:
                             OnFingerMove(t.fingerId, t.position);
+                            OnFingerHeld(t.position);
+                            break;
+                        case TouchPhase.Stationary:
+                            OnFingerHeld(t.position);
                             break;
                         case TouchPhase.Canceled:
                         case TouchPhase.Ended:
@@ -718,6 +769,10 @@ public class Game : MonoBehaviour
                         {
                             OnKeyDownOnLane(lane);
                         }
+                        if (Input.GetKey(key))
+                        {
+                            OnKeyHeldOnLane(lane);
+                        }
                     }
                 }
                 break;
@@ -728,11 +783,30 @@ public class Game : MonoBehaviour
                 }
                 else if (Input.GetMouseButton(0))
                 {
+                    // TODO: does it matter if there's a down event?
                     OnFingerMove(0, Input.mousePosition);
                 }
                 else if (Input.GetMouseButtonUp(0))
                 {
                     OnFingerUp(0);
+                }
+                if (Input.GetMouseButton(0))
+                {
+                    OnFingerHeld(Input.mousePosition);
+                }
+                for (int lane = 0; lane < 4; lane++)
+                {
+                    foreach (KeyCode key in keysForLane[lane])
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            OnKeyDownOnAnyLane();
+                        }
+                        if (Input.GetKey(key))
+                        {
+                            OnKeyHeldOnAnyLane();
+                        }
+                    }
                 }
                 break;
         }
@@ -856,6 +930,10 @@ public class Game : MonoBehaviour
         {
             NoteObject n = r.gameObject
                 .GetComponentInParent<NoteObject>();
+            // TODO: for KM, only respond to the following types:
+            // - Basic
+            // - Chain Head/Node
+            // - Drag
             if (n != null)
             {
                 float correctTime = n.note.time;
@@ -896,6 +974,11 @@ public class Game : MonoBehaviour
 
         return kOutsideAllLanes;
     }
+
+    private void OnFingerHeld(Vector2 screenPosition)
+    {
+        // TODO
+    }
     #endregion
 
     #region Keyboard
@@ -920,6 +1003,23 @@ public class Game : MonoBehaviour
             // The keystroke lands on this note.
             HitNote(earliestNote, difference);
         }
+    }
+
+    private void OnKeyDownOnAnyLane()
+    {
+        // KM only.
+        // TODO
+    }
+
+    private void OnKeyHeldOnLane(int lane)
+    {
+        // TODO
+    }
+
+    private void OnKeyHeldOnAnyLane()
+    {
+        // KM only.
+        // TODO
     }
     #endregion
 

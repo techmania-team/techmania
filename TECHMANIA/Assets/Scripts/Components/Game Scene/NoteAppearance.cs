@@ -177,14 +177,13 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region Path, Trail and Curve
-    /* A little complication here is that, to achieve the correct
-     * draw order, each Chain Node draws a path to its previous
-     * Chain Head/Node, the same way as in the editor.
-     * However, when a Chain Head/Node gets resolved, it should
-     * also take away the path pointing to it. Therefore, it's
-     * necessary for each Chain Head/Node to be aware of, and
-     * eventually control, the next Chain Node.
-     */
+    // A little complication here is that, to achieve the correct
+    // draw order, each Chain Node draws a path to its previous
+    // Chain Head/Node, the same way as in the editor.
+    // However, when a Chain Head/Node gets resolved, it should
+    // also take away the path pointing to it. Therefore, it's
+    // necessary for each Chain Head/Node to be aware of, and
+    // eventually control, the next Chain Node.
     private GameObject nextChainNode;
     public void SetNextChainNode(NoteObject nextChainNode)
     {
