@@ -1193,7 +1193,7 @@ public class Game : MonoBehaviour
                 // Register an ongoing note.
                 ongoingNotes.Add(n, judgement);
                 ongoingNoteIsHitOnThisFrame.Add(n, true);
-                // TODO: tell NoteAppearance to enter Ongoing state.
+                n.GetComponent<NoteAppearance>().SetOngoing();
                 break;
             default:
                 ResolveNote(n, judgement);

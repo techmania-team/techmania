@@ -18,9 +18,17 @@ public class NoteAppearance : MonoBehaviour
         Inactive,  // Note has not appeared yet; starting state
         Prepare,  // Note is 50% transparent
         Active,  // Note is opaque and can be played
+        Ongoing,  // Note with a duration is being played
         Resolved  // Note is resolved and no longer visible
     }
     private State state;
+
+    private enum Visibility
+    {
+        Hidden,
+        Transparent,
+        Visible
+    }
 
     public Image noteImage;
     public GameObject feverOverlay;
@@ -54,10 +62,109 @@ public class NoteAppearance : MonoBehaviour
         UpdateState();
     }
 
+    public void SetOngoing()
+    {
+        state = State.Ongoing;
+        UpdateState();
+    }
+
     public void Resolve()
     {
         state = State.Resolved;
         UpdateState();
+    }
+    #endregion
+
+    #region States
+    private void SetNoteImageVisibility(Visibility v)
+    {
+        noteImage.gameObject.SetActive(v != Visibility.Hidden);
+        noteImage.color = (v == Visibility.Transparent) ?
+            new Color(1f, 1f, 1f, 0.6f) :
+            Color.white;
+    }
+
+    private void SetFeverOverlayVisibility(Visibility v)
+    {
+        if (feverOverlayImage == null) return;
+        feverOverlayImage.enabled = v != Visibility.Hidden;
+    }
+
+    private void SetPathToPreviousChainNodeVisibility(Visibility v)
+    {
+        if (pathToPreviousNote == null) return;
+        pathToPreviousNote.gameObject.SetActive(
+            v != Visibility.Hidden);
+    }
+
+    private void SetPathFromNextChainNodeVisibility(Visibility v)
+    {
+        if (nextChainNode == null) return;
+        nextChainNode.GetComponent<NoteAppearance>()
+            .SetPathToPreviousChainNodeVisibility(v);
+    }
+
+    private void SetDurationTrailVisibility(Visibility v)
+    {
+        if (durationTrail == null) return;
+        durationTrail.gameObject.SetActive(v != Visibility.Hidden);
+        ongoingTrail.gameObject.SetActive(v != Visibility.Hidden);
+        Color color = (v == Visibility.Transparent) ?
+            new Color(1f, 1f, 1f, 0.6f) :
+            Color.white;
+        durationTrail.GetComponent<Image>().color = color;
+        ongoingTrail.GetComponent<Image>().color = color;
+    }
+
+    private void UpdateState()
+    {
+        // Is the note image visible and targetable?
+        if (hidden)
+        {
+            SetNoteImageVisibility(Visibility.Hidden);
+            SetFeverOverlayVisibility(Visibility.Hidden);
+            SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
+            SetDurationTrailVisibility(Visibility.Hidden);
+            return;
+        }
+
+        switch (state)
+        {
+            case State.Inactive:
+            case State.Resolved:
+                SetNoteImageVisibility(Visibility.Hidden);
+                SetFeverOverlayVisibility(Visibility.Hidden);
+                SetPathFromNextChainNodeVisibility(
+                    Visibility.Hidden);
+                SetDurationTrailVisibility(Visibility.Hidden);
+                break;
+            case State.Prepare:
+                // Only the following should be transparent:
+                // - Basic Note
+                // - Trail of Hold Note
+                // - Curve (TODO)
+                if (GetNoteType() == NoteType.Basic)
+                {
+                    SetNoteImageVisibility(Visibility.Transparent);
+                }
+                else
+                {
+                    SetNoteImageVisibility(Visibility.Visible);
+                }
+                SetFeverOverlayVisibility(Visibility.Visible);
+                SetPathFromNextChainNodeVisibility(
+                    Visibility.Visible);
+                SetDurationTrailVisibility(Visibility.Transparent);
+                break;
+            case State.Active:
+            case State.Ongoing:
+                SetNoteImageVisibility(Visibility.Visible);
+                SetFeverOverlayVisibility(Visibility.Visible);
+                SetPathFromNextChainNodeVisibility(
+                    Visibility.Visible);
+                SetDurationTrailVisibility(Visibility.Visible);
+                break;
+        }
     }
     #endregion
 
@@ -84,7 +191,7 @@ public class NoteAppearance : MonoBehaviour
         {
             UpdateFeverOverlay();
         }
-        if (ongoingTrail != null)
+        if (state == State.Ongoing && ongoingTrail != null)
         {
             UpdateOngoingTrail();
         }
@@ -114,111 +221,12 @@ public class NoteAppearance : MonoBehaviour
             }
         }
     }
-
-    private void UpdateOngoingTrail()
-    {
-        // TODO
-    }
+    #endregion
 
     private NoteType GetNoteType()
     {
         return GetComponent<NoteObject>().note.type;
     }
-
-    private void UpdateState()
-    {
-        // Is the note image visible and targetable?
-        if (hidden)
-        {
-            noteImage.gameObject.SetActive(false);
-            if (pathToPreviousNote != null)
-            {
-                pathToPreviousNote.gameObject.SetActive(false);
-            }
-            if (durationTrail != null)
-            {
-                durationTrail.gameObject.SetActive(false);
-                ongoingTrail.gameObject.SetActive(false);
-            }
-            return;
-        }
-
-        // TODO: clean this up. Maybe methods for each field?
-        // In preparation of practice mode, each case should
-        // set every single field.
-        switch (state)
-        {
-            case State.Inactive:
-            case State.Resolved:
-                noteImage.gameObject.SetActive(false);
-                if (nextChainNode != null)
-                {
-                    nextChainNode.GetComponent<NoteAppearance>()
-                        .TogglePathToPreviousNote(false);
-                }
-                if (durationTrail != null)
-                {
-                    durationTrail.gameObject.SetActive(false);
-                    ongoingTrail.gameObject.SetActive(false);
-                }
-                if (feverOverlayImage)
-                {
-                    feverOverlayImage.enabled = false;
-                }
-                break;
-            case State.Prepare:
-                // TODO: Only the following should be transparent:
-                // - Basic Note
-                // - Trail of Hold Note
-                // - Curve
-                Color transparent = new Color(1f, 1f, 1f, 0.6f);
-                noteImage.gameObject.SetActive(true);
-                if (GetNoteType() == NoteType.Basic)
-                {
-                    noteImage.color = transparent;
-                }
-                if (nextChainNode != null)
-                {
-                    nextChainNode.GetComponent<NoteAppearance>()
-                        .TogglePathToPreviousNote(true);
-                }
-                if (durationTrail != null)
-                {
-                    durationTrail.gameObject.SetActive(true);
-                    durationTrail.GetComponent<Image>().color =            transparent;
-                    ongoingTrail.gameObject.SetActive(true);
-                    ongoingTrail.GetComponent<Image>().color = 
-                        transparent;
-                }
-                if (feverOverlayImage)
-                {
-                    feverOverlayImage.enabled = true;
-                }
-                break;
-            case State.Active:
-                noteImage.gameObject.SetActive(true);
-                noteImage.color = Color.white;
-                if (nextChainNode != null)
-                {
-                    nextChainNode.GetComponent<NoteAppearance>()
-                        .TogglePathToPreviousNote(true);
-                }
-                if (durationTrail != null)
-                {
-                    durationTrail.gameObject.SetActive(true);
-                    durationTrail.GetComponent<Image>().color =            Color.white;
-                    ongoingTrail.gameObject.SetActive(true);
-                    ongoingTrail.GetComponent<Image>().color =
-                        Color.white;
-                }
-                if (feverOverlayImage)
-                {
-                    feverOverlayImage.enabled = true;
-                }
-                break;
-        }
-    }
-    #endregion
 
     #region Path
     // A little complication here is that, to achieve the correct
@@ -258,12 +266,6 @@ public class NoteAppearance : MonoBehaviour
             targetPos: previousNote
                 .GetComponent<RectTransform>().anchoredPosition);
     }
-
-    private void TogglePathToPreviousNote(bool active)
-    {
-        if (pathToPreviousNote == null) return;
-        pathToPreviousNote.gameObject.SetActive(active);
-    }
     #endregion
 
     #region Trail
@@ -286,8 +288,23 @@ public class NoteAppearance : MonoBehaviour
         {
             durationTrail.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
+            ongoingTrail.localRotation =
+                Quaternion.Euler(0f, 0f, 180f);
         }
         ongoingTrail.sizeDelta = new Vector2(0f,
+            ongoingTrail.sizeDelta.y);
+    }
+
+    private void UpdateOngoingTrail()
+    {
+        float startX = GetComponent<RectTransform>()
+            .anchoredPosition.x;
+        float endX = scanlineRef.GetComponent<RectTransform>()
+            .anchoredPosition.x;
+        float width = Mathf.Min(Mathf.Abs(startX - endX),
+            durationTrail.sizeDelta.x);
+
+        ongoingTrail.sizeDelta = new Vector2(width,
             ongoingTrail.sizeDelta.y);
     }
     #endregion
