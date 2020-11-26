@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class VFXSpawner : MonoBehaviour
 {
-    public GameObject explosionBig;
-    public GameObject explosionMedium;
-    public GameObject explosionSmall;
+    public GameObject explosionMax;
+    public GameObject explosionCool;
+    public GameObject explosionGood;
+    public GameObject holdCompleted;
 
     private void SpawnPrefabAt(GameObject prefab, NoteObject note)
     {
@@ -19,18 +20,21 @@ public class VFXSpawner : MonoBehaviour
         rect.position = note.transform.position;
     }
 
-    public void SpawnExplosionBigAt(NoteObject note)
+    public void SpawnBasicOrChainExplosion(NoteObject note,
+        Judgement judgement)
     {
-        SpawnPrefabAt(explosionBig, note);
-    }
-
-    public void SpawnExplosionMediumAt(NoteObject note)
-    {
-        SpawnPrefabAt(explosionMedium, note);
-    }
-
-    public void SpawnExplosionSmallAt(NoteObject note)
-    {
-        SpawnPrefabAt(explosionSmall, note);
+        switch (judgement)
+        {
+            case Judgement.RainbowMax:
+            case Judgement.Max:
+                SpawnPrefabAt(explosionMax, note);
+                break;
+            case Judgement.Cool:
+                SpawnPrefabAt(explosionCool, note);
+                break;
+            case Judgement.Good:
+                SpawnPrefabAt(explosionGood, note);
+                break;
+        }
     }
 }

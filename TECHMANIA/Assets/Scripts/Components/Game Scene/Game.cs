@@ -270,8 +270,10 @@ public class Game : MonoBehaviour
     private void InitializePattern()
     {
         // Prepare for keyboard input if applicable.
-        if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Keys ||
-            GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.KM)
+        if (GameSetup.pattern.patternMetadata
+            .controlScheme == ControlScheme.Keys ||
+            GameSetup.pattern.patternMetadata
+            .controlScheme == ControlScheme.KM)
         {
             InitializeKeysForLane();
         }
@@ -466,6 +468,11 @@ public class Game : MonoBehaviour
         ongoingNotes = new Dictionary<NoteObject, Judgement>();
         ongoingNoteIsHitOnThisFrame =
             new Dictionary<NoteObject, bool>();
+        keysoundsPlaying = new List<NoteObject>();
+        for (int i = 0; i < keysoundSources.Count; i++)
+        {
+            keysoundsPlaying.Add(null);
+        }
     }
 
     private void InitializeKeysForLane()
@@ -1244,22 +1251,18 @@ public class Game : MonoBehaviour
         if (absDifference <= kRainbowMaxThreshold)
         {
             judgement = Judgement.RainbowMax;
-            vfxSpawner.SpawnExplosionBigAt(n);
         }
         else if (absDifference <= kMaxThreshold)
         {
             judgement = Judgement.Max;
-            vfxSpawner.SpawnExplosionBigAt(n);
         }
         else if (absDifference <= kCoolThreshold)
         {
             judgement = Judgement.Cool;
-            vfxSpawner.SpawnExplosionMediumAt(n);
         }
         else if (absDifference <= kGoodThreshold)
         {
             judgement = Judgement.Good;
-            vfxSpawner.SpawnExplosionSmallAt(n);
         }
         else
         {
@@ -1326,7 +1329,18 @@ public class Game : MonoBehaviour
 
     private void ResolveNote(NoteObject n, Judgement judgement)
     {
+        // Appearances and VFX.
         n.GetComponent<NoteAppearance>().Resolve();
+        vfxSpawner.SpawnBasicOrChainExplosion(n, judgement);
+        judgementText.Show(n, judgement);
+
+        // Stop keysound of notes with a duration.
+        if (judgement == Judgement.Miss)
+        {
+            StopKeysoundIfPlaying(n);
+        }
+
+        // Remove note from linked lists.
         noteObjectsInLane[n.note.lane].Remove(n);
         switch (n.note.type)
         {
@@ -1345,6 +1359,7 @@ public class Game : MonoBehaviour
                 break;
         }
 
+        // Score, combo and fever.
         if (judgement != Judgement.Miss &&
             judgement != Judgement.Break)
         {
@@ -1395,17 +1410,7 @@ public class Game : MonoBehaviour
         {
             maxCombo = currentCombo;
         }
-        judgementText.Show(n, judgement);
         score.LogNote(judgement);
-    }
-
-    private void PlayKeysound(NoteObject n)
-    {
-        if (n.sound == "") return;
-
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        keysoundSources[n.note.lane].clip = clip;
-        keysoundSources[n.note.lane].Play();
     }
 
     private IEnumerator StageFailedSequence()
@@ -1413,6 +1418,33 @@ public class Game : MonoBehaviour
         stageFailedScreen.SetActive(true);
         yield return new WaitForSeconds(4f);
         Curtain.DrawCurtainThenGoToScene("Result");
+    }
+    #endregion
+
+    #region Keysound
+    // Indexed by lane number, this records which keysound source
+    // is playing the keysound of which note, so they can be
+    // stopped later.
+    private List<NoteObject> keysoundsPlaying;
+    private void PlayKeysound(NoteObject n)
+    {
+        if (n.sound == "") return;
+
+        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
+        keysoundSources[n.note.lane].clip = clip;
+        keysoundSources[n.note.lane].Play();
+
+        keysoundsPlaying[n.note.lane] = n;
+    }
+
+    private void StopKeysoundIfPlaying(NoteObject n)
+    {
+        if (n.sound == "") return;
+        if (keysoundsPlaying[n.note.lane] != n) return;
+        if (!keysoundSources[n.note.lane].isPlaying) return;
+
+        keysoundSources[n.note.lane].Stop();
+        keysoundsPlaying[n.note.lane] = null;
     }
     #endregion
 

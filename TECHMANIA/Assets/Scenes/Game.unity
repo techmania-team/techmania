@@ -5753,12 +5753,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c23afac824aac04b934317613f340de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionBig: {fileID: 5442111664239852118, guid: c663a1d2f6dc4a34ea094bde10ec3f49,
+  explosionMax: {fileID: 5442111664239852118, guid: c663a1d2f6dc4a34ea094bde10ec3f49,
     type: 3}
-  explosionMedium: {fileID: 500166245825039261, guid: 1c60403cb56246d4ebb28beb64cddeea,
+  explosionCool: {fileID: 500166245825039261, guid: 1c60403cb56246d4ebb28beb64cddeea,
     type: 3}
-  explosionSmall: {fileID: 444680925815114610, guid: 77d38caea70aab54b9f21fd456c3da4e,
+  explosionGood: {fileID: 444680925815114610, guid: 77d38caea70aab54b9f21fd456c3da4e,
     type: 3}
+  holdCompleted: {fileID: 0}
 --- !u!1 &1742368665
 GameObject:
   m_ObjectHideFlags: 0
