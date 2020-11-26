@@ -45,6 +45,7 @@ public class Game : MonoBehaviour
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
+    public GameObject holdNotePrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -116,12 +117,16 @@ public class Game : MonoBehaviour
     // find the upcoming note in each lane, and in turn:
     // - play keysounds on empty hits
     // - check the Break condition on upcoming notes
-    //
-    // TODO: make seperate lists for mouse and keyboard notes in KM.
-    // This ensures we can play the correct empty hit sounds for
-    // each input.
     private List<LinkedList<NoteObject>> noteObjectsInLane;
+    // noteObjectsInLane separated into mouse and keyboard notes.
+    // Each input device only care about notes in its corresponding
+    // list.
+    private List<LinkedList<NoteObject>> notesForMouseInLane;
+    private List<LinkedList<NoteObject>> notesForKeyboardInLane;
     private int numPlayableNotes;
+
+    private Dictionary<NoteObject, Judgement> ongoingNotes;
+    private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
     // Start is called before the first frame update
     void Start()
@@ -359,6 +364,8 @@ public class Game : MonoBehaviour
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
         noteObjectsInLane = new List<LinkedList<NoteObject>>();
+        notesForMouseInLane = new List<LinkedList<NoteObject>>();
+        notesForKeyboardInLane = new List<LinkedList<NoteObject>>();
         numPlayableNotes = 0;
         NoteObject nextChainNode = null;
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
@@ -380,6 +387,9 @@ public class Game : MonoBehaviour
                 case NoteType.ChainNode:
                     prefab = chainNodePrefab;
                     break;
+                case NoteType.Hold:
+                    prefab = holdNotePrefab;
+                    break;
             }
             NoteObject noteObject = scanObjects[scanOfN]
                 .SpawnNoteObject(prefab, n.note, n.sound, hidden);
@@ -387,8 +397,30 @@ public class Game : MonoBehaviour
             while (noteObjectsInLane.Count <= n.note.lane)
             {
                 noteObjectsInLane.Add(new LinkedList<NoteObject>());
+                notesForMouseInLane.Add(
+                    new LinkedList<NoteObject>());
+                notesForKeyboardInLane.Add(
+                    new LinkedList<NoteObject>());
             }
             noteObjectsInLane[n.note.lane].AddFirst(noteObject);
+            switch (n.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.Drag:
+                    notesForMouseInLane[n.note.lane]
+                        .AddFirst(noteObject);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHead:
+                case NoteType.RepeatHeadHold:
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    notesForKeyboardInLane[n.note.lane]
+                        .AddFirst(noteObject);
+                    break;
+            }
 
             if (!hidden)
             {
@@ -430,6 +462,9 @@ public class Game : MonoBehaviour
                 feverInstruction.text = "PRESS SPACE";
                 break;
         }
+        ongoingNotes = new Dictionary<NoteObject, Judgement>();
+        ongoingNoteIsHitOnThisFrame =
+            new Dictionary<NoteObject, bool>();
     }
 
     private void InitializeKeysForLane()
@@ -646,23 +681,29 @@ public class Game : MonoBehaviour
         }
         Scan = newScan;
 
-        for (int laneIndex = 0; laneIndex < noteObjectsInLane.Count; laneIndex++)
+        for (int laneIndex = 0;
+            laneIndex < noteObjectsInLane.Count;
+            laneIndex++)
         {
-            LinkedList<NoteObject> lane = noteObjectsInLane[laneIndex];
+            LinkedList<NoteObject> lane =
+                noteObjectsInLane[laneIndex];
             if (lane.Count == 0) continue;
             NoteObject upcomingNote = lane.First.Value;
 
             if (laneIndex < kPlayableLanes)
             {
-                // Check for Break on upcoming notes in each playable lane.
-                if (Time > upcomingNote.note.time + kBreakThreshold)
+                // Check for Break on upcoming notes in each
+                // playable lane.
+                if (Time > upcomingNote.note.time + kBreakThreshold
+                    && !ongoingNotes.ContainsKey(upcomingNote))
                 {
                     ResolveNote(upcomingNote, Judgement.Break);
                 }
             }
             else
             {
-                // Play keyounds of upcoming notes in each hidden lane.
+                // Play keyounds of upcoming notes in each
+                // hidden lane, regardless of note type.
                 if (oldTime < upcomingNote.note.time &&
                     Time >= upcomingNote.note.time)
                 {
@@ -705,7 +746,7 @@ public class Game : MonoBehaviour
         //              |   |                            |
         //              |   ------------------------------
         //              |                 |
-        //        EnterOngoing        ResolveNote
+        //       RegisterOngoing       ResolveNote
         //
         // [0] mouse is considered finger #0; finger moving between
         // lanes will cause a new finger down event.
@@ -761,7 +802,7 @@ public class Game : MonoBehaviour
                 }
                 break;
             case ControlScheme.Keys:
-                for (int lane = 0; lane < 4; lane++)
+                for (int lane = 0; lane < kPlayableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -781,20 +822,16 @@ public class Game : MonoBehaviour
                 {
                     OnFingerDown(0, Input.mousePosition);
                 }
-                else if (Input.GetMouseButton(0))
+                if (Input.GetMouseButton(0))
                 {
-                    // TODO: does it matter if there's a down event?
                     OnFingerMove(0, Input.mousePosition);
+                    OnFingerHeld(Input.mousePosition);
                 }
-                else if (Input.GetMouseButtonUp(0))
+                if (Input.GetMouseButtonUp(0))
                 {
                     OnFingerUp(0);
                 }
-                if (Input.GetMouseButton(0))
-                {
-                    OnFingerHeld(Input.mousePosition);
-                }
-                for (int lane = 0; lane < 4; lane++)
+                for (int lane = 0; lane < kPlayableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -924,18 +961,34 @@ public class Game : MonoBehaviour
         return results;
     }
 
-    private void ProcessMouseOrFingerDown(List<RaycastResult> results)
+    private void ProcessMouseOrFingerDown(
+        List<RaycastResult> results)
     {
         foreach (RaycastResult r in results)
         {
             NoteObject n = r.gameObject
                 .GetComponentInParent<NoteObject>();
-            // TODO: for KM, only respond to the following types:
-            // - Basic
-            // - Chain Head/Node
-            // - Drag
             if (n != null)
             {
+                if (ongoingNotes.ContainsKey(n))
+                {
+                    // Ignore ongoing notes, and don't play sound
+                    // either.
+                    break;
+                }
+                if (GameSetup.pattern.patternMetadata.controlScheme 
+                    == ControlScheme.KM)
+                {
+                    if (n.note.type == NoteType.Hold ||
+                        n.note.type == NoteType.RepeatHead ||
+                        n.note.type == NoteType.RepeatHeadHold ||
+                        n.note.type == NoteType.Repeat ||
+                        n.note.type == NoteType.RepeatHold)
+                    {
+                        // The mouse does not care about this note.
+                        continue;
+                    }
+                }
                 float correctTime = n.note.time;
                 float difference = Time - correctTime;
                 if (Mathf.Abs(difference) > kBreakThreshold)
@@ -984,19 +1037,27 @@ public class Game : MonoBehaviour
     #region Keyboard
     private void OnKeyDownOnLane(int lane)
     {
+        // Keys only.
+
         if (noteObjectsInLane[lane].Count == 0)
         {
-            EmptyHit(lane);
+            // Do nothing.
             return;
         }
-        NoteObject earliestNote = noteObjectsInLane[lane].First.Value;
+        NoteObject earliestNote = noteObjectsInLane[lane]
+            .First.Value;
+        if (ongoingNotes.ContainsKey(earliestNote))
+        {
+            // Do nothing.
+            return;
+        }
         float correctTime = earliestNote.note.time;
         float difference = Time - correctTime;
         if (Mathf.Abs(difference) > kBreakThreshold)
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
-            EmptyHit(lane);
+            PlayKeysound(earliestNote);
         }
         else
         {
@@ -1008,11 +1069,78 @@ public class Game : MonoBehaviour
     private void OnKeyDownOnAnyLane()
     {
         // KM only.
-        // TODO
+
+        List<NoteObject> earliestNotes = new List<NoteObject>();
+        int earliestPulse = int.MaxValue;
+        for (int i = 0; i < kPlayableLanes; i++)
+        {
+            if (notesForKeyboardInLane[i].Count == 0)
+            {
+                continue;
+            }
+            NoteObject n = notesForKeyboardInLane[i].First.Value;
+            if (ongoingNotes.ContainsKey(n))
+            {
+                continue;
+            }
+            if (n.note.pulse < earliestPulse)
+            {
+                earliestNotes.Clear();
+                earliestNotes.Add(n);
+                earliestPulse = n.note.pulse;
+            }
+            else if (n.note.pulse == earliestPulse)
+            {
+                earliestNotes.Add(n);
+            }
+        }
+        if (earliestNotes.Count == 0)
+        {
+            // Do nothing.
+            return;
+        }
+
+        NoteObject earliestNote = null;
+        if (earliestNotes.Count == 1)
+        {
+            earliestNote = earliestNotes[0];
+        }
+        else
+        {
+            // Pick the first note that has no duration, if any.
+            foreach (NoteObject n in earliestNotes)
+            {
+                if (n.note.type == NoteType.RepeatHead ||
+                    n.note.type == NoteType.Repeat)
+                {
+                    earliestNote = n;
+                    break;
+                }
+            }
+            if (earliestNote == null)
+            {
+                earliestNote = earliestNotes[0];
+            }
+        }
+
+        float correctTime = earliestNote.note.time;
+        float difference = Time - correctTime;
+        if (Mathf.Abs(difference) > kBreakThreshold)
+        {
+            // The keystroke is too early or too late
+            // for this note. Ignore.
+            PlayKeysound(earliestNote);
+        }
+        else
+        {
+            // The keystroke lands on this note.
+            HitNote(earliestNote, difference);
+        }
     }
 
     private void OnKeyHeldOnLane(int lane)
     {
+        // Keys only.
         // TODO
     }
 
@@ -1026,6 +1154,9 @@ public class Game : MonoBehaviour
     #region Hitting Notes And Empty Hits
     private void HitNote(NoteObject n, float timeDifference)
     {
+        // All code paths into this method should have ignored
+        // ongoing notes.
+
         Judgement judgement;
         float absDifference = Mathf.Abs(timeDifference);
         if (absDifference <= kRainbowMaxThreshold)
@@ -1053,18 +1184,52 @@ public class Game : MonoBehaviour
             judgement = Judgement.Miss;
         }
 
-        ResolveNote(n, judgement);
+        switch (n.note.type)
+        {
+            case NoteType.Hold:
+            case NoteType.Drag:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                // Register an ongoing note.
+                ongoingNotes.Add(n, judgement);
+                ongoingNoteIsHitOnThisFrame.Add(n, true);
+                // TODO: tell NoteAppearance to enter Ongoing state.
+                break;
+            default:
+                ResolveNote(n, judgement);
+                break;
+        }
 
         PlayKeysound(n);
     }
 
     private void EmptyHit(int lane)
     {
-        // Debug.Log("Empty hit on lane " + lane);
-        if (noteObjectsInLane[lane].Count > 0)
+        NoteObject upcomingNote = null;
+        switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
-            NoteObject upcomingNote = noteObjectsInLane[lane]
-                .First.Value;
+            case ControlScheme.Touch:
+                if (noteObjectsInLane[lane].Count > 0)
+                {
+                    upcomingNote = noteObjectsInLane[lane]
+                        .First.Value;
+                }
+                break;
+            case ControlScheme.KM:
+                if (notesForMouseInLane[lane].Count > 0)
+                {
+                    upcomingNote = notesForMouseInLane[lane]
+                        .First.Value;
+                }
+                break;
+            case ControlScheme.Keys:
+                // Keys should not call this method.
+                break;
+        }
+
+        if (upcomingNote != null &&
+            !ongoingNotes.ContainsKey(upcomingNote))
+        {
             PlayKeysound(upcomingNote);
         }
     }
@@ -1073,6 +1238,22 @@ public class Game : MonoBehaviour
     {
         n.GetComponent<NoteAppearance>().Resolve();
         noteObjectsInLane[n.note.lane].Remove(n);
+        switch (n.note.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.Drag:
+                notesForMouseInLane[n.note.lane].Remove(n);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                notesForKeyboardInLane[n.note.lane].Remove(n);
+                break;
+        }
 
         if (judgement != Judgement.Miss &&
             judgement != Judgement.Break)

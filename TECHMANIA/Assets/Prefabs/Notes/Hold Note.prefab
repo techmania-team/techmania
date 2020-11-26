@@ -25,7 +25,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1025852555850092530}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -221,6 +221,8 @@ MonoBehaviour:
   noteImage: {fileID: 679015273133456939}
   feverOverlay: {fileID: 6953956412375015768}
   pathToPreviousNote: {fileID: 0}
+  durationTrail: {fileID: 6787334719987153941}
+  ongoingTrail: {fileID: 1491787679577037505}
 --- !u!1 &7702790904713800161
 GameObject:
   m_ObjectHideFlags: 0

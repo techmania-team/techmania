@@ -19,6 +19,7 @@ public class Scan : MonoBehaviour
     private float scanHeight;
     public static float laneHeight { get; private set; }
     private List<NoteAppearance> noteAppearances;
+    private Scanline scanline;
 
     private void OnDestroy()
     {
@@ -37,7 +38,7 @@ public class Scan : MonoBehaviour
         laneHeight = scanHeight * 0.25f;
         noteAppearances = new List<NoteAppearance>();
 
-        Scanline scanline = GetComponentInChildren<Scanline>();
+        scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
         scanline.Initialize(this, scanHeight);
     }
@@ -63,6 +64,13 @@ public class Scan : MonoBehaviour
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
         appearance.SetHidden(hidden);
         noteAppearances.Add(appearance);
+
+        switch (n.type)
+        {
+            case NoteType.Hold:
+                appearance.InitializeTrail(this, scanline);
+                break;
+        }
 
         return noteObject;
     }

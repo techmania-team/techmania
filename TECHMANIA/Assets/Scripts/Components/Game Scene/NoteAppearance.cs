@@ -26,10 +26,15 @@ public class NoteAppearance : MonoBehaviour
     public GameObject feverOverlay;
     [Header("Chain")]
     public RectTransform pathToPreviousNote;
+    [Header("Hold")]
+    public RectTransform durationTrail;
+    public RectTransform ongoingTrail;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
     private bool hidden;
+    private Scan scanRef;
+    private Scanline scanlineRef;
 
     #region State Interfaces
     public void SetHidden(bool hidden)
@@ -79,6 +84,10 @@ public class NoteAppearance : MonoBehaviour
         {
             UpdateFeverOverlay();
         }
+        if (ongoingTrail != null)
+        {
+            UpdateOngoingTrail();
+        }
     }
 
     private void UpdateFeverOverlay()
@@ -106,6 +115,11 @@ public class NoteAppearance : MonoBehaviour
         }
     }
 
+    private void UpdateOngoingTrail()
+    {
+        // TODO
+    }
+
     private NoteType GetNoteType()
     {
         return GetComponent<NoteObject>().note.type;
@@ -121,9 +135,17 @@ public class NoteAppearance : MonoBehaviour
             {
                 pathToPreviousNote.gameObject.SetActive(false);
             }
+            if (durationTrail != null)
+            {
+                durationTrail.gameObject.SetActive(false);
+                ongoingTrail.gameObject.SetActive(false);
+            }
             return;
         }
 
+        // TODO: clean this up. Maybe methods for each field?
+        // In preparation of practice mode, each case should
+        // set every single field.
         switch (state)
         {
             case State.Inactive:
@@ -133,6 +155,11 @@ public class NoteAppearance : MonoBehaviour
                 {
                     nextChainNode.GetComponent<NoteAppearance>()
                         .TogglePathToPreviousNote(false);
+                }
+                if (durationTrail != null)
+                {
+                    durationTrail.gameObject.SetActive(false);
+                    ongoingTrail.gameObject.SetActive(false);
                 }
                 if (feverOverlayImage)
                 {
@@ -144,15 +171,24 @@ public class NoteAppearance : MonoBehaviour
                 // - Basic Note
                 // - Trail of Hold Note
                 // - Curve
+                Color transparent = new Color(1f, 1f, 1f, 0.6f);
                 noteImage.gameObject.SetActive(true);
                 if (GetNoteType() == NoteType.Basic)
                 {
-                    noteImage.color = new Color(1f, 1f, 1f, 0.5f);
+                    noteImage.color = transparent;
                 }
                 if (nextChainNode != null)
                 {
                     nextChainNode.GetComponent<NoteAppearance>()
                         .TogglePathToPreviousNote(true);
+                }
+                if (durationTrail != null)
+                {
+                    durationTrail.gameObject.SetActive(true);
+                    durationTrail.GetComponent<Image>().color =            transparent;
+                    ongoingTrail.gameObject.SetActive(true);
+                    ongoingTrail.GetComponent<Image>().color = 
+                        transparent;
                 }
                 if (feverOverlayImage)
                 {
@@ -167,6 +203,14 @@ public class NoteAppearance : MonoBehaviour
                     nextChainNode.GetComponent<NoteAppearance>()
                         .TogglePathToPreviousNote(true);
                 }
+                if (durationTrail != null)
+                {
+                    durationTrail.gameObject.SetActive(true);
+                    durationTrail.GetComponent<Image>().color =            Color.white;
+                    ongoingTrail.gameObject.SetActive(true);
+                    ongoingTrail.GetComponent<Image>().color =
+                        Color.white;
+                }
                 if (feverOverlayImage)
                 {
                     feverOverlayImage.enabled = true;
@@ -176,7 +220,7 @@ public class NoteAppearance : MonoBehaviour
     }
     #endregion
 
-    #region Path, Trail and Curve
+    #region Path
     // A little complication here is that, to achieve the correct
     // draw order, each Chain Node draws a path to its previous
     // Chain Head/Node, the same way as in the editor.
@@ -219,6 +263,32 @@ public class NoteAppearance : MonoBehaviour
     {
         if (pathToPreviousNote == null) return;
         pathToPreviousNote.gameObject.SetActive(active);
+    }
+    #endregion
+
+    #region Trail
+    public void InitializeTrail(Scan scanRef, Scanline scanlineRef)
+    {
+        this.scanRef = scanRef;
+        this.scanlineRef = scanlineRef;
+
+        HoldNote holdNote = GetComponent<NoteObject>().note
+            as HoldNote;
+        float startX = GetComponent<RectTransform>()
+            .anchoredPosition.x;
+        float endX = scanRef.FloatPulseToXPosition(
+            holdNote.pulse + holdNote.duration);
+        float width = Mathf.Abs(startX - endX);
+
+        durationTrail.sizeDelta = new Vector2(width,
+            durationTrail.sizeDelta.y);
+        if (endX < startX)
+        {
+            durationTrail.localRotation =
+                Quaternion.Euler(0f, 0f, 180f);
+        }
+        ongoingTrail.sizeDelta = new Vector2(0f,
+            ongoingTrail.sizeDelta.y);
     }
     #endregion
 }
