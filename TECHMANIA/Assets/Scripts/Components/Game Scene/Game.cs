@@ -125,6 +125,7 @@ public class Game : MonoBehaviour
     private List<LinkedList<NoteObject>> notesForKeyboardInLane;
     private int numPlayableNotes;
 
+    // Value is the judgement at note's head.
     private Dictionary<NoteObject, Judgement> ongoingNotes;
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
@@ -617,6 +618,7 @@ public class Game : MonoBehaviour
         UpdateTime();
         UpdateFever();
         HandleInput();
+        UpdateOngoingNotes();
         UpdateUI();
         UpdateBrightness();
     }
@@ -849,6 +851,50 @@ public class Game : MonoBehaviour
         }
     }
 
+    private void UpdateOngoingNotes()
+    {
+        // This must happen after HandleInput.
+
+        foreach (KeyValuePair<NoteObject, bool> pair in
+            ongoingNoteIsHitOnThisFrame)
+        {
+            // Has the note's duration finished?
+            int duration = 0;
+            if (pair.Key.note is HoldNote)
+            {
+                duration = (pair.Key.note as HoldNote).duration;
+            }
+            else if (pair.Key.note is DragNote)
+            {
+                duration = (pair.Key.note as DragNote).Duration();
+            }
+            if (Pulse >= pair.Key.note.pulse + duration)
+            {
+                // Resolve note.
+                ResolveNote(pair.Key, ongoingNotes[pair.Key]);
+                ongoingNotes.Remove(pair.Key);
+                continue;
+            }
+
+            if (pair.Value == false)
+            {
+                // No hit on this note during this frame, resolve
+                // as a Miss.
+                // TODO: abort keysound.
+                ResolveNote(pair.Key, Judgement.Miss);
+                ongoingNotes.Remove(pair.Key);
+            }
+        }
+
+        // Prepare for next frame.
+        ongoingNoteIsHitOnThisFrame.Clear();
+        foreach (KeyValuePair<NoteObject, Judgement> pair in
+            ongoingNotes)
+        {
+            ongoingNoteIsHitOnThisFrame.Add(pair.Key, false);
+        }
+    }
+
     private void UpdateUI()
     {
         // Fever
@@ -1005,7 +1051,8 @@ public class Game : MonoBehaviour
                 }
             }
 
-            EmptyTouchReceiver receiver = r.gameObject.GetComponent<EmptyTouchReceiver>();
+            EmptyTouchReceiver receiver = r.gameObject
+                .GetComponent<EmptyTouchReceiver>();
             if (receiver != null)
             {
                 EmptyHit(receiver.lane);
@@ -1030,7 +1077,17 @@ public class Game : MonoBehaviour
 
     private void OnFingerHeld(Vector2 screenPosition)
     {
-        // TODO
+        List<RaycastResult> results = Raycast(screenPosition);
+        foreach (RaycastResult r in results)
+        {
+            NoteObject n = r.gameObject
+                .GetComponentInParent<NoteObject>();
+            if (n == null) continue;
+            if (ongoingNoteIsHitOnThisFrame.ContainsKey(n))
+            {
+                ongoingNoteIsHitOnThisFrame[n] = true;
+            }
+        }
     }
     #endregion
 
@@ -1141,13 +1198,38 @@ public class Game : MonoBehaviour
     private void OnKeyHeldOnLane(int lane)
     {
         // Keys only.
-        // TODO
+
+        NoteObject noteToMark = null;
+        foreach (KeyValuePair<NoteObject, bool> pair in
+            ongoingNoteIsHitOnThisFrame)
+        {
+            if (pair.Value == true) continue;
+            if (pair.Key.note.lane != lane) continue;
+            noteToMark = pair.Key;
+            break;
+        }
+        if (noteToMark != null)
+        {
+            ongoingNoteIsHitOnThisFrame[noteToMark] = true;
+        }
     }
 
     private void OnKeyHeldOnAnyLane()
     {
         // KM only.
-        // TODO
+
+        NoteObject noteToMark = null;
+        foreach (KeyValuePair<NoteObject, bool> pair in
+            ongoingNoteIsHitOnThisFrame)
+        {
+            if (pair.Value == true) continue;
+            noteToMark = pair.Key;
+            break;
+        }
+        if (noteToMark != null)
+        {
+            ongoingNoteIsHitOnThisFrame[noteToMark] = true;
+        }
     }
     #endregion
 
@@ -1190,10 +1272,18 @@ public class Game : MonoBehaviour
             case NoteType.Drag:
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
-                // Register an ongoing note.
-                ongoingNotes.Add(n, judgement);
-                ongoingNoteIsHitOnThisFrame.Add(n, true);
-                n.GetComponent<NoteAppearance>().SetOngoing();
+                if (judgement == Judgement.Miss)
+                {
+                    // Missed notes do not enter Ongoing state.
+                    ResolveNote(n, judgement);
+                }
+                else
+                {
+                    // Register an ongoing note.
+                    ongoingNotes.Add(n, judgement);
+                    ongoingNoteIsHitOnThisFrame.Add(n, true);
+                    n.GetComponent<NoteAppearance>().SetOngoing();
+                }
                 break;
             default:
                 ResolveNote(n, judgement);

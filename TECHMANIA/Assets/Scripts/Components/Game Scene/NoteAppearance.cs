@@ -9,8 +9,6 @@ using UnityEngine.UI;
 // when a held down click/touch enters another lane, Game can
 // handle that has a new click/touch. This is necessary for chain
 // notes.
-//
-// TODO: Add a Playing state for notes with a duration.
 public class NoteAppearance : MonoBehaviour
 {
     private enum State
