@@ -34,7 +34,9 @@ public class NoteAppearance : MonoBehaviour
     public RectTransform pathToPreviousNote;
     [Header("Hold")]
     public RectTransform durationTrail;
+    public RectTransform durationTrailEnd;
     public RectTransform ongoingTrail;
+    public RectTransform ongoingTrailEnd;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
@@ -306,7 +308,16 @@ public class NoteAppearance : MonoBehaviour
             ongoingTrail.sizeDelta.y);
     }
 
-    // TODO: Expose API to tell the VFXSpawner where to draw
-    // ongoing VFX on head and trail.
+    // VFXSpawner calls this to draw ongoing VFX at the correct
+    // position.
+    public Vector3 GetDurationTrailEndPosition()
+    {
+        return durationTrailEnd.position;
+    }
+
+    public Vector3 GetOngoingTrailEndPosition()
+    {
+        return ongoingTrailEnd.position;
+    }
     #endregion
 }

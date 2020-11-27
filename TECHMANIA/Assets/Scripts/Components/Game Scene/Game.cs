@@ -1269,6 +1269,8 @@ public class Game : MonoBehaviour
             judgement = Judgement.Miss;
         }
 
+        vfxSpawner.SpawnVFXOnHit(n, judgement);
+
         switch (n.note.type)
         {
             case NoteType.Hold:
@@ -1293,7 +1295,10 @@ public class Game : MonoBehaviour
                 break;
         }
 
-        PlayKeysound(n);
+        if (judgement != Judgement.Miss)
+        {
+            PlayKeysound(n);
+        }
     }
 
     private void EmptyHit(int lane)
@@ -1402,8 +1407,8 @@ public class Game : MonoBehaviour
         score.LogNote(judgement);
 
         // Appearances and VFX.
+        vfxSpawner.SpawnVFXOnResolve(n, judgement);
         n.GetComponent<NoteAppearance>().Resolve();
-        vfxSpawner.SpawnBasicOrChainExplosion(n, judgement);
         // Call this after updating combo to show the correct
         // combo on judgement text.
         // TODO: for long notes, add 1 combo every 60 pulses,
