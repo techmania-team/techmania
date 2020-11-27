@@ -160,8 +160,10 @@ public class Pattern
 
     public Pattern CloneWithDifferentGuid()
     {
-        string json = UnityEngine.JsonUtility.ToJson(this, prettyPrint: false);
-        Pattern clone = UnityEngine.JsonUtility.FromJson<Pattern>(json);
+        string json = UnityEngine.JsonUtility.ToJson(
+            this, prettyPrint: false);
+        Pattern clone = UnityEngine.JsonUtility.FromJson<Pattern>(
+            json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         return clone;
     }

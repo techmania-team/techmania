@@ -305,5 +305,8 @@ public class NoteAppearance : MonoBehaviour
         ongoingTrail.sizeDelta = new Vector2(width,
             ongoingTrail.sizeDelta.y);
     }
+
+    // TODO: Expose API to tell the VFXSpawner where to draw
+    // ongoing VFX on head and trail.
     #endregion
 }

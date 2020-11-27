@@ -887,8 +887,8 @@ public class Game : MonoBehaviour
             {
                 // No hit on this note during this frame, resolve
                 // as a Miss.
-                // TODO: abort keysound.
                 ResolveNote(pair.Key, Judgement.Miss);
+                StopKeysoundIfPlaying(pair.Key);
                 ongoingNotes.Remove(pair.Key);
             }
         }
@@ -1329,17 +1329,6 @@ public class Game : MonoBehaviour
 
     private void ResolveNote(NoteObject n, Judgement judgement)
     {
-        // Appearances and VFX.
-        n.GetComponent<NoteAppearance>().Resolve();
-        vfxSpawner.SpawnBasicOrChainExplosion(n, judgement);
-        judgementText.Show(n, judgement);
-
-        // Stop keysound of notes with a duration.
-        if (judgement == Judgement.Miss)
-        {
-            StopKeysoundIfPlaying(n);
-        }
-
         // Remove note from linked lists.
         noteObjectsInLane[n.note.lane].Remove(n);
         switch (n.note.type)
@@ -1411,6 +1400,16 @@ public class Game : MonoBehaviour
             maxCombo = currentCombo;
         }
         score.LogNote(judgement);
+
+        // Appearances and VFX.
+        n.GetComponent<NoteAppearance>().Resolve();
+        vfxSpawner.SpawnBasicOrChainExplosion(n, judgement);
+        // Call this after updating combo to show the correct
+        // combo on judgement text.
+        // TODO: for long notes, add 1 combo every 60 pulses,
+        // and 1 additional combo at end of note.
+        // The start of note does not immediately increase combo.
+        judgementText.Show(n, judgement);
     }
 
     private IEnumerator StageFailedSequence()
