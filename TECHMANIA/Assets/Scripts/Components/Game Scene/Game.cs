@@ -94,11 +94,16 @@ public class Game : MonoBehaviour
     private const int kMaxHp = 1000;
     private const int kHpLoss = 50;
     private const int kHpRecovery = 4;
+    private const int kComboTickInterval = 60;
 
     private Stopwatch stopwatch;
     private Stopwatch feverTimer;
     private float initialTime;
     private bool loading;
+    // Combo ticks are pulses where each ongoing notes increase
+    // combo by 1. Ongoing notes add 1 more combo when
+    // resolved. Combo ticks are, by default, 60 pulses apart.
+    private int previousComboTick;
     public static float Time { get; private set; }
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
@@ -119,8 +124,8 @@ public class Game : MonoBehaviour
     // - check the Break condition on upcoming notes
     private List<LinkedList<NoteObject>> noteObjectsInLane;
     // noteObjectsInLane separated into mouse and keyboard notes.
-    // Each input device only care about notes in its corresponding
-    // list.
+    // In KM, Each input device only care about notes in its
+    // corresponding list.
     private List<LinkedList<NoteObject>> notesForMouseInLane;
     private List<LinkedList<NoteObject>> notesForKeyboardInLane;
     private int numPlayableNotes;
@@ -285,6 +290,7 @@ public class Game : MonoBehaviour
             .firstBeatOffset;
         Pulse = 0;
         Scan = 0;
+        previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
         PulsesPerScan = Pattern.pulsesPerBeat *
@@ -630,25 +636,6 @@ public class Game : MonoBehaviour
         UpdateBrightness();
     }
 
-    private void UpdateBrightness()
-    {
-        float a = brightnessCover.color.a;
-        if (Input.GetKeyDown(KeyCode.PageUp))
-        {
-            a -= 0.1f;
-        }
-        if (Input.GetKeyDown(KeyCode.PageDown))
-        {
-            a += 0.1f;
-        }
-        a = Mathf.Clamp01(a);
-        brightnessCover.color = new Color(
-            brightnessCover.color.r,
-            brightnessCover.color.g,
-            brightnessCover.color.b,
-            a);
-    }
-
     private void UpdateTime()
     {
         float oldTime = Time;
@@ -683,13 +670,22 @@ public class Game : MonoBehaviour
             ScanAboutToChange?.Invoke(
                 (newPulse + PulsesPerScan / 8) / PulsesPerScan);
         }
-        Pulse = newPulse;
         if (newScan > Scan)
         {
             ScanChanged?.Invoke(newScan);
         }
+        Pulse = newPulse;
         Scan = newScan;
 
+        // Handle combo ticks, if one occurred in this frame.
+        while (previousComboTick + kComboTickInterval <=
+            Pulse)
+        {
+            previousComboTick += kComboTickInterval;
+            HandleComboTick();
+        }
+
+        // Handle upcoming notes.
         for (int laneIndex = 0;
             laneIndex < noteObjectsInLane.Count;
             laneIndex++)
@@ -723,6 +719,7 @@ public class Game : MonoBehaviour
             }
         }
 
+        // Check for end of pattern.
         if (Scan > lastScan)
         {
             if (feverState == FeverState.Active)
@@ -858,6 +855,16 @@ public class Game : MonoBehaviour
         }
     }
 
+    private void HandleComboTick()
+    {
+        foreach (KeyValuePair<NoteObject, Judgement> pair in
+            ongoingNotes)
+        {
+            SetCombo(currentCombo + 1);
+            judgementText.Show(pair.Key, pair.Value);
+        }
+    }
+
     private void UpdateOngoingNotes()
     {
         // This must happen after HandleInput.
@@ -918,6 +925,25 @@ public class Game : MonoBehaviour
             (float)hp / kMaxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
+    }
+
+    private void UpdateBrightness()
+    {
+        float a = brightnessCover.color.a;
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            a -= 0.1f;
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            a += 0.1f;
+        }
+        a = Mathf.Clamp01(a);
+        brightnessCover.color = new Color(
+            brightnessCover.color.r,
+            brightnessCover.color.g,
+            brightnessCover.color.b,
+            a);
     }
     #endregion
 
@@ -1357,7 +1383,7 @@ public class Game : MonoBehaviour
         if (judgement != Judgement.Miss &&
             judgement != Judgement.Break)
         {
-            currentCombo++;
+            SetCombo(currentCombo + 1);
             hp += kHpRecovery;
             if (hp >= kMaxHp) hp = kMaxHp;
 
@@ -1375,7 +1401,7 @@ public class Game : MonoBehaviour
         }
         else
         {
-            currentCombo = 0;
+            SetCombo(0);
             hp -= kHpLoss;
             if (hp <= 0)
             {
@@ -1400,10 +1426,6 @@ public class Game : MonoBehaviour
                 feverState = FeverState.Idle;
             }
         }
-        if (currentCombo > maxCombo)
-        {
-            maxCombo = currentCombo;
-        }
         score.LogNote(judgement);
 
         // Appearances and VFX.
@@ -1415,6 +1437,15 @@ public class Game : MonoBehaviour
         // and 1 additional combo at end of note.
         // The start of note does not immediately increase combo.
         judgementText.Show(n, judgement);
+    }
+
+    private void SetCombo(int combo)
+    {
+        currentCombo = combo;
+        if (currentCombo > maxCombo)
+        {
+            maxCombo = currentCombo;
+        }
     }
 
     private IEnumerator StageFailedSequence()
