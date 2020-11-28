@@ -46,6 +46,7 @@ public class Game : MonoBehaviour
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
     public GameObject holdNotePrefab;
+    public GameObject holdExtensionPrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -338,20 +339,7 @@ public class Game : MonoBehaviour
 
         // Find last scan. Make sure it ends later than the backing
         // track, so we don't cut the track short.
-        lastScan = 0;
-        if (sortedNotes.Count > 0)
-        {
-            lastScan = sortedNotes[sortedNotes.Count - 1].note.pulse /
-                PulsesPerScan;
-        }
-        if (backingTrackSource.clip != null)
-        {
-            while (GameSetup.pattern.PulseToTime((lastScan + 1) * PulsesPerScan)
-            < backingTrackSource.clip.length)
-            {
-                lastScan++;
-            }
-        }
+        CalculateLastScan(sortedNotes);
 
         // Create scan objects.
         Dictionary<int, Scan> scanObjects = new Dictionary<int, Scan>();
@@ -431,6 +419,28 @@ public class Game : MonoBehaviour
                     break;
             }
 
+            // Create extensions for hold notes that cross scans.
+            if (!hidden && n.note.type == NoteType.Hold)
+            {
+                HoldNote holdNote = n.note as HoldNote;
+                // If a hold note ends at a scan divider, we don't
+                // want to spawn an unnecessary extension, thus the
+                // -1.
+                int lastScan = (holdNote.pulse + holdNote.duration
+                    - 1) / PulsesPerScan;
+                for (int crossedScan = scanOfN + 1;
+                    crossedScan <= lastScan;
+                    crossedScan++)
+                {
+                    HoldExtension extension =
+                        scanObjects[crossedScan]
+                        .SpawnHoldExtension(
+                            holdExtensionPrefab, holdNote);
+                    noteObject.GetComponent<NoteAppearance>()
+                        .RegisterExtension(extension);
+                }
+            }
+
             if (!hidden)
             {
                 if (n.note.type == NoteType.ChainHead ||
@@ -478,6 +488,55 @@ public class Game : MonoBehaviour
         for (int i = 0; i < keysoundSources.Count; i++)
         {
             keysoundsPlaying.Add(null);
+        }
+    }
+
+    private void CalculateLastScan(List<NoteWithSound> sortedNotes)
+    {
+        lastScan = 0;
+        if (sortedNotes.Count > 0)
+        {
+            lastScan =
+                sortedNotes[sortedNotes.Count - 1].note.pulse /
+                PulsesPerScan;
+        }
+        if (backingTrackSource.clip != null)
+        {
+            while (GameSetup.pattern
+                .PulseToTime((lastScan + 1) * PulsesPerScan)
+                < backingTrackSource.clip.length)
+            {
+                lastScan++;
+            }
+        }
+
+        // Look at all hold and drag notes in the last few scans
+        // in case their duration outlasts the currently considered
+        // last scan.
+        int pulseBorder = (lastScan - 1) * PulsesPerScan;
+        for (int i = sortedNotes.Count - 1; i >= 0; i--)
+        {
+            Note n = sortedNotes[i].note;
+            if (n.pulse < pulseBorder) break;
+
+            int endingPulse;
+            if (n is HoldNote)
+            {
+                endingPulse = n.pulse + (n as HoldNote).duration;
+            }
+            else if (n is DragNote)
+            {
+                endingPulse = n.pulse + (n as DragNote).Duration();
+            }
+            else
+            {
+                continue;
+            }
+            int endingScan = endingPulse / PulsesPerScan;
+            if (endingScan > lastScan)
+            {
+                lastScan = endingScan;
+            }
         }
     }
 
@@ -1433,9 +1492,6 @@ public class Game : MonoBehaviour
         n.GetComponent<NoteAppearance>().Resolve();
         // Call this after updating combo to show the correct
         // combo on judgement text.
-        // TODO: for long notes, add 1 combo every 60 pulses,
-        // and 1 additional combo at end of note.
-        // The start of note does not immediately increase combo.
         judgementText.Show(n, judgement);
     }
 

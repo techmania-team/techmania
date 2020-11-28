@@ -116,6 +116,11 @@ public class NoteAppearance : MonoBehaviour
         ongoingTrail.GetComponent<Image>().color = color;
     }
 
+    private void SetHoldExtensionVisibility(Visibility v)
+    {
+        // TODO
+    }
+
     private void UpdateState()
     {
         // Is the note image visible and targetable?
@@ -125,6 +130,7 @@ public class NoteAppearance : MonoBehaviour
             SetFeverOverlayVisibility(Visibility.Hidden);
             SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
             SetDurationTrailVisibility(Visibility.Hidden);
+            SetHoldExtensionVisibility(Visibility.Hidden);
             return;
         }
 
@@ -137,6 +143,7 @@ public class NoteAppearance : MonoBehaviour
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Hidden);
                 SetDurationTrailVisibility(Visibility.Hidden);
+                SetHoldExtensionVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
@@ -155,6 +162,8 @@ public class NoteAppearance : MonoBehaviour
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Transparent);
+                // Not set for extensions: these will be controlled
+                // by the scan they belong to.
                 break;
             case State.Active:
             case State.Ongoing:
@@ -163,6 +172,8 @@ public class NoteAppearance : MonoBehaviour
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
+                // Not set for extensions: these will be controlled
+                // by the scan they belong to.
                 break;
         }
     }
@@ -269,17 +280,20 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region Trail
+    private List<HoldExtension> holdExtensions;
     public void InitializeTrail(Scan scanRef, Scanline scanlineRef)
     {
         this.scanRef = scanRef;
         this.scanlineRef = scanlineRef;
+        holdExtensions = new List<HoldExtension>();
 
         HoldNote holdNote = GetComponent<NoteObject>().note
             as HoldNote;
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
         float endX = scanRef.FloatPulseToXPosition(
-            holdNote.pulse + holdNote.duration);
+            holdNote.pulse + holdNote.duration,
+            extendOutOfBoundPosition: true);
         float width = Mathf.Abs(startX - endX);
 
         durationTrail.sizeDelta = new Vector2(width,
@@ -295,6 +309,11 @@ public class NoteAppearance : MonoBehaviour
             ongoingTrail.sizeDelta.y);
     }
 
+    public void RegisterExtension(HoldExtension e)
+    {
+        holdExtensions.Add(e);
+    }
+
     private void UpdateOngoingTrail()
     {
         float startX = GetComponent<RectTransform>()
@@ -306,18 +325,39 @@ public class NoteAppearance : MonoBehaviour
 
         ongoingTrail.sizeDelta = new Vector2(width,
             ongoingTrail.sizeDelta.y);
+
+        // TODO: update for extensions.
     }
 
     // VFXSpawner calls this to draw ongoing VFX at the correct
     // position.
     public Vector3 GetDurationTrailEndPosition()
     {
+        if (holdExtensions.Count > 0)
+        {
+            return holdExtensions[holdExtensions.Count - 1]
+                .durationTrailEnd.position;
+        }
         return durationTrailEnd.position;
     }
 
     public Vector3 GetOngoingTrailEndPosition()
     {
-        return ongoingTrailEnd.position;
+        if (holdExtensions.Count == 0 ||
+            Game.Scan == scanRef.scanNumber)
+        {
+            return ongoingTrailEnd.position;
+        }
+        else
+        {
+            int extensionIndex = Game.Scan - scanRef.scanNumber - 1;
+            if (extensionIndex > holdExtensions.Count - 1)
+            {
+                extensionIndex = holdExtensions.Count - 1;
+            }
+            return holdExtensions[extensionIndex]
+                .ongoingTrailEnd.position;
+        }
     }
     #endregion
 }

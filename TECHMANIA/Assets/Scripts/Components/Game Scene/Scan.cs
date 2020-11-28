@@ -19,6 +19,7 @@ public class Scan : MonoBehaviour
     private float scanHeight;
     public static float laneHeight { get; private set; }
     private List<NoteAppearance> noteAppearances;
+    private List<HoldExtension> holdExtensions;
     private Scanline scanline;
 
     private void OnDestroy()
@@ -37,6 +38,7 @@ public class Scan : MonoBehaviour
         scanHeight = rect.height;
         laneHeight = scanHeight * 0.25f;
         noteAppearances = new List<NoteAppearance>();
+        holdExtensions = new List<HoldExtension>();
 
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
@@ -75,6 +77,28 @@ public class Scan : MonoBehaviour
         return noteObject;
     }
 
+    public HoldExtension SpawnHoldExtension(GameObject prefab,
+        HoldNote n)
+    {
+        GameObject o = Instantiate(prefab, transform);
+
+        float x = FloatPulseToXPosition((float)n.pulse,
+            extendOutOfBoundPosition: true);
+        float y = scanHeight - (n.lane + 0.5f) * laneHeight;
+        RectTransform rect = o.GetComponent<RectTransform>();
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.zero;
+        rect.anchoredPosition = new Vector2(x, y);
+        rect.sizeDelta = new Vector2(laneHeight, laneHeight);
+
+        HoldExtension extension = o.GetComponent<HoldExtension>();
+        holdExtensions.Add(extension);
+        extension.Initialize(this, scanline, n);
+        
+        return extension;
+    }
+
     private void OnScanAboutToChange(int scan)
     {
         if (scan == scanNumber)
@@ -82,6 +106,10 @@ public class Scan : MonoBehaviour
             foreach (NoteAppearance o in noteAppearances)
             {
                 o.Activate();
+            }
+            foreach (HoldExtension e in holdExtensions)
+            {
+                e.Activate();
             }
         }
     }
@@ -94,16 +122,40 @@ public class Scan : MonoBehaviour
             {
                 o.Prepare();
             }
+            foreach (HoldExtension e in holdExtensions)
+            {
+                e.Prepare();
+            }
         }
     }
 
-    public float FloatPulseToXPosition(float pulse)
+    // If extendOutOfBoundPosition, pulses not inside the
+    // scan will be mapped to a position outside the screen
+    // width. Used for extensions.
+    public float FloatPulseToXPosition(float pulse,
+        bool extendOutOfBoundPosition = false)
     {
         float relativeNormalizedScan = pulse / Game.PulsesPerScan
             - scanNumber;
         float normalizedX = Mathf.LerpUnclamped(
             kSpaceBeforeScan, 1f - kSpaceAfterScan,
             relativeNormalizedScan);
+
+        if (extendOutOfBoundPosition)
+        {
+            if (relativeNormalizedScan <= 0f)
+            {
+                // If relativeNormalizedScan == 0f, it could be
+                // due to the note head being set as an end-of-scan
+                // note.
+                normalizedX = -0.1f;
+            }
+            else if (relativeNormalizedScan > 1f)
+            {
+                normalizedX = 1.1f;
+            }
+        }
+
         if (scanNumber % 2 != 0)
         {
             normalizedX = 1f - normalizedX;

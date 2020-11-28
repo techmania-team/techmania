@@ -1029,6 +1029,7 @@ public class PatternPanel : MonoBehaviour
                 holdNote.duration += deltaDuration;
             }
             EditorContext.DoneWithChange();
+            UpdateNumScansAndRelatedUI();
         }
 
         foreach (GameObject o in holdNotesBeingAdjusted)
@@ -1070,6 +1071,7 @@ public class PatternPanel : MonoBehaviour
             return node1.anchor.pulse - node2.anchor.pulse;
         });
         EditorContext.DoneWithChange();
+        UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = note
             .GetComponent<NoteInEditor>();
@@ -1104,6 +1106,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.PrepareForChange();
         dragNote.nodes.RemoveAt(anchorIndex);
         EditorContext.DoneWithChange();
+        UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = anchor
             .GetComponentInParent<NoteInEditor>();
@@ -1294,6 +1297,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.PrepareForChange();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
         EditorContext.DoneWithChange();
+        UpdateNumScansAndRelatedUI();
     }
 
     private void OnControlPointRightClicked(GameObject controlPoint,
@@ -1429,13 +1433,49 @@ public class PatternPanel : MonoBehaviour
         int numScansBackup = numScans;
 
         int lastPulse = sortedNoteObjects.GetMaxPulse();
-        int lastScan = lastPulse / Pattern.pulsesPerBeat
-            / EditorContext.Pattern.patternMetadata.bps;
+        int pulsesPerScan = Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps;
+
+        // Look at all hold and drag notes in the last few scans
+        // in case their duration outlasts the currently considered
+        // last scan.
+        foreach (GameObject o in sortedNoteObjects
+            .GetAllNotesOfTypeInRange(new HashSet<NoteType>()
+                { NoteType.Hold,
+                NoteType.RepeatHeadHold,
+                NoteType.RepeatHold,
+                NoteType.Drag },
+            minPulseInclusive: lastPulse - pulsesPerScan * 2,
+            maxPulseInclusive: lastPulse))
+        {
+            Note n = o.GetComponent<NoteObject>().note;
+            int endingPulse;
+            if (n is HoldNote)
+            {
+                endingPulse = n.pulse + (n as HoldNote).duration;
+            }
+            else if (n is DragNote)
+            {
+                endingPulse = n.pulse + (n as DragNote).Duration();
+            }
+            else
+            {
+                continue;
+            }
+
+            if (endingPulse > lastPulse)
+            {
+                lastPulse = endingPulse;
+            }
+        }
+
+        int lastScan = lastPulse / pulsesPerScan;
         numScans = lastScan + 2;  // 1 empty scan at the end
 
         return numScans != numScansBackup;
     }
 
+    // TODO: call this after any change to duration or curves.
     private void UpdateNumScansAndRelatedUI()
     {
         if (UpdateNumScans())
@@ -1451,7 +1491,8 @@ public class PatternPanel : MonoBehaviour
             WorkspaceContentWidth,
             workspaceContent.sizeDelta.y);
         workspace.horizontalNormalizedPosition =
-                Mathf.Clamp01(workspace.horizontalNormalizedPosition);
+            Mathf.Clamp01(
+                workspace.horizontalNormalizedPosition);
     }
 
     private void RefreshScanlinePositionSlider()

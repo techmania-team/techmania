@@ -178,8 +178,10 @@ public class SortedNoteObjects
         return null;
     }
 
-    // Returns notes are sorted by pulse; order within pulse undefined.
-    public List<GameObject> GetAllNotesOfType(HashSet<NoteType> types,
+    // Returns notes are sorted by pulse; order within
+    // pulse undefined.
+    public List<GameObject> GetAllNotesOfType(
+        HashSet<NoteType> types,
         int minLaneInclusive, int maxLaneInclusive)
     {
         List<GameObject> answer = new List<GameObject>();
@@ -188,10 +190,32 @@ public class SortedNoteObjects
             foreach (GameObject o in pulseToNotes[pulse])
             {
                 if (!types.Contains(
-                    o.GetComponent<NoteObject>().note.type)) continue;
+                    o.GetComponent<NoteObject>().note.type)) 
+                    continue;
                 int lane = GetLane(o);
                 if (lane < minLaneInclusive) continue;
                 if (lane > maxLaneInclusive) continue;
+                answer.Add(o);
+            }
+        }
+        return answer;
+    }
+
+    // Returns notes are sorted by pulse; order within
+    // pulse undefined.
+    public List<GameObject> GetAllNotesOfTypeInRange(
+        HashSet<NoteType> types,
+        int minPulseInclusive, int maxPulseInclusive)
+    {
+        List<GameObject> answer = new List<GameObject>();
+        foreach (int pulse in populatedPulses.GetViewBetween(
+            minPulseInclusive, maxPulseInclusive))
+        {
+            foreach (GameObject o in pulseToNotes[pulse])
+            {
+                if (!types.Contains(
+                    o.GetComponent<NoteObject>().note.type)) 
+                    continue;
                 answer.Add(o);
             }
         }
