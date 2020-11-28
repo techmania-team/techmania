@@ -11,7 +11,7 @@ using UnityEngine.UI;
 // notes.
 public class NoteAppearance : MonoBehaviour
 {
-    private enum State
+    public enum State
     {
         Inactive,  // Note has not appeared yet; starting state
         Prepare,  // Note is 50% transparent
@@ -19,9 +19,9 @@ public class NoteAppearance : MonoBehaviour
         Ongoing,  // Note with a duration is being played
         Resolved  // Note is resolved and no longer visible
     }
-    private State state;
+    public State state { get; private set; }
 
-    private enum Visibility
+    public enum Visibility
     {
         Hidden,
         Transparent,
@@ -118,7 +118,10 @@ public class NoteAppearance : MonoBehaviour
 
     private void SetHoldExtensionVisibility(Visibility v)
     {
-        // TODO
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.SetDurationTrailVisibility(v);
+        }
     }
 
     private void UpdateState()
@@ -312,6 +315,7 @@ public class NoteAppearance : MonoBehaviour
     public void RegisterExtension(HoldExtension e)
     {
         holdExtensions.Add(e);
+        e.RegisterNoteAppearance(this);
     }
 
     private void UpdateOngoingTrail()
@@ -320,13 +324,30 @@ public class NoteAppearance : MonoBehaviour
             .anchoredPosition.x;
         float endX = scanlineRef.GetComponent<RectTransform>()
             .anchoredPosition.x;
+        // TODO: this will wrongly draw some ongoing trail
+        // before the scanline reached the note.
         float width = Mathf.Min(Mathf.Abs(startX - endX),
             durationTrail.sizeDelta.x);
+
+        // Override width to 0 if the scanline is on the wrong side.
+        float durationTrailDirection = 
+            durationTrailEnd.transform.position.x -
+            transform.position.x;
+        float scanlineDirection =
+            scanlineRef.transform.position.x -
+            transform.position.x;
+        if (durationTrailDirection * scanlineDirection < 0f)
+        {
+            width = 0f;
+        }
 
         ongoingTrail.sizeDelta = new Vector2(width,
             ongoingTrail.sizeDelta.y);
 
-        // TODO: update for extensions.
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.UpdateOngoingTrail();
+        }
     }
 
     // VFXSpawner calls this to draw ongoing VFX at the correct

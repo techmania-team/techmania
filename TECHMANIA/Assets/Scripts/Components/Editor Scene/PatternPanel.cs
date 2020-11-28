@@ -1475,7 +1475,6 @@ public class PatternPanel : MonoBehaviour
         return numScans != numScansBackup;
     }
 
-    // TODO: call this after any change to duration or curves.
     private void UpdateNumScansAndRelatedUI()
     {
         if (UpdateNumScans())
