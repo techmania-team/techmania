@@ -28,7 +28,8 @@ public class JudgementText : MonoBehaviour
 
     public void Show(NoteObject n, Judgement judgement)
     {
-        transform.position = n.transform.position;
+        transform.position = n.GetComponent<NoteAppearance>()
+            .noteImage.GetComponent<RectTransform>().position;
 
         string display = "";
         switch (judgement)

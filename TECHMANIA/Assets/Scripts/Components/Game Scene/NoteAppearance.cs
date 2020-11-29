@@ -324,8 +324,6 @@ public class NoteAppearance : MonoBehaviour
             .anchoredPosition.x;
         float endX = scanlineRef.GetComponent<RectTransform>()
             .anchoredPosition.x;
-        // TODO: this will wrongly draw some ongoing trail
-        // before the scanline reached the note.
         float width = Mathf.Min(Mathf.Abs(startX - endX),
             durationTrail.sizeDelta.x);
 
