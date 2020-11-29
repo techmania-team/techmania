@@ -9,7 +9,8 @@ using UnityEngine.UI;
 // when a held down click/touch enters another lane, Game can
 // handle that has a new click/touch. This is necessary for chain
 // notes.
-public class NoteAppearance : MonoBehaviour
+public class NoteAppearance : MonoBehaviour,
+    IPointsOnCurveProvider
 {
     public enum State
     {
@@ -37,6 +38,8 @@ public class NoteAppearance : MonoBehaviour
     public RectTransform durationTrailEnd;
     public RectTransform ongoingTrail;
     public RectTransform ongoingTrailEnd;
+    [Header("Drag")]
+    public CurvedImage curve;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
@@ -118,10 +121,19 @@ public class NoteAppearance : MonoBehaviour
 
     private void SetHoldExtensionVisibility(Visibility v)
     {
+        if (holdExtensions == null) return;
         foreach (HoldExtension e in holdExtensions)
         {
             e.SetDurationTrailVisibility(v);
         }
+    }
+
+    private void SetCurveVisibility(Visibility v)
+    {
+        curve.gameObject.SetActive(v != Visibility.Hidden);
+        curve.color = (v == Visibility.Transparent) ?
+            new Color(1f, 1f, 1f, 0.6f) :
+            Color.white;
     }
 
     private void UpdateState()
@@ -134,6 +146,7 @@ public class NoteAppearance : MonoBehaviour
             SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
             SetDurationTrailVisibility(Visibility.Hidden);
             SetHoldExtensionVisibility(Visibility.Hidden);
+            SetCurveVisibility(Visibility.Hidden);
             return;
         }
 
@@ -147,12 +160,13 @@ public class NoteAppearance : MonoBehaviour
                     Visibility.Hidden);
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
+                SetCurveVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
                 // - Basic Note
                 // - Trail of Hold Note
-                // - Curve (TODO)
+                // - Curve
                 if (GetNoteType() == NoteType.Basic)
                 {
                     SetNoteImageVisibility(Visibility.Transparent);
@@ -165,6 +179,7 @@ public class NoteAppearance : MonoBehaviour
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Transparent);
+                SetCurveVisibility(Visibility.Transparent);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
@@ -175,6 +190,7 @@ public class NoteAppearance : MonoBehaviour
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
+                SetCurveVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
@@ -205,9 +221,16 @@ public class NoteAppearance : MonoBehaviour
         {
             UpdateFeverOverlay();
         }
-        if (state == State.Ongoing && ongoingTrail != null)
+        if (state == State.Ongoing)
         {
-            UpdateOngoingTrail();
+            if (ongoingTrail != null)
+            {
+                UpdateOngoingTrail();
+            }
+            if (curve != null)
+            {
+                UpdateOngoingCurve();
+            }
         }
     }
 
@@ -377,6 +400,59 @@ public class NoteAppearance : MonoBehaviour
             return holdExtensions[extensionIndex]
                 .ongoingTrailEnd.position;
         }
+    }
+    #endregion
+
+    #region
+    // All positions relative to note head.
+    private List<Vector2> pointsOnCurve;
+
+    public List<Vector2> GetPointsOnCurve()
+    {
+        return pointsOnCurve;
+    }
+
+    public void InitializeCurve(Scan scanRef, Scanline scanlineRef)
+    {
+        this.scanRef = scanRef;
+        this.scanlineRef = scanlineRef;
+
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
+        pointsOnCurve = new List<Vector2>();
+
+        Vector2 headPosition = GetComponent<RectTransform>()
+            .anchoredPosition;
+        foreach (FloatPoint p in dragNote.Interpolate())
+        {
+            Vector2 pointOnCurve = new Vector2(
+                scanRef.FloatPulseToXPosition(
+                    dragNote.pulse + p.pulse)
+                - headPosition.x,
+                scanRef.FloatLaneToYPosition(
+                    dragNote.lane + p.lane)
+                - headPosition.y);
+            pointsOnCurve.Add(pointOnCurve);
+        }
+
+        PointNoteImageTowardCurve();
+        curve.SetVerticesDirty();
+    }
+
+    public void UpdateOngoingCurve()
+    {
+        // TODO
+    }
+
+    public void PointNoteImageTowardCurve()
+    {
+        // TODO
+    }
+
+    public Vector3 GetCurveEndPosition()
+    {
+        // TODO
+        return noteImage.transform.position;
     }
     #endregion
 }

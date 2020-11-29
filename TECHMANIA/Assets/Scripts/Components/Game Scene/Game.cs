@@ -47,6 +47,7 @@ public class Game : MonoBehaviour
     public GameObject chainNodePrefab;
     public GameObject holdNotePrefab;
     public GameObject holdExtensionPrefab;
+    public GameObject dragNotePrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -386,6 +387,9 @@ public class Game : MonoBehaviour
                     break;
                 case NoteType.Hold:
                     prefab = holdNotePrefab;
+                    break;
+                case NoteType.Drag:
+                    prefab = dragNotePrefab;
                     break;
             }
             NoteObject noteObject = scanObjects[scanOfN]
@@ -1078,6 +1082,8 @@ public class Game : MonoBehaviour
         if (fingerInLane[finger] != lane)
         {
             // Finger moved to new lane. Treat as a down event.
+            // TODO: ignore this if the finger is moving along
+            // a drag note.
             ProcessMouseOrFingerDown(results);
             fingerInLane[finger] = lane;
         }

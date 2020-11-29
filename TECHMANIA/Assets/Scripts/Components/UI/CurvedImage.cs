@@ -11,14 +11,15 @@ public class CurvedImage : Image
         // Debug.Log("OnPopulateMesh called");
         vh.Clear();
 
-        NoteInEditor noteInEditor =
-            GetComponentInParent<NoteInEditor>();
-        if (noteInEditor.PointsOnCurve == null ||
-            noteInEditor.PointsOnCurve.Count == 0)
+        IPointsOnCurveProvider pointsProvider =
+            GetComponentInParent<IPointsOnCurveProvider>();
+        List<Vector2> pointsOnCurve = pointsProvider
+            .GetPointsOnCurve();
+        if (pointsOnCurve == null ||
+            pointsOnCurve.Count == 0)
         {
             return;
         }
-        List<Vector2> pointsOnCurve = noteInEditor.PointsOnCurve;
         float curveWidth = rectTransform.rect.height;
         float halfCurveWidth = curveWidth * 0.5f;
 
@@ -30,14 +31,14 @@ public class CurvedImage : Image
         vert.position = pointsOnCurve[0]
             - halfCurveWidth * forward
             + halfCurveWidth * left;
-        vert.color = Color.white;
+        vert.color = color;
         vert.uv0 = new Vector2(0f, 1f);
         vh.AddVert(vert);
 
         vert.position = pointsOnCurve[0]
             - halfCurveWidth * forward
             - halfCurveWidth * left;
-        vert.color = Color.white;
+        vert.color = color;
         vert.uv0 = new Vector2(0f, 0f);
         vh.AddVert(vert);
 
@@ -64,13 +65,13 @@ public class CurvedImage : Image
 
             vert.position = pointsOnCurve[i] +
                 halfCurveWidth * left;
-            vert.color = Color.white;
+            vert.color = color;
             vert.uv0 = new Vector2(u, 1f);
             vh.AddVert(vert);
 
             vert.position = pointsOnCurve[i] -
                 halfCurveWidth * left;
-            vert.color = Color.white;
+            vert.color = color;
             vert.uv0 = new Vector2(u, 0f);
             vh.AddVert(vert);
         }
@@ -82,14 +83,14 @@ public class CurvedImage : Image
         vert.position = pointsOnCurve[pointsOnCurve.Count - 1]
             + halfCurveWidth * forward
             + halfCurveWidth * left;
-        vert.color = Color.white;
+        vert.color = color;
         vert.uv0 = new Vector2(1f, 1f);
         vh.AddVert(vert);
 
         vert.position = pointsOnCurve[pointsOnCurve.Count - 1]
             + halfCurveWidth * forward
             - halfCurveWidth * left;
-        vert.color = Color.white;
+        vert.color = color;
         vert.uv0 = new Vector2(1f, 0f);
         vh.AddVert(vert);
 

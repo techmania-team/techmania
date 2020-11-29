@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class NoteInEditor : MonoBehaviour
+public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 {
     public Sprite hiddenSprite;
     public Sprite hiddenTrailSprite;
@@ -385,7 +385,12 @@ public class NoteInEditor : MonoBehaviour
 
     #region Curve
     // All positions relative to note head.
-    public List<Vector2> PointsOnCurve { get; private set; }
+    private List<Vector2> pointsOnCurve;
+
+    public List<Vector2> GetPointsOnCurve()
+    {
+        return pointsOnCurve;
+    }
 
     // This does not render anchors and control points; call
     // ResetAnchorsAndControlPoints for that.
@@ -393,21 +398,21 @@ public class NoteInEditor : MonoBehaviour
     {
         DragNote dragNote = GetComponent<NoteObject>().note
             as DragNote;
-        PointsOnCurve = new List<Vector2>();
+        pointsOnCurve = new List<Vector2>();
 
         foreach (FloatPoint p in dragNote.Interpolate())
         {
             Vector2 pointOnCurve = new Vector2(
                 p.pulse * PatternPanel.PulseWidth,
                 -p.lane * PatternPanel.LaneHeight);
-            PointsOnCurve.Add(pointOnCurve);
+            pointsOnCurve.Add(pointOnCurve);
         }
         // TODO: do we need to smooth these points?
 
         // Rotate note head.
         UIUtils.RotateToward(self: noteImage,
-            selfPos: PointsOnCurve[0],
-            targetPos: PointsOnCurve[1]);
+            selfPos: pointsOnCurve[0],
+            targetPos: pointsOnCurve[1]);
 
         // Draw curve.
         curvedImage.SetVerticesDirty();
@@ -425,7 +430,7 @@ public class NoteInEditor : MonoBehaviour
         {
             anchorReceiverTemplate.transform.SetAsFirstSibling();
         }
-        for (int i = 0; i < PointsOnCurve.Count - 1; i++)
+        for (int i = 0; i < pointsOnCurve.Count - 1; i++)
         {
             int childIndex = i + 1;
             while (anchorReceiverContainer.childCount - 1
@@ -439,11 +444,11 @@ public class NoteInEditor : MonoBehaviour
                 anchorReceiverContainer.GetChild(childIndex)
                 .GetComponent<RectTransform>();
             receiver.gameObject.SetActive(true);
-            receiver.anchoredPosition = PointsOnCurve[i];
+            receiver.anchoredPosition = pointsOnCurve[i];
 
             UIUtils.PointToward(receiver,
-                selfPos: PointsOnCurve[i],
-                targetPos: PointsOnCurve[i + 1]);
+                selfPos: pointsOnCurve[i],
+                targetPos: pointsOnCurve[i + 1]);
         }
     }
 

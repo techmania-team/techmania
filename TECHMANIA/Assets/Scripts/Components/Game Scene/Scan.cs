@@ -50,8 +50,8 @@ public class Scan : MonoBehaviour
         noteObject.note = n;
         noteObject.sound = sound;
 
-        float x = FloatPulseToXPosition((float)n.pulse);
-        float y = scanHeight - (n.lane + 0.5f) * laneHeight;
+        float x = FloatPulseToXPosition(n.pulse);
+        float y = FloatLaneToYPosition(n.lane);
         RectTransform rect = o.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchorMin = Vector2.zero;
@@ -67,6 +67,9 @@ public class Scan : MonoBehaviour
         {
             case NoteType.Hold:
                 appearance.InitializeTrail(this, scanline);
+                break;
+            case NoteType.Drag:
+                appearance.InitializeCurve(this, scanline);
                 break;
         }
 
@@ -158,5 +161,10 @@ public class Scan : MonoBehaviour
         }
 
         return normalizedX * screenWidth;
+    }
+
+    public float FloatLaneToYPosition(float lane)
+    {
+        return scanHeight - (lane + 0.5f) * laneHeight;
     }
 }

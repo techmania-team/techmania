@@ -10,17 +10,23 @@ public class VFXSpawner : MonoBehaviour
     public GameObject holdOngoingHead;
     public GameObject holdOngoingTrail;
     public GameObject holdComplete;
+    public GameObject dragOngoing;
+    public GameObject dragComplete;
 
     private Dictionary<NoteObject, GameObject> 
         holdNoteToOngoingHeadVfx;
     private Dictionary<NoteObject, GameObject> 
         holdNoteToOngoingTrailVfx;
+    private Dictionary<NoteObject, GameObject>
+        dragNoteToOngoingVfx;
 
     private void Start()
     {
         holdNoteToOngoingHeadVfx =
             new Dictionary<NoteObject, GameObject>();
         holdNoteToOngoingTrailVfx =
+            new Dictionary<NoteObject, GameObject>();
+        dragNoteToOngoingVfx =
             new Dictionary<NoteObject, GameObject>();
     }
 
@@ -61,6 +67,10 @@ public class VFXSpawner : MonoBehaviour
                     SpawnPrefabAt(holdOngoingHead, note));
                 holdNoteToOngoingTrailVfx.Add(note,
                     SpawnPrefabAt(holdOngoingTrail, note));
+                break;
+            case NoteType.Drag:
+                dragNoteToOngoingVfx.Add(note,
+                    SpawnPrefabAt(dragOngoing, note));
                 break;
         }
     }
@@ -109,6 +119,20 @@ public class VFXSpawner : MonoBehaviour
                         .GetDurationTrailEndPosition());
                 }
                 break;
+            case NoteType.Drag:
+                if (dragNoteToOngoingVfx.ContainsKey(note))
+                {
+                    Destroy(dragNoteToOngoingVfx[note]);
+                    dragNoteToOngoingVfx.Remove(note);
+                }
+                if (judgement != Judgement.Miss &&
+                    judgement != Judgement.Break)
+                {
+                    SpawnPrefabAt(dragComplete,
+                        note.GetComponent<NoteAppearance>()
+                        .GetCurveEndPosition());
+                }
+                break;
         }
     }
 
@@ -120,6 +144,13 @@ public class VFXSpawner : MonoBehaviour
             pair.Value.transform.position =
                 pair.Key.GetComponent<NoteAppearance>()
                 .GetOngoingTrailEndPosition();
+        }
+        foreach (KeyValuePair<NoteObject, GameObject> pair in
+            dragNoteToOngoingVfx)
+        {
+            pair.Value.transform.position =
+                pair.Key.GetComponent<NoteAppearance>()
+                .noteImage.transform.position;
         }
     }
 }
