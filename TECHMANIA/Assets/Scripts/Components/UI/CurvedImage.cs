@@ -13,7 +13,7 @@ public class CurvedImage : Image
 
         IPointsOnCurveProvider pointsProvider =
             GetComponentInParent<IPointsOnCurveProvider>();
-        List<Vector2> pointsOnCurve = pointsProvider
+        IList<Vector2> pointsOnCurve = pointsProvider
             .GetPointsOnCurve();
         if (pointsOnCurve == null ||
             pointsOnCurve.Count == 0)

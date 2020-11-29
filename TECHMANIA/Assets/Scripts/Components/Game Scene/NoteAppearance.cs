@@ -40,6 +40,7 @@ public class NoteAppearance : MonoBehaviour,
     public RectTransform ongoingTrailEnd;
     [Header("Drag")]
     public CurvedImage curve;
+    public RectTransform curveEnd;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
@@ -230,6 +231,7 @@ public class NoteAppearance : MonoBehaviour,
             if (curve != null)
             {
                 UpdateOngoingCurve();
+                PlaceNoteImageOnCurve();
             }
         }
     }
@@ -405,9 +407,10 @@ public class NoteAppearance : MonoBehaviour,
 
     #region
     // All positions relative to note head.
-    private List<Vector2> pointsOnCurve;
+    private ListView<Vector2> pointsOnCurve;
+    private float curveXDirection;
 
-    public List<Vector2> GetPointsOnCurve()
+    public IList<Vector2> GetPointsOnCurve()
     {
         return pointsOnCurve;
     }
@@ -419,7 +422,7 @@ public class NoteAppearance : MonoBehaviour,
 
         DragNote dragNote = GetComponent<NoteObject>().note
             as DragNote;
-        pointsOnCurve = new List<Vector2>();
+        pointsOnCurve = new ListView<Vector2>();
 
         Vector2 headPosition = GetComponent<RectTransform>()
             .anchoredPosition;
@@ -435,24 +438,56 @@ public class NoteAppearance : MonoBehaviour,
             pointsOnCurve.Add(pointOnCurve);
         }
 
-        PointNoteImageTowardCurve();
+        curveEnd.anchoredPosition =
+            pointsOnCurve[pointsOnCurve.Count - 1];
+        curveXDirection = Mathf.Sign(
+            pointsOnCurve[pointsOnCurve.Count - 1].x
+            - pointsOnCurve[0].x);
+        PlaceNoteImageOnCurve();
         curve.SetVerticesDirty();
     }
 
     public void UpdateOngoingCurve()
     {
-        // TODO
+        if (pointsOnCurve.Count < 2)
+        {
+            return;
+        }
+        float scanlineX = scanlineRef
+            .GetComponent<RectTransform>().anchoredPosition.x -
+            GetComponent<RectTransform>().anchoredPosition.x;
+        // Make sure scanline is before pointsOnCurve[1]; remove
+        // points if necessary.
+        while ((scanlineX - pointsOnCurve[1].x) * curveXDirection
+            >= 0f)
+        {
+            if (pointsOnCurve.Count < 3) break;
+            pointsOnCurve.RemoveFirst();
+        }
+        // Interpolate pointsOnCurve[0] and pointsOnCurve[1].
+        float t = (scanlineX - pointsOnCurve[0].x) /
+            (pointsOnCurve[1].x - pointsOnCurve[0].x);
+        pointsOnCurve[0] = new Vector2(
+            scanlineX,
+            Mathf.Lerp(pointsOnCurve[0].y, pointsOnCurve[1].y, t));
     }
 
-    public void PointNoteImageTowardCurve()
+    public void PlaceNoteImageOnCurve()
     {
-        // TODO
+        RectTransform imageRect = noteImage
+            .GetComponent<RectTransform>();
+        imageRect.anchoredPosition = pointsOnCurve[0];
+        if (pointsOnCurve.Count > 1)
+        {
+            UIUtils.PointToward(imageRect,
+                selfPos: pointsOnCurve[0],
+                targetPos: pointsOnCurve[1]);
+        }
     }
 
     public Vector3 GetCurveEndPosition()
     {
-        // TODO
-        return noteImage.transform.position;
+        return curveEnd.position;
     }
     #endregion
 }

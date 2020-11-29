@@ -1110,6 +1110,8 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
+            // TODO: This is too much searching. Make new component
+            // called NoteImage and then call GetComponent here.
             NoteObject n = r.gameObject
                 .GetComponentInParent<NoteObject>();
             if (n != null)

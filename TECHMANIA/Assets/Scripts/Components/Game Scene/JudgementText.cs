@@ -17,6 +17,7 @@ public class JudgementText : MonoBehaviour
 
     private TextMeshProUGUI text;
     private Animator animator;
+    private Transform noteToFollow;
 
     // Start is called before the first frame update
     void Start()
@@ -28,8 +29,9 @@ public class JudgementText : MonoBehaviour
 
     public void Show(NoteObject n, Judgement judgement)
     {
-        transform.position = n.GetComponent<NoteAppearance>()
-            .noteImage.GetComponent<RectTransform>().position;
+        noteToFollow = n.GetComponent<NoteAppearance>()
+            .noteImage.transform;
+        Follow();
 
         string display = "";
         switch (judgement)
@@ -89,5 +91,15 @@ public class JudgementText : MonoBehaviour
         }
         text.text = display;
         animator.SetTrigger("Activate");
+    }
+
+    private void Update()
+    {
+        Follow();
+    }
+
+    private void Follow()
+    {
+        transform.position = noteToFollow.position;
     }
 }
