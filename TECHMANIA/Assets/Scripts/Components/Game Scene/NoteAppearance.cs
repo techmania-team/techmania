@@ -131,6 +131,7 @@ public class NoteAppearance : MonoBehaviour,
 
     private void SetCurveVisibility(Visibility v)
     {
+        if (curve == null) return;
         curve.gameObject.SetActive(v != Visibility.Hidden);
         curve.color = (v == Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
