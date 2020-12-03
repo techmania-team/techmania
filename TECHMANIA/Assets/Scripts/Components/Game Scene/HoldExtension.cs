@@ -24,7 +24,8 @@ public class HoldExtension : MonoBehaviour
             .anchoredPosition.x;
         float endX = scanRef.FloatPulseToXPosition(
             holdNote.pulse + holdNote.duration,
-            extendOutOfBoundPosition: true);
+            positionEndOfScanOutOfBounds: false,
+            positionAfterScanOutOfBounds: true);
         float width = Mathf.Abs(startX - endX);
 
         durationTrail.sizeDelta = new Vector2(width,

@@ -423,6 +423,7 @@ public class TrackSetupPanel : MonoBehaviour
 
         selectedPattern = null;
         RefreshPatternList();
+        RefreshPatternMetadata();
     }
 
     public void OnDuplicatePatternButtonClick()

@@ -41,6 +41,8 @@ public class NoteAppearance : MonoBehaviour,
     [Header("Drag")]
     public CurvedImage curve;
     public RectTransform curveEnd;
+    [Header("Repeat")]
+    public RectTransform pathToLastRepeatNote;
 
     private Image feverOverlayImage;
     private Animator feverOverlayAnimator;
@@ -138,6 +140,13 @@ public class NoteAppearance : MonoBehaviour,
             Color.white;
     }
 
+    private void SetRepeatPathVisibility(Visibility v)
+    {
+        if (pathToLastRepeatNote == null) return;
+        pathToLastRepeatNote.gameObject.SetActive(
+            v != Visibility.Hidden);
+    }
+
     private void UpdateState()
     {
         // Is the note image visible and targetable?
@@ -149,6 +158,7 @@ public class NoteAppearance : MonoBehaviour,
             SetDurationTrailVisibility(Visibility.Hidden);
             SetHoldExtensionVisibility(Visibility.Hidden);
             SetCurveVisibility(Visibility.Hidden);
+            SetRepeatPathVisibility(Visibility.Hidden);
             return;
         }
 
@@ -163,6 +173,7 @@ public class NoteAppearance : MonoBehaviour,
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
                 SetCurveVisibility(Visibility.Hidden);
+                SetRepeatPathVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
@@ -182,6 +193,7 @@ public class NoteAppearance : MonoBehaviour,
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Transparent);
                 SetCurveVisibility(Visibility.Transparent);
+                SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
@@ -193,6 +205,7 @@ public class NoteAppearance : MonoBehaviour,
                     Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
                 SetCurveVisibility(Visibility.Visible);
+                SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
@@ -211,6 +224,12 @@ public class NoteAppearance : MonoBehaviour,
 
         state = State.Inactive;
         UpdateState();
+    }
+
+    public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
+    {
+        scanRef = scan;
+        scanlineRef = scanline;
     }
 
     #region Update
@@ -310,10 +329,8 @@ public class NoteAppearance : MonoBehaviour,
 
     #region Trail
     private List<HoldExtension> holdExtensions;
-    public void InitializeTrail(Scan scanRef, Scanline scanlineRef)
+    public void InitializeTrail()
     {
-        this.scanRef = scanRef;
-        this.scanlineRef = scanlineRef;
         holdExtensions = new List<HoldExtension>();
 
         HoldNote holdNote = GetComponent<NoteObject>().note
@@ -322,7 +339,8 @@ public class NoteAppearance : MonoBehaviour,
             .anchoredPosition.x;
         float endX = scanRef.FloatPulseToXPosition(
             holdNote.pulse + holdNote.duration,
-            extendOutOfBoundPosition: true);
+            positionEndOfScanOutOfBounds: false,
+            positionAfterScanOutOfBounds: true);
         float width = Mathf.Abs(startX - endX);
 
         durationTrail.sizeDelta = new Vector2(width,
@@ -406,7 +424,7 @@ public class NoteAppearance : MonoBehaviour,
     }
     #endregion
 
-    #region
+    #region Curve
     // All positions relative to note head.
     private ListView<Vector2> pointsOnCurve;
     private float curveXDirection;
@@ -416,11 +434,8 @@ public class NoteAppearance : MonoBehaviour,
         return pointsOnCurve;
     }
 
-    public void InitializeCurve(Scan scanRef, Scanline scanlineRef)
+    public void InitializeCurve()
     {
-        this.scanRef = scanRef;
-        this.scanlineRef = scanlineRef;
-
         DragNote dragNote = GetComponent<NoteObject>().note
             as DragNote;
         pointsOnCurve = new ListView<Vector2>();
@@ -490,5 +505,54 @@ public class NoteAppearance : MonoBehaviour,
     {
         return curveEnd.position;
     }
+    #endregion
+
+    #region Repeat
+    // Repeat heads and repeat hold heads store references to
+    // all repeat notes and repeat hold notes after it.
+    private List<NoteObject> managedRepeatNotes;
+    // Repeat notes and repeat hold notes store references to
+    // the repeat head or repeat hold head before it.
+    private NoteAppearance managerRepeatHead;
+    private List<RepeatPathExtension> repeatPathExtensions;
+
+    public void ManageRepeatNotes(List<NoteObject> repeatNotes)
+    {
+        // Clone the list because it will be cleared later.
+        managedRepeatNotes = new List<NoteObject>(repeatNotes);
+        foreach (NoteObject n in managedRepeatNotes)
+        {
+            n.GetComponent<NoteAppearance>().managerRepeatHead
+                = this;
+        }
+    }
+
+    public void DrawRepeatPathTo(NoteObject lastRepeatNote)
+    {
+        float startX = GetComponent<RectTransform>()
+            .anchoredPosition.x;
+        float endX = scanRef.FloatPulseToXPosition(
+            lastRepeatNote.note.pulse,
+            positionEndOfScanOutOfBounds: true,
+            positionAfterScanOutOfBounds: true);
+        float width = Mathf.Abs(startX - endX);
+
+        pathToLastRepeatNote.sizeDelta = new Vector2(width,
+            pathToLastRepeatNote.sizeDelta.y);
+        if (endX < startX)
+        {
+            pathToLastRepeatNote.localRotation =
+                Quaternion.Euler(0f, 0f, 180f);
+        }
+
+        repeatPathExtensions = new List<RepeatPathExtension>();
+    }
+
+    public void RegisterRepeatPathExtension(
+        RepeatPathExtension extension)
+    {
+        repeatPathExtensions.Add(extension);
+    }
+
     #endregion
 }

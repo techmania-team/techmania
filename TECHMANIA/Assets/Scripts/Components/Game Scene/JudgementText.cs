@@ -23,8 +23,9 @@ public class JudgementText : MonoBehaviour
     void Start()
     {
         text = GetComponentInChildren<TextMeshProUGUI>();
-        animator = text.GetComponent<Animator>();
         text.text = "";
+        animator = text.GetComponent<Animator>();
+        noteToFollow = null;
     }
 
     public void Show(NoteObject n, Judgement judgement)
@@ -95,7 +96,10 @@ public class JudgementText : MonoBehaviour
 
     private void Update()
     {
-        Follow();
+        if (noteToFollow != null)
+        {
+            Follow();
+        }
     }
 
     private void Follow()

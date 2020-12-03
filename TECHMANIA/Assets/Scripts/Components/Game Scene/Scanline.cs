@@ -25,6 +25,7 @@ public class Scanline : MonoBehaviour
     private void Update()
     {
         float x = scanRef.FloatPulseToXPosition(Game.FloatPulse);
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(x, 0f);
+        GetComponent<RectTransform>().anchoredPosition =
+            new Vector2(x, 0f);
     }
 }

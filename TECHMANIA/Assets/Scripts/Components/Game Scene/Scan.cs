@@ -16,6 +16,7 @@ public class Scan : MonoBehaviour
     public static float laneHeight { get; private set; }
     private List<NoteAppearance> noteAppearances;
     private List<HoldExtension> holdExtensions;
+    private List<RepeatPathExtension> repeatPathExtensions;
     private Scanline scanline;
 
     private void OnDestroy()
@@ -35,6 +36,7 @@ public class Scan : MonoBehaviour
         laneHeight = scanHeight * 0.25f;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
+        repeatPathExtensions = new List<RepeatPathExtension>();
 
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
@@ -61,15 +63,16 @@ public class Scan : MonoBehaviour
 
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
         appearance.SetHidden(hidden);
+        appearance.SetScanAndScanlineRef(this, scanline);
         noteAppearances.Add(appearance);
 
         switch (n.type)
         {
             case NoteType.Hold:
-                appearance.InitializeTrail(this, scanline);
+                appearance.InitializeTrail();
                 break;
             case NoteType.Drag:
-                appearance.InitializeCurve(this, scanline);
+                appearance.InitializeCurve();
                 break;
         }
 
@@ -81,8 +84,7 @@ public class Scan : MonoBehaviour
     {
         GameObject o = Instantiate(prefab, transform);
 
-        float x = FloatPulseToXPosition((float)n.pulse,
-            extendOutOfBoundPosition: true);
+        float x = OutOfBoundXPositionBeforeScan();
         float y = scanHeight - (n.lane + 0.5f) * laneHeight;
         RectTransform rect = o.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0.5f);
@@ -98,6 +100,28 @@ public class Scan : MonoBehaviour
         return extension;
     }
 
+    public RepeatPathExtension SpawnRepeatPathExtension(
+        GameObject prefab, NoteObject head, NoteObject lastNote)
+    {
+        GameObject o = Instantiate(prefab, transform);
+
+        float x = OutOfBoundXPositionBeforeScan();
+        float y = scanHeight - (head.note.lane + 0.5f) * laneHeight;
+        RectTransform rect = o.GetComponent<RectTransform>();
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.zero;
+        rect.anchoredPosition = new Vector2(x, y);
+        rect.sizeDelta = new Vector2(laneHeight, laneHeight);
+
+        RepeatPathExtension extension = 
+            o.GetComponent<RepeatPathExtension>();
+        repeatPathExtensions.Add(extension);
+        extension.Initialize(this, lastNote.note.pulse);
+
+        return extension;
+    }
+
     private void OnScanAboutToChange(int scan)
     {
         if (scan == scanNumber)
@@ -107,6 +131,10 @@ public class Scan : MonoBehaviour
                 o.Activate();
             }
             foreach (HoldExtension e in holdExtensions)
+            {
+                e.Activate();
+            }
+            foreach (RepeatPathExtension e in repeatPathExtensions)
             {
                 e.Activate();
             }
@@ -125,36 +153,16 @@ public class Scan : MonoBehaviour
             {
                 e.Prepare();
             }
+            foreach (RepeatPathExtension e in repeatPathExtensions)
+            {
+                e.Prepare();
+            }
         }
     }
 
-    // If extendOutOfBoundPosition, pulses not inside the
-    // scan will be mapped to a position outside the screen
-    // width. Used for extensions.
-    public float FloatPulseToXPosition(float pulse,
-        bool extendOutOfBoundPosition = false)
+    #region Positioning
+    private float NormalizedXToXPosition(float normalizedX)
     {
-        float relativeNormalizedScan = pulse / Game.PulsesPerScan
-            - scanNumber;
-        float normalizedX = Mathf.LerpUnclamped(
-            kSpaceBeforeScan, 1f - kSpaceAfterScan,
-            relativeNormalizedScan);
-
-        if (extendOutOfBoundPosition)
-        {
-            if (relativeNormalizedScan <= 0f)
-            {
-                // If relativeNormalizedScan == 0f, it could be
-                // due to the note head being set as an end-of-scan
-                // note.
-                normalizedX = -0.1f;
-            }
-            else if (relativeNormalizedScan > 1f)
-            {
-                normalizedX = 1.1f;
-            }
-        }
-
         if (scanNumber % 2 != 0)
         {
             normalizedX = 1f - normalizedX;
@@ -163,8 +171,44 @@ public class Scan : MonoBehaviour
         return normalizedX * screenWidth;
     }
 
+    public float OutOfBoundXPositionBeforeScan()
+    {
+        return NormalizedXToXPosition(-0.1f);
+    }
+    
+    // If positionEndOfScanOutOfBounds, then the pulse at
+    // precisely the end of this scan will be positioned
+    // out of the screen.
+    // If positionAfterScanOutOfBounds, then pulses larger than
+    // the end of this scan will be positioned out of the screen.
+    // These are meant for notes that may cross scans.
+    public float FloatPulseToXPosition(float pulse,
+        bool positionEndOfScanOutOfBounds = false,
+        bool positionAfterScanOutOfBounds = false)
+    {
+        float relativeNormalizedScan = pulse / Game.PulsesPerScan
+            - scanNumber;
+        float normalizedX = Mathf.LerpUnclamped(
+            kSpaceBeforeScan, 1f - kSpaceAfterScan,
+            relativeNormalizedScan);
+
+        if (relativeNormalizedScan == 1f &&
+            positionEndOfScanOutOfBounds)
+        {
+            normalizedX = 1.1f;
+        }
+        if (relativeNormalizedScan > 1f &&
+            positionAfterScanOutOfBounds)
+        {
+            normalizedX = 1.1f;
+        }
+
+        return NormalizedXToXPosition(normalizedX);
+    }
+
     public float FloatLaneToYPosition(float lane)
     {
         return scanHeight - (lane + 0.5f) * laneHeight;
     }
+    #endregion
 }
