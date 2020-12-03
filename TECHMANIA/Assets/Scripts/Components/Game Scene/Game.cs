@@ -405,6 +405,8 @@ public class Game : MonoBehaviour
             }
             NoteObject noteObject = scanObjects[scanOfN]
                 .SpawnNoteObject(prefab, n.note, n.sound, hidden);
+            NoteAppearance appearance = noteObject
+                .GetComponent<NoteAppearance>();
 
             while (noteObjectsInLane.Count <= n.note.lane)
             {
@@ -456,8 +458,7 @@ public class Game : MonoBehaviour
                         scanObjects[crossedScan]
                         .SpawnHoldExtension(
                             holdExtensionPrefab, holdNote);
-                    noteObject.GetComponent<NoteAppearance>()
-                        .RegisterExtension(extension);
+                    appearance.RegisterHoldExtension(extension);
                 }
             }
 
@@ -465,8 +466,7 @@ public class Game : MonoBehaviour
             if (n.note.type == NoteType.ChainHead ||
                 n.note.type == NoteType.ChainNode)
             {
-                noteObject.GetComponent<NoteAppearance>()
-                    .SetNextChainNode(nextChainNode);
+                appearance.SetNextChainNode(nextChainNode);
                 if (n.note.type == NoteType.ChainHead)
                 {
                     nextChainNode = null;
@@ -488,23 +488,32 @@ public class Game : MonoBehaviour
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
-                noteObject.GetComponent<NoteAppearance>()
-                    .ManageRepeatNotes(
+                appearance.ManageRepeatNotes(
                     unmanagedRepeatNotes[n.note.lane]);
+                appearance.DrawRepeatHeadBeforeRepeatNotes();
                 if (unmanagedRepeatNotes[n.note.lane].Count > 0)
                 {
                     NoteObject lastRepeatNote =
                         unmanagedRepeatNotes[n.note.lane][0];
-                    // Adjust draw order so that heads and paths
-                    // are drawn below notes.
-                    noteObject.transform.SetSiblingIndex(
-                        unmanagedRepeatNotes[n.note.lane][0]
-                        .transform.GetSiblingIndex());
-                    // Draw repeat path.
-                    noteObject.GetComponent<NoteAppearance>()
-                        .DrawRepeatPathTo(lastRepeatNote);
-                    // TODO: Create path extensions if the head and last
+                    appearance.DrawRepeatPathTo(lastRepeatNote);
+                    // Create path extensions if the head and last
                     // note are in different scans.
+                    int headScan = n.note.pulse / PulsesPerScan;
+                    int lastScan = lastRepeatNote.note.pulse
+                        / PulsesPerScan;
+                    for (int crossedScan = headScan + 1;
+                        crossedScan <= lastScan;
+                        crossedScan++)
+                    {
+                        RepeatPathExtension extension =
+                            scanObjects[crossedScan]
+                            .SpawnRepeatPathExtension(
+                                repeatPathExtensionPrefab,
+                                noteObject,
+                                lastRepeatNote);
+                        appearance.RegisterRepeatPathExtension(
+                            extension);
+                    }
                 }
                 unmanagedRepeatNotes[n.note.lane].Clear();
             }

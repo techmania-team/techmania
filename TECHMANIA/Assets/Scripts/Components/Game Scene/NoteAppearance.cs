@@ -147,6 +147,15 @@ public class NoteAppearance : MonoBehaviour,
             v != Visibility.Hidden);
     }
 
+    private void SetRepeatPathExtensionVisibility(Visibility v)
+    {
+        if (repeatPathExtensions == null) return;
+        foreach (RepeatPathExtension e in repeatPathExtensions)
+        {
+            e.SetExtensionVisibility(v);
+        }
+    }
+
     private void UpdateState()
     {
         // Is the note image visible and targetable?
@@ -159,6 +168,7 @@ public class NoteAppearance : MonoBehaviour,
             SetHoldExtensionVisibility(Visibility.Hidden);
             SetCurveVisibility(Visibility.Hidden);
             SetRepeatPathVisibility(Visibility.Hidden);
+            SetRepeatPathExtensionVisibility(Visibility.Hidden);
             return;
         }
 
@@ -174,6 +184,7 @@ public class NoteAppearance : MonoBehaviour,
                 SetHoldExtensionVisibility(Visibility.Hidden);
                 SetCurveVisibility(Visibility.Hidden);
                 SetRepeatPathVisibility(Visibility.Hidden);
+                SetRepeatPathExtensionVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
@@ -356,7 +367,7 @@ public class NoteAppearance : MonoBehaviour,
             ongoingTrail.sizeDelta.y);
     }
 
-    public void RegisterExtension(HoldExtension e)
+    public void RegisterHoldExtension(HoldExtension e)
     {
         holdExtensions.Add(e);
         e.RegisterNoteAppearance(this);
@@ -524,6 +535,22 @@ public class NoteAppearance : MonoBehaviour,
         {
             n.GetComponent<NoteAppearance>().managerRepeatHead
                 = this;
+        }
+    }
+
+    public void DrawRepeatHeadBeforeRepeatNotes()
+    {
+        // Since notes are drawn from back to front, we look
+        // for the 1st note in the same scan, and draw
+        // before that one.
+        foreach (NoteObject n in managedRepeatNotes)
+        {
+            if (n.transform.parent == transform.parent)
+            {
+                transform.SetSiblingIndex(
+                    n.transform.GetSiblingIndex());
+                return;
+            }
         }
     }
 
