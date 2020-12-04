@@ -14,11 +14,20 @@ public class NoteAppearance : MonoBehaviour,
 {
     public enum State
     {
-        Inactive,  // Note has not appeared yet; starting state
-        Prepare,  // Note is 50% transparent
-        Active,  // Note is opaque and can be played
-        Ongoing,  // Note with a duration is being played
-        Resolved  // Note is resolved and no longer visible
+        // Note has not appeared yet; starting state.
+        Inactive,
+        // Some notes become transparent.
+        Prepare,
+        // Note is opaque and can be played.
+        Active,
+        // Exclusive to notes with a duration: note is
+        // being played.
+        Ongoing,
+        // Exclusive to repeat heads: head is resolved, but
+        // waiting for all managed repeat notes to also resolve.
+        PendingResolve,
+        // Note is resolved and no longer visible.
+        Resolved
     }
     public State state { get; private set; }
 
@@ -76,7 +85,24 @@ public class NoteAppearance : MonoBehaviour,
 
     public void Resolve()
     {
-        state = State.Resolved;
+        switch (GetNoteType())
+        {
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+                state = State.PendingResolve;
+                // Only fully resolved when all managed repeat notes
+                // get resolved.
+                ManagedRepeatNoteResolved();
+                break;
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                state = State.Resolved;
+                repeatHead.ManagedRepeatNoteResolved();
+                break;
+            default:
+                state = State.Resolved;
+                break;
+        }
         UpdateState();
     }
     #endregion
@@ -210,6 +236,7 @@ public class NoteAppearance : MonoBehaviour,
                 break;
             case State.Active:
             case State.Ongoing:
+            case State.PendingResolve:
                 SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetPathFromNextChainNodeVisibility(
@@ -522,9 +549,13 @@ public class NoteAppearance : MonoBehaviour,
     // Repeat heads and repeat hold heads store references to
     // all repeat notes and repeat hold notes after it.
     private List<NoteObject> managedRepeatNotes;
+    // Counting backwards because notes are drawn backwards.
+    // A value equal to managedRepeatNotes.Count means
+    // the head itself.
+    private int nextUnresolvedRepeatNoteIndex;
     // Repeat notes and repeat hold notes store references to
     // the repeat head or repeat hold head before it.
-    private NoteAppearance managerRepeatHead;
+    private NoteAppearance repeatHead;
     private List<RepeatPathExtension> repeatPathExtensions;
 
     public void ManageRepeatNotes(List<NoteObject> repeatNotes)
@@ -533,8 +564,38 @@ public class NoteAppearance : MonoBehaviour,
         managedRepeatNotes = new List<NoteObject>(repeatNotes);
         foreach (NoteObject n in managedRepeatNotes)
         {
-            n.GetComponent<NoteAppearance>().managerRepeatHead
+            n.GetComponent<NoteAppearance>().repeatHead
                 = this;
+        }
+        nextUnresolvedRepeatNoteIndex = managedRepeatNotes.Count;
+    }
+
+    public NoteAppearance GetRepeatHead()
+    {
+        return repeatHead;
+    }
+
+    public NoteObject GetFirstUnresolvedRepeatNote()
+    {
+        if (nextUnresolvedRepeatNoteIndex == 
+            managedRepeatNotes.Count)
+        {
+            return GetComponent<NoteObject>();
+        }
+        else
+        {
+            return managedRepeatNotes
+                [nextUnresolvedRepeatNoteIndex];
+        }
+    }
+
+    private void ManagedRepeatNoteResolved()
+    {
+        nextUnresolvedRepeatNoteIndex--;
+        if (nextUnresolvedRepeatNoteIndex < 0)
+        {
+            state = State.Resolved;
+            UpdateState();
         }
     }
 

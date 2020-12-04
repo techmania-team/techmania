@@ -12,6 +12,10 @@ public class VFXSpawner : MonoBehaviour
     public GameObject holdComplete;
     public GameObject dragOngoing;
     public GameObject dragComplete;
+    public GameObject repeatHead;
+    public GameObject repeatNote;
+    public GameObject repeatHoldOngoingHead;
+    public GameObject repeatHoldOngoingTrail;
 
     private Dictionary<NoteObject, GameObject> 
         holdNoteToOngoingHeadVfx;
@@ -132,6 +136,29 @@ public class VFXSpawner : MonoBehaviour
                         note.GetComponent<NoteAppearance>()
                         .GetCurveEndPosition());
                 }
+                break;
+            case NoteType.RepeatHead:
+                if (judgement == Judgement.Miss ||
+                    judgement == Judgement.Break)
+                {
+                    break;
+                }
+                SpawnPrefabAt(repeatHead, note);
+                break;
+            case NoteType.Repeat:
+                if (judgement == Judgement.Miss ||
+                    judgement == Judgement.Break)
+                {
+                    break;
+                }
+                SpawnPrefabAt(repeatNote, note);
+                SpawnPrefabAt(repeatHead, 
+                    note.GetComponent<NoteAppearance>()
+                    .GetRepeatHead().GetComponent<NoteObject>());
+                break;
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                // TODO
                 break;
         }
     }

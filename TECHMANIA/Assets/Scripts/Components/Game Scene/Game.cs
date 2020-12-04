@@ -371,6 +371,13 @@ public class Game : MonoBehaviour
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
+        for (int i = 0; i < kPlayableLanes; i++)
+        {
+            noteObjectsInLane.Add(new LinkedList<NoteObject>());
+            notesForMouseInLane.Add(new LinkedList<NoteObject>());
+            notesForKeyboardInLane.Add(new LinkedList<NoteObject>());
+            unmanagedRepeatNotes.Add(new List<NoteObject>());
+        }
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
@@ -1190,7 +1197,14 @@ public class Game : MonoBehaviour
                         continue;
                     }
                 }
-                float correctTime = n.note.time;
+                NoteObject noteToCheck = n;
+                if (n.note.type == NoteType.RepeatHead ||
+                    n.note.type == NoteType.RepeatHeadHold)
+                {
+                    noteToCheck = n.GetComponent<NoteAppearance>()
+                        .GetFirstUnresolvedRepeatNote();
+                }
+                float correctTime = noteToCheck.note.time;
                 float difference = Time - correctTime;
                 if (Mathf.Abs(difference) > kBreakThreshold)
                 {
@@ -1201,7 +1215,7 @@ public class Game : MonoBehaviour
                 else
                 {
                     // The touch or click lands on this note.
-                    HitNote(n, difference);
+                    HitNote(noteToCheck, difference);
                     break;
                 }
             }
