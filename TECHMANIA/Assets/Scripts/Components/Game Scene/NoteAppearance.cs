@@ -45,6 +45,7 @@ public class NoteAppearance : MonoBehaviour,
     [Header("Hold & Repeat Hold")]
     public RectTransform durationTrail;
     public RectTransform durationTrailEnd;
+    public GameObject durationTrailRightShadow;
     public RectTransform ongoingTrail;
     public RectTransform ongoingTrailEnd;
     [Header("Drag")]
@@ -141,8 +142,16 @@ public class NoteAppearance : MonoBehaviour,
         if (durationTrail == null) return;
         durationTrail.gameObject.SetActive(v != Visibility.Hidden);
         if (ongoingTrail != null)
+        {
             ongoingTrail.gameObject.SetActive(
                 v != Visibility.Hidden);
+        }
+        if (durationTrailRightShadow != null)
+        {
+            durationTrailRightShadow.SetActive(
+                v != Visibility.Hidden);
+        }
+
         Color color = (v == Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
@@ -250,10 +259,19 @@ public class NoteAppearance : MonoBehaviour,
                 // by the scan they belong to.
                 break;
             case State.Active:
+                SetNoteImageVisibility(Visibility.Visible);
+                SetFeverOverlayVisibility(Visibility.Visible);
+                SetPathFromNextChainNodeVisibility(
+                    Visibility.Visible);
+                SetDurationTrailVisibility(Visibility.Visible);
+                SetCurveVisibility(Visibility.Visible);
+                SetRepeatPathVisibility(Visibility.Visible);
+                // Not set for extensions: these will be controlled
+                // by the scan they belong to.
+                break;
             case State.Ongoing:
                 if (GetNoteType() == NoteType.RepeatHold)
                 {
-                    // TODO: look into why these images disappear before note enters ongoing state.
                     SetNoteImageVisibility(Visibility.Hidden);
                 }
                 else
@@ -273,6 +291,7 @@ public class NoteAppearance : MonoBehaviour,
                 SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Hidden);
+                SetHoldExtensionVisibility(Visibility.Hidden);
                 SetRepeatPathVisibility(Visibility.Visible);
                 break;
         }
@@ -418,7 +437,6 @@ public class NoteAppearance : MonoBehaviour,
             durationTrailInitialWidth,
             durationTrail.sizeDelta.y);
         
-        // TODO: after fixing stuff, copy to HoldExtension.
         if (trailExtendsLeft)
         {
             durationTrail.localRotation =
@@ -463,7 +481,6 @@ public class NoteAppearance : MonoBehaviour,
             width = 0f;
         }
 
-        // TODO: after fixing stuff, copy to HoldExtension.
         if (GetNoteType() == NoteType.Hold)
         {
             // For hold notes, the duration trail stays still,

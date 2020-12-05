@@ -7,6 +7,7 @@ public class HoldExtension : MonoBehaviour
 {
     public RectTransform durationTrail;
     public RectTransform durationTrailEnd;
+    public GameObject durationTrailRightShadow;
     public RectTransform ongoingTrail;
     public RectTransform ongoingTrailEnd;
 
@@ -14,6 +15,8 @@ public class HoldExtension : MonoBehaviour
     private Scanline scanlineRef;
     private NoteAppearance noteRef;
     private NoteType noteType;
+    private float durationTrailInitialWidth;
+    private bool trailExtendsLeft;
 
     public void Initialize(Scan scanRef, Scanline scanlineRef, 
         HoldNote holdNote)
@@ -28,11 +31,13 @@ public class HoldExtension : MonoBehaviour
             holdNote.pulse + holdNote.duration,
             positionEndOfScanOutOfBounds: false,
             positionAfterScanOutOfBounds: true);
-        float width = Mathf.Abs(startX - endX);
+        trailExtendsLeft = endX < startX;
+        durationTrailInitialWidth = Mathf.Abs(startX - endX);
 
-        durationTrail.sizeDelta = new Vector2(width,
+        durationTrail.sizeDelta = new Vector2(
+            durationTrailInitialWidth,
             durationTrail.sizeDelta.y);
-        if (endX < startX)
+        if (trailExtendsLeft)
         {
             durationTrail.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
@@ -64,6 +69,12 @@ public class HoldExtension : MonoBehaviour
             ongoingTrail.gameObject.SetActive(
                 v != NoteAppearance.Visibility.Hidden);
         }
+        if (durationTrailRightShadow != null)
+        {
+            durationTrailRightShadow.SetActive(
+                v != NoteAppearance.Visibility.Hidden);
+        }
+
         Color color = (v == NoteAppearance.Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
@@ -105,7 +116,7 @@ public class HoldExtension : MonoBehaviour
         float endX = scanlineRef.GetComponent<RectTransform>()
             .anchoredPosition.x;
         float width = Mathf.Min(Mathf.Abs(startX - endX),
-            durationTrail.sizeDelta.x);
+            durationTrailInitialWidth);
 
         // Override width to 0 if the scanline is on the wrong side.
         float durationTrailDirection =
@@ -126,11 +137,11 @@ public class HoldExtension : MonoBehaviour
         }
         else
         {
-            float fullWidth = durationTrail.anchoredPosition.x +
-                durationTrail.sizeDelta.x;
             durationTrail.anchoredPosition = new Vector2(
-                width, 0f);
-            durationTrail.sizeDelta = new Vector2(fullWidth - width,
+                trailExtendsLeft ? -width : width,
+                0f);
+            durationTrail.sizeDelta = new Vector2(
+                durationTrailInitialWidth - width,
                 durationTrail.sizeDelta.y);
         }
     }
