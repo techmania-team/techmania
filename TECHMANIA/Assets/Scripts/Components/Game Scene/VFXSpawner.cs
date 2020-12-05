@@ -16,6 +16,7 @@ public class VFXSpawner : MonoBehaviour
     public GameObject repeatNote;
     public GameObject repeatHoldOngoingHead;
     public GameObject repeatHoldOngoingTrail;
+    public GameObject repeatHoldComplete;
 
     private Dictionary<NoteObject, GameObject> 
         holdNoteToOngoingHeadVfx;
@@ -77,8 +78,21 @@ public class VFXSpawner : MonoBehaviour
                     SpawnPrefabAt(dragOngoing, note));
                 break;
             case NoteType.RepeatHeadHold:
+                holdNoteToOngoingHeadVfx.Add(note,
+                    SpawnPrefabAt(repeatHoldOngoingHead, note));
+                holdNoteToOngoingTrailVfx.Add(note,
+                    SpawnPrefabAt(repeatHoldOngoingTrail, note));
+                break;
             case NoteType.RepeatHold:
-                // TODO
+                // Spawn the head VFX on repeat head.
+                NoteObject repeatHead = note
+                    .GetComponent<NoteAppearance>()
+                    .GetRepeatHead().GetComponent<NoteObject>();
+                holdNoteToOngoingHeadVfx.Add(repeatHead,
+                    SpawnPrefabAt(
+                        repeatHoldOngoingHead, repeatHead));
+                holdNoteToOngoingTrailVfx.Add(note,
+                    SpawnPrefabAt(repeatHoldOngoingTrail, note));
                 break;
         }
     }
@@ -161,8 +175,48 @@ public class VFXSpawner : MonoBehaviour
                     .GetRepeatHead().GetComponent<NoteObject>());
                 break;
             case NoteType.RepeatHeadHold:
+                if (holdNoteToOngoingHeadVfx.ContainsKey(note))
+                {
+                    Destroy(holdNoteToOngoingHeadVfx[note]);
+                    holdNoteToOngoingHeadVfx.Remove(note);
+                }
+                if (holdNoteToOngoingTrailVfx.ContainsKey(note))
+                {
+                    Destroy(holdNoteToOngoingTrailVfx[note]);
+                    holdNoteToOngoingTrailVfx.Remove(note);
+                }
+                if (judgement != Judgement.Miss &&
+                    judgement != Judgement.Break)
+                {
+                    SpawnPrefabAt(repeatHoldComplete,
+                        note.GetComponent<NoteAppearance>()
+                        .GetDurationTrailEndPosition());
+                }
+                break;
             case NoteType.RepeatHold:
-                // TODO
+                NoteObject repeatHeadNote = note
+                    .GetComponent<NoteAppearance>()
+                    .GetRepeatHead().GetComponent<NoteObject>();
+                if (holdNoteToOngoingHeadVfx
+                    .ContainsKey(repeatHeadNote))
+                {
+                    Destroy(holdNoteToOngoingHeadVfx
+                        [repeatHeadNote]);
+                    holdNoteToOngoingHeadVfx.Remove(
+                        repeatHeadNote);
+                }
+                if (holdNoteToOngoingTrailVfx.ContainsKey(note))
+                {
+                    Destroy(holdNoteToOngoingTrailVfx[note]);
+                    holdNoteToOngoingTrailVfx.Remove(note);
+                }
+                if (judgement != Judgement.Miss &&
+                    judgement != Judgement.Break)
+                {
+                    SpawnPrefabAt(repeatHoldComplete,
+                        note.GetComponent<NoteAppearance>()
+                        .GetDurationTrailEndPosition());
+                }
                 break;
         }
     }
