@@ -13,12 +13,14 @@ public class HoldExtension : MonoBehaviour
     private Scan scanRef;
     private Scanline scanlineRef;
     private NoteAppearance noteRef;
+    private NoteType noteType;
 
     public void Initialize(Scan scanRef, Scanline scanlineRef, 
         HoldNote holdNote)
     {
         this.scanRef = scanRef;
         this.scanlineRef = scanlineRef;
+        noteType = holdNote.type;
 
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
@@ -34,11 +36,17 @@ public class HoldExtension : MonoBehaviour
         {
             durationTrail.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
-            ongoingTrail.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
+            if (ongoingTrail != null)
+            {
+                ongoingTrail.localRotation =
+                    Quaternion.Euler(0f, 0f, 180f);
+            }
         }
-        ongoingTrail.sizeDelta = new Vector2(0f,
-            ongoingTrail.sizeDelta.y);
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.sizeDelta = new Vector2(0f,
+                ongoingTrail.sizeDelta.y);
+        }
     }
 
     public void RegisterNoteAppearance(NoteAppearance noteRef)
@@ -51,13 +59,19 @@ public class HoldExtension : MonoBehaviour
     {
         durationTrail.gameObject.SetActive(
             v != NoteAppearance.Visibility.Hidden);
-        ongoingTrail.gameObject.SetActive(
-            v != NoteAppearance.Visibility.Hidden);
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.gameObject.SetActive(
+                v != NoteAppearance.Visibility.Hidden);
+        }
         Color color = (v == NoteAppearance.Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
         durationTrail.GetComponent<Image>().color = color;
-        ongoingTrail.GetComponent<Image>().color = color;
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.GetComponent<Image>().color = color;
+        }
     }
 
     public void Activate()
@@ -72,8 +86,16 @@ public class HoldExtension : MonoBehaviour
     {
         if (noteRef.state == NoteAppearance.State.Resolved)
             return;
-        SetDurationTrailVisibility(
-            NoteAppearance.Visibility.Transparent);
+        if (noteType == NoteType.Hold)
+        {
+            SetDurationTrailVisibility(
+                NoteAppearance.Visibility.Transparent);
+        }
+        else
+        {
+            SetDurationTrailVisibility(
+                NoteAppearance.Visibility.Visible);
+        }
     }
 
     public void UpdateOngoingTrail()
@@ -97,7 +119,19 @@ public class HoldExtension : MonoBehaviour
             width = 0f;
         }
 
-        ongoingTrail.sizeDelta = new Vector2(width,
-            ongoingTrail.sizeDelta.y);
+        if (noteType == NoteType.Hold)
+        {
+            ongoingTrail.sizeDelta = new Vector2(width,
+                ongoingTrail.sizeDelta.y);
+        }
+        else
+        {
+            float fullWidth = durationTrail.anchoredPosition.x +
+                durationTrail.sizeDelta.x;
+            durationTrail.anchoredPosition = new Vector2(
+                width, 0f);
+            durationTrail.sizeDelta = new Vector2(fullWidth - width,
+                durationTrail.sizeDelta.y);
+        }
     }
 }

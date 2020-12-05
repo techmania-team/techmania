@@ -69,6 +69,8 @@ public class Scan : MonoBehaviour
         switch (n.type)
         {
             case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
                 appearance.InitializeTrail();
                 break;
             case NoteType.Drag:

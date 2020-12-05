@@ -76,6 +76,10 @@ public class VFXSpawner : MonoBehaviour
                 dragNoteToOngoingVfx.Add(note,
                     SpawnPrefabAt(dragOngoing, note));
                 break;
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                // TODO
+                break;
         }
     }
 

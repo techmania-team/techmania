@@ -49,8 +49,11 @@ public class Game : MonoBehaviour
     public GameObject holdExtensionPrefab;
     public GameObject dragNotePrefab;
     public GameObject repeatHeadPrefab;
+    public GameObject repeatHeadHoldPrefab;
     public GameObject repeatNotePrefab;
+    public GameObject repeatHoldPrefab;
     public GameObject repeatPathExtensionPrefab;
+    public GameObject repeatHoldExtensionPrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -406,8 +409,18 @@ public class Game : MonoBehaviour
                 case NoteType.RepeatHead:
                     prefab = repeatHeadPrefab;
                     break;
+                case NoteType.RepeatHeadHold:
+                    prefab = repeatHeadHoldPrefab;
+                    break;
                 case NoteType.Repeat:
                     prefab = repeatNotePrefab;
+                    break;
+                case NoteType.RepeatHold:
+                    prefab = repeatHoldPrefab;
+                    break;
+                default:
+                    Debug.LogError("Unsupported note type: " +
+                        n.note.type);
                     break;
             }
             NoteObject noteObject = scanObjects[scanOfN]
@@ -449,9 +462,20 @@ public class Game : MonoBehaviour
             if (hidden) continue;
 
             // Create extensions for hold notes that cross scans.
-            if (n.note.type == NoteType.Hold)
+            if (n.note.type == NoteType.Hold ||
+                n.note.type == NoteType.RepeatHeadHold ||
+                n.note.type == NoteType.RepeatHold)
             {
                 HoldNote holdNote = n.note as HoldNote;
+                GameObject extensionPrefab;
+                if (n.note.type == NoteType.Hold)
+                {
+                    extensionPrefab = holdExtensionPrefab;
+                }
+                else  // RepeatHeadHold or RepeatHold
+                {
+                    extensionPrefab = repeatHoldExtensionPrefab;
+                }
                 // If a hold note ends at a scan divider, we don't
                 // want to spawn an unnecessary extension, thus the
                 // -1.
@@ -464,7 +488,7 @@ public class Game : MonoBehaviour
                     HoldExtension extension =
                         scanObjects[crossedScan]
                         .SpawnHoldExtension(
-                            holdExtensionPrefab, holdNote);
+                            extensionPrefab, holdNote);
                     appearance.RegisterHoldExtension(extension);
                 }
             }
@@ -505,6 +529,8 @@ public class Game : MonoBehaviour
                     appearance.DrawRepeatPathTo(lastRepeatNote);
                     // Create path extensions if the head and last
                     // note are in different scans.
+                    // TODO: draw below notes in the next scan.
+                    // TODO: the last note may have a duration.
                     int headScan = n.note.pulse / PulsesPerScan;
                     int lastScan = lastRepeatNote.note.pulse
                         / PulsesPerScan;
@@ -1252,9 +1278,16 @@ public class Game : MonoBehaviour
             NoteObject n = r.gameObject
                 .GetComponentInParent<NoteObject>();
             if (n == null) continue;
-            if (ongoingNoteIsHitOnThisFrame.ContainsKey(n))
+            NoteObject noteToCheck = n;
+            if (n.note.type == NoteType.RepeatHead ||
+                n.note.type == NoteType.RepeatHeadHold)
             {
-                ongoingNoteIsHitOnThisFrame[n] = true;
+                noteToCheck = n.GetComponent<NoteAppearance>()
+                    .GetFirstUnresolvedRepeatNote();
+            }
+            if (ongoingNoteIsHitOnThisFrame.ContainsKey(noteToCheck))
+            {
+                ongoingNoteIsHitOnThisFrame[noteToCheck] = true;
             }
         }
     }

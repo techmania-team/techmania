@@ -42,7 +42,7 @@ public class NoteAppearance : MonoBehaviour,
     public GameObject feverOverlay;
     [Header("Chain")]
     public RectTransform pathToPreviousNote;
-    [Header("Hold")]
+    [Header("Hold & Repeat Hold")]
     public RectTransform durationTrail;
     public RectTransform durationTrailEnd;
     public RectTransform ongoingTrail;
@@ -140,12 +140,17 @@ public class NoteAppearance : MonoBehaviour,
     {
         if (durationTrail == null) return;
         durationTrail.gameObject.SetActive(v != Visibility.Hidden);
-        ongoingTrail.gameObject.SetActive(v != Visibility.Hidden);
+        if (ongoingTrail != null)
+            ongoingTrail.gameObject.SetActive(
+                v != Visibility.Hidden);
         Color color = (v == Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
         durationTrail.GetComponent<Image>().color = color;
-        ongoingTrail.GetComponent<Image>().color = color;
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.GetComponent<Image>().color = color;
+        }
     }
 
     private void SetHoldExtensionVisibility(Visibility v)
@@ -217,7 +222,8 @@ public class NoteAppearance : MonoBehaviour,
                 // - Basic Note
                 // - Trail of Hold Note
                 // - Curve
-                if (GetNoteType() == NoteType.Basic)
+                NoteType type = GetNoteType();
+                if (type == NoteType.Basic)
                 {
                     SetNoteImageVisibility(Visibility.Transparent);
                 }
@@ -228,7 +234,16 @@ public class NoteAppearance : MonoBehaviour,
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
-                SetDurationTrailVisibility(Visibility.Transparent);
+                if (type == NoteType.RepeatHeadHold ||
+                    type == NoteType.RepeatHold)
+                {
+                    SetDurationTrailVisibility(Visibility.Visible);
+                }
+                else
+                {
+                    SetDurationTrailVisibility(
+                        Visibility.Transparent);
+                }
                 SetCurveVisibility(Visibility.Transparent);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
@@ -236,8 +251,15 @@ public class NoteAppearance : MonoBehaviour,
                 break;
             case State.Active:
             case State.Ongoing:
-            case State.PendingResolve:
-                SetNoteImageVisibility(Visibility.Visible);
+                if (GetNoteType() == NoteType.RepeatHold)
+                {
+                    // TODO: look into why these images disappear before note enters ongoing state.
+                    SetNoteImageVisibility(Visibility.Hidden);
+                }
+                else
+                {
+                    SetNoteImageVisibility(Visibility.Visible);
+                }
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetPathFromNextChainNodeVisibility(
                     Visibility.Visible);
@@ -246,6 +268,12 @@ public class NoteAppearance : MonoBehaviour,
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
+                break;
+            case State.PendingResolve:
+                SetNoteImageVisibility(Visibility.Visible);
+                SetFeverOverlayVisibility(Visibility.Visible);
+                SetDurationTrailVisibility(Visibility.Hidden);
+                SetRepeatPathVisibility(Visibility.Visible);
                 break;
         }
     }
@@ -282,7 +310,7 @@ public class NoteAppearance : MonoBehaviour,
         }
         if (state == State.Ongoing)
         {
-            if (ongoingTrail != null)
+            if (durationTrail != null)
             {
                 UpdateOngoingTrail();
             }
@@ -367,6 +395,8 @@ public class NoteAppearance : MonoBehaviour,
 
     #region Trail
     private List<HoldExtension> holdExtensions;
+    private float durationTrailInitialWidth;
+    private bool trailExtendsLeft;
     public void InitializeTrail()
     {
         holdExtensions = new List<HoldExtension>();
@@ -379,19 +409,31 @@ public class NoteAppearance : MonoBehaviour,
             holdNote.pulse + holdNote.duration,
             positionEndOfScanOutOfBounds: false,
             positionAfterScanOutOfBounds: true);
-        float width = Mathf.Abs(startX - endX);
+        trailExtendsLeft = endX < startX;
+        durationTrailInitialWidth = Mathf.Abs(startX - endX);
 
-        durationTrail.sizeDelta = new Vector2(width,
+        // Both trails (if existant) are anchored at 0
+        // and extend right.
+        durationTrail.sizeDelta = new Vector2(
+            durationTrailInitialWidth,
             durationTrail.sizeDelta.y);
-        if (endX < startX)
+        
+        // TODO: after fixing stuff, copy to HoldExtension.
+        if (trailExtendsLeft)
         {
             durationTrail.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
-            ongoingTrail.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
+            if (ongoingTrail != null)
+            {
+                ongoingTrail.localRotation =
+                    Quaternion.Euler(0f, 0f, 180f);
+            }
         }
-        ongoingTrail.sizeDelta = new Vector2(0f,
-            ongoingTrail.sizeDelta.y);
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.sizeDelta = new Vector2(0f,
+                ongoingTrail.sizeDelta.y);
+        }
     }
 
     public void RegisterHoldExtension(HoldExtension e)
@@ -407,7 +449,7 @@ public class NoteAppearance : MonoBehaviour,
         float endX = scanlineRef.GetComponent<RectTransform>()
             .anchoredPosition.x;
         float width = Mathf.Min(Mathf.Abs(startX - endX),
-            durationTrail.sizeDelta.x);
+            durationTrailInitialWidth);
 
         // Override width to 0 if the scanline is on the wrong side.
         float durationTrailDirection = 
@@ -421,8 +463,25 @@ public class NoteAppearance : MonoBehaviour,
             width = 0f;
         }
 
-        ongoingTrail.sizeDelta = new Vector2(width,
-            ongoingTrail.sizeDelta.y);
+        // TODO: after fixing stuff, copy to HoldExtension.
+        if (GetNoteType() == NoteType.Hold)
+        {
+            // For hold notes, the duration trail stays still,
+            // and the ongoing trail extends to the right.
+            ongoingTrail.sizeDelta = new Vector2(width,
+                ongoingTrail.sizeDelta.y);
+        }
+        else
+        {
+            // For repeat holds, the duration trail contracts to
+            // the right, and the ongoing trail does not exist.
+            durationTrail.anchoredPosition = new Vector2(
+                trailExtendsLeft ? -width : width,
+                0f);
+            durationTrail.sizeDelta = new Vector2(
+                durationTrailInitialWidth - width,
+                durationTrail.sizeDelta.y);
+        }
 
         foreach (HoldExtension e in holdExtensions)
         {
@@ -430,7 +489,7 @@ public class NoteAppearance : MonoBehaviour,
         }
     }
 
-    // VFXSpawner calls this to draw ongoing VFX at the correct
+    // VFXSpawner calls this to draw completion VFX at the correct
     // position.
     public Vector3 GetDurationTrailEndPosition()
     {
@@ -442,6 +501,8 @@ public class NoteAppearance : MonoBehaviour,
         return durationTrailEnd.position;
     }
 
+    // VFXSpawner calls this to draw ongoing VFX at the correct
+    // position.
     public Vector3 GetOngoingTrailEndPosition()
     {
         if (holdExtensions.Count == 0 ||
