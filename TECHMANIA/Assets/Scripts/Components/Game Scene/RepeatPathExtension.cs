@@ -6,9 +6,13 @@ using UnityEngine.UI;
 public class RepeatPathExtension : MonoBehaviour
 {
     public RectTransform extension;
+    private NoteAppearance noteRef;
 
-    public void Initialize(Scan scanRef, int lastNotePulse)
+    public void Initialize(Scan scanRef, NoteObject noteRef,
+        int lastNotePulse)
     {
+        this.noteRef = noteRef.GetComponent<NoteAppearance>();
+
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
         float endX = scanRef.FloatPulseToXPosition(
@@ -26,6 +30,12 @@ public class RepeatPathExtension : MonoBehaviour
         }
     }
 
+    public void DrawBeforeRepeatNotes()
+    {
+        // Hack
+        transform.SetSiblingIndex(0);
+    }
+
     public void SetExtensionVisibility(
         NoteAppearance.Visibility v)
     {
@@ -35,16 +45,15 @@ public class RepeatPathExtension : MonoBehaviour
 
     public void Activate()
     {
+        if (noteRef.state == NoteAppearance.State.Resolved)
+            return;
         SetExtensionVisibility(NoteAppearance.Visibility.Visible);
     }
 
     public void Prepare()
     {
+        if (noteRef.state == NoteAppearance.State.Resolved)
+            return;
         SetExtensionVisibility(NoteAppearance.Visibility.Visible);
-    }
-
-    public void Resolve()
-    {
-        SetExtensionVisibility(NoteAppearance.Visibility.Hidden);
     }
 }

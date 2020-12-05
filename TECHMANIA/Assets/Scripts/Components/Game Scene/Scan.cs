@@ -103,7 +103,7 @@ public class Scan : MonoBehaviour
     }
 
     public RepeatPathExtension SpawnRepeatPathExtension(
-        GameObject prefab, NoteObject head, NoteObject lastNote)
+        GameObject prefab, NoteObject head, int lastRepeatNotePulse)
     {
         GameObject o = Instantiate(prefab, transform);
 
@@ -119,7 +119,7 @@ public class Scan : MonoBehaviour
         RepeatPathExtension extension = 
             o.GetComponent<RepeatPathExtension>();
         repeatPathExtensions.Add(extension);
-        extension.Initialize(this, lastNote.note.pulse);
+        extension.Initialize(this, head, lastRepeatNotePulse);
 
         return extension;
     }

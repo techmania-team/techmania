@@ -280,6 +280,7 @@ public class Game : MonoBehaviour
         backingTrackLoaded = true;
     }
 
+    // TODO: method is too long. Break into parts.
     private void InitializePattern()
     {
         // Prepare for keyboard input if applicable.
@@ -526,13 +527,19 @@ public class Game : MonoBehaviour
                 {
                     NoteObject lastRepeatNote =
                         unmanagedRepeatNotes[n.note.lane][0];
-                    appearance.DrawRepeatPathTo(lastRepeatNote);
+                    int lastRepeatNotePulse = 
+                        lastRepeatNote.note.pulse;
+                    if (lastRepeatNote.note is HoldNote)
+                    {
+                        lastRepeatNotePulse +=
+                            (lastRepeatNote.note as HoldNote)
+                            .duration;
+                    }
+                    appearance.DrawRepeatPathTo(lastRepeatNotePulse);
                     // Create path extensions if the head and last
                     // note are in different scans.
-                    // TODO: draw below notes in the next scan.
-                    // TODO: the last note may have a duration.
                     int headScan = n.note.pulse / PulsesPerScan;
-                    int lastScan = lastRepeatNote.note.pulse
+                    int lastScan = lastRepeatNotePulse
                         / PulsesPerScan;
                     for (int crossedScan = headScan + 1;
                         crossedScan <= lastScan;
@@ -543,7 +550,8 @@ public class Game : MonoBehaviour
                             .SpawnRepeatPathExtension(
                                 repeatPathExtensionPrefab,
                                 noteObject,
-                                lastRepeatNote);
+                                lastRepeatNotePulse);
+                        extension.DrawBeforeRepeatNotes();
                         appearance.RegisterRepeatPathExtension(
                             extension);
                     }

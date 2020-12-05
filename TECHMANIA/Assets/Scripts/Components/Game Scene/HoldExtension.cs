@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// TODO: too much pasted code from NoteAppearance.
 public class HoldExtension : MonoBehaviour
 {
     public RectTransform durationTrail;
@@ -87,7 +88,8 @@ public class HoldExtension : MonoBehaviour
 
     public void Activate()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved)
+        if (noteRef.state == NoteAppearance.State.Resolved ||
+            noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         SetDurationTrailVisibility(
             NoteAppearance.Visibility.Visible);
@@ -95,7 +97,8 @@ public class HoldExtension : MonoBehaviour
 
     public void Prepare()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved)
+        if (noteRef.state == NoteAppearance.State.Resolved ||
+            noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         if (noteType == NoteType.Hold)
         {
