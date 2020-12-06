@@ -280,7 +280,6 @@ public class Game : MonoBehaviour
         backingTrackLoaded = true;
     }
 
-    // TODO: method is too long. Break into parts.
     private void InitializePattern()
     {
         // Prepare for keyboard input if applicable.
@@ -312,38 +311,7 @@ public class Game : MonoBehaviour
         }
 
         // Sort all notes by pulse.
-        List<NoteWithSound> sortedNotes = new List<NoteWithSound>();
-        foreach (SoundChannel c in GameSetup.pattern.soundChannels)
-        {
-            foreach (Note n in c.notes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-            foreach (Note n in c.holdNotes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-            foreach (Note n in c.dragNotes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-        }
-        sortedNotes.Sort((NoteWithSound n1, NoteWithSound n2) =>
-        {
-            return n1.note.pulse - n2.note.pulse;
-        });
+        List<NoteWithSound> sortedNotes = SortAllNotes();
 
         // Find last scan. Make sure it ends later than the backing
         // track, so we don't cut the track short.
@@ -375,13 +343,6 @@ public class Game : MonoBehaviour
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
-        for (int i = 0; i < kPlayableLanes; i++)
-        {
-            noteObjectsInLane.Add(new LinkedList<NoteObject>());
-            notesForMouseInLane.Add(new LinkedList<NoteObject>());
-            notesForKeyboardInLane.Add(new LinkedList<NoteObject>());
-            unmanagedRepeatNotes.Add(new List<NoteObject>());
-        }
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
             NoteWithSound n = sortedNotes[i];
@@ -389,43 +350,8 @@ public class Game : MonoBehaviour
             bool hidden = n.note.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
 
-            GameObject prefab = null;
-            switch (n.note.type)
-            {
-                case NoteType.Basic:
-                    prefab = basicNotePrefab;
-                    break;
-                case NoteType.ChainHead:
-                    prefab = chainHeadPrefab;
-                    break;
-                case NoteType.ChainNode:
-                    prefab = chainNodePrefab;
-                    break;
-                case NoteType.Hold:
-                    prefab = holdNotePrefab;
-                    break;
-                case NoteType.Drag:
-                    prefab = dragNotePrefab;
-                    break;
-                case NoteType.RepeatHead:
-                    prefab = repeatHeadPrefab;
-                    break;
-                case NoteType.RepeatHeadHold:
-                    prefab = repeatHeadHoldPrefab;
-                    break;
-                case NoteType.Repeat:
-                    prefab = repeatNotePrefab;
-                    break;
-                case NoteType.RepeatHold:
-                    prefab = repeatHoldPrefab;
-                    break;
-                default:
-                    Debug.LogError("Unsupported note type: " +
-                        n.note.type);
-                    break;
-            }
-            NoteObject noteObject = scanObjects[scanOfN]
-                .SpawnNoteObject(prefab, n.note, n.sound, hidden);
+            NoteObject noteObject = SpawnNoteObject(
+                n, scanObjects[scanOfN], hidden);
             NoteAppearance appearance = noteObject
                 .GetComponent<NoteAppearance>();
 
@@ -467,31 +393,7 @@ public class Game : MonoBehaviour
                 n.note.type == NoteType.RepeatHeadHold ||
                 n.note.type == NoteType.RepeatHold)
             {
-                HoldNote holdNote = n.note as HoldNote;
-                GameObject extensionPrefab;
-                if (n.note.type == NoteType.Hold)
-                {
-                    extensionPrefab = holdExtensionPrefab;
-                }
-                else  // RepeatHeadHold or RepeatHold
-                {
-                    extensionPrefab = repeatHoldExtensionPrefab;
-                }
-                // If a hold note ends at a scan divider, we don't
-                // want to spawn an unnecessary extension, thus the
-                // -1.
-                int lastScan = (holdNote.pulse + holdNote.duration
-                    - 1) / PulsesPerScan;
-                for (int crossedScan = scanOfN + 1;
-                    crossedScan <= lastScan;
-                    crossedScan++)
-                {
-                    HoldExtension extension =
-                        scanObjects[crossedScan]
-                        .SpawnHoldExtension(
-                            extensionPrefab, holdNote);
-                    appearance.RegisterHoldExtension(extension);
-                }
+                CreateHoldExtensions(noteObject, scanObjects);
             }
 
             // Connect chain heads/nodes to the node after it.
@@ -520,43 +422,9 @@ public class Game : MonoBehaviour
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
-                appearance.ManageRepeatNotes(
-                    unmanagedRepeatNotes[n.note.lane]);
-                appearance.DrawRepeatHeadBeforeRepeatNotes();
-                if (unmanagedRepeatNotes[n.note.lane].Count > 0)
-                {
-                    NoteObject lastRepeatNote =
-                        unmanagedRepeatNotes[n.note.lane][0];
-                    int lastRepeatNotePulse = 
-                        lastRepeatNote.note.pulse;
-                    if (lastRepeatNote.note is HoldNote)
-                    {
-                        lastRepeatNotePulse +=
-                            (lastRepeatNote.note as HoldNote)
-                            .duration;
-                    }
-                    appearance.DrawRepeatPathTo(lastRepeatNotePulse);
-                    // Create path extensions if the head and last
-                    // note are in different scans.
-                    int headScan = n.note.pulse / PulsesPerScan;
-                    int lastScan = lastRepeatNotePulse
-                        / PulsesPerScan;
-                    for (int crossedScan = headScan + 1;
-                        crossedScan <= lastScan;
-                        crossedScan++)
-                    {
-                        RepeatPathExtension extension =
-                            scanObjects[crossedScan]
-                            .SpawnRepeatPathExtension(
-                                repeatPathExtensionPrefab,
-                                noteObject,
-                                lastRepeatNotePulse);
-                        extension.DrawBeforeRepeatNotes();
-                        appearance.RegisterRepeatPathExtension(
-                            extension);
-                    }
-                }
-                unmanagedRepeatNotes[n.note.lane].Clear();
+                ManageRepeatNotes(noteObject,
+                    unmanagedRepeatNotes[n.note.lane],
+                    scanObjects);
             }
         }
 
@@ -591,55 +459,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void CalculateLastScan(List<NoteWithSound> sortedNotes)
-    {
-        lastScan = 0;
-        if (sortedNotes.Count > 0)
-        {
-            lastScan =
-                sortedNotes[sortedNotes.Count - 1].note.pulse /
-                PulsesPerScan;
-        }
-        if (backingTrackSource.clip != null)
-        {
-            while (GameSetup.pattern
-                .PulseToTime((lastScan + 1) * PulsesPerScan)
-                < backingTrackSource.clip.length)
-            {
-                lastScan++;
-            }
-        }
-
-        // Look at all hold and drag notes in the last few scans
-        // in case their duration outlasts the currently considered
-        // last scan.
-        int pulseBorder = (lastScan - 1) * PulsesPerScan;
-        for (int i = sortedNotes.Count - 1; i >= 0; i--)
-        {
-            Note n = sortedNotes[i].note;
-            if (n.pulse < pulseBorder) break;
-
-            int endingPulse;
-            if (n is HoldNote)
-            {
-                endingPulse = n.pulse + (n as HoldNote).duration;
-            }
-            else if (n is DragNote)
-            {
-                endingPulse = n.pulse + (n as DragNote).Duration();
-            }
-            else
-            {
-                continue;
-            }
-            int endingScan = endingPulse / PulsesPerScan;
-            if (endingScan > lastScan)
-            {
-                lastScan = endingScan;
-            }
-        }
-    }
-
+    #region Subroutines of InitializePattern
     private void InitializeKeysForLane()
     {
         keysForLane = new List<List<KeyCode>>();
@@ -715,6 +535,204 @@ public class Game : MonoBehaviour
             KeyCode.Keypad3
         });
     }
+
+    private List<NoteWithSound> SortAllNotes()
+    {
+        List<NoteWithSound> sortedNotes = new List<NoteWithSound>();
+        foreach (SoundChannel c in GameSetup.pattern.soundChannels)
+        {
+            foreach (Note n in c.notes)
+            {
+                sortedNotes.Add(new NoteWithSound()
+                {
+                    note = n,
+                    sound = c.name
+                });
+            }
+            foreach (Note n in c.holdNotes)
+            {
+                sortedNotes.Add(new NoteWithSound()
+                {
+                    note = n,
+                    sound = c.name
+                });
+            }
+            foreach (Note n in c.dragNotes)
+            {
+                sortedNotes.Add(new NoteWithSound()
+                {
+                    note = n,
+                    sound = c.name
+                });
+            }
+        }
+        sortedNotes.Sort((NoteWithSound n1, NoteWithSound n2) =>
+        {
+            return n1.note.pulse - n2.note.pulse;
+        });
+
+        return sortedNotes;
+    }
+
+    private void CalculateLastScan(List<NoteWithSound> sortedNotes)
+    {
+        lastScan = 0;
+        if (sortedNotes.Count > 0)
+        {
+            lastScan = sortedNotes[sortedNotes.Count - 1]
+                .note.pulse / PulsesPerScan;
+        }
+        if (backingTrackSource.clip != null)
+        {
+            while (GameSetup.pattern.PulseToTime(
+                (lastScan + 1) * PulsesPerScan)
+                < backingTrackSource.clip.length)
+            {
+                lastScan++;
+            }
+        }
+
+        // Look at all hold and drag notes in the last few scans
+        // in case their duration outlasts the currently considered
+        // last scan.
+        int pulseBorder = (lastScan - 1) * PulsesPerScan;
+        for (int i = sortedNotes.Count - 1; i >= 0; i--)
+        {
+            Note n = sortedNotes[i].note;
+            if (n.pulse < pulseBorder) break;
+
+            int endingPulse;
+            if (n is HoldNote)
+            {
+                endingPulse = n.pulse + (n as HoldNote).duration;
+            }
+            else if (n is DragNote)
+            {
+                endingPulse = n.pulse + (n as DragNote).Duration();
+            }
+            else
+            {
+                continue;
+            }
+            int endingScan = endingPulse / PulsesPerScan;
+            if (endingScan > lastScan)
+            {
+                lastScan = endingScan;
+            }
+        }
+    }
+
+    private NoteObject SpawnNoteObject(NoteWithSound n,
+        Scan scan, bool hidden)
+    {
+        GameObject prefab = null;
+        switch (n.note.type)
+        {
+            case NoteType.Basic:
+                prefab = basicNotePrefab;
+                break;
+            case NoteType.ChainHead:
+                prefab = chainHeadPrefab;
+                break;
+            case NoteType.ChainNode:
+                prefab = chainNodePrefab;
+                break;
+            case NoteType.Hold:
+                prefab = holdNotePrefab;
+                break;
+            case NoteType.Drag:
+                prefab = dragNotePrefab;
+                break;
+            case NoteType.RepeatHead:
+                prefab = repeatHeadPrefab;
+                break;
+            case NoteType.RepeatHeadHold:
+                prefab = repeatHeadHoldPrefab;
+                break;
+            case NoteType.Repeat:
+                prefab = repeatNotePrefab;
+                break;
+            case NoteType.RepeatHold:
+                prefab = repeatHoldPrefab;
+                break;
+            default:
+                Debug.LogError("Unsupported note type: " +
+                    n.note.type);
+                break;
+        }
+        return scan.SpawnNoteObject(prefab, n.note, n.sound, hidden);
+    }
+
+    private void CreateHoldExtensions(NoteObject n,
+        Dictionary<int, Scan> scanObjects)
+    {
+        HoldNote holdNote = n.note as HoldNote;
+        GameObject extensionPrefab;
+        if (n.note.type == NoteType.Hold)
+        {
+            extensionPrefab = holdExtensionPrefab;
+        }
+        else  // RepeatHeadHold or RepeatHold
+        {
+            extensionPrefab = repeatHoldExtensionPrefab;
+        }
+        // If a hold note ends at a scan divider, we don't
+        // want to spawn an unnecessary extension, thus the
+        // -1.
+        int scanOfN = n.note.pulse / PulsesPerScan;
+        int lastScan = (holdNote.pulse + holdNote.duration - 1)
+            / PulsesPerScan;
+        for (int crossedScan = scanOfN + 1;
+            crossedScan <= lastScan;
+            crossedScan++)
+        {
+            HoldExtension extension = scanObjects[crossedScan]
+                .SpawnHoldExtension(extensionPrefab, holdNote);
+            n.GetComponent<NoteAppearance>()
+                .RegisterHoldExtension(extension);
+        }
+    }
+
+    private void ManageRepeatNotes(NoteObject head,
+        List<NoteObject> notesToManage,
+        Dictionary<int, Scan> scanObjects)
+    {
+        NoteAppearance headAppearance = 
+            head.GetComponent<NoteAppearance>();
+        headAppearance.ManageRepeatNotes(notesToManage);
+        headAppearance.DrawRepeatHeadBeforeRepeatNotes();
+        if (notesToManage.Count > 0)
+        {
+            NoteObject lastRepeatNote = notesToManage[0];
+            int lastRepeatNotePulse = lastRepeatNote.note.pulse;
+            if (lastRepeatNote.note is HoldNote)
+            {
+                lastRepeatNotePulse +=
+                    (lastRepeatNote.note as HoldNote).duration;
+            }
+            headAppearance.DrawRepeatPathTo(lastRepeatNotePulse);
+            // Create path extensions if the head and last
+            // note are in different scans.
+            int headScan = head.note.pulse / PulsesPerScan;
+            int lastScan = lastRepeatNotePulse / PulsesPerScan;
+            for (int crossedScan = headScan + 1;
+                crossedScan <= lastScan;
+                crossedScan++)
+            {
+                RepeatPathExtension extension =
+                    scanObjects[crossedScan]
+                    .SpawnRepeatPathExtension(
+                        repeatPathExtensionPrefab,
+                        head,
+                        lastRepeatNotePulse);
+                extension.DrawBeforeRepeatNotes();
+                headAppearance.RegisterRepeatPathExtension(
+                    extension);
+            }
+        }
+        notesToManage.Clear();
+    }
+    #endregion
 
     private void OnKeysoundLoadComplete(string error)
     {
