@@ -120,6 +120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4938960492040002542}
   - component: {fileID: 8220241421775123500}
+  - component: {fileID: 8781710013128782693}
   m_Layer: 5
   m_Name: Hold Extension
   m_TagString: Untagged
@@ -160,8 +161,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0191321b4ef414a8244c9ad5c213aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8781710013128782693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938960492040002543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 934bd4e2c788e174591a3831dbc1f33e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   durationTrail: {fileID: 6787334719987153941}
   durationTrailEnd: {fileID: 2461929531195391284}
+  durationTrailRightShadow: {fileID: 0}
   ongoingTrail: {fileID: 1491787679577037505}
   ongoingTrailEnd: {fileID: 8092385989094609931}
 --- !u!1 &7702790904713800161

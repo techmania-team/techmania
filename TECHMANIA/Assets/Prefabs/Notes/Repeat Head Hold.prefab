@@ -395,6 +395,7 @@ GameObject:
   - component: {fileID: 4938960492040002542}
   - component: {fileID: 7334993887986592855}
   - component: {fileID: 885913038887205672}
+  - component: {fileID: 1252720363445976675}
   m_Layer: 5
   m_Name: Repeat Head Hold
   m_TagString: Untagged
@@ -457,14 +458,26 @@ MonoBehaviour:
   noteImage: {fileID: 1889145054254741463}
   feverOverlay: {fileID: 6953956412375015768}
   pathToPreviousNote: {fileID: 0}
+  curve: {fileID: 0}
+  curveEnd: {fileID: 0}
+  pathToLastRepeatNote: {fileID: 8130734685249038196}
+--- !u!114 &1252720363445976675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938960492040002543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 934bd4e2c788e174591a3831dbc1f33e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   durationTrail: {fileID: 2428405691528230459}
   durationTrailEnd: {fileID: 2955905385702317183}
   durationTrailRightShadow: {fileID: 573089368292139137}
   ongoingTrail: {fileID: 0}
   ongoingTrailEnd: {fileID: 2172905096599652451}
-  curve: {fileID: 0}
-  curveEnd: {fileID: 0}
-  pathToLastRepeatNote: {fileID: 8130734685249038196}
 --- !u!1001 &7308482784058417584
 PrefabInstance:
   m_ObjectHideFlags: 0

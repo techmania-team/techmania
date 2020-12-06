@@ -16,7 +16,7 @@ public class NoteAppearance : MonoBehaviour,
     {
         // Note has not appeared yet; starting state.
         Inactive,
-        // Some notes become transparent.
+        // Some notes become transparent, other opaque.
         Prepare,
         // Note is opaque and can be played.
         Active,
@@ -42,12 +42,6 @@ public class NoteAppearance : MonoBehaviour,
     public GameObject feverOverlay;
     [Header("Chain")]
     public RectTransform pathToPreviousNote;
-    [Header("Hold & Repeat Hold")]
-    public RectTransform durationTrail;
-    public RectTransform durationTrailEnd;
-    public GameObject durationTrailRightShadow;
-    public RectTransform ongoingTrail;
-    public RectTransform ongoingTrailEnd;
     [Header("Drag")]
     public CurvedImage curve;
     public RectTransform curveEnd;
@@ -139,27 +133,10 @@ public class NoteAppearance : MonoBehaviour,
 
     private void SetDurationTrailVisibility(Visibility v)
     {
-        if (durationTrail == null) return;
-        durationTrail.gameObject.SetActive(v != Visibility.Hidden);
-        if (ongoingTrail != null)
-        {
-            ongoingTrail.gameObject.SetActive(
-                v != Visibility.Hidden);
-        }
-        if (durationTrailRightShadow != null)
-        {
-            durationTrailRightShadow.SetActive(
-                v != Visibility.Hidden);
-        }
-
-        Color color = (v == Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
-        durationTrail.GetComponent<Image>().color = color;
-        if (ongoingTrail != null)
-        {
-            ongoingTrail.GetComponent<Image>().color = color;
-        }
+        HoldTrailManager holdTrailManager = 
+            GetComponent<HoldTrailManager>();
+        if (holdTrailManager == null) return;
+        holdTrailManager.SetVisibility(v);
     }
 
     private void SetHoldExtensionVisibility(Visibility v)
@@ -329,7 +306,7 @@ public class NoteAppearance : MonoBehaviour,
         }
         if (state == State.Ongoing)
         {
-            if (durationTrail != null)
+            if (GetComponent<HoldTrailManager>() != null)
             {
                 UpdateOngoingTrail();
             }
@@ -367,7 +344,7 @@ public class NoteAppearance : MonoBehaviour,
     }
     #endregion
 
-    private NoteType GetNoteType()
+    public NoteType GetNoteType()
     {
         return GetComponent<NoteObject>().note.type;
     }
@@ -414,44 +391,15 @@ public class NoteAppearance : MonoBehaviour,
 
     #region Trail
     private List<HoldExtension> holdExtensions;
-    private float durationTrailInitialWidth;
-    private bool trailExtendsLeft;
+
     public void InitializeTrail()
     {
         holdExtensions = new List<HoldExtension>();
-
         HoldNote holdNote = GetComponent<NoteObject>().note
             as HoldNote;
-        float startX = GetComponent<RectTransform>()
-            .anchoredPosition.x;
-        float endX = scanRef.FloatPulseToXPosition(
-            holdNote.pulse + holdNote.duration,
-            positionEndOfScanOutOfBounds: false,
-            positionAfterScanOutOfBounds: true);
-        trailExtendsLeft = endX < startX;
-        durationTrailInitialWidth = Mathf.Abs(startX - endX);
 
-        // Both trails (if existant) are anchored at 0
-        // and extend right.
-        durationTrail.sizeDelta = new Vector2(
-            durationTrailInitialWidth,
-            durationTrail.sizeDelta.y);
-        
-        if (trailExtendsLeft)
-        {
-            durationTrail.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
-            if (ongoingTrail != null)
-            {
-                ongoingTrail.localRotation =
-                    Quaternion.Euler(0f, 0f, 180f);
-            }
-        }
-        if (ongoingTrail != null)
-        {
-            ongoingTrail.sizeDelta = new Vector2(0f,
-                ongoingTrail.sizeDelta.y);
-        }
+        GetComponent<HoldTrailManager>().Initialize(
+            scanRef, scanlineRef, holdNote);
     }
 
     public void RegisterHoldExtension(HoldExtension e)
@@ -462,43 +410,7 @@ public class NoteAppearance : MonoBehaviour,
 
     private void UpdateOngoingTrail()
     {
-        float startX = GetComponent<RectTransform>()
-            .anchoredPosition.x;
-        float endX = scanlineRef.GetComponent<RectTransform>()
-            .anchoredPosition.x;
-        float width = Mathf.Min(Mathf.Abs(startX - endX),
-            durationTrailInitialWidth);
-
-        // Override width to 0 if the scanline is on the wrong side.
-        float durationTrailDirection = 
-            durationTrailEnd.transform.position.x -
-            transform.position.x;
-        float scanlineDirection =
-            scanlineRef.transform.position.x -
-            transform.position.x;
-        if (durationTrailDirection * scanlineDirection < 0f)
-        {
-            width = 0f;
-        }
-
-        if (GetNoteType() == NoteType.Hold)
-        {
-            // For hold notes, the duration trail stays still,
-            // and the ongoing trail extends to the right.
-            ongoingTrail.sizeDelta = new Vector2(width,
-                ongoingTrail.sizeDelta.y);
-        }
-        else
-        {
-            // For repeat holds, the duration trail contracts to
-            // the right, and the ongoing trail does not exist.
-            durationTrail.anchoredPosition = new Vector2(
-                trailExtendsLeft ? -width : width,
-                0f);
-            durationTrail.sizeDelta = new Vector2(
-                durationTrailInitialWidth - width,
-                durationTrail.sizeDelta.y);
-        }
+        GetComponent<HoldTrailManager>().UpdateTrails();
 
         foreach (HoldExtension e in holdExtensions)
         {
@@ -515,7 +427,8 @@ public class NoteAppearance : MonoBehaviour,
             return holdExtensions[holdExtensions.Count - 1]
                 .durationTrailEnd.position;
         }
-        return durationTrailEnd.position;
+        return GetComponent<HoldTrailManager>()
+            .durationTrailEnd.position;
     }
 
     // VFXSpawner calls this to draw ongoing VFX at the correct
@@ -525,7 +438,8 @@ public class NoteAppearance : MonoBehaviour,
         if (holdExtensions.Count == 0 ||
             Game.Scan == scanRef.scanNumber)
         {
-            return ongoingTrailEnd.position;
+            return GetComponent<HoldTrailManager>()
+                .ongoingTrailEnd.position;
         }
         else
         {
