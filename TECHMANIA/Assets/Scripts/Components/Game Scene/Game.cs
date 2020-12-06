@@ -1196,8 +1196,6 @@ public class Game : MonoBehaviour
         if (fingerInLane[finger] != lane)
         {
             // Finger moved to new lane. Treat as a down event.
-            // TODO: ignore this if the finger is moving along
-            // a drag note.
             ProcessMouseOrFingerDown(results);
             fingerInLane[finger] = lane;
         }
@@ -1224,19 +1222,20 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
-            // TODO: This is too much searching. Make new component
-            // called NoteImage and then call GetComponent here.
-            NoteObject n = r.gameObject
-                .GetComponentInParent<NoteObject>();
-            if (n != null)
+            NoteImageTouchReceiver touchReceiver = r.gameObject
+                .GetComponent<NoteImageTouchReceiver>();
+            if (touchReceiver != null)
             {
+                NoteObject n = touchReceiver
+                    .GetComponentInParent<NoteObject>();
+
                 if (ongoingNotes.ContainsKey(n))
                 {
                     // Ignore ongoing notes, and don't play sound
                     // either.
                     break;
                 }
-                if (GameSetup.pattern.patternMetadata.controlScheme 
+                if (GameSetup.pattern.patternMetadata.controlScheme
                     == ControlScheme.KM)
                 {
                     if (n.note.type == NoteType.Hold ||
@@ -1272,11 +1271,11 @@ public class Game : MonoBehaviour
                 }
             }
 
-            EmptyTouchReceiver receiver = r.gameObject
+            EmptyTouchReceiver emptyReceiver = r.gameObject
                 .GetComponent<EmptyTouchReceiver>();
-            if (receiver != null)
+            if (emptyReceiver != null)
             {
-                EmptyHit(receiver.lane);
+                EmptyHit(emptyReceiver.lane);
                 break;
             }
         }

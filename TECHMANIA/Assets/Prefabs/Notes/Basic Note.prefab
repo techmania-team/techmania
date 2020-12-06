@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6125096749521353963}
   - component: {fileID: 4659290591130577994}
   - component: {fileID: 679015273133456939}
+  - component: {fileID: 3564785425617499427}
   m_Layer: 5
   m_Name: Note Image
   m_TagString: Untagged
@@ -74,6 +75,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3564785425617499427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3727342145255258268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56539c89b5b87e540b6b4b06eacd7fd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4938960492040002543
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +157,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noteImage: {fileID: 679015273133456939}
   feverOverlay: {fileID: 6953956412375015768}
-  pathToNextChainNode: {fileID: 0}
+  pathToPreviousNote: {fileID: 0}
+  curve: {fileID: 0}
+  curveEnd: {fileID: 0}
+  pathToLastRepeatNote: {fileID: 0}
 --- !u!1001 &7308482784058417584
 PrefabInstance:
   m_ObjectHideFlags: 0

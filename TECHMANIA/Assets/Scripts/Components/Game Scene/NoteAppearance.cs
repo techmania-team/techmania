@@ -525,7 +525,7 @@ public class NoteAppearance : MonoBehaviour,
         imageRect.anchoredPosition = pointsOnCurve[0];
         if (pointsOnCurve.Count > 1)
         {
-            UIUtils.PointToward(imageRect,
+            UIUtils.RotateToward(imageRect,
                 selfPos: pointsOnCurve[0],
                 targetPos: pointsOnCurve[1]);
         }
