@@ -358,12 +358,12 @@ public class NoteAppearance : MonoBehaviour,
     // necessary for each Chain Head/Node to be aware of, and
     // eventually control, the next Chain Node.
     private GameObject nextChainNode;
-    public void SetNextChainNode(NoteObject nextChainNode)
+    public void SetNextChainNode(GameObject nextChainNode)
     {
         this.nextChainNode = null;
         if (nextChainNode != null)
         {
-            this.nextChainNode = nextChainNode.gameObject;
+            this.nextChainNode = nextChainNode;
             nextChainNode.GetComponent<NoteAppearance>()
                 .PointPathTowards(GetComponent<RectTransform>());
             if (GetNoteType() == NoteType.ChainHead)
