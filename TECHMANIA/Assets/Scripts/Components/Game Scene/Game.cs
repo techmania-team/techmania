@@ -401,7 +401,7 @@ public class Game : MonoBehaviour
                 n.note.type == NoteType.ChainNode)
             {
                 appearance.SetNextChainNode(
-                    nextChainNode.gameObject);
+                    nextChainNode?.gameObject);
                 if (n.note.type == NoteType.ChainHead)
                 {
                     nextChainNode = null;
