@@ -16,19 +16,34 @@ public class TrackBase
 
     private string Serialize()
     {
+#if UNITY_2019
         return UnityEngine.JsonUtility.ToJson(this, prettyPrint: true);
+#else
+        return System.Text.Json.JsonSerializer.Serialize(this,
+            typeof(Track),
+            new System.Text.Json.JsonSerializerOptions()
+            {
+                IncludeFields = true,
+                WriteIndented = true
+            });
+#endif
     }
+
     private static TrackBase Deserialize(string json)
     {
+#if UNITY_2019
         string version = UnityEngine.JsonUtility.FromJson<TrackBase>(json).version;
         switch (version)
         {
             case Track.kVersion:
                 return UnityEngine.JsonUtility.FromJson<Track>(json);
-                // For non-current versions, maybe attempt conversion?
+            // For non-current versions, maybe attempt conversion?
             default:
                 throw new Exception($"Unknown version: {version}");
         }
+#else
+        return null;
+#endif
     }
 
     // The clone will retain the same Guid.
@@ -160,12 +175,16 @@ public class Pattern
 
     public Pattern CloneWithDifferentGuid()
     {
+#if UNITY_2019
         string json = UnityEngine.JsonUtility.ToJson(
             this, prettyPrint: false);
         Pattern clone = UnityEngine.JsonUtility.FromJson<Pattern>(
             json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         return clone;
+#else
+        return null;
+#endif
     }
 
     public void CreateListsIfNull()
@@ -472,7 +491,11 @@ public class Note
     public int lane;
     public int pulse;
     public NoteType type;
+#if UNITY_2019
     [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
     public float time;
 
     public Note Clone()
@@ -557,14 +580,14 @@ public class FloatPoint
         return new FloatPoint(pulse, lane);
     }
 
-    public static FloatPoint operator+(
+    public static FloatPoint operator +(
         FloatPoint left, FloatPoint right)
     {
         return new FloatPoint(left.pulse + right.pulse,
             left.lane + right.lane);
     }
 
-    public static FloatPoint operator*(float coeff,
+    public static FloatPoint operator *(float coeff,
         FloatPoint point)
     {
         return new FloatPoint(coeff * point.pulse,
