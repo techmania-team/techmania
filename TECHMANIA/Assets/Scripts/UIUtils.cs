@@ -142,9 +142,9 @@ public class UIUtils
     }
 
     public const string kEmptyKeysoundDisplayText = "(None)";
-    public static string StripExtension(string filename)
+    public static string StripAudioExtension(string filename)
     {
-        return filename.Replace(".wav", "");
+        return filename.Replace(".wav", "").Replace(".ogg", "");
     }
 
     public static void RotateToward(RectTransform self,

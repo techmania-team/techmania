@@ -2507,7 +2507,7 @@ public class PatternPanel : MonoBehaviour
 
         int startSample = Mathf.FloorToInt(startTime * clip.frequency);
         source.clip = clip;
-        source.timeSamples = startSample;
+        source.timeSamples = Mathf.Min(clip.samples, startSample);
         source.Play();
     }
     #endregion

@@ -53,8 +53,11 @@ public class ResourceLoader : MonoBehaviour
 
         foreach (string file in filenameWithFolder)
         {
-            UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-                Paths.FilePathToUri(file), AudioType.WAV);
+            // Somehow passing in AudioType.UNKNOWN will make it
+            // magically work for every format.
+            UnityWebRequest request = 
+                UnityWebRequestMultimedia.GetAudioClip(
+                Paths.FilePathToUri(file), AudioType.UNKNOWN);
             yield return request.SendWebRequest();
 
             AudioClip clip;
@@ -101,8 +104,9 @@ public class ResourceLoader : MonoBehaviour
     private IEnumerator InnerLoadAudio(string fullPath,
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
-        UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-            Paths.FilePathToUri(fullPath), AudioType.WAV);
+        UnityWebRequest request = 
+            UnityWebRequestMultimedia.GetAudioClip(
+            Paths.FilePathToUri(fullPath), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
         AudioClip clip;

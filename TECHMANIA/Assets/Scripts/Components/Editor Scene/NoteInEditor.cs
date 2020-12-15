@@ -105,7 +105,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         NoteObject noteObject = GetComponent<NoteObject>();
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
-            .text = UIUtils.StripExtension(noteObject.sound);
+            .text = UIUtils.StripAudioExtension(noteObject.sound);
     }
 
     #region Event Relay From Note Image

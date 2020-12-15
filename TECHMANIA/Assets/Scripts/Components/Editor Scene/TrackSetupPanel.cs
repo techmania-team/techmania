@@ -62,8 +62,21 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnImportButtonClick()
     {
+        SFB.ExtensionFilter[] extensionFilters =
+            new SFB.ExtensionFilter[2];
+        extensionFilters[0] = new SFB.ExtensionFilter(
+            "Supported files", new string[] {
+                "wav",
+                "ogg",
+                "jpg",
+                "png",
+                "mp4"
+            });
+        extensionFilters[1] = new SFB.ExtensionFilter(
+            "All files", new string[] { "*" });
         string[] sources = SFB.StandaloneFileBrowser.OpenFilePanel(
-            "Select resource to import", "", "wav;*.png;*.mp4", multiselect: true);
+            "Select resource to import", "",
+            extensionFilters, multiselect: true);
         string trackFolder = EditorContext.trackFolder;
 
         List<Tuple<string, string>> pairs = new List<Tuple<string, string>>();

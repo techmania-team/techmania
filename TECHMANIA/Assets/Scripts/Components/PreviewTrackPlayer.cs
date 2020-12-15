@@ -47,8 +47,9 @@ public class PreviewTrackPlayer : MonoBehaviour
         // problems when the user stops preview track playback
         // before the loading completes.
         string filename = trackFolder + "\\" + previewTrackFilename;
-        UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(
-            Paths.FilePathToUri(filename), AudioType.WAV);
+        UnityWebRequest request = 
+            UnityWebRequestMultimedia.GetAudioClip(
+            Paths.FilePathToUri(filename), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
         AudioClip clip;
