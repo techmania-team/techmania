@@ -58,6 +58,7 @@ public class PatternPanel : MonoBehaviour
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
     public GameObject stopButton;
+    public GameObject audioLoadingIndicator;
     public Slider scanlinePositionSlider;
     public Snackbar snackbar;
     public MessageDialog messageDialog;
@@ -155,7 +156,8 @@ public class PatternPanel : MonoBehaviour
 
         // Playback
         playButton.GetComponent<Button>().interactable = false;
-        ResourceLoader.CacheAudioResources(EditorContext.trackFolder,
+        ResourceLoader.CacheAudioResources(
+            EditorContext.trackFolder,
             cacheAudioCompleteCallback: OnResourceLoadComplete);
         isPlaying = false;
 
@@ -2410,7 +2412,8 @@ public class PatternPanel : MonoBehaviour
     public void StartPlayback()
     {
         if (isPlaying) return;
-        if (!playButton.GetComponent<Button>().interactable) return;
+        if (!playButton.GetComponent<Button>().interactable) 
+            return;
         isPlaying = true;
         UpdateUIOnPlaybackStartOrStop();
 
