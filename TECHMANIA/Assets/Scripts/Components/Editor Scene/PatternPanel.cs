@@ -147,6 +147,8 @@ public class PatternPanel : MonoBehaviour
         // Scanline
         scanline.floatPulse = 0f;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
+        workspace.horizontalNormalizedPosition = 0f;
+        scanlinePositionSlider.SetValueWithoutNotify(0f);
 
         // UI and options
         noteType = NoteType.Basic;
@@ -2378,6 +2380,7 @@ public class PatternPanel : MonoBehaviour
     private bool isPlaying;
     private float playbackStartingPulse;
     private float playbackStartingTime;
+    private bool backingTrackPlaying;
     private DateTime systemTimeOnPlaybackStart;
 
     // Each queue represents one lane; each lane is sorted by pulse.
@@ -2421,7 +2424,8 @@ public class PatternPanel : MonoBehaviour
         pattern.PrepareForTimeCalculation();
         pattern.CalculateTimeOfAllNotes();
         playbackStartingPulse = scanline.floatPulse;
-        playbackStartingTime = pattern.PulseToTime((int)playbackStartingPulse);
+        playbackStartingTime = pattern.PulseToTime(
+            (int)playbackStartingPulse);
 
         // Put notes into queues, each corresponding to a lane.
         // Use MaxTotalLanes instead of TotalLanes, so that, for
@@ -2444,10 +2448,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         systemTimeOnPlaybackStart = DateTime.Now;
-        PlaySound(backingTrackSource,
-            ResourceLoader.GetCachedClip(
-                pattern.patternMetadata.backingTrack),
-            playbackStartingTime);
+        backingTrackPlaying = false;
     }
 
     public void StopPlayback()
@@ -2474,6 +2475,18 @@ public class PatternPanel : MonoBehaviour
         float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
         float playbackCurrentTime = playbackStartingTime + elapsedTime;
         float playbackCurrentPulse = EditorContext.Pattern.TimeToPulse(playbackCurrentTime);
+
+        // Start playing backing track if applicable.
+        if (!backingTrackPlaying &&
+            playbackCurrentTime >= 0f)
+        {
+            backingTrackPlaying = true;
+            PlaySound(backingTrackSource,
+                ResourceLoader.GetCachedClip(
+                    EditorContext.Pattern.patternMetadata
+                    .backingTrack),
+                playbackCurrentTime);
+        }
 
         // Stop playback after the last scan.
         int totalPulses = numScans * EditorContext.Pattern.patternMetadata.bps * Pattern.pulsesPerBeat;
