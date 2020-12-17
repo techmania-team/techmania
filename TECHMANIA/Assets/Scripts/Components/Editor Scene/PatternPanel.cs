@@ -2458,6 +2458,10 @@ public class PatternPanel : MonoBehaviour
         UpdateUIOnPlaybackStartOrStop();
 
         backingTrackSource.Stop();
+        foreach (AudioSource source in keysoundSources)
+        {
+            source.Stop();
+        }
         scanline.floatPulse = playbackStartingPulse;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
