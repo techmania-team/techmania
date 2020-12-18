@@ -75,6 +75,8 @@ public class Game : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
+    public GameObject loadingBar;
+    public MaterialProgressBar loadingProgress;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -154,6 +156,8 @@ public class Game : MonoBehaviour
         loading = true;
         topBar.SetActive(false);
         middleFeverBar.SetActive(false);
+        loadingBar.SetActive(true);
+        loadingProgress.SetValue(0f);
         stopwatch = null;
 
         // Start the load sequence.
@@ -215,7 +219,8 @@ public class Game : MonoBehaviour
         keysoundsLoaded = false;
         ResourceLoader.CacheSoundChannels(GameSetup.trackFolder,
             GameSetup.pattern,
-            OnKeysoundLoadComplete);
+            OnKeysoundLoadComplete,
+            OnKeysoundLoadProgress);
         yield return new WaitUntil(() => keysoundsLoaded);
 
         // Step 4: load BGA, if any.
@@ -244,6 +249,7 @@ public class Game : MonoBehaviour
         loading = false;
         topBar.SetActive(true);
         middleFeverBar.SetActive(true);
+        loadingBar.SetActive(false);
 
         // Start timer. Backing track will start when timer hits 0;
         // BGA will start when timer hits bgaOffset.
@@ -734,6 +740,11 @@ public class Game : MonoBehaviour
         notesToManage.Clear();
     }
     #endregion
+
+    private void OnKeysoundLoadProgress(float progress)
+    {
+        loadingProgress.SetValue(progress);
+    }
 
     private void OnKeysoundLoadComplete(string error)
     {

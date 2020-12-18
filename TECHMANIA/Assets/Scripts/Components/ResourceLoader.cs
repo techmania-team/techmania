@@ -25,12 +25,15 @@ public class ResourceLoader : MonoBehaviour
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
             Paths.GetAllAudioFiles(trackFolder),
-            cacheAudioCompleteCallback));
+            cacheAudioCompleteCallback,
+            progressCallback: null));
     }
 
     // Cache all keysounds of the given pattern.
     public static void CacheSoundChannels(string trackFolder,
-        Pattern pattern, UnityAction<string> cacheAudioCompleteCallback)
+        Pattern pattern,
+        UnityAction<string> cacheAudioCompleteCallback,
+        UnityAction<float> progressCallback)
     {
         List<string> filenames = new List<string>();
         foreach (SoundChannel channel in pattern.soundChannels)
@@ -42,15 +45,18 @@ public class ResourceLoader : MonoBehaviour
         }
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
-            filenames, cacheAudioCompleteCallback));
+            filenames, cacheAudioCompleteCallback,
+            progressCallback));
     }
 
     private IEnumerator InnerCacheAudioResources(
         List<string> filenameWithFolder,
-        UnityAction<string> cacheAudioCompleteCallback)
+        UnityAction<string> cacheAudioCompleteCallback,
+        UnityAction<float> progressCallback)
     {
         audioClips = new Dictionary<string, AudioClip>();
 
+        int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
             // Somehow passing in AudioType.UNKNOWN will make it
@@ -71,6 +77,9 @@ public class ResourceLoader : MonoBehaviour
             else
             {
                 audioClips.Add(new FileInfo(file).Name, clip);
+                numLoaded++;
+                progressCallback?.Invoke((float)numLoaded /
+                    filenameWithFolder.Count);
                 Debug.Log("Loaded: " + file);
             }
         }
