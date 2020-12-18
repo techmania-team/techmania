@@ -157,11 +157,12 @@ public class PatternPanel : MonoBehaviour
         keysoundSheet.Initialize();
 
         // Playback
-        playButton.GetComponent<Button>().interactable = false;
+        audioLoaded = false;
+        isPlaying = false;
+        UpdatePlaybackUI();
         ResourceLoader.CacheAudioResources(
             EditorContext.trackFolder,
             cacheAudioCompleteCallback: OnResourceLoadComplete);
-        isPlaying = false;
 
         Refresh();
         OnKeysoundVisibilityChanged(showKeysoundToggle.isOn);
@@ -2377,6 +2378,7 @@ public class PatternPanel : MonoBehaviour
     //   specified in options
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
+    private bool audioLoaded;
     private bool isPlaying;
     private float playbackStartingPulse;
     private float playbackStartingTime;
@@ -2394,31 +2396,41 @@ public class PatternPanel : MonoBehaviour
 
     private void OnResourceLoadComplete(string error)
     {
-        if (error == null)
-        {
-            playButton.GetComponent<Button>().interactable = true;
-        }
-        else
+        if (error != null)
         {
             messageDialog.Show(error + "\n\n" +
                 "You can continue to edit this pattern, but playback and preview will be disabled.");
         }
+        audioLoaded = true;
+        playButton.GetComponent<Button>().interactable =
+            error == null;
+        UpdatePlaybackUI();
     }
 
-    private void UpdateUIOnPlaybackStartOrStop()
+    private void UpdatePlaybackUI()
     {
-        playButton.SetActive(!isPlaying);
-        stopButton.SetActive(isPlaying);
+        if (audioLoaded)
+        {
+            playButton.SetActive(!isPlaying);
+            stopButton.SetActive(isPlaying);
+        }
+        else
+        {
+            playButton.SetActive(false);
+            stopButton.SetActive(false);
+        }
+        audioLoadingIndicator.SetActive(!audioLoaded);
         scanlinePositionSlider.interactable = !isPlaying;
     }
 
     public void StartPlayback()
     {
+        if (!audioLoaded) return;
         if (isPlaying) return;
-        if (!playButton.GetComponent<Button>().interactable) 
+        if (!playButton.GetComponent<Button>().interactable)
             return;
         isPlaying = true;
-        UpdateUIOnPlaybackStartOrStop();
+        UpdatePlaybackUI();
 
         Pattern pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
@@ -2454,9 +2466,8 @@ public class PatternPanel : MonoBehaviour
     public void StopPlayback()
     {
         if (!isPlaying) return;
-        if (!stopButton.GetComponent<Button>().interactable) return;
         isPlaying = false;
-        UpdateUIOnPlaybackStartOrStop();
+        UpdatePlaybackUI();
 
         backingTrackSource.Stop();
         foreach (AudioSource source in keysoundSources)

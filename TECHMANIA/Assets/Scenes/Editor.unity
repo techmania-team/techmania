@@ -10252,6 +10252,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 605100987}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &609738635 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7535505893864022585, guid: b3bdae820d366a141927b89cdd3ebeee,
+    type: 3}
+  m_PrefabInstance: {fileID: 1090154321}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &612381306 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8698110673133264009, guid: 89db7b43bb839e64487c643a777b16c9,
@@ -15849,7 +15855,7 @@ PrefabInstance:
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
       propertyPath: m_Pivot.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
@@ -15884,12 +15890,12 @@ PrefabInstance:
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 54
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 54
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
@@ -15929,7 +15935,7 @@ PrefabInstance:
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 10
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7535505893864022566, guid: b3bdae820d366a141927b89cdd3ebeee,
         type: 3}
@@ -17909,7 +17915,7 @@ MonoBehaviour:
   keysoundSheet: {fileID: 1706930105}
   playButton: {fileID: 779846809}
   stopButton: {fileID: 1126855693}
-  audioLoadingIndicator: {fileID: 0}
+  audioLoadingIndicator: {fileID: 609738635}
   scanlinePositionSlider: {fileID: 1114461274}
   snackbar: {fileID: 5183661607719462379}
   messageDialog: {fileID: 8369197524032551023}
