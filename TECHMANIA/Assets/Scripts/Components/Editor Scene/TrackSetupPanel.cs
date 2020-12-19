@@ -70,7 +70,8 @@ public class TrackSetupPanel : MonoBehaviour
                 "ogg",
                 "jpg",
                 "png",
-                "mp4"
+                "mp4",
+                "wmv"
             });
         extensionFilters[1] = new SFB.ExtensionFilter(
             "All files", new string[] { "*" });

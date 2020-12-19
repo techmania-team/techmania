@@ -72,7 +72,7 @@ public static class Paths
     public static List<string> GetAllVideoFiles(string folder)
     {
         return GetAllMatchingFiles(folder, new List<string>()
-            { "*.mp4"}
+            { "*.mp4", "*.wmv"}
         );
     }
 
