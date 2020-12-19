@@ -17,11 +17,26 @@ public class ResourceLoader : MonoBehaviour
     #region Audio Caching
     // Keys do not contain folder.
     private static Dictionary<string, AudioClip> audioClips;
+    // If a cache request is on the same folder, then audioClips
+    // will not be cleared.
+    private static string cachedFolder;
+
+    static ResourceLoader()
+    {
+        audioClips = new Dictionary<string, AudioClip>();
+        cachedFolder = "";
+    }
 
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
         UnityAction<string> cacheAudioCompleteCallback)
     {
+        if (trackFolder != cachedFolder)
+        {
+            audioClips.Clear();
+            cachedFolder = trackFolder;
+        }
+
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
             Paths.GetAllAudioFiles(trackFolder),
@@ -35,6 +50,12 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
+        if (trackFolder != cachedFolder)
+        {
+            audioClips.Clear();
+            cachedFolder = trackFolder;
+        }
+
         List<string> filenames = new List<string>();
         foreach (SoundChannel channel in pattern.soundChannels)
         {
@@ -54,34 +75,35 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
-        audioClips = new Dictionary<string, AudioClip>();
-
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            // Somehow passing in AudioType.UNKNOWN will make it
-            // magically work for every format.
-            UnityWebRequest request = 
-                UnityWebRequestMultimedia.GetAudioClip(
-                Paths.FilePathToUri(file), AudioType.UNKNOWN);
-            yield return request.SendWebRequest();
+            string fileWithoutFolder = new FileInfo(file).Name;
+            if (!audioClips.ContainsKey(fileWithoutFolder))
+            {
+                // Somehow passing in AudioType.UNKNOWN will make it
+                // magically work for every format.
+                UnityWebRequest request =
+                    UnityWebRequestMultimedia.GetAudioClip(
+                    Paths.FilePathToUri(file), AudioType.UNKNOWN);
+                yield return request.SendWebRequest();
 
-            AudioClip clip;
-            string error;
-            GetAudioClipFromWebRequest(request, out clip, out error);
-            if (clip == null)
-            {
-                cacheAudioCompleteCallback?.Invoke(error);
-                yield break;
+                AudioClip clip;
+                string error;
+                GetAudioClipFromWebRequest(request,
+                    out clip, out error);
+                if (clip == null)
+                {
+                    cacheAudioCompleteCallback?.Invoke(error);
+                    yield break;
+                }
+                audioClips.Add(fileWithoutFolder, clip);
             }
-            else
-            {
-                audioClips.Add(new FileInfo(file).Name, clip);
-                numLoaded++;
-                progressCallback?.Invoke((float)numLoaded /
-                    filenameWithFolder.Count);
-                Debug.Log("Loaded: " + file);
-            }
+            
+            numLoaded++;
+            progressCallback?.Invoke((float)numLoaded /
+                filenameWithFolder.Count);
+            Debug.Log("Loaded: " + file);
         }
 
         yield return null;  // Wait 1 more frame just in case
