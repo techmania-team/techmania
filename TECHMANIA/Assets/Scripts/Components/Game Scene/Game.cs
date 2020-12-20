@@ -1697,12 +1697,14 @@ public class Game : MonoBehaviour
         stopwatch.Stop();
         feverTimer?.Stop();
         backingTrackSource.Pause();
+        keysoundSources.ForEach(s => s.Pause());
         if (videoPlayer.isPrepared) videoPlayer.Pause();
         pauseDialog.Show(closeCallback: () =>
         {
             stopwatch.Start();
             feverTimer?.Start();
             backingTrackSource.UnPause();
+            keysoundSources.ForEach(s => s.UnPause());
             if (videoPlayer.isPrepared) videoPlayer.Play();
         });
         MenuSfx.instance.PlayPauseSound();
