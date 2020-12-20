@@ -186,7 +186,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void RefreshMetadataTab()
     {
-        TrackMetadata metadata = EditorContext.track.trackMetadata;
+        TrackMetadataV1 metadata = EditorContext.track.trackMetadata;
         audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
         imageFilesCache = Paths.GetAllImageFiles(EditorContext.trackFolder);
         videoFilesCache = Paths.GetAllVideoFiles(EditorContext.trackFolder);
@@ -226,7 +226,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnMetadataUpdated()
     {
-        TrackMetadata metadata = EditorContext.track.trackMetadata;
+        TrackMetadataV1 metadata = EditorContext.track.trackMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(
@@ -314,7 +314,7 @@ public class TrackSetupPanel : MonoBehaviour
     //
     // However this reference will be invalidated upon undo/redo.
     // Must refresh it upon undo/redo.
-    private Pattern selectedPattern;
+    private PatternV1 selectedPattern;
 
     private void RefreshPatternsTab()
     {
@@ -340,7 +340,7 @@ public class TrackSetupPanel : MonoBehaviour
         noPatternSelectedNotice.SetActive(selectedPattern == null);
         if (selectedPattern == null) return;
 
-        PatternMetadata m = selectedPattern.patternMetadata;
+        PatternMetadataV1 m = selectedPattern.patternMetadata;
         patternName.SetTextWithoutNotify(m.patternName);
         patternAuthor.SetTextWithoutNotify(m.author);
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
@@ -367,7 +367,7 @@ public class TrackSetupPanel : MonoBehaviour
         }
     }
 
-    private void SelectedPatternChanged(Pattern newSelection)
+    private void SelectedPatternChanged(PatternV1 newSelection)
     {
         selectedPattern = newSelection;
         RefreshPatternMetadata();
@@ -375,7 +375,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnPatternMetadataChanged()
     {
-        PatternMetadata m = selectedPattern.patternMetadata;
+        PatternMetadataV1 m = selectedPattern.patternMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(ref m.patternName,
@@ -383,7 +383,7 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.UpdatePropertyInMemory(ref m.author,
             patternAuthor.text, ref madeChange);
         UIUtils.ClampInputField(patternLevel,
-            Pattern.minLevel, Pattern.maxLevel);
+            PatternV1.minLevel, PatternV1.maxLevel);
         UIUtils.UpdatePropertyInMemory(ref m.level,
             patternLevel.text, ref madeChange);
 
@@ -403,10 +403,10 @@ public class TrackSetupPanel : MonoBehaviour
 
         UIUtils.UpdatePropertyInMemory(
             ref m.firstBeatOffset, firstBeatOffset.text, ref madeChange);
-        UIUtils.ClampInputField(initialBpm, Pattern.minBpm, Pattern.maxBpm);
+        UIUtils.ClampInputField(initialBpm, PatternV1.minBpm, PatternV1.maxBpm);
         UIUtils.UpdatePropertyInMemory(
             ref m.initBpm, initialBpm.text, ref madeChange);
-        UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
+        UIUtils.ClampInputField(bps, PatternV1.minBps, PatternV1.maxBps);
         UIUtils.UpdatePropertyInMemory(
             ref m.bps, bps.text, ref madeChange);
 
@@ -421,7 +421,7 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnNewPatternButtonClick()
     {
         EditorContext.PrepareForChange();
-        EditorContext.track.patterns.Add(new Pattern());
+        EditorContext.track.patterns.Add(new PatternV1());
         EditorContext.track.SortPatterns();
         EditorContext.DoneWithChange();
 

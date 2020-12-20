@@ -16,7 +16,7 @@ public class PreviewTrackPlayer : MonoBehaviour
     }
 
     public void Play(string trackFolder,
-        TrackMetadata trackMetadata,
+        TrackMetadataV1 trackMetadata,
         bool loop)
     {
         if (trackMetadata.previewTrack == "" ||

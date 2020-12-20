@@ -11,7 +11,7 @@ public class PatternBanner : MonoBehaviour
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI nameText;
     
-    public void Initialize(PatternMetadata p)
+    public void Initialize(PatternMetadataV1 p)
     {
         switch (p.controlScheme)
         {

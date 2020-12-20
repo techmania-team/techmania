@@ -25,7 +25,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     {
         EditorContext.Reset();
         EditorContext.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        EditorContext.track = TrackBase.LoadFromFile(EditorContext.trackPath) as Track;
+        EditorContext.track = TrackBase.LoadFromFile(EditorContext.trackPath) as TrackV1;
         PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
     }
 
@@ -58,7 +58,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
 
         // Create empty track.
-        Track track = new Track(title, artist);
+        TrackV1 track = new TrackV1(title, artist);
         string filename = $"{newDir}\\{Paths.kTrackFilename}";
         try
         {

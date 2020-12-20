@@ -338,10 +338,10 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #region Duration Trail
     public void ResetTrail()
     {
-        int duration = (GetComponent<NoteObject>().note as HoldNote).duration;
+        int duration = (GetComponent<NoteObject>().note as HoldNoteV1).duration;
         float width = duration * (PatternPanel.ScanWidth /
             EditorContext.Pattern.patternMetadata.bps /
-            Pattern.pulsesPerBeat);
+            PatternV1.pulsesPerBeat);
         durationTrail.sizeDelta = new Vector2(width, 0f);
         invisibleTrail.sizeDelta = new Vector2(width, 0f);
 
@@ -396,8 +396,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     // ResetAnchorsAndControlPoints for that.
     public void ResetCurve()
     {
-        DragNote dragNote = GetComponent<NoteObject>().note
-            as DragNote;
+        DragNoteV1 dragNote = GetComponent<NoteObject>().note
+            as DragNoteV1;
         pointsOnCurve = new List<Vector2>();
 
         foreach (FloatPoint p in dragNote.Interpolate())
@@ -454,8 +454,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     public void ResetAllAnchorsAndControlPoints()
     {
-        DragNote dragNote = GetComponent<NoteObject>().note
-            as DragNote;
+        DragNoteV1 dragNote = GetComponent<NoteObject>().note
+            as DragNoteV1;
 
         for (int i = 0; i < anchorContainer.childCount; i++)
         {

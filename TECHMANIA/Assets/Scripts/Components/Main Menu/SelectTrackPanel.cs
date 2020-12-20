@@ -19,7 +19,7 @@ public class SelectTrackPanel : MonoBehaviour
     protected class TrackInFolder
     {
         public string folder;
-        public Track track;
+        public TrackV1 track;
     }
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
@@ -61,7 +61,7 @@ public class SelectTrackPanel : MonoBehaviour
             try
             {
                 trackBase = TrackBase.LoadFromFile(possibleTrackFile);
-                if (!(trackBase is Track))
+                if (!(trackBase is TrackV1))
                 {
                     error = "The track was created in an old version and is no longer supported.";
                 }
@@ -74,7 +74,7 @@ public class SelectTrackPanel : MonoBehaviour
             GameObject card = null;
             if (error == null)
             {
-                Track track = trackBase as Track;
+                TrackV1 track = trackBase as TrackV1;
 
                 // Instantiate card.
                 card = Instantiate(trackCardTemplate, trackGrid.transform);
@@ -150,7 +150,7 @@ public class SelectTrackPanel : MonoBehaviour
     protected virtual void OnClickCard(GameObject o)
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as Track;
+        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as TrackV1;
         selectPatternDialog.Show();
     }
 

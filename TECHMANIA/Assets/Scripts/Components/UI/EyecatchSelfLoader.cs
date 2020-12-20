@@ -16,7 +16,7 @@ public class EyecatchSelfLoader : MonoBehaviour
         noImageIndicator.SetActive(true);
     }
 
-    public void LoadImage(string folder, TrackMetadata t)
+    public void LoadImage(string folder, TrackMetadataV1 t)
     {
         if (t.eyecatchImage != null &&
             t.eyecatchImage != "")

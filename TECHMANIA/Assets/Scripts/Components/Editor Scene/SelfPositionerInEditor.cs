@@ -26,17 +26,17 @@ public class SelfPositionerInEditor : MonoBehaviour
         NoteObject noteObject = GetComponent<NoteObject>();
         if (marker != null)
         {
-            float beat = (float)marker.pulse / Pattern.pulsesPerBeat;
+            float beat = (float)marker.pulse / PatternV1.pulsesPerBeat;
             scan = beat / bps;
         }
         else if (scanline != null)
         {
-            float beat = scanline.floatPulse / Pattern.pulsesPerBeat;
+            float beat = scanline.floatPulse / PatternV1.pulsesPerBeat;
             scan = beat / bps;
         }
         else
         {
-            float beat = (float)noteObject.note.pulse / Pattern.pulsesPerBeat;
+            float beat = (float)noteObject.note.pulse / PatternV1.pulsesPerBeat;
             scan = beat / bps;
         }
         float x = PatternPanel.ScanWidth * scan;

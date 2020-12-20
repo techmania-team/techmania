@@ -23,7 +23,7 @@ public class SelectPatternDialog : MonoBehaviour
         GetComponent<Dialog>().FadeIn();
 
         // Show track metadata.
-        Track track = GameSetup.track;
+        TrackV1 track = GameSetup.track;
         eyecatchImage.LoadImage(GameSetup.trackFolder, track.trackMetadata);
         genreText.text = track.trackMetadata.genre;
         titleText.text = track.trackMetadata.title;
@@ -63,7 +63,7 @@ public class SelectPatternDialog : MonoBehaviour
         playButton.interactable = patternList.GetSelectedPattern() != null;
     }
 
-    private void OnSelectedPatternObjectChanged(Pattern p)
+    private void OnSelectedPatternObjectChanged(PatternV1 p)
     {
         RefreshPlayButton();
     }

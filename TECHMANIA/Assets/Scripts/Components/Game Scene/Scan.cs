@@ -43,7 +43,7 @@ public class Scan : MonoBehaviour
         scanline.Initialize(this, scanHeight);
     }
 
-    public NoteObject SpawnNoteObject(GameObject prefab, Note n, 
+    public NoteObject SpawnNoteObject(GameObject prefab, NoteV1 n, 
         string sound, bool hidden)
     {
         GameObject o = Instantiate(prefab, transform);
@@ -82,7 +82,7 @@ public class Scan : MonoBehaviour
     }
 
     public HoldExtension SpawnHoldExtension(GameObject prefab,
-        HoldNote n)
+        HoldNoteV1 n)
     {
         GameObject o = Instantiate(prefab, transform);
 

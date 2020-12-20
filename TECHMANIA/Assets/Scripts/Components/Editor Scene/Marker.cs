@@ -11,7 +11,7 @@ public class Marker : MonoBehaviour
     public void SetTimeDisplay()
     {
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        int beat = pulse / Pattern.pulsesPerBeat;
+        int beat = pulse / PatternV1.pulsesPerBeat;
         int scan = beat / bps;
         int beatInScan = beat % bps;
 

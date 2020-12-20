@@ -42,12 +42,14 @@ public static class Paths
         return GetDataFolder() + "\\options.json";
     }
 
-    private static List<string> GetAllMatchingFiles(string folder, List<string> patterns)
+    private static List<string> GetAllMatchingFiles(string folder, 
+        List<string> patterns)
     {
         List<string> files = new List<string>();
         foreach (string pattern in patterns)
         {
-            foreach (string file in Directory.EnumerateFiles(folder, pattern))
+            foreach (string file in
+                Directory.EnumerateFiles(folder, pattern))
             {
                 files.Add(file);
             }

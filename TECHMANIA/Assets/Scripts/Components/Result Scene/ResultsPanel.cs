@@ -40,12 +40,12 @@ public class ResultsPanel : MonoBehaviour
         title.text = Game.score.stageFailed ? "Stage Failed" : "Stage Clear";
 
         // Track and Pattern
-        TrackMetadata track = GameSetup.track.trackMetadata;
+        TrackMetadataV1 track = GameSetup.track.trackMetadata;
         eyecatch.LoadImage(GameSetup.trackFolder, track);
         trackTitle.text = track.title;
         trackArtist.text = track.artist;
 
-        PatternMetadata pattern = GameSetup.pattern.patternMetadata;
+        PatternMetadataV1 pattern = GameSetup.pattern.patternMetadata;
         patternBanner.Initialize(pattern);
 
         // Tallies

@@ -307,7 +307,7 @@ public class Game : MonoBehaviour
         previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
-        PulsesPerScan = Pattern.pulsesPerBeat *
+        PulsesPerScan = PatternV1.pulsesPerBeat *
             GameSetup.pattern.patternMetadata.bps;
         while (initialTime >= 0f)
         {
@@ -548,7 +548,7 @@ public class Game : MonoBehaviour
         List<NoteWithSound> sortedNotes = new List<NoteWithSound>();
         foreach (SoundChannel c in GameSetup.pattern.soundChannels)
         {
-            foreach (Note n in c.notes)
+            foreach (NoteV1 n in c.notes)
             {
                 sortedNotes.Add(new NoteWithSound()
                 {
@@ -556,7 +556,7 @@ public class Game : MonoBehaviour
                     sound = c.name
                 });
             }
-            foreach (Note n in c.holdNotes)
+            foreach (NoteV1 n in c.holdNotes)
             {
                 sortedNotes.Add(new NoteWithSound()
                 {
@@ -564,7 +564,7 @@ public class Game : MonoBehaviour
                     sound = c.name
                 });
             }
-            foreach (Note n in c.dragNotes)
+            foreach (NoteV1 n in c.dragNotes)
             {
                 sortedNotes.Add(new NoteWithSound()
                 {
@@ -605,17 +605,17 @@ public class Game : MonoBehaviour
         int pulseBorder = (lastScan - 1) * PulsesPerScan;
         for (int i = sortedNotes.Count - 1; i >= 0; i--)
         {
-            Note n = sortedNotes[i].note;
+            NoteV1 n = sortedNotes[i].note;
             if (n.pulse < pulseBorder) break;
 
             int endingPulse;
-            if (n is HoldNote)
+            if (n is HoldNoteV1)
             {
-                endingPulse = n.pulse + (n as HoldNote).duration;
+                endingPulse = n.pulse + (n as HoldNoteV1).duration;
             }
-            else if (n is DragNote)
+            else if (n is DragNoteV1)
             {
-                endingPulse = n.pulse + (n as DragNote).Duration();
+                endingPulse = n.pulse + (n as DragNoteV1).Duration();
             }
             else
             {
@@ -673,7 +673,7 @@ public class Game : MonoBehaviour
     private void CreateHoldExtensions(NoteObject n,
         Dictionary<int, Scan> scanObjects)
     {
-        HoldNote holdNote = n.note as HoldNote;
+        HoldNoteV1 holdNote = n.note as HoldNoteV1;
         GameObject extensionPrefab;
         if (n.note.type == NoteType.Hold)
         {
@@ -712,10 +712,10 @@ public class Game : MonoBehaviour
         {
             NoteObject lastRepeatNote = notesToManage[0];
             int lastRepeatNotePulse = lastRepeatNote.note.pulse;
-            if (lastRepeatNote.note is HoldNote)
+            if (lastRepeatNote.note is HoldNoteV1)
             {
                 lastRepeatNotePulse +=
-                    (lastRepeatNote.note as HoldNote).duration;
+                    (lastRepeatNote.note as HoldNoteV1).duration;
             }
             headAppearance.DrawRepeatPathTo(lastRepeatNotePulse);
             // Create path extensions if the head and last
@@ -1063,13 +1063,13 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             int duration = 0;
-            if (pair.Key.note is HoldNote)
+            if (pair.Key.note is HoldNoteV1)
             {
-                duration = (pair.Key.note as HoldNote).duration;
+                duration = (pair.Key.note as HoldNoteV1).duration;
             }
-            else if (pair.Key.note is DragNote)
+            else if (pair.Key.note is DragNoteV1)
             {
-                duration = (pair.Key.note as DragNote).Duration();
+                duration = (pair.Key.note as DragNoteV1).Duration();
             }
             if (Pulse >= pair.Key.note.pulse + duration)
             {

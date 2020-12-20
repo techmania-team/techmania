@@ -119,7 +119,7 @@ public class PatternPanel : MonoBehaviour
         {
             return ScanWidth /
                 EditorContext.Pattern.patternMetadata.bps /
-                Pattern.pulsesPerBeat;
+                PatternV1.pulsesPerBeat;
         }
     }
     private float WorkspaceContentWidth => numScans * ScanWidth;
@@ -307,12 +307,12 @@ public class PatternPanel : MonoBehaviour
 
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInContainer.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        float cursorPulse = cursorScan * bps * PatternV1.pulsesPerBeat;
         int snappedCursorPulse = SnapPulse(cursorPulse);
 
         int snappedLane = Mathf.FloorToInt(-pointInContainer.y / LaneHeight);
 
-        noteCursor.note = new Note();
+        noteCursor.note = new NoteV1();
         noteCursor.note.pulse = snappedCursorPulse;
         noteCursor.note.lane = snappedLane;
         noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
@@ -327,7 +327,7 @@ public class PatternPanel : MonoBehaviour
 
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInHeader.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        float cursorPulse = cursorScan * bps * PatternV1.pulsesPerBeat;
         int snappedCursorPulse = SnapPulse(cursorPulse);
 
         scanline.floatPulse = snappedCursorPulse;
@@ -548,14 +548,14 @@ public class PatternPanel : MonoBehaviour
             beatSnapDivisor += direction;
             if (beatSnapDivisor <= 0 && direction < 0)
             {
-                beatSnapDivisor = Pattern.pulsesPerBeat;
+                beatSnapDivisor = PatternV1.pulsesPerBeat;
             }
-            if (beatSnapDivisor > Pattern.pulsesPerBeat && direction > 0)
+            if (beatSnapDivisor > PatternV1.pulsesPerBeat && direction > 0)
             {
                 beatSnapDivisor = 1;
             }
         }
-        while (Pattern.pulsesPerBeat % beatSnapDivisor != 0);
+        while (PatternV1.pulsesPerBeat % beatSnapDivisor != 0);
         UpdateBeatSnapDivisorDisplay();
     }
 
@@ -732,7 +732,7 @@ public class PatternPanel : MonoBehaviour
 
         int totalPulses = numScans
             * EditorContext.Pattern.patternMetadata.bps
-            * Pattern.pulsesPerBeat;
+            * PatternV1.pulsesPerBeat;
         float scanlineRawPulse = totalPulses * newValue;
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
@@ -763,8 +763,8 @@ public class PatternPanel : MonoBehaviour
         }
         sortedSelection.Sort((NoteObject e1, NoteObject e2) =>
         {
-            Note n1 = e1.note;
-            Note n2 = e2.note;
+            NoteV1 n1 = e1.note;
+            NoteV1 n2 = e2.note;
             if (n1.pulse != n2.pulse) return n1.pulse - n2.pulse;
             return n1.lane - n2.lane;
         });
@@ -834,7 +834,7 @@ public class PatternPanel : MonoBehaviour
             new HashSet<GameObject>(selectedNoteObjects);
         foreach (GameObject o in selectedNoteObjects)
         {
-            Note n = o.GetComponent<NoteObject>().note;
+            NoteV1 n = o.GetComponent<NoteObject>().note;
             int newPulse = n.pulse + deltaPulse;
             int newLane = n.lane + deltaLane;
 
@@ -854,13 +854,13 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
                     movable = movable && CanAddHoldNote(n.type,
-                        newPulse, newLane, (n as HoldNote).duration,
+                        newPulse, newLane, (n as HoldNoteV1).duration,
                         ignoredExistingNotes: selectionAsSet,
                         out invalidReason);
                     break;
                 case NoteType.Drag:
                     movable = movable && CanAddDragNote(
-                        newPulse, newLane, (n as DragNote).nodes,
+                        newPulse, newLane, (n as DragNoteV1).nodes,
                         ignoredExistingNotes: selectionAsSet,
                         out invalidReason);
                     break;
@@ -916,14 +916,14 @@ public class PatternPanel : MonoBehaviour
                         o = AddHoldNote(movedNote.note.type,
                             movedNote.note.pulse,
                             movedNote.note.lane,
-                            (movedNote.note as HoldNote).duration,
+                            (movedNote.note as HoldNoteV1).duration,
                             movedNote.sound);
                         break;
                     case NoteType.Drag:
                         o = AddDragNote(
                             movedNote.note.pulse,
                             movedNote.note.lane,
-                            (movedNote.note as DragNote).nodes,
+                            (movedNote.note as DragNoteV1).nodes,
                             movedNote.sound);
                         break;
                 }
@@ -995,7 +995,7 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         int oldDuration = (initialHoldNoteBeingAdjusted.
-            GetComponent<NoteObject>().note as HoldNote).duration;
+            GetComponent<NoteObject>().note as HoldNoteV1).duration;
         int newDuration = noteCursor.note.pulse -
             initialHoldNoteBeingAdjusted.GetComponent<NoteObject>().
             note.pulse;
@@ -1005,7 +1005,7 @@ public class PatternPanel : MonoBehaviour
         bool adjustable = true;
         foreach (GameObject o in holdNotesBeingAdjusted)
         {
-            HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+            HoldNoteV1 holdNote = o.GetComponent<NoteObject>().note as HoldNoteV1;
             oldDuration = holdNote.duration;
             newDuration = oldDuration + deltaDuration;
             if (newDuration <= 0)
@@ -1030,7 +1030,7 @@ public class PatternPanel : MonoBehaviour
             EditorContext.PrepareForChange();
             foreach (GameObject o in holdNotesBeingAdjusted)
             {
-                HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+                HoldNoteV1 holdNote = o.GetComponent<NoteObject>().note as HoldNoteV1;
                 holdNote.duration += deltaDuration;
             }
             EditorContext.DoneWithChange();
@@ -1047,8 +1047,8 @@ public class PatternPanel : MonoBehaviour
     #region Drag Notes
     private void OnAnchorReceiverClicked(GameObject note)
     {
-        DragNote dragNote = note.GetComponent<NoteObject>()
-            .note as DragNote;
+        DragNoteV1 dragNote = note.GetComponent<NoteObject>()
+            .note as DragNoteV1;
         IntPoint newAnchor = new IntPoint(
             noteCursor.note.pulse - dragNote.pulse,
             noteCursor.note.lane - dragNote.lane);
@@ -1100,8 +1100,8 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        DragNote dragNote = anchor
-            .GetComponentInParent<NoteObject>().note as DragNote;
+        DragNoteV1 dragNote = anchor
+            .GetComponentInParent<NoteObject>().note as DragNoteV1;
         if (dragNote.nodes.Count == 2)
         {
             snackbar.Show("Drag Notes must contain at least 2 Anchors.");
@@ -1129,7 +1129,7 @@ public class PatternPanel : MonoBehaviour
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
         draggedDragNode = (anchor
-            .GetComponentInParent<NoteObject>().note as DragNote)
+            .GetComponentInParent<NoteObject>().note as DragNoteV1)
             .nodes[anchorIndex];
         draggedDragNodeClone = draggedDragNode.Clone();
 
@@ -1156,7 +1156,7 @@ public class PatternPanel : MonoBehaviour
 
     private void MoveDraggedAnchor()
     {
-        Note noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
+        NoteV1 noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
         draggedDragNode.anchor.pulse = noteCursor.note.pulse
             - noteHead.pulse;
         draggedDragNode.anchor.lane = noteCursor.note.lane
@@ -1228,8 +1228,8 @@ public class PatternPanel : MonoBehaviour
     private bool ValidateMovedAnchor(DragNode movedNode,
         out string invalidReason)
     {
-        DragNote dragNote = draggedAnchor
-            .GetComponentInParent<NoteObject>().note as DragNote;
+        DragNoteV1 dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNoteV1;
         int anchorIndex = draggedAnchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
 
@@ -1313,7 +1313,7 @@ public class PatternPanel : MonoBehaviour
         int anchorIndex = controlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
         DragNode node = (controlPoint
-            .GetComponentInParent<NoteObject>().note as DragNote)
+            .GetComponentInParent<NoteObject>().note as DragNoteV1)
             .nodes[anchorIndex];
 
         EditorContext.PrepareForChange();
@@ -1339,7 +1339,7 @@ public class PatternPanel : MonoBehaviour
         int anchorIndex = draggedControlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
         draggedDragNode = (draggedControlPoint
-            .GetComponentInParent<NoteObject>().note as DragNote)
+            .GetComponentInParent<NoteObject>().note as DragNoteV1)
             .nodes[anchorIndex];
         draggedDragNodeClone = draggedDragNode.Clone();
     }
@@ -1438,7 +1438,7 @@ public class PatternPanel : MonoBehaviour
         int numScansBackup = numScans;
 
         int lastPulse = sortedNoteObjects.GetMaxPulse();
-        int pulsesPerScan = Pattern.pulsesPerBeat *
+        int pulsesPerScan = PatternV1.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps;
 
         // Look at all hold and drag notes in the last few scans
@@ -1453,15 +1453,15 @@ public class PatternPanel : MonoBehaviour
             minPulseInclusive: lastPulse - pulsesPerScan * 2,
             maxPulseInclusive: lastPulse))
         {
-            Note n = o.GetComponent<NoteObject>().note;
+            NoteV1 n = o.GetComponent<NoteObject>().note;
             int endingPulse;
-            if (n is HoldNote)
+            if (n is HoldNoteV1)
             {
-                endingPulse = n.pulse + (n as HoldNote).duration;
+                endingPulse = n.pulse + (n as HoldNoteV1).duration;
             }
-            else if (n is DragNote)
+            else if (n is DragNoteV1)
             {
-                endingPulse = n.pulse + (n as DragNote).Duration();
+                endingPulse = n.pulse + (n as DragNoteV1).Duration();
             }
             else
             {
@@ -1503,7 +1503,7 @@ public class PatternPanel : MonoBehaviour
     {
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float scanlineNormalizedPosition = scanline.floatPulse /
-            (numScans * bps * Pattern.pulsesPerBeat);
+            (numScans * bps * PatternV1.pulsesPerBeat);
        
         scanlinePositionSlider.SetValueWithoutNotify(scanlineNormalizedPosition);
     }
@@ -1537,7 +1537,7 @@ public class PatternPanel : MonoBehaviour
             GameObject marker = Instantiate(scanMarkerTemplate, markerContainer);
             marker.SetActive(true);  // This calls OnEnabled
             Marker m = marker.GetComponent<Marker>();
-            m.pulse = scan * bps * Pattern.pulsesPerBeat;
+            m.pulse = scan * bps * PatternV1.pulsesPerBeat;
             m.SetTimeDisplay();
             m.GetComponent<SelfPositionerInEditor>().Reposition();
             allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
@@ -1548,7 +1548,7 @@ public class PatternPanel : MonoBehaviour
                 marker = Instantiate(beatMarkerTemplate, markerContainer);
                 marker.SetActive(true);
                 m = marker.GetComponent<Marker>();
-                m.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
+                m.pulse = (scan * bps + beat) * PatternV1.pulsesPerBeat;
                 m.SetTimeDisplay();
                 m.GetComponent<SelfPositionerInEditor>().Reposition();
                 allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
@@ -1594,7 +1594,7 @@ public class PatternPanel : MonoBehaviour
     }
 
     // This will call Reposition on the new object.
-    private GameObject SpawnNoteObject(Note n, string sound)
+    private GameObject SpawnNoteObject(NoteV1 n, string sound)
     {
         GameObject prefab = null;
         switch (n.type)
@@ -1705,15 +1705,15 @@ public class PatternPanel : MonoBehaviour
         EditorContext.Pattern.CreateListsIfNull();
         foreach (SoundChannel channel in EditorContext.Pattern.soundChannels)
         {
-            foreach (Note n in channel.notes)
+            foreach (NoteV1 n in channel.notes)
             {
                 SpawnNoteObject(n, channel.name);
             }
-            foreach (HoldNote n in channel.holdNotes)
+            foreach (HoldNoteV1 n in channel.holdNotes)
             {
                 SpawnNoteObject(n, channel.name);
             }
-            foreach (DragNote n in channel.dragNotes)
+            foreach (DragNoteV1 n in channel.dragNotes)
             {
                 SpawnNoteObject(n, channel.name);
             }
@@ -2003,7 +2003,7 @@ public class PatternPanel : MonoBehaviour
             }, minLaneInclusive: lane, maxLaneInclusive: lane);
         if (holdNoteBeforePivot != null && !ignoredExistingNotes.Contains(holdNoteBeforePivot))
         {
-            HoldNote holdNote = holdNoteBeforePivot.GetComponent<NoteObject>().note as HoldNote;
+            HoldNoteV1 holdNote = holdNoteBeforePivot.GetComponent<NoteObject>().note as HoldNoteV1;
             if (holdNote.pulse + holdNote.duration >= pulse)
             {
                 reason = "Notes cannot be covered by Hold Notes.";
@@ -2130,15 +2130,15 @@ public class PatternPanel : MonoBehaviour
         if (noteAfterPivot != null)
         {
             int nextPulse = noteAfterPivot.GetComponent<NoteObject>().note.pulse;
-            if (nextPulse - pulse <= Pattern.pulsesPerBeat)
+            if (nextPulse - pulse <= PatternV1.pulsesPerBeat)
             {
                 return nextPulse - pulse - 1;
             }
         }
-        return Pattern.pulsesPerBeat;
+        return PatternV1.pulsesPerBeat;
     }
 
-    private GameObject FinishAddNote(Note n, string sound)
+    private GameObject FinishAddNote(NoteV1 n, string sound)
     {
         // Add to pattern.
         EditorContext.Pattern.AddNote(n, sound);
@@ -2153,7 +2153,7 @@ public class PatternPanel : MonoBehaviour
     private GameObject AddNote(NoteType type, int pulse, int lane,
         string sound)
     {
-        Note n = new Note()
+        NoteV1 n = new NoteV1()
         {
             type = type,
             pulse = pulse,
@@ -2169,7 +2169,7 @@ public class PatternPanel : MonoBehaviour
         {
             duration = HoldNoteDefaultDuration(pulse, lane);
         }
-        HoldNote n = new HoldNote()
+        HoldNoteV1 n = new HoldNoteV1()
         {
             type = type,
             pulse = pulse,
@@ -2200,7 +2200,7 @@ public class PatternPanel : MonoBehaviour
                 controlRight = new FloatPoint(0f, 0f)
             });
         }
-        DragNote n = new DragNote()
+        DragNoteV1 n = new DragNoteV1()
         {
             type = NoteType.Drag,
             pulse = pulse,
@@ -2304,13 +2304,13 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHold:
                     pastable = CanAddHoldNote(n.note.type,
                         newPulse, n.note.lane,
-                        (n.note as HoldNote).duration,
+                        (n.note as HoldNoteV1).duration,
                         ignoredExistingNotes: null,
                         out invalidReason);
                     break;
                 case NoteType.Drag:
                     pastable = CanAddDragNote(newPulse, n.note.lane,
-                        (n.note as DragNote).nodes,
+                        (n.note as DragNoteV1).nodes,
                         ignoredExistingNotes: null,
                         out invalidReason);
                     break;
@@ -2341,12 +2341,12 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
                     AddHoldNote(n.note.type, newPulse,
-                        n.note.lane, (n.note as HoldNote).duration,
+                        n.note.lane, (n.note as HoldNoteV1).duration,
                         n.sound);
                     break;
                 case NoteType.Drag:
                     AddDragNote(newPulse, n.note.lane,
-                        (n.note as DragNote).nodes,
+                        (n.note as DragNoteV1).nodes,
                         n.sound);
                     break;
             }
@@ -2432,7 +2432,7 @@ public class PatternPanel : MonoBehaviour
         isPlaying = true;
         UpdatePlaybackUI();
 
-        Pattern pattern = EditorContext.Pattern;
+        PatternV1 pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
         pattern.CalculateTimeOfAllNotes();
         playbackStartingPulse = scanline.floatPulse;
@@ -2500,7 +2500,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Stop playback after the last scan.
-        int totalPulses = numScans * EditorContext.Pattern.patternMetadata.bps * Pattern.pulsesPerBeat;
+        int totalPulses = numScans * EditorContext.Pattern.patternMetadata.bps * PatternV1.pulsesPerBeat;
         if (playbackCurrentPulse > totalPulses)
         {
             StopPlayback();
@@ -2546,7 +2546,7 @@ public class PatternPanel : MonoBehaviour
     #region Utilities
     private int SnapPulse(float rawPulse)
     {
-        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
+        int pulsesPerDivision = PatternV1.pulsesPerBeat / beatSnapDivisor;
         int snappedPulse = Mathf.RoundToInt(rawPulse / pulsesPerDivision)
             * pulsesPerDivision;
         return snappedPulse;

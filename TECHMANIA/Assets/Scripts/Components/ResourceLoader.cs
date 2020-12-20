@@ -46,7 +46,7 @@ public class ResourceLoader : MonoBehaviour
 
     // Cache all keysounds of the given pattern.
     public static void CacheSoundChannels(string trackFolder,
-        Pattern pattern,
+        PatternV1 pattern,
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {

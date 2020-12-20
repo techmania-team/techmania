@@ -11,12 +11,12 @@ public class PatternRadioList : MonoBehaviour
     public GameObject patternTemplate;
     public GameObject noPatternText;
 
-    private Dictionary<GameObject, Pattern> objectToPattern;
+    private Dictionary<GameObject, PatternV1> objectToPattern;
     private GameObject selectedPatternObject;
-    public static event UnityAction<Pattern> SelectedPatternChanged;
+    public static event UnityAction<PatternV1> SelectedPatternChanged;
 
-    public GameObject InitializeAndReturnFirstPatternObject(Track t,
-        Pattern initialSelectedPattern = null)
+    public GameObject InitializeAndReturnFirstPatternObject(TrackV1 t,
+        PatternV1 initialSelectedPattern = null)
     {
         // Remove all patterns from list, except for template.
         for (int i = 0; i < list.transform.childCount; i++)
@@ -27,10 +27,10 @@ public class PatternRadioList : MonoBehaviour
         }
 
         // Rebuild pattern list.
-        objectToPattern = new Dictionary<GameObject, Pattern>();
+        objectToPattern = new Dictionary<GameObject, PatternV1>();
         selectedPatternObject = null;
         GameObject firstObject = null;
-        foreach (Pattern p in t.patterns)
+        foreach (PatternV1 p in t.patterns)
         {
             // Instantiate pattern representation.
             GameObject patternObject = Instantiate(patternTemplate, list.transform);
@@ -63,7 +63,7 @@ public class PatternRadioList : MonoBehaviour
         return firstObject;
     }
 
-    public Pattern GetSelectedPattern()
+    public PatternV1 GetSelectedPattern()
     {
         if (selectedPatternObject == null)
         {
