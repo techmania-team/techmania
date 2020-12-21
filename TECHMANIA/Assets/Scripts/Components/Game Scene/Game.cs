@@ -110,7 +110,7 @@ public class Game : MonoBehaviour
     private Stopwatch feverTimer;
     private float initialTime;
     private bool loading;
-    // Combo ticks are pulses where each ongoing notes increase
+    // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
     // resolved. Combo ticks are, by default, 60 pulses apart.
     private int previousComboTick;

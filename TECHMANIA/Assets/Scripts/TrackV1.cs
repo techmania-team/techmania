@@ -27,7 +27,7 @@ using System.Collections.Generic;
 public class TrackV1 : TrackBase
 {
     public const string kVersion = "1";
-    public TrackV1() { version = kVersion; }
+
     public TrackV1(string title, string artist)
     {
         version = kVersion;
@@ -136,8 +136,8 @@ public class PatternV1
 #if UNITY_2019
         string json = UnityEngine.JsonUtility.ToJson(
             this, prettyPrint: false);
-        PatternV1 clone = UnityEngine.JsonUtility.FromJson<PatternV1>(
-            json);
+        PatternV1 clone = UnityEngine.JsonUtility
+            .FromJson<PatternV1>(json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         return clone;
 #else
