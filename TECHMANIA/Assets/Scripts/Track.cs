@@ -8,7 +8,7 @@ using System.Collections.Generic;
 // Because class names are not serialized, we can change class
 // names however we want without breaking old files, so the
 // current version class will always be called "Track", and
-// deprecated versions will be called "TrackV1" or such.
+// deprecated versions will be renamed to "TrackV1" or such.
 
 // The current version ("2") introduces "packing", which basically
 // compresses notes to concise strings before serialization,
@@ -215,7 +215,7 @@ public class TrackMetadata
 [Serializable]
 public class Pattern
 {
-    public PatternMetadataV1 patternMetadata;
+    public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
 
     [NonSerialized]
@@ -236,7 +236,7 @@ public class Pattern
 
     public Pattern()
     {
-        patternMetadata = new PatternMetadataV1();
+        patternMetadata = new PatternMetadata();
         bpmEvents = new List<BpmEvent>();
         notes = new SortedSet<Note>(new NoteComparer());
     }
@@ -324,9 +324,9 @@ public class PatternMetadata
     {
         guid = Guid.NewGuid().ToString();
         patternName = "New pattern";
-        level = PatternV1.minLevel;
-        initBpm = PatternV1.minBpm;
-        bps = PatternV1.minBps;
+        level = Pattern.minLevel;
+        initBpm = Pattern.minBpm;
+        bps = Pattern.minBps;
     }
 }
 
