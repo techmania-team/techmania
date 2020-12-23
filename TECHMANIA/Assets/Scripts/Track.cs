@@ -213,7 +213,7 @@ public class TrackMetadata
 }
 
 [Serializable]
-public class Pattern
+public partial class Pattern
 {
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;

@@ -522,12 +522,3 @@ public class DragNoteV1 : NoteV1
         return result;
     }
 }
-
-// Not intended to be serialized. Different from NoteObject,
-// this class does not derive from MonoBehavior, so it's much
-// lighter.
-public class NoteWithSound
-{
-    public NoteV1 note;
-    public string sound;
-}
