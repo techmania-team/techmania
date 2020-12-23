@@ -40,21 +40,27 @@ public class ResultsPanel : MonoBehaviour
         title.text = Game.score.stageFailed ? "Stage Failed" : "Stage Clear";
 
         // Track and Pattern
-        TrackMetadataV1 track = GameSetup.track.trackMetadata;
+        TrackMetadata track = GameSetup.track.trackMetadata;
         eyecatch.LoadImage(GameSetup.trackFolder, track);
         trackTitle.text = track.title;
         trackArtist.text = track.artist;
 
-        PatternMetadataV1 pattern = GameSetup.pattern.patternMetadata;
+        PatternMetadata pattern = GameSetup.pattern.patternMetadata;
         patternBanner.Initialize(pattern);
 
         // Tallies
-        rainbowMax.text = Game.score.notesPerJudgement[Judgement.RainbowMax].ToString();
-        max.text = Game.score.notesPerJudgement[Judgement.Max].ToString();
-        cool.text = Game.score.notesPerJudgement[Judgement.Cool].ToString();
-        good.text = Game.score.notesPerJudgement[Judgement.Good].ToString();
-        miss.text = Game.score.notesPerJudgement[Judgement.Miss].ToString();
-        breakText.text = Game.score.notesPerJudgement[Judgement.Break].ToString();
+        rainbowMax.text = Game.score.notesPerJudgement
+            [Judgement.RainbowMax].ToString();
+        max.text = Game.score.notesPerJudgement
+            [Judgement.Max].ToString();
+        cool.text = Game.score.notesPerJudgement
+            [Judgement.Cool].ToString();
+        good.text = Game.score.notesPerJudgement
+            [Judgement.Good].ToString();
+        miss.text = Game.score.notesPerJudgement
+            [Judgement.Miss].ToString();
+        breakText.text = Game.score.notesPerJudgement
+            [Judgement.Break].ToString();
         maxCombo.text = Game.maxCombo.ToString();
         feverBonus.text = Game.score.totalFeverBonus.ToString();
 
@@ -78,7 +84,8 @@ public class ResultsPanel : MonoBehaviour
         {
             // Qualified for performance medal.
             performanceMedal.SetActive(true);
-            TextMeshProUGUI medalText = performanceMedal.GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI medalText = performanceMedal
+                .GetComponentInChildren<TextMeshProUGUI>();
             if (Game.score.notesPerJudgement[Judgement.Cool] == 0 &&
                 Game.score.notesPerJudgement[Judgement.Good] == 0)
             {

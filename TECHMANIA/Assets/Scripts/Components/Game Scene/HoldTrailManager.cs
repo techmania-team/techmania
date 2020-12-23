@@ -20,7 +20,7 @@ public class HoldTrailManager : MonoBehaviour
     private bool trailExtendsLeft;
 
     public void Initialize(Scan scanRef, Scanline scanlineRef,
-        HoldNoteV1 holdNote)
+        HoldNote holdNote)
     {
         this.scanlineRef = scanlineRef;
         noteType = holdNote.type;

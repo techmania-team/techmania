@@ -11,12 +11,12 @@ public class PatternRadioList : MonoBehaviour
     public GameObject patternTemplate;
     public GameObject noPatternText;
 
-    private Dictionary<GameObject, PatternV1> objectToPattern;
+    private Dictionary<GameObject, Pattern> objectToPattern;
     private GameObject selectedPatternObject;
-    public static event UnityAction<PatternV1> SelectedPatternChanged;
+    public static event UnityAction<Pattern> SelectedPatternChanged;
 
-    public GameObject InitializeAndReturnFirstPatternObject(TrackV1 t,
-        PatternV1 initialSelectedPattern = null)
+    public GameObject InitializeAndReturnFirstPatternObject(Track t,
+        Pattern initialSelectedPattern = null)
     {
         // Remove all patterns from list, except for template.
         for (int i = 0; i < list.transform.childCount; i++)
@@ -27,16 +27,16 @@ public class PatternRadioList : MonoBehaviour
         }
 
         // Rebuild pattern list.
-        objectToPattern = new Dictionary<GameObject, PatternV1>();
+        objectToPattern = new Dictionary<GameObject, Pattern>();
         selectedPatternObject = null;
         GameObject firstObject = null;
-        foreach (PatternV1 p in t.patterns)
+        foreach (Pattern p in t.patterns)
         {
             // Instantiate pattern representation.
             GameObject patternObject = Instantiate(patternTemplate, list.transform);
             patternObject.name = "Pattern Radio Button";
-            patternObject.GetComponentInChildren<PatternBanner>().Initialize(
-                p.patternMetadata);
+            patternObject.GetComponentInChildren<PatternBanner>()
+                .Initialize(p.patternMetadata);
             patternObject.SetActive(true);
             if (firstObject == null)
             {
@@ -63,7 +63,7 @@ public class PatternRadioList : MonoBehaviour
         return firstObject;
     }
 
-    public PatternV1 GetSelectedPattern()
+    public Pattern GetSelectedPattern()
     {
         if (selectedPatternObject == null)
         {

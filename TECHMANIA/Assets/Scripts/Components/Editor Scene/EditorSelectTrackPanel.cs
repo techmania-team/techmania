@@ -24,14 +24,18 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     protected override void OnClickCard(GameObject o)
     {
         EditorContext.Reset();
-        EditorContext.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        EditorContext.track = TrackBase.LoadFromFile(EditorContext.trackPath) as TrackV1;
-        PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
+        EditorContext.trackPath = 
+            $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
+        EditorContext.track = TrackBase.LoadFromFile(
+            EditorContext.trackPath) as Track;
+        PanelTransitioner.TransitionTo(trackSetupPanel, 
+            TransitionToPanel.Direction.Right);
     }
 
     protected override void OnClickNewTrackCard()
     {
-        newTrackDialog.Show(createCallback: (string title, string artist) =>
+        newTrackDialog.Show(createCallback:
+            (string title, string artist) =>
         {
             OnCreateButtonClick(title, artist);
         });
@@ -58,7 +62,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
 
         // Create empty track.
-        TrackV1 track = new TrackV1(title, artist);
+        Track track = new Track(title, artist);
         string filename = $"{newDir}\\{Paths.kTrackFilename}";
         try
         {
@@ -74,6 +78,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         EditorContext.Reset();
         EditorContext.trackPath = filename;
         EditorContext.track = track;
-        PanelTransitioner.TransitionTo(trackSetupPanel, TransitionToPanel.Direction.Right);
+        PanelTransitioner.TransitionTo(trackSetupPanel, 
+            TransitionToPanel.Direction.Right);
     }
 }

@@ -19,7 +19,7 @@ public class SelectTrackPanel : MonoBehaviour
     protected class TrackInFolder
     {
         public string folder;
-        public TrackV1 track;
+        public Track track;
     }
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
@@ -61,7 +61,7 @@ public class SelectTrackPanel : MonoBehaviour
             try
             {
                 trackBase = TrackBase.LoadFromFile(possibleTrackFile);
-                if (!(trackBase is TrackV1))
+                if (!(trackBase is Track))
                 {
                     error = "The track was created in an old version and is no longer supported.";
                 }
@@ -74,10 +74,11 @@ public class SelectTrackPanel : MonoBehaviour
             GameObject card = null;
             if (error == null)
             {
-                TrackV1 track = trackBase as TrackV1;
+                Track track = trackBase as Track;
 
                 // Instantiate card.
-                card = Instantiate(trackCardTemplate, trackGrid.transform);
+                card = Instantiate(trackCardTemplate, 
+                    trackGrid.transform);
                 card.name = "Track Card";
                 card.SetActive(true);
                 card.GetComponent<TrackCard>().Initialize(
@@ -102,7 +103,8 @@ public class SelectTrackPanel : MonoBehaviour
                     + error;
 
                 // Instantiate card.
-                card = Instantiate(errorCardTemplate, trackGrid.transform);
+                card = Instantiate(errorCardTemplate, 
+                    trackGrid.transform);
                 card.name = "Error Card";
                 card.SetActive(true);
 
@@ -126,8 +128,10 @@ public class SelectTrackPanel : MonoBehaviour
         {
             newTrackCard.transform.SetAsLastSibling();
             newTrackCard.SetActive(true);
-            newTrackCard.GetComponent<Button>().onClick.RemoveAllListeners();
-            newTrackCard.GetComponent<Button>().onClick.AddListener(() =>
+            newTrackCard.GetComponent<Button>().onClick
+                .RemoveAllListeners();
+            newTrackCard.GetComponent<Button>().onClick
+                .AddListener(() =>
             {
                 OnClickNewTrackCard();
             });
@@ -150,7 +154,8 @@ public class SelectTrackPanel : MonoBehaviour
     protected virtual void OnClickCard(GameObject o)
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        GameSetup.track = TrackBase.LoadFromFile(GameSetup.trackPath) as TrackV1;
+        GameSetup.track = TrackBase.LoadFromFile(
+            GameSetup.trackPath) as Track;
         selectPatternDialog.Show();
     }
 

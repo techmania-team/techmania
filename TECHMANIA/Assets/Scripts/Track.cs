@@ -199,7 +199,7 @@ public class TrackMetadata
     public string title;
     public string artist;
     public string genre;
-    public string additionalCredit;  // Multiple lines allowed
+    public string additionalCredits;  // Multiple lines allowed
 
     // In track select screen.
 
@@ -239,6 +239,22 @@ public class Pattern
         patternMetadata = new PatternMetadata();
         bpmEvents = new List<BpmEvent>();
         notes = new SortedSet<Note>(new NoteComparer());
+    }
+
+    public Pattern CloneWithDifferentGuid()
+    {
+#if UNITY_2019
+        PackAllNotes();
+        string json = UnityEngine.JsonUtility.ToJson(
+            this, prettyPrint: false);
+        Pattern clone = UnityEngine.JsonUtility
+            .FromJson<Pattern>(json);
+        clone.patternMetadata.guid = Guid.NewGuid().ToString();
+        clone.UnpackAllNotes();
+        return clone;
+#else
+        return null;
+#endif
     }
 
     public void PackAllNotes()

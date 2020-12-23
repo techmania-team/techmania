@@ -170,14 +170,12 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField trackTitle;
     public TMP_InputField artist;
     public TMP_InputField genre;
+    public TMP_InputField additionalCredits;
     public EyecatchSelfLoader eyecatchPreview;
     public TMP_Dropdown eyecatchImage;
     public TMP_Dropdown previewTrack;
     public TMP_InputField startTime;
     public TMP_InputField endTime;
-    public TMP_Dropdown backgroundImage;
-    public TMP_Dropdown backgroundVideo;
-    public TMP_InputField bgaOffset;
     public PreviewTrackPlayer previewTrackPlayer;
 
     private List<string> audioFilesCache;
@@ -186,14 +184,19 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void RefreshMetadataTab()
     {
-        TrackMetadataV1 metadata = EditorContext.track.trackMetadata;
-        audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
-        imageFilesCache = Paths.GetAllImageFiles(EditorContext.trackFolder);
-        videoFilesCache = Paths.GetAllVideoFiles(EditorContext.trackFolder);
+        TrackMetadata metadata = EditorContext.track.trackMetadata;
+        audioFilesCache = Paths.GetAllAudioFiles(
+            EditorContext.trackFolder);
+        imageFilesCache = Paths.GetAllImageFiles(
+            EditorContext.trackFolder);
+        videoFilesCache = Paths.GetAllVideoFiles(
+            EditorContext.trackFolder);
 
         trackTitle.SetTextWithoutNotify(metadata.title);
         artist.SetTextWithoutNotify(metadata.artist);
         genre.SetTextWithoutNotify(metadata.genre);
+        additionalCredits.SetTextWithoutNotify(
+            metadata.additionalCredits);
 
         UIUtils.MemoryToDropdown(eyecatchImage,
             metadata.eyecatchImage, imageFilesCache);
@@ -202,20 +205,14 @@ public class TrackSetupPanel : MonoBehaviour
         startTime.SetTextWithoutNotify(metadata.previewStartTime.ToString());
         endTime.SetTextWithoutNotify(metadata.previewEndTime.ToString());
 
-        UIUtils.MemoryToDropdown(backgroundImage,
-            metadata.backImage, imageFilesCache);
-        UIUtils.MemoryToDropdown(backgroundVideo,
-            metadata.bga, videoFilesCache);
-        bgaOffset.SetTextWithoutNotify(metadata.bgaOffset.ToString());
-
         foreach (TMP_InputField field in new List<TMP_InputField>()
         {
             trackTitle,
             artist,
             genre,
+            additionalCredits,
             startTime,
-            endTime,
-            bgaOffset
+            endTime
         })
         {
             field.GetComponent<MaterialTextField>().RefreshMiniLabel();
@@ -226,7 +223,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnMetadataUpdated()
     {
-        TrackMetadataV1 metadata = EditorContext.track.trackMetadata;
+        TrackMetadata metadata = EditorContext.track.trackMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(
@@ -235,6 +232,9 @@ public class TrackSetupPanel : MonoBehaviour
             ref metadata.artist, artist.text, ref madeChange);
         UIUtils.UpdatePropertyInMemory(
             ref metadata.genre, genre.text, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref metadata.additionalCredits,
+            additionalCredits.text, ref madeChange);
 
         UIUtils.UpdatePropertyInMemory(
             ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
@@ -246,13 +246,6 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
         UIUtils.UpdatePropertyInMemory(
             ref metadata.previewEndTime, endTime.text, ref madeChange);
-
-        UIUtils.UpdatePropertyInMemory(
-            ref metadata.backImage, backgroundImage, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
-            ref metadata.bga, backgroundVideo, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
-            ref metadata.bgaOffset, bgaOffset.text, ref madeChange);
 
         if (madeChange)
         {
@@ -304,6 +297,9 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_Dropdown controlScheme;
     public TMP_InputField patternLevel;
     public TMP_Dropdown patternBackingTrack;
+    public TMP_Dropdown backgroundImage;
+    public TMP_Dropdown backgroundVideo;
+    public TMP_InputField bgaOffset;
     public TMP_InputField firstBeatOffset;
     public TMP_InputField initialBpm;
     public TMP_InputField bps;
@@ -314,7 +310,7 @@ public class TrackSetupPanel : MonoBehaviour
     //
     // However this reference will be invalidated upon undo/redo.
     // Must refresh it upon undo/redo.
-    private PatternV1 selectedPattern;
+    private Pattern selectedPattern;
 
     private void RefreshPatternsTab()
     {
@@ -340,7 +336,7 @@ public class TrackSetupPanel : MonoBehaviour
         noPatternSelectedNotice.SetActive(selectedPattern == null);
         if (selectedPattern == null) return;
 
-        PatternMetadataV1 m = selectedPattern.patternMetadata;
+        PatternMetadata m = selectedPattern.patternMetadata;
         patternName.SetTextWithoutNotify(m.patternName);
         patternAuthor.SetTextWithoutNotify(m.author);
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
@@ -348,6 +344,11 @@ public class TrackSetupPanel : MonoBehaviour
 
         UIUtils.MemoryToDropdown(patternBackingTrack,
             m.backingTrack, audioFilesCache);
+        UIUtils.MemoryToDropdown(backgroundImage,
+            m.backImage, imageFilesCache);
+        UIUtils.MemoryToDropdown(backgroundVideo,
+            m.bga, videoFilesCache);
+        bgaOffset.SetTextWithoutNotify(m.bgaOffset.ToString());
 
         firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
         initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
@@ -358,6 +359,7 @@ public class TrackSetupPanel : MonoBehaviour
             patternName,
             patternAuthor,
             patternLevel,
+            bgaOffset,
             firstBeatOffset,
             initialBpm,
             bps
@@ -367,7 +369,7 @@ public class TrackSetupPanel : MonoBehaviour
         }
     }
 
-    private void SelectedPatternChanged(PatternV1 newSelection)
+    private void SelectedPatternChanged(Pattern newSelection)
     {
         selectedPattern = newSelection;
         RefreshPatternMetadata();
@@ -375,7 +377,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnPatternMetadataChanged()
     {
-        PatternMetadataV1 m = selectedPattern.patternMetadata;
+        PatternMetadata m = selectedPattern.patternMetadata;
         bool madeChange = false;
 
         UIUtils.UpdatePropertyInMemory(ref m.patternName,
@@ -383,7 +385,7 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.UpdatePropertyInMemory(ref m.author,
             patternAuthor.text, ref madeChange);
         UIUtils.ClampInputField(patternLevel,
-            PatternV1.minLevel, PatternV1.maxLevel);
+            Pattern.minLevel, Pattern.maxLevel);
         UIUtils.UpdatePropertyInMemory(ref m.level,
             patternLevel.text, ref madeChange);
 
@@ -400,13 +402,21 @@ public class TrackSetupPanel : MonoBehaviour
 
         UIUtils.UpdatePropertyInMemory(ref m.backingTrack,
             patternBackingTrack, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref m.backImage, backgroundImage, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref m.bga, backgroundVideo, ref madeChange);
+        UIUtils.UpdatePropertyInMemory(
+            ref m.bgaOffset, bgaOffset.text, ref madeChange);
 
         UIUtils.UpdatePropertyInMemory(
-            ref m.firstBeatOffset, firstBeatOffset.text, ref madeChange);
-        UIUtils.ClampInputField(initialBpm, PatternV1.minBpm, PatternV1.maxBpm);
+            ref m.firstBeatOffset, firstBeatOffset.text,
+            ref madeChange);
+        UIUtils.ClampInputField(initialBpm,
+            Pattern.minBpm, Pattern.maxBpm);
         UIUtils.UpdatePropertyInMemory(
             ref m.initBpm, initialBpm.text, ref madeChange);
-        UIUtils.ClampInputField(bps, PatternV1.minBps, PatternV1.maxBps);
+        UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
         UIUtils.UpdatePropertyInMemory(
             ref m.bps, bps.text, ref madeChange);
 
@@ -421,7 +431,7 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnNewPatternButtonClick()
     {
         EditorContext.PrepareForChange();
-        EditorContext.track.patterns.Add(new PatternV1());
+        EditorContext.track.patterns.Add(new Pattern());
         EditorContext.track.SortPatterns();
         EditorContext.DoneWithChange();
 

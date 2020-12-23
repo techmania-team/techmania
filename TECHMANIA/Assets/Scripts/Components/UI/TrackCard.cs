@@ -9,7 +9,7 @@ public class TrackCard : MonoBehaviour
     public TextMeshProUGUI title;
     public TextMeshProUGUI artist;
 
-    public void Initialize(string folder, TrackMetadataV1 t)
+    public void Initialize(string folder, TrackMetadata t)
     {
         eyecatch.LoadImage(folder, t);
         title.text = t.title;

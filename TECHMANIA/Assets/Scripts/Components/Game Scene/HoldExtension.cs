@@ -15,7 +15,7 @@ public class HoldExtension : MonoBehaviour
         GetComponent<HoldTrailManager>().ongoingTrailEnd;
 
     public void Initialize(Scan scanRef, Scanline scanlineRef, 
-        HoldNoteV1 holdNote)
+        HoldNote holdNote)
     {
         GetComponent<HoldTrailManager>().Initialize(
             scanRef, scanlineRef, holdNote);

@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class EditorContext : MonoBehaviour
 {
-    public static TrackV1 track;
+    public static Track track;
     public static string trackPath;
     public static string trackFolder
     {
@@ -17,14 +17,14 @@ public class EditorContext : MonoBehaviour
     }
 
     public static int patternIndex;
-    public static PatternV1 Pattern
+    public static Pattern Pattern
     {
         get { return track.patterns[patternIndex]; }
     }
 
     public static bool Dirty { get; private set; }
-    private static LimitedStack<TrackV1> undoStack;
-    private static LimitedStack<TrackV1> redoStack;
+    private static LimitedStack<Track> undoStack;
+    private static LimitedStack<Track> redoStack;
 
     public static event UnityAction<bool> DirtynessUpdated;
     public static event UnityAction UndoRedoStackUpdated;
@@ -33,15 +33,15 @@ public class EditorContext : MonoBehaviour
     public static void Reset()
     {
         Dirty = false;
-        undoStack = new LimitedStack<TrackV1>(20);
-        redoStack = new LimitedStack<TrackV1>(20);
+        undoStack = new LimitedStack<Track>(20);
+        redoStack = new LimitedStack<Track>(20);
     }
 
     // Call this before making any change to track.
     public static void PrepareForChange()
     {
         Dirty = true;
-        undoStack.Push(track.Clone() as TrackV1);
+        undoStack.Push(track.Clone() as Track);
         redoStack.Clear();
         UndoRedoStackUpdated?.Invoke();
     }    
@@ -72,7 +72,7 @@ public class EditorContext : MonoBehaviour
     public static void Undo()
     {
         if (undoStack.Empty()) return;
-        redoStack.Push(track.Clone() as TrackV1);
+        redoStack.Push(track.Clone() as Track);
         track = undoStack.Pop();
         Dirty = true;
         DirtynessUpdated?.Invoke(Dirty);
@@ -83,7 +83,7 @@ public class EditorContext : MonoBehaviour
     public static void Redo()
     {
         if (redoStack.Empty()) return;
-        undoStack.Push(track.Clone() as TrackV1);
+        undoStack.Push(track.Clone() as Track);
         track = redoStack.Pop();
         Dirty = true;
         DirtynessUpdated?.Invoke(Dirty);
