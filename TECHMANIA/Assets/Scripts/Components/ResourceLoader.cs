@@ -46,7 +46,7 @@ public class ResourceLoader : MonoBehaviour
 
     // Cache all keysounds of the given pattern.
     public static void CacheSoundChannels(string trackFolder,
-        PatternV1 pattern,
+        Pattern pattern,
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
@@ -56,12 +56,12 @@ public class ResourceLoader : MonoBehaviour
             cachedFolder = trackFolder;
         }
 
-        List<string> filenames = new List<string>();
-        foreach (SoundChannel channel in pattern.soundChannels)
+        HashSet<string> filenames = new HashSet<string>();
+        foreach (Note n in pattern.notes)
         {
-            if (channel.name != "")
+            if (n.sound != "")
             {
-                filenames.Add(trackFolder + "\\" + channel.name);
+                filenames.Add(trackFolder + "\\" + n.sound);
             }
         }
         ResourceLoader instance = GetInstance();
@@ -71,7 +71,7 @@ public class ResourceLoader : MonoBehaviour
     }
 
     private IEnumerator InnerCacheAudioResources(
-        List<string> filenameWithFolder,
+        ICollection<string> filenameWithFolder,
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {

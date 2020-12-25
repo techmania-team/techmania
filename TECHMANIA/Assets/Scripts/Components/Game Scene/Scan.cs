@@ -43,14 +43,13 @@ public class Scan : MonoBehaviour
         scanline.Initialize(this, scanHeight);
     }
 
-    public NoteObject SpawnNoteObject(GameObject prefab, NoteV1 n, 
-        string sound, bool hidden)
+    public NoteObject SpawnNoteObject(GameObject prefab, Note n, 
+        bool hidden)
     {
         GameObject o = Instantiate(prefab, transform);
 
         NoteObject noteObject = o.GetComponent<NoteObject>();
         noteObject.note = n;
-        noteObject.sound = sound;
 
         float x = FloatPulseToXPosition(n.pulse);
         float y = FloatLaneToYPosition(n.lane);
@@ -82,7 +81,7 @@ public class Scan : MonoBehaviour
     }
 
     public HoldExtension SpawnHoldExtension(GameObject prefab,
-        HoldNoteV1 n)
+        HoldNote n)
     {
         GameObject o = Instantiate(prefab, transform);
 

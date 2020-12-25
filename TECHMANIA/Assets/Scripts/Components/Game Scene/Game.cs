@@ -186,11 +186,11 @@ public class Game : MonoBehaviour
     {
         // Step 1: load background image, if any. This makes the
         // loading screen not too dull.
-        if (GameSetup.track.trackMetadata.backImage != null &&
-            GameSetup.track.trackMetadata.backImage != "")
+        if (GameSetup.pattern.patternMetadata.backImage != null &&
+            GameSetup.pattern.patternMetadata.backImage != "")
         {
             string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.track.trackMetadata.backImage;
+                GameSetup.pattern.patternMetadata.backImage;
             backgroundImageLoaded = false;
             ResourceLoader.LoadImage(fullPath,
                 OnImageLoadComplete);
@@ -224,11 +224,11 @@ public class Game : MonoBehaviour
         yield return new WaitUntil(() => keysoundsLoaded);
 
         // Step 4: load BGA, if any.
-        if (GameSetup.track.trackMetadata.bga != null &&
-            GameSetup.track.trackMetadata.bga != "")
+        if (GameSetup.pattern.patternMetadata.bga != null &&
+            GameSetup.pattern.patternMetadata.bga != "")
         {
             string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.track.trackMetadata.bga;
+                GameSetup.pattern.patternMetadata.bga;
             videoPlayer.url = fullPath;
             videoPlayer.errorReceived += VideoPlayerErrorReceived;
             videoPlayer.Prepare();
@@ -269,12 +269,14 @@ public class Game : MonoBehaviour
 
         backgroundImage.sprite = sprite;
         backgroundImage.color = Color.white;
-        backgroundImage.GetComponent<AspectRatioFitter>().aspectRatio =
+        backgroundImage.GetComponent<AspectRatioFitter>()
+            .aspectRatio =
             (float)sprite.rect.width / sprite.rect.height;
         backgroundImageLoaded = true;
     }
 
-    private void OnBackingTrackLoadComplete(AudioClip clip, string error)
+    private void OnBackingTrackLoadComplete(
+        AudioClip clip, string error)
     {
         if (error != null)
         {
@@ -316,12 +318,9 @@ public class Game : MonoBehaviour
             initialTime = GameSetup.pattern.PulseToTime(Pulse);
         }
 
-        // Sort all notes by pulse.
-        List<NoteWithSound> sortedNotes = SortAllNotes();
-
         // Find last scan. Make sure it ends later than the backing
-        // track, so we don't cut the track short.
-        CalculateLastScan(sortedNotes);
+        // track and BGA, so we don't cut either short.
+        CalculateLastScan();
 
         // Create scan objects.
         Dictionary<int, Scan> scanObjects = new Dictionary<int, Scan>();
@@ -349,11 +348,10 @@ public class Game : MonoBehaviour
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
-        for (int i = sortedNotes.Count - 1; i >= 0; i--)
+        foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
-            NoteWithSound n = sortedNotes[i];
-            int scanOfN = n.note.pulse / PulsesPerScan;
-            bool hidden = n.note.lane >= kPlayableLanes;
+            int scanOfN = n.pulse / PulsesPerScan;
+            bool hidden = n.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
 
             NoteObject noteObject = SpawnNoteObject(
@@ -361,7 +359,7 @@ public class Game : MonoBehaviour
             NoteAppearance appearance = noteObject
                 .GetComponent<NoteAppearance>();
 
-            while (noteObjectsInLane.Count <= n.note.lane)
+            while (noteObjectsInLane.Count <= n.lane)
             {
                 noteObjectsInLane.Add(new LinkedList<NoteObject>());
                 notesForMouseInLane.Add(
@@ -370,14 +368,14 @@ public class Game : MonoBehaviour
                     new LinkedList<NoteObject>());
                 unmanagedRepeatNotes.Add(new List<NoteObject>());
             }
-            noteObjectsInLane[n.note.lane].AddFirst(noteObject);
-            switch (n.note.type)
+            noteObjectsInLane[n.lane].AddFirst(noteObject);
+            switch (n.type)
             {
                 case NoteType.Basic:
                 case NoteType.ChainHead:
                 case NoteType.ChainNode:
                 case NoteType.Drag:
-                    notesForMouseInLane[n.note.lane]
+                    notesForMouseInLane[n.lane]
                         .AddFirst(noteObject);
                     break;
                 case NoteType.Hold:
@@ -385,7 +383,7 @@ public class Game : MonoBehaviour
                 case NoteType.RepeatHeadHold:
                 case NoteType.Repeat:
                 case NoteType.RepeatHold:
-                    notesForKeyboardInLane[n.note.lane]
+                    notesForKeyboardInLane[n.lane]
                         .AddFirst(noteObject);
                     break;
             }
@@ -395,20 +393,20 @@ public class Game : MonoBehaviour
             if (hidden) continue;
 
             // Create extensions for hold notes that cross scans.
-            if (n.note.type == NoteType.Hold ||
-                n.note.type == NoteType.RepeatHeadHold ||
-                n.note.type == NoteType.RepeatHold)
+            if (n.type == NoteType.Hold ||
+                n.type == NoteType.RepeatHeadHold ||
+                n.type == NoteType.RepeatHold)
             {
                 CreateHoldExtensions(noteObject, scanObjects);
             }
 
             // Connect chain heads/nodes to the node after it.
-            if (n.note.type == NoteType.ChainHead ||
-                n.note.type == NoteType.ChainNode)
+            if (n.type == NoteType.ChainHead ||
+                n.type == NoteType.ChainNode)
             {
                 appearance.SetNextChainNode(
                     nextChainNode?.gameObject);
-                if (n.note.type == NoteType.ChainHead)
+                if (n.type == NoteType.ChainHead)
                 {
                     nextChainNode = null;
                 }
@@ -420,17 +418,17 @@ public class Game : MonoBehaviour
 
             // Establish management between repeat (hold) heads
             // and repeat (hold) notes.
-            if (n.note.type == NoteType.Repeat ||
-                n.note.type == NoteType.RepeatHold)
+            if (n.type == NoteType.Repeat ||
+                n.type == NoteType.RepeatHold)
             {
-                unmanagedRepeatNotes[n.note.lane].Add(
+                unmanagedRepeatNotes[n.lane].Add(
                     noteObject);
             }
-            if (n.note.type == NoteType.RepeatHead ||
-                n.note.type == NoteType.RepeatHeadHold)
+            if (n.type == NoteType.RepeatHead ||
+                n.type == NoteType.RepeatHeadHold)
             {
                 ManageRepeatNotes(noteObject,
-                    unmanagedRepeatNotes[n.note.lane],
+                    unmanagedRepeatNotes[n.lane],
                     scanObjects);
             }
         }
@@ -543,51 +541,14 @@ public class Game : MonoBehaviour
         });
     }
 
-    private List<NoteWithSound> SortAllNotes()
+    private void CalculateLastScan()
     {
-        List<NoteWithSound> sortedNotes = new List<NoteWithSound>();
-        foreach (SoundChannel c in GameSetup.pattern.soundChannels)
-        {
-            foreach (NoteV1 n in c.notes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-            foreach (NoteV1 n in c.holdNotes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-            foreach (NoteV1 n in c.dragNotes)
-            {
-                sortedNotes.Add(new NoteWithSound()
-                {
-                    note = n,
-                    sound = c.name
-                });
-            }
-        }
-        sortedNotes.Sort((NoteWithSound n1, NoteWithSound n2) =>
-        {
-            return n1.note.pulse - n2.note.pulse;
-        });
+        SortedSet<Note> notes = GameSetup.pattern.notes;
 
-        return sortedNotes;
-    }
-
-    private void CalculateLastScan(List<NoteWithSound> sortedNotes)
-    {
         lastScan = 0;
-        if (sortedNotes.Count > 0)
+        if (notes.Count > 0)
         {
-            lastScan = sortedNotes[sortedNotes.Count - 1]
-                .note.pulse / PulsesPerScan;
+            lastScan = notes.Max.pulse / PulsesPerScan;
         }
         if (backingTrackSource.clip != null)
         {
@@ -598,24 +559,31 @@ public class Game : MonoBehaviour
                 lastScan++;
             }
         }
+        if (videoPlayer.url != "")
+        {
+            while (GameSetup.pattern.PulseToTime(
+                (lastScan + 1) * PulsesPerScan)
+                < videoPlayer.length)
+            {
+                lastScan++;
+            }
+        }
 
         // Look at all hold and drag notes in the last few scans
         // in case their duration outlasts the currently considered
         // last scan.
         int pulseBorder = (lastScan - 1) * PulsesPerScan;
-        for (int i = sortedNotes.Count - 1; i >= 0; i--)
+        foreach (Note n in GameSetup.pattern.GetViewBetween(
+            pulseBorder, int.MaxValue))
         {
-            NoteV1 n = sortedNotes[i].note;
-            if (n.pulse < pulseBorder) break;
-
             int endingPulse;
-            if (n is HoldNoteV1)
+            if (n is HoldNote)
             {
-                endingPulse = n.pulse + (n as HoldNoteV1).duration;
+                endingPulse = n.pulse + (n as HoldNote).duration;
             }
-            else if (n is DragNoteV1)
+            else if (n is DragNote)
             {
-                endingPulse = n.pulse + (n as DragNoteV1).Duration();
+                endingPulse = n.pulse + (n as DragNote).Duration();
             }
             else
             {
@@ -629,11 +597,11 @@ public class Game : MonoBehaviour
         }
     }
 
-    private NoteObject SpawnNoteObject(NoteWithSound n,
+    private NoteObject SpawnNoteObject(Note n,
         Scan scan, bool hidden)
     {
         GameObject prefab = null;
-        switch (n.note.type)
+        switch (n.type)
         {
             case NoteType.Basic:
                 prefab = basicNotePrefab;
@@ -664,16 +632,16 @@ public class Game : MonoBehaviour
                 break;
             default:
                 Debug.LogError("Unsupported note type: " +
-                    n.note.type);
+                    n.type);
                 break;
         }
-        return scan.SpawnNoteObject(prefab, n.note, n.sound, hidden);
+        return scan.SpawnNoteObject(prefab, n, hidden);
     }
 
     private void CreateHoldExtensions(NoteObject n,
         Dictionary<int, Scan> scanObjects)
     {
-        HoldNoteV1 holdNote = n.note as HoldNoteV1;
+        HoldNote holdNote = n.note as HoldNote;
         GameObject extensionPrefab;
         if (n.note.type == NoteType.Hold)
         {
@@ -712,10 +680,10 @@ public class Game : MonoBehaviour
         {
             NoteObject lastRepeatNote = notesToManage[0];
             int lastRepeatNotePulse = lastRepeatNote.note.pulse;
-            if (lastRepeatNote.note is HoldNoteV1)
+            if (lastRepeatNote.note is HoldNote)
             {
                 lastRepeatNotePulse +=
-                    (lastRepeatNote.note as HoldNoteV1).duration;
+                    (lastRepeatNote.note as HoldNote).duration;
             }
             headAppearance.DrawRepeatPathTo(lastRepeatNotePulse);
             // Create path extensions if the head and last
@@ -834,7 +802,8 @@ public class Game : MonoBehaviour
         int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
 
         // Play backing track if timer hits 0.
-        if (oldTime < 0f && Time >= 0f && backingTrackSource.clip != null)
+        if (oldTime < 0f && Time >= 0f &&
+            backingTrackSource.clip != null)
         {
             backingTrackSource.timeSamples = Mathf.FloorToInt(
                 Time * backingTrackSource.clip.frequency);
@@ -843,12 +812,13 @@ public class Game : MonoBehaviour
         }
 
         // Play bga if timer hits bgaOffset.
-        if (oldTime < GameSetup.track.trackMetadata.bgaOffset &&
-            Time >= GameSetup.track.trackMetadata.bgaOffset &&
-            GameSetup.track.trackMetadata.bga != null &&
-            GameSetup.track.trackMetadata.bga != "")
+        if (oldTime < GameSetup.pattern.patternMetadata.bgaOffset &&
+            Time >= GameSetup.pattern.patternMetadata.bgaOffset &&
+            GameSetup.pattern.patternMetadata.bga != null &&
+            GameSetup.pattern.patternMetadata.bga != "")
         {
-            videoPlayer.time = Time - GameSetup.track.trackMetadata.bgaOffset;
+            videoPlayer.time = Time - 
+                GameSetup.pattern.patternMetadata.bgaOffset;
             videoPlayer.Play();
         }
 
@@ -970,7 +940,8 @@ public class Game : MonoBehaviour
         // [1] after all input is handled, any ongoing note not
         // marked on the current frame will be resolved as Misses.
         // [2] takes a lane number in Keys, works on any lane in KM.
-        ControlScheme scheme = GameSetup.pattern.patternMetadata.controlScheme;
+        ControlScheme scheme = GameSetup.pattern.patternMetadata
+            .controlScheme;
         switch (scheme)
         {
             case ControlScheme.Touch:
@@ -1063,13 +1034,13 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             int duration = 0;
-            if (pair.Key.note is HoldNoteV1)
+            if (pair.Key.note is HoldNote)
             {
-                duration = (pair.Key.note as HoldNoteV1).duration;
+                duration = (pair.Key.note as HoldNote).duration;
             }
-            else if (pair.Key.note is DragNoteV1)
+            else if (pair.Key.note is DragNote)
             {
-                duration = (pair.Key.note as DragNoteV1).Duration();
+                duration = (pair.Key.note as DragNote).Duration();
             }
             if (Pulse >= pair.Key.note.pulse + duration)
             {
@@ -1220,7 +1191,8 @@ public class Game : MonoBehaviour
 
     private List<RaycastResult> Raycast(Vector2 screenPosition)
     {
-        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        PointerEventData eventData = new PointerEventData(
+            EventSystem.current);
         eventData.position = screenPosition;
 
         List<RaycastResult> results = new List<RaycastResult>();
@@ -1297,7 +1269,8 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
-            EmptyTouchReceiver receiver = r.gameObject.GetComponent<EmptyTouchReceiver>();
+            EmptyTouchReceiver receiver = r.gameObject
+                .GetComponent<EmptyTouchReceiver>();
             if (receiver != null)
             {
                 return receiver.lane;
@@ -1666,9 +1639,9 @@ public class Game : MonoBehaviour
     private List<NoteObject> keysoundsPlaying;
     private void PlayKeysound(NoteObject n)
     {
-        if (n.sound == "") return;
+        if (n.note.sound == "") return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
+        AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         keysoundSources[n.note.lane].clip = clip;
         keysoundSources[n.note.lane].Play();
 
@@ -1677,7 +1650,7 @@ public class Game : MonoBehaviour
 
     private void StopKeysoundIfPlaying(NoteObject n)
     {
-        if (n.sound == "") return;
+        if (n.note.sound == "") return;
         if (keysoundsPlaying[n.note.lane] != n) return;
         if (!keysoundSources[n.note.lane].isPlaying) return;
 
