@@ -291,6 +291,7 @@ public class TrackSetupPanel : MonoBehaviour
     [Header("Patterns tab")]
     public PatternRadioList patternList;
     public GameObject patternMetadata;
+    public GameObject patternButtons;
     public GameObject noPatternSelectedNotice;
     public TMP_InputField patternName;
     public TMP_InputField patternAuthor;
@@ -333,6 +334,7 @@ public class TrackSetupPanel : MonoBehaviour
     private void RefreshPatternMetadata()
     {
         patternMetadata.SetActive(selectedPattern != null);
+        patternButtons.SetActive(selectedPattern != null);
         noPatternSelectedNotice.SetActive(selectedPattern == null);
         if (selectedPattern == null) return;
 

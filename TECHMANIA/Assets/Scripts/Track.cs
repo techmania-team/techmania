@@ -16,11 +16,6 @@ using System.Collections.Generic;
 // each note. This should bring the serialized tracks to a
 // reasonable size.
 
-// TODO
-// - In PatternPanel, replace sortedNoteObjects with a dictionary
-//   from Note to NoteObject.
-// - Auto-update V1 to V2 after making a backup.
-
 [Serializable]
 public class TrackBase
 {
@@ -295,9 +290,6 @@ public partial class Pattern
             notes.Add(DragNote.Unpack(n));
         }
     }
-
-    // TODO: Add and delete notes
-    // TODO: Timing calculation
 }
 
 [Serializable]
@@ -635,6 +627,7 @@ public class DragNode
     }
 }
 
+[Serializable]
 public class PackedDragNote
 {
     public string packedNote;
