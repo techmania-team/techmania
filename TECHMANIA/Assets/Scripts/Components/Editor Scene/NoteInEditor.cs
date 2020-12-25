@@ -105,7 +105,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         NoteObject noteObject = GetComponent<NoteObject>();
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
-            .text = UIUtils.StripAudioExtension(noteObject.sound);
+            .text = UIUtils.StripAudioExtension(
+                noteObject.note.sound);
     }
 
     #region Event Relay From Note Image
@@ -338,10 +339,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #region Duration Trail
     public void ResetTrail()
     {
-        int duration = (GetComponent<NoteObject>().note as HoldNoteV1).duration;
+        int duration = (GetComponent<NoteObject>().note as 
+            HoldNote).duration;
         float width = duration * (PatternPanel.ScanWidth /
             EditorContext.Pattern.patternMetadata.bps /
-            PatternV1.pulsesPerBeat);
+            Pattern.pulsesPerBeat);
         durationTrail.sizeDelta = new Vector2(width, 0f);
         invisibleTrail.sizeDelta = new Vector2(width, 0f);
 
@@ -374,7 +376,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         if (invisibleTrail.sizeDelta.x <
             GetComponent<RectTransform>().sizeDelta.x * 0.5f)
         {
-            noteImage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.38f);
+            noteImage.GetComponent<Image>().color =
+                new Color(1f, 1f, 1f, 0.38f);
         }
         else
         {
@@ -396,8 +399,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     // ResetAnchorsAndControlPoints for that.
     public void ResetCurve()
     {
-        DragNoteV1 dragNote = GetComponent<NoteObject>().note
-            as DragNoteV1;
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
         pointsOnCurve = new List<Vector2>();
 
         foreach (FloatPoint p in dragNote.Interpolate())
@@ -454,8 +457,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     public void ResetAllAnchorsAndControlPoints()
     {
-        DragNoteV1 dragNote = GetComponent<NoteObject>().note
-            as DragNoteV1;
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
 
         for (int i = 0; i < anchorContainer.childCount; i++)
         {

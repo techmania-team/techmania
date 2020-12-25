@@ -309,7 +309,7 @@ public class Game : MonoBehaviour
         previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
-        PulsesPerScan = PatternV1.pulsesPerBeat *
+        PulsesPerScan = Pattern.pulsesPerBeat *
             GameSetup.pattern.patternMetadata.bps;
         while (initialTime >= 0f)
         {

@@ -395,8 +395,8 @@ public class NoteAppearance : MonoBehaviour,
     public void InitializeTrail()
     {
         holdExtensions = new List<HoldExtension>();
-        HoldNoteV1 holdNote = GetComponent<NoteObject>().note
-            as HoldNoteV1;
+        HoldNote holdNote = GetComponent<NoteObject>().note
+            as HoldNote;
 
         GetComponent<HoldTrailManager>().Initialize(
             scanRef, scanlineRef, holdNote);
@@ -466,8 +466,8 @@ public class NoteAppearance : MonoBehaviour,
 
     public void InitializeCurve()
     {
-        DragNoteV1 dragNote = GetComponent<NoteObject>().note
-            as DragNoteV1;
+        DragNote dragNote = GetComponent<NoteObject>().note
+            as DragNote;
         pointsOnCurve = new ListView<Vector2>();
 
         Vector2 headPosition = GetComponent<RectTransform>()
