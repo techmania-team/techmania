@@ -12,6 +12,32 @@ public class TrackSetupPanel : MonoBehaviour
     public ConfirmDialog confirmDialog;
     public Tabs tabs;
 
+    #region Filename caching
+    private List<string> audioFilesCache;
+    private List<string> imageFilesCache;
+    private List<string> videoFilesCache;
+
+    private void RefreshFilenameCaches()
+    {
+        audioFilesCache = Paths.GetAllAudioFiles(
+            EditorContext.trackFolder);
+        imageFilesCache = Paths.GetAllImageFiles(
+            EditorContext.trackFolder);
+        videoFilesCache = Paths.GetAllVideoFiles(
+            EditorContext.trackFolder);
+    }
+
+    private void RefreshFilenameCachesIfNull()
+    {
+        if (audioFilesCache == null ||
+            imageFilesCache == null ||
+            videoFilesCache == null)
+        {
+            RefreshFilenameCaches();
+        }
+    }
+    #endregion
+
     #region Refreshing
     private void OnEnable()
     {
@@ -155,13 +181,13 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void RefreshResourcesTab()
     {
-        string trackFolder = EditorContext.trackFolder;
+        RefreshFilenameCaches();
         audioFilesDisplay.text = CondenseFileList(
-            Paths.GetAllAudioFiles(trackFolder));
+            audioFilesCache);
         imageFilesDisplay.text = CondenseFileList(
-            Paths.GetAllImageFiles(trackFolder));
+            imageFilesCache);
         videoFilesDisplay.text = CondenseFileList(
-            Paths.GetAllVideoFiles(trackFolder));
+            videoFilesCache);
     }
     #endregion
 
@@ -178,19 +204,10 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField endTime;
     public PreviewTrackPlayer previewTrackPlayer;
 
-    private List<string> audioFilesCache;
-    private List<string> imageFilesCache;
-    private List<string> videoFilesCache;
-
     public void RefreshMetadataTab()
     {
         TrackMetadata metadata = EditorContext.track.trackMetadata;
-        audioFilesCache = Paths.GetAllAudioFiles(
-            EditorContext.trackFolder);
-        imageFilesCache = Paths.GetAllImageFiles(
-            EditorContext.trackFolder);
-        videoFilesCache = Paths.GetAllVideoFiles(
-            EditorContext.trackFolder);
+        RefreshFilenameCachesIfNull();
 
         trackTitle.SetTextWithoutNotify(metadata.title);
         artist.SetTextWithoutNotify(metadata.artist);
@@ -315,7 +332,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     private void RefreshPatternsTab()
     {
-        audioFilesCache = Paths.GetAllAudioFiles(EditorContext.trackFolder);
+        RefreshFilenameCachesIfNull();
         if (selectedPattern != null)
         {
             selectedPattern = EditorContext.track.FindPatternByGuid(
