@@ -632,5 +632,10 @@ public class PackedDragNote
 {
     public string packedNote;
     public List<string> packedNodes;
+
+    public PackedDragNote()
+    {
+        packedNodes = new List<string>();
+    }
 }
 #endregion
