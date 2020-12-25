@@ -2309,18 +2309,18 @@ public class PatternPanel : MonoBehaviour
 
         if (clipboard == null)
         {
-            clipboard = new List<NoteWithSound>();
+            clipboard = new List<Note>();
         }
         clipboard.Clear();
         minPulseInClipboard = int.MaxValue;
         foreach (GameObject o in selectedNoteObjects)
         {
-            NoteWithSound n = ConvertToNoteWithSound(o);
-            if (n.note.pulse < minPulseInClipboard)
+            Note n = GetNoteFromGameObject(o);
+            if (n.pulse < minPulseInClipboard)
             {
-                minPulseInClipboard = n.note.pulse;
+                minPulseInClipboard = n.pulse;
             }
-            clipboard.Add(n);
+            clipboard.Add(n.Clone());
         }
     }
 
@@ -2336,31 +2336,31 @@ public class PatternPanel : MonoBehaviour
         // Can we paste here?
         bool pastable = true;
         string invalidReason = "";
-        foreach (NoteWithSound n in clipboard)
+        foreach (Note n in clipboard)
         {
-            int newPulse = n.note.pulse + deltaPulse;
-            switch (n.note.type)
+            int newPulse = n.pulse + deltaPulse;
+            switch (n.type)
             {
                 case NoteType.Basic:
                 case NoteType.ChainHead:
                 case NoteType.ChainNode:
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
-                    pastable = CanAddNote(n.note.type, newPulse,
-                        n.note.lane, out invalidReason);
+                    pastable = CanAddNote(n.type, newPulse,
+                        n.lane, out invalidReason);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
-                    pastable = CanAddHoldNote(n.note.type,
-                        newPulse, n.note.lane,
-                        (n.note as HoldNote).duration,
+                    pastable = CanAddHoldNote(n.type,
+                        newPulse, n.lane,
+                        (n as HoldNote).duration,
                         ignoredExistingNotes: null,
                         out invalidReason);
                     break;
                 case NoteType.Drag:
-                    pastable = CanAddDragNote(newPulse, n.note.lane,
-                        (n.note as DragNote).nodes,
+                    pastable = CanAddDragNote(newPulse, n.lane,
+                        (n as DragNote).nodes,
                         ignoredExistingNotes: null,
                         out invalidReason);
                     break;
@@ -2374,29 +2374,29 @@ public class PatternPanel : MonoBehaviour
 
         // Paste.
         EditorContext.PrepareForChange();
-        foreach (NoteWithSound n in clipboard)
+        foreach (Note n in clipboard)
         {
-            int newPulse = n.note.pulse + deltaPulse;
-            switch (n.note.type)
+            int newPulse = n.pulse + deltaPulse;
+            switch (n.type)
             {
                 case NoteType.Basic:
                 case NoteType.ChainHead:
                 case NoteType.ChainNode:
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
-                    AddNote(n.note.type, newPulse,
-                        n.note.lane, n.sound);
+                    AddNote(n.type, newPulse,
+                        n.lane, n.sound);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
-                    AddHoldNote(n.note.type, newPulse,
-                        n.note.lane, (n.note as HoldNote).duration,
+                    AddHoldNote(n.type, newPulse,
+                        n.lane, (n as HoldNote).duration,
                         n.sound);
                     break;
                 case NoteType.Drag:
-                    AddDragNote(newPulse, n.note.lane,
-                        (n.note as DragNote).nodes,
+                    AddDragNote(newPulse, n.lane,
+                        (n as DragNote).nodes,
                         n.sound);
                     break;
             }
@@ -2442,7 +2442,7 @@ public class PatternPanel : MonoBehaviour
     //
     // This data structure is only used for playback, so it's not
     // defined in the Internal Data Structures region.
-    private List<Queue<NoteWithSound>> notesInLanes;
+    private List<Queue<Note>> notesInLanes;
 
     private void OnResourceLoadComplete(string error)
     {
@@ -2493,20 +2493,16 @@ public class PatternPanel : MonoBehaviour
         // Use MaxTotalLanes instead of TotalLanes, so that, for
         // example, when user sets hidden lanes to 4, lanes
         // 8~11 are still played.
-        notesInLanes = new List<Queue<NoteWithSound>>();
+        notesInLanes = new List<Queue<Note>>();
         for (int i = 0; i < MaxTotalLanes; i++)
         {
-            notesInLanes.Add(new Queue<NoteWithSound>());
+            notesInLanes.Add(new Queue<Note>());
         }
-        for (int pulse = (int)playbackStartingPulse;
-            pulse <= sortedNoteObjects.GetMaxPulse();
-            pulse++)
+        foreach (Note n in EditorContext.Pattern.GetViewBetween(
+            (int)playbackStartingPulse,
+            int.MaxValue))
         {
-            foreach (GameObject o in sortedNoteObjects.GetAt(pulse))
-            {
-                NoteObject n = o.GetComponent<NoteObject>();
-                notesInLanes[n.note.lane].Enqueue(ConvertToNoteWithSound(o));
-            }
+            notesInLanes[n.lane].Enqueue(n);
         }
 
         systemTimeOnPlaybackStart = DateTime.Now;
@@ -2533,9 +2529,12 @@ public class PatternPanel : MonoBehaviour
     public void UpdatePlayback()
     {
         // Calculate time.
-        float elapsedTime = (float)(DateTime.Now - systemTimeOnPlaybackStart).TotalSeconds;
-        float playbackCurrentTime = playbackStartingTime + elapsedTime;
-        float playbackCurrentPulse = EditorContext.Pattern.TimeToPulse(playbackCurrentTime);
+        float elapsedTime = (float)(DateTime.Now - 
+            systemTimeOnPlaybackStart).TotalSeconds;
+        float playbackCurrentTime = playbackStartingTime + 
+            elapsedTime;
+        float playbackCurrentPulse = EditorContext.Pattern
+            .TimeToPulse(playbackCurrentTime);
 
         // Start playing backing track if applicable.
         if (!backingTrackPlaying &&
@@ -2550,25 +2549,27 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Stop playback after the last scan.
-        int totalPulses = numScans * EditorContext.Pattern.patternMetadata.bps * Pattern.pulsesPerBeat;
+        int totalPulses = numScans * 
+            EditorContext.Pattern.patternMetadata.bps * 
+            Pattern.pulsesPerBeat;
         if (playbackCurrentPulse > totalPulses)
         {
             StopPlayback();
             return;
         }
 
-        // Debug.Log($"frame: {Time.frameCount} time: {time} timeFromSamples: {timeFromSamples} systemTime: {systemTime} unityTime: {unityTime} pulse: {pulse}");
-
         // Play keysounds if it's their time.
         for (int i = 0; i < notesInLanes.Count; i++)
         {
             if (notesInLanes[i].Count == 0) continue;
-            NoteWithSound nextNote = notesInLanes[i].Peek();
-            if (playbackCurrentTime >= nextNote.note.time)
+            Note nextNote = notesInLanes[i].Peek();
+            if (playbackCurrentTime >= nextNote.time)
             {
-                AudioClip clip = ResourceLoader.GetCachedClip(nextNote.sound);
+                AudioClip clip = ResourceLoader.GetCachedClip(
+                    nextNote.sound);
                 AudioSource source = keysoundSources[i];
-                float startTime = playbackCurrentTime - nextNote.note.time;
+                float startTime = playbackCurrentTime - 
+                    nextNote.time;
                 PlaySound(source, clip, startTime);
 
                 notesInLanes[i].Dequeue();
@@ -2582,11 +2583,13 @@ public class PatternPanel : MonoBehaviour
         RefreshScanlinePositionSlider();
     }
 
-    private void PlaySound(AudioSource source, AudioClip clip, float startTime)
+    private void PlaySound(AudioSource source, AudioClip clip,
+        float startTime)
     {
         if (clip == null) return;
 
-        int startSample = Mathf.FloorToInt(startTime * clip.frequency);
+        int startSample = Mathf.FloorToInt(
+            startTime * clip.frequency);
         source.clip = clip;
         source.timeSamples = Mathf.Min(clip.samples, startSample);
         source.Play();
