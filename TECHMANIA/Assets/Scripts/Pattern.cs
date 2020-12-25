@@ -39,6 +39,29 @@ public partial class Pattern
         });
     }
 
+    // Returns all notes whose pulse and lane are both between
+    // first and last, inclusive.
+    public List<Note> GetRangeBetween(Note first, Note last)
+    {
+        List<Note> range = new List<Note>();
+        int minPulse = first.pulse < last.pulse ?
+            first.pulse : last.pulse;
+        int maxPulse = first.pulse + last.pulse - minPulse;
+        int minLane = first.lane < last.lane ?
+            first.lane : last.lane;
+        int maxLane = first.lane + last.lane - minLane;
+
+        foreach (Note candidate in GetViewBetween(minPulse, maxPulse))
+        {
+            if (candidate.lane >= minLane &&
+                candidate.lane <= maxLane)
+            {
+                range.Add(candidate);
+            }
+        }
+        return range;
+    }
+
     // Of all the notes that are:
     // - before n in time (exclusive)
     // - of one of the specified types (any type if types is null)

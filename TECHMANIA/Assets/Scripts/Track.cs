@@ -30,6 +30,8 @@ public class TrackBase
 #if UNITY_2019
         return UnityEngine.JsonUtility.ToJson(this,
             prettyPrint: true);
+        // TODO: if the serialized file is still too large, we can
+        // go through it line by line and reduce spaces.
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             typeof(Track),

@@ -463,8 +463,8 @@ public class PatternPanel : MonoBehaviour
             }
             // At this point lastSelectedNoteObjectWithoutShift
             // might still be null.
-            SortedSet<Note> range = EditorContext.Pattern.notes
-                .GetViewBetween(
+            List<Note> range = EditorContext.Pattern
+                .GetRangeBetween(
                 lastSelectedNoteWithoutShift,
                 clickedNote);
             if (ctrl)
