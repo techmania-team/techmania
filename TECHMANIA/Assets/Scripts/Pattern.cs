@@ -24,6 +24,10 @@ public partial class Pattern
     public SortedSet<Note> GetViewBetween(int minPulseInclusive,
         int maxPulseInclusive)
     {
+        if (minPulseInclusive > maxPulseInclusive)
+        {
+            return new SortedSet<Note>();
+        }
         return notes.GetViewBetween(new Note()
         {
             pulse = minPulseInclusive,
