@@ -78,6 +78,12 @@ public class PatternPanel : MonoBehaviour
     {
         return o.GetComponent<NoteObject>().note;
     }
+    
+    private GameObject GetGameObjectFromNote(Note n)
+    {
+        return noteToNoteObject[n].gameObject;
+    }
+
     // Clipboard stores notes instead of GameObjects,
     // so we are free of Unity stuff such as MonoBehaviors and
     // Instantiating.
@@ -467,7 +473,7 @@ public class PatternPanel : MonoBehaviour
                 foreach (Note oInRange in range)
                 {
                     selectedNoteObjects.Add(
-                        noteToNoteObject[oInRange].gameObject);
+                        GetGameObjectFromNote(oInRange));
                 }
             }
             else  // !ctrl
@@ -477,7 +483,7 @@ public class PatternPanel : MonoBehaviour
                 foreach (Note oInRange in range)
                 {
                     selectedNoteObjects.Add(
-                        noteToNoteObject[oInRange].gameObject);
+                        GetGameObjectFromNote(oInRange));
                 }
             }
         }
@@ -1444,16 +1450,10 @@ public class PatternPanel : MonoBehaviour
         // Look at all hold and drag notes in the last few scans
         // in case their duration outlasts the currently considered
         // last scan.
-        foreach (GameObject o in sortedNoteObjects
-            .GetAllNotesOfTypeInRange(new HashSet<NoteType>()
-                { NoteType.Hold,
-                NoteType.RepeatHeadHold,
-                NoteType.RepeatHold,
-                NoteType.Drag },
+        foreach (Note n in EditorContext.Pattern.GetViewBetween(
             minPulseInclusive: lastPulse - pulsesPerScan * 2,
             maxPulseInclusive: lastPulse))
         {
-            Note n = o.GetComponent<NoteObject>().note;
             int endingPulse;
             if (n is HoldNote)
             {
@@ -1520,7 +1520,8 @@ public class PatternPanel : MonoBehaviour
     {
         for (int i = 0; i < markerContainer.childCount; i++)
         {
-            GameObject child = markerContainer.GetChild(i).gameObject;
+            GameObject child = markerContainer.GetChild(i)
+                .gameObject;
             if (child == scanMarkerTemplate) continue;
             if (child == beatMarkerTemplate) continue;
             if (child == bpmMarkerTemplate) continue;
@@ -1529,42 +1530,51 @@ public class PatternPanel : MonoBehaviour
 
         EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        // Value in KeyValuePairs is priority: 1 for BPM events, 0 for others.
+        // Value in KeyValuePairs is priority: 1 for BPM events,
+        // 0 for others.
         List<KeyValuePair<Transform, MarkerPriority>> allMarkers =
             new List<KeyValuePair<Transform, MarkerPriority>>();
         for (int scan = 0; scan < numScans; scan++)
         {
-            GameObject marker = Instantiate(scanMarkerTemplate, markerContainer);
+            GameObject marker = Instantiate(
+                scanMarkerTemplate, markerContainer);
             marker.SetActive(true);  // This calls OnEnabled
             Marker m = marker.GetComponent<Marker>();
             m.pulse = scan * bps * Pattern.pulsesPerBeat;
             m.SetTimeDisplay();
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-            allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
+            allMarkers.Add(new KeyValuePair<
+                Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Other));
 
             for (int beat = 1; beat < bps; beat++)
             {
-                marker = Instantiate(beatMarkerTemplate, markerContainer);
+                marker = Instantiate(
+                    beatMarkerTemplate, markerContainer);
                 marker.SetActive(true);
                 m = marker.GetComponent<Marker>();
-                m.pulse = (scan * bps + beat) * Pattern.pulsesPerBeat;
+                m.pulse = (scan * bps + beat) * 
+                    Pattern.pulsesPerBeat;
                 m.SetTimeDisplay();
-                m.GetComponent<SelfPositionerInEditor>().Reposition();
-                allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
-                marker.transform, MarkerPriority.Other));
+                m.GetComponent<SelfPositionerInEditor>()
+                    .Reposition();
+                allMarkers.Add(new KeyValuePair<
+                    Transform, MarkerPriority>(
+                    marker.transform, MarkerPriority.Other));
             }
         }
 
         foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
         {
-            GameObject marker = Instantiate(bpmMarkerTemplate, markerContainer);
+            GameObject marker = Instantiate(
+                bpmMarkerTemplate, markerContainer);
             marker.SetActive(true);
             Marker m = marker.GetComponent<Marker>();
             m.pulse = e.pulse;
             m.SetBpmText(e.bpm);
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-            allMarkers.Add(new KeyValuePair<Transform, MarkerPriority>(
+            allMarkers.Add(new KeyValuePair<
+                Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Bpm));
         }
 
@@ -1576,7 +1586,8 @@ public class PatternPanel : MonoBehaviour
             float deltaX = p1.Key.position.x - p2.Key.position.x;
             if (deltaX < 0) return -1;
             if (deltaX > 0) return 1;
-            // At the same position, BPM markers should be drawn later.
+            // At the same position, BPM markers should be
+            // drawn later.
             if (p1.Value == MarkerPriority.Bpm) return 1;
             if (p2.Value == MarkerPriority.Bpm) return -1;
             return 0;
@@ -1586,15 +1597,17 @@ public class PatternPanel : MonoBehaviour
             allMarkers[i].Key.SetSiblingIndex(i);
         }
 
-        foreach (KeyValuePair<Transform, MarkerPriority> pair in allMarkers)
+        foreach (KeyValuePair<Transform, MarkerPriority> pair
+            in allMarkers)
         {
-            SelfPositionerInEditor positioner = pair.Key.GetComponent<SelfPositionerInEditor>();
+            SelfPositionerInEditor positioner = pair.Key
+                .GetComponent<SelfPositionerInEditor>();
             positioner.Reposition();
         }
     }
 
     // This will call Reposition on the new object.
-    private GameObject SpawnNoteObject(Note n, string sound)
+    private GameObject SpawnNoteObject(Note n)
     {
         GameObject prefab = null;
         switch (n.type)
@@ -1635,14 +1648,15 @@ public class PatternPanel : MonoBehaviour
         NoteObject noteObject = Instantiate(prefab,
             noteContainer).GetComponent<NoteObject>();
         noteObject.note = n;
-        noteObject.sound = sound;
-        NoteInEditor noteInEditor = noteObject.GetComponent<NoteInEditor>();
+        NoteInEditor noteInEditor = noteObject
+            .GetComponent<NoteInEditor>();
         noteInEditor.SetKeysoundText();
         noteInEditor.SetKeysoundVisibility(showKeysoundToggle.isOn);
         if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
-        noteObject.GetComponent<SelfPositionerInEditor>().Reposition();
+        noteObject.GetComponent<SelfPositionerInEditor>()
+            .Reposition();
 
-        sortedNoteObjects.Add(noteObject.gameObject);
+        noteToNoteObject.Add(n, noteObject);
 
         // Binary search the appropriate sibling index of
         // new note, so all notes are drawn from right to left.
@@ -1672,7 +1686,8 @@ public class PatternPanel : MonoBehaviour
             }
             // Now we know for sure that lastX < targetX < firstX.
             int middle = (first + last) / 2;
-            float middleX = noteContainer.GetChild(middle).position.x;
+            float middleX = noteContainer.GetChild(middle)
+                .position.x;
             if (middleX == targetX)
             {
                 noteObject.transform.SetSiblingIndex(middle);
@@ -1697,29 +1712,66 @@ public class PatternPanel : MonoBehaviour
         {
             Destroy(noteContainer.GetChild(i).gameObject);
         }
-        sortedNoteObjects = new SortedNoteObjects();
+        noteToNoteObject = new Dictionary<Note, NoteObject>();
         lastSelectedNoteWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
 
-        // For newly created patterns, there's no sound channel yet.
-        EditorContext.Pattern.CreateListsIfNull();
-        foreach (SoundChannel channel in EditorContext.Pattern.soundChannels)
+        foreach (Note n in EditorContext.Pattern.notes)
         {
-            foreach (Note n in channel.notes)
-            {
-                SpawnNoteObject(n, channel.name);
-            }
-            foreach (HoldNote n in channel.holdNotes)
-            {
-                SpawnNoteObject(n, channel.name);
-            }
-            foreach (DragNote n in channel.dragNotes)
-            {
-                SpawnNoteObject(n, channel.name);
-            }
+            SpawnNoteObject(n);
         }
 
         AdjustAllPathsAndTrails();
+    }
+
+    private void GetPreviousAndNextNoteObjects(
+        Note n, HashSet<NoteType> types,
+        int minLaneInclusive, int maxLaneInclusive,
+        out GameObject prev, out GameObject next)
+    {
+        Note prevNote = EditorContext.Pattern
+            .GetClosestNoteBefore(n.pulse, types,
+            minLaneInclusive,
+            maxLaneInclusive);
+        Note nextNote = EditorContext.Pattern
+            .GetClosestNoteAfter(n.pulse, types,
+            minLaneInclusive,
+            maxLaneInclusive);
+        prev = null;
+        if (prevNote != null)
+        {
+            prev = GetGameObjectFromNote(prevNote);
+        }
+        next = null;
+        if (nextNote != null)
+        {
+            next = GetGameObjectFromNote(nextNote);
+        }
+    }
+
+    private void GetPreviousAndNextChainNotes(Note n,
+        out GameObject prev, out GameObject next)
+    {
+        GetPreviousAndNextNoteObjects(n,
+            new HashSet<NoteType>()
+                { NoteType.ChainHead, NoteType.ChainNode },
+            minLaneInclusive: 0,
+            maxLaneInclusive: PlayableLanes - 1,
+            out prev, out next);
+    }
+
+    private void GetPreviousAndNextRepeatNotes(Note n,
+        out GameObject prev, out GameObject next)
+    {
+        GetPreviousAndNextNoteObjects(n,
+            new HashSet<NoteType>()
+                { NoteType.RepeatHead,
+                NoteType.RepeatHeadHold,
+                NoteType.Repeat,
+                NoteType.RepeatHold},
+            minLaneInclusive: n.lane,
+            maxLaneInclusive: n.lane,
+            out prev, out next);
     }
 
     // This may modify o, the same-type note before o, and/or
@@ -1733,21 +1785,21 @@ public class PatternPanel : MonoBehaviour
         {
             if (n.note.lane >= 0 && n.note.lane < PlayableLanes)
             {
-                HashSet<NoteType> types = new HashSet<NoteType>()
-                        { NoteType.ChainHead, NoteType.ChainNode };
-                GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                    o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
-                GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                    o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                GameObject prev, next;
+                GetPreviousAndNextChainNotes(n.note,
+                    out prev, out next);
 
                 if (n.note.type == NoteType.ChainNode)
                 {
-                    o.GetComponent<NoteInEditor>().PointPathToward(prev);
+                    o.GetComponent<NoteInEditor>()
+                        .PointPathToward(prev);
                 }
                 if (next != null &&
-                    next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
+                    next.GetComponent<NoteObject>().note.type
+                    == NoteType.ChainNode)
                 {
-                    next.GetComponent<NoteInEditor>().PointPathToward(o);
+                    next.GetComponent<NoteInEditor>()
+                        .PointPathToward(o);
                 }
             }
         }
@@ -1759,29 +1811,26 @@ public class PatternPanel : MonoBehaviour
         {
             if (n.note.lane >= 0 && n.note.lane < PlayableLanes)
             {
-                HashSet<NoteType> types = new HashSet<NoteType>()
-                    { NoteType.RepeatHead,
-                    NoteType.RepeatHeadHold,
-                    NoteType.Repeat,
-                    NoteType.RepeatHold};
-                GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                    o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
-                GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                    o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+                GameObject prev, next;
+                GetPreviousAndNextRepeatNotes(n.note,
+                    out prev, out next);
 
                 if (n.note.type == NoteType.Repeat ||
                     n.note.type == NoteType.RepeatHold)
                 {
-                    o.GetComponent<NoteInEditor>().PointPathToward(prev);
+                    o.GetComponent<NoteInEditor>()
+                        .PointPathToward(prev);
                 }
                 
                 if (next != null)
                 {
-                    NoteType nextType = next.GetComponent<NoteObject>().note.type;
+                    NoteType nextType = next
+                        .GetComponent<NoteObject>().note.type;
                     if (nextType == NoteType.Repeat ||
                         nextType == NoteType.RepeatHold)
                     {
-                        next.GetComponent<NoteInEditor>().PointPathToward(o);
+                        next.GetComponent<NoteInEditor>()
+                            .PointPathToward(o);
                     }
                 }
             }
@@ -1813,21 +1862,20 @@ public class PatternPanel : MonoBehaviour
             case NoteType.ChainHead:
             case NoteType.ChainNode:
                 {
-                    HashSet<NoteType> types = new HashSet<NoteType>()
-                        { NoteType.ChainHead, NoteType.ChainNode };
-                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
-                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                        o, types, minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
+                    GameObject prev, next;
+                    GetPreviousAndNextChainNotes(n.note,
+                        out prev, out next);
 
                     if (next != null &&
-                        next.GetComponent<NoteObject>().note.type == NoteType.ChainNode)
+                        next.GetComponent<NoteObject>().note.type
+                        == NoteType.ChainNode)
                     {
                         next.GetComponent<NoteInEditor>()
                             .PointPathToward(prev);
                     }
                     else if (prev != null &&
-                        prev.GetComponent<NoteObject>().note.type == NoteType.ChainHead)
+                        prev.GetComponent<NoteObject>().note.type
+                        == NoteType.ChainHead)
                     {
                         prev.GetComponent<NoteInEditor>()
                             .ResetNoteImageRotation();
@@ -1839,19 +1887,14 @@ public class PatternPanel : MonoBehaviour
             case NoteType.Repeat:
             case NoteType.RepeatHold:
                 {
-                    HashSet<NoteType> types = new HashSet<NoteType>()
-                        { NoteType.RepeatHead,
-                        NoteType.RepeatHeadHold,
-                        NoteType.Repeat,
-                        NoteType.RepeatHold};
-                    GameObject prev = sortedNoteObjects.GetClosestNoteBefore(
-                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
-                    GameObject next = sortedNoteObjects.GetClosestNoteAfter(
-                        o, types, minLaneInclusive: n.note.lane, maxLaneInclusive: n.note.lane);
+                    GameObject prev, next;
+                    GetPreviousAndNextRepeatNotes(n.note,
+                        out prev, out next);
 
                     if (next != null)
                     {
-                        NoteType nextType = next.GetComponent<NoteObject>().note.type;
+                        NoteType nextType = next
+                            .GetComponent<NoteObject>().note.type;
                         if (nextType == NoteType.Repeat ||
                             nextType == NoteType.RepeatHold)
                         {
@@ -1868,66 +1911,57 @@ public class PatternPanel : MonoBehaviour
 
     private void AdjustAllPathsAndTrails()
     {
-        // Adjust the paths of chain nodes.
-        List<GameObject> chainHeadsAndNodes = sortedNoteObjects.
-            GetAllNotesOfType(new HashSet<NoteType>()
-            { NoteType.ChainHead, NoteType.ChainNode},
-            minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
         GameObject previousChain = null;
-        foreach (GameObject o in chainHeadsAndNodes)
-        {
-            NoteObject n = o.GetComponent<NoteObject>();
-            if (n.note.type == NoteType.ChainNode)
-            {
-                n.GetComponent<NoteInEditor>().PointPathToward(previousChain);
-            }
-            previousChain = o;
-        }
-
-        // Adjust the paths of repeat notes.
-        List<GameObject> repeatHeadsAndNotes = sortedNoteObjects.
-            GetAllNotesOfType(new HashSet<NoteType>()
-                { NoteType.RepeatHead,
-                NoteType.Repeat,
-                NoteType.RepeatHeadHold,
-                NoteType.RepeatHold},
-            minLaneInclusive: 0, maxLaneInclusive: PlayableLanes - 1);
         List<GameObject> previousRepeat = new List<GameObject>();
-        for (int i = 0; i < PlayableLanes; i++) previousRepeat.Add(null);
-        foreach (GameObject o in repeatHeadsAndNotes)
+        for (int i = 0; i < PlayableLanes; i++)
         {
-            NoteObject n = o.GetComponent<NoteObject>();
-            if (n.note.type == NoteType.Repeat ||
-                n.note.type == NoteType.RepeatHold)
+            previousRepeat.Add(null);
+        }
+
+        foreach (Note n in EditorContext.Pattern.notes)
+        {
+            GameObject o = GetGameObjectFromNote(n);
+            if (n.type == NoteType.ChainHead ||
+                n.type == NoteType.ChainNode)
             {
-                n.GetComponent<NoteInEditor>().PointPathToward(
-                    previousRepeat[n.note.lane]);
+                // Adjust the paths of chain nodes.
+                if (n.lane >= PlayableLanes) continue;
+                if (n.type == NoteType.ChainNode)
+                {
+                    o.GetComponent<NoteInEditor>()
+                        .PointPathToward(previousChain);
+                }
+                previousChain = o;
             }
-            previousRepeat[n.note.lane] = o;
-        }
-
-        // Adjust the trails of hold notes.
-        List<GameObject> holdNotes = sortedNoteObjects.
-            GetAllNotesOfType(new HashSet<NoteType>()
-            { NoteType.Hold, NoteType.RepeatHeadHold, NoteType.RepeatHold},
-            minLaneInclusive: 0,
-            maxLaneInclusive: TotalLanes - 1);
-        foreach (GameObject o in holdNotes)
-        {
-            o.GetComponent<NoteInEditor>().ResetTrail();
-        }
-
-        // Draw curves of drag notes.
-        List<GameObject> dragNotes = sortedNoteObjects.
-            GetAllNotesOfType(new HashSet<NoteType>()
-            { NoteType.Drag },
-            minLaneInclusive: 0,
-            maxLaneInclusive: TotalLanes - 1);
-        foreach (GameObject o in dragNotes)
-        {
-            o.GetComponent<NoteInEditor>().ResetCurve();
-            o.GetComponent<NoteInEditor>()
-                .ResetAllAnchorsAndControlPoints();
+            if (n.type == NoteType.RepeatHead ||
+                n.type == NoteType.Repeat ||
+                n.type == NoteType.RepeatHeadHold ||
+                n.type == NoteType.RepeatHold)
+            {
+                // Adjust the paths of repeat notes.
+                if (n.lane >= PlayableLanes) continue;
+                if (n.type == NoteType.Repeat ||
+                    n.type == NoteType.RepeatHold)
+                {
+                    o.GetComponent<NoteInEditor>()
+                        .PointPathToward(previousRepeat[n.lane]);
+                }
+                previousRepeat[n.lane] = o;
+            }
+            if (n.type == NoteType.Hold ||
+                n.type == NoteType.RepeatHeadHold ||
+                n.type == NoteType.RepeatHold)
+            {
+                // Adjust the trails of hold notes.
+                o.GetComponent<NoteInEditor>().ResetTrail();
+            }
+            if (n.type == NoteType.Drag)
+            {
+                // Draw curves of drag notes.
+                o.GetComponent<NoteInEditor>().ResetCurve();
+                o.GetComponent<NoteInEditor>()
+                    .ResetAllAnchorsAndControlPoints();
+            }
         }
     }
     #endregion
@@ -1966,9 +2000,11 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Overlap check.
-        GameObject noteAtSamePulseAndLane = sortedNoteObjects.GetAt(pulse, lane);
+        Note noteAtSamePulseAndLane = EditorContext.Pattern
+            .GetNoteAt(pulse, lane);
         if (noteAtSamePulseAndLane != null &&
-            !ignoredExistingNotes.Contains(noteAtSamePulseAndLane))
+            !ignoredExistingNotes.Contains(
+                GetGameObjectFromNote(noteAtSamePulseAndLane)))
         {
             reason = "Cannot place notes on top of an existing note.";
             return false;
@@ -1977,15 +2013,17 @@ public class PatternPanel : MonoBehaviour
         // Chain check.
         if (type == NoteType.ChainHead || type == NoteType.ChainNode)
         {
-            foreach (GameObject noteAtPulse in sortedNoteObjects.GetAt(pulse))
+            foreach (Note noteAtPulse in EditorContext.Pattern
+                .GetViewBetween(pulse, pulse))
             {
-                if (ignoredExistingNotes.Contains(noteAtPulse))
+                if (ignoredExistingNotes.Contains(
+                    GetGameObjectFromNote(noteAtPulse)))
                 {
                     continue;
                 }
-                NoteObject noteObject = noteAtPulse.GetComponent<NoteObject>();
-                if (noteObject.note.type == NoteType.ChainHead ||
-                    noteObject.note.type == NoteType.ChainNode)
+                
+                if (noteAtPulse.type == NoteType.ChainHead ||
+                    noteAtPulse.type == NoteType.ChainNode)
                 {
                     reason = "No two Chain Notes may occupy the same timepoint.";
                     return false;
@@ -1994,16 +2032,19 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Hold check.
-        GameObject holdNoteBeforePivot = sortedNoteObjects.GetClosestNoteBefore(pulse,
+        Note holdNoteBeforePivot =
+            EditorContext.Pattern.GetClosestNoteBefore(pulse,
             new HashSet<NoteType>()
             {
                 NoteType.Hold,
                 NoteType.RepeatHeadHold,
                 NoteType.RepeatHold
             }, minLaneInclusive: lane, maxLaneInclusive: lane);
-        if (holdNoteBeforePivot != null && !ignoredExistingNotes.Contains(holdNoteBeforePivot))
+        if (holdNoteBeforePivot != null &&
+            !ignoredExistingNotes.Contains(
+                GetGameObjectFromNote(holdNoteBeforePivot)))
         {
-            HoldNote holdNote = holdNoteBeforePivot.GetComponent<NoteObject>().note as HoldNote;
+            HoldNote holdNote = holdNoteBeforePivot as HoldNote;
             if (holdNote.pulse + holdNote.duration >= pulse)
             {
                 reason = "Notes cannot be covered by Hold Notes.";
@@ -2077,14 +2118,16 @@ public class PatternPanel : MonoBehaviour
             ignoredExistingNotes = new HashSet<GameObject>();
         }
 
-        GameObject noteAfterPivot = sortedNoteObjects.GetClosestNoteAfter(
+        Note noteAfterPivot = EditorContext.Pattern
+            .GetClosestNoteAfter(
             pulse, types: null,
             minLaneInclusive: lane,
             maxLaneInclusive: lane);
         if (noteAfterPivot != null &&
-            !ignoredExistingNotes.Contains(noteAfterPivot))
+            !ignoredExistingNotes.Contains(
+                GetGameObjectFromNote(noteAfterPivot)))
         {
-            if (pulse + duration >= noteAfterPivot.GetComponent<NoteObject>().note.pulse)
+            if (pulse + duration >= noteAfterPivot.pulse)
             {
                 return true;
             }
@@ -2108,11 +2151,12 @@ public class PatternPanel : MonoBehaviour
         {
             int anchorPulse = pulse + nodes[i].anchor.pulse;
             int anchorLane = lane + nodes[i].anchor.lane;
-            GameObject existingNote = sortedNoteObjects.GetAt(
+            Note existingNote = EditorContext.Pattern.GetNoteAt(
                 anchorPulse, anchorLane);
 
             if (existingNote != null &&
-                !ignoredExistingNotes.Contains(existingNote))
+                !ignoredExistingNotes.Contains(
+                    GetGameObjectFromNote(existingNote)))
             {
                 return true;
             }
@@ -2123,13 +2167,14 @@ public class PatternPanel : MonoBehaviour
 
     private int HoldNoteDefaultDuration(int pulse, int lane)
     {
-        GameObject noteAfterPivot = sortedNoteObjects.GetClosestNoteAfter(
-            pulse, types: null,
-            minLaneInclusive: lane,
-            maxLaneInclusive: lane);
+        Note noteAfterPivot = EditorContext.Pattern
+            .GetClosestNoteAfter(
+                pulse, types: null,
+                minLaneInclusive: lane,
+                maxLaneInclusive: lane);
         if (noteAfterPivot != null)
         {
-            int nextPulse = noteAfterPivot.GetComponent<NoteObject>().note.pulse;
+            int nextPulse = noteAfterPivot.pulse;
             if (nextPulse - pulse <= Pattern.pulsesPerBeat)
             {
                 return nextPulse - pulse - 1;
@@ -2138,13 +2183,14 @@ public class PatternPanel : MonoBehaviour
         return Pattern.pulsesPerBeat;
     }
 
-    private GameObject FinishAddNote(Note n, string sound)
+    private GameObject FinishAddNote(Note n)
     {
         // Add to pattern.
-        EditorContext.Pattern.AddNote(n, sound);
+        EditorContext.Pattern.notes.Add(n);
 
-        // Add to UI.
-        GameObject newNote = SpawnNoteObject(n, sound);
+        // Add to UI. SpawnNoteObject will add n to
+        // noteToNoteObject.
+        GameObject newNote = SpawnNoteObject(n);
         AdjustPathOrTrailAround(newNote);
         UpdateNumScansAndRelatedUI();
         return newNote;
@@ -2157,12 +2203,14 @@ public class PatternPanel : MonoBehaviour
         {
             type = type,
             pulse = pulse,
-            lane = lane
+            lane = lane,
+            sound = sound
         };
-        return FinishAddNote(n, sound);
+        return FinishAddNote(n);
     }
 
-    private GameObject AddHoldNote(NoteType type, int pulse, int lane,
+    private GameObject AddHoldNote(NoteType type,
+        int pulse, int lane,
         int? duration, string sound)
     {
         if (!duration.HasValue)
@@ -2174,9 +2222,10 @@ public class PatternPanel : MonoBehaviour
             type = type,
             pulse = pulse,
             lane = lane,
+            sound = sound,
             duration = duration.Value
         };
-        return FinishAddNote(n, sound);
+        return FinishAddNote(n);
     }
 
     private GameObject AddDragNote(int pulse, int lane,
@@ -2205,9 +2254,10 @@ public class PatternPanel : MonoBehaviour
             type = NoteType.Drag,
             pulse = pulse,
             lane = lane,
+            sound = sound,
             nodes = nodes
         };
-        return FinishAddNote(n, sound);
+        return FinishAddNote(n);
     }
 
     // Cannot remove o from selectedNoteObjects because the
@@ -2215,13 +2265,13 @@ public class PatternPanel : MonoBehaviour
     private void DeleteNote(GameObject o)
     {
         // Delete from pattern.
-        NoteObject n = o.GetComponent<NoteObject>();
-        EditorContext.Pattern.DeleteNote(n.note, n.sound);
+        Note n = GetNoteFromGameObject(o);
+        EditorContext.Pattern.notes.Remove(n);
 
         // Delete from UI.
         AdjustPathBeforeDeleting(o);
-        sortedNoteObjects.Delete(o);
-        if (lastSelectedNoteWithoutShift == o)
+        noteToNoteObject.Remove(n);
+        if (lastSelectedNoteWithoutShift == n)
         {
             lastSelectedNoteWithoutShift = null;
         }
