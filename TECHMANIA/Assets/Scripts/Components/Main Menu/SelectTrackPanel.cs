@@ -63,6 +63,8 @@ public class SelectTrackPanel : MonoBehaviour
                 trackBase = TrackBase.LoadFromFile(possibleTrackFile);
                 if (!(trackBase is Track))
                 {
+                    // TODO: on game scene, quietly upgrade.
+                    // On editor scene, show a upgrade notice.
                     error = "The track was created in an old version and is no longer supported.";
                 }
             }

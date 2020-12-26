@@ -24,6 +24,7 @@ public class TrackBase
     protected virtual void PrepareToSerialize() { }
     protected virtual void InitAfterDeserialize() { }
 
+    // This should never be called from outside the editor.
     private string Serialize()
     {
         PrepareToSerialize();
@@ -55,7 +56,6 @@ public class TrackBase
                 track = UnityEngine.JsonUtility
                     .FromJson<TrackV1>(json);
                 break;
-                // TODO: attempt to backup, convert, then overwrite.
             case Track.kVersion:
                 track = UnityEngine.JsonUtility
                     .FromJson<Track>(json);
@@ -120,6 +120,15 @@ public class BpmEvent
     public double bpm;
     [NonSerialized]
     public float time;
+
+    public BpmEvent Clone()
+    {
+        return new BpmEvent()
+        {
+            pulse = pulse,
+            bpm = bpm
+        };
+    }
 }
 
 [Serializable]

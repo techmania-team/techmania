@@ -75,6 +75,19 @@ public class TrackV1 : TrackBase
         if (index < 0) return null;
         return patterns[index];
     }
+
+    public Track Upgrade()
+    {
+        Track track = new Track(trackMetadata.title,
+            trackMetadata.artist);
+        trackMetadata.UpgradeTo(track.trackMetadata);
+        foreach (PatternV1 p in patterns)
+        {
+            track.patterns.Add(p.Upgrade(
+                oldTrackMetadata: trackMetadata));
+        }
+        return track;
+    }
 }
 
 [Serializable]
@@ -107,6 +120,20 @@ public class TrackMetadataV1
     public string bga;
     // Play BGA from this time.
     public double bgaOffset;
+
+    public void UpgradeTo(TrackMetadata metadata)
+    {
+        // GUID should persist through upgrades.
+        metadata.guid = guid;
+
+        // Title and artist should be already set.
+        metadata.genre = genre;
+        metadata.additionalCredits = "";
+        metadata.eyecatchImage = eyecatchImage;
+        metadata.previewTrack = previewTrack;
+        metadata.previewStartTime = previewStartTime;
+        metadata.previewEndTime = previewEndTime;
+    }
 }
 
 [Serializable]
@@ -363,6 +390,34 @@ public class PatternV1
         return referenceTime +
             secondsPerPulse * (pulse - referencePulse);
     }
+
+    public Pattern Upgrade(TrackMetadataV1 oldTrackMetadata)
+    {
+        Pattern pattern = new Pattern();
+        patternMetadata.UpgradeTo(pattern.patternMetadata,
+            oldTrackMetadata);
+        foreach (BpmEvent e in bpmEvents)
+        {
+            pattern.bpmEvents.Add(e.Clone());
+        }
+        foreach (SoundChannel channel in soundChannels)
+        {
+            string sound = channel.name;
+            foreach (NoteV1 n in channel.notes)
+            {
+                pattern.notes.Add(n.Upgrade());
+            }
+            foreach (HoldNoteV1 n in channel.holdNotes)
+            {
+                pattern.notes.Add(n.Upgrade());
+            }
+            foreach (DragNoteV1 n in channel.dragNotes)
+            {
+                pattern.notes.Add(n.Upgrade());
+            }
+        }
+        return pattern;
+    }
 }
 
 [Serializable]
@@ -395,6 +450,27 @@ public class PatternMetadataV1
         level = PatternV1.minLevel;
         initBpm = PatternV1.minBpm;
         bps = PatternV1.minBps;
+    }
+
+    public void UpgradeTo(PatternMetadata metadata,
+        TrackMetadataV1 oldTrackMetadata)
+    {
+        metadata.guid = guid;
+
+        metadata.patternName = patternName;
+        metadata.level = level;
+        metadata.controlScheme = controlScheme;
+        metadata.lanes = lanes;
+        metadata.author = author;
+
+        metadata.backingTrack = backingTrack;
+        metadata.backImage = oldTrackMetadata.backImage;
+        metadata.bga = oldTrackMetadata.bga;
+        metadata.bgaOffset = oldTrackMetadata.bgaOffset;
+
+        metadata.firstBeatOffset = firstBeatOffset;
+        metadata.initBpm = initBpm;
+        metadata.bps = bps;
     }
 }
 
@@ -463,12 +539,33 @@ public class NoteV1
             type = type
         };
     }
+
+    public Note Upgrade()
+    {
+        return new Note()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane
+        };
+    }
 }
 
 [Serializable]
 public class HoldNoteV1 : NoteV1
 {
     public int duration;  // in pulses
+
+    public new HoldNote Upgrade()
+    {
+        return new HoldNote()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane,
+            duration = duration
+        };
+    }
 }
 
 [Serializable]
@@ -520,5 +617,20 @@ public class DragNoteV1 : NoteV1
         }
 
         return result;
+    }
+
+    public new DragNote Upgrade()
+    {
+        DragNote newNote = new DragNote()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane
+        };
+        foreach (DragNode node in nodes)
+        {
+            newNote.nodes.Add(node.Clone());
+        }
+        return newNote;
     }
 }
