@@ -30,9 +30,8 @@ public class TrackBase
         PrepareToSerialize();
 #if UNITY_2019
         return UnityEngine.JsonUtility.ToJson(this,
-            prettyPrint: true);
-        // TODO: if the serialized file is still too large, we can
-        // go through it line by line and reduce spaces.
+            prettyPrint: true)
+            .Replace("    ", "\t");
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             typeof(Track),
@@ -433,6 +432,7 @@ public class DragNote : Note
     // describing the note head.
     // controlBefore of the first node and controlAfter
     // of the last node are ignored.
+    [NonSerialized]
     public List<DragNode> nodes;
 
     public DragNote()
@@ -517,6 +517,11 @@ public class NoteComparer : IComparer<Note>
 }
 
 #region Drag note dependencies
+// Version 2 does not serialize the following classes, but
+// serialization is required for the loading of version 1 tracks
+// to complete.
+
+[Serializable]
 public class IntPoint
 {
     public int lane;
@@ -539,6 +544,7 @@ public class IntPoint
     }
 }
 
+[Serializable]
 public class FloatPoint
 {
     public float lane;
@@ -570,6 +576,7 @@ public class FloatPoint
     }
 }
 
+[Serializable]
 public class DragNode
 {
     // Relative to DragNote

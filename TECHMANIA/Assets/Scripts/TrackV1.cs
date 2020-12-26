@@ -405,15 +405,15 @@ public class PatternV1
             string sound = channel.name;
             foreach (NoteV1 n in channel.notes)
             {
-                pattern.notes.Add(n.Upgrade());
+                pattern.notes.Add(n.Upgrade(sound));
             }
             foreach (HoldNoteV1 n in channel.holdNotes)
             {
-                pattern.notes.Add(n.Upgrade());
+                pattern.notes.Add(n.Upgrade(sound));
             }
             foreach (DragNoteV1 n in channel.dragNotes)
             {
-                pattern.notes.Add(n.Upgrade());
+                pattern.notes.Add(n.Upgrade(sound));
             }
         }
         return pattern;
@@ -540,13 +540,14 @@ public class NoteV1
         };
     }
 
-    public Note Upgrade()
+    public Note Upgrade(string sound)
     {
         return new Note()
         {
             type = type,
             pulse = pulse,
-            lane = lane
+            lane = lane,
+            sound = sound
         };
     }
 }
@@ -556,13 +557,14 @@ public class HoldNoteV1 : NoteV1
 {
     public int duration;  // in pulses
 
-    public new HoldNote Upgrade()
+    public new HoldNote Upgrade(string sound)
     {
         return new HoldNote()
         {
             type = type,
             pulse = pulse,
             lane = lane,
+            sound = sound,
             duration = duration
         };
     }
@@ -619,13 +621,14 @@ public class DragNoteV1 : NoteV1
         return result;
     }
 
-    public new DragNote Upgrade()
+    public new DragNote Upgrade(string sound)
     {
         DragNote newNote = new DragNote()
         {
             type = type,
             pulse = pulse,
-            lane = lane
+            lane = lane,
+            sound = sound
         };
         foreach (DragNode node in nodes)
         {

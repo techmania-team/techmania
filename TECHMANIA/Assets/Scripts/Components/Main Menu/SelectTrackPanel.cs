@@ -58,13 +58,18 @@ public class SelectTrackPanel : MonoBehaviour
             // Attempt to load track.
             TrackBase trackBase = null;
             string error = null;
+            bool upgraded = false;
             try
             {
                 trackBase = TrackBase.LoadFromFile(possibleTrackFile);
+                if (trackBase is TrackV1)
+                {
+                    // Attempt upgrade.
+                    trackBase = (trackBase as TrackV1).Upgrade();
+                    upgraded = true;
+                }
                 if (!(trackBase is Track))
                 {
-                    // TODO: on game scene, quietly upgrade.
-                    // On editor scene, show a upgrade notice.
                     error = "The track was created in an old version and is no longer supported.";
                 }
             }
@@ -93,11 +98,24 @@ public class SelectTrackPanel : MonoBehaviour
                     track = track
                 });
 
-                // Bind click event.
-                card.GetComponent<Button>().onClick.AddListener(() =>
+                if (upgraded && ShowUpgradeNoticeOnOutdatedTracks())
                 {
-                    OnClickCard(card);
-                });
+                    // Bind click event.
+                    card.GetComponent<Button>().onClick
+                        .AddListener(() =>
+                    {
+                        OnClickCardWithUpgradeNotice(card);
+                    });
+                }
+                else
+                {
+                    // Bind click event.
+                    card.GetComponent<Button>().onClick
+                        .AddListener(() =>
+                    {
+                        OnClickCard(card);
+                    });
+                }
             }
             else
             {
@@ -153,11 +171,15 @@ public class SelectTrackPanel : MonoBehaviour
         return false;
     }
 
+    protected virtual bool ShowUpgradeNoticeOnOutdatedTracks()
+    {
+        return false;
+    }
+
     protected virtual void OnClickCard(GameObject o)
     {
         GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
-        GameSetup.track = TrackBase.LoadFromFile(
-            GameSetup.trackPath) as Track;
+        GameSetup.track = cardToTrack[o].track;
         selectPatternDialog.Show();
     }
 
@@ -171,5 +193,11 @@ public class SelectTrackPanel : MonoBehaviour
     {
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");
+    }
+
+    protected virtual void OnClickCardWithUpgradeNotice(GameObject o)
+    {
+        throw new NotImplementedException(
+            "SelectTrackPanel in the game scene should not show upgrade notices.");
     }
 }

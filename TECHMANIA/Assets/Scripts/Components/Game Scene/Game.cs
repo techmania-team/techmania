@@ -217,7 +217,7 @@ public class Game : MonoBehaviour
 
         // Step 3: load keysounds, if any.
         keysoundsLoaded = false;
-        ResourceLoader.CacheSoundChannels(GameSetup.trackFolder,
+        ResourceLoader.CacheAllKeysounds(GameSetup.trackFolder,
             GameSetup.pattern,
             OnKeysoundLoadComplete,
             OnKeysoundLoadProgress);
