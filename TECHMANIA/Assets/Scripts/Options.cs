@@ -73,7 +73,7 @@ public class Options : OptionsBase
         vSync = false;
 
         masterVolume = 1f;
-        musicVolume = 1f;
+        musicVolume = 0.8f;
         keysoundVolume = 1f;
         sfxVolume = 1f;
     }
