@@ -826,9 +826,9 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Calculate delta pulse and delta lane.
-        NoteObject noteObject = draggedNoteObject.GetComponent<NoteObject>();
-        int oldPulse = noteObject.note.pulse;
-        int oldLane = noteObject.note.lane;
+        Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
+        int oldPulse = draggedNote.pulse;
+        int oldLane = draggedNote.lane;
         int deltaPulse = noteCursor.note.pulse - oldPulse;
         int deltaLane = noteCursor.note.lane - oldLane;
 
@@ -886,6 +886,9 @@ public class PatternPanel : MonoBehaviour
             EditorContext.PrepareForChange();
             HashSet<GameObject> replacedSelection =
                 new HashSet<GameObject>();
+            // These notes are not the ones added to the pattern.
+            // They are created only to pass information to AddNote
+            // methods.
             List<Note> movedNotes = new List<Note>();
             foreach (GameObject o in selectedNoteObjects)
             {
@@ -930,6 +933,12 @@ public class PatternPanel : MonoBehaviour
                         break;
                 }
                 replacedSelection.Add(o);
+                if (movedNote.pulse == oldPulse + deltaPulse &&
+                    movedNote.lane == oldLane + deltaLane)
+                {
+                    lastSelectedNoteWithoutShift =
+                        GetNoteFromGameObject(o);
+                }
             }
             EditorContext.DoneWithChange();
             selectedNoteObjects = replacedSelection;
