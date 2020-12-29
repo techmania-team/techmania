@@ -68,6 +68,11 @@ public class NoteAppearance : MonoBehaviour,
 
     public void Activate()
     {
+        if (state == State.Resolved)
+        {
+            // Do nothing.
+            return;
+        }
         state = State.Active;
         UpdateState();
     }
