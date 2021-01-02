@@ -521,6 +521,7 @@ public class NoteAppearance : MonoBehaviour,
         pointsOnCurve[0] = new Vector2(
             scanlineX,
             Mathf.Lerp(pointsOnCurve[0].y, pointsOnCurve[1].y, t));
+        curve.SetVerticesDirty();
     }
 
     public void PlaceNoteImageOnCurve()
