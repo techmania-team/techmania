@@ -140,6 +140,7 @@ public class PatternPanel : MonoBehaviour
         AllLaneTotalHeight = laneDividerParent.rect.height;
 
         // Horizontal spacing
+        numScans = 0;  // Will be updated in Refresh()
         zoom = 100;
         beatSnapDivisor = 2;
 
@@ -1444,6 +1445,9 @@ public class PatternPanel : MonoBehaviour
     }
 
     // Returns whether the number changed.
+    // During an editing session the number of scans will never
+    // decrease. This prevents unintended scrolling when deleting
+    // the last notes.
     private bool UpdateNumScans()
     {
         int numScansBackup = numScans;
@@ -1484,7 +1488,8 @@ public class PatternPanel : MonoBehaviour
         }
 
         int lastScan = lastPulse / pulsesPerScan;
-        numScans = lastScan + 2;  // 1 empty scan at the end
+        // 1 empty scan at the end
+        numScans = Mathf.Max(numScansBackup, lastScan + 2);
 
         return numScans != numScansBackup;
     }
