@@ -28,6 +28,10 @@ public partial class Pattern
         {
             return new SortedSet<Note>();
         }
+        if (notes.Count == 0)
+        {
+            return new SortedSet<Note>();
+        }
         return notes.GetViewBetween(new Note()
         {
             pulse = minPulseInclusive,
