@@ -6,7 +6,7 @@ Head to [Releases](https://github.com/macmillan333/techmania/releases) to downlo
 ## Licensing
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
 * Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
-* Included tracks in the releases may be released under separate licenses. Refer to the release notes on each release for details.
+* Included tracks in the releases may be under separate licenses. Refer to the release notes on each release for details.
 
 ## Roadmap and Progress
 Refer to the [Kanban](https://github.com/macmillan333/techmania/projects/1).
