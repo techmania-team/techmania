@@ -20,4 +20,6 @@ The current target is Windows PCs, with the Touch control scheme requiring a tou
 The game may be ported to WebGL in the future so it can be played on any web-enabled device. However there are no concrete plans to make such a port at this moment.
 
 ## Feedback
-Submit technical issues to [Issues](https://github.com/macmillan333/techmania/issues). For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania).
+For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/macmillan333/techmania/issues).
+
+For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania).
