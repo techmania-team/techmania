@@ -8,7 +8,7 @@ All code and assets are released under the [MIT License](LICENSE), with the foll
 * Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
 * Included tracks in the releases may be under separate licenses. Refer to the release notes on each release for details.
 
-## Roadmap and Progress
+## Roadmap and progress
 Refer to the [Kanban](https://github.com/macmillan333/techmania/projects/1).
 
 ## How to play
@@ -23,3 +23,12 @@ The game may be ported to WebGL in the future so it can be played on any web-ena
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/macmillan333/techmania/issues).
 
 For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania).
+
+## Making your own builds
+While Linux and macOS are not supported, it may be possible to build the project on these platforms. Follow the standard building process:
+* Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
+* Clone this repo, then open it from Unity.
+* File - Build Settings
+* Choose your target platform, then build.
+
+If the build fails, you can submit an issue, but I do not guarantee support.
