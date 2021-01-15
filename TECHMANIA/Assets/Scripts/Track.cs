@@ -25,7 +25,7 @@ public class TrackBase
     protected virtual void InitAfterDeserialize() { }
 
     // This should never be called from outside the editor.
-    private string Serialize()
+    public string Serialize()
     {
         PrepareToSerialize();
 #if UNITY_2019
@@ -45,8 +45,8 @@ public class TrackBase
 
     private static TrackBase Deserialize(string json)
     {
-        TrackBase track = null;
 #if UNITY_2019
+        TrackBase track = null;
         string version = UnityEngine.JsonUtility
             .FromJson<TrackBase>(json).version;
         switch (version)
@@ -62,11 +62,11 @@ public class TrackBase
             default:
                 throw new Exception($"Unknown version: {version}");
         }
+        track.InitAfterDeserialize();
+        return track;
 #else
         return null;
 #endif
-        track.InitAfterDeserialize();
-        return track;
     }
 
     // The clone will retain the same Guid.
@@ -117,7 +117,11 @@ public class BpmEvent
 {
     public int pulse;
     public double bpm;
+#if UNITY_2019
     [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
     public float time;
 
     public BpmEvent Clone()
@@ -223,7 +227,11 @@ public partial class Pattern
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
 
+#if UNITY_2019
     [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
     public SortedSet<Note> notes;
 
     // Only used in serialization and deserialization.
@@ -432,7 +440,11 @@ public class DragNote : Note
     // describing the note head.
     // controlBefore of the first node and controlAfter
     // of the last node are ignored.
+#if UNITY_2019
     [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
     public List<DragNode> nodes;
 
     public DragNote()
