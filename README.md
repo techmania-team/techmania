@@ -14,6 +14,9 @@ Refer to the [Kanban](https://github.com/macmillan333/techmania/projects/1).
 ## How to play
 The game includes tutorials, but you can also find textual instructions in the [Wiki](https://github.com/macmillan333/techmania/wiki/How-to-play).
 
+## How to edit
+The included editor is hopefully self-explanatory, but you can find additional notes in the [Wiki](https://github.com/macmillan333/techmania/wiki/Additional-notes-on-the-editor).
+
 ## Platform
 The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, I will not target Android or iOS/iPadOS.
 
@@ -31,4 +34,4 @@ While Linux and macOS are not supported, it may be possible to build the project
 * File - Build Settings
 * Choose your target platform, then build.
 
-If the build fails, you can submit an issue, but I do not guarantee support.
+If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
