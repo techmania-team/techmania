@@ -13,8 +13,10 @@ public class PatternPanel : MonoBehaviour
     public RectTransform rootCanvas;
 
     [Header("Workspace")]
-    public ScrollRect workspace;
+    public ScrollRect workspaceScrollRect;
+    public ScrollRect headerScrollRect;
     public RectTransform workspaceContent;
+    public RectTransform headerContent;
     public ScanlineInEditor scanline;
 
     [Header("Lanes")]
@@ -23,10 +25,13 @@ public class PatternPanel : MonoBehaviour
     public RectTransform laneDividerParent;
 
     [Header("Markers")]
+    public Transform markerInHeaderContainer;
+    public GameObject scanMarkerInHeaderTemplate;
+    public GameObject beatMarkerInHeaderTemplate;
+    public GameObject bpmMarkerTemplate;
     public Transform markerContainer;
     public GameObject scanMarkerTemplate;
     public GameObject beatMarkerTemplate;
-    public GameObject bpmMarkerTemplate;
 
     [Header("Notes")]
     public Transform noteContainer;
@@ -146,7 +151,8 @@ public class PatternPanel : MonoBehaviour
         // Scanline
         scanline.floatPulse = 0f;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        workspace.horizontalNormalizedPosition = 0f;
+        workspaceScrollRect.horizontalNormalizedPosition = 0f;
+        headerScrollRect.horizontalNormalizedPosition = 0f;
         scanlinePositionSlider.SetValueWithoutNotify(0f);
 
         // UI and options
@@ -224,15 +230,17 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        bool mouseInWorkspace = RectTransformUtility.RectangleContainsScreenPoint(
-            workspace.GetComponent<RectTransform>(),
-            Input.mousePosition);
-        bool mouseInHeader = RectTransformUtility.RectangleContainsScreenPoint(
-            header, Input.mousePosition);
+        bool mouseInWorkspace = RectTransformUtility
+            .RectangleContainsScreenPoint(
+                workspaceScrollRect.GetComponent<RectTransform>(),
+                Input.mousePosition);
+        bool mouseInHeader = RectTransformUtility
+            .RectangleContainsScreenPoint(
+                header, Input.mousePosition);
         if (Input.mouseScrollDelta.y != 0)
         {
             HandleMouseScroll(Input.mouseScrollDelta.y,
-                mouseInWorkspace);
+                mouseInWorkspace || mouseInHeader);
         }
 
         if (mouseInWorkspace && !mouseInHeader)
@@ -246,7 +254,6 @@ public class PatternPanel : MonoBehaviour
         }
 
         if (Input.GetMouseButton(0) &&
-            mouseInWorkspace &&
             mouseInHeader &&
             !isPlaying)
         {
@@ -258,7 +265,8 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Mouse and Keyboard Update
-    private void HandleMouseScroll(float y, bool mouseInWorkspace)
+    private void HandleMouseScroll(float y,
+        bool mouseInWorkspaceOrHeader)
     {
         bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
                 Input.GetKey(KeyCode.RightControl);
@@ -266,26 +274,31 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightAlt);
 
         // Is the cursor inside the workspace?
-        if (mouseInWorkspace && !alt)
+        if (mouseInWorkspaceOrHeader && !alt)
         {
             if (ctrl)
             {
                 // Adjust zoom
                 zoom += Mathf.FloorToInt(y * 5f);
                 zoom = Mathf.Clamp(zoom, 10, 500);
-                float horizontal = workspace.horizontalNormalizedPosition;
+                float horizontal = workspaceScrollRect
+                    .horizontalNormalizedPosition;
                 ResizeWorkspace();
                 RepositionNeeded?.Invoke();
                 AdjustAllPathsAndTrails();
-                workspace.horizontalNormalizedPosition = horizontal;
+                workspaceScrollRect.horizontalNormalizedPosition = 
+                    horizontal;
             }
             else
             {
                 // Scroll workspace
-                workspace.horizontalNormalizedPosition += y * 100f / WorkspaceContentWidth;
-                workspace.horizontalNormalizedPosition =
-                    Mathf.Clamp01(workspace.horizontalNormalizedPosition);
+                workspaceScrollRect.horizontalNormalizedPosition +=
+                    y * 100f / WorkspaceContentWidth;
+                workspaceScrollRect.horizontalNormalizedPosition =
+                    Mathf.Clamp01(
+                    workspaceScrollRect.horizontalNormalizedPosition);
             }
+            SynchronizeScrollRects();
         }
 
         // Alt+scroll to change beat snap divisor
@@ -375,6 +388,12 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Events From Workspace
+    public void OnWorkspaceScrollRectValueChanged(
+        Vector2 value)
+    {
+        SynchronizeScrollRects();
+    }
+
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
@@ -437,14 +456,17 @@ public class PatternPanel : MonoBehaviour
         PointerEventData p = eventData as PointerEventData;
         if (p.button != PointerEventData.InputButton.Middle) return;
 
-        float viewPortWidth = workspace.GetComponent<RectTransform>().rect.width;
+        float viewPortWidth = workspaceScrollRect
+            .GetComponent<RectTransform>().rect.width;
         if (WorkspaceContentWidth < viewPortWidth) return;
-        float horizontal = workspace.horizontalNormalizedPosition *
+        float horizontal = 
+            workspaceScrollRect.horizontalNormalizedPosition *
             (WorkspaceContentWidth - viewPortWidth);
         horizontal -= p.delta.x / rootCanvas.localScale.x;
-        workspace.horizontalNormalizedPosition = Mathf.Clamp01(
-            horizontal /
-            (WorkspaceContentWidth - viewPortWidth));
+        workspaceScrollRect.horizontalNormalizedPosition = 
+            Mathf.Clamp01(horizontal /
+                (WorkspaceContentWidth - viewPortWidth));
+        SynchronizeScrollRects();
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -1507,9 +1529,10 @@ public class PatternPanel : MonoBehaviour
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
             workspaceContent.sizeDelta.y);
-        workspace.horizontalNormalizedPosition =
+        workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(
-                workspace.horizontalNormalizedPosition);
+                workspaceScrollRect.horizontalNormalizedPosition);
+        SynchronizeScrollRects();
     }
 
     private void RefreshScanlinePositionSlider()
@@ -1531,68 +1554,100 @@ public class PatternPanel : MonoBehaviour
 
     private void DestroyAndRespawnAllMarkers()
     {
+        for (int i = 0; i < markerInHeaderContainer.childCount; i++)
+        {
+            GameObject child = markerInHeaderContainer.GetChild(i)
+                .gameObject;
+            if (child == scanMarkerInHeaderTemplate) continue;
+            if (child == beatMarkerInHeaderTemplate) continue;
+            if (child == bpmMarkerTemplate) continue;
+            Destroy(child.gameObject);
+        }
         for (int i = 0; i < markerContainer.childCount; i++)
         {
             GameObject child = markerContainer.GetChild(i)
                 .gameObject;
             if (child == scanMarkerTemplate) continue;
             if (child == beatMarkerTemplate) continue;
-            if (child == bpmMarkerTemplate) continue;
             Destroy(child.gameObject);
         }
 
         EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        // Value in KeyValuePairs is priority: 1 for BPM events,
-        // 0 for others.
-        List<KeyValuePair<Transform, MarkerPriority>> allMarkers =
+        // BPM markers in the header need to be drawn on top of
+        // other markers, so we sort them. No need to do this for
+        // markers in the workspace.
+        List<KeyValuePair<Transform, MarkerPriority>> 
+            allMarkersInHeader =
             new List<KeyValuePair<Transform, MarkerPriority>>();
+
         for (int scan = 0; scan < numScans; scan++)
         {
+            GameObject markerInHeader = Instantiate(
+                scanMarkerInHeaderTemplate, markerInHeaderContainer);
             GameObject marker = Instantiate(
                 scanMarkerTemplate, markerContainer);
-            marker.SetActive(true);  // This calls OnEnabled
-            Marker m = marker.GetComponent<Marker>();
-            m.pulse = scan * bps * Pattern.pulsesPerBeat;
+            markerInHeader.SetActive(true);  // This calls OnEnabled
+            marker.SetActive(true);
+
+            int pulse = scan * bps * Pattern.pulsesPerBeat;
+            Marker m = markerInHeader.GetComponent<Marker>();
+            m.pulse = pulse;
             m.SetTimeDisplay();
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-            allMarkers.Add(new KeyValuePair<
+            m = marker.GetComponent<Marker>();
+            m.pulse = pulse;
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+
+            allMarkersInHeader.Add(new KeyValuePair<
                 Transform, MarkerPriority>(
-                marker.transform, MarkerPriority.Other));
+                markerInHeader.transform, MarkerPriority.Other));
 
             for (int beat = 1; beat < bps; beat++)
             {
+                markerInHeader = Instantiate(
+                    beatMarkerInHeaderTemplate, 
+                    markerInHeaderContainer);
                 marker = Instantiate(
-                    beatMarkerTemplate, markerContainer);
+                    beatMarkerTemplate,
+                    markerContainer);
+                markerInHeader.SetActive(true);
                 marker.SetActive(true);
-                m = marker.GetComponent<Marker>();
-                m.pulse = (scan * bps + beat) * 
+
+                pulse = (scan * bps + beat) *
                     Pattern.pulsesPerBeat;
+                m = markerInHeader.GetComponent<Marker>();
+                m.pulse = pulse;
                 m.SetTimeDisplay();
                 m.GetComponent<SelfPositionerInEditor>()
                     .Reposition();
-                allMarkers.Add(new KeyValuePair<
+                m = marker.GetComponent<Marker>();
+                m.pulse = pulse;
+                m.GetComponent<SelfPositionerInEditor>()
+                    .Reposition();
+
+                allMarkersInHeader.Add(new KeyValuePair<
                     Transform, MarkerPriority>(
-                    marker.transform, MarkerPriority.Other));
+                    markerInHeader.transform, MarkerPriority.Other));
             }
         }
 
         foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
         {
             GameObject marker = Instantiate(
-                bpmMarkerTemplate, markerContainer);
+                bpmMarkerTemplate, markerInHeaderContainer);
             marker.SetActive(true);
             Marker m = marker.GetComponent<Marker>();
             m.pulse = e.pulse;
             m.SetBpmText(e.bpm);
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-            allMarkers.Add(new KeyValuePair<
+            allMarkersInHeader.Add(new KeyValuePair<
                 Transform, MarkerPriority>(
                 marker.transform, MarkerPriority.Bpm));
         }
 
-        // Sort all markers so they are drawn from left to right.
-        allMarkers.Sort((
+        // Sort all markers in the header.
+        allMarkersInHeader.Sort((
             KeyValuePair<Transform, MarkerPriority> p1,
             KeyValuePair<Transform, MarkerPriority> p2) =>
         {
@@ -1605,17 +1660,9 @@ public class PatternPanel : MonoBehaviour
             if (p2.Value == MarkerPriority.Bpm) return -1;
             return 0;
         });
-        for (int i = 0; i < allMarkers.Count; i++)
+        for (int i = 0; i < allMarkersInHeader.Count; i++)
         {
-            allMarkers[i].Key.SetSiblingIndex(i);
-        }
-
-        foreach (KeyValuePair<Transform, MarkerPriority> pair
-            in allMarkers)
-        {
-            SelfPositionerInEditor positioner = pair.Key
-                .GetComponent<SelfPositionerInEditor>();
-            positioner.Reposition();
+            allMarkersInHeader[i].Key.SetSiblingIndex(i);
         }
     }
 
@@ -2617,13 +2664,15 @@ public class PatternPanel : MonoBehaviour
 
     private void ScrollScanlineIntoView()
     {
-        float viewPortWidth = workspace.GetComponent<RectTransform>().rect.width;
+        float viewPortWidth = workspaceScrollRect
+            .GetComponent<RectTransform>().rect.width;
         if (WorkspaceContentWidth <= viewPortWidth) return;
 
-        float scanlinePosition = scanline.GetComponent<RectTransform>().anchoredPosition.x;
+        float scanlinePosition = scanline
+            .GetComponent<RectTransform>().anchoredPosition.x;
 
         float xAtViewPortLeft = (WorkspaceContentWidth - viewPortWidth)
-            * workspace.horizontalNormalizedPosition;
+            * workspaceScrollRect.horizontalNormalizedPosition;
         float xAtViewPortRight = xAtViewPortLeft + viewPortWidth;
 
         if (scanlinePosition >= xAtViewPortLeft &&
@@ -2646,8 +2695,18 @@ public class PatternPanel : MonoBehaviour
         }
         float normalizedPosition =
             desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
-        workspace.horizontalNormalizedPosition =
+        workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(normalizedPosition);
+        SynchronizeScrollRects();
+    }
+
+    private void SynchronizeScrollRects()
+    {
+        headerContent.sizeDelta = new Vector2(
+            workspaceContent.sizeDelta.x,
+            workspaceContent.sizeDelta.y);
+        headerScrollRect.horizontalNormalizedPosition =
+            workspaceScrollRect.horizontalNormalizedPosition;
     }
     #endregion
 }
