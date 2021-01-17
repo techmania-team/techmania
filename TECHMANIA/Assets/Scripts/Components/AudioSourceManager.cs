@@ -38,9 +38,12 @@ public class AudioSourceManager : MonoBehaviour
         PlaySound(backingTrack, clip, startTime);
     }
 
-    public void PlayKeysound(AudioClip clip, bool hiddenLane,
+    // Returns the AudioSource chosen to play the clip, if not null.
+    public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
         float startTime = 0f)
     {
+        if (clip == null) return null;
+
         AudioSource[] sources = hiddenLane ?
             hiddenLanes : playableLanes;
 
@@ -51,7 +54,7 @@ public class AudioSourceManager : MonoBehaviour
             if (!s.isPlaying)
             {
                 PlaySound(s, clip, startTime);
-                return;
+                return s;
             }
 
             // Calculate the remaining time of this source.
@@ -65,7 +68,23 @@ public class AudioSourceManager : MonoBehaviour
 
         // If no source is available, cut off the source with least
         // remaining time.
+        Debug.LogWarning($"Out of available audio sources, cutting one off. hiddenLane={hiddenLane}");
         PlaySound(sourceWithLeastRemainingTime, clip, startTime);
+        return sourceWithLeastRemainingTime;
+    }
+
+    public void PauseAll()
+    {
+        backingTrack.Pause();
+        foreach (AudioSource s in playableLanes) s.Pause();
+        foreach (AudioSource s in hiddenLanes) s.Pause();
+    }
+
+    public void UnpauseAll()
+    {
+        backingTrack.UnPause();
+        foreach (AudioSource s in playableLanes) s.UnPause();
+        foreach (AudioSource s in hiddenLanes) s.UnPause();
     }
 
     public void StopAll()

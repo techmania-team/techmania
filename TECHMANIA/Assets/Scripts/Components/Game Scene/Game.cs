@@ -38,8 +38,7 @@ public class Game : MonoBehaviour
     public GameObject bottomScanTemplate;
 
     [Header("Audio")]
-    public AudioSource backingTrackSource;
-    public List<AudioSource> keysoundSources;
+    public AudioSourceManager audioSourceManager;
 
     [Header("Prefabs")]
     public GameObject basicNotePrefab;
@@ -180,6 +179,7 @@ public class Game : MonoBehaviour
     }
 
     private bool backgroundImageLoaded;
+    private AudioClip backingTrackClip;
     private bool backingTrackLoaded;
     private bool keysoundsLoaded;
     private IEnumerator LoadSequence()
@@ -208,7 +208,6 @@ public class Game : MonoBehaviour
         {
             string fullPath = GameSetup.trackFolder + "\\" +
                 GameSetup.pattern.patternMetadata.backingTrack;
-            backingTrackSource.clip = null;
             backingTrackLoaded = false;
             ResourceLoader.LoadAudio(fullPath,
                 OnBackingTrackLoadComplete);
@@ -284,7 +283,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        backingTrackSource.clip = clip;
+        backingTrackClip = clip;
         backingTrackLoaded = true;
     }
 
@@ -457,11 +456,7 @@ public class Game : MonoBehaviour
         ongoingNotes = new Dictionary<NoteObject, Judgement>();
         ongoingNoteIsHitOnThisFrame =
             new Dictionary<NoteObject, bool>();
-        keysoundsPlaying = new List<NoteObject>();
-        for (int i = 0; i < keysoundSources.Count; i++)
-        {
-            keysoundsPlaying.Add(null);
-        }
+        noteToAudioSource = new Dictionary<Note, AudioSource>();
     }
 
     #region Subroutines of InitializePattern
@@ -550,11 +545,11 @@ public class Game : MonoBehaviour
         {
             lastScan = notes.Max.pulse / PulsesPerScan;
         }
-        if (backingTrackSource.clip != null)
+        if (backingTrackClip != null)
         {
             while (GameSetup.pattern.PulseToTime(
                 (lastScan + 1) * PulsesPerScan)
-                < backingTrackSource.clip.length)
+                < backingTrackClip.length)
             {
                 lastScan++;
             }
@@ -803,12 +798,10 @@ public class Game : MonoBehaviour
 
         // Play backing track if timer hits 0.
         if (oldTime < 0f && Time >= 0f &&
-            backingTrackSource.clip != null)
+            backingTrackClip != null)
         {
-            backingTrackSource.timeSamples = Mathf.FloorToInt(
-                Time * backingTrackSource.clip.frequency);
-            backingTrackSource.loop = false;
-            backingTrackSource.Play();
+            audioSourceManager.PlayBackingTrack(backingTrackClip,
+                Time);
         }
 
         // Play bga if timer hits bgaOffset.
@@ -1587,7 +1580,7 @@ public class Game : MonoBehaviour
                 // Stage failed.
                 score.stageFailed = true;
                 stopwatch.Stop();
-                backingTrackSource.Stop();
+                audioSourceManager.StopAll();
                 StartCoroutine(StageFailedSequence());
             }
 
@@ -1633,29 +1626,29 @@ public class Game : MonoBehaviour
     #endregion
 
     #region Keysound
-    // Indexed by lane number, this records which keysound source
-    // is playing the keysound of which note, so they can be
-    // stopped later.
-    private List<NoteObject> keysoundsPlaying;
+    // Records which AudioSource is playing the keysounds of which
+    // note, so they can be stopped later.
+    private Dictionary<Note, AudioSource> noteToAudioSource;
     private void PlayKeysound(NoteObject n)
     {
         if (n.note.sound == "") return;
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
-        keysoundSources[n.note.lane].clip = clip;
-        keysoundSources[n.note.lane].Play();
-
-        keysoundsPlaying[n.note.lane] = n;
+        AudioSource source = audioSourceManager.PlayKeysound(clip,
+            n.note.lane >= kPlayableLanes);
+        noteToAudioSource[n.note] = source;
     }
 
     private void StopKeysoundIfPlaying(NoteObject n)
     {
         if (n.note.sound == "") return;
-        if (keysoundsPlaying[n.note.lane] != n) return;
-        if (!keysoundSources[n.note.lane].isPlaying) return;
 
-        keysoundSources[n.note.lane].Stop();
-        keysoundsPlaying[n.note.lane] = null;
+        AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
+        if (noteToAudioSource[n.note].clip == clip)
+        {
+            noteToAudioSource[n.note].Stop();
+            noteToAudioSource.Remove(n.note);
+        }
     }
     #endregion
 
@@ -1669,15 +1662,13 @@ public class Game : MonoBehaviour
     {
         stopwatch.Stop();
         feverTimer?.Stop();
-        backingTrackSource.Pause();
-        keysoundSources.ForEach(s => s.Pause());
+        audioSourceManager.PauseAll();
         if (videoPlayer.isPrepared) videoPlayer.Pause();
         pauseDialog.Show(closeCallback: () =>
         {
             stopwatch.Start();
             feverTimer?.Start();
-            backingTrackSource.UnPause();
-            keysoundSources.ForEach(s => s.UnPause());
+            audioSourceManager.UnpauseAll();
             if (videoPlayer.isPrepared) videoPlayer.Play();
         });
         MenuSfx.instance.PlayPauseSound();
