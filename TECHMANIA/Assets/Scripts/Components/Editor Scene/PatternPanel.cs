@@ -43,8 +43,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject dragNotePrefab;
 
     [Header("Audio")]
-    public AudioSource backingTrackSource;
-    public List<AudioSource> keysoundSources;
+    public AudioSourceManager audioSourceManager;
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
@@ -2529,11 +2528,7 @@ public class PatternPanel : MonoBehaviour
         isPlaying = false;
         UpdatePlaybackUI();
 
-        backingTrackSource.Stop();
-        foreach (AudioSource source in keysoundSources)
-        {
-            source.Stop();
-        }
+        audioSourceManager.StopAll();
         scanline.floatPulse = playbackStartingPulse;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
@@ -2555,7 +2550,7 @@ public class PatternPanel : MonoBehaviour
             playbackCurrentTime >= 0f)
         {
             backingTrackPlaying = true;
-            PlaySound(backingTrackSource,
+            audioSourceManager.PlayBackingTrack(
                 ResourceLoader.GetCachedClip(
                     EditorContext.Pattern.patternMetadata
                     .backingTrack),
@@ -2581,10 +2576,11 @@ public class PatternPanel : MonoBehaviour
             {
                 AudioClip clip = ResourceLoader.GetCachedClip(
                     nextNote.sound);
-                AudioSource source = keysoundSources[i];
                 float startTime = playbackCurrentTime - 
                     nextNote.time;
-                PlaySound(source, clip, startTime);
+                audioSourceManager.PlayKeysound(clip,
+                    nextNote.lane > PlayableLanes,
+                    startTime);
 
                 notesInLanes[i].Dequeue();
             }

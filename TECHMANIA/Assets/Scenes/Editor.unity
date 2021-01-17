@@ -7584,12 +7584,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 440707362}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &440707364 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 5662662026322096756, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &440707365 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 440707365, guid: f943b11608b40564fa4fccdfe23334c5,
@@ -7602,78 +7596,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfaf2f14b828a154eaedd55353744fec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!82 &440707366 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 2908010093117043386, guid: f943b11608b40564fa4fccdfe23334c5,
+--- !u!114 &440707366 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8968253357677184648, guid: f943b11608b40564fa4fccdfe23334c5,
     type: 3}
   m_PrefabInstance: {fileID: 440707362}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &440707367 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 8452191364378066215, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707368 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 1116160034164339407, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707369 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 7851868676466564514, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707370 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 2495550965957238645, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707371 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 3876256418794424574, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707372 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 6874287373909838576, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707373 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 759281147288737019, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707374 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 759281147590832615, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707375 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 759281147369989890, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707376 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 759281147325413461, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &440707377 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 759281147297339014, guid: f943b11608b40564fa4fccdfe23334c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 440707362}
-  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 534ba62181d21d24c837fd54274c7e1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &441886142
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17923,20 +17857,7 @@ MonoBehaviour:
     type: 3}
   dragNotePrefab: {fileID: 6915570976975822383, guid: b274eba65f6eedc43bb31a20c2bc49ee,
     type: 3}
-  backingTrackSource: {fileID: 440707377}
-  keysoundSources:
-  - {fileID: 440707376}
-  - {fileID: 440707375}
-  - {fileID: 440707374}
-  - {fileID: 440707373}
-  - {fileID: 440707372}
-  - {fileID: 440707371}
-  - {fileID: 440707370}
-  - {fileID: 440707369}
-  - {fileID: 440707368}
-  - {fileID: 440707367}
-  - {fileID: 440707366}
-  - {fileID: 440707364}
+  audioSourceManager: {fileID: 440707366}
   beatSnapDividerDisplay: {fileID: 689014187}
   hiddenLanesDropdown: {fileID: 340067587}
   applyNoteTypeToSelectionToggle: {fileID: 813921501}
