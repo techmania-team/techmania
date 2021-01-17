@@ -15,6 +15,7 @@ public class PatternPanel : MonoBehaviour
     [Header("Workspace")]
     public ScrollRect workspaceScrollRect;
     public ScrollRect headerScrollRect;
+    public RectTransform workspaceViewport;
     public RectTransform workspaceContent;
     public RectTransform headerContent;
     public ScanlineInEditor scanline;
@@ -22,7 +23,6 @@ public class PatternPanel : MonoBehaviour
     [Header("Lanes")]
     public RectTransform hiddenLaneBackground;
     public RectTransform header;
-    public RectTransform laneDividerParent;
 
     [Header("Markers")]
     public Transform markerInHeaderContainer;
@@ -52,7 +52,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
-    public TMP_Dropdown hiddenLanesDropdown;
+    public TMP_Dropdown visibleLanesDropdown;
     public Toggle applyNoteTypeToSelectionToggle;
     public Toggle applyKeysoundToSelectionToggle;
     public Toggle showKeysoundToggle;
@@ -102,13 +102,14 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Vertical Spacing
-    public static int PlayableLanes => 4;
-    public static int HiddenLanes { get; private set; }
-    public const int MaxHiddenLanes = 8;
-    public static int TotalLanes => PlayableLanes + HiddenLanes;
-    public static int MaxTotalLanes => PlayableLanes + MaxHiddenLanes;
-    public static float AllLaneTotalHeight { get; private set; }
-    public static float LaneHeight => AllLaneTotalHeight / TotalLanes;
+    private static int PlayableLanes => 4;
+    private const int HiddenLanes = 8;
+    private static int TotalLanes => PlayableLanes + HiddenLanes;
+
+    private static float WorkspaceViewportHeight;
+    private static int VisibleLanes;
+    public static float LaneHeight =>
+        WorkspaceViewportHeight / VisibleLanes;
     #endregion
 
     #region Horizontal Spacing
@@ -138,10 +139,11 @@ public class PatternPanel : MonoBehaviour
     private void OnEnable()
     {
         // Vertical spacing
-        HiddenLanes = int.Parse(
-            hiddenLanesDropdown.options[hiddenLanesDropdown.value].text);
+        VisibleLanes = int.Parse(
+            visibleLanesDropdown.options
+            [visibleLanesDropdown.value].text);
         Canvas.ForceUpdateCanvases();
-        AllLaneTotalHeight = laneDividerParent.rect.height;
+        WorkspaceViewportHeight = workspaceViewport.rect.height;
 
         // Horizontal spacing
         numScans = 0;  // Will be updated in Refresh()
@@ -243,7 +245,7 @@ public class PatternPanel : MonoBehaviour
                 mouseInWorkspace || mouseInHeader);
         }
 
-        if (mouseInWorkspace && !mouseInHeader)
+        if (mouseInWorkspace)
         {
             noteCursor.gameObject.SetActive(true);
             SnapNoteCursor();
@@ -636,22 +638,13 @@ public class PatternPanel : MonoBehaviour
         });
     }
 
-    public void OnHiddenLaneNumberChanged(int newValue)
+    public void OnVisibleLaneNumberChanged(int newValue)
     {
-        HiddenLanes = newValue * 4;
+        VisibleLanes = int.Parse(
+            visibleLanesDropdown.options
+            [newValue].text);
 
-        // Update background
-        hiddenLaneBackground.anchorMin = Vector2.zero;
-        hiddenLaneBackground.anchorMax = new Vector2(
-            1f, (float)HiddenLanes / TotalLanes);
-
-        // Update lane dividers
-        for (int i = 0; i < laneDividerParent.childCount; i++)
-        {
-            laneDividerParent.GetChild(i).gameObject.SetActive(
-                i < TotalLanes);
-        }
-
+        ResizeWorkspace();
         RepositionNeeded?.Invoke();
         AdjustAllPathsAndTrails();
     }
@@ -1528,7 +1521,7 @@ public class PatternPanel : MonoBehaviour
     {
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
-            workspaceContent.sizeDelta.y);
+            LaneHeight * TotalLanes);
         workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(
                 workspaceScrollRect.horizontalNormalizedPosition);
@@ -1561,7 +1554,7 @@ public class PatternPanel : MonoBehaviour
             if (child == scanMarkerInHeaderTemplate) continue;
             if (child == beatMarkerInHeaderTemplate) continue;
             if (child == bpmMarkerTemplate) continue;
-            Destroy(child.gameObject);
+            Destroy(child);
         }
         for (int i = 0; i < markerContainer.childCount; i++)
         {
@@ -1569,7 +1562,7 @@ public class PatternPanel : MonoBehaviour
                 .gameObject;
             if (child == scanMarkerTemplate) continue;
             if (child == beatMarkerTemplate) continue;
-            Destroy(child.gameObject);
+            Destroy(child);
         }
 
         EditorContext.Pattern.PrepareForTimeCalculation();
@@ -2554,7 +2547,7 @@ public class PatternPanel : MonoBehaviour
         // example, when user sets hidden lanes to 4, lanes
         // 8~11 are still played.
         notesInLanes = new List<Queue<Note>>();
-        for (int i = 0; i < MaxTotalLanes; i++)
+        for (int i = 0; i < TotalLanes; i++)
         {
             notesInLanes.Add(new Queue<Note>());
         }
@@ -2704,7 +2697,7 @@ public class PatternPanel : MonoBehaviour
     {
         headerContent.sizeDelta = new Vector2(
             workspaceContent.sizeDelta.x,
-            workspaceContent.sizeDelta.y);
+            headerContent.sizeDelta.y);
         headerScrollRect.horizontalNormalizedPosition =
             workspaceScrollRect.horizontalNormalizedPosition;
     }
