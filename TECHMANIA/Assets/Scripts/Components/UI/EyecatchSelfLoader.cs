@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ public class EyecatchSelfLoader : MonoBehaviour
         if (t.eyecatchImage != null &&
             t.eyecatchImage != "")
         {
-            string fullPath = folder + "\\" + t.eyecatchImage;
+            string fullPath = Path.Combine(folder, t.eyecatchImage);
             ResourceLoader.LoadImage(fullPath, OnLoadImageComplete);
         }
         else

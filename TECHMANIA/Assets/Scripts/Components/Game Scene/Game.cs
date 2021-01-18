@@ -189,8 +189,8 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backImage != null &&
             GameSetup.pattern.patternMetadata.backImage != "")
         {
-            string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.pattern.patternMetadata.backImage;
+            string fullPath = Path.Combine(GameSetup.trackFolder,
+                GameSetup.pattern.patternMetadata.backImage);
             backgroundImageLoaded = false;
             ResourceLoader.LoadImage(fullPath,
                 OnImageLoadComplete);
@@ -206,8 +206,8 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
         {
-            string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.pattern.patternMetadata.backingTrack;
+            string fullPath = Path.Combine(GameSetup.trackFolder,
+                GameSetup.pattern.patternMetadata.backingTrack);
             backingTrackLoaded = false;
             ResourceLoader.LoadAudio(fullPath,
                 OnBackingTrackLoadComplete);
@@ -226,8 +226,8 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
-            string fullPath = GameSetup.trackFolder + "\\" +
-                GameSetup.pattern.patternMetadata.bga;
+            string fullPath = Path.Combine(GameSetup.trackFolder,
+                GameSetup.pattern.patternMetadata.bga);
             videoPlayer.url = fullPath;
             videoPlayer.errorReceived += VideoPlayerErrorReceived;
             videoPlayer.Prepare();

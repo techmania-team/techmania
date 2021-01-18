@@ -60,7 +60,7 @@ public class ResourceLoader : MonoBehaviour
         {
             if (n.sound != "")
             {
-                filenames.Add(trackFolder + "\\" + n.sound);
+                filenames.Add(Path.Combine(trackFolder, n.sound));
             }
         }
         ResourceLoader instance = GetInstance();
