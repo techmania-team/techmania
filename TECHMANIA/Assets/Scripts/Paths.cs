@@ -93,11 +93,5 @@ public static class Paths
         return builder.ToString();
     }
 
-    public static string FilePathToUri(string fullPath)
-    {
-        // "+" means spaces in URIs so they need to be escaped.
-        return "file://" + fullPath.Replace("+", "%2b");
-    }
-
     public const string kTrackFilename = "track.tech";
 }

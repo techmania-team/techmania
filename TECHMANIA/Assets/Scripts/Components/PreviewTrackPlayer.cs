@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -49,7 +50,7 @@ public class PreviewTrackPlayer : MonoBehaviour
         string filename = trackFolder + "\\" + previewTrackFilename;
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
-            Paths.FilePathToUri(filename), AudioType.UNKNOWN);
+            new Uri(filename), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
         AudioClip clip;

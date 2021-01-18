@@ -84,7 +84,7 @@ public class ResourceLoader : MonoBehaviour
                 // magically work for every format.
                 UnityWebRequest request =
                     UnityWebRequestMultimedia.GetAudioClip(
-                    Paths.FilePathToUri(file), AudioType.UNKNOWN);
+                        new Uri(file),AudioType.UNKNOWN);
                 yield return request.SendWebRequest();
 
                 AudioClip clip;
@@ -136,7 +136,7 @@ public class ResourceLoader : MonoBehaviour
     {
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
-            Paths.FilePathToUri(fullPath), AudioType.UNKNOWN);
+            new Uri(fullPath), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
         AudioClip clip;
@@ -190,7 +190,7 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<Sprite, string> loadImageCompleteCallback)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(
-            Paths.FilePathToUri(fullPath), nonReadable: true);
+            new Uri(fullPath), nonReadable: true);
         yield return request.SendWebRequest();
 
         if (request.isNetworkError || request.isHttpError)
