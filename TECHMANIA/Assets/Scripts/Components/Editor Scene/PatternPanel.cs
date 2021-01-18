@@ -103,8 +103,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Vertical Spacing
     private static int PlayableLanes => 4;
-    private const int HiddenLanes = 8;
-    private static int TotalLanes => PlayableLanes + HiddenLanes;
+    private static int TotalLanes => 64;
 
     private static float WorkspaceViewportHeight;
     private static int VisibleLanes;
