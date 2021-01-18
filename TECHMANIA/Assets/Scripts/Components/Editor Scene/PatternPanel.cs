@@ -110,6 +110,8 @@ public class PatternPanel : MonoBehaviour
     private static int VisibleLanes;
     public static float LaneHeight =>
         WorkspaceViewportHeight / VisibleLanes;
+    public static float WorkspaceContentHeight => LaneHeight *
+        TotalLanes;
     #endregion
 
     #region Horizontal Spacing
@@ -274,39 +276,48 @@ public class PatternPanel : MonoBehaviour
                 Input.GetKey(KeyCode.RightControl);
         bool alt = Input.GetKey(KeyCode.LeftAlt) ||
             Input.GetKey(KeyCode.RightAlt);
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
 
-        // Is the cursor inside the workspace?
-        if (mouseInWorkspaceOrHeader && !alt)
+        if (mouseInWorkspaceOrHeader && ctrl)
         {
-            if (ctrl)
+            // Adjust zoom.
+            zoom += Mathf.FloorToInt(y * 5f);
+            zoom = Mathf.Clamp(zoom, 10, 500);
+            float horizontal = workspaceScrollRect
+                .horizontalNormalizedPosition;
+            ResizeWorkspace();
+            RepositionNeeded?.Invoke();
+            AdjustAllPathsAndTrails();
+            workspaceScrollRect.horizontalNormalizedPosition =
+                horizontal;
+        }
+        else if (alt)
+        {
+            // Change beat snap divisor.
+            OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
+        }
+        else if (mouseInWorkspaceOrHeader)
+        {
+            if (shift)
             {
-                // Adjust zoom
-                zoom += Mathf.FloorToInt(y * 5f);
-                zoom = Mathf.Clamp(zoom, 10, 500);
-                float horizontal = workspaceScrollRect
-                    .horizontalNormalizedPosition;
-                ResizeWorkspace();
-                RepositionNeeded?.Invoke();
-                AdjustAllPathsAndTrails();
-                workspaceScrollRect.horizontalNormalizedPosition = 
-                    horizontal;
+                // Vertical scroll.
+                workspaceScrollRect.verticalNormalizedPosition +=
+                    y * 100f / WorkspaceContentHeight;
+                workspaceScrollRect.verticalNormalizedPosition =
+                    Mathf.Clamp01(
+                    workspaceScrollRect.verticalNormalizedPosition);
             }
             else
             {
-                // Scroll workspace
+                // Horizontal scroll.
                 workspaceScrollRect.horizontalNormalizedPosition +=
                     y * 100f / WorkspaceContentWidth;
                 workspaceScrollRect.horizontalNormalizedPosition =
                     Mathf.Clamp01(
                     workspaceScrollRect.horizontalNormalizedPosition);
+                SynchronizeScrollRects();
             }
-            SynchronizeScrollRects();
-        }
-
-        // Alt+scroll to change beat snap divisor
-        if (alt)
-        {
-            OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
         }
     }
 
@@ -458,16 +469,27 @@ public class PatternPanel : MonoBehaviour
         PointerEventData p = eventData as PointerEventData;
         if (p.button != PointerEventData.InputButton.Middle) return;
 
-        float viewPortWidth = workspaceScrollRect
-            .GetComponent<RectTransform>().rect.width;
-        if (WorkspaceContentWidth < viewPortWidth) return;
+        float outOfViewWidth = WorkspaceContentWidth - 
+            workspaceViewport.rect.width;
+        float outOfViewHeight = WorkspaceContentHeight -
+            workspaceViewport.rect.height;
+        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
+        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
+
         float horizontal = 
             workspaceScrollRect.horizontalNormalizedPosition *
-            (WorkspaceContentWidth - viewPortWidth);
+            outOfViewWidth;
         horizontal -= p.delta.x / rootCanvas.localScale.x;
         workspaceScrollRect.horizontalNormalizedPosition = 
-            Mathf.Clamp01(horizontal /
-                (WorkspaceContentWidth - viewPortWidth));
+            Mathf.Clamp01(horizontal / outOfViewWidth);
+
+        float vertical =
+            workspaceScrollRect.verticalNormalizedPosition *
+            outOfViewHeight;
+        vertical -= p.delta.y / rootCanvas.localScale.x;
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(vertical / outOfViewHeight);
+
         SynchronizeScrollRects();
     }
 
@@ -1521,10 +1543,14 @@ public class PatternPanel : MonoBehaviour
     {
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
-            LaneHeight * TotalLanes);
+            WorkspaceContentHeight);
         workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(
                 workspaceScrollRect.horizontalNormalizedPosition);
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.verticalNormalizedPosition);
+
         SynchronizeScrollRects();
     }
 
