@@ -368,6 +368,10 @@ public class PatternPanel : MonoBehaviour
             {
                 SelectAll();
             }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                SelectNone();
+            }
             if (Input.GetKeyDown(KeyCode.X))
             {
                 CutSelection();
@@ -2370,6 +2374,12 @@ public class PatternPanel : MonoBehaviour
         {
             selectedNoteObjects.Add(noteContainer.GetChild(i).gameObject);
         }
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    public void SelectNone()
+    {
+        selectedNoteObjects.Clear();
         SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
