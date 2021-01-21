@@ -8,13 +8,21 @@ using UnityEngine.UI;
 
 public class OptionsPanel : MonoBehaviour
 {
+    [Header("Graphics")]
     public TMP_Dropdown resolutionDropdown;
     public TMP_Dropdown fullscreenDropdown;
     public Toggle vSyncToggle;
+
+    [Header("Audio")]
     public Slider masterVolumeSlider;
+    public TMP_Text masterVolumeDisplay;
     public Slider musicVolumeSlider;
+    public TMP_Text musicVolumeDisplay;
     public Slider keysoundVolumeSlider;
+    public TMP_Text keysoundVolumeDisplay;
     public Slider sfxVolumeSlider;
+    public TMP_Text sfxVolumeDisplay;
+    public TMP_Dropdown audioBufferDropdown;
     public AudioMixer audioMixer;
 
     private Options options;
@@ -83,6 +91,8 @@ public class OptionsPanel : MonoBehaviour
 
     private void MemoryToUI()
     {
+        // Graphics
+
         resolutionDropdown.ClearOptions();
         foreach (Resolution r in resolutions)
         {
@@ -109,10 +119,13 @@ public class OptionsPanel : MonoBehaviour
 
         vSyncToggle.SetIsOnWithoutNotify(options.vSync);
 
+        // Audio
+
         masterVolumeSlider.SetValueWithoutNotify(options.masterVolume);
         musicVolumeSlider.SetValueWithoutNotify(options.musicVolume);
         keysoundVolumeSlider.SetValueWithoutNotify(options.keysoundVolume);
         sfxVolumeSlider.SetValueWithoutNotify(options.sfxVolume);
+        UpdateVolumeDisplay();
     }
 
     #region Graphics
@@ -148,12 +161,26 @@ public class OptionsPanel : MonoBehaviour
         options.keysoundVolume = keysoundVolumeSlider.value;
         options.sfxVolume = sfxVolumeSlider.value;
 
+        UpdateVolumeDisplay();
         ApplyVolume();
     }
 
     private float VolumeValueToDb(float volume)
     {
         return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
+    }
+
+    private string VolumeValueToDisplay(float volume)
+    {
+        return Mathf.FloorToInt(volume * 100f).ToString();
+    }
+
+    private void UpdateVolumeDisplay()
+    {
+        masterVolumeDisplay.text = VolumeValueToDisplay(options.masterVolume);
+        musicVolumeDisplay.text = VolumeValueToDisplay(options.musicVolume);
+        keysoundVolumeDisplay.text = VolumeValueToDisplay(options.keysoundVolume);
+        sfxVolumeDisplay.text = VolumeValueToDisplay(options.sfxVolume);
     }
 
     public void ApplyVolume()

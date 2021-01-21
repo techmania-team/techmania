@@ -61,6 +61,7 @@ public class Options : OptionsBase
     public float musicVolume;
     public float keysoundVolume;
     public float sfxVolume;
+    public int audioBuffer;
 
     public Options()
     {
@@ -76,6 +77,7 @@ public class Options : OptionsBase
         musicVolume = 0.8f;
         keysoundVolume = 1f;
         sfxVolume = 1f;
+        audioBuffer = 512;
     }
 
     public void ApplyGraphicSettings()
