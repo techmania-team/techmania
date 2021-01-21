@@ -598,6 +598,13 @@ public class DragNode
     // Relative to anchor
     public FloatPoint controlRight;
 
+    public DragNode()
+    {
+        anchor = new IntPoint(0, 0);
+        controlLeft = new FloatPoint(0f, 0f);
+        controlRight = new FloatPoint(0f, 0f);
+    }
+
     public FloatPoint GetControlPoint(int index)
     {
         if (index == 0)
