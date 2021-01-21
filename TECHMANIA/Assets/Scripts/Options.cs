@@ -61,7 +61,7 @@ public class Options : OptionsBase
     public float musicVolume;
     public float keysoundVolume;
     public float sfxVolume;
-    public int audioBuffer;
+    public int audioBufferSize;
 
     public Options()
     {
@@ -77,7 +77,16 @@ public class Options : OptionsBase
         musicVolume = 0.8f;
         keysoundVolume = 1f;
         sfxVolume = 1f;
-        audioBuffer = 512;
+        // Cannot call GetDefaultAudioBufferSize() here, because
+        // somehow Unity calls this constructor during serialization,
+        // and calling AudioSettings.GetConfiguration() at that time
+        // causes an exception.
+        audioBufferSize = 512;
+    }
+
+    public static int GetDefaultAudioBufferSize()
+    {
+        return AudioSettings.GetConfiguration().dspBufferSize;
     }
 
     public void ApplyGraphicSettings()

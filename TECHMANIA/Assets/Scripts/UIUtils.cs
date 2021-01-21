@@ -141,6 +141,24 @@ public class UIUtils
         dropdown.RefreshShownValue();
     }
 
+    // Updates the value of dropdown so the new value points to
+    // currentOptions if it is among the dropdown's options.
+    public static void MemoryToDropdown(TMP_Dropdown dropdown,
+        string currentOption, int defaultValue = 0)
+    {
+        for (int i = 0; i < dropdown.options.Count; i++)
+        {
+            if (dropdown.options[i].text == currentOption)
+            {
+                dropdown.SetValueWithoutNotify(i);
+                dropdown.RefreshShownValue();
+                return;
+            }
+        }
+        dropdown.SetValueWithoutNotify(defaultValue);
+        dropdown.RefreshShownValue();
+    }
+
     public const string kEmptyKeysoundDisplayText = "(None)";
     public static string StripAudioExtension(string filename)
     {

@@ -37,7 +37,7 @@ public class OptionsPanel : MonoBehaviour
             .GetComponentInChildren<OptionsPanel>(includeInactive: true);
         instance.LoadOrCreateOptions();
         instance.options.ApplyGraphicSettings();
-        instance.ApplyVolume();
+        instance.ApplyAudioOptions();
     }
 
     private void LoadOrCreateOptions()
@@ -75,6 +75,14 @@ public class OptionsPanel : MonoBehaviour
             options.width = resolutions[resolutionIndex].width;
             options.height = resolutions[resolutionIndex].height;
             options.refreshRate = resolutions[resolutionIndex].refreshRate;
+        }
+
+        // Audio buffer size was added in 0.2, and options
+        // created in 0.1 did not contain this field, so the
+        // deserialized value would be 0.
+        if (options.audioBufferSize == 0)
+        {
+            options.audioBufferSize = Options.GetDefaultAudioBufferSize();
         }
     }
 
@@ -126,6 +134,10 @@ public class OptionsPanel : MonoBehaviour
         keysoundVolumeSlider.SetValueWithoutNotify(options.keysoundVolume);
         sfxVolumeSlider.SetValueWithoutNotify(options.sfxVolume);
         UpdateVolumeDisplay();
+
+        UIUtils.MemoryToDropdown(audioBufferDropdown,
+            options.audioBufferSize.ToString(),
+            defaultValue: 0);
     }
 
     #region Graphics
@@ -153,16 +165,19 @@ public class OptionsPanel : MonoBehaviour
     }
     #endregion
 
-    #region Volume
-    public void OnVolumeOptionsUpdated()
+    #region Audio
+    public void OnAudioOptionsUpdated()
     {
         options.masterVolume = masterVolumeSlider.value;
         options.musicVolume = musicVolumeSlider.value;
         options.keysoundVolume = keysoundVolumeSlider.value;
         options.sfxVolume = sfxVolumeSlider.value;
+        options.audioBufferSize = int.Parse(
+            audioBufferDropdown.options[
+            audioBufferDropdown.value].text);
 
         UpdateVolumeDisplay();
-        ApplyVolume();
+        ApplyAudioOptions();
     }
 
     private float VolumeValueToDb(float volume)
@@ -183,12 +198,16 @@ public class OptionsPanel : MonoBehaviour
         sfxVolumeDisplay.text = VolumeValueToDisplay(options.sfxVolume);
     }
 
-    public void ApplyVolume()
+    private void ApplyAudioOptions()
     {
         audioMixer.SetFloat("MasterVolume", VolumeValueToDb(options.masterVolume));
         audioMixer.SetFloat("MusicVolume", VolumeValueToDb(options.musicVolume));
         audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(options.keysoundVolume));
         audioMixer.SetFloat("SfxVolume", VolumeValueToDb(options.sfxVolume));
+
+        AudioConfiguration config = AudioSettings.GetConfiguration();
+        config.dspBufferSize = options.audioBufferSize;
+        AudioSettings.Reset(config);
     }
     #endregion
 }
