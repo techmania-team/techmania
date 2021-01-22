@@ -1,9 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class LatencyCalibrationPanel : MonoBehaviour
 {
+    public GraphicRaycaster raycaster;
+
+    [Header("Scan and notes")]
     public RectTransform scan;
     public RectTransform scanline0;
     public RectTransform scanline1;
@@ -16,8 +21,16 @@ public class LatencyCalibrationPanel : MonoBehaviour
     public AudioClip snare;
 
     private System.Diagnostics.Stopwatch stopwatch;
-    private int[] pulses = { 0, 240, 480, 600, 720 };
-    private int[] lanes = { 1, 0, 1, 1, 0 };
+    private readonly int[] pulses = { 0, 240, 480, 600, 720 };
+    private readonly int[] lanes = { 1, 0, 1, 1, 0 };
+    private const float beatPerSecond = 1.5f;
+
+    private enum InputDevice
+    {
+        Touchscreen,
+        Keyboard,
+        Mouse
+    }
 
     private void OnEnable()
     {
@@ -45,7 +58,6 @@ public class LatencyCalibrationPanel : MonoBehaviour
                 FloatScanToAnchorX(scan),
                 1f - 0.25f * lanes[i] - 0.125f);
             notes[i].anchorMax = notes[i].anchorMin;
-            notes[i].GetComponent<NoteAppearance>().Activate();
         }
     }
 
@@ -68,8 +80,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
         // Move scanline.
 
-        // Background is 90 BPM, or 1.5 beats per second
-        float beat = time * 1.5f;
+        float beat = time * beatPerSecond;
         float pulse = beat * Pattern.pulsesPerBeat;
         // Debug.Log($"time:{time} beat:{beat} pulse:{pulse}");
         float scan0 = PulseToFloatScan(pulse);
@@ -84,5 +95,81 @@ public class LatencyCalibrationPanel : MonoBehaviour
             FloatScanToAnchorX(scan1), 0f);
         scanline1.anchorMax = new Vector2(
             scanline1.anchorMin.x, 1f);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnMouseOrTouchDown(Input.mousePosition, InputDevice.Mouse);
+        }
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            if (Input.GetTouch(i).phase == TouchPhase.Began)
+            {
+                OnMouseOrTouchDown(Input.GetTouch(i).position,
+                    InputDevice.Touchscreen);
+            }
+        }
+        // TODO: handle keyboard
+    }
+
+    private float CurrentTime()
+    {
+        float time = (float)stopwatch.Elapsed.TotalSeconds;
+        float timePerScan = 4f / beatPerSecond;
+        while (time >= timePerScan * 0.875f) time -= timePerScan;
+        return time;
+    }
+    
+    private float CorrectTime(int noteId)
+    {
+        float beat = pulses[noteId] / Pattern.pulsesPerBeat;
+        return beat / beatPerSecond;
+    }
+
+    private void OnMouseOrTouchDown(Vector2 screenPosition,
+        InputDevice device)
+    {
+        PointerEventData eventData = new PointerEventData(
+            EventSystem.current);
+        eventData.position = screenPosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        raycaster.Raycast(eventData, results);
+
+        foreach (RaycastResult r in results)
+        {
+            NoteImageTouchReceiver touchReceiver = r.gameObject
+                .GetComponent<NoteImageTouchReceiver>();
+            if (touchReceiver == null) continue;
+
+            RectTransform noteRect = touchReceiver.transform.parent
+                .GetComponent<RectTransform>();
+            int noteId = -1;
+            for (int i = 0; i < pulses.Length; i++)
+            {
+                if (notes[i] == noteRect)
+                {
+                    noteId = i;
+                    break;
+                }
+            }
+            if (noteId == -1) continue;
+            OnNoteHit(noteId, device);
+            return;
+        }
+    }
+
+    private void OnNoteHit(int id, InputDevice device)
+    {
+        Debug.Log($"Note #{id} is hit by {device}");
+        float currentTime = CurrentTime();
+        float correctTime = CorrectTime(id);
+        if (currentTime < correctTime)
+        {
+            Debug.Log($"{correctTime - currentTime}s early");
+        }
+        else
+        {
+            Debug.Log($"{currentTime - correctTime}s late");
+        }
     }
 }
