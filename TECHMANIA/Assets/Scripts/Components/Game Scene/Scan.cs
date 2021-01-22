@@ -8,8 +8,8 @@ public class Scan : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
-    private const float kSpaceBeforeScan = 0.15f;
-    private const float kSpaceAfterScan = 0.1f;
+    public const float kSpaceBeforeScan = 0.15f;
+    public const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
     private float scanHeight;
     public static float laneHeight { get; private set; }
