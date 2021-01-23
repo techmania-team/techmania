@@ -25,6 +25,9 @@ public class OptionsPanel : MonoBehaviour
     public TMP_Dropdown audioBufferDropdown;
     public AudioMixer audioMixer;
 
+    [Header("Miscellaneous")]
+    public TMP_Text latencyDisplay;
+
     private Options options;
     // Make a backup of all available resolutions at startup, because
     // Screen.resolutions may change at runtime. I have no idea why.
@@ -74,15 +77,8 @@ public class OptionsPanel : MonoBehaviour
             resolutionIndex = resolutions.Count - 1;
             options.width = resolutions[resolutionIndex].width;
             options.height = resolutions[resolutionIndex].height;
-            options.refreshRate = resolutions[resolutionIndex].refreshRate;
-        }
-
-        // Audio buffer size was added in 0.2, and options
-        // created in 0.1 did not contain this field, so the
-        // deserialized value would be 0.
-        if (options.audioBufferSize == 0)
-        {
-            options.audioBufferSize = Options.GetDefaultAudioBufferSize();
+            options.refreshRate = resolutions[resolutionIndex]
+                .refreshRate;
         }
     }
 
@@ -138,6 +134,10 @@ public class OptionsPanel : MonoBehaviour
         UIUtils.MemoryToDropdown(audioBufferDropdown,
             options.audioBufferSize.ToString(),
             defaultValue: 0);
+
+        // Miscellaneous
+
+        latencyDisplay.text = $"{options.touchLatencyMs}/{options.keyboardLatencyMs}/{options.mouseLatencyMs} ms";
     }
 
     #region Graphics

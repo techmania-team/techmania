@@ -46,6 +46,9 @@ public class OptionsBase
     }
 }
 
+// Deserialization will call the constructor, so we can set whatever
+// weird default values in the constructor, and they will naturally
+// apply to options from earlier versions.
 [Serializable]
 public class Options : OptionsBase
 {
@@ -62,6 +65,10 @@ public class Options : OptionsBase
     public float keysoundVolume;
     public float sfxVolume;
     public int audioBufferSize;
+
+    public int touchLatencyMs;
+    public int keyboardLatencyMs;
+    public int mouseLatencyMs;
 
     public Options()
     {
@@ -82,6 +89,10 @@ public class Options : OptionsBase
         // and calling AudioSettings.GetConfiguration() at that time
         // causes an exception.
         audioBufferSize = 512;
+
+        touchLatencyMs = 30;
+        keyboardLatencyMs = 0;
+        mouseLatencyMs = 0;
     }
 
     public static int GetDefaultAudioBufferSize()

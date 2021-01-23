@@ -10,6 +10,14 @@ public class LatencyCalibrationPanel : MonoBehaviour
 {
     public GraphicRaycaster raycaster;
 
+    [Header("Controls")]
+    public Slider touchSlider;
+    public Slider keyboardSlider;
+    public Slider mouseSlider;
+    public TMP_InputField touchInputField;
+    public TMP_InputField keyboardInputField;
+    public TMP_InputField mouseInputField;
+
     [Header("Scan and notes")]
     public RectTransform scan;
     public RectTransform scanline0;
@@ -26,12 +34,14 @@ public class LatencyCalibrationPanel : MonoBehaviour
     public Color earlyColor;
     public Color lateColor;
 
+    private Options options;
+
     private System.Diagnostics.Stopwatch stopwatch;
     private readonly int[] pulses = { 0, 240, 480, 600, 720 };
     private readonly int[] lanes = { 1, 0, 1, 1, 0 };
     private const float beatPerSecond = 1.5f;
     private List<List<string>> timingHistory;
-    private List<TMPro.TMP_Text> historyDisplay;
+    private List<TextMeshProUGUI> historyDisplay;
 
     private enum InputDevice
     {
@@ -42,6 +52,12 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        options = OptionsBase.LoadFromFile(
+            Paths.GetOptionsFilePath()) as Options;
+
+        RefreshSliders();
+        RefreshInputFields();
+
         stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
         bgSource.Play();
@@ -51,6 +67,8 @@ public class LatencyCalibrationPanel : MonoBehaviour
     {
         bgSource.Stop();
         audioSourceManager.StopAll();
+
+        options.SaveToFile(Paths.GetOptionsFilePath());
     }
 
     // Start is called before the first frame update
@@ -59,7 +77,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
         float scanHeight = scan.rect.height;
         float laneHeight = scanHeight / 4f;
         timingHistory = new List<List<string>>();
-        historyDisplay = new List<TMP_Text>();
+        historyDisplay = new List<TextMeshProUGUI>();
         for (int i = 0; i < pulses.Length; i++)
         {
             notes[i].sizeDelta = new Vector2(laneHeight, laneHeight);
@@ -70,8 +88,8 @@ public class LatencyCalibrationPanel : MonoBehaviour
             notes[i].anchorMax = notes[i].anchorMin;
             notes[i].anchoredPosition = Vector2.zero;
             timingHistory.Add(new List<string>());
-            TMP_Text display = notes[i]
-                .GetComponentInChildren<TMP_Text>();
+            TextMeshProUGUI display = notes[i]
+                .GetComponentInChildren<TextMeshProUGUI>();
             display.text = "";
             historyDisplay.Add(display);
         }
@@ -200,5 +218,55 @@ public class LatencyCalibrationPanel : MonoBehaviour
             history.AppendLine(timingHistory[id][i]);
         }
         historyDisplay[id].text = history.ToString();
+    }
+
+    public void OnSliderValueChanged()
+    {
+        options.touchLatencyMs = (int)touchSlider.value;
+        options.keyboardLatencyMs = (int)keyboardSlider.value;
+        options.mouseLatencyMs = (int)mouseSlider.value;
+
+        RefreshInputFields();
+    }
+
+    public void OnInputFieldEndEdit()
+    {
+        UIUtils.ClampInputField(touchInputField,
+            (int)touchSlider.minValue,
+            (int)touchSlider.maxValue);
+        UIUtils.ClampInputField(keyboardInputField,
+            (int)keyboardSlider.minValue,
+            (int)keyboardSlider.maxValue);
+        UIUtils.ClampInputField(mouseInputField,
+            (int)mouseSlider.minValue,
+            (int)mouseSlider.maxValue);
+        options.touchLatencyMs = int.Parse(
+            touchInputField.text);
+        options.keyboardLatencyMs = int.Parse(
+            keyboardInputField.text);
+        options.mouseLatencyMs = int.Parse(
+            mouseInputField.text);
+
+        RefreshSliders();
+    }
+
+    private void RefreshSliders()
+    {
+        touchSlider.SetValueWithoutNotify(
+            options.touchLatencyMs);
+        keyboardSlider.SetValueWithoutNotify(
+            options.keyboardLatencyMs);
+        mouseSlider.SetValueWithoutNotify(
+            options.mouseLatencyMs);
+    }
+
+    private void RefreshInputFields()
+    {
+        touchInputField.SetTextWithoutNotify(
+            options.touchLatencyMs.ToString());
+        keyboardInputField.SetTextWithoutNotify(
+            options.keyboardLatencyMs.ToString());
+        mouseInputField.SetTextWithoutNotify(
+            options.mouseLatencyMs.ToString());
     }
 }
