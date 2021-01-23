@@ -23,6 +23,8 @@ public class LatencyCalibrationPanel : MonoBehaviour
     public RectTransform scanline0;
     public RectTransform scanline1;
     public List<RectTransform> notes;
+    public RectTransform explosionContainer;
+    public GameObject explosionPrefab;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
@@ -40,6 +42,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
     private readonly int[] pulses = { 0, 240, 480, 600, 720 };
     private readonly int[] lanes = { 1, 0, 1, 1, 0 };
     private const float beatPerSecond = 1.5f;
+    private float laneHeight = 0f;
     private List<List<string>> timingHistory;
     private List<TextMeshProUGUI> historyDisplay;
 
@@ -75,7 +78,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
     void Start()
     {
         float scanHeight = scan.rect.height;
-        float laneHeight = scanHeight / 4f;
+        laneHeight = scanHeight / 4f;
         timingHistory = new List<List<string>>();
         historyDisplay = new List<TextMeshProUGUI>();
         for (int i = 0; i < pulses.Length; i++)
@@ -116,7 +119,6 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
         float beat = time * beatPerSecond;
         float pulse = beat * Pattern.pulsesPerBeat;
-        // Debug.Log($"time:{time} beat:{beat} pulse:{pulse}");
         float scan0 = PulseToFloatScan(pulse);
         float scan1 = scan0 + 1f;
         while (scan0 > 1.5f) scan0 -= 2f;
@@ -142,7 +144,41 @@ public class LatencyCalibrationPanel : MonoBehaviour
                     InputDevice.Touchscreen);
             }
         }
-        // TODO: handle keyboard
+        if (AnyKeyDown())
+        {
+            // Which note does this keystroke go to?
+            int id = -1;
+            float minDifference = float.MaxValue;
+            float currentTime = CurrentTime();
+            for (int i = 0; i < pulses.Length; i++)
+            {
+                float correctTime = CorrectTime(i, 
+                    InputDevice.Keyboard);
+                float difference = Mathf.Abs(
+                    currentTime - correctTime);
+                if (difference < minDifference)
+                {
+                    id = i;
+                    minDifference = difference;
+                }
+            }
+            OnNoteHit(id, InputDevice.Keyboard);
+        }
+    }
+
+    private bool AnyKeyDown()
+    {
+        for (int i = (int)KeyCode.A; i <= (int)KeyCode.Z; i++)
+        {
+            if (Input.GetKeyDown((KeyCode)i)) return true;
+        }
+        for (int i = (int)KeyCode.Alpha0;
+            i <= (int)KeyCode.Alpha9;
+            i++)
+        {
+            if (Input.GetKeyDown((KeyCode)i)) return true;
+        }
+        return false;
     }
 
     private float CurrentTime()
@@ -155,9 +191,22 @@ public class LatencyCalibrationPanel : MonoBehaviour
     
     private float CorrectTime(int noteId, InputDevice device)
     {
-        // TODO: apply latency.
+        int latency = 0;
+        // No C# 8.0, not hype.
+        switch (device)
+        {
+            case InputDevice.Touchscreen:
+                latency = options.touchLatencyMs;
+                break;
+            case InputDevice.Keyboard:
+                latency = options.keyboardLatencyMs;
+                break;
+            case InputDevice.Mouse:
+                latency = options.mouseLatencyMs;
+                break;
+        }
         float beat = (float)pulses[noteId] / Pattern.pulsesPerBeat;
-        return beat / beatPerSecond;
+        return beat / beatPerSecond + latency * 0.001f;
     }
 
     private void OnMouseOrTouchDown(Vector2 screenPosition,
@@ -195,12 +244,38 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
     private void OnNoteHit(int id, InputDevice device)
     {
+        // Calculate time difference.
         float currentTime = CurrentTime();
         float correctTime = CorrectTime(id, device);
-        string historyLine;
-        char deviceLetter = device.ToString()[0];
         int timeDifferenceInMs = Mathf.FloorToInt(
             Mathf.Abs(currentTime - correctTime) * 1000f);
+
+        // The usual stuff: explosion and keysound.
+        if (timeDifferenceInMs <= 200)
+        {
+            GameObject vfx = Instantiate(
+                explosionPrefab, explosionContainer);
+            RectTransform rect = vfx.GetComponent<RectTransform>();
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(
+                laneHeight * 3f, laneHeight * 3f);
+            rect.position = notes[id].transform.position;
+
+            if (lanes[id] == 0)
+            {
+                audioSourceManager.PlayKeysound(snare,
+                    hiddenLane: false);
+            }
+            else
+            {
+                audioSourceManager.PlayKeysound(kick,
+                    hiddenLane: false);
+            }
+        }
+
+        // Write timing history.
+        string historyLine;
+        char deviceLetter = device.ToString()[0];
         if (currentTime < correctTime)
         {
             historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(earlyColor)}>early</color>";
