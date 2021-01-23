@@ -410,8 +410,13 @@ public class Note
 
 public class HoldNote : Note
 {
+    // Calculated at unpack time:
+
     public int duration;  // In pulses.
-    // TODO: add "endTime" field and calculate at load time.
+
+    // Calculated at runtime:
+
+    public float endTime;
 
     public override string Pack()
     {
@@ -441,12 +446,11 @@ public class DragNote : Note
     // describing the note head.
     // controlBefore of the first node and controlAfter
     // of the last node are ignored.
-#if UNITY_2019
-    [NonSerialized]
-#else
-    [System.Text.Json.Serialization.JsonIgnore]
-#endif
     public List<DragNode> nodes;
+
+    // Calculated at runtime:
+
+    public float endTime;
 
     public DragNote()
     {

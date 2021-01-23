@@ -1085,17 +1085,18 @@ public class Game : MonoBehaviour
             ongoingNoteIsHitOnThisFrame)
         {
             // Has the note's duration finished?
-            // TODO: take latency into account.
-            int duration = 0;
+            float endTime = 0f;
             if (pair.Key.note is HoldNote)
             {
-                duration = (pair.Key.note as HoldNote).duration;
+                endTime = (pair.Key.note as HoldNote).endTime
+                    + LatencyForNote(pair.Key.note);
             }
             else if (pair.Key.note is DragNote)
             {
-                duration = (pair.Key.note as DragNote).Duration();
+                endTime = (pair.Key.note as DragNote).endTime
+                    + LatencyForNote(pair.Key.note);
             }
-            if (Pulse >= pair.Key.note.pulse + duration)
+            if (Time >= endTime)
             {
                 // Resolve note.
                 ResolveNote(pair.Key, ongoingNotes[pair.Key]);
