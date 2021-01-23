@@ -371,6 +371,14 @@ public class Game : MonoBehaviour
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
+        for (int i = 0; i < kPlayableLanes; i++)
+        {
+            noteObjectsInLane.Add(new LinkedList<NoteObject>());
+            notesForMouseInLane.Add(
+                new LinkedList<NoteObject>());
+            notesForKeyboardInLane.Add(
+                new LinkedList<NoteObject>());
+        }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
             int scanOfN = n.pulse / PulsesPerScan;
