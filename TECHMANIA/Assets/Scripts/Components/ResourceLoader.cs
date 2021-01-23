@@ -26,14 +26,36 @@ public class ResourceLoader : MonoBehaviour
         cachedFolder = "";
     }
 
+    private void ReportAudioCache()
+    {
+        Debug.Log("Cached clips: " + audioClips.Count);
+        Debug.Log("Sample sizes:");
+        int logs = 0;
+        foreach (AudioClip c in audioClips.Values)
+        {
+            Debug.Log(c.samples);
+            logs++;
+            if (logs > 5) break;
+        }
+    }
+
+    private void Update()
+    {
+    }
+
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
-        UnityAction<string> cacheAudioCompleteCallback)
+        UnityAction<string> cacheAudioCompleteCallback,
+        bool reuseCachedClips = false)
     {
         if (trackFolder != cachedFolder)
         {
             audioClips.Clear();
             cachedFolder = trackFolder;
+        }
+        if (!reuseCachedClips)
+        {
+            audioClips.Clear();
         }
 
         ResourceLoader instance = GetInstance();
@@ -47,12 +69,17 @@ public class ResourceLoader : MonoBehaviour
     public static void CacheAllKeysounds(string trackFolder,
         Pattern pattern,
         UnityAction<string> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback)
+        UnityAction<float> progressCallback,
+        bool reuseCachedClips = false)
     {
         if (trackFolder != cachedFolder)
         {
             audioClips.Clear();
             cachedFolder = trackFolder;
+        }
+        if (!reuseCachedClips)
+        {
+            audioClips.Clear();
         }
 
         HashSet<string> filenames = new HashSet<string>();
