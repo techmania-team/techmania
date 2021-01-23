@@ -90,7 +90,7 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        touchLatencyMs = 30;
+        touchLatencyMs = 20;
         keyboardLatencyMs = 0;
         mouseLatencyMs = 0;
     }
@@ -98,6 +98,21 @@ public class Options : OptionsBase
     public static int GetDefaultAudioBufferSize()
     {
         return AudioSettings.GetConfiguration().dspBufferSize;
+    }
+
+    public int GetLatencyForDevice(InputDevice device)
+    {
+        switch (device)
+        {
+            case InputDevice.Touchscreen:
+                return touchLatencyMs;
+            case InputDevice.Keyboard:
+                return keyboardLatencyMs;
+            case InputDevice.Mouse:
+                return mouseLatencyMs;
+            default:
+                return 0;
+        }
     }
 
     public void ApplyGraphicSettings()

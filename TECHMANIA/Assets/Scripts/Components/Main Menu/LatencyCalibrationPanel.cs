@@ -46,13 +46,6 @@ public class LatencyCalibrationPanel : MonoBehaviour
     private List<List<string>> timingHistory;
     private List<TextMeshProUGUI> historyDisplay;
 
-    private enum InputDevice
-    {
-        Touchscreen,
-        Keyboard,
-        Mouse
-    }
-
     private void OnEnable()
     {
         options = OptionsBase.LoadFromFile(
@@ -191,20 +184,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
     
     private float CorrectTime(int noteId, InputDevice device)
     {
-        int latency = 0;
-        // No C# 8.0, not hype.
-        switch (device)
-        {
-            case InputDevice.Touchscreen:
-                latency = options.touchLatencyMs;
-                break;
-            case InputDevice.Keyboard:
-                latency = options.keyboardLatencyMs;
-                break;
-            case InputDevice.Mouse:
-                latency = options.mouseLatencyMs;
-                break;
-        }
+        int latency = options.GetLatencyForDevice(device);
         float beat = (float)pulses[noteId] / Pattern.pulsesPerBeat;
         return beat / beatPerSecond + latency * 0.001f;
     }

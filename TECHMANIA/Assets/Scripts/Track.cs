@@ -411,6 +411,7 @@ public class Note
 public class HoldNote : Note
 {
     public int duration;  // In pulses.
+    // TODO: add "endTime" field and calculate at load time.
 
     public override string Pack()
     {

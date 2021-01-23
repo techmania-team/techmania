@@ -22,6 +22,13 @@ public enum Judgement
     Break
 }
 
+public enum InputDevice
+{
+    Touchscreen,
+    Keyboard,
+    Mouse
+}
+
 public class Game : MonoBehaviour
 {
     [Header("Background")]
@@ -94,6 +101,7 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
+    private Options options;
     private const int kPlayableLanes = 4;
     private const float kBreakThreshold = 0.3f;
     private const float kGoodThreshold = 0.15f;
@@ -158,6 +166,22 @@ public class Game : MonoBehaviour
         loadingBar.SetActive(true);
         loadingProgress.SetValue(0f);
         stopwatch = null;
+
+        // Load options.
+        try
+        {
+            options = OptionsBase.LoadFromFile(
+                Paths.GetOptionsFilePath()) as Options;
+        }
+        catch (IOException)
+        {
+            options = new Options();
+        }
+        catch (Exception ex)
+        {
+            ReportFatalError(
+                "Could not load options:\n\n" + ex.Message);
+        }
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
@@ -740,6 +764,7 @@ public class Game : MonoBehaviour
     }
     #endregion
 
+    #region Utilities
     // By default -3 / 2 = -1 because reasons. We want -2.
     // This assumes b is positive.
     private int RoundingDownIntDivision(int a, int b)
@@ -748,6 +773,38 @@ public class Game : MonoBehaviour
         if (a >= 0) return a / b;
         return (a / b) - 1;
     }
+
+    private InputDevice DeviceForNote(Note n)
+    {
+        if (GameSetup.pattern.patternMetadata.controlScheme
+            == ControlScheme.Touch)
+        {
+            return InputDevice.Touchscreen;
+        }
+        if (GameSetup.pattern.patternMetadata.controlScheme
+            == ControlScheme.Keys)
+        {
+            return InputDevice.Keyboard;
+        }
+        switch (n.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.Drag:
+                return InputDevice.Mouse;
+            default:
+                return InputDevice.Keyboard;
+        }
+    }
+
+    private float LatencyForNote(Note n)
+    {
+        int latencyMs = options.GetLatencyForDevice(
+            DeviceForNote(n));
+        return latencyMs * 0.001f;
+    }
+    #endregion
 
     #region Update
     // Update is called once per frame
@@ -851,7 +908,9 @@ public class Game : MonoBehaviour
             {
                 // Check for Break on upcoming notes in each
                 // playable lane.
-                if (Time > upcomingNote.note.time + kBreakThreshold
+                if (Time > upcomingNote.note.time 
+                        + LatencyForNote(upcomingNote.note)
+                        + kBreakThreshold
                     && !ongoingNotes.ContainsKey(upcomingNote))
                 {
                     ResolveNote(upcomingNote, Judgement.Break);
@@ -1026,6 +1085,7 @@ public class Game : MonoBehaviour
             ongoingNoteIsHitOnThisFrame)
         {
             // Has the note's duration finished?
+            // TODO: take latency into account.
             int duration = 0;
             if (pair.Key.note is HoldNote)
             {
@@ -1232,7 +1292,8 @@ public class Game : MonoBehaviour
                     noteToCheck = n.GetComponent<NoteAppearance>()
                         .GetFirstUnresolvedRepeatNote();
                 }
-                float correctTime = noteToCheck.note.time;
+                float correctTime = noteToCheck.note.time
+                    + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;
                 if (Mathf.Abs(difference) > kBreakThreshold)
                 {
@@ -1313,7 +1374,8 @@ public class Game : MonoBehaviour
             // Do nothing.
             return;
         }
-        float correctTime = earliestNote.note.time;
+        float correctTime = earliestNote.note.time
+            + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
         if (Mathf.Abs(difference) > kBreakThreshold)
         {
@@ -1385,7 +1447,8 @@ public class Game : MonoBehaviour
             }
         }
 
-        float correctTime = earliestNote.note.time;
+        float correctTime = earliestNote.note.time
+            + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
         if (Mathf.Abs(difference) > kBreakThreshold)
         {

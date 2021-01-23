@@ -526,6 +526,11 @@ public class NoteAppearance : MonoBehaviour,
 
     public void PlaceNoteImageOnCurve()
     {
+        // TODO: compensate for input latency.
+        // - Maintain 2 copies of pointsOnCurve: one for hitbox
+        //   placement, one for display.
+        // - Ask the scanline where it would be at
+        //   (currentTime - latency), and use that to place hitbox.
         RectTransform imageRect = noteImage
             .GetComponent<RectTransform>();
         imageRect.anchoredPosition = pointsOnCurve[0];

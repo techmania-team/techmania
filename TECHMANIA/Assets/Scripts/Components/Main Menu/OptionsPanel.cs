@@ -37,7 +37,8 @@ public class OptionsPanel : MonoBehaviour
     public static void ApplyOptionsOnStartUp()
     {
         OptionsPanel instance = FindObjectOfType<Canvas>()
-            .GetComponentInChildren<OptionsPanel>(includeInactive: true);
+            .GetComponentInChildren<OptionsPanel>(
+            includeInactive: true);
         instance.LoadOrCreateOptions();
         instance.options.ApplyGraphicSettings();
         instance.ApplyAudioOptions();
