@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,10 +22,16 @@ public class LatencyCalibrationPanel : MonoBehaviour
     public AudioClip kick;
     public AudioClip snare;
 
+    [Header("Colors")]
+    public Color earlyColor;
+    public Color lateColor;
+
     private System.Diagnostics.Stopwatch stopwatch;
     private readonly int[] pulses = { 0, 240, 480, 600, 720 };
     private readonly int[] lanes = { 1, 0, 1, 1, 0 };
     private const float beatPerSecond = 1.5f;
+    private List<List<string>> timingHistory;
+    private List<TMPro.TMP_Text> historyDisplay;
 
     private enum InputDevice
     {
@@ -50,6 +58,8 @@ public class LatencyCalibrationPanel : MonoBehaviour
     {
         float scanHeight = scan.rect.height;
         float laneHeight = scanHeight / 4f;
+        timingHistory = new List<List<string>>();
+        historyDisplay = new List<TMP_Text>();
         for (int i = 0; i < pulses.Length; i++)
         {
             notes[i].sizeDelta = new Vector2(laneHeight, laneHeight);
@@ -58,6 +68,12 @@ public class LatencyCalibrationPanel : MonoBehaviour
                 FloatScanToAnchorX(scan),
                 1f - 0.25f * lanes[i] - 0.125f);
             notes[i].anchorMax = notes[i].anchorMin;
+            notes[i].anchoredPosition = Vector2.zero;
+            timingHistory.Add(new List<string>());
+            TMP_Text display = notes[i]
+                .GetComponentInChildren<TMP_Text>();
+            display.text = "";
+            historyDisplay.Add(display);
         }
     }
 
@@ -119,9 +135,10 @@ public class LatencyCalibrationPanel : MonoBehaviour
         return time;
     }
     
-    private float CorrectTime(int noteId)
+    private float CorrectTime(int noteId, InputDevice device)
     {
-        float beat = pulses[noteId] / Pattern.pulsesPerBeat;
+        // TODO: apply latency.
+        float beat = (float)pulses[noteId] / Pattern.pulsesPerBeat;
         return beat / beatPerSecond;
     }
 
@@ -160,16 +177,28 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
     private void OnNoteHit(int id, InputDevice device)
     {
-        Debug.Log($"Note #{id} is hit by {device}");
         float currentTime = CurrentTime();
-        float correctTime = CorrectTime(id);
+        float correctTime = CorrectTime(id, device);
+        string historyLine;
+        char deviceLetter = device.ToString()[0];
+        int timeDifferenceInMs = Mathf.FloorToInt(
+            Mathf.Abs(currentTime - correctTime) * 1000f);
         if (currentTime < correctTime)
         {
-            Debug.Log($"{correctTime - currentTime}s early");
+            historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(earlyColor)}>early</color>";
         }
         else
         {
-            Debug.Log($"{currentTime - correctTime}s late");
+            historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(lateColor)}>late</color>";
         }
+
+        timingHistory[id].Add(historyLine);
+        StringBuilder history = new StringBuilder();
+        int lowerBound = Mathf.Max(0, timingHistory[id].Count - 5);
+        for (int i = timingHistory[id].Count - 1; i >= lowerBound; i--)
+        {
+            history.AppendLine(timingHistory[id][i]);
+        }
+        historyDisplay[id].text = history.ToString();
     }
 }
