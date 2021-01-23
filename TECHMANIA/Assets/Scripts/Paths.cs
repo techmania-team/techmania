@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using UnityEngine.Events;
+using System;
 
 public static class Paths
 {
@@ -91,6 +92,19 @@ public static class Paths
             }
         }
         return builder.ToString();
+    }
+
+    public static string FullPathToUri(string fullPath)
+    {
+        return "file://" + fullPath.Replace("#", "%23")
+            .Replace("$", "%24")
+            .Replace("&", "%26")
+            .Replace("+", "%2b")
+            .Replace(",", "%2c")
+            .Replace(";", "%3b")
+            .Replace("=", "%3d")
+            .Replace("?", "%3f")
+            .Replace("@", "%40");
     }
 
     public const string kTrackFilename = "track.tech";

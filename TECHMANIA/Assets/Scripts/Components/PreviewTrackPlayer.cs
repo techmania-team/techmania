@@ -52,7 +52,7 @@ public class PreviewTrackPlayer : MonoBehaviour
             previewTrackFilename);
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
-            new Uri(filename), AudioType.UNKNOWN);
+            Paths.FullPathToUri(filename), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
         AudioClip clip;
