@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -120,4 +121,20 @@ public class Options : OptionsBase
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
         QualitySettings.vSyncCount = vSync ? 1 : 0;
     }
+
+    #region Instance
+    public static Options instance { get; private set; }
+    public static void RefreshInstance()
+    {
+        try
+        {
+            instance = LoadFromFile(
+                Paths.GetOptionsFilePath()) as Options;
+        }
+        catch (IOException)
+        {
+            instance = new Options();
+        }
+    }
+    #endregion
 }

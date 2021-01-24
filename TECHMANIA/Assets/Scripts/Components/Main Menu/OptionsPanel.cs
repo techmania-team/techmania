@@ -28,7 +28,6 @@ public class OptionsPanel : MonoBehaviour
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
 
-    private Options options;
     // Make a backup of all available resolutions at startup, because
     // Screen.resolutions may change at runtime. I have no idea why.
     private List<Resolution> resolutions;
@@ -40,22 +39,13 @@ public class OptionsPanel : MonoBehaviour
             .GetComponentInChildren<OptionsPanel>(
             includeInactive: true);
         instance.LoadOrCreateOptions();
-        instance.options.ApplyGraphicSettings();
+        Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioOptions();
     }
 
     private void LoadOrCreateOptions()
     {
-        options = null;
-        try
-        {
-            options = OptionsBase.LoadFromFile(
-                Paths.GetOptionsFilePath()) as Options;
-        }
-        catch (IOException)
-        {
-            options = new Options();
-        }
+        Options.RefreshInstance();
 
         // Find all resolutions, as well as resolutionIndex.
         resolutions = new List<Resolution>();
@@ -64,9 +54,9 @@ public class OptionsPanel : MonoBehaviour
         {
             Resolution r = Screen.resolutions[i];
             resolutions.Add(r);
-            if (r.width == options.width &&
-                r.height == options.height &&
-                r.refreshRate == options.refreshRate)
+            if (r.width == Options.instance.width &&
+                r.height == Options.instance.height &&
+                r.refreshRate == Options.instance.refreshRate)
             {
                 resolutionIndex = i;
             }
@@ -76,10 +66,12 @@ public class OptionsPanel : MonoBehaviour
         {
             // Restore default resolution.
             resolutionIndex = resolutions.Count - 1;
-            options.width = resolutions[resolutionIndex].width;
-            options.height = resolutions[resolutionIndex].height;
-            options.refreshRate = resolutions[resolutionIndex]
-                .refreshRate;
+            Options.instance.width =
+                resolutions[resolutionIndex].width;
+            Options.instance.height =
+                resolutions[resolutionIndex].height;
+            Options.instance.refreshRate =
+                resolutions[resolutionIndex].refreshRate;
         }
     }
 
@@ -91,7 +83,7 @@ public class OptionsPanel : MonoBehaviour
 
     private void OnDisable()
     {
-        options.SaveToFile(Paths.GetOptionsFilePath());
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
     }
 
     private void MemoryToUI()
@@ -101,7 +93,8 @@ public class OptionsPanel : MonoBehaviour
         resolutionDropdown.ClearOptions();
         foreach (Resolution r in resolutions)
         {
-            resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(r.ToString()));
+            resolutionDropdown.options.Add(
+                new TMP_Dropdown.OptionData(r.ToString()));
         }
         if (resolutions.Count > 1)
         {
@@ -115,30 +108,37 @@ public class OptionsPanel : MonoBehaviour
         resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
 
         fullscreenDropdown.ClearOptions();
-        foreach (FullScreenMode m in System.Enum.GetValues(typeof(FullScreenMode)))
+        foreach (FullScreenMode m in
+            System.Enum.GetValues(typeof(FullScreenMode)))
         {
-            fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(m.ToString()));
+            fullscreenDropdown.options.Add(
+                new TMP_Dropdown.OptionData(m.ToString()));
         }
         fullscreenDropdown.SetValueWithoutNotify(1);
-        fullscreenDropdown.SetValueWithoutNotify((int)options.fullScreenMode);
+        fullscreenDropdown.SetValueWithoutNotify(
+            (int)Options.instance.fullScreenMode);
 
-        vSyncToggle.SetIsOnWithoutNotify(options.vSync);
+        vSyncToggle.SetIsOnWithoutNotify(Options.instance.vSync);
 
         // Audio
 
-        masterVolumeSlider.SetValueWithoutNotify(options.masterVolume);
-        musicVolumeSlider.SetValueWithoutNotify(options.musicVolume);
-        keysoundVolumeSlider.SetValueWithoutNotify(options.keysoundVolume);
-        sfxVolumeSlider.SetValueWithoutNotify(options.sfxVolume);
+        masterVolumeSlider.SetValueWithoutNotify(
+            Options.instance.masterVolume);
+        musicVolumeSlider.SetValueWithoutNotify(
+            Options.instance.musicVolume);
+        keysoundVolumeSlider.SetValueWithoutNotify(
+            Options.instance.keysoundVolume);
+        sfxVolumeSlider.SetValueWithoutNotify(
+            Options.instance.sfxVolume);
         UpdateVolumeDisplay();
 
         UIUtils.MemoryToDropdown(audioBufferDropdown,
-            options.audioBufferSize.ToString(),
+            Options.instance.audioBufferSize.ToString(),
             defaultValue: 0);
 
         // Miscellaneous
 
-        latencyDisplay.text = $"{options.touchLatencyMs}/{options.keyboardLatencyMs}/{options.mouseLatencyMs} ms";
+        latencyDisplay.text = $"{Options.instance.touchLatencyMs}/{Options.instance.keyboardLatencyMs}/{Options.instance.mouseLatencyMs} ms";
     }
 
     #region Graphics
@@ -155,25 +155,27 @@ public class OptionsPanel : MonoBehaviour
     public void OnGraphicsOptionsUpdated()
     {
         resolutionIndex = resolutionDropdown.value;
-        options.width = resolutions[resolutionIndex].width;
-        options.height = resolutions[resolutionIndex].height;
-        options.refreshRate = resolutions[resolutionIndex].refreshRate;
+        Options.instance.width = resolutions[resolutionIndex].width;
+        Options.instance.height = resolutions[resolutionIndex].height;
+        Options.instance.refreshRate =
+            resolutions[resolutionIndex].refreshRate;
 
-        options.fullScreenMode = (FullScreenMode)fullscreenDropdown.value;
-        options.vSync = vSyncToggle.isOn;
+        Options.instance.fullScreenMode =
+            (FullScreenMode)fullscreenDropdown.value;
+        Options.instance.vSync = vSyncToggle.isOn;
 
-        options.ApplyGraphicSettings();
+        Options.instance.ApplyGraphicSettings();
     }
     #endregion
 
     #region Audio
     public void OnAudioOptionsUpdated()
     {
-        options.masterVolume = masterVolumeSlider.value;
-        options.musicVolume = musicVolumeSlider.value;
-        options.keysoundVolume = keysoundVolumeSlider.value;
-        options.sfxVolume = sfxVolumeSlider.value;
-        options.audioBufferSize = int.Parse(
+        Options.instance.masterVolume = masterVolumeSlider.value;
+        Options.instance.musicVolume = musicVolumeSlider.value;
+        Options.instance.keysoundVolume = keysoundVolumeSlider.value;
+        Options.instance.sfxVolume = sfxVolumeSlider.value;
+        Options.instance.audioBufferSize = int.Parse(
             audioBufferDropdown.options[
             audioBufferDropdown.value].text);
 
@@ -193,21 +195,29 @@ public class OptionsPanel : MonoBehaviour
 
     private void UpdateVolumeDisplay()
     {
-        masterVolumeDisplay.text = VolumeValueToDisplay(options.masterVolume);
-        musicVolumeDisplay.text = VolumeValueToDisplay(options.musicVolume);
-        keysoundVolumeDisplay.text = VolumeValueToDisplay(options.keysoundVolume);
-        sfxVolumeDisplay.text = VolumeValueToDisplay(options.sfxVolume);
+        masterVolumeDisplay.text = VolumeValueToDisplay(
+            Options.instance.masterVolume);
+        musicVolumeDisplay.text = VolumeValueToDisplay(
+            Options.instance.musicVolume);
+        keysoundVolumeDisplay.text = VolumeValueToDisplay(
+            Options.instance.keysoundVolume);
+        sfxVolumeDisplay.text = VolumeValueToDisplay(
+            Options.instance.sfxVolume);
     }
 
     private void ApplyAudioOptions()
     {
-        audioMixer.SetFloat("MasterVolume", VolumeValueToDb(options.masterVolume));
-        audioMixer.SetFloat("MusicVolume", VolumeValueToDb(options.musicVolume));
-        audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(options.keysoundVolume));
-        audioMixer.SetFloat("SfxVolume", VolumeValueToDb(options.sfxVolume));
+        audioMixer.SetFloat("MasterVolume", VolumeValueToDb(
+            Options.instance.masterVolume));
+        audioMixer.SetFloat("MusicVolume", VolumeValueToDb(
+            Options.instance.musicVolume));
+        audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(
+            Options.instance.keysoundVolume));
+        audioMixer.SetFloat("SfxVolume", VolumeValueToDb(
+            Options.instance.sfxVolume));
 
         AudioConfiguration config = AudioSettings.GetConfiguration();
-        config.dspBufferSize = options.audioBufferSize;
+        config.dspBufferSize = Options.instance.audioBufferSize;
         AudioSettings.Reset(config);
     }
     #endregion

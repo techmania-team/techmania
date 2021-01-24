@@ -102,7 +102,6 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
-    private Options options;
     private const int kPlayableLanes = 4;
     private const float kBreakThreshold = 0.3f;
     private const float kGoodThreshold = 0.15f;
@@ -169,20 +168,7 @@ public class Game : MonoBehaviour
         stopwatch = null;
 
         // Load options.
-        try
-        {
-            options = OptionsBase.LoadFromFile(
-                Paths.GetOptionsFilePath()) as Options;
-        }
-        catch (IOException)
-        {
-            options = new Options();
-        }
-        catch (Exception ex)
-        {
-            ReportFatalError(
-                "Could not load options:\n\n" + ex.Message);
-        }
+        Options.RefreshInstance();
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
@@ -818,7 +804,7 @@ public class Game : MonoBehaviour
 
     private float LatencyForNote(Note n)
     {
-        int latencyMs = options.GetLatencyForDevice(
+        int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
         return latencyMs * 0.001f;
     }
