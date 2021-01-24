@@ -163,7 +163,8 @@ public class Scan : MonoBehaviour
     #region Positioning
     private float NormalizedXToXPosition(float normalizedX)
     {
-        if (scanNumber % 2 != 0)
+        // Even scans are from right to left.
+        if (scanNumber % 2 == 0)
         {
             normalizedX = 1f - normalizedX;
         }

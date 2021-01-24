@@ -336,11 +336,14 @@ public class Game : MonoBehaviour
         CalculateLastScan();
 
         // Create scan objects.
-        Dictionary<int, Scan> scanObjects = new Dictionary<int, Scan>();
+        Dictionary<int, Scan> scanObjects =
+            new Dictionary<int, Scan>();
         for (int i = Scan; i <= lastScan; i++)
         {
-            Transform parent = (i % 2 == 0) ? topScanContainer : bottomScanContainer;
-            GameObject template = (i % 2 == 0) ? topScanTemplate : bottomScanTemplate;
+            Transform parent = (i % 2 == 0) ?
+                bottomScanContainer : topScanContainer;
+            GameObject template = (i % 2 == 0) ?
+                bottomScanTemplate : topScanTemplate;
             GameObject scanObject = Instantiate(template, parent);
             scanObject.SetActive(true);
 
