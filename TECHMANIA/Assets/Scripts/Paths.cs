@@ -10,15 +10,17 @@ public static class Paths
 {
     public static string GetTrackFolder()
     {
-        string current = Directory.GetCurrentDirectory();  // Does not end with \
+        // Does not end with separator
+        string current = Directory.GetCurrentDirectory();
+        
         // If there's a "Builds" folder, assume we are running from
         // Unity editor.
-        if (Directory.Exists(current + "\\Builds"))
+        if (Directory.Exists(Path.Combine(current, "Builds")))
         {
-            current += "\\Builds";
+            current = Path.Combine(current, "Builds");
         }
 
-        string tracks = current + "\\Tracks";
+        string tracks = Path.Combine(current, "Tracks");
         if (!Directory.Exists(tracks))
         {
             Directory.CreateDirectory(tracks);
@@ -28,9 +30,10 @@ public static class Paths
 
     private static string GetDataFolder()
     {
-        string folder = System.Environment.GetFolderPath(
-            System.Environment.SpecialFolder.MyDocuments)
-            + "\\TECHMANIA";
+        string folder = Path.Combine(
+            System.Environment.GetFolderPath(
+            System.Environment.SpecialFolder.MyDocuments),
+            "TECHMANIA");
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
@@ -40,7 +43,12 @@ public static class Paths
 
     public static string GetOptionsFilePath()
     {
-        return GetDataFolder() + "\\options.json";
+        return Path.Combine(GetDataFolder(), "options.json");
+    }
+
+    public static string GetRulesetFilePath()
+    {
+        return Path.Combine(GetDataFolder(), "ruleset.json");
     }
 
     private static List<string> GetAllMatchingFiles(string folder, 

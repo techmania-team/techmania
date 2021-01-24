@@ -5,13 +5,6 @@ using UnityEngine;
 
 public class MainMenuPanel : MonoBehaviour
 {
-    public TextMeshProUGUI versionText;
-
-    private void Start()
-    {
-        versionText.text = Application.version;
-    }
-
     public void OnEditorButtonClick()
     {
         Curtain.DrawCurtainThenGoToScene("Editor");
