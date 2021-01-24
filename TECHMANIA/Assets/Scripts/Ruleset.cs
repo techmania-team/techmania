@@ -91,6 +91,11 @@ public class Ruleset : RulesetBase
                 Paths.GetRulesetFilePath()) as Ruleset;
             instance.isCustom = true;
         }
+        catch (IOException)
+        {
+            instance = new Ruleset();
+            instance.isCustom = false;
+        }
         catch (Exception ex)
         {
             instance = new Ruleset();
