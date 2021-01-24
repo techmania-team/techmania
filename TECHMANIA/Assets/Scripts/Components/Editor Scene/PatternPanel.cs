@@ -400,6 +400,24 @@ public class PatternPanel : MonoBehaviour
                 StartPlayback();
             }
         }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            ChangeNoteType(NoteType.Basic);
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            ChangeNoteType(NoteType.ChainHead);
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            ChangeNoteType(NoteType.ChainNode);
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            ChangeNoteType(NoteType.Drag);
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            ChangeNoteType(NoteType.Hold);
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+            ChangeNoteType(NoteType.RepeatHead);
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+            ChangeNoteType(NoteType.Repeat);
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            ChangeNoteType(NoteType.RepeatHeadHold);
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+            ChangeNoteType(NoteType.RepeatHold);
     }
     #endregion
 
@@ -676,7 +694,12 @@ public class PatternPanel : MonoBehaviour
 
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
-        noteType = clickedButton.type;
+        ChangeNoteType(clickedButton.type);
+    }
+
+    private void ChangeNoteType(NoteType newType)
+    {
+        noteType = newType;
         UpdateNoteTypeButtons();
 
         // Apply to selection if asked to.
