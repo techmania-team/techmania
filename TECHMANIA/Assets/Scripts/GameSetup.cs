@@ -15,8 +15,10 @@ public class GameSetup
             return new FileInfo(trackPath).DirectoryName;
         }
     }
-    
     public static Pattern pattern;
+
+    // Gameplay options
+
     public static bool noFail;
     public static bool autoPlay;
 }

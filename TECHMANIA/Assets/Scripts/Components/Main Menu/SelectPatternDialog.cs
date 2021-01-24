@@ -72,6 +72,10 @@ public class SelectPatternDialog : MonoBehaviour
     {
         GameSetup.pattern = patternList.GetSelectedPattern();
         if (GameSetup.pattern == null) return;
+        GameSetup.noFail = Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        GameSetup.autoPlay = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
         Curtain.DrawCurtainThenGoToScene("Game");
     }
 }

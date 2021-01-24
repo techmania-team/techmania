@@ -81,6 +81,7 @@ public class Game : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
+    public GameObject noFailIndicator;
     public GameObject loadingBar;
     public MaterialProgressBar loadingProgress;
     public PauseDialog pauseDialog;
@@ -271,6 +272,7 @@ public class Game : MonoBehaviour
         // Loading complete.
         loading = false;
         topBar.SetActive(true);
+        noFailIndicator.SetActive(GameSetup.noFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
 
@@ -1655,7 +1657,8 @@ public class Game : MonoBehaviour
         {
             SetCombo(0);
             hp -= kHpLoss;
-            if (hp <= 0)
+            if (hp < 0) hp = 0;
+            if (hp <= 0 && !GameSetup.noFail)
             {
                 // Stage failed.
                 score.stageFailed = true;
