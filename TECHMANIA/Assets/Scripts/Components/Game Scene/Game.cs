@@ -117,6 +117,7 @@ public class Game : MonoBehaviour
     private Stopwatch feverTimer;
     private float initialTime;
     private bool loading;
+    private bool hitboxVisible;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
     // resolved. Combo ticks are, by default, 60 pulses apart.
@@ -130,6 +131,7 @@ public class Game : MonoBehaviour
 
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
+    public static event UnityAction<bool> HitboxVisibilityChanged;
 
     private static List<List<KeyCode>> keysForLane;
 
@@ -459,6 +461,10 @@ public class Game : MonoBehaviour
                 appearance.SetInputLatency(LatencyForNote(n));
             }
         }
+
+        // Broadcast the initial hitbox visibility.
+        hitboxVisible = false;
+        HitboxVisibilityChanged?.Invoke(hitboxVisible);
 
         // Ensure that a ScanChanged event is fired at the first update.
         Scan--;
@@ -839,6 +845,12 @@ public class Game : MonoBehaviour
             {
                 OnFeverButtonPointerDown();
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            hitboxVisible = !hitboxVisible;
+            HitboxVisibilityChanged?.Invoke(hitboxVisible);
         }
 
         UpdateTime();

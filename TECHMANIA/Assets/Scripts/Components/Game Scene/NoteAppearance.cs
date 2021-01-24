@@ -112,6 +112,10 @@ public class NoteAppearance : MonoBehaviour,
     private void SetNoteImageVisibility(Visibility v)
     {
         noteImage.gameObject.SetActive(v != Visibility.Hidden);
+        if (hitbox != null)
+        {
+            hitbox.gameObject.SetActive(v != Visibility.Hidden);
+        }
         noteImage.color = (v == Visibility.Transparent) ?
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
@@ -294,6 +298,22 @@ public class NoteAppearance : MonoBehaviour,
         UpdateState();
     }
 
+    private void OnEnable()
+    {
+        if (hitbox != null)
+        {
+            Game.HitboxVisibilityChanged += OnHitboxVisibilityChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (hitbox != null)
+        {
+            Game.HitboxVisibilityChanged -= OnHitboxVisibilityChanged;
+        }
+    }
+
     public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
     {
         scanRef = scan;
@@ -354,6 +374,20 @@ public class NoteAppearance : MonoBehaviour,
     {
         return GetComponent<NoteObject>().note.type;
     }
+
+    #region Hitbox
+    private void OnHitboxVisibilityChanged(bool visible)
+    {
+        if (hitbox == null) return;
+
+        Image hitboxImage = hitbox.GetComponent<Image>();
+        hitboxImage.color = new Color(
+            hitboxImage.color.r,
+            hitboxImage.color.g,
+            hitboxImage.color.b,
+            visible ? 1f : 0f);
+    }
+    #endregion
 
     #region Path
     // A little complication here is that, to achieve the correct
