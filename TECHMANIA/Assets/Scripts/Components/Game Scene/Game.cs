@@ -924,14 +924,26 @@ public class Game : MonoBehaviour
 
             if (laneIndex < kPlayableLanes)
             {
-                // Check for Break on upcoming notes in each
-                // playable lane.
-                if (Time > upcomingNote.note.time 
-                        + LatencyForNote(upcomingNote.note)
-                        + kBreakThreshold
-                    && !ongoingNotes.ContainsKey(upcomingNote))
+                if (GameSetup.autoPlay)
                 {
-                    ResolveNote(upcomingNote, Judgement.Break);
+                    // Auto-play notes when it comes to their time.
+                    if (oldTime < upcomingNote.note.time
+                        && Time >= upcomingNote.note.time)
+                    {
+                        HitNote(upcomingNote, 0f);
+                    }
+                }
+                else
+                {
+                    // Check for Break on upcoming notes in each
+                    // playable lane.
+                    if (Time > upcomingNote.note.time
+                            + LatencyForNote(upcomingNote.note)
+                            + kBreakThreshold
+                        && !ongoingNotes.ContainsKey(upcomingNote))
+                    {
+                        ResolveNote(upcomingNote, Judgement.Break);
+                    }
                 }
             }
             else
@@ -963,6 +975,10 @@ public class Game : MonoBehaviour
     private void HandleInput()
     {
         if (IsPaused())
+        {
+            return;
+        }
+        if (GameSetup.autoPlay)
         {
             return;
         }
@@ -1122,7 +1138,7 @@ public class Game : MonoBehaviour
                 continue;
             }
 
-            if (pair.Value == false)
+            if (pair.Value == false && !GameSetup.autoPlay)
             {
                 // No hit on this note during this frame, resolve
                 // as a Miss.
@@ -1183,6 +1199,7 @@ public class Game : MonoBehaviour
     public void OnFeverButtonPointerDown()
     {
         if (feverState != FeverState.Ready) return;
+        if (GameSetup.autoPlay) return;
         feverState = FeverState.Active;
         score.FeverOn();
         feverSoundSource.Play();
@@ -1199,7 +1216,8 @@ public class Game : MonoBehaviour
     private void UpdateFever()
     {
         if (feverState != FeverState.Active) return;
-        feverAmount = 1f - (float)feverTimer.Elapsed.TotalSeconds * 0.1f;
+        feverAmount = 1f -
+            (float)feverTimer.Elapsed.TotalSeconds * 0.1f;
         if (feverAmount < 0f)
         {
             feverAmount = 0f;
@@ -1646,6 +1664,7 @@ public class Game : MonoBehaviour
                  judgement == Judgement.Max))
             {
                 feverAmount += 8f / numPlayableNotes;
+                if (GameSetup.autoPlay) feverAmount = 0f;
                 if (feverAmount >= 1f)
                 {
                     feverState = FeverState.Ready;

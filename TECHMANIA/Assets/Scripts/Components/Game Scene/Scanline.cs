@@ -7,6 +7,7 @@ public class Scanline : MonoBehaviour
 {
     [HideInInspector]
     public int scanNumber;
+    public GameObject autoPlayIndicator;
 
     private Scan scanRef;
 
@@ -20,6 +21,8 @@ public class Scanline : MonoBehaviour
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
+
+        autoPlayIndicator.SetActive(GameSetup.autoPlay);
     }
 
     private void Update()
