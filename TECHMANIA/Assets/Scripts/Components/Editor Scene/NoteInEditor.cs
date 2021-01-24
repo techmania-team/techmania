@@ -389,7 +389,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     // All positions relative to note head.
     private List<Vector2> pointsOnCurve;
 
-    public IList<Vector2> GetPointsOnCurve()
+    public IList<Vector2> GetVisiblePointsOnCurve()
     {
         return pointsOnCurve;
     }

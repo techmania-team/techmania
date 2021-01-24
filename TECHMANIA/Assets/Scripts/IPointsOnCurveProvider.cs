@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IPointsOnCurveProvider
 {
-    IList<Vector2> GetPointsOnCurve();
+    IList<Vector2> GetVisiblePointsOnCurve();
 }

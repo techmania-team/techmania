@@ -378,6 +378,7 @@ public class Game : MonoBehaviour
                 new LinkedList<NoteObject>());
             notesForKeyboardInLane.Add(
                 new LinkedList<NoteObject>());
+            unmanagedRepeatNotes.Add(new List<NoteObject>());
         }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
@@ -461,6 +462,13 @@ public class Game : MonoBehaviour
                 ManageRepeatNotes(noteObject,
                     unmanagedRepeatNotes[n.lane],
                     scanObjects);
+            }
+
+            // Tell drag notes about their input latency so they can
+            // move their hitboxes accordingly.
+            if (n.type == NoteType.Drag)
+            {
+                appearance.SetInputLatency(LatencyForNote(n));
             }
         }
 
@@ -1268,8 +1276,8 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
-            NoteImageTouchReceiver touchReceiver = r.gameObject
-                .GetComponent<NoteImageTouchReceiver>();
+            NoteHitbox touchReceiver = r.gameObject
+                .GetComponent<NoteHitbox>();
             if (touchReceiver != null)
             {
                 NoteObject n = touchReceiver

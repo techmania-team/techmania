@@ -201,8 +201,8 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
         foreach (RaycastResult r in results)
         {
-            NoteImageTouchReceiver touchReceiver = r.gameObject
-                .GetComponent<NoteImageTouchReceiver>();
+            NoteHitbox touchReceiver = r.gameObject
+                .GetComponent<NoteHitbox>();
             if (touchReceiver == null) continue;
 
             RectTransform noteRect = touchReceiver.transform.parent

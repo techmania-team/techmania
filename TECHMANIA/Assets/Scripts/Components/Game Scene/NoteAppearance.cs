@@ -40,6 +40,7 @@ public class NoteAppearance : MonoBehaviour,
 
     public Image noteImage;
     public GameObject feverOverlay;
+    public RectTransform hitbox;
     [Header("Chain")]
     public RectTransform pathToPreviousNote;
     [Header("Drag")]
@@ -318,7 +319,7 @@ public class NoteAppearance : MonoBehaviour,
             if (curve != null)
             {
                 UpdateOngoingCurve();
-                PlaceNoteImageOnCurve();
+                PlaceNoteImageAndHitboxOnCurve();
             }
         }
     }
@@ -461,19 +462,27 @@ public class NoteAppearance : MonoBehaviour,
 
     #region Curve
     // All positions relative to note head.
-    private ListView<Vector2> pointsOnCurve;
+    private ListView<Vector2> visiblePointsOnCurve;
+    private List<Vector2> pointsOnCurve;
     private float curveXDirection;
+    private float inputLatency;
 
-    public IList<Vector2> GetPointsOnCurve()
+    public IList<Vector2> GetVisiblePointsOnCurve()
     {
-        return pointsOnCurve;
+        return visiblePointsOnCurve;
+    }
+
+    public void SetInputLatency(float latency)
+    {
+        inputLatency = latency;
     }
 
     public void InitializeCurve()
     {
         DragNote dragNote = GetComponent<NoteObject>().note
             as DragNote;
-        pointsOnCurve = new ListView<Vector2>();
+        visiblePointsOnCurve = new ListView<Vector2>();
+        pointsOnCurve = new List<Vector2>();
 
         Vector2 headPosition = GetComponent<RectTransform>()
             .anchoredPosition;
@@ -486,21 +495,27 @@ public class NoteAppearance : MonoBehaviour,
                 scanRef.FloatLaneToYPosition(
                     dragNote.lane + p.lane)
                 - headPosition.y);
+            visiblePointsOnCurve.Add(pointOnCurve);
             pointsOnCurve.Add(pointOnCurve);
         }
 
         curveEnd.anchoredPosition =
-            pointsOnCurve[pointsOnCurve.Count - 1];
+            visiblePointsOnCurve[visiblePointsOnCurve.Count - 1];
         curveXDirection = Mathf.Sign(
-            pointsOnCurve[pointsOnCurve.Count - 1].x
-            - pointsOnCurve[0].x);
-        PlaceNoteImageOnCurve();
+            visiblePointsOnCurve[visiblePointsOnCurve.Count - 1].x
+            - visiblePointsOnCurve[0].x);
         curve.SetVerticesDirty();
+
+        noteImage.rectTransform.anchoredPosition = Vector2.zero;
+        hitbox.anchoredPosition = Vector2.zero;
+        UIUtils.RotateToward(noteImage.rectTransform,
+                selfPos: pointsOnCurve[0],
+                targetPos: pointsOnCurve[1]);
     }
 
     public void UpdateOngoingCurve()
     {
-        if (pointsOnCurve.Count < 2)
+        if (visiblePointsOnCurve.Count < 2)
         {
             return;
         }
@@ -509,37 +524,72 @@ public class NoteAppearance : MonoBehaviour,
             GetComponent<RectTransform>().anchoredPosition.x;
         // Make sure scanline is before pointsOnCurve[1]; remove
         // points if necessary.
-        while ((scanlineX - pointsOnCurve[1].x) * curveXDirection
-            >= 0f)
+        while ((scanlineX - visiblePointsOnCurve[1].x)
+            * curveXDirection >= 0f)
         {
-            if (pointsOnCurve.Count < 3) break;
-            pointsOnCurve.RemoveFirst();
+            if (visiblePointsOnCurve.Count < 3) break;
+            visiblePointsOnCurve.RemoveFirst();
         }
         // Interpolate pointsOnCurve[0] and pointsOnCurve[1].
-        float t = (scanlineX - pointsOnCurve[0].x) /
-            (pointsOnCurve[1].x - pointsOnCurve[0].x);
-        pointsOnCurve[0] = new Vector2(
-            scanlineX,
-            Mathf.Lerp(pointsOnCurve[0].y, pointsOnCurve[1].y, t));
+        float t = (scanlineX - visiblePointsOnCurve[0].x) /
+            (visiblePointsOnCurve[1].x - visiblePointsOnCurve[0].x);
+        visiblePointsOnCurve[0] = Vector2.Lerp(
+            visiblePointsOnCurve[0],
+            visiblePointsOnCurve[1], t);
         curve.SetVerticesDirty();
     }
 
-    public void PlaceNoteImageOnCurve()
+    public void PlaceNoteImageAndHitboxOnCurve()
     {
-        // TODO: compensate for input latency.
-        // - Maintain 2 copies of pointsOnCurve: one for hitbox
-        //   placement, one for display.
-        // - Ask the scanline where it would be at
-        //   (currentTime - latency), and use that to place hitbox.
         RectTransform imageRect = noteImage
             .GetComponent<RectTransform>();
-        imageRect.anchoredPosition = pointsOnCurve[0];
-        if (pointsOnCurve.Count > 1)
+        imageRect.anchoredPosition = visiblePointsOnCurve[0];
+        if (visiblePointsOnCurve.Count > 1)
         {
             UIUtils.RotateToward(imageRect,
-                selfPos: pointsOnCurve[0],
-                targetPos: pointsOnCurve[1]);
+                selfPos: visiblePointsOnCurve[0],
+                targetPos: visiblePointsOnCurve[1]);
         }
+
+        // To calculate the hitbox's position, we need to compensate
+        // for latency.
+        float compensatedPulse = GameSetup.pattern.TimeToPulse(
+            Game.Time - inputLatency);
+        float compensatedScanlineX = scanRef.FloatPulseToXPosition(
+            compensatedPulse) -
+            GetComponent<RectTransform>().anchoredPosition.x;
+        int pointIndexAfterHitbox = -1;
+        // Find the first point after the compensated scanline's
+        // position.
+        for (int i = 0; i < pointsOnCurve.Count; i++)
+        {
+            if ((pointsOnCurve[i].x - compensatedScanlineX) *
+                curveXDirection >= 0f)
+            {
+                pointIndexAfterHitbox = i;
+                break;
+            }
+        }
+        if (pointIndexAfterHitbox < 0)
+        {
+            // All points are before the compensated scanline.
+            pointIndexAfterHitbox = pointsOnCurve.Count - 1;
+        }
+        else if (pointIndexAfterHitbox == 0)
+        {
+            // All points are after the compensated scanline.
+            pointIndexAfterHitbox = 1;
+        }
+        // Interpolate pointsOnCurve[pointIndexAfterHitbox - 1]
+        // and pointsOnCurve[pointIndexAfterHitbox].
+        Vector2 pointBeforeHitbox =
+            pointsOnCurve[pointIndexAfterHitbox - 1];
+        Vector2 pointAfterHitbox =
+            pointsOnCurve[pointIndexAfterHitbox];
+        float t = (compensatedScanlineX - pointBeforeHitbox.x) /
+            (pointBeforeHitbox.x - pointAfterHitbox.x);
+        hitbox.anchoredPosition = Vector2.Lerp(pointBeforeHitbox,
+            pointAfterHitbox, t);
     }
 
     public Vector3 GetCurveEndPosition()
