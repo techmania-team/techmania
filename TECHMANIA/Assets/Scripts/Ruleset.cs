@@ -47,6 +47,7 @@ public class Ruleset : RulesetBase
     public float coolWindow;
     public float goodWindow;
     public float breakThreshold;
+    // TODO: grace period
 
     // Hitbox size
     public float hitboxWidth;
@@ -64,8 +65,8 @@ public class Ruleset : RulesetBase
     {
         version = kVersion;
 
-        rainbowMaxWindow = 0.03f;
-        maxWindow = 0.05f;
+        rainbowMaxWindow = 0.04f;
+        maxWindow = 0.07f;
         coolWindow = 0.1f;
         goodWindow = 0.15f;
         breakThreshold = 0.3f;
@@ -78,7 +79,7 @@ public class Ruleset : RulesetBase
 
         maxHp = 1000;
         hpLoss = 50;
-        hpRecovery = 4;
+        hpRecovery = 3;
     }
 
     #region Instance
