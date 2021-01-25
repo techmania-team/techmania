@@ -103,14 +103,6 @@ public class Game : MonoBehaviour
     public static float feverAmount { get; private set; }
 
     private const int kPlayableLanes = 4;
-    private const float kBreakThreshold = 0.3f;
-    private const float kGoodThreshold = 0.15f;
-    private const float kCoolThreshold = 0.1f;
-    private const float kMaxThreshold = 0.05f;
-    private const float kRainbowMaxThreshold = 0.03f;
-    private const int kMaxHp = 1000;
-    private const int kHpLoss = 50;
-    private const int kHpRecovery = 4;
     private const int kComboTickInterval = 60;
 
     private Stopwatch stopwatch;
@@ -171,6 +163,7 @@ public class Game : MonoBehaviour
 
         // Load options.
         Options.RefreshInstance();
+        Ruleset.RefreshInstance();
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
@@ -477,7 +470,7 @@ public class Game : MonoBehaviour
         currentCombo = 0;
         maxCombo = 0;
         score.Initialize(numPlayableNotes);
-        hp = kMaxHp;
+        hp = Ruleset.instance.maxHp;
         feverState = FeverState.Idle;
         feverAmount = 0f;
         switch (GameSetup.pattern.patternMetadata.controlScheme)
@@ -940,7 +933,7 @@ public class Game : MonoBehaviour
                     // playable lane.
                     if (Time > upcomingNote.note.time
                             + LatencyForNote(upcomingNote.note)
-                            + kBreakThreshold
+                            + Ruleset.instance.breakThreshold
                         && !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         ResolveNote(upcomingNote, Judgement.Break);
@@ -1171,7 +1164,7 @@ public class Game : MonoBehaviour
 
         // Other
         hpBar.anchorMax = new Vector2(
-            (float)hp / kMaxHp, 1f);
+            (float)hp / Ruleset.instance.maxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
     }
@@ -1333,7 +1326,8 @@ public class Game : MonoBehaviour
                 float correctTime = noteToCheck.note.time
                     + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;
-                if (Mathf.Abs(difference) > kBreakThreshold)
+                if (Mathf.Abs(difference) > 
+                    Ruleset.instance.breakThreshold)
                 {
                     // The touch or click is too early or too late
                     // for this note. Ignore.
@@ -1415,7 +1409,7 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > kBreakThreshold)
+        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -1488,7 +1482,7 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > kBreakThreshold)
+        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -1547,19 +1541,19 @@ public class Game : MonoBehaviour
 
         Judgement judgement;
         float absDifference = Mathf.Abs(timeDifference);
-        if (absDifference <= kRainbowMaxThreshold)
+        if (absDifference <= Ruleset.instance.rainbowMaxWindow)
         {
             judgement = Judgement.RainbowMax;
         }
-        else if (absDifference <= kMaxThreshold)
+        else if (absDifference <= Ruleset.instance.maxWindow)
         {
             judgement = Judgement.Max;
         }
-        else if (absDifference <= kCoolThreshold)
+        else if (absDifference <= Ruleset.instance.coolWindow)
         {
             judgement = Judgement.Cool;
         }
-        else if (absDifference <= kGoodThreshold)
+        else if (absDifference <= Ruleset.instance.goodWindow)
         {
             judgement = Judgement.Good;
         }
@@ -1657,8 +1651,11 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             SetCombo(currentCombo + 1);
-            hp += kHpRecovery;
-            if (hp >= kMaxHp) hp = kMaxHp;
+            hp += Ruleset.instance.hpRecovery;
+            if (hp >= Ruleset.instance.maxHp)
+            {
+                hp = Ruleset.instance.maxHp;
+            }
 
             if (feverState == FeverState.Idle &&
                 (judgement == Judgement.RainbowMax ||
@@ -1676,7 +1673,7 @@ public class Game : MonoBehaviour
         else
         {
             SetCombo(0);
-            hp -= kHpLoss;
+            hp -= Ruleset.instance.hpLoss;
             if (hp < 0) hp = 0;
             if (hp <= 0 && !GameSetup.noFail)
             {
