@@ -49,7 +49,7 @@ public class SelectTrackPanel : MonoBehaviour
             Paths.GetTrackFolder()))
         {
             // Is there a track?
-            string possibleTrackFile = $"{dir}\\{Paths.kTrackFilename}";
+            string possibleTrackFile = Path.Combine(dir, Paths.kTrackFilename);
             if (!File.Exists(possibleTrackFile))
             {
                 continue;
@@ -178,7 +178,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected virtual void OnClickCard(GameObject o)
     {
-        GameSetup.trackPath = $"{cardToTrack[o].folder}\\{Paths.kTrackFilename}";
+        GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, Paths.kTrackFilename);
         GameSetup.track = cardToTrack[o].track;
         selectPatternDialog.Show();
     }

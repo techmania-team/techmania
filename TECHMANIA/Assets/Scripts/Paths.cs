@@ -10,8 +10,13 @@ public static class Paths
 {
     public static string GetTrackFolder()
     {
+#if UNITY_ANDROID || UNITY_IOS
+        // Android
+        string current = Application.persistentDataPath;
+#else
         // Does not end with separator
         string current = Directory.GetCurrentDirectory();
+#endif
         
         // If there's a "Builds" folder, assume we are running from
         // Unity editor.
@@ -30,10 +35,18 @@ public static class Paths
 
     private static string GetDataFolder()
     {
+
+#if UNITY_ANDROID || UNITY_IOS
+        // Android
+        string folder = Path.Combine(
+            Application.persistentDataPath,
+            "TECHMANIA");
+#else
         string folder = Path.Combine(
             System.Environment.GetFolderPath(
             System.Environment.SpecialFolder.MyDocuments),
             "TECHMANIA");
+#endif
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
