@@ -112,7 +112,7 @@ public class TrackSetupPanel : MonoBehaviour
         {
             FileInfo fileInfo = new FileInfo(source);
             if (fileInfo.DirectoryName == trackFolder) continue;
-            string destination = $"{trackFolder}\\{fileInfo.Name}";
+            string destination = Path.Combine(trackFolder, fileInfo.Name);
 
             if (File.Exists(destination))
             {
