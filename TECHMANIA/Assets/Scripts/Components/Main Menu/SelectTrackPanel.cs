@@ -87,9 +87,9 @@ public class SelectTrackPanel : MonoBehaviour
                 card = Instantiate(trackCardTemplate, 
                     trackGrid.transform);
                 card.name = "Track Card";
-                card.SetActive(true);
                 card.GetComponent<TrackCard>().Initialize(
                     dir, track.trackMetadata);
+                card.SetActive(true);
 
                 // Record mapping.
                 cardToTrack.Add(card, new TrackInFolder()

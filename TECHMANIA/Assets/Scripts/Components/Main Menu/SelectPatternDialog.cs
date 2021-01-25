@@ -20,14 +20,16 @@ public class SelectPatternDialog : MonoBehaviour
 
     public void Show()
     {
-        GetComponent<Dialog>().FadeIn();
-
         // Show track metadata.
         Track track = GameSetup.track;
-        eyecatchImage.LoadImage(GameSetup.trackFolder, track.trackMetadata);
+        eyecatchImage.LoadImage(GameSetup.trackFolder, 
+            track.trackMetadata);
         genreText.text = track.trackMetadata.genre;
         titleText.text = track.trackMetadata.title;
         artistText.text = track.trackMetadata.artist;
+
+        // Show dialog after setting texts, so scrolling can work.
+        GetComponent<Dialog>().FadeIn();
 
         // Initialize pattern list.
         GameObject firstObject =

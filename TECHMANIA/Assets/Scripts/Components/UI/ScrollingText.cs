@@ -6,35 +6,69 @@ using UnityEngine.UI;
 
 public class ScrollingText : MonoBehaviour
 {
+    public enum Direction
+    {
+        Horizontal,
+        Vertical
+    }
+    public Direction direction;
+
     private RectTransform rect;
     private RectTransform innerRect;
-    private TextMeshProUGUI text;
-    private float maskWidth;
-    private float textWidth;
+    private float maskSize;
+    private float contentSize;
 
-    // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
         rect = GetComponent<RectTransform>();
-        text = GetComponentInChildren<TextMeshProUGUI>();
-        innerRect = text.GetComponent<RectTransform>();
+        innerRect = rect.GetChild(0).GetComponent<RectTransform>();
+        TextMeshProUGUI[] allTexts = 
+            GetComponentsInChildren<TextMeshProUGUI>();
 
-        // The RectTransform must have a static width for this
-        // line to work.
-        maskWidth = rect.sizeDelta.x;
-        textWidth = text.preferredWidth;
+        contentSize = 0f;
+        switch (direction)
+        {
+            case Direction.Horizontal:
+                maskSize = rect.sizeDelta.x;
+                foreach (TextMeshProUGUI t in allTexts)
+                {
+                    contentSize += t.preferredWidth;
+                }
+                break;
+            case Direction.Vertical:
+                maskSize = rect.sizeDelta.y;
+                foreach (TextMeshProUGUI t in allTexts)
+                {
+                    contentSize += t.preferredHeight;
+                }
+                break;
+        }
 
-        if (textWidth > maskWidth)
+        if (contentSize > maskSize)
         {
             StartCoroutine(Scroll());
+        }
+        else
+        {
+            ScrollTo(direction == Direction.Horizontal ? 0.5f : 0f);
         }
     }
 
     private void ScrollTo(float t)
     {
-        innerRect.anchorMin = new Vector2(t, 0f);
-        innerRect.anchorMax = new Vector2(t, 1f);
-        innerRect.pivot = new Vector2(t, 0.5f);
+        switch (direction)
+        {
+            case Direction.Horizontal:
+                innerRect.anchorMin = new Vector2(t, 0f);
+                innerRect.anchorMax = new Vector2(t, 1f);
+                innerRect.pivot = new Vector2(t, 0.5f);
+                break;
+            case Direction.Vertical:
+                innerRect.anchorMin = new Vector2(0f, 1f - t);
+                innerRect.anchorMax = new Vector2(1f, 1f - t);
+                innerRect.pivot = new Vector2(0.5f, 1f - t);
+                break;
+        }
     }
 
     private IEnumerator Scroll()
@@ -46,7 +80,8 @@ public class ScrollingText : MonoBehaviour
         {
             ScrollTo(0f);
             yield return new WaitForSeconds(kWaitTime);
-            for (float time = 0; time < kScrollTime; time += Time.deltaTime)
+            for (float time = 0;
+                time < kScrollTime; time += Time.deltaTime)
             {
                 float progress = time / kScrollTime;
                 ScrollTo(progress);
@@ -54,7 +89,8 @@ public class ScrollingText : MonoBehaviour
             }
             ScrollTo(1f);
             yield return new WaitForSeconds(kWaitTime);
-            for (float time = 0; time < kScrollTime; time += Time.deltaTime)
+            for (float time = 0;
+                time < kScrollTime; time += Time.deltaTime)
             {
                 float progress = 1f - time / kScrollTime;
                 ScrollTo(progress);
