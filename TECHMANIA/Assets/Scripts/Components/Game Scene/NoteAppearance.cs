@@ -65,6 +65,7 @@ public class NoteAppearance : MonoBehaviour,
     {
         state = State.Prepare;
         UpdateState();
+        InitializeHitbox();
     }
 
     public void Activate()
@@ -82,6 +83,11 @@ public class NoteAppearance : MonoBehaviour,
     {
         state = State.Ongoing;
         UpdateState();
+        if (GetNoteType() == NoteType.Drag)
+        {
+            SetHitboxSize(Ruleset.instance.ongoingDragHitboxWidth,
+                Ruleset.instance.ongoingDragHitboxHeight);
+        }
     }
 
     public void Resolve()
@@ -376,6 +382,36 @@ public class NoteAppearance : MonoBehaviour,
     }
 
     #region Hitbox
+    public void InitializeHitbox()
+    {
+        if (hitbox == null) return;
+
+        float hitboxWidth;
+        switch (GetNoteType())
+        {
+            case NoteType.ChainHead:
+                hitboxWidth = Ruleset.instance.chainHeadHitboxWidth;
+                break;
+            case NoteType.ChainNode:
+                hitboxWidth = Ruleset.instance.chainNodeHitboxWidth;
+                break;
+            default:
+                hitboxWidth = Ruleset.instance.hitboxWidth;
+                break;
+        }
+        SetHitboxSize(hitboxWidth, 1f);
+    }
+
+    private void SetHitboxSize(float width, float height)
+    {
+        if (hitbox == null) return;
+
+        hitbox.anchorMin = new Vector2(0.5f - width * 0.5f,
+            0.5f - height * 0.5f);
+        hitbox.anchorMax = new Vector2(0.5f + width * 0.5f,
+            0.5f + height * 0.5f);
+    }
+
     private void OnHitboxVisibilityChanged(bool visible)
     {
         if (hitbox == null) return;

@@ -74,7 +74,7 @@ public class Ruleset : RulesetBase
         chainHeadHitboxWidth = 1.5f;
         chainNodeHitboxWidth = 3f;
         ongoingDragHitboxWidth = 2f;
-        ongoingDragHitboxHeight = 1.5f;
+        ongoingDragHitboxHeight = 2f;
 
         maxHp = 1000;
         hpLoss = 50;
