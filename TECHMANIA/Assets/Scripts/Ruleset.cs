@@ -47,7 +47,7 @@ public class Ruleset : RulesetBase
     public float coolWindow;
     public float goodWindow;
     public float breakThreshold;
-    // TODO: grace period
+    public float longNoteGracePeriod;
 
     // Hitbox size
     public float hitboxWidth;
@@ -70,6 +70,7 @@ public class Ruleset : RulesetBase
         coolWindow = 0.1f;
         goodWindow = 0.15f;
         breakThreshold = 0.3f;
+        longNoteGracePeriod = 0.15f;
 
         hitboxWidth = 1.5f;
         chainHeadHitboxWidth = 1.5f;

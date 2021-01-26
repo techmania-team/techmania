@@ -114,7 +114,7 @@ public class Game : MonoBehaviour
     
     #region Timers
     // The stopwatch provides the "base time", which drives
-    // the backing track, BGA and hidden notes.
+    // the backing track, BGA, hidden notes and auto-played notes.
     private Stopwatch stopwatch;
     private static float BaseTime { get; set; }
 
@@ -1132,16 +1132,22 @@ public class Game : MonoBehaviour
             ongoingNoteIsHitOnThisFrame)
         {
             // Has the note's duration finished?
+            float latency = LatencyForNote(pair.Key.note);
+            float gracePeriodStart = 0f;
             float endTime = 0f;
             if (pair.Key.note is HoldNote)
             {
-                endTime = (pair.Key.note as HoldNote).endTime
-                    + LatencyForNote(pair.Key.note);
+                HoldNote holdNote = pair.Key.note as HoldNote;
+                gracePeriodStart = holdNote.gracePeriodStart +
+                    latency;
+                endTime = holdNote.endTime + latency;
             }
             else if (pair.Key.note is DragNote)
             {
-                endTime = (pair.Key.note as DragNote).endTime
-                    + LatencyForNote(pair.Key.note);
+                DragNote dragNote = pair.Key.note as DragNote;
+                gracePeriodStart = dragNote.gracePeriodStart +
+                    latency;
+                endTime = dragNote.endTime + latency;
             }
             if (Time >= endTime)
             {
@@ -1151,7 +1157,9 @@ public class Game : MonoBehaviour
                 continue;
             }
 
-            if (pair.Value == false && !GameSetup.autoPlay)
+            if (pair.Value == false
+                && !GameSetup.autoPlay
+                && Time < gracePeriodStart)
             {
                 // No hit on this note during this frame, resolve
                 // as a Miss.
