@@ -99,6 +99,7 @@ public class Game : MonoBehaviour
         Ready,  // No longer accummulates, awaiting activation
         Active  // Decreases with time
     }
+    private float feverCoefficient;
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
@@ -479,6 +480,14 @@ public class Game : MonoBehaviour
 
         // Ensure that a ScanChanged event is fired at the first update.
         Scan--;
+
+        // Calculate Fever coefficient. The goal is for the Fever bar
+        // to fill up in around 12.5 seconds.
+        int lastPulse = (lastScan + 1) *
+            GameSetup.pattern.patternMetadata.bps *
+            Pattern.pulsesPerBeat;
+        float trackLength = GameSetup.pattern.PulseToTime(lastPulse);
+        feverCoefficient = trackLength / 12.5f;
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
@@ -1688,7 +1697,7 @@ public class Game : MonoBehaviour
                 (judgement == Judgement.RainbowMax ||
                  judgement == Judgement.Max))
             {
-                feverAmount += 8f / numPlayableNotes;
+                feverAmount += feverCoefficient / numPlayableNotes;
                 if (GameSetup.autoPlay) feverAmount = 0f;
                 if (feverAmount >= 1f)
                 {
