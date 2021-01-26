@@ -104,22 +104,32 @@ public class Game : MonoBehaviour
 
     private const int kPlayableLanes = 4;
     private const int kComboTickInterval = 60;
-
-    private Stopwatch stopwatch;
-    private Stopwatch feverTimer;
-    private float initialTime;
-    private bool loading;
-    private bool hitboxVisible;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
     // resolved. Combo ticks are, by default, 60 pulses apart.
     private int previousComboTick;
-    public static float Time { get; private set; }
+
+    private bool loading;
+    private bool hitboxVisible;
+    
+    #region Timers
+    // The stopwatch provides the "base time", which drives
+    // the backing track, BGA and hidden notes.
+    private Stopwatch stopwatch;
+    private static float BaseTime { get; set; }
+
+    private static float offset;
+    // The public timer is compensated for offset, to be used for
+    // scanlines and notes. All public timers are based on this time.
+    public static float Time => BaseTime - offset;
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
-    public static int Pulse { get; private set; }
+    private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private int lastScan;
+    private Stopwatch feverTimer;
+    private float initialTime;
+    #endregion
 
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
@@ -261,7 +271,12 @@ public class Game : MonoBehaviour
         // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
         stopwatch.Start();
-        Time = initialTime;
+        int offsetMs = GameSetup.pattern.patternMetadata.controlScheme
+            == ControlScheme.Touch ?
+            Options.instance.touchOffsetMs :
+            Options.instance.keyboardMouseOffsetMs;
+        offset = offsetMs * 0.001f;
+        BaseTime = initialTime;
     }
 
     private void OnImageLoadComplete(Sprite sprite, string error)
@@ -859,34 +874,37 @@ public class Game : MonoBehaviour
 
     private void UpdateTime()
     {
+        float oldBaseTime = BaseTime;
         float oldTime = Time;
-        Time = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
+        BaseTime = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         int newPulse = Mathf.FloorToInt(FloatPulse);
         int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
 
-        // Play backing track if timer hits 0.
-        if (oldTime < 0f && Time >= 0f &&
+        // Play backing track if base time hits 0.
+        if (oldBaseTime < 0f && BaseTime >= 0f &&
             backingTrackClip != null)
         {
             audioSourceManager.PlayBackingTrack(backingTrackClip,
-                Time);
+                BaseTime);
         }
 
-        // Play bga if timer hits bgaOffset.
-        if (oldTime < GameSetup.pattern.patternMetadata.bgaOffset &&
-            Time >= GameSetup.pattern.patternMetadata.bgaOffset &&
+        // Play bga if base time hits bgaOffset.
+        if (oldBaseTime < GameSetup.pattern.patternMetadata.bgaOffset &&
+            BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset &&
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
-            videoPlayer.time = Time - 
+            videoPlayer.time = BaseTime - 
                 GameSetup.pattern.patternMetadata.bgaOffset;
             videoPlayer.Play();
         }
 
         // Fire ScanAboutToChange if we are 7/8 into the next scan.
-        if (RoundingDownIntDivision(Pulse + PulsesPerScan / 8, PulsesPerScan) !=
-            RoundingDownIntDivision(newPulse + PulsesPerScan / 8, PulsesPerScan))
+        if (RoundingDownIntDivision(
+                Pulse + PulsesPerScan / 8, PulsesPerScan) !=
+            RoundingDownIntDivision(
+                newPulse + PulsesPerScan / 8, PulsesPerScan))
         {
             ScanAboutToChange?.Invoke(
                 (newPulse + PulsesPerScan / 8) / PulsesPerScan);
@@ -921,8 +939,9 @@ public class Game : MonoBehaviour
                 if (GameSetup.autoPlay)
                 {
                     // Auto-play notes when it comes to their time.
-                    if (oldTime < upcomingNote.note.time
-                        && Time >= upcomingNote.note.time)
+                    // Also, auto-play uses the base time.
+                    if (oldBaseTime < upcomingNote.note.time
+                        && BaseTime >= upcomingNote.note.time)
                     {
                         HitNote(upcomingNote, 0f);
                     }
@@ -944,8 +963,8 @@ public class Game : MonoBehaviour
             {
                 // Play keyounds of upcoming notes in each
                 // hidden lane, regardless of note type.
-                if (oldTime < upcomingNote.note.time &&
-                    Time >= upcomingNote.note.time)
+                if (oldBaseTime < upcomingNote.note.time &&
+                    BaseTime >= upcomingNote.note.time)
                 {
                     PlayKeysound(upcomingNote);
                     upcomingNote.gameObject.SetActive(false);

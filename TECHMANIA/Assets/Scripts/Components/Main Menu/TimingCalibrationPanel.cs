@@ -38,7 +38,7 @@ public class TimingCalibrationPanel : MonoBehaviour
 
     private Options options;
 
-    // Timers. The stopwatch provides central time.
+    // Timers. The stopwatch provides base time.
     private System.Diagnostics.Stopwatch stopwatch;
     // noteTime = stopwatch + offset.
     private float noteTime;
