@@ -67,9 +67,10 @@ public class Options : OptionsBase
     public float sfxVolume;
     public int audioBufferSize;
 
+    public int touchOffsetMs;
     public int touchLatencyMs;
-    public int keyboardLatencyMs;
-    public int mouseLatencyMs;
+    public int keyboardMouseOffsetMs;
+    public int keyboardMouseLatencyMs;
 
     public Options()
     {
@@ -91,14 +92,26 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
+        touchOffsetMs = -20;
         touchLatencyMs = 20;
-        keyboardLatencyMs = 0;
-        mouseLatencyMs = 0;
+        keyboardMouseOffsetMs = 0;
+        keyboardMouseLatencyMs = 0;
     }
 
     public static int GetDefaultAudioBufferSize()
     {
         return AudioSettings.GetConfiguration().dspBufferSize;
+    }
+
+    public int GetOffsetForControlScheme(ControlScheme scheme)
+    {
+        switch (scheme)
+        {
+            case ControlScheme.Touch:
+                return touchOffsetMs;
+            default:
+                return keyboardMouseOffsetMs;
+        }
     }
 
     public int GetLatencyForDevice(InputDevice device)
@@ -107,12 +120,8 @@ public class Options : OptionsBase
         {
             case InputDevice.Touchscreen:
                 return touchLatencyMs;
-            case InputDevice.Keyboard:
-                return keyboardLatencyMs;
-            case InputDevice.Mouse:
-                return mouseLatencyMs;
             default:
-                return 0;
+                return keyboardMouseLatencyMs;
         }
     }
 

@@ -138,7 +138,7 @@ public class OptionsPanel : MonoBehaviour
 
         // Miscellaneous
 
-        latencyDisplay.text = $"{Options.instance.touchLatencyMs}/{Options.instance.keyboardLatencyMs}/{Options.instance.mouseLatencyMs} ms";
+        latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
     }
 
     #region Graphics

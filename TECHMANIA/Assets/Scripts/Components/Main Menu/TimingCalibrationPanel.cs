@@ -6,17 +6,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class LatencyCalibrationPanel : MonoBehaviour
+public class TimingCalibrationPanel : MonoBehaviour
 {
     public GraphicRaycaster raycaster;
 
     [Header("Controls")]
-    public Slider touchSlider;
-    public Slider keyboardSlider;
-    public Slider mouseSlider;
-    public TMP_InputField touchInputField;
-    public TMP_InputField keyboardInputField;
-    public TMP_InputField mouseInputField;
+    public MaterialRadioButton touchscreenRadio;
+    public MaterialRadioButton keyboardMouseRadio;
+    public Slider offsetSlider;
+    public Slider latencySlider;
+    public TMP_InputField offsetInputField;
+    public TMP_InputField latencyInputField;
 
     [Header("Scan and notes")]
     public RectTransform scan;
@@ -38,11 +38,19 @@ public class LatencyCalibrationPanel : MonoBehaviour
 
     private Options options;
 
+    // Timers. The stopwatch provides central time.
     private System.Diagnostics.Stopwatch stopwatch;
+    // noteTime = stopwatch + offset.
+    private float noteTime;
+    // Unique to this panel, clampedNoteTime is noteTime but
+    // clamped into the 0th scan.
+    private float clampedNoteTime;
+
     private readonly int[] pulses = { 0, 240, 480, 600, 720 };
     private readonly int[] lanes = { 1, 0, 1, 1, 0 };
     private const float beatPerSecond = 1.5f;
     private float laneHeight = 0f;
+    private bool calibratingTouchscreen;
     private List<List<string>> timingHistory;
     private List<TextMeshProUGUI> historyDisplay;
 
@@ -50,7 +58,9 @@ public class LatencyCalibrationPanel : MonoBehaviour
     {
         options = OptionsBase.LoadFromFile(
             Paths.GetOptionsFilePath()) as Options;
+        calibratingTouchscreen = true;
 
+        RefreshRadioButtons();
         RefreshSliders();
         RefreshInputFields();
 
@@ -106,11 +116,24 @@ public class LatencyCalibrationPanel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float time = (float)stopwatch.Elapsed.TotalSeconds;
+        // Update timers.
+
+        int offsetMs = calibratingTouchscreen ?
+            options.touchOffsetMs :
+            options.keyboardMouseOffsetMs;
+        noteTime = (float)stopwatch.Elapsed.TotalSeconds
+            - offsetMs * 0.001f;
+
+        float timePerScan = 4f / beatPerSecond;
+        clampedNoteTime = noteTime;
+        while (clampedNoteTime >= timePerScan * 0.875f)
+        {
+            clampedNoteTime -= timePerScan;
+        }
 
         // Move scanline.
 
-        float beat = time * beatPerSecond;
+        float beat = noteTime * beatPerSecond;
         float pulse = beat * Pattern.pulsesPerBeat;
         float scan0 = PulseToFloatScan(pulse);
         float scan1 = scan0 + 1f;
@@ -142,13 +165,12 @@ public class LatencyCalibrationPanel : MonoBehaviour
             // Which note does this keystroke go to?
             int id = -1;
             float minDifference = float.MaxValue;
-            float currentTime = CurrentTime();
             for (int i = 0; i < pulses.Length; i++)
             {
                 float correctTime = CorrectTime(i, 
                     InputDevice.Keyboard);
                 float difference = Mathf.Abs(
-                    currentTime - correctTime);
+                    clampedNoteTime - correctTime);
                 if (difference < minDifference)
                 {
                     id = i;
@@ -172,14 +194,6 @@ public class LatencyCalibrationPanel : MonoBehaviour
             if (Input.GetKeyDown((KeyCode)i)) return true;
         }
         return false;
-    }
-
-    private float CurrentTime()
-    {
-        float time = (float)stopwatch.Elapsed.TotalSeconds;
-        float timePerScan = 4f / beatPerSecond;
-        while (time >= timePerScan * 0.875f) time -= timePerScan;
-        return time;
     }
     
     private float CorrectTime(int noteId, InputDevice device)
@@ -225,10 +239,9 @@ public class LatencyCalibrationPanel : MonoBehaviour
     private void OnNoteHit(int id, InputDevice device)
     {
         // Calculate time difference.
-        float currentTime = CurrentTime();
         float correctTime = CorrectTime(id, device);
         int timeDifferenceInMs = Mathf.FloorToInt(
-            Mathf.Abs(currentTime - correctTime) * 1000f);
+            Mathf.Abs(clampedNoteTime - correctTime) * 1000f);
 
         // The usual stuff: explosion and keysound.
         if (timeDifferenceInMs <= 200)
@@ -256,7 +269,7 @@ public class LatencyCalibrationPanel : MonoBehaviour
         // Write timing history.
         string historyLine;
         char deviceLetter = device.ToString()[0];
-        if (currentTime < correctTime)
+        if (clampedNoteTime < correctTime)
         {
             historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(earlyColor)}>early</color>";
         }
@@ -275,53 +288,106 @@ public class LatencyCalibrationPanel : MonoBehaviour
         historyDisplay[id].text = history.ToString();
     }
 
+    #region Events from controls
+    public void OnTouchscreenRadioButtonClick()
+    {
+        calibratingTouchscreen = true;
+        RefreshRadioButtons();
+        RefreshSliders();
+        RefreshInputFields();
+    }
+
+    public void OnKeyboardMouseButtonClick()
+    {
+        calibratingTouchscreen = false;
+        RefreshRadioButtons();
+        RefreshSliders();
+        RefreshInputFields();
+    }
+
     public void OnSliderValueChanged()
     {
-        options.touchLatencyMs = (int)touchSlider.value;
-        options.keyboardLatencyMs = (int)keyboardSlider.value;
-        options.mouseLatencyMs = (int)mouseSlider.value;
+        if (calibratingTouchscreen)
+        {
+            options.touchOffsetMs = (int)offsetSlider.value;
+            options.touchLatencyMs = (int)latencySlider.value;
+        }
+        else
+        {
+            options.keyboardMouseOffsetMs = (int)offsetSlider.value;
+            options.keyboardMouseLatencyMs = (int)latencySlider.value;
+        }
 
         RefreshInputFields();
     }
 
     public void OnInputFieldEndEdit()
     {
-        UIUtils.ClampInputField(touchInputField,
-            (int)touchSlider.minValue,
-            (int)touchSlider.maxValue);
-        UIUtils.ClampInputField(keyboardInputField,
-            (int)keyboardSlider.minValue,
-            (int)keyboardSlider.maxValue);
-        UIUtils.ClampInputField(mouseInputField,
-            (int)mouseSlider.minValue,
-            (int)mouseSlider.maxValue);
-        options.touchLatencyMs = int.Parse(
-            touchInputField.text);
-        options.keyboardLatencyMs = int.Parse(
-            keyboardInputField.text);
-        options.mouseLatencyMs = int.Parse(
-            mouseInputField.text);
+        UIUtils.ClampInputField(offsetInputField,
+            (int)offsetSlider.minValue,
+            (int)offsetSlider.maxValue);
+        UIUtils.ClampInputField(latencyInputField,
+            (int)latencySlider.minValue,
+            (int)latencySlider.maxValue);
+
+        if (calibratingTouchscreen)
+        {
+            options.touchOffsetMs = int.Parse(offsetInputField.text);
+            options.touchLatencyMs = int.Parse(latencyInputField.text);
+        }
+        else
+        {
+            options.keyboardMouseOffsetMs =
+                int.Parse(offsetInputField.text);
+            options.keyboardMouseLatencyMs =
+                int.Parse(latencyInputField.text);
+        }
 
         RefreshSliders();
+    }
+    #endregion
+
+    #region Refresthing controls
+    private void RefreshRadioButtons()
+    {
+        touchscreenRadio.SetIsOn(calibratingTouchscreen);
+        keyboardMouseRadio.SetIsOn(!calibratingTouchscreen);
     }
 
     private void RefreshSliders()
     {
-        touchSlider.SetValueWithoutNotify(
-            options.touchLatencyMs);
-        keyboardSlider.SetValueWithoutNotify(
-            options.keyboardLatencyMs);
-        mouseSlider.SetValueWithoutNotify(
-            options.mouseLatencyMs);
+        if (calibratingTouchscreen)
+        {
+            offsetSlider.SetValueWithoutNotify(
+                options.touchOffsetMs);
+            latencySlider.SetValueWithoutNotify(
+                options.touchLatencyMs);
+        }
+        else
+        {
+            offsetSlider.SetValueWithoutNotify(
+                options.keyboardMouseOffsetMs);
+            latencySlider.SetValueWithoutNotify(
+                options.keyboardMouseLatencyMs);
+        }
     }
 
     private void RefreshInputFields()
     {
-        touchInputField.SetTextWithoutNotify(
-            options.touchLatencyMs.ToString());
-        keyboardInputField.SetTextWithoutNotify(
-            options.keyboardLatencyMs.ToString());
-        mouseInputField.SetTextWithoutNotify(
-            options.mouseLatencyMs.ToString());
+        if (calibratingTouchscreen)
+        {
+            offsetInputField.SetTextWithoutNotify(
+                options.touchOffsetMs.ToString());
+            latencyInputField.SetTextWithoutNotify(
+                options.touchLatencyMs.ToString());
+        }
+        else
+        {
+            offsetInputField.SetTextWithoutNotify(
+                options.keyboardMouseOffsetMs.ToString());
+            latencyInputField.SetTextWithoutNotify(
+                options.keyboardMouseLatencyMs.ToString());
+        }
     }
+    #endregion
 }
