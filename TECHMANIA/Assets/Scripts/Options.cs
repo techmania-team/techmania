@@ -92,8 +92,8 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        touchOffsetMs = -20;
-        touchLatencyMs = 20;
+        touchOffsetMs = 0;
+        touchLatencyMs = 0;
         keyboardMouseOffsetMs = 0;
         keyboardMouseLatencyMs = 0;
     }
