@@ -586,7 +586,7 @@ public class DragNoteV1 : NoteV1
 
     public int Duration()
     {
-        return nodes[nodes.Count - 1].anchor.pulse;
+        return (int)nodes[nodes.Count - 1].anchor.pulse;
     }
 
     // Returns a list of points on the bezier curve defined by
@@ -594,13 +594,13 @@ public class DragNoteV1 : NoteV1
     public List<FloatPoint> Interpolate()
     {
         List<FloatPoint> result = new List<FloatPoint>();
-        result.Add(nodes[0].anchor.ToFloatPoint());
+        result.Add(nodes[0].anchor);
         const int numSteps = 50;
         for (int i = 0; i < nodes.Count - 1; i++)
         {
-            FloatPoint p0 = nodes[i].anchor.ToFloatPoint();
+            FloatPoint p0 = nodes[i].anchor;
             FloatPoint p1 = p0 + nodes[i].controlRight;
-            FloatPoint p3 = nodes[i + 1].anchor.ToFloatPoint();
+            FloatPoint p3 = nodes[i + 1].anchor;
             FloatPoint p2 = p3 + nodes[i + 1].controlLeft;
             for (int step = 1; step <= numSteps; step++)
             {

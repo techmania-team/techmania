@@ -1123,7 +1123,7 @@ public class PatternPanel : MonoBehaviour
     {
         DragNote dragNote = note.GetComponent<NoteObject>()
             .note as DragNote;
-        IntPoint newAnchor = new IntPoint(
+        FloatPoint newAnchor = new FloatPoint(
             noteCursor.note.pulse - dragNote.pulse,
             noteCursor.note.lane - dragNote.lane);
 
@@ -1147,7 +1147,8 @@ public class PatternPanel : MonoBehaviour
         dragNote.nodes.Add(newNode);
         dragNote.nodes.Sort((DragNode node1, DragNode node2) =>
         {
-            return node1.anchor.pulse - node2.anchor.pulse;
+            return (int)Mathf.Sign(
+                node1.anchor.pulse - node2.anchor.pulse);
         });
         EditorContext.DoneWithChange();
         UpdateNumScansAndRelatedUI();
@@ -1323,10 +1324,11 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Check 2: anchor is at a valid place for notes.
+        // TODO: remove this check altogether.
         string invalidPositionReason;
         bool validPosition = CanAddNote(NoteType.Basic,
-            movedNode.anchor.pulse + dragNote.pulse,
-            movedNode.anchor.lane + dragNote.lane,
+            (int)movedNode.anchor.pulse + dragNote.pulse,
+            (int)movedNode.anchor.lane + dragNote.lane,
             out invalidPositionReason);
         if (!validPosition)
         {
@@ -2242,6 +2244,7 @@ public class PatternPanel : MonoBehaviour
     }
 
     // Ignores notes at (pulse, lane), if any.
+    // TODO: remove this check altogether.
     private bool DragNoteCoversAnotherNote(int pulse, int lane,
         List<DragNode> nodes,
         HashSet<GameObject> ignoredExistingNotes)
@@ -2254,8 +2257,8 @@ public class PatternPanel : MonoBehaviour
         // For now we only check anchors.
         for (int i = 1; i < nodes.Count; i++)
         {
-            int anchorPulse = pulse + nodes[i].anchor.pulse;
-            int anchorLane = lane + nodes[i].anchor.lane;
+            int anchorPulse = pulse + (int)nodes[i].anchor.pulse;
+            int anchorLane = lane + (int)nodes[i].anchor.lane;
             Note existingNote = EditorContext.Pattern.GetNoteAt(
                 anchorPulse, anchorLane);
 
@@ -2343,13 +2346,13 @@ public class PatternPanel : MonoBehaviour
                 HoldNoteDefaultDuration(pulse, lane);
             nodes.Add(new DragNode()
             {
-                anchor = new IntPoint(0, 0),
+                anchor = new FloatPoint(0f, 0f),
                 controlLeft = new FloatPoint(0f, 0f),
                 controlRight = new FloatPoint(0f, 0f)
             });
             nodes.Add(new DragNode()
             {
-                anchor = new IntPoint(relativePulseOfLastNode, 0),
+                anchor = new FloatPoint(relativePulseOfLastNode, 0f),
                 controlLeft = new FloatPoint(0f, 0f),
                 controlRight = new FloatPoint(0f, 0f)
             });

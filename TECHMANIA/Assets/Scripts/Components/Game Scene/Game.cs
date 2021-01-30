@@ -268,6 +268,8 @@ public class Game : MonoBehaviour
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
 
+        yield return null;  // Wait 1 more frame just in case.
+
         // Start timer. Backing track will start when timer hits 0;
         // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
