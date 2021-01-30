@@ -40,7 +40,7 @@ public class BpmEventDialog : MonoBehaviour
 
     public void OnChangeRadioButtonClick()
     {
-        newBpm = Pattern.minBpm;  // Exact value doesn't matter
+        newBpm = Pattern.defaultBpm;  // Exact value doesn't matter
         UpdateRadioButtons();
     }
 
@@ -63,7 +63,7 @@ public class BpmEventDialog : MonoBehaviour
     public void OnBpmInputFieldEndEdit()
     {
         UIUtils.ClampInputField(bpmInputField,
-            Pattern.minBpm, Pattern.maxBpm);
+            Pattern.minBpm, float.MaxValue);
         if (newBpm.HasValue)
         {
             newBpm = double.Parse(bpmInputField.text);

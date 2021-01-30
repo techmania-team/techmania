@@ -432,7 +432,7 @@ public class TrackSetupPanel : MonoBehaviour
             ref m.firstBeatOffset, firstBeatOffset.text,
             ref madeChange);
         UIUtils.ClampInputField(initialBpm,
-            Pattern.minBpm, Pattern.maxBpm);
+            Pattern.minBpm, float.MaxValue);
         UIUtils.UpdatePropertyInMemory(
             ref m.initBpm, initialBpm.text, ref madeChange);
         UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
