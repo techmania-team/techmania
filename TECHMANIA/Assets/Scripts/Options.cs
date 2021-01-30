@@ -55,11 +55,15 @@ public class Options : OptionsBase
 {
     public const string kVersion = "1";
 
+    // Graphics
+
     public int width; 
     public int height;
     public int refreshRate;
     public FullScreenMode fullScreenMode;
     public bool vSync;
+
+    // Audio
 
     public float masterVolume;
     public float musicVolume;
@@ -67,10 +71,16 @@ public class Options : OptionsBase
     public float sfxVolume;
     public int audioBufferSize;
 
+    // Timing
+
     public int touchOffsetMs;
     public int touchLatencyMs;
     public int keyboardMouseOffsetMs;
     public int keyboardMouseLatencyMs;
+
+    // Editor options
+
+    public EditorOptions editorOptions;
 
     public Options()
     {
@@ -96,6 +106,8 @@ public class Options : OptionsBase
         touchLatencyMs = 0;
         keyboardMouseOffsetMs = 0;
         keyboardMouseLatencyMs = 0;
+
+        editorOptions = new EditorOptions();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -146,4 +158,41 @@ public class Options : OptionsBase
         }
     }
     #endregion
+}
+
+[Serializable]
+public class EditorOptions
+{
+    // Appearance
+
+    public bool showKeysounds;
+
+    // Editing
+
+    public bool applyKeysoundToSelection;
+    public bool applyNoteTypeToSelection;
+    public bool lockNotePulses;
+    public bool snapDragAnchors;
+
+    // Playback
+
+    public bool metronome;
+    public bool assistTickOnSilentNotes;
+    public bool returnScanlineAfterPlayback;
+    public bool continousScrollDuringPlayback;
+
+    public EditorOptions()
+    {
+        showKeysounds = true;
+
+        applyKeysoundToSelection = false;
+        applyNoteTypeToSelection = false;
+        lockNotePulses = false;
+        snapDragAnchors = true;
+
+        metronome = false;
+        assistTickOnSilentNotes = false;
+        returnScanlineAfterPlayback = true;
+        continousScrollDuringPlayback = false;
+    }
 }
