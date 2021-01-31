@@ -54,14 +54,16 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += UpdateSelection;
-        PatternPanel.KeysoundVisibilityChanged += SetKeysoundVisibility;
+        PatternPanel.KeysoundVisibilityChanged += 
+            UpdateKeysoundVisibility;
         resizeCursorState = 0;
     }
 
     private void OnDisable()
     {
         PatternPanel.SelectionChanged -= UpdateSelection;
-        PatternPanel.KeysoundVisibilityChanged -= SetKeysoundVisibility;
+        PatternPanel.KeysoundVisibilityChanged -=
+            UpdateKeysoundVisibility;
     }
 
     public void UseHiddenSprite()
@@ -69,7 +71,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         noteImage.GetComponent<Image>().sprite = hiddenSprite;
         if (durationTrail != null)
         {
-            durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
+            durationTrail.GetComponent<Image>().sprite = 
+                hiddenTrailSprite;
         }
         if (curvedImage != null)
         {
@@ -94,10 +97,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         }
     }
 
-    public void SetKeysoundVisibility(bool visible)
+    public void UpdateKeysoundVisibility()
     {
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
-            .gameObject.SetActive(visible);
+            .gameObject.SetActive(
+            Options.instance.editorOptions.showKeysounds);
     }
 
     public void SetKeysoundText()

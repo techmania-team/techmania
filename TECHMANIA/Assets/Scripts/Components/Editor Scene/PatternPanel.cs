@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public class PatternPanel : MonoBehaviour
 {
     public RectTransform rootCanvas;
+    public CanvasGroup canvasGroup;
 
     [Header("Workspace")]
     public ScrollRect workspaceScrollRect;
@@ -53,9 +54,7 @@ public class PatternPanel : MonoBehaviour
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
     public TMP_Dropdown visibleLanesDropdown;
-    public Toggle applyNoteTypeToSelectionToggle;
-    public Toggle applyKeysoundToSelectionToggle;
-    public Toggle showKeysoundToggle;
+    public GameObject optionsTab;
 
     [Header("UI")]
     public List<NoteTypeButton> noteTypeButtons;
@@ -67,7 +66,6 @@ public class PatternPanel : MonoBehaviour
     public Snackbar snackbar;
     public MessageDialog messageDialog;
     public BpmEventDialog bpmEventDialog;
-    public Dialog shortcutDialog;
 
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
@@ -132,8 +130,9 @@ public class PatternPanel : MonoBehaviour
 
     #region Outward Events
     public static event UnityAction RepositionNeeded;
-    public static event UnityAction<HashSet<GameObject>> SelectionChanged;
-    public static event UnityAction<bool> KeysoundVisibilityChanged;
+    public static event UnityAction<HashSet<GameObject>> 
+        SelectionChanged;
+    public static event UnityAction KeysoundVisibilityChanged;
     #endregion
 
     #region MonoBehavior APIs
@@ -163,6 +162,7 @@ public class PatternPanel : MonoBehaviour
         UpdateNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
+        Options.RefreshInstance();
 
         // Playback
         audioLoaded = false;
@@ -173,7 +173,6 @@ public class PatternPanel : MonoBehaviour
             cacheAudioCompleteCallback: OnResourceLoadComplete);
 
         Refresh();
-        OnKeysoundVisibilityChanged(showKeysoundToggle.isOn);
         EditorContext.UndoneOrRedone += Refresh;
         NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
         NoteInEditor.RightClicked += OnNoteObjectRightClick;
@@ -193,6 +192,8 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.ControlPointDrag += OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
+        EditorOptionsTab.Opened += OnOptionsTabOpened;
+        EditorOptionsTab.Closed += OnOptionsTabClosed;
     }
 
     private void OnDisable()
@@ -217,6 +218,8 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.ControlPointDrag -= OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
+        EditorOptionsTab.Opened -= OnOptionsTabOpened;
+        EditorOptionsTab.Closed -= OnOptionsTabClosed;
     }
 
     // Update is called once per frame
@@ -228,7 +231,7 @@ public class PatternPanel : MonoBehaviour
         }
         if (messageDialog.gameObject.activeSelf ||
             bpmEventDialog.gameObject.activeSelf ||
-            shortcutDialog.gameObject.activeSelf)
+            optionsTab.activeSelf)
         {
             return;
         }
@@ -703,7 +706,11 @@ public class PatternPanel : MonoBehaviour
         UpdateNoteTypeButtons();
 
         // Apply to selection if asked to.
-        if (!applyNoteTypeToSelectionToggle.isOn) return;
+        if (!Options.instance.editorOptions
+            .applyNoteTypeToSelection)
+        {
+            return;
+        }
         if (isPlaying) return;
         if (selectedNoteObjects.Count == 0) return;
 
@@ -791,11 +798,6 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    public void OnShortcutButtonClick()
-    {
-        shortcutDialog.FadeIn();
-    }
-
     public void OnScanlinePositionSliderValueChanged(float newValue)
     {
         if (isPlaying) return;
@@ -809,16 +811,15 @@ public class PatternPanel : MonoBehaviour
         ScrollScanlineIntoView();
     }
 
-    public void OnKeysoundVisibilityChanged(bool visible)
-    {
-        KeysoundVisibilityChanged?.Invoke(visible);
-    }
-
     private void OnSelectedKeysoundsUpdated(List<string> keysounds)
     {
         if (selectedNoteObjects == null ||
             selectedNoteObjects.Count == 0) return;
-        if (!applyKeysoundToSelectionToggle.isOn) return;
+        if (!Options.instance.editorOptions
+            .applyKeysoundToSelection)
+        {
+            return;
+        }
         if (isPlaying) return;
         if (keysounds.Count == 0)
         {
@@ -846,10 +847,21 @@ public class PatternPanel : MonoBehaviour
         {
             n.note.sound = keysounds[keysoundIndex];
             n.GetComponent<NoteInEditor>().SetKeysoundText();
-            n.GetComponent<NoteInEditor>().SetKeysoundVisibility(showKeysoundToggle.isOn);
+            n.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
             keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
         }
         EditorContext.DoneWithChange();
+    }
+
+    private void OnOptionsTabOpened()
+    {
+        canvasGroup.alpha = 0f;
+    }
+
+    private void OnOptionsTabClosed()
+    {
+        canvasGroup.alpha = 1f;
+        KeysoundVisibilityChanged?.Invoke();
     }
     #endregion
 
@@ -1758,7 +1770,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor noteInEditor = noteObject
             .GetComponent<NoteInEditor>();
         noteInEditor.SetKeysoundText();
-        noteInEditor.SetKeysoundVisibility(showKeysoundToggle.isOn);
+        noteInEditor.UpdateKeysoundVisibility();
         if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
         noteObject.GetComponent<SelfPositionerInEditor>()
             .Reposition();

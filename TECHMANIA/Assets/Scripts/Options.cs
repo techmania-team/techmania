@@ -171,7 +171,7 @@ public class EditorOptions
 
     public bool applyKeysoundToSelection;
     public bool applyNoteTypeToSelection;
-    public bool lockNotePulses;
+    public bool lockNotesInTime;
     public bool snapDragAnchors;
 
     // Playback
@@ -187,7 +187,7 @@ public class EditorOptions
 
         applyKeysoundToSelection = false;
         applyNoteTypeToSelection = false;
-        lockNotePulses = false;
+        lockNotesInTime = false;
         snapDragAnchors = true;
 
         metronome = false;
