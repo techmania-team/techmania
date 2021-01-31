@@ -50,6 +50,9 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
+    public AudioClip metronome1;
+    public AudioClip metronome2;
+    public AudioClip assistTick;
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
@@ -2531,6 +2534,7 @@ public class PatternPanel : MonoBehaviour
     private float playbackStartingTime;
     private bool backingTrackPlaying;
     private DateTime systemTimeOnPlaybackStart;
+    private float playbackBeatOnPreviousFrame;  // For metronome
 
     // Each queue represents one lane; each lane is sorted by pulse.
     // Played notes are popped from the corresponding queue. This
@@ -2603,6 +2607,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         systemTimeOnPlaybackStart = DateTime.Now;
+        playbackBeatOnPreviousFrame = -1f;
         backingTrackPlaying = false;
     }
 
@@ -2631,6 +2636,23 @@ public class PatternPanel : MonoBehaviour
             elapsedTime;
         float playbackCurrentPulse = EditorContext.Pattern
             .TimeToPulse(playbackCurrentTime);
+        
+        // Play metronome sound if necessary.
+        if (Options.instance.editorOptions.metronome)
+        {
+            float beat = playbackCurrentPulse / Pattern.pulsesPerBeat;
+            if (Mathf.FloorToInt(beat) >
+                Mathf.FloorToInt(playbackBeatOnPreviousFrame))
+            {
+                int wholeBeat = Mathf.FloorToInt(beat);
+                bool wholeScan = wholeBeat % 
+                    EditorContext.Pattern.patternMetadata.bps == 0;
+                AudioClip clip = wholeScan ? metronome2 : metronome1;
+
+                MenuSfx.instance.PlaySound(clip);
+            }
+            playbackBeatOnPreviousFrame = beat;
+        }
 
         // Start playing backing track if applicable.
         if (!backingTrackPlaying &&
@@ -2663,6 +2685,11 @@ public class PatternPanel : MonoBehaviour
             {
                 AudioClip clip = ResourceLoader.GetCachedClip(
                     nextNote.sound);
+                if (clip == null && Options.instance.editorOptions
+                    .assistTickOnSilentNotes)
+                {
+                    clip = assistTick;
+                }
                 float startTime = playbackCurrentTime - 
                     nextNote.time;
                 audioSourceManager.PlayKeysound(clip,
@@ -2728,6 +2755,8 @@ public class PatternPanel : MonoBehaviour
         SynchronizeScrollRects();
     }
 
+    // This was used to implement continuous scrolling during playback,
+    // but the frame rate is too low, so it's abandoned.
     private void KeepScanlineAtLeftOfView()
     {
         float viewPortWidth = workspaceScrollRect
