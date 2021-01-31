@@ -433,7 +433,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Events From Workspace
+    #region Events From Workspace and NoteObjects
     public void OnWorkspaceScrollRectValueChanged(
         Vector2 value)
     {

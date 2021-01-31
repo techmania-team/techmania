@@ -112,6 +112,14 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
                 noteObject.note.sound);
     }
 
+    private void Update()
+    {
+        if (curvedImage != null && Input.GetMouseButtonDown(0))
+        {
+            DetectClickOnCurve();
+        }
+    }
+
     #region Event Relay From Note Image
     public void OnPointerClick(BaseEventData eventData)
     {
@@ -520,6 +528,21 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             UIUtils.PointToward(path,
                 selfPos: Vector2.zero,
                 targetPos: position);
+        }
+    }
+
+    private void DetectClickOnCurve()
+    {
+        foreach (Vector2 v in pointsOnCurve)
+        {
+            Vector3 p = noteImage.transform.position +
+                new Vector3(v.x, v.y);
+            float squareDistance = Vector3.SqrMagnitude(p - Input.mousePosition);
+            if (squareDistance <= PatternPanel.LaneHeight * PatternPanel.LaneHeight * 0.25f)
+            {
+                Debug.Log("Detected click");
+                break;
+            }
         }
     }
     #endregion

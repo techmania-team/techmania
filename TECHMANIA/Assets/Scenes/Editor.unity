@@ -24734,6 +24734,9 @@ MonoBehaviour:
   dragNotePrefab: {fileID: 6915570976975822383, guid: b274eba65f6eedc43bb31a20c2bc49ee,
     type: 3}
   audioSourceManager: {fileID: 440707366}
+  metronome1: {fileID: 8300000, guid: 7c8bbd4660bff354e8675fc930c2e62c, type: 3}
+  metronome2: {fileID: 8300000, guid: 8577deeb9f3fff64cae2060b40801fe7, type: 3}
+  assistTick: {fileID: 8300000, guid: d2015313935379e42841c3284f874d3a, type: 3}
   beatSnapDividerDisplay: {fileID: 689014187}
   visibleLanesDropdown: {fileID: 340067587}
   optionsTab: {fileID: 1363880818}
@@ -34125,7 +34128,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -200, y: 405}
+  m_AnchoredPosition: {x: -199.99994, y: 405}
   m_SizeDelta: {x: -880, y: -810}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1870087211
@@ -39080,6 +39083,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 416503498}
     m_Modifications:
+    - target: {fileID: 4580588604087754428, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4580588605187403660, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -39113,6 +39121,11 @@ PrefabInstance:
     - target: {fileID: 4580588605722296664, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4580588605722296664, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5692625535482728929, guid: 3a51faf5a17d9ce45839976a67c5503f,
