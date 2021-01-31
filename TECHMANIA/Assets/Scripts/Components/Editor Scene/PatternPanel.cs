@@ -906,6 +906,10 @@ public class PatternPanel : MonoBehaviour
         int oldLane = draggedNote.lane;
         int deltaPulse = noteCursor.note.pulse - oldPulse;
         int deltaLane = noteCursor.note.lane - oldLane;
+        if (Options.instance.editorOptions.lockNotesInTime)
+        {
+            deltaPulse = 0;
+        }
 
         // Is the move valid?
         bool movable = true;
