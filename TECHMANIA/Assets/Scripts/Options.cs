@@ -179,7 +179,6 @@ public class EditorOptions
     public bool metronome;
     public bool assistTickOnSilentNotes;
     public bool returnScanlineAfterPlayback;
-    public bool continousScrollDuringPlayback;
 
     public EditorOptions()
     {
@@ -193,6 +192,5 @@ public class EditorOptions
         metronome = false;
         assistTickOnSilentNotes = false;
         returnScanlineAfterPlayback = true;
-        continousScrollDuringPlayback = false;
     }
 }

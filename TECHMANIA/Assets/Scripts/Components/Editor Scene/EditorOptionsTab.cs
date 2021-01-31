@@ -19,7 +19,6 @@ public class EditorOptionsTab : MonoBehaviour
     public Toggle metronomeToggle;
     public Toggle assistTickOnSilentNotesToggle;
     public Toggle returnScanlineAfterPlaybackToggle;
-    public Toggle continousScrollDuringPlaybackToggle;
 
     public static event UnityAction Opened;
     public static event UnityAction Closed;
@@ -57,9 +56,6 @@ public class EditorOptionsTab : MonoBehaviour
         returnScanlineAfterPlaybackToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions
             .returnScanlineAfterPlayback);
-        continousScrollDuringPlaybackToggle.SetIsOnWithoutNotify(
-            Options.instance.editorOptions
-            .continousScrollDuringPlayback);
     }
 
     public void UIToMemory()
@@ -82,7 +78,5 @@ public class EditorOptionsTab : MonoBehaviour
             assistTickOnSilentNotesToggle.isOn;
         Options.instance.editorOptions.returnScanlineAfterPlayback =
             returnScanlineAfterPlaybackToggle.isOn;
-        Options.instance.editorOptions.continousScrollDuringPlayback =
-            continousScrollDuringPlaybackToggle.isOn;
     }
 }

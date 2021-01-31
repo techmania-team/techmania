@@ -97,6 +97,9 @@ public class PatternPanel : MonoBehaviour
     private int minPulseInClipboard;
 
     private NoteType noteType;
+
+    private float unsnappedCursorPulse;
+    private float unsnappedCursorLane;
     #endregion
 
     #region Vertical Spacing
@@ -184,7 +187,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
         NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked += OnAnchorRightClicked;
-        NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
+        NoteInEditor.AnchorBeginDrag += OnAnchorBeingDragged;
         NoteInEditor.AnchorDrag += OnAnchorDrag;
         NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
         NoteInEditor.ControlPointRightClicked += OnControlPointRightClicked;
@@ -210,7 +213,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
         NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked -= OnAnchorRightClicked;
-        NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
+        NoteInEditor.AnchorBeginDrag -= OnAnchorBeingDragged;
         NoteInEditor.AnchorDrag -= OnAnchorDrag;
         NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
         NoteInEditor.ControlPointRightClicked -= OnControlPointRightClicked;
@@ -242,7 +245,8 @@ public class PatternPanel : MonoBehaviour
                 Input.mousePosition);
         bool mouseInHeader = RectTransformUtility
             .RectangleContainsScreenPoint(
-                header, Input.mousePosition);
+                headerScrollRect.GetComponent<RectTransform>(), 
+                Input.mousePosition);
         if (Input.mouseScrollDelta.y != 0)
         {
             HandleMouseScroll(Input.mouseScrollDelta.y,
@@ -334,10 +338,12 @@ public class PatternPanel : MonoBehaviour
 
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInContainer.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = SnapPulse(cursorPulse);
+        unsnappedCursorPulse = cursorScan * bps * 
+            Pattern.pulsesPerBeat;
+        int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
 
-        int snappedLane = Mathf.FloorToInt(-pointInContainer.y / LaneHeight);
+        unsnappedCursorLane = -pointInContainer.y / LaneHeight - 0.5f;
+        int snappedLane = Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
 
         noteCursor.note = new Note();
         noteCursor.note.pulse = snappedCursorPulse;
@@ -1135,13 +1141,31 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Drag Notes
+    // These may be snapped or unsnapped depending on options.
+    private void GetCursorPositionForAnchor(out float pulse,
+        out float lane)
+    {
+        if (Options.instance.editorOptions.snapDragAnchors)
+        {
+            pulse = noteCursor.note.pulse;
+            lane = noteCursor.note.lane;
+        }
+        else
+        {
+            pulse = unsnappedCursorPulse;
+            lane = unsnappedCursorLane;
+        }
+    }
+
     private void OnAnchorReceiverClicked(GameObject note)
     {
         DragNote dragNote = note.GetComponent<NoteObject>()
             .note as DragNote;
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
         FloatPoint newAnchor = new FloatPoint(
-            noteCursor.note.pulse - dragNote.pulse,
-            noteCursor.note.lane - dragNote.lane);
+            cursorPulse - dragNote.pulse,
+            cursorLane - dragNote.lane);
 
         // Is there an existing anchor at the same pulse?
         if (dragNote.nodes.Find((DragNode node) =>
@@ -1210,7 +1234,7 @@ public class PatternPanel : MonoBehaviour
         noteInEditor.ResetAllAnchorsAndControlPoints();
     }
 
-    private void OnAnchorBeginDrag(GameObject anchor)
+    private void OnAnchorBeingDragged(GameObject anchor)
     {
         if (isPlaying) return;
 
@@ -1247,10 +1271,13 @@ public class PatternPanel : MonoBehaviour
 
     private void MoveDraggedAnchor()
     {
-        Note noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
-        draggedDragNode.anchor.pulse = noteCursor.note.pulse
+        Note noteHead = draggedAnchor
+            .GetComponentInParent<NoteObject>().note;
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
+        draggedDragNode.anchor.pulse = cursorPulse
             - noteHead.pulse;
-        draggedDragNode.anchor.lane = noteCursor.note.lane
+        draggedDragNode.anchor.lane = cursorLane
             - noteHead.lane;
         draggedAnchor.GetComponent<RectTransform>().anchoredPosition
             = new Vector2(
@@ -1336,19 +1363,6 @@ public class PatternPanel : MonoBehaviour
         if (!anchorsInOrder)
         {
             invalidReason = "Anchors must flow from left to right.";
-            return false;
-        }
-
-        // Check 2: anchor is at a valid place for notes.
-        // TODO: remove this check altogether.
-        string invalidPositionReason;
-        bool validPosition = CanAddNote(NoteType.Basic,
-            (int)movedNode.anchor.pulse + dragNote.pulse,
-            (int)movedNode.anchor.lane + dragNote.lane,
-            out invalidPositionReason);
-        if (!validPosition)
-        {
-            invalidReason = "Anchors cannot be placed on top of or inside other notes.";
             return false;
         }
 
@@ -2209,26 +2223,9 @@ public class PatternPanel : MonoBehaviour
         HashSet<GameObject> ignoredExistingNotes,
         out string reason)
     {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-        if (!CanAddNote(NoteType.Drag, pulse, lane,
+        return CanAddNote(NoteType.Drag, pulse, lane,
             ignoredExistingNotes,
-            out reason))
-        {
-            return false;
-        }
-
-        // Additional check for hold notes.
-        if (DragNoteCoversAnotherNote(pulse, lane, nodes,
-            ignoredExistingNotes))
-        {
-            reason = "Drag Notes cannot cover other notes.";
-            return false;
-        }
-
-        return true;
+            out reason);
     }
 
     // Ignores notes at (pulse, lane), if any.
@@ -2251,36 +2248,6 @@ public class PatternPanel : MonoBehaviour
                 GetGameObjectFromNote(noteAfterPivot)))
         {
             if (pulse + duration >= noteAfterPivot.pulse)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    // Ignores notes at (pulse, lane), if any.
-    // TODO: remove this check altogether.
-    private bool DragNoteCoversAnotherNote(int pulse, int lane,
-        List<DragNode> nodes,
-        HashSet<GameObject> ignoredExistingNotes)
-    {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-
-        // For now we only check anchors.
-        for (int i = 1; i < nodes.Count; i++)
-        {
-            int anchorPulse = pulse + (int)nodes[i].anchor.pulse;
-            int anchorLane = lane + (int)nodes[i].anchor.lane;
-            Note existingNote = EditorContext.Pattern.GetNoteAt(
-                anchorPulse, anchorLane);
-
-            if (existingNote != null &&
-                !ignoredExistingNotes.Contains(
-                    GetGameObjectFromNote(existingNote)))
             {
                 return true;
             }
@@ -2646,7 +2613,10 @@ public class PatternPanel : MonoBehaviour
         UpdatePlaybackUI();
 
         audioSourceManager.StopAll();
-        scanline.floatPulse = playbackStartingPulse;
+        if (Options.instance.editorOptions.returnScanlineAfterPlayback)
+        {
+            scanline.floatPulse = playbackStartingPulse;
+        }
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
@@ -2709,18 +2679,6 @@ public class PatternPanel : MonoBehaviour
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
     }
-
-    private void PlaySound(AudioSource source, AudioClip clip,
-        float startTime)
-    {
-        if (clip == null) return;
-
-        int startSample = Mathf.FloorToInt(
-            startTime * clip.frequency);
-        source.clip = clip;
-        source.timeSamples = Mathf.Min(clip.samples, startSample);
-        source.Play();
-    }
     #endregion
 
     #region Utilities
@@ -2763,6 +2721,23 @@ public class PatternPanel : MonoBehaviour
             // Scrolling right: put scanline at left side.
             desiredXAtLeft = scanlinePosition - viewPortWidth * 0.2f;
         }
+        float normalizedPosition =
+            desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(normalizedPosition);
+        SynchronizeScrollRects();
+    }
+
+    private void KeepScanlineAtLeftOfView()
+    {
+        float viewPortWidth = workspaceScrollRect
+            .GetComponent<RectTransform>().rect.width;
+        if (WorkspaceContentWidth <= viewPortWidth) return;
+
+        float scanlinePosition = scanline
+            .GetComponent<RectTransform>().anchoredPosition.x;
+
+        float desiredXAtLeft = scanlinePosition - viewPortWidth * 0.1f;
         float normalizedPosition =
             desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
         workspaceScrollRect.horizontalNormalizedPosition =
