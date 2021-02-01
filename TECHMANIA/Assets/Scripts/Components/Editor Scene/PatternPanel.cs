@@ -621,7 +621,6 @@ public class PatternPanel : MonoBehaviour
 
     public void OnNoteObjectLeftClick(GameObject o)
     {
-        Debug.Log("OnNoteObjectLeftClick");
         bool shift = Input.GetKey(KeyCode.LeftShift) ||
             Input.GetKey(KeyCode.RightShift);
         bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
