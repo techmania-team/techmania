@@ -75,6 +75,10 @@ public class PatternPanel : MonoBehaviour
     // dictionary is the reverse of that. Must be updated alongside
     // EditorContext.Pattern at all times.
     private Dictionary<Note, NoteObject> noteToNoteObject;
+    // Maintain a list of all drag notes, so when the workspace
+    // receives a click, it can check if it should have landed on
+    // any drag note.
+    private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
     private HashSet<GameObject> selectedNoteObjects;
@@ -330,18 +334,18 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void SnapNoteCursor()
+    private void SnapNoteCursor(Vector2 mousePositionOverride)
     {
         Vector2 pointInContainer;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             noteContainer.GetComponent<RectTransform>(),
-            Input.mousePosition,
+            mousePositionOverride,
             cam: null,
             out pointInContainer);
 
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInContainer.x / ScanWidth;
-        unsnappedCursorPulse = cursorScan * bps * 
+        unsnappedCursorPulse = cursorScan * bps *
             Pattern.pulsesPerBeat;
         int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
 
@@ -352,6 +356,11 @@ public class PatternPanel : MonoBehaviour
         noteCursor.note.pulse = snappedCursorPulse;
         noteCursor.note.lane = snappedLane;
         noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
+    }
+
+    private void SnapNoteCursor()
+    {
+        SnapNoteCursor(Input.mousePosition);
     }
 
     private void MoveScanlineToMouse()
@@ -440,10 +449,49 @@ public class PatternPanel : MonoBehaviour
         SynchronizeScrollRects();
     }
 
+    // If no drag note should receive this event, returns null.
+    private NoteInEditor FindDragNoteToReceiveEvent(
+        PointerEventData eventData)
+    {
+        foreach (NoteInEditor dragNote in dragNotes)
+        {
+            if (dragNote.ClickLandsOnCurve(eventData.position))
+            {
+                return dragNote;
+            }
+        }
+        return null;
+    }
+
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button !=
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (pointerEventData.dragging) return;
+
+        // Special case: check drag notes because the curves do not
+        // receive clicks.
+        NoteInEditor dragNoteToReceiveEvent = 
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null)
+        {
+            if (pointerEventData.button ==
+                    PointerEventData.InputButton.Left)
+            {
+                OnNoteObjectLeftClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            if (pointerEventData.button ==
+                PointerEventData.InputButton.Right)
+            {
+                OnNoteObjectRightClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            return;
+        }
+
+        if (pointerEventData.button !=
             PointerEventData.InputButton.Left)
         {
             return;
@@ -496,10 +544,40 @@ public class PatternPanel : MonoBehaviour
         EditorContext.DoneWithChange();
     }
 
+    private bool draggingDragCurve;
+    public void OnNoteContainerBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        draggingDragCurve = false;
+
+        // Special case for drag notes.
+        NoteInEditor dragNoteToReceiveEvent =
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null &&
+            pointerEventData.button == 
+                PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectBeginDrag(dragNoteToReceiveEvent.gameObject);
+            draggingDragCurve = true;
+            return;
+        }
+    }
+
     public void OnNoteContainerDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
+
+        // Special case for drag notes.
+        if (draggingDragCurve && p.button == 
+            PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectDrag(p.delta);
+            return;
+        }
+
         if (p.button != PointerEventData.InputButton.Middle) return;
 
         float outOfViewWidth = WorkspaceContentWidth - 
@@ -526,8 +604,24 @@ public class PatternPanel : MonoBehaviour
         SynchronizeScrollRects();
     }
 
+    public void OnNoteContainerEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+
+        // Special case for drag notes.
+        if (draggingDragCurve && pointerEventData.button == 
+            PointerEventData.InputButton.Left)
+        { 
+            OnNoteObjectEndDrag();
+            return;
+        }
+    }
+
     public void OnNoteObjectLeftClick(GameObject o)
     {
+        Debug.Log("OnNoteObjectLeftClick");
         bool shift = Input.GetKey(KeyCode.LeftShift) ||
             Input.GetKey(KeyCode.RightShift);
         bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
@@ -901,7 +995,8 @@ public class PatternPanel : MonoBehaviour
             // This is only visual. Notes are only really moved
             // in OnNoteObjectEndDrag.
             o.GetComponent<RectTransform>().anchoredPosition += delta;
-            o.GetComponent<NoteInEditor>().KeepPathInPlaceWhileNoteBeingDragged(delta);
+            o.GetComponent<NoteInEditor>()
+                .KeepPathInPlaceWhileNoteBeingDragged(delta);
         }
     }
 
@@ -909,12 +1004,22 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
 
-        // Calculate delta pulse and delta lane.
+        // In case the drag is on a trail or curve, first calculate
+        // and snap where the note image lands at.
         Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
+        Vector3 noteImagePosition = 
+            draggedNoteObject.GetComponent<NoteInEditor>().noteImage
+            .position;
+        SnapNoteCursor(noteImagePosition);  // hackity hack
+        int newPulse = noteCursor.note.pulse;
+        int newLane = noteCursor.note.lane;
+        SnapNoteCursor();  // unhack
+
+        // Calculate delta pulse and delta lane.
         int oldPulse = draggedNote.pulse;
         int oldLane = draggedNote.lane;
-        int deltaPulse = noteCursor.note.pulse - oldPulse;
-        int deltaLane = noteCursor.note.lane - oldLane;
+        int deltaPulse = newPulse - oldPulse;
+        int deltaLane = newLane - oldLane;
         if (Options.instance.editorOptions.lockNotesInTime)
         {
             deltaPulse = 0;
@@ -928,8 +1033,8 @@ public class PatternPanel : MonoBehaviour
         foreach (GameObject o in selectedNoteObjects)
         {
             Note n = o.GetComponent<NoteObject>().note;
-            int newPulse = n.pulse + deltaPulse;
-            int newLane = n.lane + deltaLane;
+            newPulse = n.pulse + deltaPulse;
+            newLane = n.lane + deltaLane;
 
             switch (n.type)
             {
@@ -1749,7 +1854,7 @@ public class PatternPanel : MonoBehaviour
     // This will call Reposition on the new object.
     private GameObject SpawnNoteObject(Note n)
     {
-        GameObject prefab = null;
+        GameObject prefab;
         switch (n.type)
         {
             case NoteType.Basic:
@@ -1797,6 +1902,10 @@ public class PatternPanel : MonoBehaviour
             .Reposition();
 
         noteToNoteObject.Add(n, noteObject);
+        if (n.type == NoteType.Drag)
+        {
+            dragNotes.Add(noteInEditor);
+        }
 
         // Binary search the appropriate sibling index of
         // new note, so all notes are drawn from right to left.
@@ -1853,6 +1962,7 @@ public class PatternPanel : MonoBehaviour
             Destroy(noteContainer.GetChild(i).gameObject);
         }
         noteToNoteObject = new Dictionary<Note, NoteObject>();
+        dragNotes = new HashSet<NoteInEditor>();
         lastSelectedNoteWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
 
@@ -2365,6 +2475,10 @@ public class PatternPanel : MonoBehaviour
         // Delete from UI.
         AdjustPathBeforeDeleting(o);
         noteToNoteObject.Remove(n);
+        if (n.type == NoteType.Drag)
+        {
+            dragNotes.Remove(o.GetComponent<NoteInEditor>());
+        }
         if (lastSelectedNoteWithoutShift == n)
         {
             lastSelectedNoteWithoutShift = null;

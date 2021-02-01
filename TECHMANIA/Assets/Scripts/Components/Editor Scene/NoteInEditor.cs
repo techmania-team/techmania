@@ -114,10 +114,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     private void Update()
     {
-        if (curvedImage != null && Input.GetMouseButtonDown(0))
-        {
-            DetectClickOnCurve();
-        }
+
     }
 
     #region Event Relay From Note Image
@@ -141,6 +138,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public void OnBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if ((eventData as PointerEventData).button
+            != PointerEventData.InputButton.Left)
+        {
+            return;
+        }
         BeginDrag?.Invoke(gameObject);
     }
 
@@ -148,12 +150,22 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
+        if (pointerData.button
+            != PointerEventData.InputButton.Left)
+        {
+            return;
+        }
         Drag?.Invoke(pointerData.delta);
     }
 
     public void OnEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if ((eventData as PointerEventData).button
+            != PointerEventData.InputButton.Left)
+        {
+            return;
+        }
         EndDrag?.Invoke();
     }
     #endregion
@@ -531,19 +543,38 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         }
     }
 
-    private void DetectClickOnCurve()
+    public bool ClickLandsOnCurve(Vector3 screenPosition)
     {
+        // Prune
+        if (screenPosition.x < noteImage.transform.position.x
+            - PatternPanel.LaneHeight * 0.5f)
+        {
+            return false;
+        }
+        if (screenPosition.x > noteImage.transform.position.x
+            + pointsOnCurve[pointsOnCurve.Count - 1].x
+            + PatternPanel.LaneHeight * 0.5f)
+        {
+            return false;
+        }
+
+        float minDistanceSquared = PatternPanel.LaneHeight * 
+            PatternPanel.LaneHeight * 0.25f;
         foreach (Vector2 v in pointsOnCurve)
         {
-            Vector3 p = noteImage.transform.position +
-                new Vector3(v.x, v.y);
-            float squareDistance = Vector3.SqrMagnitude(p - Input.mousePosition);
-            if (squareDistance <= PatternPanel.LaneHeight * PatternPanel.LaneHeight * 0.25f)
+            Vector2 distance = new Vector2(
+                noteImage.transform.position.x + v.x 
+                    - screenPosition.x,
+                noteImage.transform.position.y + v.y
+                    - screenPosition.y);
+            float squareDistance = distance.sqrMagnitude;
+            if (squareDistance <= minDistanceSquared)
             {
-                Debug.Log("Detected click");
-                break;
+                return true;
             }
         }
+
+        return false;
     }
     #endregion
 }
