@@ -26,6 +26,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public GameObject anchorReceiverTemplate;
     public RectTransform anchorContainer;
     public GameObject anchorTemplate;
+    public Texture2D addAnchorCursor;
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
@@ -227,6 +228,18 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #endregion
 
     #region Event Relay From Curve
+    public void OnAnchorReceiverPointerEnter()
+    {
+        UnityEngine.Cursor.SetCursor(addAnchorCursor,
+            Vector2.zero, CursorMode.Auto);
+    }
+
+    public void OnAnchorReceiverPointerExit()
+    {
+        UnityEngine.Cursor.SetCursor(null,
+            Vector2.zero, CursorMode.Auto);
+    }
+
     public void OnAnchorReceiverClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
