@@ -2807,7 +2807,8 @@ public class PatternPanel : MonoBehaviour
                     nextNote.time;
                 audioSourceManager.PlayKeysound(clip,
                     nextNote.lane > PlayableLanes,
-                    startTime);
+                    startTime,
+                    nextNote.volume, nextNote.pan);
 
                 notesInLanes[i].Dequeue();
             }
@@ -2818,6 +2819,15 @@ public class PatternPanel : MonoBehaviour
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
+    }
+
+    public void PlayKeysound(Note n)
+    {
+        AudioClip clip = ResourceLoader.GetCachedClip(
+            n.sound);
+        audioSourceManager.PlayKeysound(clip,
+            n.lane > PlayableLanes, 0f,
+            n.volume, n.pan);
     }
     #endregion
 
