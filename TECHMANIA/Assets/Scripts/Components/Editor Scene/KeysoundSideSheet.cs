@@ -11,11 +11,10 @@ public class KeysoundSideSheet : MonoBehaviour
 {
     public Transform keysoundButtonContainer;
     public GameObject keysoundButtonTemplate;
-    public GameObject showKeysoundSheetButton;
-    public GameObject closeButton;
     public TextMeshProUGUI upcomingKeysoundDisplay;
 
-    public static event UnityAction<List<string>> selectedKeysoundsUpdated;
+    public static event UnityAction<List<string>> 
+        selectedKeysoundsUpdated;
 
     // The following lists have the same length.
     private List<string> audioFilesNoFolder;
@@ -31,7 +30,8 @@ public class KeysoundSideSheet : MonoBehaviour
         // Remove all keysound buttons, except for template.
         for (int i = 0; i < keysoundButtonContainer.childCount; i++)
         {
-            GameObject o = keysoundButtonContainer.GetChild(i).gameObject;
+            GameObject o = keysoundButtonContainer.GetChild(i)
+                .gameObject;
             if (o == keysoundButtonTemplate) continue;
             Destroy(o);
         }
@@ -48,7 +48,8 @@ public class KeysoundSideSheet : MonoBehaviour
             audioFilesNoFolder[i] = file;
 
             int iCopy = i;
-            GameObject b = Instantiate(keysoundButtonTemplate, keysoundButtonContainer);
+            GameObject b = Instantiate(keysoundButtonTemplate, 
+                keysoundButtonContainer);
             b.GetComponentInChildren<TextMeshProUGUI>().text = file;
             b.GetComponent<KeysoundButton>().clickHandler =
                 () => OnKeysoundButtonClick(iCopy);
@@ -66,7 +67,8 @@ public class KeysoundSideSheet : MonoBehaviour
     {
         for (int i = 0; i < audioFilesNoFolder.Count; i++)
         {
-            KeysoundButton keysoundButton = keysoundButtons[i].GetComponent<KeysoundButton>();
+            KeysoundButton keysoundButton = keysoundButtons[i]
+                .GetComponent<KeysoundButton>();
             keysoundButton.UpdateSelected(selected[i]);
             keysoundButton.UpdateUpcoming(i == upcomingIndex);
         }
@@ -107,20 +109,6 @@ public class KeysoundSideSheet : MonoBehaviour
         Refresh();
     }
 
-    public void Show()
-    {
-        gameObject.SetActive(true);
-        showKeysoundSheetButton.SetActive(false);
-        EventSystem.current.SetSelectedGameObject(closeButton);
-    }
-
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-        showKeysoundSheetButton.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(showKeysoundSheetButton);
-    }
-
     private void OnKeysoundButtonClick(int index)
     {
         bool shift = Input.GetKey(KeyCode.LeftShift) ||
@@ -134,8 +122,10 @@ public class KeysoundSideSheet : MonoBehaviour
                 lastSelectedIndexWithoutShift = 0;
             }
 
-            int first = Mathf.Min(lastSelectedIndexWithoutShift, index);
-            int last = Mathf.Max(lastSelectedIndexWithoutShift, index);
+            int first = Mathf.Min(lastSelectedIndexWithoutShift, 
+                index);
+            int last = Mathf.Max(lastSelectedIndexWithoutShift,
+                index);
             if (ctrl)
             {
                 // Add [first, last] to current selection.
