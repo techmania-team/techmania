@@ -47,7 +47,8 @@ public class AudioSourceManager : MonoBehaviour
     // Returns the AudioSource chosen to play the clip, if not null.
     public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
         float startTime = 0f,
-        float volume = 1f, float pan = 0f)
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan)
     {
         if (clip == null) return null;
 

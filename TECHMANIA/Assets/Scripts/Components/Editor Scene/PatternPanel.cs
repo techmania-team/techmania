@@ -824,6 +824,9 @@ public class PatternPanel : MonoBehaviour
             int pulse = n.note.pulse;
             int lane = n.note.lane;
             string sound = n.note.sound;
+            float volume = n.note.volume;
+            float pan = n.note.pan;
+            bool endOfScan = n.note.endOfScan;
 
             GameObject newObject = null;
             string invalidReason = "";
@@ -842,7 +845,8 @@ public class PatternPanel : MonoBehaviour
                         break;
                     }
                     DeleteNote(o);
-                    newObject = AddNote(noteType, pulse, lane, sound);
+                    newObject = AddNote(noteType, pulse, lane, sound,
+                        volume, pan, endOfScan);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
@@ -858,7 +862,8 @@ public class PatternPanel : MonoBehaviour
                     }
                     DeleteNote(o);
                     newObject = AddHoldNote(noteType, pulse, lane,
-                        duration: null, sound);
+                        duration: null, sound,
+                        volume, pan, endOfScan);
                     break;
                 case NoteType.Drag:
                     // No need to call CanAddDragNote because
@@ -872,7 +877,8 @@ public class PatternPanel : MonoBehaviour
                     }
                     DeleteNote(o);
                     newObject = AddDragNote(pulse, lane,
-                        nodes: null, sound);
+                        nodes: null, sound,
+                        volume, pan, endOfScan);
                     break;
             }
 
@@ -1105,7 +1111,10 @@ public class PatternPanel : MonoBehaviour
                         o = AddNote(movedNote.type,
                             movedNote.pulse,
                             movedNote.lane,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                     case NoteType.Hold:
                     case NoteType.RepeatHeadHold:
@@ -1114,14 +1123,20 @@ public class PatternPanel : MonoBehaviour
                             movedNote.pulse,
                             movedNote.lane,
                             (movedNote as HoldNote).duration,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                     case NoteType.Drag:
                         o = AddDragNote(
                             movedNote.pulse,
                             movedNote.lane,
                             (movedNote as DragNote).nodes,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                 }
                 replacedSelection.Add(o);
@@ -1896,6 +1911,7 @@ public class PatternPanel : MonoBehaviour
             .GetComponent<NoteInEditor>();
         noteInEditor.SetKeysoundText();
         noteInEditor.UpdateKeysoundVisibility();
+        noteInEditor.UpdateEndOfScanIndicator();
         if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
         noteObject.GetComponent<SelfPositionerInEditor>()
             .Reposition();
@@ -2400,21 +2416,29 @@ public class PatternPanel : MonoBehaviour
     }
 
     private GameObject AddNote(NoteType type, int pulse, int lane,
-        string sound)
+        string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         Note n = new Note()
         {
             type = type,
             pulse = pulse,
             lane = lane,
-            sound = sound
+            sound = sound,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
 
     private GameObject AddHoldNote(NoteType type,
-        int pulse, int lane,
-        int? duration, string sound)
+        int pulse, int lane, int? duration, string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         if (!duration.HasValue)
         {
@@ -2426,13 +2450,19 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             sound = sound,
-            duration = duration.Value
+            duration = duration.Value,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
 
     private GameObject AddDragNote(int pulse, int lane,
-        List<DragNode> nodes, string sound)
+        List<DragNode> nodes, string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         if (nodes == null)
         {
@@ -2458,7 +2488,10 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             sound = sound,
-            nodes = nodes
+            nodes = nodes,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
@@ -2598,19 +2631,22 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
                     AddNote(n.type, newPulse,
-                        n.lane, n.sound);
+                        n.lane, n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
                     AddHoldNote(n.type, newPulse,
                         n.lane, (n as HoldNote).duration,
-                        n.sound);
+                        n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Drag:
                     AddDragNote(newPulse, n.lane,
                         (n as DragNote).nodes,
-                        n.sound);
+                        n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
             }
         }

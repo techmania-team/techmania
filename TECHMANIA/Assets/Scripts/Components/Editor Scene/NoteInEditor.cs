@@ -11,6 +11,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public Sprite hiddenSprite;
     public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
+    public RectTransform endOfScanIndicator;
     public RectTransform noteImage;
 
     public RectTransform pathToPreviousNote;
@@ -103,6 +104,38 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
             .gameObject.SetActive(
             Options.instance.editorOptions.showKeysounds);
+    }
+
+    public void UpdateEndOfScanIndicator()
+    {
+        Note n = GetComponent<NoteObject>().note;
+        bool showIndicator = n.endOfScan;
+        if (showIndicator)
+        {
+            // Don't show indicator if the note is not on a
+            // scan divider.
+            int pulsesPerScan = Pattern.pulsesPerBeat *
+                EditorContext.Pattern.patternMetadata.bps;
+            if (n.pulse % pulsesPerScan != 0)
+            {
+                showIndicator = false;
+            }
+        }
+
+        if (showIndicator)
+        {
+            endOfScanIndicator.sizeDelta = new Vector2(
+                endOfScanIndicator.sizeDelta.y,
+                endOfScanIndicator.sizeDelta.y);
+            endOfScanIndicator.GetComponent<Image>().enabled = true;
+        }
+        else
+        {
+            endOfScanIndicator.sizeDelta = new Vector2(
+                0f,
+                endOfScanIndicator.sizeDelta.y);
+            endOfScanIndicator.GetComponent<Image>().enabled = false;
+        }
     }
 
     public void SetKeysoundText()

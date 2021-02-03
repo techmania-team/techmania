@@ -17,6 +17,7 @@ public class NoteDetailSideSheet : MonoBehaviour
     public Toggle endOfScanToggle;
     public PatternPanel patternPanel;
 
+    private HashSet<GameObject> selection;
     private List<Note> notes;
 
     private void OnEnable()
@@ -40,6 +41,7 @@ public class NoteDetailSideSheet : MonoBehaviour
             contents.SetActive(false);
             return;
         }
+        selection = newSelection;
         noSelectionNotice.SetActive(false);
         contents.SetActive(true);
 
@@ -144,5 +146,10 @@ public class NoteDetailSideSheet : MonoBehaviour
         EditorContext.PrepareForChange();
         notes.ForEach(n => n.endOfScan = newValue);
         EditorContext.DoneWithChange();
+
+        foreach (GameObject o in selection)
+        {
+            o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
+        }
     }
 }
