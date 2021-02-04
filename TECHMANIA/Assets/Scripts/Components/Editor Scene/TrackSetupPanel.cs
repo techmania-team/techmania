@@ -42,17 +42,23 @@ public class TrackSetupPanel : MonoBehaviour
     private void OnEnable()
     {
         Tabs.tabChanged += Refresh;
-        EditorContext.UndoInvoked += Refresh;
-        PatternRadioList.SelectedPatternChanged += SelectedPatternChanged;
+        EditorContext.UndoInvoked += OnUndoOrRedo;
+        EditorContext.RedoInvoked += OnUndoOrRedo;
+        PatternRadioList.SelectedPatternChanged += 
+            SelectedPatternChanged;
+
         selectedPattern = null;
+        EditorContext.ClearUndoRedoStack();
         Refresh();
     }
 
     private void OnDisable()
     {
         Tabs.tabChanged -= Refresh;
-        EditorContext.UndoInvoked -= Refresh;
-        PatternRadioList.SelectedPatternChanged -= SelectedPatternChanged;
+        EditorContext.UndoInvoked -= OnUndoOrRedo;
+        EditorContext.RedoInvoked -= OnUndoOrRedo;
+        PatternRadioList.SelectedPatternChanged -= 
+            SelectedPatternChanged;
     }
 
     private void OnApplicationFocus(bool focus)
@@ -61,6 +67,11 @@ public class TrackSetupPanel : MonoBehaviour
         {
             Refresh();
         }
+    }
+
+    private void OnUndoOrRedo(EditTransaction t)
+    {
+        Refresh();
     }
 
     private void Refresh()

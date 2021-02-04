@@ -183,7 +183,8 @@ public class PatternPanel : MonoBehaviour
             cacheAudioCompleteCallback: OnResourceLoadComplete);
 
         Refresh();
-        EditorContext.UndoInvoked += Refresh;
+        EditorContext.UndoInvoked += OnUndo;
+        EditorContext.RedoInvoked += OnRedo;
         NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
         NoteInEditor.RightClicked += OnNoteObjectRightClick;
         NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
@@ -209,7 +210,8 @@ public class PatternPanel : MonoBehaviour
     private void OnDisable()
     {
         StopPlayback();
-        EditorContext.UndoInvoked -= Refresh;
+        EditorContext.UndoInvoked -= OnUndo;
+        EditorContext.RedoInvoked -= OnRedo;
         NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
         NoteInEditor.RightClicked -= OnNoteObjectRightClick;
         NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
@@ -278,6 +280,42 @@ public class PatternPanel : MonoBehaviour
         }
 
         HandleKeyboardShortcuts();
+    }
+    #endregion
+
+    #region Undo and Redo
+    private void OnUndo(EditTransaction transaction)
+    {
+        foreach (EditOperation op in transaction.ops)
+        {
+            switch (op.type)
+            {
+                case EditOperation.Type.Metadata:
+                    // Do nothing.
+                    break;
+                case EditOperation.Type.BpmEvent:
+                    DestroyAndRespawnAllMarkers();
+                    break;
+                    // TODO: other types.
+            }
+        }
+    }
+
+    private void OnRedo(EditTransaction transaction)
+    {
+        foreach (EditOperation op in transaction.ops)
+        {
+            switch (op.type)
+            {
+                case EditOperation.Type.Metadata:
+                    // Do nothing.
+                    break;
+                case EditOperation.Type.BpmEvent:
+                    DestroyAndRespawnAllMarkers();
+                    break;
+                    // TODO: other types.
+            }
+        }
     }
     #endregion
 
@@ -1651,6 +1689,8 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Refreshing
+    // This deletes and respawns everything, therefore is extremely
+    // slow.
     private void Refresh()
     {
         DestroyAndRespawnExistingNotes();
