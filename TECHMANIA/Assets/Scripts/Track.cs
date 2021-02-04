@@ -478,6 +478,28 @@ public class Note
             return Note.Unpack(Pack());
         }
     }
+
+    // This does not modify type, pulse and lane.
+    public void CopyFrom(Note other)
+    {
+        sound = other.sound;
+        volume = other.volume;
+        pan = other.pan;
+        endOfScan = other.endOfScan;
+        if (this is HoldNote && other is HoldNote)
+        {
+            (this as HoldNote).duration = (other as HoldNote).duration;
+        }
+        if (this is DragNote && other is DragNote)
+        {
+            DragNote d = this as DragNote;
+            d.nodes = new List<DragNode>();
+            foreach (DragNode node in (other as DragNote).nodes)
+            {
+                d.nodes.Add(node.Clone());
+            }
+        }
+    }
 }
 
 // There has been a bug with HoldNote since 0.1 but only found

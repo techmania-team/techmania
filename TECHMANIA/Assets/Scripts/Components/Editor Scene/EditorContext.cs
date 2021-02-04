@@ -120,21 +120,32 @@ public class EditorContext : MonoBehaviour
     }
 
     #region Transaction and operation APIs
-    // Any modification to the track should look like this:
+    // Modify tracks in the following pattern to enable undo and redo.
     //
-    // EditorContext.BeginTransaction();
-    // EditOperation op = EditorContext.BeginOperation(...);
-    // MakeChange();
-    // RecordBeforeAndAfterStatesInOp();
-    // EditOperation op = EditorContext.BeginOperation(...);
-    // MakeChange();
-    // RecordBeforeAndAfterStatesInOp();
-    // EditorContext.EndTransaction();
+    // To modify metadata:
+    //   EditorContext.PrepareToModifyMetadata();
+    //   (then modify metadata)
     //
-    // It's up to the caller to record the following in the op:
-    // - AddNote: a clone of the added note
-    // - DeleteNote: a clone of the deleted note
-    // - ModifyNote: clones of note both before and after modification
+    // To modify BPM events:
+    //   EditorContext.PrepareToModifyBpmEvents();
+    //   (then modify BPM events)
+    //
+    // To add, delete and modify notes:
+    //   EditorContext.BeginTransaction();
+    //
+    //   Note newNote = (add note)
+    //   EditorContext.RecordAddedNote(newNote);
+    //
+    //   EditorContext.RecordDeletedNote((note to delete));
+    //   (delte note)
+    //
+    //   EditOperation op = EditorContext.BeginModifyNoteOperation();
+    //   op.noteBeforeOp = (note before modification).Clone();
+    //   (modify note)
+    //   op.noteAfterOp = (note after modification).Clone();
+    //
+    //   EditorContext.EndTransaction();
+
     public static void BeginTransaction()
     {
         currentTransaction = new EditTransaction();
@@ -152,31 +163,12 @@ public class EditorContext : MonoBehaviour
         UndoRedoStackUpdated?.Invoke();
     }
 
-    // Call this shortcut before making any change to track
-    // or pattern metadata. No need to call anything on transactions
-    // or operations.
-    public static void PrepareToModifyMetadata()
-    {
-        BeginTransaction();
-        BeginOperation(EditOperation.Type.Metadata);
-        EndTransaction();
-    }
-
-    // Call this shortcut before making any change to BPM events.
-    // No need to call anything on transactions or operations.
-    public static void PrepareToModifyBpmEvent()
-    {
-        BeginTransaction();
-        BeginOperation(EditOperation.Type.BpmEvent);
-        EndTransaction();
-    }
-
     // For types Metadata and BpmEvent, EditorContext will
     // automatically record the current track / list of BPM events.
     //
     // For other types, it's up to the caller to record the
     // before/after state of things.
-    public static EditOperation BeginOperation(
+    private static EditOperation BeginOperation(
         EditOperation.Type type)
     {
         EditOperation op = new EditOperation();
@@ -193,6 +185,47 @@ public class EditorContext : MonoBehaviour
         }
         return op;
     }
+
+    // Shortcuts
+
+    // Call this shortcut before making any change to track
+    // or pattern metadata. Afterwards there's no need to call
+    // anything else.
+    public static void PrepareToModifyMetadata()
+    {
+        BeginTransaction();
+        BeginOperation(EditOperation.Type.Metadata);
+        EndTransaction();
+    }
+
+    // Call this shortcut before making any change to BPM events.
+    // Afterwards there's no need to call anything else.
+    public static void PrepareToModifyBpmEvent()
+    {
+        BeginTransaction();
+        BeginOperation(EditOperation.Type.BpmEvent);
+        EndTransaction();
+    }
+
+    // Call this shortcut between BeginTransaction and EndTransaction.
+    public static void RecordAddedNote(Note n)
+    {
+        EditOperation op = BeginOperation(EditOperation.Type.AddNote);
+        op.addedNote = n.Clone();
+    }
+
+    // Call this shortcut between BeginTransaction and EndTransaction.
+    public static void RecordDeletedNote(Note n)
+    {
+        EditOperation op = BeginOperation(
+            EditOperation.Type.DeleteNote);
+        op.deletedNote = n.Clone();
+    }
+
+    public static EditOperation BeginModifyNoteOperation()
+    {
+        return BeginOperation(EditOperation.Type.ModifyNote);
+    }
     #endregion
 
     // May throw exceptions.
@@ -203,6 +236,7 @@ public class EditorContext : MonoBehaviour
         DirtynessUpdated?.Invoke(Dirty);
     }
 
+    #region Undo and Redo
     public static bool CanUndo()
     {
         return !undoStack.Empty();
@@ -296,4 +330,5 @@ public class EditorContext : MonoBehaviour
         redoStack.Clear();
         UndoRedoStackUpdated?.Invoke();
     }
+    #endregion
 }

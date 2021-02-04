@@ -296,9 +296,47 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.BpmEvent:
                     DestroyAndRespawnAllMarkers();
                     break;
-                    // TODO: other types.
+                case EditOperation.Type.AddNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.addedNote.pulse,
+                            op.addedNote.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to undo AddNote.");
+                            break;
+                        }
+                        selectedNoteObjects.Remove(optionsTab);
+                        GameObject o = GetGameObjectFromNote(n);
+                        selectedNoteObjects.Remove(o);
+                        DeleteNote(o);
+                    }
+                    break;
+                case EditOperation.Type.DeleteNote:
+                    {
+                        Note n = op.deletedNote;
+                        AddNote(n.type, n.pulse, n.lane, n.sound,
+                            n.volume, n.pan, n.endOfScan);
+                    }
+                    break;
+                case EditOperation.Type.ModifyNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.noteBeforeOp.pulse,
+                            op.noteBeforeOp.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to undo ModifyNote.");
+                            break;
+                        }
+                        n.CopyFrom(op.noteBeforeOp);
+                        RefreshNoteInEditor(n);
+                    }
+                    break;
             }
         }
+        // To update note detail sheet.
+        SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
     private void OnRedo(EditTransaction transaction)
@@ -313,8 +351,65 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.BpmEvent:
                     DestroyAndRespawnAllMarkers();
                     break;
-                    // TODO: other types.
+                case EditOperation.Type.AddNote:
+                    {
+                        Note n = op.addedNote;
+                        AddNote(n.type, n.pulse, n.lane, n.sound,
+                            n.volume, n.pan, n.endOfScan);
+                    }
+                    break;
+                case EditOperation.Type.DeleteNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.deletedNote.pulse,
+                            op.deletedNote.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to redo DeleteNote.");
+                            break;
+                        }
+                        selectedNoteObjects.Remove(optionsTab);
+                        GameObject o = GetGameObjectFromNote(n);
+                        selectedNoteObjects.Remove(o);
+                        DeleteNote(o);
+                    }
+                    break;
+                case EditOperation.Type.ModifyNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.noteBeforeOp.pulse,
+                            op.noteBeforeOp.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to redo ModifyNote.");
+                            break;
+                        }
+                        n.CopyFrom(op.noteAfterOp);
+                        RefreshNoteInEditor(n);
+                    }
+                    break;
             }
+        }
+        // To update note detail sheet.
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    private void RefreshNoteInEditor(Note n)
+    {
+        NoteInEditor e = GetGameObjectFromNote(n)
+            .GetComponent<NoteInEditor>();
+        e.SetKeysoundText();
+        e.UpdateEndOfScanIndicator();
+        switch (n.type)
+        {
+            case NoteType.Hold:
+            case NoteType.RepeatHold:
+            case NoteType.RepeatHeadHold:
+                e.ResetTrail();
+                break;
+            case NoteType.Drag:
+                e.ResetCurve();
+                break;
         }
     }
     #endregion
@@ -554,7 +649,8 @@ public class PatternPanel : MonoBehaviour
 
         string sound = keysoundSheet.UpcomingKeysound();
         keysoundSheet.AdvanceUpcoming();
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        GameObject newNote = null;
         switch (noteType)
         {
             case NoteType.Basic:
@@ -562,24 +658,25 @@ public class PatternPanel : MonoBehaviour
             case NoteType.ChainNode:
             case NoteType.RepeatHead:
             case NoteType.Repeat:
-                AddNote(noteType, noteCursor.note.pulse,
+                newNote = AddNote(noteType, noteCursor.note.pulse,
                     noteCursor.note.lane, sound);
                 break;
             case NoteType.Hold:
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
-                AddHoldNote(noteType, noteCursor.note.pulse,
+                newNote = AddHoldNote(noteType, noteCursor.note.pulse,
                     noteCursor.note.lane, duration: null, sound);
                 break;
             case NoteType.Drag:
-                AddDragNote(noteCursor.note.pulse,
+                newNote = AddDragNote(noteCursor.note.pulse,
                     noteCursor.note.lane,
                     nodes: null,
                     sound);
                 break;
         }
-        
-        EditorContext.DoneWithChange();
+
+        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
+        EditorContext.EndTransaction();
     }
 
     private bool draggingDragCurve;
@@ -750,10 +847,11 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditorContext.RecordDeletedNote(GetNoteFromGameObject(o));
         selectedNoteObjects.Remove(o);
         DeleteNote(o);
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
     }
     #endregion
 
