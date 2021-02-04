@@ -52,10 +52,11 @@ public class UIUtils
     }
 
     // Update property to be newValue.
-    // If the new value is different from the old one,
-    // set madeChange to true.
-    // If madeChange was false before, also call Navigation.PrepareForChange().
-    public static void UpdatePropertyInMemory(
+    // - If the new value is different from the old one,
+    //   set madeChange to true.
+    // - If madeChange was false before, also call 
+    //   EditorContext.PrepareToModifyMetadata().
+    public static void UpdateMetadataInMemory(
         ref string property, string newValue, ref bool madeChange)
     {
         if (property == newValue)
@@ -64,13 +65,13 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareForChange();
+            EditorContext.PrepareToModifyMetadata();
             madeChange = true;
         }
         property = newValue;
     }
 
-    public static void UpdatePropertyInMemory(ref double property,
+    public static void UpdateMetadataInMemory(ref double property,
         string newValueString, ref bool madeChange)
     {
         double newValue = double.Parse(newValueString);
@@ -80,13 +81,13 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareForChange();
+            EditorContext.PrepareToModifyMetadata();
             madeChange = true;
         }
         property = newValue;
     }
 
-    public static void UpdatePropertyInMemory(ref int property,
+    public static void UpdateMetadataInMemory(ref int property,
         string newValueString, ref bool madeChange)
     {
         int newValue = int.Parse(newValueString);
@@ -96,13 +97,13 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareForChange();
+            EditorContext.PrepareToModifyMetadata();
             madeChange = true;
         }
         property = newValue;
     }
 
-    public static void UpdatePropertyInMemory(ref string property,
+    public static void UpdateMetadataInMemory(ref string property,
         TMP_Dropdown dropdown, ref bool madeChange)
     {
         string newValueString = dropdown.options[dropdown.value].text;
@@ -111,7 +112,7 @@ public class UIUtils
         {
             newValueString = "";
         }
-        UpdatePropertyInMemory(ref property,
+        UpdateMetadataInMemory(ref property,
             newValueString, ref madeChange);
     }
 

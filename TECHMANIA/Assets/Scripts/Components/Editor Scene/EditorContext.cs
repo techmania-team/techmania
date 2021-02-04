@@ -138,6 +138,7 @@ public class EditorContext : MonoBehaviour
     public static void BeginTransaction()
     {
         currentTransaction = new EditTransaction();
+        currentTransaction.ops = new List<EditOperation>();
     }
 
     public static void EndTransaction()
@@ -149,6 +150,25 @@ public class EditorContext : MonoBehaviour
         Dirty = true;
         DirtynessUpdated?.Invoke(Dirty);
         UndoRedoStackUpdated?.Invoke();
+    }
+
+    // Call this shortcut before making any change to track
+    // or pattern metadata. No need to call anything on transactions
+    // or operations.
+    public static void PrepareToModifyMetadata()
+    {
+        BeginTransaction();
+        BeginOperation(EditOperation.Type.Metadata);
+        EndTransaction();
+    }
+
+    // Call this shortcut before making any change to BPM events.
+    // No need to call anything on transactions or operations.
+    public static void PrepareToModifyBpmEvent()
+    {
+        BeginTransaction();
+        BeginOperation(EditOperation.Type.BpmEvent);
+        EndTransaction();
     }
 
     // For types Metadata and BpmEvent, EditorContext will
@@ -213,11 +233,12 @@ public class EditorContext : MonoBehaviour
     {
         if (redoStack.Empty()) return;
 
-        EditTransaction transaction = undoStack.Pop();
+        EditTransaction transaction = redoStack.Pop();
         EditTransaction transactionToUndo =
             ProcessTransactionAndConvertForOtherStack(transaction);
         undoStack.Push(transactionToUndo);
         UndoRedoStackUpdated?.Invoke();
+
         RedoInvoked?.Invoke(transaction);
 
         Dirty = true;
