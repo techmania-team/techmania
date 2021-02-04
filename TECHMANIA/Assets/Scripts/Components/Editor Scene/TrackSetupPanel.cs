@@ -42,7 +42,7 @@ public class TrackSetupPanel : MonoBehaviour
     private void OnEnable()
     {
         Tabs.tabChanged += Refresh;
-        EditorContext.UndoneOrRedone += Refresh;
+        EditorContext.UndoInvoked += Refresh;
         PatternRadioList.SelectedPatternChanged += SelectedPatternChanged;
         selectedPattern = null;
         Refresh();
@@ -51,7 +51,7 @@ public class TrackSetupPanel : MonoBehaviour
     private void OnDisable()
     {
         Tabs.tabChanged -= Refresh;
-        EditorContext.UndoneOrRedone -= Refresh;
+        EditorContext.UndoInvoked -= Refresh;
         PatternRadioList.SelectedPatternChanged -= SelectedPatternChanged;
     }
 

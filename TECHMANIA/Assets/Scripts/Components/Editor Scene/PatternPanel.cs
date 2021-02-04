@@ -183,7 +183,7 @@ public class PatternPanel : MonoBehaviour
             cacheAudioCompleteCallback: OnResourceLoadComplete);
 
         Refresh();
-        EditorContext.UndoneOrRedone += Refresh;
+        EditorContext.UndoInvoked += Refresh;
         NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
         NoteInEditor.RightClicked += OnNoteObjectRightClick;
         NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
@@ -209,7 +209,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDisable()
     {
         StopPlayback();
-        EditorContext.UndoneOrRedone -= Refresh;
+        EditorContext.UndoInvoked -= Refresh;
         NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
         NoteInEditor.RightClicked -= OnNoteObjectRightClick;
         NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;

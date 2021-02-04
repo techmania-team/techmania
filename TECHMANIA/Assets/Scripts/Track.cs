@@ -29,13 +29,20 @@ public class TrackBase
     protected virtual void InitAfterDeserialize() { }
 
     // This should never be called from outside the editor.
-    public string Serialize()
+    public string Serialize(bool optimizeForSaving)
     {
         PrepareToSerialize();
 #if UNITY_2019
-        return UnityEngine.JsonUtility.ToJson(this,
-            prettyPrint: true)
-            .Replace("    ", "\t");
+        if (optimizeForSaving)
+        {
+            return UnityEngine.JsonUtility.ToJson(this,
+                prettyPrint: true).Replace("    ", "\t");
+        }
+        else
+        {
+            return UnityEngine.JsonUtility.ToJson(this,
+                prettyPrint: false);
+        }
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             typeof(Track),
@@ -47,7 +54,7 @@ public class TrackBase
 #endif
     }
 
-    private static TrackBase Deserialize(string json)
+    public static TrackBase Deserialize(string json)
     {
 #if UNITY_2019
         TrackBase track = null;
@@ -76,12 +83,12 @@ public class TrackBase
     // The clone will retain the same Guid.
     public TrackBase Clone()
     {
-        return Deserialize(Serialize());
+        return Deserialize(Serialize(optimizeForSaving: false));
     }
 
     public void SaveToFile(string path)
     {
-        string serialized = Serialize();
+        string serialized = Serialize(optimizeForSaving: true);
         System.IO.File.WriteAllText(path, serialized);
     }
 
