@@ -1773,7 +1773,9 @@ public class Game : MonoBehaviour
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         AudioSource source = audioSourceManager.PlayKeysound(clip,
-            n.note.lane >= kPlayableLanes);
+            n.note.lane >= kPlayableLanes,
+            startTime: 0f,
+            n.note.volume, n.note.pan);
         noteToAudioSource[n.note] = source;
     }
 
