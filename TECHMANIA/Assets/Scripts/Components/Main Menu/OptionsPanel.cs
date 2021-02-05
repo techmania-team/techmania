@@ -197,7 +197,7 @@ public class OptionsPanel : MonoBehaviour
 
     private string VolumeValueToDisplay(float volume)
     {
-        return Mathf.FloorToInt(volume * 100f).ToString();
+        return Mathf.RoundToInt(volume * 100f).ToString();
     }
 
     private void UpdateVolumeDisplay()

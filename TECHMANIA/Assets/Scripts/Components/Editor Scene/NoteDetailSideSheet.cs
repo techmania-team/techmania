@@ -92,7 +92,7 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
         if (sameValue)
         {
-            volumeDisplay.text = Mathf.FloorToInt(volume * 100f) + "%";
+            volumeDisplay.text = Mathf.RoundToInt(volume * 100f) + "%";
         }
         else
         {
@@ -110,7 +110,7 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
         if (sameValue)
         {
-            panDisplay.text = Mathf.FloorToInt(pan * 100f) + "%";
+            panDisplay.text = Mathf.RoundToInt(pan * 100f) + "%";
         }
         else
         {
