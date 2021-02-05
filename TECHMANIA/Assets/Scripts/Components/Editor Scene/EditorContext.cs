@@ -109,16 +109,6 @@ public class EditorContext : MonoBehaviour
         redoStack = new LimitedStack<EditTransaction>(20);
     }
 
-    // TODO: deprecate
-    public static void PrepareForChange()
-    {
-    }    
-
-    // TODO: deprecate
-    public static void DoneWithChange()
-    {
-    }
-
     #region Transaction and operation APIs
     // Modify tracks in the following pattern to enable undo and redo.
     //

@@ -286,8 +286,12 @@ public class PatternPanel : MonoBehaviour
     #region Undo and Redo
     private void OnUndo(EditTransaction transaction)
     {
-        foreach (EditOperation op in transaction.ops)
+        // Undo operations in reverse order.
+        for (int opIndex = transaction.ops.Count - 1;
+            opIndex >= 0;
+            opIndex--)
         {
+            EditOperation op = transaction.ops[opIndex];
             switch (op.type)
             {
                 case EditOperation.Type.Metadata:
@@ -315,15 +319,14 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.DeleteNote:
                     {
                         Note n = op.deletedNote;
-                        AddNote(n.type, n.pulse, n.lane, n.sound,
-                            n.volume, n.pan, n.endOfScan);
+                        GenericAddNote(n);
                     }
                     break;
                 case EditOperation.Type.ModifyNote:
                     {
                         Note n = EditorContext.Pattern.GetNoteAt(
-                            op.noteBeforeOp.pulse,
-                            op.noteBeforeOp.lane);
+                            op.noteAfterOp.pulse,
+                            op.noteAfterOp.lane);
                         if (n == null)
                         {
                             Debug.LogError("Note not found when trying to undo ModifyNote.");
@@ -354,8 +357,7 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.AddNote:
                     {
                         Note n = op.addedNote;
-                        AddNote(n.type, n.pulse, n.lane, n.sound,
-                            n.volume, n.pan, n.endOfScan);
+                        GenericAddNote(n);
                     }
                     break;
                 case EditOperation.Type.DeleteNote:
@@ -394,6 +396,34 @@ public class PatternPanel : MonoBehaviour
         SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
+    // Calls one of AddNote, AddHoldNote and AddDragNote.
+    private void GenericAddNote(Note n)
+    {
+        switch (n.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                AddNote(n.type, n.pulse, n.lane, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                AddHoldNote(n.type, n.pulse, n.lane,
+                    (n as HoldNote).duration, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+            case NoteType.Drag:
+                AddDragNote(n.pulse, n.lane,
+                    (n as DragNote).nodes, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+        }
+    }
+
     private void RefreshNoteInEditor(Note n)
     {
         NoteInEditor e = GetGameObjectFromNote(n)
@@ -409,6 +439,7 @@ public class PatternPanel : MonoBehaviour
                 break;
             case NoteType.Drag:
                 e.ResetCurve();
+                e.ResetAllAnchorsAndControlPoints();
                 break;
         }
     }
@@ -901,7 +932,7 @@ public class PatternPanel : MonoBehaviour
                 return;
             }
 
-            EditorContext.PrepareForChange();
+            EditorContext.PrepareToModifyBpmEvent();
             // Delete event.
             EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
             {
@@ -916,7 +947,6 @@ public class PatternPanel : MonoBehaviour
                     bpm = newBpm.Value
                 });
             }
-            EditorContext.DoneWithChange();
 
             DestroyAndRespawnAllMarkers();
         });
@@ -953,7 +983,7 @@ public class PatternPanel : MonoBehaviour
         if (selectedNoteObjects.Count == 0) return;
 
         HashSet<GameObject> newSelection = new HashSet<GameObject>();
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (GameObject o in selectedNoteObjects)
         {
             NoteObject n = o.GetComponent<NoteObject>();
@@ -974,15 +1004,19 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddNote(noteType, pulse, lane, sound,
                         volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
@@ -990,31 +1024,39 @@ public class PatternPanel : MonoBehaviour
                     // No need to call CanAddHoldNote because
                     // duration is flexible.
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddHoldNote(noteType, pulse, lane,
                         duration: null, sound,
                         volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
                 case NoteType.Drag:
                     // No need to call CanAddDragNote because
                     // curve is flexible.
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddDragNote(pulse, lane,
                         nodes: null, sound,
                         volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
             }
 
@@ -1027,7 +1069,7 @@ public class PatternPanel : MonoBehaviour
                 newSelection.Add(o);
             }
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
 
         selectedNoteObjects = newSelection;
         SelectionChanged?.Invoke(selectedNoteObjects);
@@ -1085,16 +1127,21 @@ public class PatternPanel : MonoBehaviour
         });
 
         // Apply keysound.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         int keysoundIndex = 0;
         foreach (NoteObject n in sortedSelection)
         {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.note.Clone();
             n.note.sound = keysounds[keysoundIndex];
+            op.noteAfterOp = n.note.Clone();
+
             n.GetComponent<NoteInEditor>().SetKeysoundText();
             n.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
             keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
     }
 
     private void OnOptionsTabOpened()
@@ -1217,7 +1264,7 @@ public class PatternPanel : MonoBehaviour
             // Apply move. We need to delete and respawn note
             // objects, because they may have been moved between
             // playable and hidden lanes.
-            EditorContext.PrepareForChange();
+            EditorContext.BeginTransaction();
             HashSet<GameObject> replacedSelection =
                 new HashSet<GameObject>();
             // These notes are not the ones added to the pattern.
@@ -1227,11 +1274,13 @@ public class PatternPanel : MonoBehaviour
             foreach (GameObject o in selectedNoteObjects)
             {
                 NoteObject n = o.GetComponent<NoteObject>();
+                
                 Note movedNote = n.note.Clone();
                 movedNote.pulse += deltaPulse;
                 movedNote.lane += deltaLane;
                 movedNotes.Add(movedNote);
 
+                EditorContext.RecordDeletedNote(n.note.Clone());
                 DeleteNote(o);
             }
             foreach (Note movedNote in movedNotes)
@@ -1275,6 +1324,8 @@ public class PatternPanel : MonoBehaviour
                             movedNote.endOfScan);
                         break;
                 }
+                EditorContext.RecordAddedNote(
+                    GetNoteFromGameObject(o));
                 replacedSelection.Add(o);
                 if (movedNote.pulse == oldPulse + deltaPulse &&
                     movedNote.lane == oldLane + deltaLane)
@@ -1283,7 +1334,7 @@ public class PatternPanel : MonoBehaviour
                         GetNoteFromGameObject(o);
                 }
             }
-            EditorContext.DoneWithChange();
+            EditorContext.EndTransaction();
             selectedNoteObjects = replacedSelection;
             SelectionChanged?.Invoke(selectedNoteObjects);
         }
@@ -1381,13 +1432,18 @@ public class PatternPanel : MonoBehaviour
         {
             // Apply adjustment. No need to delete and respawn notes
             // this time.
-            EditorContext.PrepareForChange();
+            EditorContext.BeginTransaction();
             foreach (GameObject o in holdNotesBeingAdjusted)
             {
-                HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+                EditOperation op = EditorContext
+                    .BeginModifyNoteOperation();
+                HoldNote holdNote = o.GetComponent<NoteObject>()
+                    .note as HoldNote;
+                op.noteBeforeOp = holdNote.Clone();
                 holdNote.duration += deltaDuration;
+                op.noteAfterOp = holdNote.Clone();
             }
-            EditorContext.DoneWithChange();
+            EditorContext.EndTransaction();
             UpdateNumScansAndRelatedUI();
         }
 
@@ -1441,14 +1497,17 @@ public class PatternPanel : MonoBehaviour
             controlLeft = new FloatPoint(0f, 0f),
             controlRight = new FloatPoint(0f, 0f)
         };
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         dragNote.nodes.Add(newNode);
         dragNote.nodes.Sort((DragNode node1, DragNode node2) =>
         {
             return (int)Mathf.Sign(
                 node1.anchor.pulse - node2.anchor.pulse);
         });
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
         UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = note
@@ -1481,9 +1540,12 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         dragNote.nodes.RemoveAt(anchorIndex);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
         UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = anchor
@@ -1663,9 +1725,15 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        DragNote dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
+
         UpdateNumScansAndRelatedUI();
     }
 
@@ -1676,14 +1744,17 @@ public class PatternPanel : MonoBehaviour
 
         int anchorIndex = controlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
-        DragNode node = (controlPoint
-            .GetComponentInParent<NoteObject>().note as DragNote)
-            .nodes[anchorIndex];
+        DragNote note = controlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        DragNode node = note.nodes[anchorIndex];
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = note.Clone();
         node.SetControlPoint(controlPointIndex,
             new FloatPoint(0f, 0f));
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = note.Clone();
+        EditorContext.EndTransaction();
 
         NoteInEditor noteInEditor = controlPoint
             .GetComponentInParent<NoteInEditor>();
@@ -1780,9 +1851,14 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        DragNote dragNote = draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
     }
     #endregion
 
@@ -2757,10 +2833,11 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Paste.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (Note n in clipboard)
         {
             int newPulse = n.pulse + deltaPulse;
+            GameObject newObject = null;
             switch (n.type)
             {
                 case NoteType.Basic:
@@ -2768,27 +2845,29 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.ChainNode:
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
-                    AddNote(n.type, newPulse,
+                    newObject = AddNote(n.type, newPulse,
                         n.lane, n.sound,
                         n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
-                    AddHoldNote(n.type, newPulse,
+                    newObject = AddHoldNote(n.type, newPulse,
                         n.lane, (n as HoldNote).duration,
                         n.sound,
                         n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Drag:
-                    AddDragNote(newPulse, n.lane,
+                    newObject = AddDragNote(newPulse, n.lane,
                         (n as DragNote).nodes,
                         n.sound,
                         n.volume, n.pan, n.endOfScan);
                     break;
             }
+            EditorContext.RecordAddedNote(
+                GetNoteFromGameObject(newObject));
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
     }
 
     public void DeleteSelection()
@@ -2797,13 +2876,16 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Delete notes from pattern.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (GameObject o in selectedNoteObjects)
         {
+            EditorContext.RecordDeletedNote(
+                GetNoteFromGameObject(o));
             DeleteNote(o);
         }
+        EditorContext.EndTransaction();
+
         selectedNoteObjects.Clear();
-        EditorContext.DoneWithChange();
     }
     #endregion
 

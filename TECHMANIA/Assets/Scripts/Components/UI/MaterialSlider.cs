@@ -1,14 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[Serializable]
+public class SliderEndEditEvent : UnityEvent<float> { }
+
 public class MaterialSlider : MonoBehaviour,
     ISelectHandler, IPointerEnterHandler, IMoveHandler,
-    IEndDragHandler, IPointerDownHandler
+    IPointerUpHandler
 {
     public float step;
+    // Prefer this event over OnValueChanged, because this does not
+    // fire every frame the pointer is held.
+    public SliderEndEditEvent endEdit;
 
     private Slider slider;
     private float previousValue;
@@ -56,17 +64,13 @@ public class MaterialSlider : MonoBehaviour,
                 break;
         }
         previousValue = slider.value;
+        endEdit?.Invoke(slider.value);
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnPointerUp(PointerEventData eventData)
     {
         // So that the next move starts from the correct value.
         previousValue = slider.value;
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        // So that the next move starts from the correct value.
-        previousValue = slider.value;
+        endEdit?.Invoke(slider.value);
     }
 }

@@ -118,20 +118,40 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
     }
 
-    public void OnVolumeSliderValueChanged(float newValue)
+    public void OnSliderValueChanged()
     {
-        EditorContext.PrepareForChange();
-        notes.ForEach(n => n.volume = newValue * 0.01f);
-        EditorContext.DoneWithChange();
+        volumeDisplay.text = volumeSlider.value + "%";
+        panDisplay.text = panSlider.value + "%";
+    }
+
+    public void OnVolumeSliderEndEdit(float newValue)
+    {
+        EditorContext.BeginTransaction();
+        foreach (Note n in notes)
+        {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            n.volume = newValue * 0.01f;
+            op.noteAfterOp = n.Clone();
+        }
+        EditorContext.EndTransaction();
 
         RefreshDisplays();
     }
 
-    public void OnPanSliderValueChanged(float newValue)
+    public void OnPanSliderEndEdit(float newValue)
     {
-        EditorContext.PrepareForChange();
-        notes.ForEach(n => n.pan = newValue * 0.01f);
-        EditorContext.DoneWithChange();
+        EditorContext.BeginTransaction();
+        foreach (Note n in notes)
+        {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            n.pan = newValue * 0.01f;
+            op.noteAfterOp = n.Clone();
+        }
+        EditorContext.EndTransaction();
 
         RefreshDisplays();
     }
@@ -143,9 +163,16 @@ public class NoteDetailSideSheet : MonoBehaviour
 
     public void OnEndOfScanToggleValueChanged(bool newValue)
     {
-        EditorContext.PrepareForChange();
-        notes.ForEach(n => n.endOfScan = newValue);
-        EditorContext.DoneWithChange();
+        EditorContext.BeginTransaction();
+        foreach (Note n in notes)
+        {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            n.endOfScan = newValue;
+            op.noteAfterOp = n.Clone();
+        }
+        EditorContext.EndTransaction();
 
         foreach (GameObject o in selection)
         {
