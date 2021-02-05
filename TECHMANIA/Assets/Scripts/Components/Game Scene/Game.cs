@@ -391,7 +391,8 @@ public class Game : MonoBehaviour
                 (n.pulse % PulsesPerScan == 0) &&
                 scanOfN > 0)
             {
-                // TODO: test all note types
+                // TODO: this renders incorrectly for hold and repeat
+                // notes.
                 scanOfN--;
             }
             bool hidden = n.lane >= kPlayableLanes;
