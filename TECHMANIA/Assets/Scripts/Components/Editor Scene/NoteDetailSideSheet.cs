@@ -23,9 +23,7 @@ public class NoteDetailSideSheet : MonoBehaviour
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += OnSelectionChanged;
-        // TODO: don't do this when the user hides, and then shows
-        // this sheet.
-        OnSelectionChanged(new HashSet<GameObject>());
+        OnSelectionChanged(patternPanel.selectedNoteObjects);
     }
 
     private void OnDisable()
@@ -35,6 +33,7 @@ public class NoteDetailSideSheet : MonoBehaviour
 
     private void OnSelectionChanged(HashSet<GameObject> newSelection)
     {
+        if (newSelection == null) return;
         if (newSelection.Count == 0)
         {
             noSelectionNotice.SetActive(true);

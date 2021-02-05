@@ -387,6 +387,13 @@ public class Game : MonoBehaviour
         foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
             int scanOfN = n.pulse / PulsesPerScan;
+            if (n.endOfScan &&
+                (n.pulse % PulsesPerScan == 0) &&
+                scanOfN > 0)
+            {
+                // TODO: test all note types
+                scanOfN--;
+            }
             bool hidden = n.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
 

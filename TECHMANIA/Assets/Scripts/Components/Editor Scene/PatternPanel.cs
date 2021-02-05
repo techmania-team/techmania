@@ -81,7 +81,8 @@ public class PatternPanel : MonoBehaviour
     private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
-    private HashSet<GameObject> selectedNoteObjects;
+    public HashSet<GameObject> selectedNoteObjects
+    { get; private set; }
 
     private Note GetNoteFromGameObject(GameObject o)
     {
