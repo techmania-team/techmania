@@ -60,6 +60,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject optionsTab;
 
     [Header("UI")]
+    public MaterialToggleButton rectangularSelectButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -108,6 +109,13 @@ public class PatternPanel : MonoBehaviour
 
     private float unsnappedCursorPulse;
     private float unsnappedCursorLane;
+
+    private enum Tool
+    {
+        Select,
+        Note
+    }
+    private Tool tool;
     #endregion
 
     #region Vertical Spacing
@@ -169,8 +177,9 @@ public class PatternPanel : MonoBehaviour
         scanlinePositionSlider.SetValueWithoutNotify(0f);
 
         // UI and options
+        tool = Tool.Note;
         noteType = NoteType.Basic;
-        UpdateNoteTypeButtons();
+        UpdateToolAndNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
         Options.RefreshInstance();
@@ -586,6 +595,10 @@ public class PatternPanel : MonoBehaviour
                 StartPlayback();
             }
         }
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            OnRectangularSelectButtonClick();
+        }
         if (Input.GetKeyDown(KeyCode.Alpha1))
             ChangeNoteType(NoteType.Basic);
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -964,6 +977,12 @@ public class PatternPanel : MonoBehaviour
         AdjustAllPathsAndTrails();
     }
 
+    public void OnRectangularSelectButtonClick()
+    {
+        tool = Tool.Select;
+        UpdateToolAndNoteTypeButtons();
+    }
+
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         ChangeNoteType(clickedButton.type);
@@ -971,8 +990,9 @@ public class PatternPanel : MonoBehaviour
 
     private void ChangeNoteType(NoteType newType)
     {
+        tool = Tool.Note;
         noteType = newType;
-        UpdateNoteTypeButtons();
+        UpdateToolAndNoteTypeButtons();
 
         // Apply to selection if asked to.
         if (!Options.instance.editorOptions
@@ -1076,12 +1096,13 @@ public class PatternPanel : MonoBehaviour
         SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
-    private void UpdateNoteTypeButtons()
+    private void UpdateToolAndNoteTypeButtons()
     {
+        rectangularSelectButton.SetIsOn(tool == Tool.Select);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
-                b.type == noteType);
+                tool == Tool.Note && b.type == noteType);
         }
     }
 
