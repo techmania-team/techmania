@@ -38,6 +38,7 @@ public class PatternPanel : MonoBehaviour
     public Transform noteContainer;
     public Transform noteCemetary;
     public NoteObject noteCursor;
+    public RectTransform selectionRectangle;
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
@@ -272,7 +273,7 @@ public class PatternPanel : MonoBehaviour
                 mouseInWorkspace || mouseInHeader);
         }
 
-        if (mouseInWorkspace)
+        if (mouseInWorkspace && tool == Tool.Note)
         {
             noteCursor.gameObject.SetActive(true);
             SnapNoteCursor();
@@ -508,27 +509,29 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    private void CalculateCursorPulseAndLane(
+        Vector2 mousePosition,
+        out float unsnappedPulse, out float unsnappedLane)
+    {
+        Vector2 pointInContainer = ScreenPointToPointInNoteContainer(
+            mousePosition);
+        PointInNoteContainerToPulseAndLane(pointInContainer,
+            out unsnappedPulse, out unsnappedLane);
+    }
+
     private void SnapNoteCursor(Vector2 mousePositionOverride)
     {
-        Vector2 pointInContainer;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            noteContainer.GetComponent<RectTransform>(),
-            mousePositionOverride,
-            cam: null,
-            out pointInContainer);
-
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float cursorScan = pointInContainer.x / ScanWidth;
-        unsnappedCursorPulse = cursorScan * bps *
-            Pattern.pulsesPerBeat;
+        float unsnappedCursorPulse, unsnappedCursorLane;
+        CalculateCursorPulseAndLane(mousePositionOverride,
+            out unsnappedCursorPulse, out unsnappedCursorLane);
+        
         int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
-
-        unsnappedCursorLane = -pointInContainer.y / LaneHeight - 0.5f;
-        int snappedLane = Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
+        int snappedCursorLane =
+            Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
 
         noteCursor.note = new Note();
         noteCursor.note.pulse = snappedCursorPulse;
-        noteCursor.note.lane = snappedLane;
+        noteCursor.note.lane = snappedCursorLane;
         noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
     }
 
@@ -644,6 +647,7 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if (tool == Tool.Select) return;
         PointerEventData pointerEventData =
             eventData as PointerEventData;
         if (pointerEventData.dragging) return;
@@ -728,6 +732,11 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if (tool == Tool.Select)
+        {
+            StartRectangle();
+            return;
+        }
         PointerEventData pointerEventData =
             eventData as PointerEventData;
         draggingDragCurve = false;
@@ -748,6 +757,11 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if (tool == Tool.Select)
+        {
+            UpdateRectangle();
+            return;
+        }
         PointerEventData p = eventData as PointerEventData;
 
         // Special case for drag notes.
@@ -787,6 +801,11 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        if (tool == Tool.Select)
+        {
+            ProcessRectangle();
+            return;
+        }
         PointerEventData pointerEventData =
             eventData as PointerEventData;
 
@@ -2760,6 +2779,85 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
+    #region Rectangular Select Tool
+    private Vector2 rectangleStart;
+    private Vector2 rectangleEnd;
+    private bool movingNotesWhenSelectToolActive;
+
+    private void OnBeginDragWhenSelectToolActive()
+    {
+        movingNotesWhenSelectToolActive =
+            Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        if (movingNotesWhenSelectToolActive)
+        {
+            
+        }
+        else
+        {
+            StartRectangle();
+        }
+    }
+
+    private void OnDragWhenSelectToolActive()
+    {
+        if (movingNotesWhenSelectToolActive)
+        {
+
+        }
+        else
+        {
+            UpdateRectangle();
+        }
+    }
+
+    private void OnEndDragWhenSelectToolActive()
+    {
+        if (movingNotesWhenSelectToolActive)
+        {
+
+        }
+        else
+        {
+            ProcessRectangle();
+        }
+    }
+
+    private void StartRectangle()
+    {
+        rectangleStart = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+        selectionRectangle.gameObject.SetActive(true);
+
+        DrawRectangle();
+    }
+
+    private void UpdateRectangle()
+    {
+        rectangleEnd = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+
+        DrawRectangle();
+    }
+
+    private void ProcessRectangle()
+    {
+        selectionRectangle.gameObject.SetActive(false);
+
+        // TODO: process rectangle
+    }
+
+    private void DrawRectangle()
+    {
+        selectionRectangle.anchoredPosition = new Vector2(
+            Mathf.Min(rectangleStart.x, rectangleEnd.x),
+            Mathf.Max(rectangleStart.y, rectangleEnd.y));
+        selectionRectangle.sizeDelta = new Vector2(
+            Mathf.Abs(rectangleStart.x - rectangleEnd.x),
+            Mathf.Abs(rectangleStart.y - rectangleEnd.y));
+    }
+    #endregion
+
     #region Selection And Clipboard
     public void SelectAll()
     {
@@ -3116,6 +3214,38 @@ public class PatternPanel : MonoBehaviour
         int snappedPulse = Mathf.RoundToInt(rawPulse / pulsesPerDivision)
             * pulsesPerDivision;
         return snappedPulse;
+    }
+
+    private Vector2 ScreenPointToPointInNoteContainer(
+        Vector2 screenPoint)
+    {
+        Vector2 pointInContainer;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            noteContainer.GetComponent<RectTransform>(),
+            screenPoint,
+            cam: null,
+            out pointInContainer);
+        return pointInContainer;
+    }
+
+    private void PointInNoteContainerToPulseAndLane(
+        Vector2 pointInContainer,
+        out float pulse, out float lane)
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float scan = pointInContainer.x / ScanWidth;
+        pulse = scan * bps * Pattern.pulsesPerBeat;
+        lane = -pointInContainer.y / LaneHeight - 0.5f;
+    }
+
+    private Vector2 PulseAndLaneToPointInNoteContainer(
+        float pulse, float lane)
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float scan = pulse / Pattern.pulsesPerBeat / bps;
+        return new Vector2(
+            scan * ScanWidth,
+            -(lane + 0.5f) * LaneHeight);
     }
 
     private void ScrollScanlineIntoView()
