@@ -209,7 +209,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     private void UseResizeCursor()
     {
         resizeCursorState++;
-        if (resizeCursorState > 0)
+        if (resizeCursorState > 0 &&
+            PatternPanel.tool == PatternPanel.Tool.Note)
         {
             UnityEngine.Cursor.SetCursor(horizontalResizeCursor,
                 new Vector2(64f, 64f), CursorMode.Auto);
@@ -263,8 +264,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #region Event Relay From Curve
     public void OnAnchorReceiverPointerEnter()
     {
-        UnityEngine.Cursor.SetCursor(addAnchorCursor,
-            Vector2.zero, CursorMode.Auto);
+        if (PatternPanel.tool == PatternPanel.Tool.Note)
+        {
+            UnityEngine.Cursor.SetCursor(addAnchorCursor,
+                Vector2.zero, CursorMode.Auto);
+        }
     }
 
     public void OnAnchorReceiverPointerExit()

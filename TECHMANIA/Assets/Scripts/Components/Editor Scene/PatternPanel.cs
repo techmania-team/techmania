@@ -110,12 +110,12 @@ public class PatternPanel : MonoBehaviour
     private float unsnappedCursorPulse;
     private float unsnappedCursorLane;
 
-    private enum Tool
+    public enum Tool
     {
         Select,
         Note
     }
-    private Tool tool;
+    public static Tool tool { get; private set; }
     #endregion
 
     #region Vertical Spacing
