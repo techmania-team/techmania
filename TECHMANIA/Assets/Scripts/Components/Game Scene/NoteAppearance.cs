@@ -738,13 +738,14 @@ public class NoteAppearance : MonoBehaviour,
         }
     }
 
-    public void DrawRepeatPathTo(int lastRepeatNotePulse)
+    public void DrawRepeatPathTo(int lastRepeatNotePulse,
+        bool positionEndOfScanOutOfBounds)
     {
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
         float endX = scanRef.FloatPulseToXPosition(
             lastRepeatNotePulse,
-            positionEndOfScanOutOfBounds: true,
+            positionEndOfScanOutOfBounds,
             positionAfterScanOutOfBounds: true);
         float width = Mathf.Abs(startX - endX);
 

@@ -386,15 +386,8 @@ public class Game : MonoBehaviour
         }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
-            int scanOfN = n.pulse / PulsesPerScan;
-            if (n.endOfScan &&
-                (n.pulse % PulsesPerScan == 0) &&
-                scanOfN > 0)
-            {
-                // TODO: this renders incorrectly for hold and repeat
-                // notes.
-                scanOfN--;
-            }
+            int scanOfN = n.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
             bool hidden = n.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
 
@@ -713,7 +706,8 @@ public class Game : MonoBehaviour
         // If a hold note ends at a scan divider, we don't
         // want to spawn an unnecessary extension, thus the
         // -1.
-        int scanOfN = n.note.pulse / PulsesPerScan;
+        int scanOfN = holdNote.GetScanNumber(
+            GameSetup.pattern.patternMetadata.bps);
         int lastScan = (holdNote.pulse + holdNote.duration - 1)
             / PulsesPerScan;
         for (int crossedScan = scanOfN + 1;
@@ -744,11 +738,20 @@ public class Game : MonoBehaviour
                 lastRepeatNotePulse +=
                     (lastRepeatNote.note as HoldNote).duration;
             }
-            headAppearance.DrawRepeatPathTo(lastRepeatNotePulse);
+            headAppearance.DrawRepeatPathTo(lastRepeatNotePulse,
+                positionEndOfScanOutOfBounds: 
+                !lastRepeatNote.note.endOfScan);
+
             // Create path extensions if the head and last
             // note are in different scans.
-            int headScan = head.note.pulse / PulsesPerScan;
-            int lastScan = lastRepeatNotePulse / PulsesPerScan;
+            int headScan = head.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+            int lastScan = lastRepeatNote.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+            if (lastRepeatNote.note is HoldNote)
+            {
+                lastScan = lastRepeatNotePulse / PulsesPerScan;
+            }
             for (int crossedScan = headScan + 1;
                 crossedScan <= lastScan;
                 crossedScan++)

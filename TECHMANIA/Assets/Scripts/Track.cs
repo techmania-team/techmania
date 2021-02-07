@@ -500,6 +500,18 @@ public class Note
             }
         }
     }
+
+    public int GetScanNumber(int bps)
+    {
+        int pulsesPerScan = Pattern.pulsesPerBeat * bps;
+        int scan = pulse / pulsesPerScan;
+        if (pulse % pulsesPerScan == 0 &&
+            endOfScan && scan > 0)
+        {
+            scan--;
+        }
+        return scan;
+    }
 }
 
 // There has been a bug with HoldNote since 0.1 but only found
