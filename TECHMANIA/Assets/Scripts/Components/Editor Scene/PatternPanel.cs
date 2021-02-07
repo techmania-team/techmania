@@ -647,7 +647,12 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Select) return;
+        if (tool == Tool.Select)
+        {
+            selectedNoteObjects.Clear();
+            SelectionChanged?.Invoke(selectedNoteObjects);
+            return;
+        }
         PointerEventData pointerEventData =
             eventData as PointerEventData;
         if (pointerEventData.dragging) return;
@@ -2939,7 +2944,55 @@ public class PatternPanel : MonoBehaviour
     {
         selectionRectangle.gameObject.SetActive(false);
 
-        // TODO: process rectangle
+        float startPulse, startLane, endPulse, endLane;
+        PointInNoteContainerToPulseAndLane(rectangleStart,
+            out startPulse, out startLane);
+        PointInNoteContainerToPulseAndLane(rectangleEnd,
+            out endPulse, out endLane);
+
+        int minPulse = Mathf.RoundToInt(
+            Mathf.Min(startPulse, endPulse));
+        int maxPulse = Mathf.RoundToInt(
+            Mathf.Max(startPulse, endPulse));
+        float minLane = Mathf.Min(startLane, endLane);
+        float maxLane = Mathf.Max(startLane, endLane);
+        HashSet<GameObject> notesInRectangle =
+            new HashSet<GameObject>();
+        foreach (Note n in EditorContext.Pattern
+            .GetViewBetween(minPulse, maxPulse))
+        {
+            if (n.lane >= minLane && n.lane <= maxLane)
+            {
+                notesInRectangle.Add(GetGameObjectFromNote(n));
+            }
+        }
+
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (shift)
+        {
+            // Append rectangle to selection.
+            foreach (GameObject o in notesInRectangle)
+            {
+                selectedNoteObjects.Add(o);
+            }
+        }
+        else if (alt)
+        {
+            // Subtract rectangle from selection.
+            foreach (GameObject o in notesInRectangle)
+            {
+                selectedNoteObjects.Remove(o);
+            }
+        }
+        else
+        {
+            // Replace selection with rectangle.
+            selectedNoteObjects = notesInRectangle;
+        }
+        SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
     private void DrawRectangle()
