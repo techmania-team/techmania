@@ -410,7 +410,7 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.UpdateMetadataInMemory(ref m.author,
             patternAuthor.text, ref madeChange);
         UIUtils.ClampInputField(patternLevel,
-            Pattern.minLevel, Pattern.maxLevel);
+            Pattern.minLevel, int.MaxValue);
         UIUtils.UpdateMetadataInMemory(ref m.level,
             patternLevel.text, ref madeChange);
 
@@ -441,7 +441,7 @@ public class TrackSetupPanel : MonoBehaviour
             Pattern.minBpm, float.MaxValue);
         UIUtils.UpdateMetadataInMemory(
             ref m.initBpm, initialBpm.text, ref madeChange);
-        UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
+        UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
         UIUtils.UpdateMetadataInMemory(
             ref m.bps, bps.text, ref madeChange);
 

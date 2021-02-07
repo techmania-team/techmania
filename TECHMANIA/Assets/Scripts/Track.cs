@@ -252,11 +252,11 @@ public partial class Pattern
 
     public const int pulsesPerBeat = 240;
     public const int minLevel = 1;
-    public const int maxLevel = 12;
+    public const int defaultLevel = 1;
     public const double minBpm = 1;
     public const double defaultBpm = 60;
     public const int minBps = 1;
-    public const int maxBps = 128;
+    public const int defaultBps = 4;
 
     public Pattern()
     {
@@ -361,9 +361,9 @@ public class PatternMetadata
     {
         guid = Guid.NewGuid().ToString();
         patternName = "New pattern";
-        level = Pattern.minLevel;
+        level = Pattern.defaultLevel;
         initBpm = Pattern.defaultBpm;
-        bps = Pattern.minBps;
+        bps = Pattern.defaultBps;
     }
 }
 
