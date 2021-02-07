@@ -757,12 +757,12 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
+        PointerEventData p = eventData as PointerEventData;
         if (tool == Tool.Select)
         {
-            OnDragWhenSelectToolActive();
+            OnDragWhenSelectToolActive(p.delta);
             return;
         }
-        PointerEventData p = eventData as PointerEventData;
 
         // Special case for drag notes.
         if (draggingDragCurve && p.button == 
@@ -1202,7 +1202,47 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectBeginDrag(GameObject o)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnBeginDragWhenSelectToolActive();
+        }
+        else
+        {
+            OnBeginDraggingNotes(o);
+        }
+    }
 
+    private void OnNoteObjectDrag(Vector2 delta)
+    {
+        if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnDragWhenSelectToolActive(delta);
+        }
+        else
+        {
+            OnDraggingNotes(delta);
+        }
+    }
+
+    private void OnNoteObjectEndDrag()
+    {
+        if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnEndDragWhenSelectToolActive();
+        }
+        else
+        {
+            OnEndDraggingNotes();
+        }
+    }
+
+    // The following can be called in 2 ways:
+    // - from NoteObject's drag events, when any note type is active
+    // - from ctrl+drag on anything, when the select tool is active
+    private void OnBeginDraggingNotes(GameObject o)
+    {
         draggedNoteObject = o;
         lastSelectedNoteWithoutShift = GetNoteFromGameObject(o);
         if (!selectedNoteObjects.Contains(o))
@@ -1214,9 +1254,8 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnNoteObjectDrag(Vector2 delta)
+    private void OnDraggingNotes(Vector2 delta)
     {
-        if (isPlaying) return;
         delta /= rootCanvas.localScale.x;
 
         foreach (GameObject o in selectedNoteObjects)
@@ -1229,14 +1268,11 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnNoteObjectEndDrag()
+    private void OnEndDraggingNotes()
     {
-        if (isPlaying) return;
-
-        // In case the drag is on a trail or curve, first calculate
-        // and snap where the note image lands at.
+        // Calculate and snap where the note image lands at.
         Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
-        Vector3 noteImagePosition = 
+        Vector3 noteImagePosition =
             draggedNoteObject.GetComponent<NoteInEditor>().noteImage
             .position;
         SnapNoteCursor(noteImagePosition);  // hackity hack
@@ -1315,7 +1351,7 @@ public class PatternPanel : MonoBehaviour
             foreach (GameObject o in selectedNoteObjects)
             {
                 NoteObject n = o.GetComponent<NoteObject>();
-                
+
                 Note movedNote = n.note.Clone();
                 movedNote.pulse += deltaPulse;
                 movedNote.lane += deltaLane;
@@ -1428,12 +1464,12 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnDurationHandleDrag(float delta)
+    private void OnDurationHandleDrag(Vector2 delta)
     {
         if (isPlaying) return;
         if (tool == Tool.Select)
         {
-            OnDragWhenSelectToolActive();
+            OnDragWhenSelectToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -1442,7 +1478,8 @@ public class PatternPanel : MonoBehaviour
         {
             // This is only visual; duration is only really changed
             // in OnDurationHandleEndDrag.
-            o.GetComponent<NoteInEditor>().AdjustTrailLength(delta);
+            o.GetComponent<NoteInEditor>().AdjustTrailLength(
+                delta.x);
         }
     }
 
@@ -1714,7 +1751,7 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
         if (tool == Tool.Select)
         {
-            OnDragWhenSelectToolActive();
+            OnDragWhenSelectToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -1866,7 +1903,7 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
         if (tool == Tool.Select)
         {
-            OnDragWhenSelectToolActive();
+            OnDragWhenSelectToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -2842,7 +2879,12 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightControl);
         if (movingNotesWhenSelectToolActive)
         {
-            
+            if (selectedNoteObjects.Count == 0) return;
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                OnBeginDraggingNotes(o);
+                break;
+            }
         }
         else
         {
@@ -2850,11 +2892,12 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnDragWhenSelectToolActive()
+    private void OnDragWhenSelectToolActive(Vector2 delta)
     {
         if (movingNotesWhenSelectToolActive)
         {
-
+            if (selectedNoteObjects.Count == 0) return;
+            OnDraggingNotes(delta);
         }
         else
         {
@@ -2866,7 +2909,8 @@ public class PatternPanel : MonoBehaviour
     {
         if (movingNotesWhenSelectToolActive)
         {
-
+            if (selectedNoteObjects.Count == 0) return;
+            OnEndDraggingNotes();
         }
         else
         {

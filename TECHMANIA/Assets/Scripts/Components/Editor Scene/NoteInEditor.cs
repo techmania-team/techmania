@@ -37,7 +37,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public static event UnityAction EndDrag;
 
     public static event UnityAction<GameObject> DurationHandleBeginDrag;
-    public static event UnityAction<float> DurationHandleDrag;
+    public static event UnityAction<Vector2> DurationHandleDrag;
     public static event UnityAction DurationHandleEndDrag;
 
     public static event UnityAction<GameObject> AnchorReceiverClicked;
@@ -250,7 +250,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        DurationHandleDrag?.Invoke(pointerData.delta.x);
+        DurationHandleDrag?.Invoke(pointerData.delta);
     }
 
     public void OnDurationHandleEndDrag(BaseEventData eventData)
