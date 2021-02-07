@@ -206,7 +206,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
         NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked += OnAnchorRightClicked;
-        NoteInEditor.AnchorBeginDrag += OnAnchorBeingDragged;
+        NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag += OnAnchorDrag;
         NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
         NoteInEditor.ControlPointRightClicked += OnControlPointRightClicked;
@@ -233,7 +233,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
         NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClicked;
         NoteInEditor.AnchorRightClicked -= OnAnchorRightClicked;
-        NoteInEditor.AnchorBeginDrag -= OnAnchorBeingDragged;
+        NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag -= OnAnchorDrag;
         NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
         NoteInEditor.ControlPointRightClicked -= OnControlPointRightClicked;
@@ -734,7 +734,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         if (tool == Tool.Select)
         {
-            StartRectangle();
+            OnBeginDragWhenSelectToolActive();
             return;
         }
         PointerEventData pointerEventData =
@@ -759,7 +759,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         if (tool == Tool.Select)
         {
-            UpdateRectangle();
+            OnDragWhenSelectToolActive();
             return;
         }
         PointerEventData p = eventData as PointerEventData;
@@ -803,7 +803,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         if (tool == Tool.Select)
         {
-            ProcessRectangle();
+            OnEndDragWhenSelectToolActive();
             return;
         }
         PointerEventData pointerEventData =
@@ -1394,6 +1394,11 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleBeginDrag(GameObject note)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnBeginDragWhenSelectToolActive();
+            return;
+        }
 
         holdNotesBeingAdjusted = new List<GameObject>();
         if (selectedNoteObjects.Contains(note))
@@ -1426,6 +1431,11 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleDrag(float delta)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnDragWhenSelectToolActive();
+            return;
+        }
         delta /= rootCanvas.localScale.x;
 
         foreach (GameObject o in holdNotesBeingAdjusted)
@@ -1439,6 +1449,11 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleEndDrag()
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnEndDragWhenSelectToolActive();
+            return;
+        }
 
         int oldDuration = (initialHoldNoteBeingAdjusted.
             GetComponent<NoteObject>().note as HoldNote).duration;
@@ -1514,6 +1529,12 @@ public class PatternPanel : MonoBehaviour
 
     private void OnAnchorReceiverClicked(GameObject note)
     {
+        if (tool == Tool.Select)
+        {
+            OnNoteObjectLeftClick(note);
+            return;
+        }
+
         DragNote dragNote = note.GetComponent<NoteObject>()
             .note as DragNote;
         float cursorPulse, cursorLane;
@@ -1595,9 +1616,14 @@ public class PatternPanel : MonoBehaviour
         noteInEditor.ResetAllAnchorsAndControlPoints();
     }
 
-    private void OnAnchorBeingDragged(GameObject anchor)
+    private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnBeginDragWhenSelectToolActive();
+            return;
+        }
 
         draggedAnchor = anchor
             .GetComponentInParent<DragNoteAnchor>().gameObject;
@@ -1686,6 +1712,11 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorDrag(Vector2 delta)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnDragWhenSelectToolActive();
+            return;
+        }
         delta /= rootCanvas.localScale.x;
 
         if (ctrlHeldOnAnchorBeginDrag)
@@ -1734,6 +1765,11 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorEndDrag()
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnEndDragWhenSelectToolActive();
+            return;
+        }
         if (!ctrlHeldOnAnchorBeginDrag &&
             draggedAnchor.GetComponentInParent<DragNoteAnchor>()
                 .anchorIndex == 0)
@@ -1809,6 +1845,11 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnBeginDragWhenSelectToolActive();
+            return;
+        }
         draggedControlPoint = controlPoint;
         draggedControlPointIndex = controlPointIndex;
 
@@ -1823,6 +1864,11 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointDrag(Vector2 delta)
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnDragWhenSelectToolActive();
+            return;
+        }
         delta /= rootCanvas.localScale.x;
         draggedControlPoint.GetComponent<RectTransform>()
             .anchoredPosition += delta;
@@ -1874,6 +1920,11 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointEndDrag()
     {
         if (isPlaying) return;
+        if (tool == Tool.Select)
+        {
+            OnEndDragWhenSelectToolActive();
+            return;
+        }
 
         DragNode cloneAtEndDrag = draggedDragNode.Clone();
         // Temporarily restore pre-drag data for snapshotting.
