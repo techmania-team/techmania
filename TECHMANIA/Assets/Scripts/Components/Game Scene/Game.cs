@@ -489,8 +489,17 @@ public class Game : MonoBehaviour
         int lastPulse = (lastScan + 1) *
             GameSetup.pattern.patternMetadata.bps *
             Pattern.pulsesPerBeat;
-        float trackLength = GameSetup.pattern.PulseToTime(lastPulse);
-        feverCoefficient = trackLength / 12.5f;
+        if (Ruleset.instance.constantFeverCoefficient)
+        {
+            feverCoefficient = 8f;
+        }
+        else
+        {
+            float trackLength =
+                GameSetup.pattern.PulseToTime(lastPulse);
+            feverCoefficient = trackLength / 12.5f;
+        }
+        Debug.Log("Fever coefficient is: " + feverCoefficient);
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
@@ -1700,7 +1709,9 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             SetCombo(currentCombo + 1);
-            hp += Ruleset.instance.hpRecovery;
+            hp += feverState == FeverState.Active ? 
+                Ruleset.instance.hpRecoveryDuringFever : 
+                Ruleset.instance.hpRecovery;
             if (hp >= Ruleset.instance.maxHp)
             {
                 hp = Ruleset.instance.maxHp;
@@ -1722,7 +1733,9 @@ public class Game : MonoBehaviour
         else
         {
             SetCombo(0);
-            hp -= Ruleset.instance.hpLoss;
+            hp -= feverState == FeverState.Active ? 
+                Ruleset.instance.hpLossDuringFever :
+                Ruleset.instance.hpLoss;
             if (hp < 0) hp = 0;
             if (hp <= 0 && !GameSetup.noFail)
             {

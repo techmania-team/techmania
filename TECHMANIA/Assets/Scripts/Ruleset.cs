@@ -60,6 +60,17 @@ public class Ruleset : RulesetBase
     public int maxHp;
     public int hpLoss;
     public int hpRecovery;
+    public int hpLossDuringFever;
+    public int hpRecoveryDuringFever;
+
+    // Score
+    public bool comboBonus;
+
+    // Fever
+    public bool constantFeverCoefficient;
+    public int feverBonusOnMax;
+    public int feverBonusOnCool;
+    public int feverBonusOnGood;
 
     public Ruleset()
     {
@@ -81,6 +92,15 @@ public class Ruleset : RulesetBase
         maxHp = 1000;
         hpLoss = 50;
         hpRecovery = 3;
+        hpLossDuringFever = 50;
+        hpRecoveryDuringFever = 5;
+
+        comboBonus = false;
+
+        constantFeverCoefficient = false;
+        feverBonusOnMax = 1;
+        feverBonusOnCool = 1;
+        feverBonusOnGood = 0;
     }
 
     #region Instance
