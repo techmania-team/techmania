@@ -2879,7 +2879,6 @@ public class PatternPanel : MonoBehaviour
 
     private void OnBeginDragWhenRectangleToolActive()
     {
-        Debug.Log($"OnBeginDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
         movingNotesWhenRectangleToolActive =
             Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl);
@@ -2900,7 +2899,6 @@ public class PatternPanel : MonoBehaviour
 
     private void OnDragWhenRectangleToolActive(Vector2 delta)
     {
-        Debug.Log($"OnDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
         if (movingNotesWhenRectangleToolActive)
         {
             if (selectedNoteObjects.Count == 0) return;
@@ -2914,7 +2912,6 @@ public class PatternPanel : MonoBehaviour
 
     private void OnEndDragWhenRectangleToolActive()
     {
-        Debug.Log($"OnEndDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
         if (movingNotesWhenRectangleToolActive)
         {
             if (selectedNoteObjects.Count == 0) return;

@@ -9259,7 +9259,7 @@ PrefabInstance:
     - target: {fileID: 6024100903353481884, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481884, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
@@ -26991,7 +26991,7 @@ MonoBehaviour:
   beatSnapDividerDisplay: {fileID: 689014187}
   visibleLanesDropdown: {fileID: 340067587}
   optionsTab: {fileID: 1363880818}
-  rectangleToolButton: {fileID: 0}
+  rectangleToolButton: {fileID: 1723818278}
   noteTypeButtons:
   - {fileID: 230162766}
   - {fileID: 417386169}
@@ -34057,6 +34057,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ecbabad9b88e9f4da6d57bcb71b2eef, type: 3}
+--- !u!114 &1723818278 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7795559642927612110, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1938104381}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8fcb1df5e261e44eb52e78b3a3286a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1736220994
 GameObject:
   m_ObjectHideFlags: 0
