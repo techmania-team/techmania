@@ -61,7 +61,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject optionsTab;
 
     [Header("UI")]
-    public MaterialToggleButton rectangularSelectButton;
+    public MaterialToggleButton rectangleToolButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -113,7 +113,7 @@ public class PatternPanel : MonoBehaviour
 
     public enum Tool
     {
-        Select,
+        Rectangle,
         Note
     }
     public static Tool tool { get; private set; }
@@ -600,7 +600,7 @@ public class PatternPanel : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
-            OnRectangularSelectButtonClick();
+            OnRectangleToolButtonClick();
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
             ChangeNoteType(NoteType.Basic);
@@ -647,15 +647,15 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Select)
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (pointerEventData.dragging) return;
+        if (tool == Tool.Rectangle)
         {
             selectedNoteObjects.Clear();
             SelectionChanged?.Invoke(selectedNoteObjects);
             return;
         }
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
-        if (pointerEventData.dragging) return;
 
         // Special case: check drag notes because the curves do not
         // receive clicks.
@@ -737,9 +737,9 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnBeginDragWhenSelectToolActive();
+            OnBeginDragWhenRectangleToolActive();
             return;
         }
         PointerEventData pointerEventData =
@@ -763,9 +763,9 @@ public class PatternPanel : MonoBehaviour
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnDragWhenSelectToolActive(p.delta);
+            OnDragWhenRectangleToolActive(p.delta);
             return;
         }
 
@@ -806,9 +806,9 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnEndDragWhenSelectToolActive();
+            OnEndDragWhenRectangleToolActive();
             return;
         }
         PointerEventData pointerEventData =
@@ -1001,9 +1001,9 @@ public class PatternPanel : MonoBehaviour
         AdjustAllPathsAndTrails();
     }
 
-    public void OnRectangularSelectButtonClick()
+    public void OnRectangleToolButtonClick()
     {
-        tool = Tool.Select;
+        tool = Tool.Rectangle;
         UpdateToolAndNoteTypeButtons();
     }
 
@@ -1122,7 +1122,7 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
-        rectangularSelectButton.SetIsOn(tool == Tool.Select);
+        rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
@@ -1207,9 +1207,9 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectBeginDrag(GameObject o)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnBeginDragWhenSelectToolActive();
+            OnBeginDragWhenRectangleToolActive();
         }
         else
         {
@@ -1220,9 +1220,9 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectDrag(Vector2 delta)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnDragWhenSelectToolActive(delta);
+            OnDragWhenRectangleToolActive(delta);
         }
         else
         {
@@ -1233,9 +1233,9 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectEndDrag()
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnEndDragWhenSelectToolActive();
+            OnEndDragWhenRectangleToolActive();
         }
         else
         {
@@ -1435,9 +1435,9 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleBeginDrag(GameObject note)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnBeginDragWhenSelectToolActive();
+            OnBeginDragWhenRectangleToolActive();
             return;
         }
 
@@ -1472,9 +1472,9 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleDrag(Vector2 delta)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnDragWhenSelectToolActive(delta);
+            OnDragWhenRectangleToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -1491,9 +1491,9 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleEndDrag()
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnEndDragWhenSelectToolActive();
+            OnEndDragWhenRectangleToolActive();
             return;
         }
 
@@ -1571,7 +1571,7 @@ public class PatternPanel : MonoBehaviour
 
     private void OnAnchorReceiverClicked(GameObject note)
     {
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
             OnNoteObjectLeftClick(note);
             return;
@@ -1661,9 +1661,9 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorBeginDrag(GameObject anchor)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnBeginDragWhenSelectToolActive();
+            OnBeginDragWhenRectangleToolActive();
             return;
         }
 
@@ -1754,9 +1754,9 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorDrag(Vector2 delta)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnDragWhenSelectToolActive(delta);
+            OnDragWhenRectangleToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -1807,9 +1807,9 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorEndDrag()
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnEndDragWhenSelectToolActive();
+            OnEndDragWhenRectangleToolActive();
             return;
         }
         if (!ctrlHeldOnAnchorBeginDrag &&
@@ -1887,9 +1887,9 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnBeginDragWhenSelectToolActive();
+            OnBeginDragWhenRectangleToolActive();
             return;
         }
         draggedControlPoint = controlPoint;
@@ -1906,9 +1906,9 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointDrag(Vector2 delta)
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnDragWhenSelectToolActive(delta);
+            OnDragWhenRectangleToolActive(delta);
             return;
         }
         delta /= rootCanvas.localScale.x;
@@ -1962,9 +1962,9 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointEndDrag()
     {
         if (isPlaying) return;
-        if (tool == Tool.Select)
+        if (tool == Tool.Rectangle)
         {
-            OnEndDragWhenSelectToolActive();
+            OnEndDragWhenRectangleToolActive();
             return;
         }
 
@@ -2872,17 +2872,18 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Rectangular Select Tool
+    #region Rectangle Tool
     private Vector2 rectangleStart;
     private Vector2 rectangleEnd;
-    private bool movingNotesWhenSelectToolActive;
+    private bool movingNotesWhenRectangleToolActive;
 
-    private void OnBeginDragWhenSelectToolActive()
+    private void OnBeginDragWhenRectangleToolActive()
     {
-        movingNotesWhenSelectToolActive =
+        Debug.Log($"OnBeginDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
+        movingNotesWhenRectangleToolActive =
             Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl);
-        if (movingNotesWhenSelectToolActive)
+        if (movingNotesWhenRectangleToolActive)
         {
             if (selectedNoteObjects.Count == 0) return;
             foreach (GameObject o in selectedNoteObjects)
@@ -2897,9 +2898,10 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnDragWhenSelectToolActive(Vector2 delta)
+    private void OnDragWhenRectangleToolActive(Vector2 delta)
     {
-        if (movingNotesWhenSelectToolActive)
+        Debug.Log($"OnDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
+        if (movingNotesWhenRectangleToolActive)
         {
             if (selectedNoteObjects.Count == 0) return;
             OnDraggingNotes(delta);
@@ -2910,9 +2912,10 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnEndDragWhenSelectToolActive()
+    private void OnEndDragWhenRectangleToolActive()
     {
-        if (movingNotesWhenSelectToolActive)
+        Debug.Log($"OnEndDragWhenRectangleToolActive {selectedNoteObjects.Count} notes selected");
+        if (movingNotesWhenRectangleToolActive)
         {
             if (selectedNoteObjects.Count == 0) return;
             OnEndDraggingNotes();
