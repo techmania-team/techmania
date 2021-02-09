@@ -33,7 +33,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public static event UnityAction<GameObject> RightClicked;
 
     public static event UnityAction<GameObject> BeginDrag;
-    public static event UnityAction<Vector2> Drag;
+    public static event UnityAction<PointerEventData> Drag;
     public static event UnityAction EndDrag;
 
     public static event UnityAction<GameObject> DurationHandleBeginDrag;
@@ -184,12 +184,9 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button
-            != PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-        Drag?.Invoke(pointerData.delta);
+        // Invoked with PointerEventData so the handler gets
+        // both the mouse button and delta.
+        Drag?.Invoke(pointerData);
     }
 
     public void OnEndDrag(BaseEventData eventData)

@@ -777,30 +777,36 @@ public class PatternPanel : MonoBehaviour
         if (draggingDragCurve && p.button == 
             PointerEventData.InputButton.Left)
         {
-            OnNoteObjectDrag(p.delta);
+            OnNoteObjectDrag(p);
             return;
         }
 
-        if (p.button != PointerEventData.InputButton.Middle) return;
+        if (p.button == PointerEventData.InputButton.Middle)
+        {
+            OnMiddleMouseButtonDrag(p.delta);
+        }
+    }
 
-        float outOfViewWidth = WorkspaceContentWidth - 
+    private void OnMiddleMouseButtonDrag(Vector2 unscaledDelta)
+    {
+        float outOfViewWidth = WorkspaceContentWidth -
             workspaceViewport.rect.width;
         float outOfViewHeight = WorkspaceContentHeight -
             workspaceViewport.rect.height;
         if (outOfViewWidth < 0f) outOfViewWidth = 0f;
         if (outOfViewHeight < 0f) outOfViewHeight = 0f;
 
-        float horizontal = 
+        float horizontal =
             workspaceScrollRect.horizontalNormalizedPosition *
             outOfViewWidth;
-        horizontal -= p.delta.x / rootCanvas.localScale.x;
-        workspaceScrollRect.horizontalNormalizedPosition = 
+        horizontal -= unscaledDelta.x / rootCanvas.localScale.x;
+        workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(horizontal / outOfViewWidth);
 
         float vertical =
             workspaceScrollRect.verticalNormalizedPosition *
             outOfViewHeight;
-        vertical -= p.delta.y / rootCanvas.localScale.x;
+        vertical -= unscaledDelta.y / rootCanvas.localScale.x;
         workspaceScrollRect.verticalNormalizedPosition =
             Mathf.Clamp01(vertical / outOfViewHeight);
 
@@ -1223,16 +1229,27 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnNoteObjectDrag(Vector2 delta)
+    private void OnNoteObjectDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (eventData.button == PointerEventData.InputButton.Middle)
+        {
+            OnMiddleMouseButtonDrag(eventData.delta);
+            return;
+        }
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            // Do nothing.
+            return;
+        }
+
         if (tool == Tool.Rectangle)
         {
-            OnDragWhenRectangleToolActive(delta);
+            OnDragWhenRectangleToolActive(eventData.delta);
         }
         else
         {
-            OnDraggingNotes(delta);
+            OnDraggingNotes(eventData.delta);
         }
     }
 
