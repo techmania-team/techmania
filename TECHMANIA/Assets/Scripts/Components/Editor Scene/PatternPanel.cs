@@ -737,13 +737,15 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Rectangle)
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (tool == Tool.Rectangle &&
+            pointerEventData.button == 
+                PointerEventData.InputButton.Left)
         {
             OnBeginDragWhenRectangleToolActive();
             return;
         }
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
         draggingDragCurve = false;
 
         // Special case for drag notes.
@@ -763,7 +765,9 @@ public class PatternPanel : MonoBehaviour
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
-        if (tool == Tool.Rectangle)
+        if (tool == Tool.Rectangle &&
+            p.button ==
+                PointerEventData.InputButton.Left)
         {
             OnDragWhenRectangleToolActive(p.delta);
             return;
@@ -806,13 +810,15 @@ public class PatternPanel : MonoBehaviour
     public void OnNoteContainerEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if (tool == Tool.Rectangle)
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (tool == Tool.Rectangle &&
+            pointerEventData.button ==
+                PointerEventData.InputButton.Left)
         {
             OnEndDragWhenRectangleToolActive();
             return;
         }
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
 
         // Special case for drag notes.
         if (draggingDragCurve && pointerEventData.button == 
