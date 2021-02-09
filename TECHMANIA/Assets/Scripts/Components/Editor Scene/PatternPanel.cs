@@ -3327,11 +3327,9 @@ public class PatternPanel : MonoBehaviour
                 {
                     clip = assistTick;
                 }
-                float startTime = playbackCurrentTime - 
-                    nextNote.time;
                 audioSourceManager.PlayKeysound(clip,
                     nextNote.lane > PlayableLanes,
-                    startTime,
+                    startTime: 0f,
                     nextNote.volume, nextNote.pan);
 
                 notesInLanes[i].Dequeue();
