@@ -29,29 +29,41 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public GameObject anchorTemplate;
     public Texture2D addAnchorCursor;
 
+    // GameObject in the following events all refer to
+    // this.gameObject.
+
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
 
-    public static event UnityAction<GameObject> BeginDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        BeginDrag;
     public static event UnityAction<PointerEventData> Drag;
-    public static event UnityAction EndDrag;
+    public static event UnityAction<PointerEventData> EndDrag;
 
-    public static event UnityAction<GameObject> DurationHandleBeginDrag;
-    public static event UnityAction<Vector2> DurationHandleDrag;
-    public static event UnityAction DurationHandleEndDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        DurationHandleBeginDrag;
+    public static event UnityAction<PointerEventData> 
+        DurationHandleDrag;
+    public static event UnityAction<PointerEventData> 
+        DurationHandleEndDrag;
 
-    public static event UnityAction<GameObject> AnchorReceiverClicked;
-    // GameObject is the anchor being dragged, not this.gameObject.
-    public static event UnityAction<GameObject> AnchorRightClicked;
-    public static event UnityAction<GameObject> AnchorBeginDrag;
-    public static event UnityAction<Vector2> AnchorDrag;
-    public static event UnityAction AnchorEndDrag;
-    // GameObject is the control point being dragged, not
-    // this.gameObject. int is control point index (0 or 1).
-    public static event UnityAction<GameObject, int> ControlPointRightClicked;
-    public static event UnityAction<GameObject, int> ControlPointBeginDrag;
-    public static event UnityAction<Vector2> ControlPointDrag;
-    public static event UnityAction ControlPointEndDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        AnchorReceiverClicked;
+    public static event UnityAction<PointerEventData> 
+        AnchorClicked;
+    public static event UnityAction<PointerEventData> 
+        AnchorBeginDrag;
+    public static event UnityAction<PointerEventData> AnchorDrag;
+    public static event UnityAction<PointerEventData> AnchorEndDrag;
+
+    // int is control point index (0 or 1).
+    public static event UnityAction<PointerEventData, int> 
+        ControlPointClicked;
+    public static event UnityAction<PointerEventData, int> 
+        ControlPointBeginDrag;
+    public static event UnityAction<PointerEventData> ControlPointDrag;
+    public static event UnityAction<PointerEventData> 
+        ControlPointEndDrag;
 
     private void OnEnable()
     {
@@ -172,32 +184,19 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public void OnBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button
-            != PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-        BeginDrag?.Invoke(gameObject);
+        BeginDrag?.Invoke(eventData as PointerEventData, gameObject);
     }
 
     public void OnDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        // Invoked with PointerEventData so the handler gets
-        // both the mouse button and delta.
-        Drag?.Invoke(pointerData);
+        Drag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button
-            != PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-        EndDrag?.Invoke();
+        EndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
@@ -240,21 +239,22 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         if (!(eventData is PointerEventData)) return;
         UseResizeCursor();
-        DurationHandleBeginDrag?.Invoke(gameObject);
+        DurationHandleBeginDrag?.Invoke(
+            eventData as PointerEventData, gameObject);
     }
 
     public void OnDurationHandleDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        DurationHandleDrag?.Invoke(pointerData.delta);
+        DurationHandleDrag?.Invoke(pointerData);
     }
 
     public void OnDurationHandleEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         UseDefaultCursor();
-        DurationHandleEndDrag?.Invoke();
+        DurationHandleEndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
@@ -277,57 +277,46 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public void OnAnchorReceiverClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button !=
-            PointerEventData.InputButton.Left) return;
-
-        AnchorReceiverClicked?.Invoke(gameObject);
+        AnchorReceiverClicked?.Invoke(eventData as PointerEventData,
+            gameObject);
     }
 
     public void OnAnchorClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button !=
-            PointerEventData.InputButton.Right) return;
-
-        AnchorRightClicked?.Invoke(pointerData.pointerPress);
+        AnchorClicked?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        AnchorBeginDrag?.Invoke(pointerData.pointerDrag);
+        AnchorBeginDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        AnchorDrag?.Invoke(pointerData.delta);
+        AnchorDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        AnchorEndDrag?.Invoke();
+        AnchorEndDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnControlPointClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button != 
-            PointerEventData.InputButton.Right) return;
 
         GameObject clicked = pointerData.pointerPress;
         DragNoteAnchor anchor = clicked
             .GetComponentInParent<DragNoteAnchor>();
         int controlPointIndex = anchor
             .GetControlPointIndex(clicked);
-        ControlPointRightClicked?.Invoke(
-            clicked, controlPointIndex);
+        ControlPointClicked?.Invoke(
+            pointerData, controlPointIndex);
     }
 
     public void OnControlPointBeginDrag(BaseEventData eventData)
@@ -340,20 +329,19 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             .GetComponentInParent<DragNoteAnchor>();
         int controlPointIndex = anchor
             .GetControlPointIndex(dragging);
-        ControlPointBeginDrag?.Invoke(dragging, controlPointIndex);
+        ControlPointBeginDrag?.Invoke(pointerData, controlPointIndex);
     }
 
     public void OnControlPointDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        ControlPointDrag?.Invoke(pointerData.delta);
+        ControlPointDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnControlPointEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        ControlPointEndDrag?.Invoke();
+        ControlPointEndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
