@@ -26,16 +26,6 @@ public class TrackSetupPanel : MonoBehaviour
         videoFilesCache = Paths.GetAllVideoFiles(
             EditorContext.trackFolder);
     }
-
-    private void RefreshFilenameCachesIfNull()
-    {
-        if (audioFilesCache == null ||
-            imageFilesCache == null ||
-            videoFilesCache == null)
-        {
-            RefreshFilenameCaches();
-        }
-    }
     #endregion
 
     #region Refreshing
@@ -49,6 +39,7 @@ public class TrackSetupPanel : MonoBehaviour
 
         selectedPattern = null;
         EditorContext.ClearUndoRedoStack();
+        RefreshFilenameCaches();
         Refresh();
     }
 
@@ -65,6 +56,7 @@ public class TrackSetupPanel : MonoBehaviour
     {
         if (focus)
         {
+            RefreshFilenameCaches();
             Refresh();
         }
     }
@@ -176,7 +168,8 @@ public class TrackSetupPanel : MonoBehaviour
                 break;
             }
         }
-        
+
+        RefreshFilenameCaches();
         RefreshResourcesTab();
     }
 
@@ -192,7 +185,6 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void RefreshResourcesTab()
     {
-        RefreshFilenameCaches();
         audioFilesDisplay.text = CondenseFileList(
             audioFilesCache);
         imageFilesDisplay.text = CondenseFileList(
@@ -218,7 +210,6 @@ public class TrackSetupPanel : MonoBehaviour
     public void RefreshMetadataTab()
     {
         TrackMetadata metadata = EditorContext.track.trackMetadata;
-        RefreshFilenameCachesIfNull();
 
         trackTitle.SetTextWithoutNotify(metadata.title);
         artist.SetTextWithoutNotify(metadata.artist);
@@ -338,7 +329,6 @@ public class TrackSetupPanel : MonoBehaviour
 
     private void RefreshPatternsTab()
     {
-        RefreshFilenameCachesIfNull();
         if (selectedPattern != null)
         {
             selectedPattern = EditorContext.track.FindPatternByGuid(
