@@ -26,7 +26,7 @@ public class PreviewTrackPlayer : MonoBehaviour
         {
             return;
         }
-        if (trackMetadata.previewStartTime >=
+        if (trackMetadata.previewStartTime >
             trackMetadata.previewEndTime)
         {
             return;
@@ -69,6 +69,7 @@ public class PreviewTrackPlayer : MonoBehaviour
 
         if (startTime < 0f) startTime = 0f;
         if (endTime > clip.length) endTime = clip.length;
+        if (endTime == 0f) endTime = clip.length;
         float previewLength = (float)endTime - (float)startTime;
 
         source.clip = clip;

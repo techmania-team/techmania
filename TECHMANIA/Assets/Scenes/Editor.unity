@@ -7896,27 +7896,27 @@ PrefabInstance:
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_Pivot.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 317.46582
+      value: 421.3534
       objectReference: {fileID: 0}
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 69.43536
+      value: 90.690704
       objectReference: {fileID: 0}
     - target: {fileID: 11903353385839559, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -7931,8 +7931,12 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: During pattern selection, the preview track will loop from the start
+      value: 'During pattern selection, the preview track will loop from the start
         time to the end time (both in seconds).
+
+
+        Set both start and end
+        to 0 to play the entire file.'
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -34511,7 +34515,7 @@ PrefabInstance:
     - target: {fileID: 2879772478109390521, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2879772478357956192, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
         type: 3}
@@ -34556,7 +34560,7 @@ PrefabInstance:
     - target: {fileID: 2879772478824099793, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2879772479052286996, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
         type: 3}
