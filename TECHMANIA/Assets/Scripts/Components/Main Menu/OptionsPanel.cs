@@ -40,8 +40,8 @@ public class OptionsPanel : MonoBehaviour
             includeInactive: true);
         instance.LoadOrCreateOptions();
         Options.instance.ApplyGraphicSettings();
-        instance.ApplyVolume();
         instance.ApplyAudioBufferSize();
+        instance.ApplyVolume();
     }
 
     private void LoadOrCreateOptions()
@@ -188,6 +188,7 @@ public class OptionsPanel : MonoBehaviour
             audioBufferDropdown.value].text);
 
         ApplyAudioBufferSize();
+        ApplyVolume();
     }
 
     private float VolumeValueToDb(float volume)
@@ -224,6 +225,9 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.sfxVolume));
     }
 
+    // This resets the audio mixer, AND it only happens in
+    // the standalone player. What the heck? Anyway always reset
+    // the audio mixer after calling this.
     private void ApplyAudioBufferSize()
     {
         AudioConfiguration config = AudioSettings.GetConfiguration();
