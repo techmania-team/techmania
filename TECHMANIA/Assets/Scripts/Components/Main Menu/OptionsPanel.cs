@@ -231,8 +231,12 @@ public class OptionsPanel : MonoBehaviour
     private void ApplyAudioBufferSize()
     {
         AudioConfiguration config = AudioSettings.GetConfiguration();
-        config.dspBufferSize = Options.instance.audioBufferSize;
-        AudioSettings.Reset(config);
+        if (config.dspBufferSize != Options.instance.audioBufferSize)
+        {
+            config.dspBufferSize = Options.instance.audioBufferSize;
+            AudioSettings.Reset(config);
+            ResourceLoader.forceReload = true;
+        }
     }
     #endregion
 }
