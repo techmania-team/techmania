@@ -15,6 +15,10 @@ using System.Collections.Generic;
 // so we don't output field names and hundreds of spaces for
 // each note. This should bring the serialized tracks to a
 // reasonable size.
+//
+// Notes contain optional parameters. A note with non-default values
+// on any such parameter is considered an "extended" note, and
+// is packed differently from normal notes.
 
 [Serializable]
 public class TrackBase
@@ -25,13 +29,20 @@ public class TrackBase
     protected virtual void InitAfterDeserialize() { }
 
     // This should never be called from outside the editor.
-    public string Serialize()
+    public string Serialize(bool optimizeForSaving)
     {
         PrepareToSerialize();
 #if UNITY_2019
-        return UnityEngine.JsonUtility.ToJson(this,
-            prettyPrint: true)
-            .Replace("    ", "\t");
+        if (optimizeForSaving)
+        {
+            return UnityEngine.JsonUtility.ToJson(this,
+                prettyPrint: true).Replace("    ", "\t");
+        }
+        else
+        {
+            return UnityEngine.JsonUtility.ToJson(this,
+                prettyPrint: false);
+        }
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             typeof(Track),
@@ -43,7 +54,7 @@ public class TrackBase
 #endif
     }
 
-    private static TrackBase Deserialize(string json)
+    public static TrackBase Deserialize(string json)
     {
 #if UNITY_2019
         TrackBase track = null;
@@ -72,12 +83,12 @@ public class TrackBase
     // The clone will retain the same Guid.
     public TrackBase Clone()
     {
-        return Deserialize(Serialize());
+        return Deserialize(Serialize(optimizeForSaving: false));
     }
 
     public void SaveToFile(string path)
     {
-        string serialized = Serialize();
+        string serialized = Serialize(optimizeForSaving: true);
         System.IO.File.WriteAllText(path, serialized);
     }
 
@@ -241,11 +252,11 @@ public partial class Pattern
 
     public const int pulsesPerBeat = 240;
     public const int minLevel = 1;
-    public const int maxLevel = 12;
-    public const double minBpm = 1.0;
-    public const double maxBpm = 1000.0;
+    public const int defaultLevel = 1;
+    public const double minBpm = 1;
+    public const double defaultBpm = 60;
     public const int minBps = 1;
-    public const int maxBps = 128;
+    public const int defaultBps = 4;
 
     public Pattern()
     {
@@ -350,9 +361,9 @@ public class PatternMetadata
     {
         guid = Guid.NewGuid().ToString();
         patternName = "New pattern";
-        level = Pattern.minLevel;
-        initBpm = Pattern.minBpm;
-        bps = Pattern.minBps;
+        level = Pattern.defaultLevel;
+        initBpm = Pattern.defaultBpm;
+        bps = Pattern.defaultBps;
     }
 }
 
@@ -369,24 +380,85 @@ public class Note
 
     public float time;
 
+    // Optional parameters:
+
+    public float volume;
+    public float pan;
+    public bool endOfScan;
+    protected string endOfScanString
+    {
+        get { return endOfScan ? "1" : "0"; }
+        set { endOfScan = value == "1"; }
+    }
+    public const float minVolume = 0f;
+    public const float defaultVolume = 1f;
+    public const float maxVolume = 1f;
+    public const float minPan = -1f;
+    public const float defaultPan = 0f;
+    public const float maxPan = 1f;
+
+    public Note()
+    {
+        // These will apply to HoldNote and DragNote.
+        volume = defaultVolume;
+        pan = defaultPan;
+        endOfScan = false;
+    }
+
+    public bool IsExtended()
+    {
+        if (volume != defaultVolume) return true;
+        if (pan != defaultPan) return true;
+        if (endOfScan) return true;
+        return false;
+    }
+
     public virtual string Pack()
     {
-        // Enums will be formatted as strings.
-        return string.Format("{0}|{1}|{2}|{3}",
-            type, pulse, lane, sound);
+        if (IsExtended())
+        {
+            // Enums will be formatted as strings.
+            return $"E|{type}|{pulse}|{lane}|{volume}|{pan}|{endOfScanString}|{sound}";
+        }
+        else
+        {
+            return $"{type}|{pulse}|{lane}|{sound}";
+        }
     }
 
     public static Note Unpack(string packed)
     {
+        char[] delim = new char[] { '|' };
         // Beware that the "sound" portion may contain |.
-        string[] splits = packed.Split('|');
-        return new Note()
+        string[] splits = packed.Split(delim, 2);
+        // Extended?
+        if (splits[0] == "E")
         {
-            type = (NoteType)Enum.Parse(typeof(NoteType), splits[0]),
-            pulse = int.Parse(splits[1]),
-            lane = int.Parse(splits[2]),
-            sound = splits[3]
-        };
+            splits = packed.Split(delim, 8);
+            return new Note()
+            {
+                type = (NoteType)Enum.Parse(
+                    typeof(NoteType), splits[1]),
+                pulse = int.Parse(splits[2]),
+                lane = int.Parse(splits[3]),
+                volume = float.Parse(splits[4]),
+                pan = float.Parse(splits[5]),
+                endOfScanString = splits[6],
+                sound = splits[7]
+            };
+        }
+        else
+        {
+            splits = packed.Split(delim, 4);
+            return new Note()
+            {
+                type = (NoteType)Enum.Parse(
+                    typeof(NoteType), splits[0]),
+                pulse = int.Parse(splits[1]),
+                lane = int.Parse(splits[2]),
+                sound = splits[3]
+            };
+        }
     }
 
     public Note Clone()
@@ -406,8 +478,44 @@ public class Note
             return Note.Unpack(Pack());
         }
     }
+
+    // This does not modify type, pulse and lane.
+    public void CopyFrom(Note other)
+    {
+        sound = other.sound;
+        volume = other.volume;
+        pan = other.pan;
+        endOfScan = other.endOfScan;
+        if (this is HoldNote && other is HoldNote)
+        {
+            (this as HoldNote).duration = (other as HoldNote).duration;
+        }
+        if (this is DragNote && other is DragNote)
+        {
+            DragNote d = this as DragNote;
+            d.nodes = new List<DragNode>();
+            foreach (DragNode node in (other as DragNote).nodes)
+            {
+                d.nodes.Add(node.Clone());
+            }
+        }
+    }
+
+    public int GetScanNumber(int bps)
+    {
+        int pulsesPerScan = Pattern.pulsesPerBeat * bps;
+        int scan = pulse / pulsesPerScan;
+        if (pulse % pulsesPerScan == 0 &&
+            endOfScan && scan > 0)
+        {
+            scan--;
+        }
+        return scan;
+    }
 }
 
+// There has been a bug with HoldNote since 0.1 but only found
+// in 0.3: the order of pulse and lane are swapped when packing.
 public class HoldNote : Note
 {
     // Calculated at unpack time:
@@ -421,23 +529,52 @@ public class HoldNote : Note
 
     public override string Pack()
     {
-        // Enums will be formatted as strings.
-        return string.Format("{0}|{1}|{2}|{3}|{4}",
-            type, lane, pulse, duration, sound);
+        if (IsExtended())
+        {
+            // Enums will be formatted as strings.
+            return $"E|{type}|{lane}|{pulse}|{duration}|{volume}|{pan}|{endOfScanString}|{sound}";
+        }
+        else
+        {
+            return $"{type}|{lane}|{pulse}|{duration}|{sound}";
+        }
     }
 
     public static new HoldNote Unpack(string packed)
     {
+        char[] delim = new char[] { '|' };
         // Beware that the "sound" portion may contain |.
-        string[] splits = packed.Split('|');
-        return new HoldNote()
+        string[] splits = packed.Split(delim, 2);
+        // Extended?
+        if (splits[0] == "E")
         {
-            type = (NoteType)Enum.Parse(typeof(NoteType), splits[0]),
-            lane = int.Parse(splits[1]),
-            pulse = int.Parse(splits[2]),
-            duration = int.Parse(splits[3]),
-            sound = splits[4]
-        };
+            splits = packed.Split(delim, 9);
+            return new HoldNote()
+            {
+                type = (NoteType)Enum.Parse(
+                    typeof(NoteType), splits[1]),
+                lane = int.Parse(splits[2]),
+                pulse = int.Parse(splits[3]),
+                duration = int.Parse(splits[4]),
+                volume = float.Parse(splits[5]),
+                pan = float.Parse(splits[6]),
+                endOfScanString = splits[7],
+                sound = splits[8]
+            };
+        }
+        else
+        {
+            splits = packed.Split(delim, 5);
+            return new HoldNote()
+            {
+                type = (NoteType)Enum.Parse(
+                    typeof(NoteType), splits[0]),
+                lane = int.Parse(splits[1]),
+                pulse = int.Parse(splits[2]),
+                duration = int.Parse(splits[3]),
+                sound = splits[4]
+            };
+        }
     }
 }
 
@@ -461,7 +598,7 @@ public class DragNote : Note
 
     public int Duration()
     {
-        return nodes[nodes.Count - 1].anchor.pulse;
+        return (int)nodes[nodes.Count - 1].anchor.pulse;
     }
 
     // Returns a list of points on the bezier curve defined by
@@ -469,13 +606,13 @@ public class DragNote : Note
     public List<FloatPoint> Interpolate()
     {
         List<FloatPoint> result = new List<FloatPoint>();
-        result.Add(nodes[0].anchor.ToFloatPoint());
+        result.Add(nodes[0].anchor);
         const int numSteps = 50;
         for (int i = 0; i < nodes.Count - 1; i++)
         {
-            FloatPoint p0 = nodes[i].anchor.ToFloatPoint();
+            FloatPoint p0 = nodes[i].anchor;
             FloatPoint p1 = p0 + nodes[i].controlRight;
-            FloatPoint p3 = nodes[i + 1].anchor.ToFloatPoint();
+            FloatPoint p3 = nodes[i + 1].anchor;
             FloatPoint p2 = p3 + nodes[i + 1].controlLeft;
             for (int step = 1; step <= numSteps; step++)
             {
@@ -515,6 +652,9 @@ public class DragNote : Note
             type = unpackedNote.type,
             pulse = unpackedNote.pulse,
             lane = unpackedNote.lane,
+            volume = unpackedNote.volume,
+            pan = unpackedNote.pan,
+            endOfScan = unpackedNote.endOfScan,
             sound = unpackedNote.sound,
             nodes = new List<DragNode>()
         };
@@ -599,7 +739,7 @@ public class FloatPoint
 public class DragNode
 {
     // Relative to DragNote
-    public IntPoint anchor;
+    public FloatPoint anchor;
     // Relative to anchor
     public FloatPoint controlLeft;
     // Relative to anchor
@@ -607,7 +747,7 @@ public class DragNode
 
     public DragNode()
     {
-        anchor = new IntPoint(0, 0);
+        anchor = new FloatPoint(0f, 0f);
         controlLeft = new FloatPoint(0f, 0f);
         controlRight = new FloatPoint(0f, 0f);
     }
@@ -630,10 +770,7 @@ public class DragNode
 
     public string Pack()
     {
-        return string.Format("{0}|{1}|{2}|{3}|{4}|{5}",
-            anchor.pulse, anchor.lane,
-            controlLeft.pulse, controlLeft.lane,
-            controlRight.pulse, controlRight.lane);
+        return $"{anchor.pulse}|{anchor.lane}|{controlLeft.pulse}|{controlLeft.lane}|{controlRight.pulse}|{controlRight.lane}";
     }
 
     public static DragNode Unpack(string packed)
@@ -641,9 +778,9 @@ public class DragNode
         string[] splits = packed.Split('|');
         return new DragNode()
         {
-            anchor = new IntPoint(
-                int.Parse(splits[0]),
-                int.Parse(splits[1])),
+            anchor = new FloatPoint(
+                float.Parse(splits[0]),
+                float.Parse(splits[1])),
             controlLeft = new FloatPoint(
                 float.Parse(splits[2]),
                 float.Parse(splits[3])),

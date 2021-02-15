@@ -11,6 +11,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public Sprite hiddenSprite;
     public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
+    public RectTransform endOfScanIndicator;
     public RectTransform noteImage;
 
     public RectTransform pathToPreviousNote;
@@ -26,42 +27,57 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public GameObject anchorReceiverTemplate;
     public RectTransform anchorContainer;
     public GameObject anchorTemplate;
+    public Texture2D addAnchorCursor;
+
+    // GameObject in the following events all refer to
+    // this.gameObject.
 
     public static event UnityAction<GameObject> LeftClicked;
     public static event UnityAction<GameObject> RightClicked;
 
-    public static event UnityAction<GameObject> BeginDrag;
-    public static event UnityAction<Vector2> Drag;
-    public static event UnityAction EndDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        BeginDrag;
+    public static event UnityAction<PointerEventData> Drag;
+    public static event UnityAction<PointerEventData> EndDrag;
 
-    public static event UnityAction<GameObject> DurationHandleBeginDrag;
-    public static event UnityAction<float> DurationHandleDrag;
-    public static event UnityAction DurationHandleEndDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        DurationHandleBeginDrag;
+    public static event UnityAction<PointerEventData> 
+        DurationHandleDrag;
+    public static event UnityAction<PointerEventData> 
+        DurationHandleEndDrag;
 
-    public static event UnityAction<GameObject> AnchorReceiverClicked;
-    // GameObject is the anchor being dragged, not this.gameObject.
-    public static event UnityAction<GameObject> AnchorRightClicked;
-    public static event UnityAction<GameObject> AnchorBeginDrag;
-    public static event UnityAction<Vector2> AnchorDrag;
-    public static event UnityAction AnchorEndDrag;
-    // GameObject is the control point being dragged, not
-    // this.gameObject. int is control point index (0 or 1).
-    public static event UnityAction<GameObject, int> ControlPointRightClicked;
-    public static event UnityAction<GameObject, int> ControlPointBeginDrag;
-    public static event UnityAction<Vector2> ControlPointDrag;
-    public static event UnityAction ControlPointEndDrag;
+    public static event UnityAction<PointerEventData, GameObject> 
+        AnchorReceiverClicked;
+    public static event UnityAction<PointerEventData> 
+        AnchorClicked;
+    public static event UnityAction<PointerEventData> 
+        AnchorBeginDrag;
+    public static event UnityAction<PointerEventData> AnchorDrag;
+    public static event UnityAction<PointerEventData> AnchorEndDrag;
+
+    // int is control point index (0 or 1).
+    public static event UnityAction<PointerEventData, int> 
+        ControlPointClicked;
+    public static event UnityAction<PointerEventData, int> 
+        ControlPointBeginDrag;
+    public static event UnityAction<PointerEventData> ControlPointDrag;
+    public static event UnityAction<PointerEventData> 
+        ControlPointEndDrag;
 
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += UpdateSelection;
-        PatternPanel.KeysoundVisibilityChanged += SetKeysoundVisibility;
+        PatternPanel.KeysoundVisibilityChanged += 
+            UpdateKeysoundVisibility;
         resizeCursorState = 0;
     }
 
     private void OnDisable()
     {
         PatternPanel.SelectionChanged -= UpdateSelection;
-        PatternPanel.KeysoundVisibilityChanged -= SetKeysoundVisibility;
+        PatternPanel.KeysoundVisibilityChanged -=
+            UpdateKeysoundVisibility;
     }
 
     public void UseHiddenSprite()
@@ -69,7 +85,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         noteImage.GetComponent<Image>().sprite = hiddenSprite;
         if (durationTrail != null)
         {
-            durationTrail.GetComponent<Image>().sprite = hiddenTrailSprite;
+            durationTrail.GetComponent<Image>().sprite = 
+                hiddenTrailSprite;
         }
         if (curvedImage != null)
         {
@@ -94,10 +111,43 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         }
     }
 
-    public void SetKeysoundVisibility(bool visible)
+    public void UpdateKeysoundVisibility()
     {
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
-            .gameObject.SetActive(visible);
+            .gameObject.SetActive(
+            Options.instance.editorOptions.showKeysounds);
+    }
+
+    public void UpdateEndOfScanIndicator()
+    {
+        Note n = GetComponent<NoteObject>().note;
+        bool showIndicator = n.endOfScan;
+        if (showIndicator)
+        {
+            // Don't show indicator if the note is not on a
+            // scan divider.
+            int pulsesPerScan = Pattern.pulsesPerBeat *
+                EditorContext.Pattern.patternMetadata.bps;
+            if (n.pulse % pulsesPerScan != 0)
+            {
+                showIndicator = false;
+            }
+        }
+
+        if (showIndicator)
+        {
+            endOfScanIndicator.sizeDelta = new Vector2(
+                endOfScanIndicator.sizeDelta.y,
+                endOfScanIndicator.sizeDelta.y);
+            endOfScanIndicator.GetComponent<Image>().enabled = true;
+        }
+        else
+        {
+            endOfScanIndicator.sizeDelta = new Vector2(
+                0f,
+                endOfScanIndicator.sizeDelta.y);
+            endOfScanIndicator.GetComponent<Image>().enabled = false;
+        }
     }
 
     public void SetKeysoundText()
@@ -106,6 +156,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
             .text = UIUtils.StripAudioExtension(
                 noteObject.note.sound);
+    }
+
+    private void Update()
+    {
+
     }
 
     #region Event Relay From Note Image
@@ -129,20 +184,19 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public void OnBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        BeginDrag?.Invoke(gameObject);
+        BeginDrag?.Invoke(eventData as PointerEventData, gameObject);
     }
 
     public void OnDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        Drag?.Invoke(pointerData.delta);
+        Drag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        EndDrag?.Invoke();
+        EndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
@@ -151,7 +205,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     private void UseResizeCursor()
     {
         resizeCursorState++;
-        if (resizeCursorState > 0)
+        if (resizeCursorState > 0 &&
+            PatternPanel.tool == PatternPanel.Tool.Note)
         {
             UnityEngine.Cursor.SetCursor(horizontalResizeCursor,
                 new Vector2(64f, 64f), CursorMode.Auto);
@@ -184,79 +239,84 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         if (!(eventData is PointerEventData)) return;
         UseResizeCursor();
-        DurationHandleBeginDrag?.Invoke(gameObject);
+        DurationHandleBeginDrag?.Invoke(
+            eventData as PointerEventData, gameObject);
     }
 
     public void OnDurationHandleDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        DurationHandleDrag?.Invoke(pointerData.delta.x);
+        DurationHandleDrag?.Invoke(pointerData);
     }
 
     public void OnDurationHandleEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         UseDefaultCursor();
-        DurationHandleEndDrag?.Invoke();
+        DurationHandleEndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
     #region Event Relay From Curve
+    public void OnAnchorReceiverPointerEnter()
+    {
+        if (PatternPanel.tool == PatternPanel.Tool.Note)
+        {
+            UnityEngine.Cursor.SetCursor(addAnchorCursor,
+                Vector2.zero, CursorMode.Auto);
+        }
+    }
+
+    public void OnAnchorReceiverPointerExit()
+    {
+        UnityEngine.Cursor.SetCursor(null,
+            Vector2.zero, CursorMode.Auto);
+    }
+
     public void OnAnchorReceiverClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button !=
-            PointerEventData.InputButton.Left) return;
-
-        AnchorReceiverClicked?.Invoke(gameObject);
+        AnchorReceiverClicked?.Invoke(eventData as PointerEventData,
+            gameObject);
     }
 
     public void OnAnchorClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button !=
-            PointerEventData.InputButton.Right) return;
-
-        AnchorRightClicked?.Invoke(pointerData.pointerPress);
+        AnchorClicked?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorBeginDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        AnchorBeginDrag?.Invoke(pointerData.pointerDrag);
+        AnchorBeginDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        AnchorDrag?.Invoke(pointerData.delta);
+        AnchorDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnAnchorEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        AnchorEndDrag?.Invoke();
+        AnchorEndDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnControlPointClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerData = eventData as PointerEventData;
-        if (pointerData.button != 
-            PointerEventData.InputButton.Right) return;
 
         GameObject clicked = pointerData.pointerPress;
         DragNoteAnchor anchor = clicked
             .GetComponentInParent<DragNoteAnchor>();
         int controlPointIndex = anchor
             .GetControlPointIndex(clicked);
-        ControlPointRightClicked?.Invoke(
-            clicked, controlPointIndex);
+        ControlPointClicked?.Invoke(
+            pointerData, controlPointIndex);
     }
 
     public void OnControlPointBeginDrag(BaseEventData eventData)
@@ -269,20 +329,19 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             .GetComponentInParent<DragNoteAnchor>();
         int controlPointIndex = anchor
             .GetControlPointIndex(dragging);
-        ControlPointBeginDrag?.Invoke(dragging, controlPointIndex);
+        ControlPointBeginDrag?.Invoke(pointerData, controlPointIndex);
     }
 
     public void OnControlPointDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerData = eventData as PointerEventData;
-        ControlPointDrag?.Invoke(pointerData.delta);
+        ControlPointDrag?.Invoke(eventData as PointerEventData);
     }
 
     public void OnControlPointEndDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        ControlPointEndDrag?.Invoke();
+        ControlPointEndDrag?.Invoke(eventData as PointerEventData);
     }
     #endregion
 
@@ -517,6 +576,40 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
                 selfPos: Vector2.zero,
                 targetPos: position);
         }
+    }
+
+    public bool ClickLandsOnCurve(Vector3 screenPosition)
+    {
+        // Prune
+        if (screenPosition.x < noteImage.transform.position.x
+            - PatternPanel.LaneHeight * 0.5f)
+        {
+            return false;
+        }
+        if (screenPosition.x > noteImage.transform.position.x
+            + pointsOnCurve[pointsOnCurve.Count - 1].x
+            + PatternPanel.LaneHeight * 0.5f)
+        {
+            return false;
+        }
+
+        float minDistanceSquared = PatternPanel.LaneHeight * 
+            PatternPanel.LaneHeight * 0.25f;
+        foreach (Vector2 v in pointsOnCurve)
+        {
+            Vector2 distance = new Vector2(
+                noteImage.transform.position.x + v.x 
+                    - screenPosition.x,
+                noteImage.transform.position.y + v.y
+                    - screenPosition.y);
+            float squareDistance = distance.sqrMagnitude;
+            if (squareDistance <= minDistanceSquared)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
     #endregion
 }

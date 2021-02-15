@@ -40,7 +40,8 @@ public class OptionsPanel : MonoBehaviour
             includeInactive: true);
         instance.LoadOrCreateOptions();
         Options.instance.ApplyGraphicSettings();
-        instance.ApplyAudioOptions();
+        instance.ApplyAudioBufferSize();
+        instance.ApplyVolume();
     }
 
     private void LoadOrCreateOptions()
@@ -169,18 +170,25 @@ public class OptionsPanel : MonoBehaviour
     #endregion
 
     #region Audio
-    public void OnAudioOptionsUpdated()
+    public void OnVolumeChanged()
     {
         Options.instance.masterVolume = masterVolumeSlider.value;
         Options.instance.musicVolume = musicVolumeSlider.value;
         Options.instance.keysoundVolume = keysoundVolumeSlider.value;
         Options.instance.sfxVolume = sfxVolumeSlider.value;
+        
+        UpdateVolumeDisplay();
+        ApplyVolume();
+    }
+
+    public void OnAudioBufferSizeChanged()
+    {
         Options.instance.audioBufferSize = int.Parse(
             audioBufferDropdown.options[
             audioBufferDropdown.value].text);
 
-        UpdateVolumeDisplay();
-        ApplyAudioOptions();
+        ApplyAudioBufferSize();
+        ApplyVolume();
     }
 
     private float VolumeValueToDb(float volume)
@@ -190,7 +198,7 @@ public class OptionsPanel : MonoBehaviour
 
     private string VolumeValueToDisplay(float volume)
     {
-        return Mathf.FloorToInt(volume * 100f).ToString();
+        return Mathf.RoundToInt(volume * 100f).ToString();
     }
 
     private void UpdateVolumeDisplay()
@@ -205,7 +213,7 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.sfxVolume);
     }
 
-    private void ApplyAudioOptions()
+    private void ApplyVolume()
     {
         audioMixer.SetFloat("MasterVolume", VolumeValueToDb(
             Options.instance.masterVolume));
@@ -215,10 +223,20 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.keysoundVolume));
         audioMixer.SetFloat("SfxVolume", VolumeValueToDb(
             Options.instance.sfxVolume));
+    }
 
+    // This resets the audio mixer, AND it only happens in
+    // the standalone player. What the heck? Anyway always reset
+    // the audio mixer after calling this.
+    private void ApplyAudioBufferSize()
+    {
         AudioConfiguration config = AudioSettings.GetConfiguration();
-        config.dspBufferSize = Options.instance.audioBufferSize;
-        AudioSettings.Reset(config);
+        if (config.dspBufferSize != Options.instance.audioBufferSize)
+        {
+            config.dspBufferSize = Options.instance.audioBufferSize;
+            AudioSettings.Reset(config);
+            ResourceLoader.forceReload = true;
+        }
     }
     #endregion
 }

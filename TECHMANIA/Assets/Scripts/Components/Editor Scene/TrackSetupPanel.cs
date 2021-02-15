@@ -26,41 +26,44 @@ public class TrackSetupPanel : MonoBehaviour
         videoFilesCache = Paths.GetAllVideoFiles(
             EditorContext.trackFolder);
     }
-
-    private void RefreshFilenameCachesIfNull()
-    {
-        if (audioFilesCache == null ||
-            imageFilesCache == null ||
-            videoFilesCache == null)
-        {
-            RefreshFilenameCaches();
-        }
-    }
     #endregion
 
     #region Refreshing
     private void OnEnable()
     {
         Tabs.tabChanged += Refresh;
-        EditorContext.UndoneOrRedone += Refresh;
-        PatternRadioList.SelectedPatternChanged += SelectedPatternChanged;
+        EditorContext.UndoInvoked += OnUndoOrRedo;
+        EditorContext.RedoInvoked += OnUndoOrRedo;
+        PatternRadioList.SelectedPatternChanged += 
+            SelectedPatternChanged;
+
         selectedPattern = null;
+        EditorContext.ClearUndoRedoStack();
+        RefreshFilenameCaches();
         Refresh();
     }
 
     private void OnDisable()
     {
         Tabs.tabChanged -= Refresh;
-        EditorContext.UndoneOrRedone -= Refresh;
-        PatternRadioList.SelectedPatternChanged -= SelectedPatternChanged;
+        EditorContext.UndoInvoked -= OnUndoOrRedo;
+        EditorContext.RedoInvoked -= OnUndoOrRedo;
+        PatternRadioList.SelectedPatternChanged -= 
+            SelectedPatternChanged;
     }
 
     private void OnApplicationFocus(bool focus)
     {
         if (focus)
         {
+            RefreshFilenameCaches();
             Refresh();
         }
+    }
+
+    private void OnUndoOrRedo(EditTransaction t)
+    {
+        Refresh();
     }
 
     private void Refresh()
@@ -165,7 +168,8 @@ public class TrackSetupPanel : MonoBehaviour
                 break;
             }
         }
-        
+
+        RefreshFilenameCaches();
         RefreshResourcesTab();
     }
 
@@ -181,7 +185,6 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void RefreshResourcesTab()
     {
-        RefreshFilenameCaches();
         audioFilesDisplay.text = CondenseFileList(
             audioFilesCache);
         imageFilesDisplay.text = CondenseFileList(
@@ -207,7 +210,6 @@ public class TrackSetupPanel : MonoBehaviour
     public void RefreshMetadataTab()
     {
         TrackMetadata metadata = EditorContext.track.trackMetadata;
-        RefreshFilenameCachesIfNull();
 
         trackTitle.SetTextWithoutNotify(metadata.title);
         artist.SetTextWithoutNotify(metadata.artist);
@@ -243,31 +245,26 @@ public class TrackSetupPanel : MonoBehaviour
         TrackMetadata metadata = EditorContext.track.trackMetadata;
         bool madeChange = false;
 
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.title, trackTitle.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.artist, artist.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.genre, genre.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.additionalCredits,
             additionalCredits.text, ref madeChange);
 
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.previewTrack, previewTrack, ref madeChange);
         UIUtils.ClampInputField(startTime, 0.0, double.MaxValue);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.previewStartTime, startTime.text, ref madeChange);
         UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref metadata.previewEndTime, endTime.text, ref madeChange);
-
-        if (madeChange)
-        {
-            EditorContext.DoneWithChange();
-        }
     }
 
     public void OnEyecatchUpdated()
@@ -332,7 +329,6 @@ public class TrackSetupPanel : MonoBehaviour
 
     private void RefreshPatternsTab()
     {
-        RefreshFilenameCachesIfNull();
         if (selectedPattern != null)
         {
             selectedPattern = EditorContext.track.FindPatternByGuid(
@@ -399,13 +395,13 @@ public class TrackSetupPanel : MonoBehaviour
         PatternMetadata m = selectedPattern.patternMetadata;
         bool madeChange = false;
 
-        UIUtils.UpdatePropertyInMemory(ref m.patternName,
+        UIUtils.UpdateMetadataInMemory(ref m.patternName,
             patternName.text, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(ref m.author,
+        UIUtils.UpdateMetadataInMemory(ref m.author,
             patternAuthor.text, ref madeChange);
         UIUtils.ClampInputField(patternLevel,
-            Pattern.minLevel, Pattern.maxLevel);
-        UIUtils.UpdatePropertyInMemory(ref m.level,
+            Pattern.minLevel, int.MaxValue);
+        UIUtils.UpdateMetadataInMemory(ref m.level,
             patternLevel.text, ref madeChange);
 
         // Special handling for control scheme
@@ -413,46 +409,44 @@ public class TrackSetupPanel : MonoBehaviour
         {
             if (!madeChange)
             {
-                EditorContext.PrepareForChange();
+                EditorContext.PrepareToModifyMetadata();
                 madeChange = true;
             }
             m.controlScheme = (ControlScheme)controlScheme.value;
         }
 
-        UIUtils.UpdatePropertyInMemory(ref m.backingTrack,
+        UIUtils.UpdateMetadataInMemory(ref m.backingTrack,
             patternBackingTrack, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref m.backImage, backgroundImage, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref m.bga, backgroundVideo, ref madeChange);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref m.bgaOffset, bgaOffset.text, ref madeChange);
 
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.UpdateMetadataInMemory(
             ref m.firstBeatOffset, firstBeatOffset.text,
             ref madeChange);
         UIUtils.ClampInputField(initialBpm,
-            Pattern.minBpm, Pattern.maxBpm);
-        UIUtils.UpdatePropertyInMemory(
+            Pattern.minBpm, float.MaxValue);
+        UIUtils.UpdateMetadataInMemory(
             ref m.initBpm, initialBpm.text, ref madeChange);
-        UIUtils.ClampInputField(bps, Pattern.minBps, Pattern.maxBps);
-        UIUtils.UpdatePropertyInMemory(
+        UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
+        UIUtils.UpdateMetadataInMemory(
             ref m.bps, bps.text, ref madeChange);
 
         if (madeChange)
         {
             EditorContext.track.SortPatterns();
-            EditorContext.DoneWithChange();
             RefreshPatternList();
         }
     }
 
     public void OnNewPatternButtonClick()
     {
-        EditorContext.PrepareForChange();
+        EditorContext.PrepareToModifyMetadata();
         EditorContext.track.patterns.Add(new Pattern());
         EditorContext.track.SortPatterns();
-        EditorContext.DoneWithChange();
 
         RefreshPatternList();
     }
@@ -460,9 +454,8 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDeletePatternButtonClick()
     {
         // This is undoable, so no need for confirmation.
-        EditorContext.PrepareForChange();
+        EditorContext.PrepareToModifyMetadata();
         EditorContext.track.patterns.Remove(selectedPattern);
-        EditorContext.DoneWithChange();
 
         selectedPattern = null;
         RefreshPatternList();
@@ -471,10 +464,9 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnDuplicatePatternButtonClick()
     {
-        EditorContext.PrepareForChange();
+        EditorContext.PrepareToModifyMetadata();
         EditorContext.track.patterns.Add(selectedPattern.CloneWithDifferentGuid());
         EditorContext.track.SortPatterns();
-        EditorContext.DoneWithChange();
 
         RefreshPatternList();
     }

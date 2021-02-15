@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public class PatternPanel : MonoBehaviour
 {
     public RectTransform rootCanvas;
+    public CanvasGroup canvasGroup;
 
     [Header("Workspace")]
     public ScrollRect workspaceScrollRect;
@@ -37,6 +38,7 @@ public class PatternPanel : MonoBehaviour
     public Transform noteContainer;
     public Transform noteCemetary;
     public NoteObject noteCursor;
+    public RectTransform selectionRectangle;
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
@@ -49,15 +51,17 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
+    public AudioClip metronome1;
+    public AudioClip metronome2;
+    public AudioClip assistTick;
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
     public TMP_Dropdown visibleLanesDropdown;
-    public Toggle applyNoteTypeToSelectionToggle;
-    public Toggle applyKeysoundToSelectionToggle;
-    public Toggle showKeysoundToggle;
+    public GameObject optionsTab;
 
     [Header("UI")]
+    public MaterialToggleButton rectangleToolButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -67,16 +71,20 @@ public class PatternPanel : MonoBehaviour
     public Snackbar snackbar;
     public MessageDialog messageDialog;
     public BpmEventDialog bpmEventDialog;
-    public Dialog shortcutDialog;
 
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
     // dictionary is the reverse of that. Must be updated alongside
     // EditorContext.Pattern at all times.
     private Dictionary<Note, NoteObject> noteToNoteObject;
+    // Maintain a list of all drag notes, so when the workspace
+    // receives a click, it can check if it should have landed on
+    // any drag note.
+    private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
-    private HashSet<GameObject> selectedNoteObjects;
+    public HashSet<GameObject> selectedNoteObjects
+    { get; private set; }
 
     private Note GetNoteFromGameObject(GameObject o)
     {
@@ -99,6 +107,16 @@ public class PatternPanel : MonoBehaviour
     private int minPulseInClipboard;
 
     private NoteType noteType;
+
+    private float unsnappedCursorPulse;
+    private float unsnappedCursorLane;
+
+    public enum Tool
+    {
+        Rectangle,
+        Note
+    }
+    public static Tool tool { get; private set; }
     #endregion
 
     #region Vertical Spacing
@@ -132,8 +150,9 @@ public class PatternPanel : MonoBehaviour
 
     #region Outward Events
     public static event UnityAction RepositionNeeded;
-    public static event UnityAction<HashSet<GameObject>> SelectionChanged;
-    public static event UnityAction<bool> KeysoundVisibilityChanged;
+    public static event UnityAction<HashSet<GameObject>> 
+        SelectionChanged;
+    public static event UnityAction KeysoundVisibilityChanged;
     #endregion
 
     #region MonoBehavior APIs
@@ -159,10 +178,12 @@ public class PatternPanel : MonoBehaviour
         scanlinePositionSlider.SetValueWithoutNotify(0f);
 
         // UI and options
+        tool = Tool.Note;
         noteType = NoteType.Basic;
-        UpdateNoteTypeButtons();
+        UpdateToolAndNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
+        Options.RefreshInstance();
 
         // Playback
         audioLoaded = false;
@@ -173,50 +194,61 @@ public class PatternPanel : MonoBehaviour
             cacheAudioCompleteCallback: OnResourceLoadComplete);
 
         Refresh();
-        OnKeysoundVisibilityChanged(showKeysoundToggle.isOn);
-        EditorContext.UndoneOrRedone += Refresh;
+        EditorContext.UndoInvoked += OnUndo;
+        EditorContext.RedoInvoked += OnRedo;
         NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
         NoteInEditor.RightClicked += OnNoteObjectRightClick;
         NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
         NoteInEditor.Drag += OnNoteObjectDrag;
         NoteInEditor.EndDrag += OnNoteObjectEndDrag;
-        NoteInEditor.DurationHandleBeginDrag += OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleBeginDrag += 
+            OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
-        NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClicked;
-        NoteInEditor.AnchorRightClicked += OnAnchorRightClicked;
+        NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClick;
+        NoteInEditor.AnchorClicked += OnAnchorClick;
         NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag += OnAnchorDrag;
         NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
-        NoteInEditor.ControlPointRightClicked += OnControlPointRightClicked;
+        NoteInEditor.ControlPointClicked += 
+            OnControlPointClick;
         NoteInEditor.ControlPointBeginDrag += OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag += OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
-        KeysoundSideSheet.selectedKeysoundsUpdated += OnSelectedKeysoundsUpdated;
+        KeysoundSideSheet.selectedKeysoundsUpdated += 
+            OnSelectedKeysoundsUpdated;
+        EditorOptionsTab.Opened += OnOptionsTabOpened;
+        EditorOptionsTab.Closed += OnOptionsTabClosed;
     }
 
     private void OnDisable()
     {
         StopPlayback();
-        EditorContext.UndoneOrRedone -= Refresh;
+        EditorContext.UndoInvoked -= OnUndo;
+        EditorContext.RedoInvoked -= OnRedo;
         NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
         NoteInEditor.RightClicked -= OnNoteObjectRightClick;
         NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
         NoteInEditor.Drag -= OnNoteObjectDrag;
         NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
-        NoteInEditor.DurationHandleBeginDrag -= OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleBeginDrag -= 
+            OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
         NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
-        NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClicked;
-        NoteInEditor.AnchorRightClicked -= OnAnchorRightClicked;
+        NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClick;
+        NoteInEditor.AnchorClicked -= OnAnchorClick;
         NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
         NoteInEditor.AnchorDrag -= OnAnchorDrag;
         NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
-        NoteInEditor.ControlPointRightClicked -= OnControlPointRightClicked;
+        NoteInEditor.ControlPointClicked -=
+            OnControlPointClick;
         NoteInEditor.ControlPointBeginDrag -= OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag -= OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
-        KeysoundSideSheet.selectedKeysoundsUpdated -= OnSelectedKeysoundsUpdated;
+        KeysoundSideSheet.selectedKeysoundsUpdated -= 
+            OnSelectedKeysoundsUpdated;
+        EditorOptionsTab.Opened -= OnOptionsTabOpened;
+        EditorOptionsTab.Closed -= OnOptionsTabClosed;
     }
 
     // Update is called once per frame
@@ -228,7 +260,7 @@ public class PatternPanel : MonoBehaviour
         }
         if (messageDialog.gameObject.activeSelf ||
             bpmEventDialog.gameObject.activeSelf ||
-            shortcutDialog.gameObject.activeSelf)
+            optionsTab.activeSelf)
         {
             return;
         }
@@ -239,14 +271,15 @@ public class PatternPanel : MonoBehaviour
                 Input.mousePosition);
         bool mouseInHeader = RectTransformUtility
             .RectangleContainsScreenPoint(
-                header, Input.mousePosition);
+                headerScrollRect.GetComponent<RectTransform>(), 
+                Input.mousePosition);
         if (Input.mouseScrollDelta.y != 0)
         {
             HandleMouseScroll(Input.mouseScrollDelta.y,
                 mouseInWorkspace || mouseInHeader);
         }
 
-        if (mouseInWorkspace)
+        if (mouseInWorkspace && tool == Tool.Note)
         {
             noteCursor.gameObject.SetActive(true);
             SnapNoteCursor();
@@ -264,6 +297,168 @@ public class PatternPanel : MonoBehaviour
         }
 
         HandleKeyboardShortcuts();
+    }
+    #endregion
+
+    #region Undo and Redo
+    private void OnUndo(EditTransaction transaction)
+    {
+        // Undo operations in reverse order.
+        for (int opIndex = transaction.ops.Count - 1;
+            opIndex >= 0;
+            opIndex--)
+        {
+            EditOperation op = transaction.ops[opIndex];
+            switch (op.type)
+            {
+                case EditOperation.Type.Metadata:
+                    // Do nothing.
+                    break;
+                case EditOperation.Type.BpmEvent:
+                    DestroyAndRespawnAllMarkers();
+                    break;
+                case EditOperation.Type.AddNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.addedNote.pulse,
+                            op.addedNote.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to undo AddNote.");
+                            break;
+                        }
+                        selectedNoteObjects.Remove(optionsTab);
+                        GameObject o = GetGameObjectFromNote(n);
+                        selectedNoteObjects.Remove(o);
+                        DeleteNote(o);
+                    }
+                    break;
+                case EditOperation.Type.DeleteNote:
+                    {
+                        Note n = op.deletedNote;
+                        GenericAddNote(n);
+                    }
+                    break;
+                case EditOperation.Type.ModifyNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.noteAfterOp.pulse,
+                            op.noteAfterOp.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to undo ModifyNote.");
+                            break;
+                        }
+                        n.CopyFrom(op.noteBeforeOp);
+                        RefreshNoteInEditor(n);
+                    }
+                    break;
+            }
+        }
+        // To update note detail sheet.
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    private void OnRedo(EditTransaction transaction)
+    {
+        foreach (EditOperation op in transaction.ops)
+        {
+            switch (op.type)
+            {
+                case EditOperation.Type.Metadata:
+                    // Do nothing.
+                    break;
+                case EditOperation.Type.BpmEvent:
+                    DestroyAndRespawnAllMarkers();
+                    break;
+                case EditOperation.Type.AddNote:
+                    {
+                        Note n = op.addedNote;
+                        GenericAddNote(n);
+                    }
+                    break;
+                case EditOperation.Type.DeleteNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.deletedNote.pulse,
+                            op.deletedNote.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to redo DeleteNote.");
+                            break;
+                        }
+                        selectedNoteObjects.Remove(optionsTab);
+                        GameObject o = GetGameObjectFromNote(n);
+                        selectedNoteObjects.Remove(o);
+                        DeleteNote(o);
+                    }
+                    break;
+                case EditOperation.Type.ModifyNote:
+                    {
+                        Note n = EditorContext.Pattern.GetNoteAt(
+                            op.noteBeforeOp.pulse,
+                            op.noteBeforeOp.lane);
+                        if (n == null)
+                        {
+                            Debug.LogError("Note not found when trying to redo ModifyNote.");
+                            break;
+                        }
+                        n.CopyFrom(op.noteAfterOp);
+                        RefreshNoteInEditor(n);
+                    }
+                    break;
+            }
+        }
+        // To update note detail sheet.
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    // Calls one of AddNote, AddHoldNote and AddDragNote.
+    private void GenericAddNote(Note n)
+    {
+        switch (n.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                AddNote(n.type, n.pulse, n.lane, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                AddHoldNote(n.type, n.pulse, n.lane,
+                    (n as HoldNote).duration, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+            case NoteType.Drag:
+                AddDragNote(n.pulse, n.lane,
+                    (n as DragNote).nodes, n.sound,
+                    n.volume, n.pan, n.endOfScan);
+                break;
+        }
+    }
+
+    private void RefreshNoteInEditor(Note n)
+    {
+        NoteInEditor e = GetGameObjectFromNote(n)
+            .GetComponent<NoteInEditor>();
+        e.SetKeysoundText();
+        e.UpdateEndOfScanIndicator();
+        switch (n.type)
+        {
+            case NoteType.Hold:
+            case NoteType.RepeatHold:
+            case NoteType.RepeatHeadHold:
+                e.ResetTrail();
+                break;
+            case NoteType.Drag:
+                e.ResetCurve();
+                e.ResetAllAnchorsAndControlPoints();
+                break;
+        }
     }
     #endregion
 
@@ -320,26 +515,34 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void SnapNoteCursor()
+    private void CalculateCursorPulseAndLane(
+        Vector2 mousePosition,
+        out float unsnappedPulse, out float unsnappedLane)
     {
-        Vector2 pointInContainer;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            noteContainer.GetComponent<RectTransform>(),
-            Input.mousePosition,
-            cam: null,
-            out pointInContainer);
+        Vector2 pointInContainer = ScreenPointToPointInNoteContainer(
+            mousePosition);
+        PointInNoteContainerToPulseAndLane(pointInContainer,
+            out unsnappedPulse, out unsnappedLane);
+    }
 
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float cursorScan = pointInContainer.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = SnapPulse(cursorPulse);
-
-        int snappedLane = Mathf.FloorToInt(-pointInContainer.y / LaneHeight);
+    private void SnapNoteCursor(Vector2 mousePositionOverride)
+    {
+        CalculateCursorPulseAndLane(mousePositionOverride,
+            out unsnappedCursorPulse, out unsnappedCursorLane);
+        
+        int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
+        int snappedCursorLane =
+            Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
 
         noteCursor.note = new Note();
         noteCursor.note.pulse = snappedCursorPulse;
-        noteCursor.note.lane = snappedLane;
+        noteCursor.note.lane = snappedCursorLane;
         noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
+    }
+
+    private void SnapNoteCursor()
+    {
+        SnapNoteCursor(Input.mousePosition);
     }
 
     private void MoveScanlineToMouse()
@@ -400,6 +603,10 @@ public class PatternPanel : MonoBehaviour
                 StartPlayback();
             }
         }
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            OnRectangleToolButtonClick();
+        }
         if (Input.GetKeyDown(KeyCode.Alpha1))
             ChangeNoteType(NoteType.Basic);
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -421,17 +628,64 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Events From Workspace
+    #region Events From Workspace and NoteObjects
     public void OnWorkspaceScrollRectValueChanged(
         Vector2 value)
     {
         SynchronizeScrollRects();
     }
 
+    // If no drag note should receive this event, returns null.
+    private NoteInEditor FindDragNoteToReceiveEvent(
+        PointerEventData eventData)
+    {
+        foreach (NoteInEditor dragNote in dragNotes)
+        {
+            if (dragNote.ClickLandsOnCurve(eventData.position))
+            {
+                return dragNote;
+            }
+        }
+        return null;
+    }
+
     public void OnNoteContainerClick(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
-        if ((eventData as PointerEventData).button !=
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (pointerEventData.dragging) return;
+
+        // Special case: check drag notes because the curves do not
+        // receive clicks.
+        NoteInEditor dragNoteToReceiveEvent = 
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null)
+        {
+            if (pointerEventData.button ==
+                    PointerEventData.InputButton.Left)
+            {
+                OnNoteObjectLeftClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            if (pointerEventData.button ==
+                PointerEventData.InputButton.Right)
+            {
+                OnNoteObjectRightClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            return;
+        }
+
+        // Special case: if rectangle tool, deselect all.
+        if (tool == Tool.Rectangle)
+        {
+            selectedNoteObjects.Clear();
+            SelectionChanged?.Invoke(selectedNoteObjects);
+            return;
+        }
+
+        if (pointerEventData.button !=
             PointerEventData.InputButton.Left)
         {
             return;
@@ -456,7 +710,8 @@ public class PatternPanel : MonoBehaviour
 
         string sound = keysoundSheet.UpcomingKeysound();
         keysoundSheet.AdvanceUpcoming();
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        GameObject newNote = null;
         switch (noteType)
         {
             case NoteType.Basic:
@@ -464,54 +719,128 @@ public class PatternPanel : MonoBehaviour
             case NoteType.ChainNode:
             case NoteType.RepeatHead:
             case NoteType.Repeat:
-                AddNote(noteType, noteCursor.note.pulse,
+                newNote = AddNote(noteType, noteCursor.note.pulse,
                     noteCursor.note.lane, sound);
                 break;
             case NoteType.Hold:
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
-                AddHoldNote(noteType, noteCursor.note.pulse,
+                newNote = AddHoldNote(noteType, noteCursor.note.pulse,
                     noteCursor.note.lane, duration: null, sound);
                 break;
             case NoteType.Drag:
-                AddDragNote(noteCursor.note.pulse,
+                newNote = AddDragNote(noteCursor.note.pulse,
                     noteCursor.note.lane,
                     nodes: null,
                     sound);
                 break;
         }
-        
-        EditorContext.DoneWithChange();
+
+        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
+        EditorContext.EndTransaction();
+    }
+
+    private bool draggingDragCurve;
+    public void OnNoteContainerBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (tool == Tool.Rectangle &&
+            pointerEventData.button == 
+                PointerEventData.InputButton.Left)
+        {
+            OnBeginDragWhenRectangleToolActive();
+            return;
+        }
+        draggingDragCurve = false;
+
+        // Special case for drag notes.
+        NoteInEditor dragNoteToReceiveEvent =
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null &&
+            pointerEventData.button == 
+                PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectBeginDrag(pointerEventData,
+                dragNoteToReceiveEvent.gameObject);
+            draggingDragCurve = true;
+            return;
+        }
     }
 
     public void OnNoteContainerDrag(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
-        if (p.button != PointerEventData.InputButton.Middle) return;
+        if (tool == Tool.Rectangle &&
+            p.button ==
+                PointerEventData.InputButton.Left)
+        {
+            OnDragWhenRectangleToolActive(p.delta);
+            return;
+        }
 
-        float outOfViewWidth = WorkspaceContentWidth - 
+        // Special case for drag notes.
+        if (draggingDragCurve && p.button == 
+            PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectDrag(p);
+            return;
+        }
+
+        if (p.button == PointerEventData.InputButton.Middle)
+        {
+            OnMiddleMouseButtonDrag(p.delta);
+        }
+    }
+
+    private void OnMiddleMouseButtonDrag(Vector2 unscaledDelta)
+    {
+        float outOfViewWidth = WorkspaceContentWidth -
             workspaceViewport.rect.width;
         float outOfViewHeight = WorkspaceContentHeight -
             workspaceViewport.rect.height;
         if (outOfViewWidth < 0f) outOfViewWidth = 0f;
         if (outOfViewHeight < 0f) outOfViewHeight = 0f;
 
-        float horizontal = 
+        float horizontal =
             workspaceScrollRect.horizontalNormalizedPosition *
             outOfViewWidth;
-        horizontal -= p.delta.x / rootCanvas.localScale.x;
-        workspaceScrollRect.horizontalNormalizedPosition = 
+        horizontal -= unscaledDelta.x / rootCanvas.localScale.x;
+        workspaceScrollRect.horizontalNormalizedPosition =
             Mathf.Clamp01(horizontal / outOfViewWidth);
 
         float vertical =
             workspaceScrollRect.verticalNormalizedPosition *
             outOfViewHeight;
-        vertical -= p.delta.y / rootCanvas.localScale.x;
+        vertical -= unscaledDelta.y / rootCanvas.localScale.x;
         workspaceScrollRect.verticalNormalizedPosition =
             Mathf.Clamp01(vertical / outOfViewHeight);
 
         SynchronizeScrollRects();
+    }
+
+    public void OnNoteContainerEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (tool == Tool.Rectangle &&
+            pointerEventData.button ==
+                PointerEventData.InputButton.Left)
+        {
+            OnEndDragWhenRectangleToolActive();
+            return;
+        }
+
+        // Special case for drag notes.
+        if (draggingDragCurve && pointerEventData.button == 
+            PointerEventData.InputButton.Left)
+        { 
+            OnNoteObjectEndDrag(pointerEventData);
+            return;
+        }
     }
 
     public void OnNoteObjectLeftClick(GameObject o)
@@ -607,10 +936,11 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditorContext.RecordDeletedNote(GetNoteFromGameObject(o));
         selectedNoteObjects.Remove(o);
         DeleteNote(o);
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
     }
     #endregion
 
@@ -660,7 +990,7 @@ public class PatternPanel : MonoBehaviour
                 return;
             }
 
-            EditorContext.PrepareForChange();
+            EditorContext.PrepareToModifyBpmEvent();
             // Delete event.
             EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
             {
@@ -675,7 +1005,6 @@ public class PatternPanel : MonoBehaviour
                     bpm = newBpm.Value
                 });
             }
-            EditorContext.DoneWithChange();
 
             DestroyAndRespawnAllMarkers();
         });
@@ -692,6 +1021,12 @@ public class PatternPanel : MonoBehaviour
         AdjustAllPathsAndTrails();
     }
 
+    public void OnRectangleToolButtonClick()
+    {
+        tool = Tool.Rectangle;
+        UpdateToolAndNoteTypeButtons();
+    }
+
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         ChangeNoteType(clickedButton.type);
@@ -699,22 +1034,30 @@ public class PatternPanel : MonoBehaviour
 
     private void ChangeNoteType(NoteType newType)
     {
+        tool = Tool.Note;
         noteType = newType;
-        UpdateNoteTypeButtons();
+        UpdateToolAndNoteTypeButtons();
 
         // Apply to selection if asked to.
-        if (!applyNoteTypeToSelectionToggle.isOn) return;
+        if (!Options.instance.editorOptions
+            .applyNoteTypeToSelection)
+        {
+            return;
+        }
         if (isPlaying) return;
         if (selectedNoteObjects.Count == 0) return;
 
         HashSet<GameObject> newSelection = new HashSet<GameObject>();
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (GameObject o in selectedNoteObjects)
         {
             NoteObject n = o.GetComponent<NoteObject>();
             int pulse = n.note.pulse;
             int lane = n.note.lane;
             string sound = n.note.sound;
+            float volume = n.note.volume;
+            float pan = n.note.pan;
+            bool endOfScan = n.note.endOfScan;
 
             GameObject newObject = null;
             string invalidReason = "";
@@ -726,14 +1069,19 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
-                    newObject = AddNote(noteType, pulse, lane, sound);
+                    newObject = AddNote(noteType, pulse, lane, sound,
+                        volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
@@ -741,29 +1089,39 @@ public class PatternPanel : MonoBehaviour
                     // No need to call CanAddHoldNote because
                     // duration is flexible.
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddHoldNote(noteType, pulse, lane,
-                        duration: null, sound);
+                        duration: null, sound,
+                        volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
                 case NoteType.Drag:
                     // No need to call CanAddDragNote because
                     // curve is flexible.
                     if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes: new HashSet<GameObject>() { o },
+                        ignoredExistingNotes:
+                        new HashSet<GameObject>() { o },
                         out invalidReason))
                     {
                         snackbar.Show(invalidReason);
                         break;
                     }
+                    EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddDragNote(pulse, lane,
-                        nodes: null, sound);
+                        nodes: null, sound,
+                        volume, pan, endOfScan);
+                    EditorContext.RecordAddedNote(
+                        GetNoteFromGameObject(newObject));
                     break;
             }
 
@@ -776,24 +1134,20 @@ public class PatternPanel : MonoBehaviour
                 newSelection.Add(o);
             }
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
 
         selectedNoteObjects = newSelection;
         SelectionChanged?.Invoke(selectedNoteObjects);
     }
 
-    private void UpdateNoteTypeButtons()
+    private void UpdateToolAndNoteTypeButtons()
     {
+        rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
-                b.type == noteType);
+                tool == Tool.Note && b.type == noteType);
         }
-    }
-
-    public void OnShortcutButtonClick()
-    {
-        shortcutDialog.FadeIn();
     }
 
     public void OnScanlinePositionSliderValueChanged(float newValue)
@@ -809,16 +1163,15 @@ public class PatternPanel : MonoBehaviour
         ScrollScanlineIntoView();
     }
 
-    public void OnKeysoundVisibilityChanged(bool visible)
-    {
-        KeysoundVisibilityChanged?.Invoke(visible);
-    }
-
     private void OnSelectedKeysoundsUpdated(List<string> keysounds)
     {
         if (selectedNoteObjects == null ||
             selectedNoteObjects.Count == 0) return;
-        if (!applyKeysoundToSelectionToggle.isOn) return;
+        if (!Options.instance.editorOptions
+            .applyKeysoundToSelection)
+        {
+            return;
+        }
         if (isPlaying) return;
         if (keysounds.Count == 0)
         {
@@ -840,25 +1193,85 @@ public class PatternPanel : MonoBehaviour
         });
 
         // Apply keysound.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         int keysoundIndex = 0;
         foreach (NoteObject n in sortedSelection)
         {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.note.Clone();
             n.note.sound = keysounds[keysoundIndex];
+            op.noteAfterOp = n.note.Clone();
+
             n.GetComponent<NoteInEditor>().SetKeysoundText();
-            n.GetComponent<NoteInEditor>().SetKeysoundVisibility(showKeysoundToggle.isOn);
+            n.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
             keysoundIndex = (keysoundIndex + 1) % keysounds.Count;
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
+    }
+
+    private void OnOptionsTabOpened()
+    {
+        canvasGroup.alpha = 0f;
+    }
+
+    private void OnOptionsTabClosed()
+    {
+        canvasGroup.alpha = 1f;
+        KeysoundVisibilityChanged?.Invoke();
     }
     #endregion
 
     #region Dragging And Dropping Notes
     private GameObject draggedNoteObject;
-    private void OnNoteObjectBeginDrag(GameObject o)
+    private void OnNoteObjectBeginDrag(PointerEventData eventData,
+        GameObject o)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
 
+        OnBeginDraggingNotes(o);
+    }
+
+    private void OnNoteObjectDrag(PointerEventData eventData)
+    {
+        if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        OnDraggingNotes(eventData.delta);
+    }
+
+    private void OnNoteObjectEndDrag(PointerEventData eventData)
+    {
+        if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
+
+        OnEndDraggingNotes();
+    }
+
+    // The following can be called in 2 ways:
+    // - from NoteObject's drag events, when any note type is active
+    // - from ctrl+drag on anything, when the select tool is active
+    private void OnBeginDraggingNotes(GameObject o)
+    {
         draggedNoteObject = o;
         lastSelectedNoteWithoutShift = GetNoteFromGameObject(o);
         if (!selectedNoteObjects.Contains(o))
@@ -870,9 +1283,8 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnNoteObjectDrag(Vector2 delta)
+    private void OnDraggingNotes(Vector2 delta)
     {
-        if (isPlaying) return;
         delta /= rootCanvas.localScale.x;
 
         foreach (GameObject o in selectedNoteObjects)
@@ -880,20 +1292,32 @@ public class PatternPanel : MonoBehaviour
             // This is only visual. Notes are only really moved
             // in OnNoteObjectEndDrag.
             o.GetComponent<RectTransform>().anchoredPosition += delta;
-            o.GetComponent<NoteInEditor>().KeepPathInPlaceWhileNoteBeingDragged(delta);
+            o.GetComponent<NoteInEditor>()
+                .KeepPathInPlaceWhileNoteBeingDragged(delta);
         }
     }
 
-    private void OnNoteObjectEndDrag()
+    private void OnEndDraggingNotes()
     {
-        if (isPlaying) return;
+        // Calculate and snap where the note image lands at.
+        Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
+        Vector3 noteImagePosition =
+            draggedNoteObject.GetComponent<NoteInEditor>().noteImage
+            .position;
+        SnapNoteCursor(noteImagePosition);  // hackity hack
+        int newPulse = noteCursor.note.pulse;
+        int newLane = noteCursor.note.lane;
+        SnapNoteCursor();  // unhack
 
         // Calculate delta pulse and delta lane.
-        Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
         int oldPulse = draggedNote.pulse;
         int oldLane = draggedNote.lane;
-        int deltaPulse = noteCursor.note.pulse - oldPulse;
-        int deltaLane = noteCursor.note.lane - oldLane;
+        int deltaPulse = newPulse - oldPulse;
+        int deltaLane = newLane - oldLane;
+        if (Options.instance.editorOptions.lockNotesInTime)
+        {
+            deltaPulse = 0;
+        }
 
         // Is the move valid?
         bool movable = true;
@@ -903,8 +1327,8 @@ public class PatternPanel : MonoBehaviour
         foreach (GameObject o in selectedNoteObjects)
         {
             Note n = o.GetComponent<NoteObject>().note;
-            int newPulse = n.pulse + deltaPulse;
-            int newLane = n.lane + deltaLane;
+            newPulse = n.pulse + deltaPulse;
+            newLane = n.lane + deltaLane;
 
             switch (n.type)
             {
@@ -946,7 +1370,7 @@ public class PatternPanel : MonoBehaviour
             // Apply move. We need to delete and respawn note
             // objects, because they may have been moved between
             // playable and hidden lanes.
-            EditorContext.PrepareForChange();
+            EditorContext.BeginTransaction();
             HashSet<GameObject> replacedSelection =
                 new HashSet<GameObject>();
             // These notes are not the ones added to the pattern.
@@ -956,11 +1380,13 @@ public class PatternPanel : MonoBehaviour
             foreach (GameObject o in selectedNoteObjects)
             {
                 NoteObject n = o.GetComponent<NoteObject>();
+
                 Note movedNote = n.note.Clone();
                 movedNote.pulse += deltaPulse;
                 movedNote.lane += deltaLane;
                 movedNotes.Add(movedNote);
 
+                EditorContext.RecordDeletedNote(n.note.Clone());
                 DeleteNote(o);
             }
             foreach (Note movedNote in movedNotes)
@@ -976,7 +1402,10 @@ public class PatternPanel : MonoBehaviour
                         o = AddNote(movedNote.type,
                             movedNote.pulse,
                             movedNote.lane,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                     case NoteType.Hold:
                     case NoteType.RepeatHeadHold:
@@ -985,16 +1414,24 @@ public class PatternPanel : MonoBehaviour
                             movedNote.pulse,
                             movedNote.lane,
                             (movedNote as HoldNote).duration,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                     case NoteType.Drag:
                         o = AddDragNote(
                             movedNote.pulse,
                             movedNote.lane,
                             (movedNote as DragNote).nodes,
-                            movedNote.sound);
+                            movedNote.sound,
+                            movedNote.volume,
+                            movedNote.pan,
+                            movedNote.endOfScan);
                         break;
                 }
+                EditorContext.RecordAddedNote(
+                    GetNoteFromGameObject(o));
                 replacedSelection.Add(o);
                 if (movedNote.pulse == oldPulse + deltaPulse &&
                     movedNote.lane == oldLane + deltaLane)
@@ -1003,7 +1440,7 @@ public class PatternPanel : MonoBehaviour
                         GetNoteFromGameObject(o);
                 }
             }
-            EditorContext.DoneWithChange();
+            EditorContext.EndTransaction();
             selectedNoteObjects = replacedSelection;
             SelectionChanged?.Invoke(selectedNoteObjects);
         }
@@ -1019,9 +1456,17 @@ public class PatternPanel : MonoBehaviour
     #region Hold Note Duration Adjustment
     private List<GameObject> holdNotesBeingAdjusted;
     private GameObject initialHoldNoteBeingAdjusted;
-    private void OnDurationHandleBeginDrag(GameObject note)
+    private void OnDurationHandleBeginDrag(
+        PointerEventData eventData, GameObject note)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
 
         holdNotesBeingAdjusted = new List<GameObject>();
         if (selectedNoteObjects.Contains(note))
@@ -1051,22 +1496,38 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnDurationHandleDrag(float delta)
+    private void OnDurationHandleDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+        Vector2 delta = eventData.delta;
         delta /= rootCanvas.localScale.x;
 
         foreach (GameObject o in holdNotesBeingAdjusted)
         {
             // This is only visual; duration is only really changed
             // in OnDurationHandleEndDrag.
-            o.GetComponent<NoteInEditor>().AdjustTrailLength(delta);
+            o.GetComponent<NoteInEditor>().AdjustTrailLength(
+                delta.x);
         }
     }
 
-    private void OnDurationHandleEndDrag()
+    private void OnDurationHandleEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
 
         int oldDuration = (initialHoldNoteBeingAdjusted.
             GetComponent<NoteObject>().note as HoldNote).duration;
@@ -1101,13 +1562,18 @@ public class PatternPanel : MonoBehaviour
         {
             // Apply adjustment. No need to delete and respawn notes
             // this time.
-            EditorContext.PrepareForChange();
+            EditorContext.BeginTransaction();
             foreach (GameObject o in holdNotesBeingAdjusted)
             {
-                HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+                EditOperation op = EditorContext
+                    .BeginModifyNoteOperation();
+                HoldNote holdNote = o.GetComponent<NoteObject>()
+                    .note as HoldNote;
+                op.noteBeforeOp = holdNote.Clone();
                 holdNote.duration += deltaDuration;
+                op.noteAfterOp = holdNote.Clone();
             }
-            EditorContext.DoneWithChange();
+            EditorContext.EndTransaction();
             UpdateNumScansAndRelatedUI();
         }
 
@@ -1119,13 +1585,40 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Drag Notes
-    private void OnAnchorReceiverClicked(GameObject note)
+    // These may be snapped or unsnapped depending on options.
+    private void GetCursorPositionForAnchor(out float pulse,
+        out float lane)
     {
+        if (Options.instance.editorOptions.snapDragAnchors)
+        {
+            pulse = noteCursor.note.pulse;
+            lane = noteCursor.note.lane;
+        }
+        else
+        {
+            pulse = unsnappedCursorPulse;
+            lane = unsnappedCursorLane;
+        }
+    }
+
+    private void OnAnchorReceiverClick(PointerEventData eventData,
+        GameObject note)
+    {
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+
         DragNote dragNote = note.GetComponent<NoteObject>()
             .note as DragNote;
-        IntPoint newAnchor = new IntPoint(
-            noteCursor.note.pulse - dragNote.pulse,
-            noteCursor.note.lane - dragNote.lane);
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
+        FloatPoint newAnchor = new FloatPoint(
+            cursorPulse - dragNote.pulse,
+            cursorLane - dragNote.lane);
 
         // Is there an existing anchor at the same pulse?
         if (dragNote.nodes.Find((DragNode node) =>
@@ -1143,13 +1636,17 @@ public class PatternPanel : MonoBehaviour
             controlLeft = new FloatPoint(0f, 0f),
             controlRight = new FloatPoint(0f, 0f)
         };
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         dragNote.nodes.Add(newNode);
         dragNote.nodes.Sort((DragNode node1, DragNode node2) =>
         {
-            return node1.anchor.pulse - node2.anchor.pulse;
+            return (int)Mathf.Sign(
+                node1.anchor.pulse - node2.anchor.pulse);
         });
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
         UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = note
@@ -1163,8 +1660,18 @@ public class PatternPanel : MonoBehaviour
     private DragNode draggedDragNodeClone;
     private bool ctrlHeldOnAnchorBeginDrag;
     private Vector2 mousePositionRelativeToDraggedAnchor;
-    private void OnAnchorRightClicked(GameObject anchor)
+    private void OnAnchorClick(PointerEventData eventData)
     {
+        if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Right)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+
+        GameObject anchor = eventData.pointerDrag;
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
 
@@ -1182,9 +1689,12 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         dragNote.nodes.RemoveAt(anchorIndex);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
         UpdateNumScansAndRelatedUI();
 
         NoteInEditor noteInEditor = anchor
@@ -1193,10 +1703,18 @@ public class PatternPanel : MonoBehaviour
         noteInEditor.ResetAllAnchorsAndControlPoints();
     }
 
-    private void OnAnchorBeginDrag(GameObject anchor)
+    private void OnAnchorBeginDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
 
+        GameObject anchor = eventData.pointerDrag;
         draggedAnchor = anchor
             .GetComponentInParent<DragNoteAnchor>().gameObject;
         
@@ -1230,10 +1748,13 @@ public class PatternPanel : MonoBehaviour
 
     private void MoveDraggedAnchor()
     {
-        Note noteHead = draggedAnchor.GetComponentInParent<NoteObject>().note;
-        draggedDragNode.anchor.pulse = noteCursor.note.pulse
+        Note noteHead = draggedAnchor
+            .GetComponentInParent<NoteObject>().note;
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
+        draggedDragNode.anchor.pulse = cursorPulse
             - noteHead.pulse;
-        draggedDragNode.anchor.lane = noteCursor.note.lane
+        draggedDragNode.anchor.lane = cursorLane
             - noteHead.lane;
         draggedAnchor.GetComponent<RectTransform>().anchoredPosition
             = new Vector2(
@@ -1278,9 +1799,18 @@ public class PatternPanel : MonoBehaviour
             draggedAnchor.GetComponent<DragNoteAnchor>());
     }
 
-    private void OnAnchorDrag(Vector2 delta)
+    private void OnAnchorDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        Vector2 delta = eventData.delta;
         delta /= rootCanvas.localScale.x;
 
         if (ctrlHeldOnAnchorBeginDrag)
@@ -1322,25 +1852,20 @@ public class PatternPanel : MonoBehaviour
             return false;
         }
 
-        // Check 2: anchor is at a valid place for notes.
-        string invalidPositionReason;
-        bool validPosition = CanAddNote(NoteType.Basic,
-            movedNode.anchor.pulse + dragNote.pulse,
-            movedNode.anchor.lane + dragNote.lane,
-            out invalidPositionReason);
-        if (!validPosition)
-        {
-            invalidReason = "Anchors cannot be placed on top of or inside other notes.";
-            return false;
-        }
-
         invalidReason = null;
         return true;
     }
 
-    private void OnAnchorEndDrag()
+    private void OnAnchorEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
         if (!ctrlHeldOnAnchorBeginDrag &&
             draggedAnchor.GetComponentInParent<DragNoteAnchor>()
                 .anchorIndex == 0)
@@ -1373,27 +1898,44 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        DragNote dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
+
         UpdateNumScansAndRelatedUI();
     }
 
-    private void OnControlPointRightClicked(GameObject controlPoint,
+    private void OnControlPointClick(PointerEventData eventData,
         int controlPointIndex)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Right)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
 
+        GameObject controlPoint = eventData.pointerPress;
         int anchorIndex = controlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
-        DragNode node = (controlPoint
-            .GetComponentInParent<NoteObject>().note as DragNote)
-            .nodes[anchorIndex];
+        DragNote note = controlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        DragNode node = note.nodes[anchorIndex];
 
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = note.Clone();
         node.SetControlPoint(controlPointIndex,
             new FloatPoint(0f, 0f));
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = note.Clone();
+        EditorContext.EndTransaction();
 
         NoteInEditor noteInEditor = controlPoint
             .GetComponentInParent<NoteInEditor>();
@@ -1403,11 +1945,18 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject draggedControlPoint;
     private int draggedControlPointIndex;
-    private void OnControlPointBeginDrag(GameObject controlPoint,
+    private void OnControlPointBeginDrag(PointerEventData eventData,
         int controlPointIndex)
     {
         if (isPlaying) return;
-        draggedControlPoint = controlPoint;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
+        draggedControlPoint = eventData.pointerDrag;
         draggedControlPointIndex = controlPointIndex;
 
         int anchorIndex = draggedControlPoint
@@ -1418,9 +1967,18 @@ public class PatternPanel : MonoBehaviour
         draggedDragNodeClone = draggedDragNode.Clone();
     }
 
-    private void OnControlPointDrag(Vector2 delta)
+    private void OnControlPointDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        Vector2 delta = eventData.delta;
         delta /= rootCanvas.localScale.x;
         draggedControlPoint.GetComponent<RectTransform>()
             .anchoredPosition += delta;
@@ -1469,9 +2027,16 @@ public class PatternPanel : MonoBehaviour
         noteInEditor.ResetCurve();
     }
 
-    private void OnControlPointEndDrag()
+    private void OnControlPointEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
+        if (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
 
         DragNode cloneAtEndDrag = draggedDragNode.Clone();
         // Temporarily restore pre-drag data for snapshotting.
@@ -1490,13 +2055,20 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        EditorContext.PrepareForChange();
+        DragNote dragNote = draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
         draggedDragNode.CopyFrom(cloneAtEndDrag);
-        EditorContext.DoneWithChange();
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
     }
     #endregion
 
     #region Refreshing
+    // This deletes and respawns everything, therefore is extremely
+    // slow.
     private void Refresh()
     {
         DestroyAndRespawnExistingNotes();
@@ -1714,7 +2286,7 @@ public class PatternPanel : MonoBehaviour
     // This will call Reposition on the new object.
     private GameObject SpawnNoteObject(Note n)
     {
-        GameObject prefab = null;
+        GameObject prefab;
         switch (n.type)
         {
             case NoteType.Basic:
@@ -1756,12 +2328,17 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor noteInEditor = noteObject
             .GetComponent<NoteInEditor>();
         noteInEditor.SetKeysoundText();
-        noteInEditor.SetKeysoundVisibility(showKeysoundToggle.isOn);
+        noteInEditor.UpdateKeysoundVisibility();
+        noteInEditor.UpdateEndOfScanIndicator();
         if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
         noteObject.GetComponent<SelfPositionerInEditor>()
             .Reposition();
 
         noteToNoteObject.Add(n, noteObject);
+        if (n.type == NoteType.Drag)
+        {
+            dragNotes.Add(noteInEditor);
+        }
 
         // Binary search the appropriate sibling index of
         // new note, so all notes are drawn from right to left.
@@ -1818,6 +2395,7 @@ public class PatternPanel : MonoBehaviour
             Destroy(noteContainer.GetChild(i).gameObject);
         }
         noteToNoteObject = new Dictionary<Note, NoteObject>();
+        dragNotes = new HashSet<NoteInEditor>();
         lastSelectedNoteWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
 
@@ -2191,26 +2769,9 @@ public class PatternPanel : MonoBehaviour
         HashSet<GameObject> ignoredExistingNotes,
         out string reason)
     {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-        if (!CanAddNote(NoteType.Drag, pulse, lane,
+        return CanAddNote(NoteType.Drag, pulse, lane,
             ignoredExistingNotes,
-            out reason))
-        {
-            return false;
-        }
-
-        // Additional check for hold notes.
-        if (DragNoteCoversAnotherNote(pulse, lane, nodes,
-            ignoredExistingNotes))
-        {
-            reason = "Drag Notes cannot cover other notes.";
-            return false;
-        }
-
-        return true;
+            out reason);
     }
 
     // Ignores notes at (pulse, lane), if any.
@@ -2233,35 +2794,6 @@ public class PatternPanel : MonoBehaviour
                 GetGameObjectFromNote(noteAfterPivot)))
         {
             if (pulse + duration >= noteAfterPivot.pulse)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    // Ignores notes at (pulse, lane), if any.
-    private bool DragNoteCoversAnotherNote(int pulse, int lane,
-        List<DragNode> nodes,
-        HashSet<GameObject> ignoredExistingNotes)
-    {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-
-        // For now we only check anchors.
-        for (int i = 1; i < nodes.Count; i++)
-        {
-            int anchorPulse = pulse + nodes[i].anchor.pulse;
-            int anchorLane = lane + nodes[i].anchor.lane;
-            Note existingNote = EditorContext.Pattern.GetNoteAt(
-                anchorPulse, anchorLane);
-
-            if (existingNote != null &&
-                !ignoredExistingNotes.Contains(
-                    GetGameObjectFromNote(existingNote)))
             {
                 return true;
             }
@@ -2302,21 +2834,29 @@ public class PatternPanel : MonoBehaviour
     }
 
     private GameObject AddNote(NoteType type, int pulse, int lane,
-        string sound)
+        string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         Note n = new Note()
         {
             type = type,
             pulse = pulse,
             lane = lane,
-            sound = sound
+            sound = sound,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
 
     private GameObject AddHoldNote(NoteType type,
-        int pulse, int lane,
-        int? duration, string sound)
+        int pulse, int lane, int? duration, string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         if (!duration.HasValue)
         {
@@ -2328,13 +2868,19 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             sound = sound,
-            duration = duration.Value
+            duration = duration.Value,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
 
     private GameObject AddDragNote(int pulse, int lane,
-        List<DragNode> nodes, string sound)
+        List<DragNode> nodes, string sound,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan,
+        bool endOfScan = false)
     {
         if (nodes == null)
         {
@@ -2343,13 +2889,13 @@ public class PatternPanel : MonoBehaviour
                 HoldNoteDefaultDuration(pulse, lane);
             nodes.Add(new DragNode()
             {
-                anchor = new IntPoint(0, 0),
+                anchor = new FloatPoint(0f, 0f),
                 controlLeft = new FloatPoint(0f, 0f),
                 controlRight = new FloatPoint(0f, 0f)
             });
             nodes.Add(new DragNode()
             {
-                anchor = new IntPoint(relativePulseOfLastNode, 0),
+                anchor = new FloatPoint(relativePulseOfLastNode, 0f),
                 controlLeft = new FloatPoint(0f, 0f),
                 controlRight = new FloatPoint(0f, 0f)
             });
@@ -2360,7 +2906,10 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             sound = sound,
-            nodes = nodes
+            nodes = nodes,
+            volume = volume,
+            pan = pan,
+            endOfScan = endOfScan
         };
         return FinishAddNote(n);
     }
@@ -2376,6 +2925,10 @@ public class PatternPanel : MonoBehaviour
         // Delete from UI.
         AdjustPathBeforeDeleting(o);
         noteToNoteObject.Remove(n);
+        if (n.type == NoteType.Drag)
+        {
+            dragNotes.Remove(o.GetComponent<NoteInEditor>());
+        }
         if (lastSelectedNoteWithoutShift == n)
         {
             lastSelectedNoteWithoutShift = null;
@@ -2386,6 +2939,140 @@ public class PatternPanel : MonoBehaviour
         o.transform.SetParent(noteCemetary);
         Destroy(o);
         UpdateNumScansAndRelatedUI();
+    }
+    #endregion
+
+    #region Rectangle Tool
+    private Vector2 rectangleStart;
+    private Vector2 rectangleEnd;
+    private bool movingNotesWhenRectangleToolActive;
+
+    private void OnBeginDragWhenRectangleToolActive()
+    {
+        movingNotesWhenRectangleToolActive =
+            Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (selectedNoteObjects.Count == 0) return;
+            foreach (GameObject o in selectedNoteObjects)
+            {
+                OnBeginDraggingNotes(o);
+                break;
+            }
+        }
+        else
+        {
+            StartRectangle();
+        }
+    }
+
+    private void OnDragWhenRectangleToolActive(Vector2 delta)
+    {
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (selectedNoteObjects.Count == 0) return;
+            OnDraggingNotes(delta);
+        }
+        else
+        {
+            UpdateRectangle();
+        }
+    }
+
+    private void OnEndDragWhenRectangleToolActive()
+    {
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (selectedNoteObjects.Count == 0) return;
+            OnEndDraggingNotes();
+        }
+        else
+        {
+            ProcessRectangle();
+        }
+    }
+
+    private void StartRectangle()
+    {
+        rectangleStart = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+        selectionRectangle.gameObject.SetActive(true);
+
+        DrawRectangle();
+    }
+
+    private void UpdateRectangle()
+    {
+        rectangleEnd = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+
+        DrawRectangle();
+    }
+
+    private void ProcessRectangle()
+    {
+        selectionRectangle.gameObject.SetActive(false);
+
+        float startPulse, startLane, endPulse, endLane;
+        PointInNoteContainerToPulseAndLane(rectangleStart,
+            out startPulse, out startLane);
+        PointInNoteContainerToPulseAndLane(rectangleEnd,
+            out endPulse, out endLane);
+
+        int minPulse = Mathf.RoundToInt(
+            Mathf.Min(startPulse, endPulse));
+        int maxPulse = Mathf.RoundToInt(
+            Mathf.Max(startPulse, endPulse));
+        float minLane = Mathf.Min(startLane, endLane);
+        float maxLane = Mathf.Max(startLane, endLane);
+        HashSet<GameObject> notesInRectangle =
+            new HashSet<GameObject>();
+        foreach (Note n in EditorContext.Pattern
+            .GetViewBetween(minPulse, maxPulse))
+        {
+            if (n.lane >= minLane && n.lane <= maxLane)
+            {
+                notesInRectangle.Add(GetGameObjectFromNote(n));
+            }
+        }
+
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (shift)
+        {
+            // Append rectangle to selection.
+            foreach (GameObject o in notesInRectangle)
+            {
+                selectedNoteObjects.Add(o);
+            }
+        }
+        else if (alt)
+        {
+            // Subtract rectangle from selection.
+            foreach (GameObject o in notesInRectangle)
+            {
+                selectedNoteObjects.Remove(o);
+            }
+        }
+        else
+        {
+            // Replace selection with rectangle.
+            selectedNoteObjects = notesInRectangle;
+        }
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    private void DrawRectangle()
+    {
+        selectionRectangle.anchoredPosition = new Vector2(
+            Mathf.Min(rectangleStart.x, rectangleEnd.x),
+            Mathf.Max(rectangleStart.y, rectangleEnd.y));
+        selectionRectangle.sizeDelta = new Vector2(
+            Mathf.Abs(rectangleStart.x - rectangleEnd.x),
+            Mathf.Abs(rectangleStart.y - rectangleEnd.y));
     }
     #endregion
 
@@ -2484,10 +3171,11 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Paste.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (Note n in clipboard)
         {
             int newPulse = n.pulse + deltaPulse;
+            GameObject newObject = null;
             switch (n.type)
             {
                 case NoteType.Basic:
@@ -2495,24 +3183,29 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.ChainNode:
                 case NoteType.RepeatHead:
                 case NoteType.Repeat:
-                    AddNote(n.type, newPulse,
-                        n.lane, n.sound);
+                    newObject = AddNote(n.type, newPulse,
+                        n.lane, n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
-                    AddHoldNote(n.type, newPulse,
+                    newObject = AddHoldNote(n.type, newPulse,
                         n.lane, (n as HoldNote).duration,
-                        n.sound);
+                        n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
                 case NoteType.Drag:
-                    AddDragNote(newPulse, n.lane,
+                    newObject = AddDragNote(newPulse, n.lane,
                         (n as DragNote).nodes,
-                        n.sound);
+                        n.sound,
+                        n.volume, n.pan, n.endOfScan);
                     break;
             }
+            EditorContext.RecordAddedNote(
+                GetNoteFromGameObject(newObject));
         }
-        EditorContext.DoneWithChange();
+        EditorContext.EndTransaction();
     }
 
     public void DeleteSelection()
@@ -2521,13 +3214,16 @@ public class PatternPanel : MonoBehaviour
         if (isPlaying) return;
 
         // Delete notes from pattern.
-        EditorContext.PrepareForChange();
+        EditorContext.BeginTransaction();
         foreach (GameObject o in selectedNoteObjects)
         {
+            EditorContext.RecordDeletedNote(
+                GetNoteFromGameObject(o));
             DeleteNote(o);
         }
+        EditorContext.EndTransaction();
+
         selectedNoteObjects.Clear();
-        EditorContext.DoneWithChange();
     }
     #endregion
 
@@ -2545,6 +3241,7 @@ public class PatternPanel : MonoBehaviour
     private float playbackStartingTime;
     private bool backingTrackPlaying;
     private DateTime systemTimeOnPlaybackStart;
+    private float playbackBeatOnPreviousFrame;  // For metronome
 
     // Each queue represents one lane; each lane is sorted by pulse.
     // Played notes are popped from the corresponding queue. This
@@ -2617,6 +3314,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         systemTimeOnPlaybackStart = DateTime.Now;
+        playbackBeatOnPreviousFrame = -1f;
         backingTrackPlaying = false;
     }
 
@@ -2627,7 +3325,10 @@ public class PatternPanel : MonoBehaviour
         UpdatePlaybackUI();
 
         audioSourceManager.StopAll();
-        scanline.floatPulse = playbackStartingPulse;
+        if (Options.instance.editorOptions.returnScanlineAfterPlayback)
+        {
+            scanline.floatPulse = playbackStartingPulse;
+        }
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
@@ -2642,6 +3343,23 @@ public class PatternPanel : MonoBehaviour
             elapsedTime;
         float playbackCurrentPulse = EditorContext.Pattern
             .TimeToPulse(playbackCurrentTime);
+        
+        // Play metronome sound if necessary.
+        if (Options.instance.editorOptions.metronome)
+        {
+            float beat = playbackCurrentPulse / Pattern.pulsesPerBeat;
+            if (Mathf.FloorToInt(beat) >
+                Mathf.FloorToInt(playbackBeatOnPreviousFrame))
+            {
+                int wholeBeat = Mathf.FloorToInt(beat);
+                bool wholeScan = wholeBeat % 
+                    EditorContext.Pattern.patternMetadata.bps == 0;
+                AudioClip clip = wholeScan ? metronome2 : metronome1;
+
+                MenuSfx.instance.PlaySound(clip);
+            }
+            playbackBeatOnPreviousFrame = beat;
+        }
 
         // Start playing backing track if applicable.
         if (!backingTrackPlaying &&
@@ -2674,11 +3392,15 @@ public class PatternPanel : MonoBehaviour
             {
                 AudioClip clip = ResourceLoader.GetCachedClip(
                     nextNote.sound);
-                float startTime = playbackCurrentTime - 
-                    nextNote.time;
+                if (clip == null && Options.instance.editorOptions
+                    .assistTickOnSilentNotes)
+                {
+                    clip = assistTick;
+                }
                 audioSourceManager.PlayKeysound(clip,
                     nextNote.lane > PlayableLanes,
-                    startTime);
+                    startTime: 0f,
+                    nextNote.volume, nextNote.pan);
 
                 notesInLanes[i].Dequeue();
             }
@@ -2691,16 +3413,13 @@ public class PatternPanel : MonoBehaviour
         RefreshScanlinePositionSlider();
     }
 
-    private void PlaySound(AudioSource source, AudioClip clip,
-        float startTime)
+    public void PlayKeysound(Note n)
     {
-        if (clip == null) return;
-
-        int startSample = Mathf.FloorToInt(
-            startTime * clip.frequency);
-        source.clip = clip;
-        source.timeSamples = Mathf.Min(clip.samples, startSample);
-        source.Play();
+        AudioClip clip = ResourceLoader.GetCachedClip(
+            n.sound);
+        audioSourceManager.PlayKeysound(clip,
+            n.lane > PlayableLanes, 0f,
+            n.volume, n.pan);
     }
     #endregion
 
@@ -2711,6 +3430,38 @@ public class PatternPanel : MonoBehaviour
         int snappedPulse = Mathf.RoundToInt(rawPulse / pulsesPerDivision)
             * pulsesPerDivision;
         return snappedPulse;
+    }
+
+    private Vector2 ScreenPointToPointInNoteContainer(
+        Vector2 screenPoint)
+    {
+        Vector2 pointInContainer;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            noteContainer.GetComponent<RectTransform>(),
+            screenPoint,
+            cam: null,
+            out pointInContainer);
+        return pointInContainer;
+    }
+
+    private void PointInNoteContainerToPulseAndLane(
+        Vector2 pointInContainer,
+        out float pulse, out float lane)
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float scan = pointInContainer.x / ScanWidth;
+        pulse = scan * bps * Pattern.pulsesPerBeat;
+        lane = -pointInContainer.y / LaneHeight - 0.5f;
+    }
+
+    private Vector2 PulseAndLaneToPointInNoteContainer(
+        float pulse, float lane)
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float scan = pulse / Pattern.pulsesPerBeat / bps;
+        return new Vector2(
+            scan * ScanWidth,
+            -(lane + 0.5f) * LaneHeight);
     }
 
     private void ScrollScanlineIntoView()
@@ -2744,6 +3495,25 @@ public class PatternPanel : MonoBehaviour
             // Scrolling right: put scanline at left side.
             desiredXAtLeft = scanlinePosition - viewPortWidth * 0.2f;
         }
+        float normalizedPosition =
+            desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(normalizedPosition);
+        SynchronizeScrollRects();
+    }
+
+    // This was used to implement continuous scrolling during playback,
+    // but the frame rate is too low, so it's abandoned.
+    private void KeepScanlineAtLeftOfView()
+    {
+        float viewPortWidth = workspaceScrollRect
+            .GetComponent<RectTransform>().rect.width;
+        if (WorkspaceContentWidth <= viewPortWidth) return;
+
+        float scanlinePosition = scanline
+            .GetComponent<RectTransform>().anchoredPosition.x;
+
+        float desiredXAtLeft = scanlinePosition - viewPortWidth * 0.1f;
         float normalizedPosition =
             desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
         workspaceScrollRect.horizontalNormalizedPosition =

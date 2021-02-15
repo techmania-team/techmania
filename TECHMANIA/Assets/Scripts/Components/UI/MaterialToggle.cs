@@ -21,6 +21,7 @@ public class MaterialToggle : MonoBehaviour,
 
     private Toggle toggle;
     private RectTransform thumbRect;
+    private bool displayedValue;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +32,10 @@ public class MaterialToggle : MonoBehaviour,
     // Update is called once per frame
     void Update()
     {
-        
+        if (toggle.isOn != displayedValue)
+        {
+            UpdateAppearance();
+        }
     }
 
     public void UpdateAppearance()
@@ -44,6 +48,7 @@ public class MaterialToggle : MonoBehaviour,
         {
             thumbRect = thumb.GetComponent<RectTransform>();
         }
+        displayedValue = toggle.isOn;
         track.color = toggle.isOn ? trackColorOn : trackColorOff;
         thumb.color = toggle.isOn ? thumbColorOn : thumbColorOff;
         overlay.color = toggle.isOn ? overlayColorOn : overlayColorOff;

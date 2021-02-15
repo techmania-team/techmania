@@ -268,6 +268,8 @@ public class Game : MonoBehaviour
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
 
+        yield return null;  // Wait 1 more frame just in case.
+
         // Start timer. Backing track will start when timer hits 0;
         // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
@@ -384,7 +386,8 @@ public class Game : MonoBehaviour
         }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
         {
-            int scanOfN = n.pulse / PulsesPerScan;
+            int scanOfN = n.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
             bool hidden = n.lane >= kPlayableLanes;
             if (!hidden) numPlayableNotes++;
 
@@ -486,8 +489,17 @@ public class Game : MonoBehaviour
         int lastPulse = (lastScan + 1) *
             GameSetup.pattern.patternMetadata.bps *
             Pattern.pulsesPerBeat;
-        float trackLength = GameSetup.pattern.PulseToTime(lastPulse);
-        feverCoefficient = trackLength / 12.5f;
+        if (Ruleset.instance.constantFeverCoefficient)
+        {
+            feverCoefficient = 8f;
+        }
+        else
+        {
+            float trackLength =
+                GameSetup.pattern.PulseToTime(lastPulse);
+            feverCoefficient = trackLength / 12.5f;
+        }
+        Debug.Log("Fever coefficient is: " + feverCoefficient);
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
@@ -703,7 +715,8 @@ public class Game : MonoBehaviour
         // If a hold note ends at a scan divider, we don't
         // want to spawn an unnecessary extension, thus the
         // -1.
-        int scanOfN = n.note.pulse / PulsesPerScan;
+        int scanOfN = holdNote.GetScanNumber(
+            GameSetup.pattern.patternMetadata.bps);
         int lastScan = (holdNote.pulse + holdNote.duration - 1)
             / PulsesPerScan;
         for (int crossedScan = scanOfN + 1;
@@ -734,11 +747,20 @@ public class Game : MonoBehaviour
                 lastRepeatNotePulse +=
                     (lastRepeatNote.note as HoldNote).duration;
             }
-            headAppearance.DrawRepeatPathTo(lastRepeatNotePulse);
+            headAppearance.DrawRepeatPathTo(lastRepeatNotePulse,
+                positionEndOfScanOutOfBounds: 
+                !lastRepeatNote.note.endOfScan);
+
             // Create path extensions if the head and last
             // note are in different scans.
-            int headScan = head.note.pulse / PulsesPerScan;
-            int lastScan = lastRepeatNotePulse / PulsesPerScan;
+            int headScan = head.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+            int lastScan = lastRepeatNote.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+            if (lastRepeatNote.note is HoldNote)
+            {
+                lastScan = lastRepeatNotePulse / PulsesPerScan;
+            }
             for (int crossedScan = headScan + 1;
                 crossedScan <= lastScan;
                 crossedScan++)
@@ -1687,7 +1709,9 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             SetCombo(currentCombo + 1);
-            hp += Ruleset.instance.hpRecovery;
+            hp += feverState == FeverState.Active ? 
+                Ruleset.instance.hpRecoveryDuringFever : 
+                Ruleset.instance.hpRecovery;
             if (hp >= Ruleset.instance.maxHp)
             {
                 hp = Ruleset.instance.maxHp;
@@ -1709,7 +1733,9 @@ public class Game : MonoBehaviour
         else
         {
             SetCombo(0);
-            hp -= Ruleset.instance.hpLoss;
+            hp -= feverState == FeverState.Active ? 
+                Ruleset.instance.hpLossDuringFever :
+                Ruleset.instance.hpLoss;
             if (hp < 0) hp = 0;
             if (hp <= 0 && !GameSetup.noFail)
             {
@@ -1771,7 +1797,9 @@ public class Game : MonoBehaviour
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         AudioSource source = audioSourceManager.PlayKeysound(clip,
-            n.note.lane >= kPlayableLanes);
+            n.note.lane >= kPlayableLanes,
+            startTime: 0f,
+            n.note.volume, n.note.pan);
         noteToAudioSource[n.note] = source;
     }
 

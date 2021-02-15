@@ -20,10 +20,15 @@ public class ResourceLoader : MonoBehaviour
     // will not be cleared.
     private static string cachedFolder;
 
+    // Modifying audio buffer size will unload all clips. Therefore,
+    // OptionsPanel should set this flag when the buffer size changes.
+    public static bool forceReload;
+
     static ResourceLoader()
     {
         audioClips = new Dictionary<string, AudioClip>();
         cachedFolder = "";
+        forceReload = false;
     }
 
     private void ReportAudioCache()
@@ -45,17 +50,17 @@ public class ResourceLoader : MonoBehaviour
 
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
-        UnityAction<string> cacheAudioCompleteCallback,
-        bool reuseCachedClips = false)
+        UnityAction<string> cacheAudioCompleteCallback)
     {
         if (trackFolder != cachedFolder)
         {
             audioClips.Clear();
             cachedFolder = trackFolder;
         }
-        if (!reuseCachedClips)
+        if (forceReload)
         {
             audioClips.Clear();
+            forceReload = false;
         }
 
         ResourceLoader instance = GetInstance();
@@ -69,17 +74,17 @@ public class ResourceLoader : MonoBehaviour
     public static void CacheAllKeysounds(string trackFolder,
         Pattern pattern,
         UnityAction<string> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback,
-        bool reuseCachedClips = false)
+        UnityAction<float> progressCallback)
     {
         if (trackFolder != cachedFolder)
         {
             audioClips.Clear();
             cachedFolder = trackFolder;
         }
-        if (!reuseCachedClips)
+        if (forceReload)
         {
             audioClips.Clear();
+            forceReload = false;
         }
 
         HashSet<string> filenames = new HashSet<string>();

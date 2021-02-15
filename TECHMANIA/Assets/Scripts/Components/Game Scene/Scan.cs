@@ -8,6 +8,7 @@ public class Scan : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
+    public const float kSpaceOnTopAndBottom = 0.04f;
     public const float kSpaceBeforeScan = 0.15f;
     public const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
@@ -32,7 +33,8 @@ public class Scan : MonoBehaviour
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
         scanHeight = rect.height;
-        laneHeight = scanHeight * 0.25f;
+        laneHeight = scanHeight 
+            * (1f - kSpaceOnTopAndBottom * 2f) * 0.25f;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
@@ -85,7 +87,7 @@ public class Scan : MonoBehaviour
         GameObject o = Instantiate(prefab, transform);
 
         float x = OutOfBoundXPositionBeforeScan();
-        float y = scanHeight - (n.lane + 0.5f) * laneHeight;
+        float y = FloatLaneToYPosition(n.lane);
         RectTransform rect = o.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchorMin = Vector2.zero;
@@ -106,7 +108,7 @@ public class Scan : MonoBehaviour
         GameObject o = Instantiate(prefab, transform);
 
         float x = OutOfBoundXPositionBeforeScan();
-        float y = scanHeight - (head.note.lane + 0.5f) * laneHeight;
+        float y = FloatLaneToYPosition(head.note.lane);
         RectTransform rect = o.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchorMin = Vector2.zero;
@@ -209,7 +211,8 @@ public class Scan : MonoBehaviour
 
     public float FloatLaneToYPosition(float lane)
     {
-        return scanHeight - (lane + 0.5f) * laneHeight;
+        return scanHeight * (1f - kSpaceOnTopAndBottom)
+            - (lane + 0.5f) * laneHeight;
     }
     #endregion
 }

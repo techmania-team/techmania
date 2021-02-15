@@ -25,6 +25,8 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI breakText;
     public TextMeshProUGUI maxCombo;
     public TextMeshProUGUI feverBonus;
+    public GameObject comboBonusTitle;
+    public TextMeshProUGUI comboBonus;
     public TextMeshProUGUI totalScore;
 
     [Header("Rank")]
@@ -37,7 +39,8 @@ public class ResultsPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        title.text = Game.score.stageFailed ? "Stage Failed" : "Stage Clear";
+        title.text = Game.score.stageFailed ?
+            "Stage Failed" : "Stage Clear";
 
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
@@ -62,18 +65,25 @@ public class ResultsPanel : MonoBehaviour
         breakText.text = Game.score.notesPerJudgement
             [Judgement.Break].ToString();
         maxCombo.text = Game.maxCombo.ToString();
+        comboBonusTitle.SetActive(Ruleset.instance.comboBonus);
+        comboBonus.gameObject.SetActive(Ruleset.instance.comboBonus);
+        Game.score.CalculateComboBonus();
+        comboBonus.text = Game.score.comboBonus.ToString();
         feverBonus.text = Game.score.totalFeverBonus.ToString();
 
-        int score = Game.score.CurrentScore();
+        int score = Game.score.CurrentScore() + Game.score.comboBonus;
         totalScore.text = score.ToString();
 
         // Rank
         // The choice of rank is quite arbitrary.
-        string rank = "F";
-        if (score > 150000) rank = "C";
-        if (score > 200000) rank = "B";
-        if (score > 250000) rank = "A";
-        if (score > 290000) rank = "S";
+        string rank = "C";
+        if (score > 220000) rank = "B";
+        if (score > 260000) rank = "A";
+        if (score > 270000) rank = "A<size=64>+</size>";
+        if (score > 280000) rank = "A<size=64>++</size>";
+        if (score > 285000) rank = "S";
+        if (score > 290000) rank = "S<size=64>+</size>";
+        if (score > 295000) rank = "S<size=64>++</size>";
         if (Game.score.stageFailed) rank = "F";
         rankText.text = rank;
 

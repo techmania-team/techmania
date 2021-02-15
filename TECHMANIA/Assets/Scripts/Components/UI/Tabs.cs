@@ -8,6 +8,8 @@ public class Tabs : MonoBehaviour
 {
     public Transform tabButtons;
     public Transform tabContents;
+    public bool setTabOnEnable;
+    public int tabOnEnable;
 
     public int CurrentTab { get; private set; }
 
@@ -17,23 +19,34 @@ public class Tabs : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CurrentTab = 0;
         for (int t = 0; t < tabButtons.childCount; t++)
         {
-            ToggleTabButtonBar(t, t == CurrentTab);
-            ToggleTabContent(t, t == CurrentTab);
-
             int tCopy = t;
-            tabButtons.GetChild(t).GetComponent<Button>().onClick.AddListener(() =>
+            tabButtons.GetChild(t).GetComponent<Button>().onClick
+                .AddListener(() =>
             {
                 SetTab(tCopy);
             });
         }
     }
 
+    private void OnEnable()
+    {
+        if (setTabOnEnable)
+        {
+            CurrentTab = tabOnEnable;
+            for (int t = 0; t < tabButtons.childCount; t++)
+            {
+                ToggleTabButtonBar(t, t == CurrentTab);
+                ToggleTabContent(t, t == CurrentTab);
+            }
+        }
+    }
+
     private void ToggleTabButtonBar(int t, bool active)
     {
-        tabButtons.GetChild(t).Find("Bar").gameObject.SetActive(active);
+        tabButtons.GetChild(t).Find("Bar").gameObject
+            .SetActive(active);
     }
 
     private void ToggleTabContent(int t, bool active)
