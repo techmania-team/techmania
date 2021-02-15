@@ -1,6 +1,12 @@
 # TECHMANIA
 An open source rhythm game for Windows, written in Unity, playable with or without a touchscreen.
 
+[Announcement trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
+
+[Subreddit](https://www.reddit.com/r/TechMania/)
+
+[Discord](https://discord.gg/K4Nf7AnAZt)
+
 Head to [Releases](https://github.com/techmania-team/techmania/releases) to download the released versions.
 
 ## Licensing
@@ -25,7 +31,7 @@ The game may be ported to WebGL in the future so it can be played on any web-ena
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
 
-For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania).
+For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania) or [Discord](https://discord.gg/K4Nf7AnAZt).
 
 ## Making your own builds
 While other OSes are not supported, it may be possible to build the project on these platforms. Follow the standard building process:
