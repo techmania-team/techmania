@@ -1752,8 +1752,11 @@ public class PatternPanel : MonoBehaviour
             .GetComponentInParent<NoteObject>().note;
         float cursorPulse, cursorLane;
         GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
-        draggedDragNode.anchor.pulse = cursorPulse
-            - noteHead.pulse;
+        if (!Options.instance.editorOptions.lockDragAnchorsInTime)
+        {
+            draggedDragNode.anchor.pulse = cursorPulse
+                - noteHead.pulse;
+        }
         draggedDragNode.anchor.lane = cursorLane
             - noteHead.lane;
         draggedAnchor.GetComponent<RectTransform>().anchoredPosition

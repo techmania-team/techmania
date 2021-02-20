@@ -13,6 +13,7 @@ public class EditorOptionsTab : MonoBehaviour
     public Toggle applyKeysoundToSelectionToggle;
     public Toggle applyNoteTypeToSelectionToggle;
     public Toggle lockNotesInTimeToggle;
+    public Toggle lockDragAnchorsInTimeToggle;
     public Toggle snapDragAnchorsToggle;
 
     [Header("Playback")]
@@ -46,6 +47,8 @@ public class EditorOptionsTab : MonoBehaviour
             Options.instance.editorOptions.applyNoteTypeToSelection);
         lockNotesInTimeToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.lockNotesInTime);
+        lockDragAnchorsInTimeToggle.SetIsOnWithoutNotify(
+            Options.instance.editorOptions.lockDragAnchorsInTime);
         snapDragAnchorsToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.snapDragAnchors);
 
@@ -69,6 +72,8 @@ public class EditorOptionsTab : MonoBehaviour
             applyNoteTypeToSelectionToggle.isOn;
         Options.instance.editorOptions.lockNotesInTime =
             lockNotesInTimeToggle.isOn;
+        Options.instance.editorOptions.lockDragAnchorsInTime =
+            lockDragAnchorsInTimeToggle.isOn;
         Options.instance.editorOptions.snapDragAnchors =
             snapDragAnchorsToggle.isOn;
 
