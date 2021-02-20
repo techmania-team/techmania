@@ -41,8 +41,10 @@ public class Game : MonoBehaviour
     public GraphicRaycaster raycaster;
     public Transform topScanContainer;
     public GameObject topScanTemplate;
+    public List<RectTransform> topScanEmptyHitReceivers;
     public Transform bottomScanContainer;
     public GameObject bottomScanTemplate;
+    public List<RectTransform> bottomScanEmptyScanReceivers;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
@@ -340,6 +342,33 @@ public class Game : MonoBehaviour
             Scan--;
             Pulse -= PulsesPerScan;
             initialTime = GameSetup.pattern.PulseToTime(Pulse);
+        }
+
+        // Resize empty scan receivers to fit scan margins.
+        float laneHeightRelative =
+            (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
+        topScanEmptyHitReceivers[0].anchorMin = new Vector2(
+            0f, 0.5f + laneHeightRelative);
+        topScanEmptyHitReceivers[0].anchorMax = new Vector2(
+            1f, 1f);
+        topScanEmptyHitReceivers[1].anchorMin = new Vector2(
+            0f, 0.5f);
+        topScanEmptyHitReceivers[1].anchorMax = new Vector2(
+            1f, 0.5f + laneHeightRelative);
+        topScanEmptyHitReceivers[2].anchorMin = new Vector2(
+            0f, 0.5f - laneHeightRelative);
+        topScanEmptyHitReceivers[2].anchorMax = new Vector2(
+            1f, 0.5f);
+        topScanEmptyHitReceivers[3].anchorMin = new Vector2(
+            0f, 0f);
+        topScanEmptyHitReceivers[3].anchorMax = new Vector2(
+            1f, 0.5f - laneHeightRelative);
+        for (int i = 0; i < 4; i++)
+        {
+            bottomScanEmptyScanReceivers[i].anchorMin =
+                topScanEmptyHitReceivers[i].anchorMin;
+            bottomScanEmptyScanReceivers[i].anchorMax =
+                topScanEmptyHitReceivers[i].anchorMax;
         }
 
         // Find last scan. Make sure it ends later than the backing
