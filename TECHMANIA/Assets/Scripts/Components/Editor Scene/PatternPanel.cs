@@ -1286,6 +1286,10 @@ public class PatternPanel : MonoBehaviour
     private void OnDraggingNotes(Vector2 delta)
     {
         delta /= rootCanvas.localScale.x;
+        if (Options.instance.editorOptions.lockNotesInTime)
+        {
+            delta.x = 0f;
+        }
 
         foreach (GameObject o in selectedNoteObjects)
         {
