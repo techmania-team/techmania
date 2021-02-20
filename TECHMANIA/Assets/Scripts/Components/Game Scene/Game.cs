@@ -242,9 +242,11 @@ public class Game : MonoBehaviour
         yield return new WaitUntil(() => keysoundsLoaded);
 
         // Step 4: load BGA, if any.
+        bool hasBga;
         if (GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
+            hasBga = true;
             string fullPath = Path.Combine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.bga);
             videoPlayer.url = fullPath;
@@ -256,6 +258,7 @@ public class Game : MonoBehaviour
         }
         else
         {
+            hasBga = false;
             bga.color = Color.clear;
         }
 
@@ -269,6 +272,10 @@ public class Game : MonoBehaviour
         noFailIndicator.SetActive(GameSetup.noFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
+        if (hasBga)
+        {
+            backgroundImage.color = Color.clear;
+        }
 
         yield return null;  // Wait 1 more frame just in case.
 
