@@ -8,7 +8,6 @@ public class Scan : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
-    public const float kSpaceOnTopAndBottom = 0.04f;
     public const float kSpaceBeforeScan = 0.15f;
     public const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
@@ -34,7 +33,7 @@ public class Scan : MonoBehaviour
         screenWidth = rect.width;
         scanHeight = rect.height;
         laneHeight = scanHeight 
-            * (1f - kSpaceOnTopAndBottom * 2f) * 0.25f;
+            * (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
@@ -211,7 +210,7 @@ public class Scan : MonoBehaviour
 
     public float FloatLaneToYPosition(float lane)
     {
-        return scanHeight * (1f - kSpaceOnTopAndBottom)
+        return scanHeight * (1f - Ruleset.instance.scanMargin)
             - (lane + 0.5f) * laneHeight;
     }
     #endregion

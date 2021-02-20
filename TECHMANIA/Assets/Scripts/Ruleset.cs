@@ -50,6 +50,7 @@ public class Ruleset : RulesetBase
     public float longNoteGracePeriod;
 
     // Hitbox size
+    public float scanMargin;
     public float hitboxWidth;
     public float chainHeadHitboxWidth;
     public float chainNodeHitboxWidth;
@@ -83,6 +84,7 @@ public class Ruleset : RulesetBase
         breakThreshold = 0.3f;
         longNoteGracePeriod = 0.15f;
 
+        scanMargin = 0.04f;
         hitboxWidth = 1.5f;
         chainHeadHitboxWidth = 1.5f;
         chainNodeHitboxWidth = 3f;
