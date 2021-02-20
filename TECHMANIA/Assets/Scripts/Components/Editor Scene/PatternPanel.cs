@@ -625,6 +625,19 @@ public class PatternPanel : MonoBehaviour
             ChangeNoteType(NoteType.RepeatHeadHold);
         if (Input.GetKeyDown(KeyCode.Alpha9))
             ChangeNoteType(NoteType.RepeatHold);
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (selectedNoteObjects.Count == 1)
+            {
+                Note n = null;
+                foreach (GameObject o in selectedNoteObjects)
+                {
+                    n = GetNoteFromGameObject(o);
+                }
+                PlayKeysound(n);
+            }
+        }
     }
     #endregion
 
