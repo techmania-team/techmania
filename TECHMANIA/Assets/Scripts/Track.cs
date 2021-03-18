@@ -32,7 +32,7 @@ public class TrackBase
     public string Serialize(bool optimizeForSaving)
     {
         PrepareToSerialize();
-#if UNITY_2019
+#if UNITY_2020
         if (optimizeForSaving)
         {
             return UnityEngine.JsonUtility.ToJson(this,
@@ -56,7 +56,7 @@ public class TrackBase
 
     public static TrackBase Deserialize(string json)
     {
-#if UNITY_2019
+#if UNITY_2020
         TrackBase track = null;
         string version = UnityEngine.JsonUtility
             .FromJson<TrackBase>(json).version;
@@ -128,7 +128,7 @@ public class BpmEvent
 {
     public int pulse;
     public double bpm;
-#if UNITY_2019
+#if UNITY_2020
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -238,7 +238,7 @@ public partial class Pattern
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
 
-#if UNITY_2019
+#if UNITY_2020
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -267,7 +267,7 @@ public partial class Pattern
 
     public Pattern CloneWithDifferentGuid()
     {
-#if UNITY_2019
+#if UNITY_2020
         PackAllNotes();
         string json = UnityEngine.JsonUtility.ToJson(
             this, prettyPrint: false);
