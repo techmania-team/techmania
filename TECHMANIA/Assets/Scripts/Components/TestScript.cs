@@ -10,6 +10,12 @@ public class TestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Application.persistentDataPath);
+        SerializableDemoV1 d = new SerializableDemoV1("field");
+        string json = d.Serialize();
+        Debug.Log(json);
+
+        SerializableDemoV2 de = SerializableDemoV2.Deserialize(json) as SerializableDemoV2;
+        Debug.Log(de.version);
+        Debug.Log(de.v2field);
     }
 }
