@@ -186,7 +186,7 @@ public class ResourceLoader : MonoBehaviour
         out AudioClip clip, out string error)
     {
         string fullPath = request.uri.LocalPath;
-        if (request.isHttpError || request.isNetworkError)
+        if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
             error = $"Could not load {fullPath}:\n\n{request.error}";
@@ -226,7 +226,7 @@ public class ResourceLoader : MonoBehaviour
             Paths.FullPathToUri(fullPath), nonReadable: true);
         yield return request.SendWebRequest();
 
-        if (request.isNetworkError || request.isHttpError)
+        if (request.result != UnityWebRequest.Result.Success)
         {
             loadImageCompleteCallback?.Invoke(null,
                 $"Could not load {fullPath}:\n\n{request.error}");
