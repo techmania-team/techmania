@@ -4,34 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+// Each format version is a derived class of RulesetBase.
+
 [Serializable]
-public class RulesetBase
-{
-    public string version;
-
-    private string Serialize()
-    {
-        return UnityEngine.JsonUtility.ToJson(this, prettyPrint: true);
-    }
-    private static RulesetBase Deserialize(string json)
-    {
-        string version = UnityEngine.JsonUtility.FromJson<RulesetBase>(json).version;
-        switch (version)
-        {
-            case Ruleset.kVersion:
-                return UnityEngine.JsonUtility.FromJson<Ruleset>(json);
-            // For non-current versions, maybe attempt conversion?
-            default:
-                throw new Exception($"Unknown version: {version}");
-        }
-    }
-
-    public static RulesetBase LoadFromFile(string path)
-    {
-        string fileContent = System.IO.File.ReadAllText(path);
-        return Deserialize(fileContent);
-    }
-}
+[FormatVersion(Ruleset.kVersion, typeof(Ruleset), isLatest: true)]
+public class RulesetBase : Serializable<RulesetBase> {}
 
 [Serializable]
 public class Ruleset : RulesetBase

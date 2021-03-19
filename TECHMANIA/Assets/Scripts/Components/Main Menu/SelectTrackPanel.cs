@@ -20,7 +20,6 @@ public class SelectTrackPanel : MonoBehaviour
     {
         public string folder;
         public Track track;
-        public bool upgraded;
     }
     protected class ErrorInFolder
     {
@@ -62,17 +61,10 @@ public class SelectTrackPanel : MonoBehaviour
             }
 
             // Attempt to load track.
-            TrackBase trackBase = null;
-            bool upgraded = false;
+            Track track = null;
             try
             {
-                trackBase = TrackBase.LoadFromFile(possibleTrackFile);
-                if (trackBase is TrackV1)
-                {
-                    // Attempt upgrade.
-                    trackBase = (trackBase as TrackV1).Upgrade();
-                    upgraded = true;
-                }
+                track = Track.LoadFromFile(possibleTrackFile) as Track;
             }
             catch (Exception e)
             {
@@ -87,8 +79,7 @@ public class SelectTrackPanel : MonoBehaviour
             allTracks.Add(new TrackInFolder()
             {
                 folder = dir,
-                track = trackBase as Track,
-                upgraded = upgraded
+                track = track
             });
         }
 
@@ -115,25 +106,11 @@ public class SelectTrackPanel : MonoBehaviour
             // Record mapping.
             cardToTrack.Add(card, trackInFolder);
 
-            if (trackInFolder.upgraded
-                && ShowUpgradeNoticeOnOutdatedTracks())
+            // Bind click event.
+            card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                // Bind click event.
-                card.GetComponent<Button>().onClick
-                    .AddListener(() =>
-                    {
-                        OnClickCardWithUpgradeNotice(card);
-                    });
-            }
-            else
-            {
-                // Bind click event.
-                card.GetComponent<Button>().onClick
-                    .AddListener(() =>
-                    {
-                        OnClickCard(card);
-                    });
-            }
+                OnClickCard(card);
+            });
 
             if (firstCard == null)
             {
@@ -195,11 +172,6 @@ public class SelectTrackPanel : MonoBehaviour
         return false;
     }
 
-    protected virtual bool ShowUpgradeNoticeOnOutdatedTracks()
-    {
-        return false;
-    }
-
     protected virtual void OnClickCard(GameObject o)
     {
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, Paths.kTrackFilename);
@@ -217,11 +189,5 @@ public class SelectTrackPanel : MonoBehaviour
     {
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");
-    }
-
-    protected virtual void OnClickCardWithUpgradeNotice(GameObject o)
-    {
-        throw new NotImplementedException(
-            "SelectTrackPanel in the game scene should not show upgrade notices.");
     }
 }

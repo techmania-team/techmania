@@ -21,83 +21,9 @@ using System.Collections.Generic;
 // is packed differently from normal notes.
 
 [Serializable]
-public class TrackBase
-{
-    public string version;
-
-    protected virtual void PrepareToSerialize() { }
-    protected virtual void InitAfterDeserialize() { }
-
-    // This should never be called from outside the editor.
-    public string Serialize(bool optimizeForSaving)
-    {
-        PrepareToSerialize();
-#if UNITY_2020
-        if (optimizeForSaving)
-        {
-            return UnityEngine.JsonUtility.ToJson(this,
-                prettyPrint: true).Replace("    ", "\t");
-        }
-        else
-        {
-            return UnityEngine.JsonUtility.ToJson(this,
-                prettyPrint: false);
-        }
-#else
-        return System.Text.Json.JsonSerializer.Serialize(this,
-            typeof(Track),
-            new System.Text.Json.JsonSerializerOptions()
-            {
-                IncludeFields = true,
-                WriteIndented = true
-            });
-#endif
-    }
-
-    public static TrackBase Deserialize(string json)
-    {
-#if UNITY_2020
-        TrackBase track = null;
-        string version = UnityEngine.JsonUtility
-            .FromJson<TrackBase>(json).version;
-        switch (version)
-        {
-            case TrackV1.kVersion:
-                track = UnityEngine.JsonUtility
-                    .FromJson<TrackV1>(json);
-                break;
-            case Track.kVersion:
-                track = UnityEngine.JsonUtility
-                    .FromJson<Track>(json);
-                break;
-            default:
-                throw new Exception($"Unknown version: {version}");
-        }
-        track.InitAfterDeserialize();
-        return track;
-#else
-        return null;
-#endif
-    }
-
-    // The clone will retain the same Guid.
-    public TrackBase Clone()
-    {
-        return Deserialize(Serialize(optimizeForSaving: false));
-    }
-
-    public void SaveToFile(string path)
-    {
-        string serialized = Serialize(optimizeForSaving: true);
-        System.IO.File.WriteAllText(path, serialized);
-    }
-
-    public static TrackBase LoadFromFile(string path)
-    {
-        string fileContent = System.IO.File.ReadAllText(path);
-        return Deserialize(fileContent);
-    }
-}
+[FormatVersion(TrackV1.kVersion, typeof(TrackV1), isLatest: false)]
+[FormatVersion(Track.kVersion, typeof(Track), isLatest: true)]
+public class TrackBase : Serializable<TrackBase> {}
 
 #region Enums
 [Serializable]

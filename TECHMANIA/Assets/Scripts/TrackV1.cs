@@ -76,7 +76,7 @@ public class TrackV1 : TrackBase
         return patterns[index];
     }
 
-    public Track Upgrade()
+    protected override TrackBase Upgrade()
     {
         Track track = new Track(trackMetadata.title,
             trackMetadata.artist);

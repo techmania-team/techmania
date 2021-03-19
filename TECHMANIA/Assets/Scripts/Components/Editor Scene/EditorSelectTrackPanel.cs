@@ -21,11 +21,6 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         return true;
     }
 
-    protected override bool ShowUpgradeNoticeOnOutdatedTracks()
-    {
-        return true;
-    }
-
     protected override void OnClickCard(GameObject o)
     {
         EditorContext.Reset();
@@ -83,13 +78,5 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         EditorContext.track = track;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
             TransitionToPanel.Direction.Right);
-    }
-
-    protected override void OnClickCardWithUpgradeNotice(GameObject o)
-    {
-        messageDialog.Show("This track was created with an outdated version of TECHMANIA.\n\nTECHMANIA will upgrade the track, and overwrite the previous version upon the first save. Please double check all resources, metadata and patterns before saving.", () =>
-        {
-            OnClickCard(o);
-        });
     }
 }

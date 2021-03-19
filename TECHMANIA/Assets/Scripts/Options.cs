@@ -9,43 +9,8 @@ using UnityEngine.Audio;
 // Each format version is a derived class of OptionsBase.
 
 [Serializable]
-public class OptionsBase
-{
-    public string version;
-
-    private string Serialize()
-    {
-        return UnityEngine.JsonUtility.ToJson(this, prettyPrint: true);
-    }
-    private static OptionsBase Deserialize(string json)
-    {
-        string version = UnityEngine.JsonUtility.FromJson<OptionsBase>(json).version;
-        switch (version)
-        {
-            case Options.kVersion:
-                return UnityEngine.JsonUtility.FromJson<Options>(json);
-            // For non-current versions, maybe attempt conversion?
-            default:
-                throw new Exception($"Unknown version: {version}");
-        }
-    }
-
-    public OptionsBase Clone()
-    {
-        return Deserialize(Serialize());
-    }
-
-    public void SaveToFile(string path)
-    {
-        System.IO.File.WriteAllText(path, Serialize());
-    }
-
-    public static OptionsBase LoadFromFile(string path)
-    {
-        string fileContent = System.IO.File.ReadAllText(path);
-        return Deserialize(fileContent);
-    }
-}
+[FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
+public class OptionsBase : Serializable<OptionsBase> {}
 
 // Deserialization will call the constructor, so we can set whatever
 // weird default values in the constructor, and they will naturally

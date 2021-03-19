@@ -30,13 +30,33 @@ public abstract class Serializable<T> where T : Serializable<T>
 {
     public string version;
 
-    public string Serialize()
+    public string Serialize(bool optimizeForSaving)
     {
-        return JsonUtility.ToJson(this, prettyPrint: true);
+        PrepareToSerialize();
+#if UNITY_2020
+        if (optimizeForSaving)
+        {
+            return JsonUtility.ToJson(this, prettyPrint: true)
+                .Replace("    ", "\t");
+        }
+        else
+        {
+            return JsonUtility.ToJson(this, prettyPrint: false);
+        }
+#else
+        return System.Text.Json.JsonSerializer.Serialize(this,
+            typeof(T),
+            new System.Text.Json.JsonSerializerOptions()
+            {
+                IncludeFields = true,
+                WriteIndented = true
+            });
+#endif
     }
 
     public static T Deserialize(string json)
     {
+#if UNITY_2020
         string version = JsonUtility.FromJson<T>(json).version;
         Type subclassType = null;
         string latestVersion = null;
@@ -68,23 +88,28 @@ public abstract class Serializable<T> where T : Serializable<T>
             throw new Exception($"Latest version not defined.");
         }
 
-        // Deserialize, and upgrade if necessary.
+        // Deserialize, upgrade if necessary, initialize if necessary.
         T t = JsonUtility.FromJson(json, subclassType) as T;
         while (t.version != latestVersion)
         {
             t = t.Upgrade();
         }
+        t.InitAfterDeserialize();
         return t;
+#else
+        return null;
+#endif
     }
 
     public T Clone()
     {
-        return Deserialize(Serialize());
+        return Deserialize(Serialize(optimizeForSaving: false));
     }
 
     public void SaveToFile(string path)
     {
-        System.IO.File.WriteAllText(path, Serialize());
+        System.IO.File.WriteAllText(path, Serialize(
+            optimizeForSaving: true));
     }
 
     public static T LoadFromFile(string path)
@@ -93,7 +118,12 @@ public abstract class Serializable<T> where T : Serializable<T>
         return Deserialize(fileContent);
     }
 
-    protected abstract T Upgrade();
+    protected virtual T Upgrade()
+    {
+        throw new NotImplementedException();
+    }
+    protected virtual void PrepareToSerialize() { }
+    protected virtual void InitAfterDeserialize() { }
 }
 
 [Serializable]
@@ -102,13 +132,7 @@ public abstract class Serializable<T> where T : Serializable<T>
 [FormatVersion(SerializableDemoV2.kVersion,
     typeof(SerializableDemoV2), isLatest: true)]
 public class SerializableDemoBase :
-    Serializable<SerializableDemoBase>
-{
-    protected override SerializableDemoBase Upgrade()
-    {
-        throw new NotImplementedException();
-    }
-}
+    Serializable<SerializableDemoBase> {}
 
 [Serializable]
 public class SerializableDemoV1 : SerializableDemoBase
@@ -116,15 +140,18 @@ public class SerializableDemoV1 : SerializableDemoBase
     public const string kVersion = "1";
     public string v1field;
 
-    public SerializableDemoV1(string field)
+    public SerializableDemoV1()
     {
+        Debug.Log("V1 constructor called");
         version = kVersion;
-        v1field = field;
     }
 
     protected override SerializableDemoBase Upgrade()
     {
-        return new SerializableDemoV2(v1field);
+        return new SerializableDemoV2()
+        {
+            v2field = v1field
+        };
     }
 }
 
@@ -134,14 +161,9 @@ public class SerializableDemoV2 : SerializableDemoBase
     public const string kVersion = "2";
     public string v2field;
 
-    public SerializableDemoV2(string field)
+    public SerializableDemoV2()
     {
+        Debug.Log("V2 constructor called");
         version = kVersion;
-        v2field = field;
-    }
-
-    protected override SerializableDemoBase Upgrade()
-    {
-        throw new NotImplementedException();
     }
 }
