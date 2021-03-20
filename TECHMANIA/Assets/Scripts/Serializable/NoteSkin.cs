@@ -11,12 +11,25 @@ public class SpriteSheet
     public int columns;
     public int firstIndex;
     public int lastIndex;
+
+    public SpriteSheet()
+    {
+        rows = 1;
+        columns = 1;
+        firstIndex = 0;
+        lastIndex = 0;
+    }
 }
 
 [Serializable]
-public class SpriteSheetWithSize : SpriteSheet
+public class SpriteSheetWithScale : SpriteSheet
 {
     public float scale;  // Relative to 1x lane height
+
+    public SpriteSheetWithScale() : base()
+    {
+        scale = 1f;
+    }
 }
 
 [Serializable]
@@ -29,26 +42,26 @@ public class NoteSkin : NoteSkinBase
 
     public string name;
 
-    public SpriteSheetWithSize basic;
+    public SpriteSheetWithScale basic;
 
-    public SpriteSheetWithSize chainHead;
-    public SpriteSheetWithSize chainNode;
-    public SpriteSheetWithSize chainPath;
+    public SpriteSheetWithScale chainHead;
+    public SpriteSheetWithScale chainNode;
+    public SpriteSheetWithScale chainPath;
 
-    public SpriteSheetWithSize holdHead;
-    public SpriteSheetWithSize holdTrail;
-    public SpriteSheetWithSize holdTrailEnd;
-    public SpriteSheetWithSize holdOngoingTrail;
-    public SpriteSheetWithSize holdOngoingTrailEnd;
+    public SpriteSheetWithScale holdHead;
+    public SpriteSheetWithScale holdTrail;
+    public SpriteSheetWithScale holdTrailEnd;
+    public SpriteSheetWithScale holdOngoingTrail;
+    public SpriteSheetWithScale holdOngoingTrailEnd;
 
-    public SpriteSheetWithSize dragHead;
-    public SpriteSheetWithSize dragCurve;
+    public SpriteSheetWithScale dragHead;
+    public SpriteSheetWithScale dragCurve;
 
-    public SpriteSheetWithSize repeatHead;
-    public SpriteSheetWithSize repeat;
-    public SpriteSheetWithSize repeatHoldTrail;
-    public SpriteSheetWithSize repeatHoldTrailEnd;
-    public SpriteSheetWithSize repeatPath;
+    public SpriteSheetWithScale repeatHead;
+    public SpriteSheetWithScale repeat;
+    public SpriteSheetWithScale repeatHoldTrail;
+    public SpriteSheetWithScale repeatHoldTrailEnd;
+    public SpriteSheetWithScale repeatPath;
 
     public NoteSkin()
     {
