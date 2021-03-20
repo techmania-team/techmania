@@ -16,17 +16,8 @@ public class SelectTrackPanel : MonoBehaviour
     public SelectPatternDialog selectPatternDialog;
     public MessageDialog messageDialog;
 
-    protected class TrackInFolder
-    {
-        public string folder;
-        public Track track;
-    }
-    protected class ErrorInFolder
-    {
-        public string trackFile;
-        public string message;
-    }
-    protected Dictionary<GameObject, TrackInFolder> cardToTrack;
+    protected Dictionary<GameObject, GlobalResource.TrackInFolder> 
+        cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
     private void OnEnable()
@@ -47,8 +38,10 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Build and sort the list of all tracks.
-        List<TrackInFolder> allTracks = new List<TrackInFolder>();
-        List<ErrorInFolder> allErrors = new List<ErrorInFolder>();
+        GlobalResource.allTracks =
+            new List<GlobalResource.TrackInFolder>();
+        GlobalResource.allTracksWithError =
+            new List<GlobalResource.ErrorInTrackFolder>();
         foreach (string dir in Directory.EnumerateDirectories(
             Paths.GetTrackFolder()))
         {
@@ -68,7 +61,8 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception e)
             {
-                allErrors.Add(new ErrorInFolder()
+                GlobalResource.allTracksWithError.Add(
+                    new GlobalResource.ErrorInTrackFolder()
                 {
                     trackFile = possibleTrackFile,
                     message = e.Message
@@ -76,24 +70,29 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            allTracks.Add(new TrackInFolder()
+            GlobalResource.allTracks.Add(
+                new GlobalResource.TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
 
-        allTracks.Sort((TrackInFolder t1, TrackInFolder t2) =>
+        GlobalResource.allTracks.Sort((
+            GlobalResource.TrackInFolder t1,
+            GlobalResource.TrackInFolder t2) =>
         {
             return string.Compare(t1.track.trackMetadata.title,
                 t2.track.trackMetadata.title);
         });
 
         // Instantiate track cards.
-        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
+        cardToTrack = new Dictionary<
+            GameObject, GlobalResource.TrackInFolder>();
         cardToError = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
-        foreach (TrackInFolder trackInFolder in allTracks)
+        foreach (GlobalResource.TrackInFolder trackInFolder in 
+            GlobalResource.allTracks)
         {
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
@@ -119,7 +118,8 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Instantiate error cards.
-        foreach (ErrorInFolder error in allErrors)
+        foreach (GlobalResource.ErrorInTrackFolder error in 
+            GlobalResource.allTracksWithError)
         {
             GameObject card = null;
             string message = $"An error occurred when loading {error.trackFile}:\n\n{error.message}";
@@ -174,7 +174,8 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected virtual void OnClickCard(GameObject o)
     {
-        GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, Paths.kTrackFilename);
+        GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
+            Paths.kTrackFilename);
         GameSetup.track = cardToTrack[o].track;
         selectPatternDialog.Show();
     }

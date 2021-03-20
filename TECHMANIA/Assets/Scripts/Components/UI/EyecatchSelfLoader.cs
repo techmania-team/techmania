@@ -31,16 +31,16 @@ public class EyecatchSelfLoader : MonoBehaviour
         }
     }
 
-    private void OnLoadImageComplete(Sprite sprite, string error)
+    private void OnLoadImageComplete(Texture2D texture, string error)
     {
         if (!gameObject.activeInHierarchy) return;
-        if (sprite == null)
+        if (texture == null)
         {
             NoImage();
             return;
         }
 
-        image.sprite = sprite;
+        image.sprite = ResourceLoader.CreateSpriteFromTexture(texture);
         image.gameObject.SetActive(true);
         progressIndicator.SetActive(false);
         noImageIndicator.SetActive(false);

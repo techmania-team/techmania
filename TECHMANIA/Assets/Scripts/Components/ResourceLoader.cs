@@ -44,10 +44,6 @@ public class ResourceLoader : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-    }
-
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
         UnityAction<string> cacheAudioCompleteCallback)
@@ -212,15 +208,22 @@ public class ResourceLoader : MonoBehaviour
 
     #region Image
     public static void LoadImage(string fullPath,
-        UnityAction<Sprite, string> loadImageCompleteCallback)
+        UnityAction<Texture2D, string> loadImageCompleteCallback)
     {
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadImage(
             fullPath, loadImageCompleteCallback));
     }
 
+    public static Sprite CreateSpriteFromTexture(Texture2D texture)
+    {
+        return Sprite.Create(texture,
+            new Rect(0f, 0f, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f));
+    }
+
     private IEnumerator InnerLoadImage(string fullPath,
-        UnityAction<Sprite, string> loadImageCompleteCallback)
+        UnityAction<Texture2D, string> loadImageCompleteCallback)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(
             Paths.FullPathToUri(fullPath), nonReadable: true);
@@ -248,12 +251,7 @@ public class ResourceLoader : MonoBehaviour
             yield break;
         }
 
-        int width = t2d.width;
-        int height = t2d.height;
-        Sprite sprite = Sprite.Create(t2d,
-            new Rect(0f, 0f, width, height),
-            new Vector2(0.5f, 0.5f));
-        loadImageCompleteCallback.Invoke(sprite, null);
+        loadImageCompleteCallback.Invoke(t2d, null);
     }
     #endregion
 }

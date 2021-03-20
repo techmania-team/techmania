@@ -9,5 +9,6 @@ public class Startup : MonoBehaviour
     {
         Input.simulateMouseWithTouches = false;
         OptionsPanel.ApplyOptionsOnStartUp();
+        GetComponent<GlobalResourceLoader>().StartLoading();
     }
 }

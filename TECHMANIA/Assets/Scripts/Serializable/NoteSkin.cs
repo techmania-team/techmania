@@ -112,4 +112,32 @@ public class NoteSkin : NoteSkinBase
     {
         version = kVersion;
     }
+
+    public List<SpriteSheetForNote> GetReferenceToAllSpriteSheets()
+    {
+        List<SpriteSheetForNote> list = new List<SpriteSheetForNote>();
+
+        list.Add(basic);
+
+        list.Add(chainHead);
+        list.Add(chainNode);
+        list.Add(chainPath);
+
+        list.Add(holdHead);
+        list.Add(holdTrail);
+        list.Add(holdTrailEnd);
+        list.Add(holdOngoingTrail);
+        list.Add(holdOngoingTrailEnd);
+
+        list.Add(dragHead);
+        list.Add(dragCurve);
+
+        list.Add(repeatHead);
+        list.Add(repeat);
+        list.Add(repeatHoldTrail);
+        list.Add(repeatHoldTrailEnd);
+        list.Add(repeatPath);
+
+        return list;
+    }
 }

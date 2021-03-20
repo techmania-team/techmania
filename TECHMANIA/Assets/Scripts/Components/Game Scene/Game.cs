@@ -291,7 +291,7 @@ public class Game : MonoBehaviour
         BaseTime = initialTime;
     }
 
-    private void OnImageLoadComplete(Sprite sprite, string error)
+    private void OnImageLoadComplete(Texture2D texture, string error)
     {
         if (error != null)
         {
@@ -300,11 +300,12 @@ public class Game : MonoBehaviour
             return;
         }
 
-        backgroundImage.sprite = sprite;
+        backgroundImage.sprite =
+            ResourceLoader.CreateSpriteFromTexture(texture);
         backgroundImage.color = Color.white;
         backgroundImage.GetComponent<AspectRatioFitter>()
             .aspectRatio =
-            (float)sprite.rect.width / sprite.rect.height;
+            texture.width / texture.height;
         backgroundImageLoaded = true;
     }
 
