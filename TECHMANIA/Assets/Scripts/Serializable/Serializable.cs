@@ -7,6 +7,14 @@ using UnityEngine;
 // skins, etc.) should be defined as a subclass to Serializable<T> and
 // take advantage of its methods, so it can be ready for future format
 // updates. Refer to SerializableDemoBase for an example.
+//
+// Each base class can implement:
+// - (optional) PrepareToSerialize
+// - (optional) InitAfterDeserialize
+//
+// Each version class should implement:
+// - Parameter-less constructor that at least sets version
+// - Upgrade, if not latest version
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class FormatVersionAttribute : Attribute
