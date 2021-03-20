@@ -27,31 +27,15 @@ public class TestScript : MonoBehaviour
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(
             filename, nonReadable: true);
         yield return request.SendWebRequest();
-        Texture2D texture = DownloadHandlerTexture.GetContent(request);
+        noteSkin.basic.texture = DownloadHandlerTexture.GetContent(request);
         Debug.Log($"Loaded: {filename}");
-
-        List<Sprite> sprites = new List<Sprite>();
-        int spriteWidth = texture.width / noteSkin.basic.columns;
-        int spriteHeight = texture.height / noteSkin.basic.rows;
-        for (int i = noteSkin.basic.firstIndex;
-            i <= noteSkin.basic.lastIndex; i++)
-        {
-            int row = i / noteSkin.basic.columns;
-            // (0, 0) is bottom left, so we inverse y here.
-            int inverseRow = noteSkin.basic.rows - 1 - row;
-            int column = i % noteSkin.basic.columns;
-            Sprite s = Sprite.Create(texture,
-                new Rect(column * spriteWidth,
-                inverseRow * spriteHeight,
-                spriteWidth, spriteHeight),
-                new Vector2(0.5f, 0.5f));
-            sprites.Add(s);
-        }
+        noteSkin.basic.GenerateSprites();
 
         int frameNumber = 0;
         while (true)
         {
-            image.sprite = sprites[frameNumber % sprites.Count];
+            image.sprite = noteSkin.basic.sprites[
+                frameNumber % noteSkin.basic.sprites.Count];
             frameNumber++;
 
             yield return new WaitForSeconds(0.03f);

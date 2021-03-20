@@ -8,7 +8,11 @@ using System;
 
 public static class Paths
 {
-    public static string GetTrackFolder()
+    public const string kTrackFilename = "track.tech";
+    public const string kSkinFilename = "skin.json";
+
+    #region Things in working directory
+    private static string GetWorkingDirectory()
     {
 #if UNITY_ANDROID || UNITY_IOS
         // Android
@@ -17,22 +21,43 @@ public static class Paths
         // Does not end with separator
         string current = Directory.GetCurrentDirectory();
 #endif
-        
-        // If there's a "Builds" folder, assume we are running from
-        // Unity editor.
-        if (Directory.Exists(Path.Combine(current, "Builds")))
-        {
-            current = Path.Combine(current, "Builds");
-        }
 
-        string tracks = Path.Combine(current, "Tracks");
-        if (!Directory.Exists(tracks))
-        {
-            Directory.CreateDirectory(tracks);
-        }
+#if UNITY_EDITOR
+        current = Path.Combine(current, "Builds");
+#endif
+
+        return current;
+    }
+
+    public static string GetTrackFolder()
+    {
+        string tracks = Path.Combine(GetWorkingDirectory(), "Tracks");
+        Directory.CreateDirectory(tracks);  // No error if already exists
         return tracks;
     }
 
+    public static string GetSkinFolder()
+    {
+        return Path.Combine(GetWorkingDirectory(), "Skins");
+    }
+
+    public static string GetNoteSkinFolder(string name)
+    {
+        return Path.Combine(GetSkinFolder(), "Note", name);
+    }
+
+    public static string GetVfxSkinFolder(string name)
+    {
+        return Path.Combine(GetSkinFolder(), "VFX", name);
+    }
+
+    public static string GetComboSkinFolder(string name)
+    {
+        return Path.Combine(GetSkinFolder(), "Combo", name);
+    }
+    #endregion
+
+    #region Things in document folder
     private static string GetDataFolder()
     {
 
@@ -47,10 +72,7 @@ public static class Paths
             System.Environment.SpecialFolder.MyDocuments),
             "TECHMANIA");
 #endif
-        if (!Directory.Exists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
+        Directory.CreateDirectory(folder);
         return folder;
     }
 
@@ -63,6 +85,7 @@ public static class Paths
     {
         return Path.Combine(GetDataFolder(), "ruleset.json");
     }
+    #endregion
 
     private static List<string> GetAllMatchingFiles(string folder, 
         List<string> patterns)
@@ -127,6 +150,4 @@ public static class Paths
             .Replace("?", "%3f")
             .Replace("@", "%40");
     }
-
-    public const string kTrackFilename = "track.tech";
 }

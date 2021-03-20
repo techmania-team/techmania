@@ -252,7 +252,7 @@ public class ResourceLoader : MonoBehaviour
         int height = t2d.height;
         Sprite sprite = Sprite.Create(t2d,
             new Rect(0f, 0f, width, height),
-            new Vector2(width * 0.5f, height * 0.5f));
+            new Vector2(0.5f, 0.5f));
         loadImageCompleteCallback.Invoke(sprite, null);
     }
     #endregion

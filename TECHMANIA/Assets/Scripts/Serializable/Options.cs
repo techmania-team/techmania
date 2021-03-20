@@ -36,6 +36,12 @@ public class Options : OptionsBase
     public float sfxVolume;
     public int audioBufferSize;
 
+    // Appearance
+
+    public string noteSkin;
+    public string vfxSkin;
+    public string comboSkin;
+
     // Timing
 
     public int touchOffsetMs;
@@ -66,6 +72,10 @@ public class Options : OptionsBase
         // and calling AudioSettings.GetConfiguration() at that time
         // causes an exception.
         audioBufferSize = 512;
+
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
 
         touchOffsetMs = 0;
         touchLatencyMs = 0;

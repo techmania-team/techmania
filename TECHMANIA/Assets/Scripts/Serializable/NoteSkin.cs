@@ -12,6 +12,11 @@ public class SpriteSheet
     public int firstIndex;
     public int lastIndex;
 
+    [NonSerialized]  // Loaded at runtime
+    public Texture2D texture;
+    [NonSerialized]
+    public List<Sprite> sprites;
+
     public SpriteSheet()
     {
         rows = 1;
@@ -19,16 +24,56 @@ public class SpriteSheet
         firstIndex = 0;
         lastIndex = 0;
     }
+
+    // Call after loading texture.
+    public void GenerateSprites()
+    {
+        if (texture == null)
+        {
+            throw new Exception("Texture not yet loaded.");
+        }
+        sprites = new List<Sprite>();
+        int spriteWidth = texture.width / columns;
+        int spriteHeight = texture.height / rows;
+        for (int i = firstIndex; i <= lastIndex; i++)
+        {
+            int row = i / columns;
+            // Unity thinks (0, 0) is bottom left but we think
+            // (0, 0) is top left. So we inverse y here.
+            int inverseRow = rows - 1 - row;
+            int column = i % columns;
+            Sprite s = Sprite.Create(texture,
+                new Rect(column * spriteWidth,
+                    inverseRow * spriteHeight,
+                    spriteWidth,
+                    spriteHeight),
+                new Vector2(0.5f, 0.5f));
+            sprites.Add(s);
+        }
+    }
 }
 
 [Serializable]
-public class SpriteSheetWithScale : SpriteSheet
+public class SpriteSheetForNote : SpriteSheet
 {
     public float scale;  // Relative to 1x lane height
 
-    public SpriteSheetWithScale() : base()
+    public SpriteSheetForNote() : base()
     {
         scale = 1f;
+    }
+}
+
+[Serializable]
+public class SpriteSheetForVfx : SpriteSheet
+{
+    public float scale;  // Relative to 1x lane height
+    public float speed;  // Relative to 60 fps
+
+    public SpriteSheetForVfx() : base()
+    {
+        scale = 1f;
+        speed = 1f;
     }
 }
 
@@ -40,28 +85,28 @@ public class NoteSkin : NoteSkinBase
 {
     public const string kVersion = "1";
 
-    public string name;
+    // Note skin's name is the folder's name.
 
-    public SpriteSheetWithScale basic;
+    public SpriteSheetForNote basic;
 
-    public SpriteSheetWithScale chainHead;
-    public SpriteSheetWithScale chainNode;
-    public SpriteSheetWithScale chainPath;
+    public SpriteSheetForNote chainHead;
+    public SpriteSheetForNote chainNode;
+    public SpriteSheetForNote chainPath;
 
-    public SpriteSheetWithScale holdHead;
-    public SpriteSheetWithScale holdTrail;
-    public SpriteSheetWithScale holdTrailEnd;
-    public SpriteSheetWithScale holdOngoingTrail;
-    public SpriteSheetWithScale holdOngoingTrailEnd;
+    public SpriteSheetForNote holdHead;
+    public SpriteSheetForNote holdTrail;
+    public SpriteSheetForNote holdTrailEnd;
+    public SpriteSheetForNote holdOngoingTrail;
+    public SpriteSheetForNote holdOngoingTrailEnd;
 
-    public SpriteSheetWithScale dragHead;
-    public SpriteSheetWithScale dragCurve;
+    public SpriteSheetForNote dragHead;
+    public SpriteSheetForNote dragCurve;
 
-    public SpriteSheetWithScale repeatHead;
-    public SpriteSheetWithScale repeat;
-    public SpriteSheetWithScale repeatHoldTrail;
-    public SpriteSheetWithScale repeatHoldTrailEnd;
-    public SpriteSheetWithScale repeatPath;
+    public SpriteSheetForNote repeatHead;
+    public SpriteSheetForNote repeat;
+    public SpriteSheetForNote repeatHoldTrail;
+    public SpriteSheetForNote repeatHoldTrailEnd;
+    public SpriteSheetForNote repeatPath;
 
     public NoteSkin()
     {
