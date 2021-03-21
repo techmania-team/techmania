@@ -28,7 +28,11 @@ public class GlobalResourceLoader : MonoBehaviour
 
         // TODO: load NoteSkin from disk
         // TODO: load each sprite sheet
-        yield return null;
+        for (int i = 0; i < 10; i++)
+        {
+            statusText = $"Simulating lengthy load... {i}";
+            yield return new WaitForSeconds(1f);
+        }
 
         state = State.Complete;
     }

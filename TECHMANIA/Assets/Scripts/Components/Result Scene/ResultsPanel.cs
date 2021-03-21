@@ -121,7 +121,7 @@ public class ResultsPanel : MonoBehaviour
 
     public void OnContinueButtonClick()
     {
-        WelcomeMat.skipToTrackSelect = true;
+        MainMenuPanel.skipToTrackSelect = true;
         Curtain.DrawCurtainThenGoToScene("Main Menu");
     }
 

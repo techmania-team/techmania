@@ -8,66 +8,21 @@ using UnityEngine.UI;
 public class WelcomeMat : MonoBehaviour
 {
     public CanvasGroup instructionTextCanvasGroup;
-    public TextMeshProUGUI loadingText;
-    public GlobalResourceLoader globalResourceLoader;
-    public GameObject mainMenuButtons;
-    public GameObject selectTrackPanel;
-    public Selectable firstSelectable;
-    public MessageDialog messageDialog;
-
-    public static bool skipToTrackSelect;
+    public MainMenuPanel mainMenuPanel;
 
     private bool receivedInput;
-    private bool handledResourceLoaderTerminalState;
-
-    static WelcomeMat()
-    {
-        skipToTrackSelect = false;
-    }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (skipToTrackSelect)
-        {
-            skipToTrackSelect = false;
-
-            // Immediately show menu and go to select track panel.
-            mainMenuButtons.SetActive(true);
-            gameObject.SetActive(false);
-            GetComponentInParent<Panel>().defaultSelectable = firstSelectable;
-            GetComponentInParent<Panel>().gameObject.SetActive(false);
-
-            selectTrackPanel.SetActive(true);
-        }
-        else
-        {
-            receivedInput = false;
-            loadingText.gameObject.SetActive(true);
-            handledResourceLoaderTerminalState = false;
-            StartCoroutine(SlowBlink());
-        }
+        receivedInput = false;
+        StartCoroutine(SlowBlink());
     }
 
     // Update is called once per frame
     void Update()
     {
-        loadingText.text = globalResourceLoader.statusText;
-
-        if (!handledResourceLoaderTerminalState &&
-            globalResourceLoader.state != 
-                GlobalResourceLoader.State.Loading)
-        {
-            handledResourceLoaderTerminalState = true;
-            loadingText.gameObject.SetActive(false);
-            if (globalResourceLoader.state ==
-                GlobalResourceLoader.State.Error)
-            {
-                messageDialog.Show(globalResourceLoader.error);
-            }
-        }
-
-        if (!receivedInput && !messageDialog.gameObject.activeSelf &&
+        if (!receivedInput &&
             (Input.anyKeyDown || Input.touchCount > 0))
         {
             receivedInput = true;
@@ -125,14 +80,6 @@ public class WelcomeMat : MonoBehaviour
         }
         yield return new WaitForSeconds(0.2f);
 
-        while (globalResourceLoader.state == 
-            GlobalResourceLoader.State.Loading)
-        {
-            yield return null;
-        }
-
-        mainMenuButtons.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(firstSelectable.gameObject);
-        gameObject.SetActive(false);
+        mainMenuPanel.ShowLoadingText();
     }
 }

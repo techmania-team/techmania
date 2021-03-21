@@ -27,7 +27,7 @@ public class PauseDialog : MonoBehaviour
     public void OnQuitButtonClick()
     {
         closeCallback = null;
-        WelcomeMat.skipToTrackSelect = true;
+        MainMenuPanel.skipToTrackSelect = true;
         Curtain.DrawCurtainThenGoToScene("Main Menu");
     }
 }

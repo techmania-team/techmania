@@ -303,7 +303,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 673040182}
+    m_TransformParent: {fileID: 1249076469}
     m_Modifications:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -318,7 +318,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -393,7 +393,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -300
+      value: -200
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -432,12 +432,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26f88fd551da9c247a8f0127571e99ac, type: 3}
---- !u!224 &45356179 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
-    type: 3}
-  m_PrefabInstance: {fileID: 45356178}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &46808314
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5401,7 +5395,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 535814989}
-  - {fileID: 45356179}
   m_Father: {fileID: 1249076469}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5423,12 +5416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructionTextCanvasGroup: {fileID: 1231431114}
-  loadingText: {fileID: 53193126}
-  globalResourceLoader: {fileID: 1740596122}
-  mainMenuButtons: {fileID: 1852209514}
-  selectTrackPanel: {fileID: 906785429}
-  firstSelectable: {fileID: 1613146148}
-  messageDialog: {fileID: 8369197524032551023}
+  mainMenuPanel: {fileID: 1249076471}
 --- !u!114 &700876310 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
@@ -10201,6 +10189,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aebe15da82655341bcd05dc848ac40d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectTrackPanel: {fileID: 906785429}
+  welcomeMat: {fileID: 673040181}
+  loadingText: {fileID: 53193126}
+  globalResourceLoader: {fileID: 1740596122}
+  menuButtons: {fileID: 1852209514}
+  firstMenuButton: {fileID: 1613146142}
+  messageDialog: {fileID: 8369197524032551023}
 --- !u!114 &1249076472 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 397205365400588434, guid: 7c56afc9b10373e4486c4490701fa985,
@@ -13313,18 +13308,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 906785431}
   targetAppearsFrom: 1
---- !u!114 &1613146148 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1308948241}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1613146142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1627659313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15106,7 +15089,7 @@ RectTransform:
   - {fileID: 363675628}
   - {fileID: 152036780}
   m_Father: {fileID: 1249076469}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -17235,7 +17218,7 @@ PrefabInstance:
     - target: {fileID: 1895532212014169647, guid: 5af34b34720ee3f45bb786bad4c277bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1895532212014169647, guid: 5af34b34720ee3f45bb786bad4c277bd,
         type: 3}

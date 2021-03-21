@@ -192,7 +192,7 @@ public class Game : MonoBehaviour
     {
         messageDialog.Show(message, closeCallback: () =>
         {
-            WelcomeMat.skipToTrackSelect = true;
+            MainMenuPanel.skipToTrackSelect = true;
             Curtain.DrawCurtainThenGoToScene("Main Menu");
         });
     }
