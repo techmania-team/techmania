@@ -251,6 +251,7 @@ public class ResourceLoader : MonoBehaviour
             yield break;
         }
 
+        Debug.Log("Loaded: " + fullPath);
         loadImageCompleteCallback.Invoke(t2d, null);
     }
     #endregion

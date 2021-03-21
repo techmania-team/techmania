@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -26,14 +28,52 @@ public class GlobalResourceLoader : MonoBehaviour
         error = null;
         statusText = "";
 
-        // TODO: load NoteSkin from disk
-        // TODO: load each sprite sheet
-        for (int i = 0; i < 10; i++)
+        string noteSkinFolder = Paths.GetNoteSkinFolder(
+            Options.instance.noteSkin);
+        string noteSkinFilename = Path.Combine(
+            noteSkinFolder, Paths.kSkinFilename);
+        try
         {
-            statusText = $"Simulating lengthy load... {i}";
-            yield return new WaitForSeconds(1f);
+            GlobalResource.noteSkin = NoteSkin.LoadFromFile(
+                noteSkinFilename) as NoteSkin;
+        }
+        catch (Exception ex)
+        {
+            state = State.Error;
+            error = $"An error occurred when loading note skin:\n\n{ex.Message}";
+            yield break;
         }
 
+        List<SpriteSheetForNote> spriteSheets = GlobalResource.noteSkin
+            .GetReferenceToAllSpriteSheets();
+        for (int i = 0; i < spriteSheets.Count; i++)
+        {
+            statusText = $"Loading note skin... ({i + 1}/{spriteSheets.Count})";
+
+            string filename = Path.Combine(noteSkinFolder,
+                spriteSheets[i].filename);
+            bool loaded = false;
+            ResourceLoader.LoadImage(filename,
+                (texture, error) =>
+                {
+                    loaded = true;
+                    if (error != null)
+                    {
+                        state = State.Error;
+                        this.error = error;
+                    }
+                    else
+                    {
+                        spriteSheets[i].texture = texture;
+                    }
+                });
+            yield return new WaitUntil(() => loaded);
+
+            if (state == State.Error) yield break;
+            spriteSheets[i].GenerateSprites();
+        }
+
+        yield return null;
         state = State.Complete;
     }
 }

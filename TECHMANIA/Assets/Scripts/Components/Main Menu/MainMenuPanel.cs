@@ -56,7 +56,6 @@ public class MainMenuPanel : MonoBehaviour
 
     public void ShowWelcomeMat()
     {
-        Debug.Log("ShowWelcomeMat");
         welcomeMat.SetActive(true);
         loadingText.gameObject.SetActive(false);
         menuButtons.SetActive(false);
@@ -66,7 +65,13 @@ public class MainMenuPanel : MonoBehaviour
 
     public void ShowLoadingText()
     {
-        Debug.Log("ShowLoadingText");
+        if (globalResourceLoader.state == 
+            GlobalResourceLoader.State.Complete)
+        {
+            ShowMenuButtons();
+            return;
+        }
+
         welcomeMat.SetActive(false);
         loadingText.gameObject.SetActive(true);
         menuButtons.SetActive(false);
@@ -77,7 +82,6 @@ public class MainMenuPanel : MonoBehaviour
 
     public void ShowMenuButtons()
     {
-        Debug.Log("ShowMenuButtons");
         welcomeMat.SetActive(false);
         loadingText.gameObject.SetActive(false);
         menuButtons.SetActive(true);
