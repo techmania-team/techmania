@@ -73,6 +73,8 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
+        BuildTrackList();
+
         EditorContext.Reset();
         EditorContext.trackPath = filename;
         EditorContext.track = track;

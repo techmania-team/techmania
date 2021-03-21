@@ -8,6 +8,21 @@ using UnityEngine.UI;
 
 public class SelectTrackPanel : MonoBehaviour
 {
+    protected class TrackInFolder
+    {
+        public string folder;
+        public Track track;
+    }
+    protected class ErrorInTrack
+    {
+        public string trackFile;
+        public string message;
+    }
+    // Cached
+    protected static List<TrackInFolder> allTracks;
+    // Cached
+    protected static List<ErrorInTrack> allTracksWithError;
+
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
@@ -16,8 +31,7 @@ public class SelectTrackPanel : MonoBehaviour
     public SelectPatternDialog selectPatternDialog;
     public MessageDialog messageDialog;
 
-    protected Dictionary<GameObject, GlobalResource.TrackInFolder> 
-        cardToTrack;
+    protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
     private void OnEnable()
@@ -25,23 +39,10 @@ public class SelectTrackPanel : MonoBehaviour
         Refresh();
     }
 
-    protected void Refresh()
+    protected void BuildTrackList()
     {
-        // Remove all objects from grid, except for templates.
-        for (int i = 0; i < trackGrid.transform.childCount; i++)
-        {
-            GameObject o = trackGrid.transform.GetChild(i).gameObject;
-            if (o == trackCardTemplate) continue;
-            if (o == errorCardTemplate) continue;
-            if (o == newTrackCard) continue;
-            Destroy(o);
-        }
-
-        // Build and sort the list of all tracks.
-        GlobalResource.allTracks =
-            new List<GlobalResource.TrackInFolder>();
-        GlobalResource.allTracksWithError =
-            new List<GlobalResource.ErrorInTrackFolder>();
+        allTracks = new List<TrackInFolder>();
+        allTracksWithError = new List<ErrorInTrack>();
         foreach (string dir in Directory.EnumerateDirectories(
             Paths.GetTrackFolder()))
         {
@@ -61,8 +62,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception e)
             {
-                GlobalResource.allTracksWithError.Add(
-                    new GlobalResource.ErrorInTrackFolder()
+                allTracksWithError.Add(new ErrorInTrack()
                 {
                     trackFile = possibleTrackFile,
                     message = e.Message
@@ -70,29 +70,44 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            GlobalResource.allTracks.Add(
-                new GlobalResource.TrackInFolder()
+            allTracks.Add(new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
 
-        GlobalResource.allTracks.Sort((
-            GlobalResource.TrackInFolder t1,
-            GlobalResource.TrackInFolder t2) =>
+        allTracks.Sort((TrackInFolder t1, TrackInFolder t2) =>
         {
             return string.Compare(t1.track.trackMetadata.title,
                 t2.track.trackMetadata.title);
         });
+    }
+
+    protected void Refresh()
+    {
+        // Remove all objects from grid, except for templates.
+        for (int i = 0; i < trackGrid.transform.childCount; i++)
+        {
+            GameObject o = trackGrid.transform.GetChild(i).gameObject;
+            if (o == trackCardTemplate) continue;
+            if (o == errorCardTemplate) continue;
+            if (o == newTrackCard) continue;
+            Destroy(o);
+        }
+
+        if (allTracks == null || allTracksWithError == null)
+        {
+            BuildTrackList();
+        }
 
         // Instantiate track cards.
         cardToTrack = new Dictionary<
-            GameObject, GlobalResource.TrackInFolder>();
+            GameObject, TrackInFolder>();
         cardToError = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
-        foreach (GlobalResource.TrackInFolder trackInFolder in 
-            GlobalResource.allTracks)
+        foreach (TrackInFolder trackInFolder in 
+            allTracks)
         {
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
@@ -118,8 +133,8 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Instantiate error cards.
-        foreach (GlobalResource.ErrorInTrackFolder error in 
-            GlobalResource.allTracksWithError)
+        foreach (ErrorInTrack error in 
+            allTracksWithError)
         {
             GameObject card = null;
             string message = $"An error occurred when loading {error.trackFile}:\n\n{error.message}";
@@ -170,6 +185,12 @@ public class SelectTrackPanel : MonoBehaviour
     protected virtual bool ShowNewTrackCard()
     {
         return false;
+    }
+
+    public void OnRefreshButtonClick()
+    {
+        BuildTrackList();
+        Refresh();
     }
 
     protected virtual void OnClickCard(GameObject o)
