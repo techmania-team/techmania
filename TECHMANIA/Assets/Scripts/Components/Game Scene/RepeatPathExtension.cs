@@ -28,6 +28,15 @@ public class RepeatPathExtension : MonoBehaviour
             extension.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
         }
+
+        InitializeScale();
+    }
+
+    private void InitializeScale()
+    {
+        extension.localScale = new Vector3(1f,
+            GlobalResource.noteSkin.repeatPath.scale,
+            1f);
     }
 
     public void DrawBeforeRepeatNotes()
@@ -55,5 +64,12 @@ public class RepeatPathExtension : MonoBehaviour
         if (noteRef.state == NoteAppearance.State.Resolved)
             return;
         SetExtensionVisibility(NoteAppearance.Visibility.Visible);
+    }
+
+    public void UpdateSprites()
+    {
+        extension.GetComponent<Image>().sprite =
+            GlobalResource.noteSkin.repeatPath.GetSpriteForFloatBeat(
+                Game.Time);
     }
 }

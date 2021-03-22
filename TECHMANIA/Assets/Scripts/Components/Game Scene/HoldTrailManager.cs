@@ -164,5 +164,47 @@ public class HoldTrailManager : MonoBehaviour
                 durationTrailInitialWidth - width,
                 durationTrail.sizeDelta.y);
         }
+
+        UpdateSprites();
+    }
+
+    public void UpdateSprites()
+    {
+        Sprite durationTrailSprite = null;
+        Sprite durationTrailEndSprite = null;
+        Sprite ongoingTrailSprite = null;
+        Sprite ongoingTrailEndSprite = null;
+        if (noteType == NoteType.Hold)
+        {
+            durationTrailSprite = GlobalResource.noteSkin.holdTrail
+                .GetSpriteForFloatBeat(Game.Time);
+            durationTrailEndSprite = GlobalResource.noteSkin.holdTrailEnd
+                .GetSpriteForFloatBeat(Game.Time);
+            ongoingTrailSprite = GlobalResource.noteSkin.holdOngoingTrail
+                .GetSpriteForFloatBeat(Game.Time);
+            ongoingTrailEndSprite = 
+                GlobalResource.noteSkin.holdOngoingTrailEnd
+                .GetSpriteForFloatBeat(Game.Time);
+        }
+        else
+        {
+            durationTrailSprite = GlobalResource.noteSkin.repeatHoldTrail
+                .GetSpriteForFloatBeat(Game.Time);
+            durationTrailEndSprite = 
+                GlobalResource.noteSkin.repeatHoldTrailEnd
+                .GetSpriteForFloatBeat(Game.Time);
+        }
+
+        durationTrail.GetComponent<Image>().sprite =
+            durationTrailSprite;
+        durationTrailEnd.GetComponent<Image>().sprite =
+            durationTrailEndSprite;
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.GetComponent<Image>().sprite =
+                ongoingTrailSprite;
+            ongoingTrailEnd.GetComponent<Image>().sprite =
+                ongoingTrailEndSprite;
+        }
     }
 }

@@ -336,6 +336,7 @@ public class NoteAppearance : MonoBehaviour,
         {
             UpdateFeverOverlay();
         }
+        UpdateSprites();
         if (state == State.Ongoing)
         {
             if (GetComponent<HoldTrailManager>() != null)
@@ -346,6 +347,14 @@ public class NoteAppearance : MonoBehaviour,
             {
                 UpdateOngoingCurve();
                 PlaceNoteImageAndHitboxOnCurve();
+            }
+            if (repeatPathExtensions != null)
+            {
+                foreach (RepeatPathExtension extension in
+                    repeatPathExtensions)
+                {
+                    extension.UpdateSprites();
+                }
             }
         }
     }
@@ -439,7 +448,47 @@ public class NoteAppearance : MonoBehaviour,
 
     private void UpdateSprites()
     {
-
+        switch (GetNoteType())
+        {
+            case NoteType.Basic:
+                noteImage.sprite = GlobalResource.noteSkin.basic
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.ChainHead:
+                noteImage.sprite = GlobalResource.noteSkin.chainHead
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.ChainNode:
+                noteImage.sprite = GlobalResource.noteSkin.chainNode
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                pathToPreviousNote.GetComponent<Image>().sprite =
+                    GlobalResource.noteSkin.chainPath
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.Drag:
+                noteImage.sprite = GlobalResource.noteSkin.dragHead
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                curve.sprite = GlobalResource.noteSkin.dragCurve
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.Hold:
+                noteImage.sprite = GlobalResource.noteSkin.holdHead
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+                noteImage.sprite = GlobalResource.noteSkin.repeatHead
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                pathToLastRepeatNote.GetComponent<Image>().sprite =
+                    GlobalResource.noteSkin.repeatPath
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                noteImage.sprite = GlobalResource.noteSkin.repeat
+                    .GetSpriteForFloatBeat(Game.FloatBeat);
+                break;
+        }
     }
     #endregion
 
@@ -557,7 +606,7 @@ public class NoteAppearance : MonoBehaviour,
 
         foreach (HoldExtension e in holdExtensions)
         {
-            e.UpdateOngoingTrail();
+            e.UpdateTrails();
         }
     }
 

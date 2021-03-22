@@ -51,6 +51,14 @@ public class SpriteSheet
             sprites.Add(s);
         }
     }
+
+    public Sprite GetSpriteForFloatBeat(float beat)
+    {
+        beat = beat - Mathf.Floor(beat);
+        int index = Mathf.FloorToInt(beat * sprites.Count);
+        index = Mathf.Clamp(index, 0, sprites.Count - 1);
+        return sprites[index];
+    }
 }
 
 [Serializable]
@@ -61,14 +69,6 @@ public class SpriteSheetForNote : SpriteSheet
     public SpriteSheetForNote() : base()
     {
         scale = 1f;
-    }
-    
-    public Sprite GetSpriteForFloatBeat(float beat)
-    {
-        beat = beat - Mathf.Floor(beat);
-        int index = Mathf.FloorToInt(beat * sprites.Count);
-        index = Mathf.Clamp(index, 0, sprites.Count - 1);
-        return sprites[index];
     }
 }
 

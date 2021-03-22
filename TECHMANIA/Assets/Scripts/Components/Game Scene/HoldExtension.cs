@@ -27,7 +27,7 @@ public class HoldExtension : MonoBehaviour
         GetComponent<HoldTrailManager>().SetVisibility(v);
     }
 
-    public void UpdateOngoingTrail()
+    public void UpdateTrails()
     {
         GetComponent<HoldTrailManager>().UpdateTrails();
     }
