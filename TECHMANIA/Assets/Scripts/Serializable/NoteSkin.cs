@@ -106,14 +106,14 @@ public class NoteSkin : NoteSkinBase
 
     public SpriteSheetForNote holdHead;
     public SpriteSheetForNote holdTrail;
-    public SpriteSheetForNote holdTrailEnd;
+    public SpriteSheet holdTrailEnd;
     public SpriteSheetForNote holdOngoingTrail;
-    public SpriteSheetForNote holdOngoingTrailEnd;
+    public SpriteSheet holdOngoingTrailEnd;
 
     public SpriteSheetForNote repeatHead;
     public SpriteSheetForNote repeat;
     public SpriteSheetForNote repeatHoldTrail;
-    public SpriteSheetForNote repeatHoldTrailEnd;
+    public SpriteSheet repeatHoldTrailEnd;
     public SpriteSheetForNote repeatPath;
 
     public NoteSkin()
@@ -121,9 +121,9 @@ public class NoteSkin : NoteSkinBase
         version = kVersion;
     }
 
-    public List<SpriteSheetForNote> GetReferenceToAllSpriteSheets()
+    public List<SpriteSheet> GetReferenceToAllSpriteSheets()
     {
-        List<SpriteSheetForNote> list = new List<SpriteSheetForNote>();
+        List<SpriteSheet> list = new List<SpriteSheet>();
 
         list.Add(basic);
 

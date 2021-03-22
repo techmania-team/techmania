@@ -13,7 +13,6 @@ public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;
     public RectTransform durationTrailEnd;
-    public GameObject durationTrailRightShadow;
     public RectTransform ongoingTrail;
     public RectTransform ongoingTrailEnd;
 
@@ -61,44 +60,63 @@ public class HoldTrailManager : MonoBehaviour
 
     private void InitializeScale()
     {
-        float trailScale = 1f, ongoingTrailScale = 1f;
+        float durationTrailScale = 1f;
+        float ongoingTrailScale = 1f;
+        float durationTrailEndAspectRatio = 1f;
+        float ongoingTrailEndAspectRatio = 1f;
         if (noteType == NoteType.Hold)
         {
-            trailScale = GlobalResource.noteSkin.holdTrail.scale;
+            durationTrailScale = GlobalResource.noteSkin.holdTrail.scale;
+            Rect rect = GlobalResource.noteSkin.holdTrailEnd
+                .sprites[0].rect;
+            durationTrailEndAspectRatio = rect.width / rect.height;
+
             ongoingTrailScale = GlobalResource.noteSkin
                 .holdOngoingTrail.scale;
+            rect = GlobalResource.noteSkin.holdOngoingTrailEnd
+                .sprites[0].rect;
+            ongoingTrailEndAspectRatio = rect.width / rect.height;
+
         }
         else
         {
-            trailScale = GlobalResource.noteSkin.repeatHoldTrail.scale;
+            durationTrailScale = GlobalResource.noteSkin
+                .repeatHoldTrail.scale;
+            Rect rect = GlobalResource.noteSkin.repeatHoldTrailEnd
+                .sprites[0].rect;
+            durationTrailEndAspectRatio = rect.width / rect.height;
         }
 
         durationTrail.localScale = new Vector3(1f,
-            trailScale,
+            durationTrailScale,
             1f);
+        // The trail's scale is applied to the trail end, so
+        // compensate for it here.
+        durationTrailEnd.localScale = new Vector3(
+            durationTrailScale, 1f, 1f);
+        durationTrailEnd.GetComponent<AspectRatioFitter>().aspectRatio =
+            durationTrailEndAspectRatio;
         if (ongoingTrail != null)
         {
             ongoingTrail.localScale = new Vector3(1f,
                 ongoingTrailScale,
                 1f);
+            ongoingTrailEnd.localScale = new Vector3(
+                ongoingTrailScale, 1f, 1f);
+            ongoingTrailEnd.GetComponent<AspectRatioFitter>()
+                .aspectRatio = ongoingTrailEndAspectRatio;
         }
-
-        // TODO: trail end
     }
 
     public void SetVisibility(NoteAppearance.Visibility v)
     {
-        durationTrail.gameObject.SetActive(
-            v != NoteAppearance.Visibility.Hidden);
+        bool active = v != NoteAppearance.Visibility.Hidden;
+        durationTrail.gameObject.SetActive(active);
+        durationTrailEnd.gameObject.SetActive(active);
         if (ongoingTrail != null)
         {
-            ongoingTrail.gameObject.SetActive(
-                v != NoteAppearance.Visibility.Hidden);
-        }
-        if (durationTrailRightShadow != null)
-        {
-            durationTrailRightShadow.SetActive(
-                v != NoteAppearance.Visibility.Hidden);
+            ongoingTrail.gameObject.SetActive(active);
+            ongoingTrailEnd.gameObject.SetActive(active);
         }
 
         Color color = (v == NoteAppearance.Visibility.Transparent) ?

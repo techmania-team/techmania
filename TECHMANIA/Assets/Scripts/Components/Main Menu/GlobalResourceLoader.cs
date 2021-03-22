@@ -44,7 +44,7 @@ public class GlobalResourceLoader : MonoBehaviour
             yield break;
         }
 
-        List<SpriteSheetForNote> spriteSheets = GlobalResource.noteSkin
+        List<SpriteSheet> spriteSheets = GlobalResource.noteSkin
             .GetReferenceToAllSpriteSheets();
         for (int i = 0; i < spriteSheets.Count; i++)
         {
