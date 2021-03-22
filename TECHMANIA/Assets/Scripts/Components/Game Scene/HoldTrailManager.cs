@@ -6,6 +6,9 @@ using UnityEngine.UI;
 // Common routines between NoteAppearance and HoldExtension.
 // This handles the initialization, visibility and
 // updating of duration trails and ongoing trails.
+//
+// Works for both hold notes and repeat hold notes.
+
 public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;
@@ -52,6 +55,35 @@ public class HoldTrailManager : MonoBehaviour
             ongoingTrail.sizeDelta = new Vector2(0f,
                 ongoingTrail.sizeDelta.y);
         }
+
+        InitializeScale();
+    }
+
+    private void InitializeScale()
+    {
+        float trailScale = 1f, ongoingTrailScale = 1f;
+        if (noteType == NoteType.Hold)
+        {
+            trailScale = GlobalResource.noteSkin.holdTrail.scale;
+            ongoingTrailScale = GlobalResource.noteSkin
+                .holdOngoingTrail.scale;
+        }
+        else
+        {
+            trailScale = GlobalResource.noteSkin.repeatHoldTrail.scale;
+        }
+
+        durationTrail.localScale = new Vector3(1f,
+            trailScale,
+            1f);
+        if (ongoingTrail != null)
+        {
+            ongoingTrail.localScale = new Vector3(1f,
+                ongoingTrailScale,
+                1f);
+        }
+
+        // TODO: trail end
     }
 
     public void SetVisibility(NoteAppearance.Visibility v)

@@ -476,6 +476,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             targetPos: pointsOnCurve[1]);
 
         // Draw curve.
+        curvedImage.scale = 1f;
         curvedImage.SetVerticesDirty();
 
         // Draw new anchor receivers. Reuse them if applicable.

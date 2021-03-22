@@ -63,6 +63,7 @@ public class Scan : MonoBehaviour
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
         appearance.SetHidden(hidden);
         appearance.SetScanAndScanlineRef(this, scanline);
+        appearance.InitializeScale();
         noteAppearances.Add(appearance);
 
         switch (n.type)

@@ -127,6 +127,7 @@ public class Game : MonoBehaviour
     public static float Time => BaseTime - offset;
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
+    public static float FloatBeat { get; private set; }
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private int lastScan;
@@ -946,6 +947,7 @@ public class Game : MonoBehaviour
         float oldTime = Time;
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
+        FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
         int newPulse = Mathf.FloorToInt(FloatPulse);
         int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
 

@@ -101,14 +101,14 @@ public class NoteSkin : NoteSkinBase
     public SpriteSheetForNote chainNode;
     public SpriteSheetForNote chainPath;
 
+    public SpriteSheetForNote dragHead;
+    public SpriteSheetForNote dragCurve;
+
     public SpriteSheetForNote holdHead;
     public SpriteSheetForNote holdTrail;
     public SpriteSheetForNote holdTrailEnd;
     public SpriteSheetForNote holdOngoingTrail;
     public SpriteSheetForNote holdOngoingTrailEnd;
-
-    public SpriteSheetForNote dragHead;
-    public SpriteSheetForNote dragCurve;
 
     public SpriteSheetForNote repeatHead;
     public SpriteSheetForNote repeat;
@@ -131,14 +131,14 @@ public class NoteSkin : NoteSkinBase
         list.Add(chainNode);
         list.Add(chainPath);
 
+        list.Add(dragHead);
+        list.Add(dragCurve);
+
         list.Add(holdHead);
         list.Add(holdTrail);
         list.Add(holdTrailEnd);
         list.Add(holdOngoingTrail);
         list.Add(holdOngoingTrailEnd);
-
-        list.Add(dragHead);
-        list.Add(dragCurve);
 
         list.Add(repeatHead);
         list.Add(repeat);

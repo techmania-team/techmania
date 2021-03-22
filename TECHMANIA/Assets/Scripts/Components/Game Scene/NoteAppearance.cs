@@ -376,6 +376,73 @@ public class NoteAppearance : MonoBehaviour,
     }
     #endregion
 
+    #region Note skin
+    public void InitializeScale()
+    {
+        float noteImageScaleX = 1f;
+        float noteImageScaleY = 1f;
+        switch (GetNoteType())
+        {
+            case NoteType.Basic:
+                noteImageScaleX = GlobalResource.noteSkin.basic.scale;
+                noteImageScaleY = GlobalResource.noteSkin.basic.scale;
+                break;
+            case NoteType.ChainHead:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    chainHead.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    chainHead.scale;
+                break;
+            case NoteType.ChainNode:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    chainNode.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    chainNode.scale;
+                pathToPreviousNote.localScale = new Vector3(1f,
+                    GlobalResource.noteSkin.chainPath.scale,
+                    1f);
+                break;
+            case NoteType.Drag:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    dragHead.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    dragHead.scale;
+                curve.scale = GlobalResource.noteSkin.dragCurve.scale;
+                break;
+            case NoteType.Hold:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    holdHead.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    holdHead.scale;
+                break;
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    repeatHead.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    repeatHead.scale;
+                pathToLastRepeatNote.localScale = new Vector3(1f,
+                    GlobalResource.noteSkin.repeatPath.scale,
+                    1f);
+                break;
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                noteImageScaleX = GlobalResource.noteSkin.
+                    repeat.scale;
+                noteImageScaleY = GlobalResource.noteSkin.
+                    repeat.scale;
+                break;
+        }
+        noteImage.transform.localScale = new Vector3(
+            noteImageScaleX, noteImageScaleY, 1f);
+    }
+
+    private void UpdateSprites()
+    {
+
+    }
+    #endregion
+
     public NoteType GetNoteType()
     {
         return GetComponent<NoteObject>().note.type;

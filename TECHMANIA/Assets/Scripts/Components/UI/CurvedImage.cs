@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class CurvedImage : Image
 {
+    public float scale;
+
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         // Debug.Log("OnPopulateMesh called");
@@ -22,9 +24,10 @@ public class CurvedImage : Image
             return;
         }
         float curveWidth = rectTransform.rect.height;
-        float halfCurveWidth = curveWidth * 0.5f;
+        float halfCurveWidth = curveWidth * 0.5f * scale;
 
         // Add 2 points before the curve.
+        // TODO: these 2 points are not needed.
         Vector2 forward = (pointsOnCurve[1] -
             pointsOnCurve[0]).normalized;
         Vector2 left = new Vector2(-forward.y, forward.x);
