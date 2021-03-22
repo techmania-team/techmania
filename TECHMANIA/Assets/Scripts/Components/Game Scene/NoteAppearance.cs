@@ -337,12 +337,14 @@ public class NoteAppearance : MonoBehaviour,
             UpdateFeverOverlay();
         }
         UpdateSprites();
+        if (GetComponent<HoldTrailManager>() != null)
+        {
+            // Do this in all visible states because it updates
+            // sprites.
+            UpdateOngoingTrail();
+        }
         if (state == State.Ongoing)
         {
-            if (GetComponent<HoldTrailManager>() != null)
-            {
-                UpdateOngoingTrail();
-            }
             if (curve != null)
             {
                 UpdateOngoingCurve();
