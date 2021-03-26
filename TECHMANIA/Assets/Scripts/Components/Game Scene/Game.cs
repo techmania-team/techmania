@@ -133,6 +133,11 @@ public class Game : MonoBehaviour
     private int lastScan;
     private Stopwatch feverTimer;
     private float initialTime;
+
+    public static void InjectBaseTime(float time)
+    {
+        BaseTime = time;
+    }
     #endregion
 
     public static event UnityAction<int> ScanChanged;

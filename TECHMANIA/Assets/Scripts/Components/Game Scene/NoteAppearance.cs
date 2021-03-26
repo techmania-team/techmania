@@ -49,8 +49,6 @@ public class NoteAppearance : MonoBehaviour,
     [Header("Repeat")]
     public RectTransform pathToLastRepeatNote;
 
-    private Image feverOverlayImage;
-    private Animator feverOverlayAnimator;
     private bool hidden;
     private Scan scanRef;
     private Scanline scanlineRef;
@@ -129,8 +127,9 @@ public class NoteAppearance : MonoBehaviour,
 
     private void SetFeverOverlayVisibility(Visibility v)
     {
-        if (feverOverlayImage == null) return;
-        feverOverlayImage.enabled = v != Visibility.Hidden;
+        if (feverOverlay == null) return;
+        feverOverlay.GetComponent<Image>().enabled =
+            v != Visibility.Hidden;
     }
 
     private void SetPathToPreviousChainNodeVisibility(Visibility v)
@@ -293,13 +292,6 @@ public class NoteAppearance : MonoBehaviour,
 
     private void Start()
     {
-        if (feverOverlay != null)
-        {
-            feverOverlayAnimator =
-                feverOverlay.GetComponent<Animator>();
-            feverOverlayImage = feverOverlay.GetComponent<Image>();
-        }
-
         state = State.Inactive;
         UpdateState();
     }
@@ -332,10 +324,6 @@ public class NoteAppearance : MonoBehaviour,
         if (hidden) return;
         if (state == State.Inactive || state == State.Resolved) return;
 
-        if (feverOverlay != null)
-        {
-            UpdateFeverOverlay();
-        }
         UpdateSprites();
         if (GetComponent<HoldTrailManager>() != null)
         {
@@ -357,31 +345,6 @@ public class NoteAppearance : MonoBehaviour,
                 {
                     extension.UpdateSprites();
                 }
-            }
-        }
-    }
-
-    private void UpdateFeverOverlay()
-    {
-        if (Game.feverState == Game.FeverState.Active)
-        {
-            if (!feverOverlayAnimator.enabled)
-            {
-                feverOverlayAnimator.enabled = true;
-                feverOverlayImage.color = Color.white;
-            }
-            else if (Game.feverAmount < 0.1f)
-            {
-                feverOverlayImage.color = new Color(
-                    1f, 1f, 1f, Game.feverAmount * 10f);
-            }
-        }
-        else
-        {
-            if (feverOverlayAnimator.enabled)
-            {
-                feverOverlayAnimator.enabled = false;
-                feverOverlayImage.color = Color.clear;
             }
         }
     }
@@ -695,6 +658,8 @@ public class NoteAppearance : MonoBehaviour,
         curve.SetVerticesDirty();
 
         noteImage.rectTransform.anchoredPosition = Vector2.zero;
+        feverOverlay.GetComponent<RectTransform>().anchoredPosition =
+            Vector2.zero;
         hitbox.anchoredPosition = Vector2.zero;
         UIUtils.RotateToward(noteImage.rectTransform,
                 selfPos: pointsOnCurve[0],
@@ -732,6 +697,8 @@ public class NoteAppearance : MonoBehaviour,
         RectTransform imageRect = noteImage
             .GetComponent<RectTransform>();
         imageRect.anchoredPosition = visiblePointsOnCurve[0];
+        feverOverlay.GetComponent<RectTransform>()
+            .anchoredPosition = visiblePointsOnCurve[0];
         if (visiblePointsOnCurve.Count > 1)
         {
             UIUtils.RotateToward(imageRect,
