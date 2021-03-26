@@ -4,19 +4,7 @@ using UnityEngine;
 
 public class VFXSpawner : MonoBehaviour
 {
-    public GameObject explosionMax;
-    public GameObject explosionCool;
-    public GameObject explosionGood;
-    public GameObject holdOngoingHead;
-    public GameObject holdOngoingTrail;
-    public GameObject holdComplete;
-    public GameObject dragOngoing;
-    public GameObject dragComplete;
-    public GameObject repeatHead;
-    public GameObject repeatNote;
-    public GameObject repeatHoldOngoingHead;
-    public GameObject repeatHoldOngoingTrail;
-    public GameObject repeatHoldComplete;
+    public GameObject vfxPrefab;
 
     private Dictionary<NoteObject, GameObject> 
         holdNoteToOngoingHeadVfx;
@@ -35,24 +23,21 @@ public class VFXSpawner : MonoBehaviour
             new Dictionary<NoteObject, GameObject>();
     }
 
-    private GameObject SpawnPrefabAt(GameObject prefab,
-        Vector3 position)
+    private GameObject SpawnVfxAt(Vector3 position,
+        SpriteSheetForVfx spriteSheet, bool loop = false)
     {
-        float size = Scan.laneHeight * 3f;
-
-        GameObject vfx = Instantiate(prefab, transform);
-        RectTransform rect = vfx.GetComponent<RectTransform>();
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(size, size);
-        rect.position = position;
+        GameObject vfx = Instantiate(vfxPrefab, transform);
+        vfx.GetComponent<VFXDrawer>().Initialize(
+            position, spriteSheet, loop);
 
         return vfx;
     }
 
-    private GameObject SpawnPrefabAt(
-        GameObject prefab, NoteObject note)
+    private GameObject SpawnVfxAt(NoteObject note,
+        SpriteSheetForVfx spriteSheet, bool loop = false)
     {
-        return SpawnPrefabAt(prefab, note.transform.position);
+        return SpawnVfxAt(note.transform.position,
+            spriteSheet, loop);
     }
 
     public void SpawnVFXOnHit(NoteObject note, Judgement judgement)
@@ -65,23 +50,35 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.Basic:
             case NoteType.ChainHead:
             case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
                 // Do nothing. VFX is spawned on resolve.
                 break;
             case NoteType.Hold:
                 holdNoteToOngoingHeadVfx.Add(note,
-                    SpawnPrefabAt(holdOngoingHead, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.holdOngoingHead,
+                        loop: true));
                 holdNoteToOngoingTrailVfx.Add(note,
-                    SpawnPrefabAt(holdOngoingTrail, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.holdOngoingTrail,
+                        loop: true));
                 break;
             case NoteType.Drag:
                 dragNoteToOngoingVfx.Add(note,
-                    SpawnPrefabAt(dragOngoing, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.dragOngoing,
+                        loop: true));
                 break;
             case NoteType.RepeatHeadHold:
                 holdNoteToOngoingHeadVfx.Add(note,
-                    SpawnPrefabAt(repeatHoldOngoingHead, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.repeatHoldOngoingHead,
+                        loop: true));
                 holdNoteToOngoingTrailVfx.Add(note,
-                    SpawnPrefabAt(repeatHoldOngoingTrail, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.repeatHoldOngoingTrail,
+                        loop: true));
                 break;
             case NoteType.RepeatHold:
                 // Spawn the head VFX on repeat head.
@@ -89,10 +86,13 @@ public class VFXSpawner : MonoBehaviour
                     .GetComponent<NoteAppearance>()
                     .GetRepeatHead().GetComponent<NoteObject>();
                 holdNoteToOngoingHeadVfx.Add(repeatHead,
-                    SpawnPrefabAt(
-                        repeatHoldOngoingHead, repeatHead));
+                    SpawnVfxAt(repeatHead,
+                        GlobalResource.vfxSkin.repeatHoldOngoingHead,
+                        loop: true));
                 holdNoteToOngoingTrailVfx.Add(note,
-                    SpawnPrefabAt(repeatHoldOngoingTrail, note));
+                    SpawnVfxAt(note,
+                        GlobalResource.vfxSkin.repeatHoldOngoingTrail,
+                        loop: true));
                 break;
         }
     }
@@ -112,13 +112,16 @@ public class VFXSpawner : MonoBehaviour
                 {
                     case Judgement.RainbowMax:
                     case Judgement.Max:
-                        SpawnPrefabAt(explosionMax, note);
+                        SpawnVfxAt(note,
+                            GlobalResource.vfxSkin.basicMax);
                         break;
                     case Judgement.Cool:
-                        SpawnPrefabAt(explosionCool, note);
+                        SpawnVfxAt(note,
+                            GlobalResource.vfxSkin.basicCool);
                         break;
                     case Judgement.Good:
-                        SpawnPrefabAt(explosionGood, note);
+                        SpawnVfxAt(note,
+                            GlobalResource.vfxSkin.basicGood);
                         break;
                 }
                 break;
@@ -136,9 +139,10 @@ public class VFXSpawner : MonoBehaviour
                 if (judgement != Judgement.Miss &&
                     judgement != Judgement.Break)
                 {
-                    SpawnPrefabAt(holdComplete,
+                    SpawnVfxAt(
                         note.GetComponent<NoteAppearance>()
-                        .GetDurationTrailEndPosition());
+                            .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.holdComplete);
                 }
                 break;
             case NoteType.Drag:
@@ -150,9 +154,10 @@ public class VFXSpawner : MonoBehaviour
                 if (judgement != Judgement.Miss &&
                     judgement != Judgement.Break)
                 {
-                    SpawnPrefabAt(dragComplete,
+                    SpawnVfxAt(
                         note.GetComponent<NoteAppearance>()
-                        .GetCurveEndPosition());
+                            .GetCurveEndPosition(),
+                        GlobalResource.vfxSkin.dragComplete);
                 }
                 break;
             case NoteType.RepeatHead:
@@ -161,7 +166,8 @@ public class VFXSpawner : MonoBehaviour
                 {
                     break;
                 }
-                SpawnPrefabAt(repeatHead, note);
+                SpawnVfxAt(note,
+                    GlobalResource.vfxSkin.repeatHead);
                 break;
             case NoteType.Repeat:
                 if (judgement == Judgement.Miss ||
@@ -169,10 +175,12 @@ public class VFXSpawner : MonoBehaviour
                 {
                     break;
                 }
-                SpawnPrefabAt(repeatNote, note);
-                SpawnPrefabAt(repeatHead, 
+                SpawnVfxAt(note,
+                    GlobalResource.vfxSkin.repeatNote);
+                SpawnVfxAt( 
                     note.GetComponent<NoteAppearance>()
-                    .GetRepeatHead().GetComponent<NoteObject>());
+                        .GetRepeatHead().GetComponent<NoteObject>(),
+                    GlobalResource.vfxSkin.repeatHead);
                 break;
             case NoteType.RepeatHeadHold:
                 if (holdNoteToOngoingHeadVfx.ContainsKey(note))
@@ -188,9 +196,10 @@ public class VFXSpawner : MonoBehaviour
                 if (judgement != Judgement.Miss &&
                     judgement != Judgement.Break)
                 {
-                    SpawnPrefabAt(repeatHoldComplete,
+                    SpawnVfxAt(
                         note.GetComponent<NoteAppearance>()
-                        .GetDurationTrailEndPosition());
+                            .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.repeatHoldComplete);
                 }
                 break;
             case NoteType.RepeatHold:
@@ -213,9 +222,10 @@ public class VFXSpawner : MonoBehaviour
                 if (judgement != Judgement.Miss &&
                     judgement != Judgement.Break)
                 {
-                    SpawnPrefabAt(repeatHoldComplete,
+                    SpawnVfxAt(
                         note.GetComponent<NoteAppearance>()
-                        .GetDurationTrailEndPosition());
+                            .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.repeatHoldComplete);
                 }
                 break;
         }

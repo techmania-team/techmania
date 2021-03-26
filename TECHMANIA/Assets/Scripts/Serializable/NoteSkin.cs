@@ -88,6 +88,19 @@ public class SpriteSheetForVfx : SpriteSheet
         scale = 1f;
         speed = 1f;
     }
+
+    // Returns null if the end of VFX is reached.
+    public Sprite GetSpriteForTime(float time, bool loop)
+    {
+        float fps = 60f * speed;
+        int index = Mathf.FloorToInt(time * fps);
+        if (loop)
+        {
+            index = index % sprites.Count;
+        }
+        if (index < 0 || index >= sprites.Count) return null;
+        return sprites[index];
+    }
 }
 
 [Serializable]
