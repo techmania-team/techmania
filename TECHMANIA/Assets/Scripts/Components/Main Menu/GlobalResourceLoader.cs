@@ -28,6 +28,12 @@ public class GlobalResourceLoader : MonoBehaviour
         error = null;
         statusText = "";
 
+        if (GlobalResource.loaded)
+        {
+            state = State.Complete;
+            yield break;
+        }
+
         string noteSkinFolder = Paths.GetNoteSkinFolder(
             Options.instance.noteSkin);
         string noteSkinFilename = Path.Combine(
@@ -63,6 +69,7 @@ public class GlobalResourceLoader : MonoBehaviour
             "Loading VFX skin..."));
 
         yield return null;
+        GlobalResource.loaded = true;
         state = State.Complete;
     }
 
