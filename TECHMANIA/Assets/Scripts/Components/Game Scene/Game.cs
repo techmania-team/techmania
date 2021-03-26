@@ -134,9 +134,11 @@ public class Game : MonoBehaviour
     private Stopwatch feverTimer;
     private float initialTime;
 
-    public static void InjectBaseTime(float time)
+    public static void InjectBaseTimeAndOffset(float baseTime,
+        float offset)
     {
-        BaseTime = time;
+        BaseTime = baseTime;
+        Game.offset = offset;
     }
     #endregion
 

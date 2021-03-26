@@ -18,6 +18,11 @@ public class Scan : MonoBehaviour
     private List<RepeatPathExtension> repeatPathExtensions;
     private Scanline scanline;
 
+    public static void InjectLaneHeight(float height)
+    {
+        laneHeight = height;
+    }
+
     private void OnDestroy()
     {
         Game.ScanChanged -= OnScanChanged;

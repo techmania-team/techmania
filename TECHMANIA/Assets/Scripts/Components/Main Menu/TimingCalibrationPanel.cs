@@ -23,8 +23,8 @@ public class TimingCalibrationPanel : MonoBehaviour
     public RectTransform scanline0;
     public RectTransform scanline1;
     public List<RectTransform> notes;
-    public RectTransform explosionContainer;
-    public GameObject explosionPrefab;
+    public RectTransform vfxContainer;
+    public GameObject vfxPrefab;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
@@ -40,16 +40,13 @@ public class TimingCalibrationPanel : MonoBehaviour
 
     // Timers. The stopwatch provides base time.
     private System.Diagnostics.Stopwatch stopwatch;
-    // noteTime = stopwatch + offset.
-    private float noteTime;
-    // Unique to this panel, clampedNoteTime is noteTime but
+    // Unique to this panel, clampedTime is the public timer but
     // clamped into the 0th scan.
-    private float clampedNoteTime;
+    private float clampedTime;
 
     private readonly int[] pulses = { 0, 240, 480, 600, 720 };
     private readonly int[] lanes = { 1, 0, 1, 1, 0 };
     private const float beatPerSecond = 1.5f;
-    private float laneHeight = 0f;
     private bool calibratingTouchscreen;
     private List<List<string>> timingHistory;
     private List<TextMeshProUGUI> historyDisplay;
@@ -81,12 +78,16 @@ public class TimingCalibrationPanel : MonoBehaviour
     void Start()
     {
         float scanHeight = scan.rect.height;
-        laneHeight = scanHeight / 4f;
+        float laneHeight = scanHeight / 4f;
+        Scan.InjectLaneHeight(laneHeight);
+
         timingHistory = new List<List<string>>();
         historyDisplay = new List<TextMeshProUGUI>();
+        float noteScale = GlobalResource.noteSkin.basic.scale;
         for (int i = 0; i < pulses.Length; i++)
         {
-            notes[i].sizeDelta = new Vector2(laneHeight, laneHeight);
+            notes[i].sizeDelta = new Vector2
+                (laneHeight * noteScale, laneHeight * noteScale);
             float scan = PulseToFloatScan(pulses[i]);
             notes[i].anchorMin = new Vector2(
                 FloatScanToAnchorX(scan),
@@ -121,19 +122,20 @@ public class TimingCalibrationPanel : MonoBehaviour
         int offsetMs = calibratingTouchscreen ?
             options.touchOffsetMs :
             options.keyboardMouseOffsetMs;
-        noteTime = (float)stopwatch.Elapsed.TotalSeconds
-            - offsetMs * 0.001f;
+        Game.InjectBaseTimeAndOffset(
+            (float)stopwatch.Elapsed.TotalSeconds,
+            offsetMs * 0.001f);
 
         float timePerScan = 4f / beatPerSecond;
-        clampedNoteTime = noteTime;
-        while (clampedNoteTime >= timePerScan * 0.875f)
+        clampedTime = Game.Time;
+        while (clampedTime >= timePerScan * 0.875f)
         {
-            clampedNoteTime -= timePerScan;
+            clampedTime -= timePerScan;
         }
 
         // Move scanline.
 
-        float beat = noteTime * beatPerSecond;
+        float beat = Game.Time * beatPerSecond;
         float pulse = beat * Pattern.pulsesPerBeat;
         float scan0 = PulseToFloatScan(pulse);
         float scan1 = scan0 + 1f;
@@ -147,6 +149,18 @@ public class TimingCalibrationPanel : MonoBehaviour
             FloatScanToAnchorX(scan1), 0f);
         scanline1.anchorMax = new Vector2(
             scanline1.anchorMin.x, 1f);
+
+        // Animate notes.
+
+        Sprite noteSprite = GlobalResource.noteSkin.basic.
+            GetSpriteForFloatBeat(beat);
+        foreach (RectTransform r in notes)
+        {
+            r.GetComponent<NoteAppearance>().noteImage.sprite = 
+                noteSprite;
+        }
+
+        // Handle input.
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -170,7 +184,7 @@ public class TimingCalibrationPanel : MonoBehaviour
                 float correctTime = CorrectTime(i, 
                     InputDevice.Keyboard);
                 float difference = Mathf.Abs(
-                    clampedNoteTime - correctTime);
+                    clampedTime - correctTime);
                 if (difference < minDifference)
                 {
                     id = i;
@@ -241,18 +255,17 @@ public class TimingCalibrationPanel : MonoBehaviour
         // Calculate time difference.
         float correctTime = CorrectTime(id, device);
         int timeDifferenceInMs = Mathf.FloorToInt(
-            Mathf.Abs(clampedNoteTime - correctTime) * 1000f);
+            Mathf.Abs(clampedTime - correctTime) * 1000f);
 
         // The usual stuff: explosion and keysound.
         if (timeDifferenceInMs <= 200)
         {
             GameObject vfx = Instantiate(
-                explosionPrefab, explosionContainer);
-            RectTransform rect = vfx.GetComponent<RectTransform>();
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(
-                laneHeight * 3f, laneHeight * 3f);
-            rect.position = notes[id].transform.position;
+                vfxPrefab, vfxContainer);
+            vfx.GetComponent<VFXDrawer>().Initialize(
+                notes[id].transform.position,
+                GlobalResource.vfxSkin.basicMax,
+                loop: false);
 
             if (lanes[id] == 0)
             {
@@ -269,7 +282,7 @@ public class TimingCalibrationPanel : MonoBehaviour
         // Write timing history.
         string historyLine;
         char deviceLetter = device.ToString()[0];
-        if (clampedNoteTime < correctTime)
+        if (clampedTime < correctTime)
         {
             historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(earlyColor)}>early</color>";
         }
@@ -347,7 +360,7 @@ public class TimingCalibrationPanel : MonoBehaviour
     }
     #endregion
 
-    #region Refresthing controls
+    #region Refreshing controls
     private void RefreshRadioButtons()
     {
         touchscreenRadio.SetIsOn(calibratingTouchscreen);

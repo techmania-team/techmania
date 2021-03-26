@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 34652195}
   m_Layer: 5
-  m_Name: Explosions
+  m_Name: VFX Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14093,8 +14093,8 @@ MonoBehaviour:
   - {fileID: 315357882}
   - {fileID: 1165211235}
   - {fileID: 608136502}
-  explosionContainer: {fileID: 34652195}
-  explosionPrefab: {fileID: 5442111664239852118, guid: c663a1d2f6dc4a34ea094bde10ec3f49,
+  vfxContainer: {fileID: 34652195}
+  vfxPrefab: {fileID: 5442111664239852118, guid: c478652c074a90142bbcb6a9c14562f9,
     type: 3}
   audioSourceManager: {fileID: 1275601375}
   bgSource: {fileID: 1035928965}
