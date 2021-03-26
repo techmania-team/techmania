@@ -47,7 +47,12 @@ public class SpriteSheet
                     inverseRow * spriteHeight,
                     spriteWidth,
                     spriteHeight),
-                new Vector2(0.5f, 0.5f));
+                new Vector2(0.5f, 0.5f),
+                pixelsPerUnit: 100f,
+                extrude: 0,
+                // The default is Tight, whose performance is
+                // atrocious.
+                meshType: SpriteMeshType.FullRect);
             sprites.Add(s);
         }
     }
@@ -89,6 +94,7 @@ public class SpriteSheetForVfx : SpriteSheet
 [FormatVersion(NoteSkin.kVersion, typeof(NoteSkin), isLatest: true)]
 public class NoteSkinBase : Serializable<NoteSkinBase> {}
 
+[Serializable]
 public class NoteSkin : NoteSkinBase
 {
     public const string kVersion = "1";
@@ -145,6 +151,68 @@ public class NoteSkin : NoteSkinBase
         list.Add(repeatHoldTrail);
         list.Add(repeatHoldTrailEnd);
         list.Add(repeatPath);
+
+        return list;
+    }
+}
+
+[Serializable]
+[FormatVersion(VfxSkin.kVersion, typeof(VfxSkin), isLatest: true)]
+public class VfxSkinBase : Serializable<VfxSkinBase> { }
+
+[Serializable]
+public class VfxSkin : VfxSkinBase
+{
+    public const string kVersion = "1";
+
+    // VFX skin's name is the folder's name.
+
+    public SpriteSheetForVfx feverOverlay;
+
+    public SpriteSheetForVfx basicMax;
+    public SpriteSheetForVfx basicCool;
+    public SpriteSheetForVfx basicGood;
+
+    public SpriteSheetForVfx dragOngoing;
+    public SpriteSheetForVfx dragComplete;
+
+    public SpriteSheetForVfx holdOngoingHead;
+    public SpriteSheetForVfx holdOngoingTrail;
+    public SpriteSheetForVfx holdComplete;
+
+    public SpriteSheetForVfx repeatHead;
+    public SpriteSheetForVfx repeatNote;
+    public SpriteSheetForVfx repeatHoldOngoingHead;
+    public SpriteSheetForVfx repeatHoldOngoingTrail;
+    public SpriteSheetForVfx repeatHoldComplete;
+
+    public VfxSkin()
+    {
+        version = kVersion;
+    }
+
+    public List<SpriteSheet> GetReferenceToAllSpriteSheets()
+    {
+        List<SpriteSheet> list = new List<SpriteSheet>();
+
+        list.Add(feverOverlay);
+
+        list.Add(basicMax);
+        list.Add(basicCool);
+        list.Add(basicGood);
+
+        list.Add(dragOngoing);
+        list.Add(dragComplete);
+
+        list.Add(holdOngoingHead);
+        list.Add(holdOngoingTrail);
+        list.Add(holdComplete);
+
+        list.Add(repeatHead);
+        list.Add(repeatNote);
+        list.Add(repeatHoldOngoingHead);
+        list.Add(repeatHoldOngoingTrail);
+        list.Add(repeatHoldComplete);
 
         return list;
     }

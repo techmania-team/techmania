@@ -5,5 +5,6 @@ using UnityEngine;
 public static class GlobalResource
 {
     public static NoteSkin noteSkin;
-    // TODO: VFX and Combo skin
+    public static VfxSkin vfxSkin;
+    // TODO: Combo skin
 }
