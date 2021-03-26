@@ -65,7 +65,7 @@ public class Game : MonoBehaviour
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
-    public JudgementText judgementText;
+    public ComboText comboText;
 
     [Header("UI - Fever")]
     public GameObject middleFeverBar;
@@ -1197,7 +1197,7 @@ public class Game : MonoBehaviour
             ongoingNotes)
         {
             SetCombo(currentCombo + 1);
-            judgementText.Show(pair.Key, pair.Value);
+            comboText.Show(pair.Key, pair.Value);
         }
     }
 
@@ -1813,7 +1813,7 @@ public class Game : MonoBehaviour
         n.GetComponent<NoteAppearance>().Resolve();
         // Call this after updating combo to show the correct
         // combo on judgement text.
-        judgementText.Show(n, judgement);
+        comboText.Show(n, judgement);
     }
 
     private void SetCombo(int combo)

@@ -78,18 +78,15 @@ public class SpriteSheetForNote : SpriteSheet
 }
 
 [Serializable]
-public class SpriteSheetForVfx : SpriteSheet
+public class SpriteSheetForCombo : SpriteSheet
 {
-    public float scale;  // Relative to 1x lane height
     public float speed;  // Relative to 60 fps
-
-    public SpriteSheetForVfx() : base()
+    public SpriteSheetForCombo() : base()
     {
-        scale = 1f;
         speed = 1f;
     }
 
-    // Returns null if the end of VFX is reached.
+    // Returns null if the end of animation is reached.
     public Sprite GetSpriteForTime(float time, bool loop)
     {
         float fps = 60f * speed;
@@ -100,6 +97,17 @@ public class SpriteSheetForVfx : SpriteSheet
         }
         if (index < 0 || index >= sprites.Count) return null;
         return sprites[index];
+    }
+}
+
+[Serializable]
+public class SpriteSheetForVfx : SpriteSheetForCombo
+{
+    public float scale;  // Relative to 1x lane height
+
+    public SpriteSheetForVfx() : base()
+    {
+        scale = 1f;
     }
 }
 
@@ -246,19 +254,19 @@ public class ComboSkin : ComboSkinBase
     public float height;  // In pixels
     public float spaceBetweenJudgementAndCombo;  // In pixels
 
-    public SpriteSheet feverMaxJudgement;
-    public SpriteSheet rainbowMaxJudgement;
-    public SpriteSheet maxJudgement;
-    public SpriteSheet coolJudgement;
-    public SpriteSheet goodJudgement;
-    public SpriteSheet missJudgement;
-    public SpriteSheet breakJudgement;
+    public SpriteSheetForCombo feverMaxJudgement;
+    public SpriteSheetForCombo rainbowMaxJudgement;
+    public SpriteSheetForCombo maxJudgement;
+    public SpriteSheetForCombo coolJudgement;
+    public SpriteSheetForCombo goodJudgement;
+    public SpriteSheetForCombo missJudgement;
+    public SpriteSheetForCombo breakJudgement;
 
-    public List<SpriteSheet> feverMaxDigits;
-    public List<SpriteSheet> rainbowMaxDigits;
-    public List<SpriteSheet> maxDigits;
-    public List<SpriteSheet> coolDigits;
-    public List<SpriteSheet> goodDigits;
+    public List<SpriteSheetForCombo> feverMaxDigits;
+    public List<SpriteSheetForCombo> rainbowMaxDigits;
+    public List<SpriteSheetForCombo> maxDigits;
+    public List<SpriteSheetForCombo> coolDigits;
+    public List<SpriteSheetForCombo> goodDigits;
 
     public ComboSkin()
     {
