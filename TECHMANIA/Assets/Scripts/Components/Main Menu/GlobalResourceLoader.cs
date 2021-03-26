@@ -42,12 +42,18 @@ public class GlobalResourceLoader : MonoBehaviour
             Options.instance.vfxSkin);
         string vfxSkinFilename = Path.Combine(vfxSkinFolder,
             Paths.kSkinFilename);
+        string comboSkinFolder = Paths.GetComboSkinFolder(
+            Options.instance.comboSkin);
+        string comboSkinFilename = Path.Combine(comboSkinFolder,
+            Paths.kSkinFilename);
         try
         {
             GlobalResource.noteSkin = NoteSkin.LoadFromFile(
                 noteSkinFilename) as NoteSkin;
             GlobalResource.vfxSkin = VfxSkin.LoadFromFile(
                 vfxSkinFilename) as VfxSkin;
+            GlobalResource.comboSkin = ComboSkin.LoadFromFile(
+                comboSkinFilename) as ComboSkin;
         }
         catch (Exception ex)
         {
@@ -67,6 +73,12 @@ public class GlobalResourceLoader : MonoBehaviour
         yield return StartCoroutine(LoadListOfSpriteSheets(
             spriteSheets, vfxSkinFolder,
             "Loading VFX skin..."));
+
+        spriteSheets = GlobalResource.comboSkin
+            .GetReferenceToAllSpriteSheets();
+        yield return StartCoroutine(LoadListOfSpriteSheets(
+            spriteSheets, comboSkinFolder,
+            "Loading combo skin..."));
 
         yield return null;
         GlobalResource.loaded = true;

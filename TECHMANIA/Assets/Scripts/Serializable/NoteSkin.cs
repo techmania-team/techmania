@@ -230,3 +230,59 @@ public class VfxSkin : VfxSkinBase
         return list;
     }
 }
+
+[Serializable]
+[FormatVersion(ComboSkin.kVersion, typeof(ComboSkin), isLatest: true)]
+public class ComboSkinBase : Serializable<ComboSkinBase> { }
+
+[Serializable]
+public class ComboSkin : ComboSkinBase
+{
+    public const string kVersion = "1";
+
+    // Combo skin's name is the folder's name.
+
+    public float distanceToNote;  // In pixels
+    public float height;  // In pixels
+    public float spaceBetweenJudgementAndCombo;  // In pixels
+
+    public SpriteSheet feverMaxJudgement;
+    public SpriteSheet rainbowMaxJudgement;
+    public SpriteSheet maxJudgement;
+    public SpriteSheet coolJudgement;
+    public SpriteSheet goodJudgement;
+    public SpriteSheet missJudgement;
+    public SpriteSheet breakJudgement;
+
+    public List<SpriteSheet> feverMaxDigits;
+    public List<SpriteSheet> rainbowMaxDigits;
+    public List<SpriteSheet> maxDigits;
+    public List<SpriteSheet> coolDigits;
+    public List<SpriteSheet> goodDigits;
+
+    public ComboSkin()
+    {
+        version = kVersion;
+    }
+
+    public List<SpriteSheet> GetReferenceToAllSpriteSheets()
+    {
+        List<SpriteSheet> list = new List<SpriteSheet>();
+
+        list.Add(feverMaxJudgement);
+        list.Add(rainbowMaxJudgement);
+        list.Add(maxJudgement);
+        list.Add(coolJudgement);
+        list.Add(goodJudgement);
+        list.Add(missJudgement);
+        list.Add(breakJudgement);
+
+        feverMaxDigits.ForEach(s => list.Add(s));
+        rainbowMaxDigits.ForEach(s => list.Add(s));
+        maxDigits.ForEach(s => list.Add(s));
+        coolDigits.ForEach(s => list.Add(s));
+        goodDigits.ForEach(s => list.Add(s));
+
+        return list;
+    }
+}
