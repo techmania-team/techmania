@@ -27,6 +27,10 @@ public class RepeatPathExtension : MonoBehaviour
         {
             extension.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
+            extension.localScale = new Vector3(
+                extension.localScale.x,
+                -extension.localScale.y,
+                extension.localScale.z);
         }
 
         InitializeScale();
@@ -34,9 +38,11 @@ public class RepeatPathExtension : MonoBehaviour
 
     private void InitializeScale()
     {
-        extension.localScale = new Vector3(1f,
-            GlobalResource.noteSkin.repeatPath.scale,
-            1f);
+        extension.localScale = new Vector3(
+            extension.localScale.x,
+            extension.localScale.y * 
+                GlobalResource.noteSkin.repeatPath.scale,
+            extension.localScale.z);
     }
 
     public void DrawBeforeRepeatNotes()

@@ -43,10 +43,18 @@ public class HoldTrailManager : MonoBehaviour
         {
             durationTrail.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
+            durationTrail.localScale = new Vector3(
+                durationTrail.localScale.x,
+                -durationTrail.localScale.y,
+                durationTrail.localScale.z);
             if (ongoingTrail != null)
             {
                 ongoingTrail.localRotation =
                     Quaternion.Euler(0f, 0f, 180f);
+                ongoingTrail.localScale = new Vector3(
+                    ongoingTrail.localScale.x,
+                    -ongoingTrail.localScale.y,
+                    ongoingTrail.localScale.z);
             }
         }
         if (ongoingTrail != null)
@@ -87,22 +95,28 @@ public class HoldTrailManager : MonoBehaviour
             durationTrailEndAspectRatio = rect.width / rect.height;
         }
 
-        durationTrail.localScale = new Vector3(1f,
-            durationTrailScale,
-            1f);
+        durationTrail.localScale = new Vector3(
+            durationTrail.localScale.x,
+            durationTrailScale * durationTrail.localScale.y,
+            durationTrail.localScale.z);
         // The trail's scale is applied to the trail end, so
         // compensate for it here.
         durationTrailEnd.localScale = new Vector3(
-            durationTrailScale, 1f, 1f);
+            durationTrailScale * durationTrailEnd.localScale.x,
+            durationTrailEnd.localScale.y,
+            durationTrailEnd.localScale.z);
         durationTrailEnd.GetComponent<AspectRatioFitter>().aspectRatio =
             durationTrailEndAspectRatio;
         if (ongoingTrail != null)
         {
-            ongoingTrail.localScale = new Vector3(1f,
-                ongoingTrailScale,
-                1f);
+            ongoingTrail.localScale = new Vector3(
+                ongoingTrail.localScale.x,
+                ongoingTrailScale * ongoingTrail.localScale.y,
+                ongoingTrail.localScale.z);
             ongoingTrailEnd.localScale = new Vector3(
-                ongoingTrailScale, 1f, 1f);
+                ongoingTrailScale * ongoingTrailEnd.localScale.x,
+                ongoingTrailEnd.localScale.y,
+                ongoingTrailEnd.localScale.z);
             ongoingTrailEnd.GetComponent<AspectRatioFitter>()
                 .aspectRatio = ongoingTrailEndAspectRatio;
         }
