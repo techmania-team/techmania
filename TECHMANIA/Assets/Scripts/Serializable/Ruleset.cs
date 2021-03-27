@@ -61,7 +61,7 @@ public class Ruleset : RulesetBase
         breakThreshold = 0.3f;
         longNoteGracePeriod = 0.15f;
 
-        scanMargin = 0.04f;
+        scanMargin = 0.05f;
         hitboxWidth = 1.5f;
         chainHeadHitboxWidth = 1.5f;
         chainNodeHitboxWidth = 3f;
