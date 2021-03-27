@@ -11,6 +11,7 @@ public class SpriteSheet
     public int columns;
     public int firstIndex;
     public int lastIndex;
+    public bool bilinearFilter;
 
     [NonSerialized]  // Loaded at runtime
     public Texture2D texture;
@@ -23,6 +24,7 @@ public class SpriteSheet
         columns = 1;
         firstIndex = 0;
         lastIndex = 0;
+        bilinearFilter = true;
     }
 
     // Call after loading texture.
@@ -32,6 +34,8 @@ public class SpriteSheet
         {
             throw new Exception("Texture not yet loaded.");
         }
+        texture.filterMode = bilinearFilter ? FilterMode.Bilinear :
+            FilterMode.Point;
         sprites = new List<Sprite>();
         int spriteWidth = texture.width / columns;
         int spriteHeight = texture.height / rows;

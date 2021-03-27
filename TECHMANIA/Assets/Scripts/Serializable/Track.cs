@@ -596,8 +596,11 @@ public class NoteComparer : IComparer<Note>
 {
     public int Compare(Note x, Note y)
     {
-        if (x.pulse != y.pulse) return x.pulse - y.pulse;
-        return x.lane - y.lane;
+        if (x.pulse < y.pulse) return -1;
+        if (x.pulse > y.pulse) return 1;
+        if (x.lane < y.lane) return -1;
+        if (x.lane > y.lane) return 1;
+        return 0;
     }
 }
 
