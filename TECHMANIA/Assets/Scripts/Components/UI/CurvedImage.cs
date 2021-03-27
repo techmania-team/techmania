@@ -53,13 +53,13 @@ public class CurvedImage : Image
             vert.position = pointsOnCurve[i] +
                 halfCurveWidth * left;
             vert.color = color;
-            vert.uv0 = new Vector2(u, 1f);
+            vert.uv0 = ProjectUvOnTexture(u, 1f);
             vh.AddVert(vert);
 
             vert.position = pointsOnCurve[i] -
                 halfCurveWidth * left;
             vert.color = color;
-            vert.uv0 = new Vector2(u, 0f);
+            vert.uv0 = ProjectUvOnTexture(u, 0f);
             vh.AddVert(vert);
         }
 
@@ -71,14 +71,14 @@ public class CurvedImage : Image
             + halfCurveWidth * forward
             + halfCurveWidth * left;
         vert.color = color;
-        vert.uv0 = new Vector2(1f, 1f);
+        vert.uv0 = ProjectUvOnTexture(1f, 1f);
         vh.AddVert(vert);
 
         vert.position = pointsOnCurve[pointsOnCurve.Count - 1]
             + halfCurveWidth * forward
             - halfCurveWidth * left;
         vert.color = color;
-        vert.uv0 = new Vector2(1f, 0f);
+        vert.uv0 = ProjectUvOnTexture(1f, 0f);
         vh.AddVert(vert);
 
         // Triangles.
@@ -91,5 +91,15 @@ public class CurvedImage : Image
             vh.AddTriangle(2 * i + 1, 2 * i, 2 * i + 2);
             vh.AddTriangle(2 * i + 3, 2 * i + 1, 2 * i + 2);
         }
+    }
+
+    private Vector2 ProjectUvOnTexture(float u, float v)
+    {
+        Rect rect = sprite.rect;
+        u = Mathf.Lerp(rect.xMin, rect.xMax, u);
+        v = Mathf.Lerp(rect.yMin, rect.yMax, v);
+        return new Vector2(
+            Mathf.InverseLerp(0f, sprite.texture.width, u),
+            Mathf.InverseLerp(0f, sprite.texture.height, v));
     }
 }
