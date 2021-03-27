@@ -26,28 +26,10 @@ public class CurvedImage : Image
         float curveWidth = rectTransform.rect.height;
         float halfCurveWidth = curveWidth * 0.5f * scale;
 
-        // Add 2 points before the curve.
-        // TODO: these 2 points are not needed.
-        Vector2 forward = (pointsOnCurve[1] -
-            pointsOnCurve[0]).normalized;
-        Vector2 left = new Vector2(-forward.y, forward.x);
-        UIVertex vert = UIVertex.simpleVert;
-        vert.position = pointsOnCurve[0]
-            - halfCurveWidth * forward
-            + halfCurveWidth * left;
-        vert.color = color;
-        vert.uv0 = new Vector2(0f, 1f);
-        vh.AddVert(vert);
-
-        vert.position = pointsOnCurve[0]
-            - halfCurveWidth * forward
-            - halfCurveWidth * left;
-        vert.color = color;
-        vert.uv0 = new Vector2(0f, 0f);
-        vh.AddVert(vert);
-
         // Calculate left vector on each point. Then generate
         // vertices.
+        Vector2 forward, left;
+        UIVertex vert = UIVertex.simpleVert;
         for (int i = 0; i < pointsOnCurve.Count; i++)
         {
             forward = Vector2.zero;
@@ -65,8 +47,9 @@ public class CurvedImage : Image
             left = new Vector2(-forward.y, forward.x);
 
             float u = (float)i / (pointsOnCurve.Count - 1);
-            u = u * 0.5f + 0.25f;
+            u = u * 0.5f;
 
+            vert = new UIVertex();
             vert.position = pointsOnCurve[i] +
                 halfCurveWidth * left;
             vert.color = color;
@@ -99,7 +82,7 @@ public class CurvedImage : Image
         vh.AddVert(vert);
 
         // Triangles.
-        for (int i = 0; i < pointsOnCurve.Count + 1; i++)
+        for (int i = 0; i < pointsOnCurve.Count; i++)
         {
             // #2i: left
             // #2i+1: right
