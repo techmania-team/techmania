@@ -331,20 +331,20 @@ public class NoteAppearance : MonoBehaviour,
             // sprites.
             UpdateOngoingTrail();
         }
+        if (repeatPathExtensions != null)
+        {
+            foreach (RepeatPathExtension extension in
+                repeatPathExtensions)
+            {
+                extension.UpdateSprites();
+            }
+        }
         if (state == State.Ongoing)
         {
             if (curve != null)
             {
                 UpdateOngoingCurve();
                 PlaceNoteImageAndHitboxOnCurve();
-            }
-            if (repeatPathExtensions != null)
-            {
-                foreach (RepeatPathExtension extension in
-                    repeatPathExtensions)
-                {
-                    extension.UpdateSprites();
-                }
             }
         }
     }
@@ -395,7 +395,8 @@ public class NoteAppearance : MonoBehaviour,
                     repeatHead.scale;
                 noteImageScaleY = GlobalResource.noteSkin.
                     repeatHead.scale;
-                pathToLastRepeatNote.localScale = new Vector3(1f,
+                pathToLastRepeatNote.localScale = new Vector3(
+                    pathToLastRepeatNote.localScale.x,
                     GlobalResource.noteSkin.repeatPath.scale,
                     1f);
                 break;
@@ -840,6 +841,10 @@ public class NoteAppearance : MonoBehaviour,
         {
             pathToLastRepeatNote.localRotation =
                 Quaternion.Euler(0f, 0f, 180f);
+            pathToLastRepeatNote.localScale = new Vector3(
+                pathToLastRepeatNote.localScale.x,
+                -pathToLastRepeatNote.localScale.y,
+                pathToLastRepeatNote.localScale.z);
         }
 
         repeatPathExtensions = new List<RepeatPathExtension>();

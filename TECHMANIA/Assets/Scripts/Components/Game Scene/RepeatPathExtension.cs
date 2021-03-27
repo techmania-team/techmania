@@ -70,6 +70,6 @@ public class RepeatPathExtension : MonoBehaviour
     {
         extension.GetComponent<Image>().sprite =
             GlobalResource.noteSkin.repeatPath.GetSpriteForFloatBeat(
-                Game.Time);
+                Game.FloatBeat);
     }
 }
