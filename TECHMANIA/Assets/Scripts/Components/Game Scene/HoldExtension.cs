@@ -21,7 +21,7 @@ public class HoldExtension : MonoBehaviour
             scanRef, scanlineRef, holdNote);
     }
 
-    public void SetDurationTrailVisibility(
+    public void SetVisibility(
         NoteAppearance.Visibility v)
     {
         GetComponent<HoldTrailManager>().SetVisibility(v);
@@ -43,7 +43,7 @@ public class HoldExtension : MonoBehaviour
         if (noteRef.state == NoteAppearance.State.Resolved ||
             noteRef.state == NoteAppearance.State.PendingResolve)
             return;
-        SetDurationTrailVisibility(
+        SetVisibility(
             NoteAppearance.Visibility.Visible);
     }
 
@@ -54,12 +54,12 @@ public class HoldExtension : MonoBehaviour
             return;
         if (noteRef.GetNoteType() == NoteType.Hold)
         {
-            SetDurationTrailVisibility(
+            SetVisibility(
                 NoteAppearance.Visibility.Transparent);
         }
         else
         {
-            SetDurationTrailVisibility(
+            SetVisibility(
                 NoteAppearance.Visibility.Visible);
         }
     }

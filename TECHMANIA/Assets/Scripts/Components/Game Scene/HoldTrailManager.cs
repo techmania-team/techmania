@@ -123,9 +123,11 @@ public class HoldTrailManager : MonoBehaviour
             new Color(1f, 1f, 1f, 0.6f) :
             Color.white;
         durationTrail.GetComponent<Image>().color = color;
+        durationTrailEnd.GetComponent<Image>().color = color;
         if (ongoingTrail != null)
         {
             ongoingTrail.GetComponent<Image>().color = color;
+            ongoingTrailEnd.GetComponent<Image>().color = color;
         }
     }
 

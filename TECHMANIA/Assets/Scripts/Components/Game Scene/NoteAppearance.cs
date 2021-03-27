@@ -159,7 +159,7 @@ public class NoteAppearance : MonoBehaviour,
         if (holdExtensions == null) return;
         foreach (HoldExtension e in holdExtensions)
         {
-            e.SetDurationTrailVisibility(v);
+            e.SetVisibility(v);
         }
     }
 
