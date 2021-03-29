@@ -260,12 +260,15 @@ public class TimingCalibrationPanel : MonoBehaviour
         // The usual stuff: explosion and keysound.
         if (timeDifferenceInMs <= 200)
         {
-            GameObject vfx = Instantiate(
-                vfxPrefab, vfxContainer);
-            vfx.GetComponent<VFXDrawer>().Initialize(
-                notes[id].transform.position,
-                GlobalResource.vfxSkin.basicMax,
-                loop: false);
+            foreach (SpriteSheetForVfx layer in
+                GlobalResource.vfxSkin.basicMax)
+            {
+                GameObject vfx = Instantiate(
+                    vfxPrefab, vfxContainer);
+                vfx.GetComponent<VFXDrawer>().Initialize(
+                    notes[id].transform.position,
+                    layer, loop: false);
+            }
 
             if (lanes[id] == 0)
             {

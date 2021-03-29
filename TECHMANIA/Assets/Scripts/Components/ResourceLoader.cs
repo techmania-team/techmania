@@ -44,18 +44,27 @@ public class ResourceLoader : MonoBehaviour
         }
     }
 
+    private static void ClearAudioCache()
+    {
+        foreach (AudioClip c in audioClips.Values)
+        {
+            c.UnloadAudioData();
+        }
+        audioClips.Clear();
+    }
+
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
         UnityAction<string> cacheAudioCompleteCallback)
     {
         if (trackFolder != cachedFolder)
         {
-            audioClips.Clear();
+            ClearAudioCache();
             cachedFolder = trackFolder;
         }
         if (forceReload)
         {
-            audioClips.Clear();
+            ClearAudioCache();
             forceReload = false;
         }
 
@@ -74,12 +83,12 @@ public class ResourceLoader : MonoBehaviour
     {
         if (trackFolder != cachedFolder)
         {
-            audioClips.Clear();
+            ClearAudioCache();
             cachedFolder = trackFolder;
         }
         if (forceReload)
         {
-            audioClips.Clear();
+            ClearAudioCache();
             forceReload = false;
         }
 

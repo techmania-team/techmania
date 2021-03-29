@@ -108,10 +108,12 @@ public class SpriteSheetForCombo : SpriteSheet
 public class SpriteSheetForVfx : SpriteSheetForCombo
 {
     public float scale;  // Relative to 1x lane height
+    public bool additiveShader;
 
     public SpriteSheetForVfx() : base()
     {
         scale = 1f;
+        additiveShader = false;
     }
 }
 
@@ -191,25 +193,28 @@ public class VfxSkin : VfxSkinBase
     public const string kVersion = "1";
 
     // VFX skin's name is the folder's name.
+    // Each VFX (except for feverOverlay) is defined as multiple
+    // layers of sprite sheets, each element in List corresponding
+    // to one layer.
 
     public SpriteSheetForVfx feverOverlay;
 
-    public SpriteSheetForVfx basicMax;
-    public SpriteSheetForVfx basicCool;
-    public SpriteSheetForVfx basicGood;
+    public List<SpriteSheetForVfx> basicMax;
+    public List<SpriteSheetForVfx> basicCool;
+    public List<SpriteSheetForVfx> basicGood;
 
-    public SpriteSheetForVfx dragOngoing;
-    public SpriteSheetForVfx dragComplete;
+    public List<SpriteSheetForVfx> dragOngoing;
+    public List<SpriteSheetForVfx> dragComplete;
 
-    public SpriteSheetForVfx holdOngoingHead;
-    public SpriteSheetForVfx holdOngoingTrail;
-    public SpriteSheetForVfx holdComplete;
+    public List<SpriteSheetForVfx> holdOngoingHead;
+    public List<SpriteSheetForVfx> holdOngoingTrail;
+    public List<SpriteSheetForVfx> holdComplete;
 
-    public SpriteSheetForVfx repeatHead;
-    public SpriteSheetForVfx repeatNote;
-    public SpriteSheetForVfx repeatHoldOngoingHead;
-    public SpriteSheetForVfx repeatHoldOngoingTrail;
-    public SpriteSheetForVfx repeatHoldComplete;
+    public List<SpriteSheetForVfx> repeatHead;
+    public List<SpriteSheetForVfx> repeatNote;
+    public List<SpriteSheetForVfx> repeatHoldOngoingHead;
+    public List<SpriteSheetForVfx> repeatHoldOngoingTrail;
+    public List<SpriteSheetForVfx> repeatHoldComplete;
 
     public VfxSkin()
     {
@@ -222,22 +227,22 @@ public class VfxSkin : VfxSkinBase
 
         list.Add(feverOverlay);
 
-        list.Add(basicMax);
-        list.Add(basicCool);
-        list.Add(basicGood);
+        list.AddRange(basicMax);
+        list.AddRange(basicCool);
+        list.AddRange(basicGood);
 
-        list.Add(dragOngoing);
-        list.Add(dragComplete);
+        list.AddRange(dragOngoing);
+        list.AddRange(dragComplete);
 
-        list.Add(holdOngoingHead);
-        list.Add(holdOngoingTrail);
-        list.Add(holdComplete);
+        list.AddRange(holdOngoingHead);
+        list.AddRange(holdOngoingTrail);
+        list.AddRange(holdComplete);
 
-        list.Add(repeatHead);
-        list.Add(repeatNote);
-        list.Add(repeatHoldOngoingHead);
-        list.Add(repeatHoldOngoingTrail);
-        list.Add(repeatHoldComplete);
+        list.AddRange(repeatHead);
+        list.AddRange(repeatNote);
+        list.AddRange(repeatHoldOngoingHead);
+        list.AddRange(repeatHoldOngoingTrail);
+        list.AddRange(repeatHoldComplete);
 
         return list;
     }

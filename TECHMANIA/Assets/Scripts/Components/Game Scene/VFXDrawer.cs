@@ -9,6 +9,8 @@ using UnityEngine.UI;
 // What the heck.
 public class VFXDrawer : MonoBehaviour
 {
+    public Material additiveMaterial;
+
     private SpriteSheetForVfx spriteSheet;
     private bool loop;
 
@@ -22,6 +24,10 @@ public class VFXDrawer : MonoBehaviour
         transform.position = position;
         this.spriteSheet = spriteSheet;
         this.loop = loop;
+        if (spriteSheet.additiveShader)
+        {
+            GetComponent<Image>().material = additiveMaterial;
+        }
     }
 
     // Start is called before the first frame update

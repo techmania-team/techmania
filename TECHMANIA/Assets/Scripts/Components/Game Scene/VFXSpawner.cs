@@ -6,38 +6,45 @@ public class VFXSpawner : MonoBehaviour
 {
     public GameObject vfxPrefab;
 
-    private Dictionary<NoteObject, GameObject> 
+    // Non-looping VFX will destroy themselves when done. The looping
+    // ones do not, so we track them in these dictionaries and destroy
+    // them when the corresponding note resolves.
+    private Dictionary<NoteObject, List<GameObject>>
         holdNoteToOngoingHeadVfx;
-    private Dictionary<NoteObject, GameObject> 
+    private Dictionary<NoteObject, List<GameObject>> 
         holdNoteToOngoingTrailVfx;
-    private Dictionary<NoteObject, GameObject>
+    private Dictionary<NoteObject, List<GameObject>>
         dragNoteToOngoingVfx;
 
     private void Start()
     {
         holdNoteToOngoingHeadVfx =
-            new Dictionary<NoteObject, GameObject>();
+            new Dictionary<NoteObject, List<GameObject>>();
         holdNoteToOngoingTrailVfx =
-            new Dictionary<NoteObject, GameObject>();
+            new Dictionary<NoteObject, List<GameObject>>();
         dragNoteToOngoingVfx =
-            new Dictionary<NoteObject, GameObject>();
+            new Dictionary<NoteObject, List<GameObject>>();
     }
 
-    private GameObject SpawnVfxAt(Vector3 position,
-        SpriteSheetForVfx spriteSheet, bool loop = false)
+    private List<GameObject> SpawnVfxAt(Vector3 position,
+        List<SpriteSheetForVfx> spriteSheetLayers, bool loop = false)
     {
-        GameObject vfx = Instantiate(vfxPrefab, transform);
-        vfx.GetComponent<VFXDrawer>().Initialize(
-            position, spriteSheet, loop);
-
-        return vfx;
+        List<GameObject> layers = new List<GameObject>();
+        foreach (SpriteSheetForVfx layer in spriteSheetLayers)
+        {
+            GameObject vfx = Instantiate(vfxPrefab, transform);
+            vfx.GetComponent<VFXDrawer>().Initialize(
+                position, layer, loop);
+            layers.Add(vfx);
+        }
+        return layers;
     }
 
-    private GameObject SpawnVfxAt(NoteObject note,
-        SpriteSheetForVfx spriteSheet, bool loop = false)
+    private List<GameObject> SpawnVfxAt(NoteObject note,
+        List<SpriteSheetForVfx> spriteSheetLayers, bool loop = false)
     {
         return SpawnVfxAt(note.transform.position,
-            spriteSheet, loop);
+            spriteSheetLayers, loop);
     }
 
     public void SpawnVFXOnHit(NoteObject note, Judgement judgement)
@@ -128,12 +135,14 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.Hold:
                 if (holdNoteToOngoingHeadVfx.ContainsKey(note))
                 {
-                    Destroy(holdNoteToOngoingHeadVfx[note]);
+                    holdNoteToOngoingHeadVfx[note].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingHeadVfx.Remove(note);
                 }
                 if (holdNoteToOngoingTrailVfx.ContainsKey(note))
                 {
-                    Destroy(holdNoteToOngoingTrailVfx[note]);
+                    holdNoteToOngoingTrailVfx[note].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingTrailVfx.Remove(note);
                 }
                 if (judgement != Judgement.Miss &&
@@ -148,7 +157,8 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.Drag:
                 if (dragNoteToOngoingVfx.ContainsKey(note))
                 {
-                    Destroy(dragNoteToOngoingVfx[note]);
+                    dragNoteToOngoingVfx[note].ForEach(
+                        o => Destroy(o));
                     dragNoteToOngoingVfx.Remove(note);
                 }
                 if (judgement != Judgement.Miss &&
@@ -185,12 +195,14 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.RepeatHeadHold:
                 if (holdNoteToOngoingHeadVfx.ContainsKey(note))
                 {
-                    Destroy(holdNoteToOngoingHeadVfx[note]);
+                    holdNoteToOngoingHeadVfx[note].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingHeadVfx.Remove(note);
                 }
                 if (holdNoteToOngoingTrailVfx.ContainsKey(note))
                 {
-                    Destroy(holdNoteToOngoingTrailVfx[note]);
+                    holdNoteToOngoingTrailVfx[note].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingTrailVfx.Remove(note);
                 }
                 if (judgement != Judgement.Miss &&
@@ -209,14 +221,15 @@ public class VFXSpawner : MonoBehaviour
                 if (holdNoteToOngoingHeadVfx
                     .ContainsKey(repeatHeadNote))
                 {
-                    Destroy(holdNoteToOngoingHeadVfx
-                        [repeatHeadNote]);
+                    holdNoteToOngoingHeadVfx[repeatHeadNote].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingHeadVfx.Remove(
                         repeatHeadNote);
                 }
                 if (holdNoteToOngoingTrailVfx.ContainsKey(note))
                 {
-                    Destroy(holdNoteToOngoingTrailVfx[note]);
+                    holdNoteToOngoingTrailVfx[note].ForEach(
+                        o => Destroy(o));
                     holdNoteToOngoingTrailVfx.Remove(note);
                 }
                 if (judgement != Judgement.Miss &&
@@ -233,19 +246,25 @@ public class VFXSpawner : MonoBehaviour
 
     private void Update()
     {
-        foreach (KeyValuePair<NoteObject, GameObject> pair in
+        foreach (KeyValuePair<NoteObject, List<GameObject>> pair in
             holdNoteToOngoingTrailVfx)
         {
-            pair.Value.transform.position =
-                pair.Key.GetComponent<NoteAppearance>()
-                .GetOngoingTrailEndPosition();
+            foreach (GameObject o in pair.Value)
+            {
+                o.transform.position =
+                    pair.Key.GetComponent<NoteAppearance>()
+                    .GetOngoingTrailEndPosition();
+            }
         }
-        foreach (KeyValuePair<NoteObject, GameObject> pair in
+        foreach (KeyValuePair<NoteObject, List<GameObject>> pair in
             dragNoteToOngoingVfx)
         {
-            pair.Value.transform.position =
-                pair.Key.GetComponent<NoteAppearance>()
-                .noteImage.transform.position;
+            foreach (GameObject o in pair.Value)
+            {
+                o.transform.position =
+                    pair.Key.GetComponent<NoteAppearance>()
+                    .noteImage.transform.position;
+            }
         }
     }
 }
