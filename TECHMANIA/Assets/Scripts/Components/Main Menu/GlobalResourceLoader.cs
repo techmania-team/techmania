@@ -67,18 +67,21 @@ public class GlobalResourceLoader : MonoBehaviour
         yield return StartCoroutine(LoadListOfSpriteSheets(
             spriteSheets, noteSkinFolder,
             "Loading note skin..."));
+        if (state == State.Error) yield break;
 
         spriteSheets = GlobalResource.vfxSkin
             .GetReferenceToAllSpriteSheets();
         yield return StartCoroutine(LoadListOfSpriteSheets(
             spriteSheets, vfxSkinFolder,
             "Loading VFX skin..."));
+        if (state == State.Error) yield break;
 
         spriteSheets = GlobalResource.comboSkin
             .GetReferenceToAllSpriteSheets();
         yield return StartCoroutine(LoadListOfSpriteSheets(
             spriteSheets, comboSkinFolder,
             "Loading combo skin..."));
+        if (state == State.Error) yield break;
 
         yield return null;
         GlobalResource.loaded = true;
@@ -111,7 +114,10 @@ public class GlobalResourceLoader : MonoBehaviour
                 });
             yield return new WaitUntil(() => loaded);
 
-            if (state == State.Error) yield break;
+            if (state == State.Error)
+            {
+                yield break;
+            }
             list[i].GenerateSprites();
         }
     }
