@@ -37,8 +37,8 @@ public class SpriteSheet
         texture.filterMode = bilinearFilter ? FilterMode.Bilinear :
             FilterMode.Point;
         sprites = new List<Sprite>();
-        int spriteWidth = texture.width / columns;
-        int spriteHeight = texture.height / rows;
+        float spriteWidth = (float)texture.width / columns;
+        float spriteHeight = (float)texture.height / rows;
         for (int i = firstIndex; i <= lastIndex; i++)
         {
             int row = i / columns;
