@@ -8,6 +8,8 @@ using UnityEngine.UI;
 public class SelectSkinPanel : MonoBehaviour
 {
     public BackButton backButton;
+    public GlobalResourceLoader resourceLoader;
+    public MessageDialog messageDialog;
 
     public TMP_Dropdown noteSkinDropdown;
     public TMP_Dropdown vfxSkinDropdown;
@@ -66,19 +68,51 @@ public class SelectSkinPanel : MonoBehaviour
     public void OnNoteSkinChanged()
     {
         UIToMemory();
-        // TODO: reload note
+
+        StopPreview();
+        backButton.GetComponent<Button>().interactable = false;
+        resourceLoader.LoadNoteSkin(progressCallback: null,
+            completeCallback: OnSkinLoaded);
     }
 
     public void OnVfxSkinChanged()
     {
         UIToMemory();
-        // TODO: reload VFX
+
+        StopPreview();
+        backButton.GetComponent<Button>().interactable = false;
+        resourceLoader.LoadVfxSkin(progressCallback: null,
+            completeCallback: OnSkinLoaded);
     }
 
     public void OnComboSkinChanged()
     {
         UIToMemory();
-        // TODO: reload combo
+
+        StopPreview();
+        backButton.GetComponent<Button>().interactable = false;
+        resourceLoader.LoadComboSkin(progressCallback: null,
+            completeCallback: OnSkinLoaded);
+    }
+
+    public void OnSkinLoaded(string error)
+    {
+        if (error != null)
+        {
+            messageDialog.Show(error);
+        }
+        RestartPreview();
+        backButton.GetComponent<Button>().interactable = true;
+    }
+
+    private void StopPreview()
+    {
+
+    }
+
+    private void RestartPreview()
+    {
+
     }
 
     public void UIToMemory()

@@ -1373,9 +1373,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1190305145}
+      objectReference: {fileID: 178470417}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 178470417}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1383,12 +1393,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnGraphicsOptionsUpdated
+      value: OnComboSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: OnComboSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606552306653, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
@@ -2280,6 +2315,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backButton: {fileID: 178470414}
+  resourceLoader: {fileID: 1740596122}
+  messageDialog: {fileID: 8369197524032551023}
   noteSkinDropdown: {fileID: 1536996601}
   vfxSkinDropdown: {fileID: 1114218184}
   comboSkinDropdown: {fileID: 139638447}
@@ -8019,7 +8056,7 @@ PrefabInstance:
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1190305145}
+      objectReference: {fileID: 178470417}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -8028,7 +8065,17 @@ PrefabInstance:
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnGraphicsOptionsUpdated
+      value: UIToMemory
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MaterialToggle, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
@@ -11427,9 +11474,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1190305145}
+      objectReference: {fileID: 178470417}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 178470417}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -11437,12 +11494,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnGraphicsOptionsUpdated
+      value: OnVfxSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: OnVfxSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606552306653, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
@@ -15979,9 +16061,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1190305145}
+      objectReference: {fileID: 178470417}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 178470417}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -15989,12 +16081,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnGraphicsOptionsUpdated
+      value: OnNoteSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: OnNoteSkinChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SelectSkinPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606552306653, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,

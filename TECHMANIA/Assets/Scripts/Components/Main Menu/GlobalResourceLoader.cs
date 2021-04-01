@@ -162,7 +162,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         for (int i = 0; i < spriteSheetReferences.Count; i++)
         {
-            progressCallback.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
+            progressCallback?.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
 
             string filename = Path.Combine(skinFolder,
                 spriteSheetReferences[i].filename);
@@ -174,7 +174,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     loaded = true;
                     if (errorMessage != null)
                     {
-                        completeCallback(errorMessage);
+                        completeCallback?.Invoke(errorMessage);
                         error = true;
                     }
                     else
@@ -183,6 +183,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     }
                 });
             yield return new WaitUntil(() => loaded);
+            yield return new WaitForSeconds(0.1f);
 
             if (error)
             {
@@ -190,6 +191,6 @@ public class GlobalResourceLoader : MonoBehaviour
             }
             spriteSheetReferences[i].GenerateSprites();
         }
-        completeCallback.Invoke(null);
+        completeCallback?.Invoke(null);
     }
 }

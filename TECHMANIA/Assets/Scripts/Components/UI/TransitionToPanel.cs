@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class TransitionToPanel : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
@@ -20,6 +21,10 @@ public class TransitionToPanel : MonoBehaviour, IPointerClickHandler, ISubmitHan
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!GetComponent<Button>().interactable)
+        {
+            return;
+        }
         Invoke();
     }
 
