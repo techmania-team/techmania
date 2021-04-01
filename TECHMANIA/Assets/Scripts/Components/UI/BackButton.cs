@@ -25,6 +25,10 @@ public class BackButton : MonoBehaviour
             {
                 return;
             }
+            if (!GetComponent<Button>().interactable)
+            {
+                return;
+            }
             if (!GetComponentInParent<CanvasGroup>().interactable)
             {
                 return;

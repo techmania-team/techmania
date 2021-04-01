@@ -38,9 +38,11 @@ public class Options : OptionsBase
 
     // Appearance
 
+    public bool showLoadingBar;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
+    public bool reloadSkinsWhenLoadingPattern;
 
     // Timing
 
@@ -73,9 +75,11 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
+        showLoadingBar = true;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
+        reloadSkinsWhenLoadingPattern = false;
 
         touchOffsetMs = 0;
         touchLatencyMs = 0;

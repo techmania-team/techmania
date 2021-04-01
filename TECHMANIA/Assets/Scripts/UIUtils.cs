@@ -9,6 +9,7 @@ public class UIUtils
 {
     public const string kNone = "(None)";
 
+    #region ClampInputField
     public static void ClampInputField(TMP_InputField field, double min, double max)
     {
         double value = double.Parse(field.text);
@@ -50,7 +51,9 @@ public class UIUtils
             field.text = value.ToString();
         }
     }
+    #endregion
 
+    #region UpdateMetadataInMemory
     // Update property to be newValue.
     // - If the new value is different from the old one,
     //   set madeChange to true.
@@ -115,11 +118,14 @@ public class UIUtils
         UpdateMetadataInMemory(ref property,
             newValueString, ref madeChange);
     }
+    #endregion
 
+    #region MemoryToDropdown
     // Refreshes the option and value of dropdown so:
-    // - The options are the file names (directory stripped) in allOptions
-    // - The new value points to currentOption if it as among allOptions;
-    //   "(None)" otherwise
+    // - The options are the file names (directory stripped)
+    //   in allOptions
+    // - The new value points to currentOption if it as among
+    //   allOptions; "(None)" otherwise
     // - No events are fired
     public static void MemoryToDropdown(TMP_Dropdown dropdown,
         string currentOption, List<string> allOptions)
@@ -159,6 +165,7 @@ public class UIUtils
         dropdown.SetValueWithoutNotify(defaultValue);
         dropdown.RefreshShownValue();
     }
+    #endregion
 
     public const string kEmptyKeysoundDisplayText = "(None)";
     public static string StripAudioExtension(string filename)
@@ -166,6 +173,7 @@ public class UIUtils
         return filename.Replace(".wav", "").Replace(".ogg", "");
     }
 
+    #region Rotate/Point Toward
     public static void RotateToward(RectTransform self,
         Vector2 selfPos, Vector2 targetPos)
     {
@@ -201,4 +209,5 @@ public class UIUtils
         Vector2 targetPos = target.anchoredPosition;
         PointToward(self, selfPos, targetPos);
     }
+    #endregion
 }

@@ -19,10 +19,10 @@ public class GlobalResourceLoader : MonoBehaviour
 
     public void StartLoading()
     {
-        StartCoroutine(Load());
+        StartCoroutine(LoadResourcesOnStartUp());
     }
 
-    private IEnumerator Load()
+    private IEnumerator LoadResourcesOnStartUp()
     {
         state = State.Loading;
         error = null;
@@ -34,53 +34,34 @@ public class GlobalResourceLoader : MonoBehaviour
             yield break;
         }
 
-        string noteSkinFolder = Paths.GetNoteSkinFolder(
-            Options.instance.noteSkin);
-        string noteSkinFilename = Path.Combine(
-            noteSkinFolder, Paths.kSkinFilename);
-        string vfxSkinFolder = Paths.GetVfxSkinFolder(
-            Options.instance.vfxSkin);
-        string vfxSkinFilename = Path.Combine(vfxSkinFolder,
-            Paths.kSkinFilename);
-        string comboSkinFolder = Paths.GetComboSkinFolder(
-            Options.instance.comboSkin);
-        string comboSkinFilename = Path.Combine(comboSkinFolder,
-            Paths.kSkinFilename);
-        try
+        UnityAction<string> progressCallback = (string progress) =>
         {
-            GlobalResource.noteSkin = NoteSkin.LoadFromFile(
-                noteSkinFilename) as NoteSkin;
-            GlobalResource.vfxSkin = VfxSkin.LoadFromFile(
-                vfxSkinFilename) as VfxSkin;
-            GlobalResource.comboSkin = ComboSkin.LoadFromFile(
-                comboSkinFilename) as ComboSkin;
-        }
-        catch (Exception ex)
+            statusText = progress;
+        };
+        bool oneSkinLoaded = false;
+        UnityAction<string> completeCallback = (string errorMessage) =>
         {
-            state = State.Error;
-            error = $"An error occurred when loading skin:\n\n{ex.Message}";
-            yield break;
-        }
+            oneSkinLoaded = true;
+            if (errorMessage != null)
+            {
+                state = State.Error;
+                error = errorMessage;
+            }
+        };
 
-        List<SpriteSheet> spriteSheets = GlobalResource.noteSkin
-            .GetReferenceToAllSpriteSheets();
-        yield return StartCoroutine(LoadListOfSpriteSheets(
-            spriteSheets, noteSkinFolder,
-            "Loading note skin..."));
+        oneSkinLoaded = false;
+        LoadNoteSkin(progressCallback, completeCallback);
+        yield return new WaitUntil(() => oneSkinLoaded);
         if (state == State.Error) yield break;
 
-        spriteSheets = GlobalResource.vfxSkin
-            .GetReferenceToAllSpriteSheets();
-        yield return StartCoroutine(LoadListOfSpriteSheets(
-            spriteSheets, vfxSkinFolder,
-            "Loading VFX skin..."));
+        oneSkinLoaded = false;
+        LoadVfxSkin(progressCallback, completeCallback);
+        yield return new WaitUntil(() => oneSkinLoaded);
         if (state == State.Error) yield break;
 
-        spriteSheets = GlobalResource.comboSkin
-            .GetReferenceToAllSpriteSheets();
-        yield return StartCoroutine(LoadListOfSpriteSheets(
-            spriteSheets, comboSkinFolder,
-            "Loading combo skin..."));
+        oneSkinLoaded = false;
+        LoadComboSkin(progressCallback, completeCallback);
+        yield return new WaitUntil(() => oneSkinLoaded);
         if (state == State.Error) yield break;
 
         yield return null;
@@ -88,37 +69,127 @@ public class GlobalResourceLoader : MonoBehaviour
         state = State.Complete;
     }
 
-    private IEnumerator LoadListOfSpriteSheets(
-        List<SpriteSheet> list, string folder, string loadMessage)
+    // completeCallback's argument is error message; null if no error.
+    public void LoadNoteSkin(UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
     {
-        for (int i = 0; i < list.Count; i++)
+        string noteSkinFolder = Paths.GetNoteSkinFolder(
+            Options.instance.noteSkin);
+        string noteSkinFilename = Path.Combine(
+            noteSkinFolder, Paths.kSkinFilename);
+        try
         {
-            statusText = $"{loadMessage} ({i + 1}/{list.Count})";
+            GlobalResource.noteSkin = NoteSkin.LoadFromFile(
+                noteSkinFilename) as NoteSkin;
+        }
+        catch (Exception ex)
+        {
+            completeCallback?.Invoke($"An error occurred when loading note skin:\n\n{ex.Message}");
+            return;
+        }
 
-            string filename = Path.Combine(folder,
-                list[i].filename);
+        List<SpriteSheet> spriteSheets = GlobalResource.noteSkin
+            .GetReferenceToAllSpriteSheets();
+        StartCoroutine(LoadSkin(noteSkinFolder,
+            spriteSheets,
+            "Loading note skin...",
+            progressCallback,
+            completeCallback));
+    }
+
+    // completeCallback's argument is error message; null if no error.
+    public void LoadVfxSkin(UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
+    {
+        string vfxSkinFolder = Paths.GetVfxSkinFolder(
+            Options.instance.vfxSkin);
+        string vfxSkinFilename = Path.Combine(
+            vfxSkinFolder, Paths.kSkinFilename);
+        try
+        {
+            GlobalResource.vfxSkin = VfxSkin.LoadFromFile(
+                vfxSkinFilename) as VfxSkin;
+        }
+        catch (Exception ex)
+        {
+            completeCallback?.Invoke($"An error occurred when loading VFX skin:\n\n{ex.Message}");
+            return;
+        }
+
+        List<SpriteSheet> spriteSheets = GlobalResource.vfxSkin
+            .GetReferenceToAllSpriteSheets();
+        StartCoroutine(LoadSkin(vfxSkinFolder,
+            spriteSheets,
+            "Loading VFX skin...",
+            progressCallback,
+            completeCallback));
+    }
+
+    // completeCallback's argument is error message; null if no error.
+    public void LoadComboSkin(UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
+    {
+        string comboSkinFolder = Paths.GetComboSkinFolder(
+            Options.instance.comboSkin);
+        string comboSkinFilename = Path.Combine(
+            comboSkinFolder, Paths.kSkinFilename);
+        try
+        {
+            GlobalResource.comboSkin = ComboSkin.LoadFromFile(
+                comboSkinFilename) as ComboSkin;
+        }
+        catch (Exception ex)
+        {
+            completeCallback?.Invoke($"An error occurred when loading combo skin:\n\n{ex.Message}");
+            return;
+        }
+
+        List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
+            .GetReferenceToAllSpriteSheets();
+        StartCoroutine(LoadSkin(comboSkinFolder,
+            spriteSheets,
+            "Loading combo skin...",
+            progressCallback,
+            completeCallback));
+    }
+
+    // completeCallback's argument is error message; null if no error.
+    private IEnumerator LoadSkin(string skinFolder,
+        List<SpriteSheet> spriteSheetReferences,
+        string loadMessage,
+        UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
+    {
+        for (int i = 0; i < spriteSheetReferences.Count; i++)
+        {
+            progressCallback.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
+
+            string filename = Path.Combine(skinFolder,
+                spriteSheetReferences[i].filename);
             bool loaded = false;
+            bool error = false;
             ResourceLoader.LoadImage(filename,
-                (texture, error) =>
+                (texture, errorMessage) =>
                 {
                     loaded = true;
-                    if (error != null)
+                    if (errorMessage != null)
                     {
-                        state = State.Error;
-                        this.error = error;
+                        completeCallback(errorMessage);
+                        error = true;
                     }
                     else
                     {
-                        list[i].texture = texture;
+                        spriteSheetReferences[i].texture = texture;
                     }
                 });
             yield return new WaitUntil(() => loaded);
 
-            if (state == State.Error)
+            if (error)
             {
                 yield break;
             }
-            list[i].GenerateSprites();
+            spriteSheetReferences[i].GenerateSprites();
         }
+        completeCallback.Invoke(null);
     }
 }

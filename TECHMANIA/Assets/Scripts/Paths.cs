@@ -41,19 +41,34 @@ public static class Paths
         return Path.Combine(GetWorkingDirectory(), "Skins");
     }
 
+    public static string GetNoteSkinRootFolder()
+    {
+        return Path.Combine(GetSkinFolder(), "Note");
+    }
+
     public static string GetNoteSkinFolder(string name)
     {
-        return Path.Combine(GetSkinFolder(), "Note", name);
+        return Path.Combine(GetNoteSkinRootFolder(), name);
+    }
+
+    public static string GetVfxSkinRootFolder()
+    {
+        return Path.Combine(GetSkinFolder(), "VFX");
     }
 
     public static string GetVfxSkinFolder(string name)
     {
-        return Path.Combine(GetSkinFolder(), "VFX", name);
+        return Path.Combine(GetVfxSkinRootFolder(), name);
+    }
+
+    public static string GetComboSkinRootFolder()
+    {
+        return Path.Combine(GetSkinFolder(), "Combo");
     }
 
     public static string GetComboSkinFolder(string name)
     {
-        return Path.Combine(GetSkinFolder(), "Combo", name);
+        return Path.Combine(GetComboSkinRootFolder(), name);
     }
     #endregion
 
