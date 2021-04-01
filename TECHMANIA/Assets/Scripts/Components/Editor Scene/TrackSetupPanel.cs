@@ -295,7 +295,7 @@ public class TrackSetupPanel : MonoBehaviour
             () =>
             {
                 Directory.Delete(EditorContext.trackFolder, recursive: true);
-                GetComponentInChildren<TransitionToPanelWhenNotDirty>().ForceTransition();
+                GetComponentInChildren<CustomTransitionFromTrackSetupPanel>().ForceTransition();
             });
     }
 

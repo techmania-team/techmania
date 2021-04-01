@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TransitionToPanelWhenNotDirty : TransitionToPanel
+public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
 {
     public ConfirmDialog confirmDialog;
 
@@ -15,10 +15,7 @@ public class TransitionToPanelWhenNotDirty : TransitionToPanel
                 "Unsaved changes to the track will be discarded. Continue?",
                 "discard",
                 "cancel",
-                () =>
-                {
-                    ForceTransition();
-                });
+                ForceTransition);
         }
         else
         {
