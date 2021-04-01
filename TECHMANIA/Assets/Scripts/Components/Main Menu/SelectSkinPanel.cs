@@ -89,10 +89,13 @@ public class SelectSkinPanel : MonoBehaviour
         bool noteVisible = beat < 2f;
         bool resolveNote = (previousBeat < 2f && beat >= 2f);
 
-        if (showPreview)
+        if (showPreview &&
+            GlobalResource.noteSkin != null &&
+            GlobalResource.vfxSkin != null &&
+            GlobalResource.comboSkin != null)
         {
             notePreview.sprite = GlobalResource.noteSkin.basic.
-                    GetSpriteForFloatBeat(beat);
+                GetSpriteForFloatBeat(beat);
             if (resolveNote)
             {
                 // VFX
@@ -122,14 +125,15 @@ public class SelectSkinPanel : MonoBehaviour
                     currentCombo: 123);
                 comboPreview.Show(null, Judgement.RainbowMax);
             }
-        }
-        if (showPreview && noteVisible)
-        {
-            notePreview.color = Color.white;
-        }
-        else
-        {
-            notePreview.color = Color.clear;
+
+            if (noteVisible)
+            {
+                notePreview.color = Color.white;
+            }
+            else
+            {
+                notePreview.color = Color.clear;
+            }
         }
 
         previousBeat = beat;
@@ -195,13 +199,19 @@ public class SelectSkinPanel : MonoBehaviour
         showPreview = true;
 
         // Note preview
-        float noteScale = GlobalResource.noteSkin.basic.scale;
-        float noteSize = Scan.laneHeight * noteScale;
-        notePreview.GetComponent<RectTransform>().sizeDelta =
-            new Vector2(noteSize, noteSize);
+        if (GlobalResource.noteSkin != null)
+        {
+            float noteScale = GlobalResource.noteSkin.basic.scale;
+            float noteSize = Scan.laneHeight * noteScale;
+            notePreview.GetComponent<RectTransform>().sizeDelta =
+                new Vector2(noteSize, noteSize);
+        }
 
         // Combo preview
-        comboPreview.ResetSizes();
+        if (GlobalResource.comboSkin != null)
+        {
+            comboPreview.ResetSizes();
+        }
     }
 
     public void UIToMemory()

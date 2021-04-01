@@ -46,14 +46,17 @@ public class ComboText : MonoBehaviour
 
     public void ResetSizes()
     {
-        comboTextLayout.anchoredPosition = new Vector2(
-            0f, GlobalResource.comboSkin.distanceToNote);
-        comboTextLayout.sizeDelta = new Vector2(
-            comboTextLayout.sizeDelta.x,
-            GlobalResource.comboSkin.height);
-        space.sizeDelta = new Vector2(
-            GlobalResource.comboSkin.spaceBetweenJudgementAndCombo,
-            space.sizeDelta.y);
+        if (GlobalResource.comboSkin != null)
+        {
+            comboTextLayout.anchoredPosition = new Vector2(
+                0f, GlobalResource.comboSkin.distanceToNote);
+            comboTextLayout.sizeDelta = new Vector2(
+                comboTextLayout.sizeDelta.x,
+                GlobalResource.comboSkin.height);
+            space.sizeDelta = new Vector2(
+                GlobalResource.comboSkin.spaceBetweenJudgementAndCombo,
+                space.sizeDelta.y);
+        }
     }
 
     public void Hide()
