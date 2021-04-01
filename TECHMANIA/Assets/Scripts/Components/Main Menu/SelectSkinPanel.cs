@@ -16,9 +16,16 @@ public class SelectSkinPanel : MonoBehaviour
     public TMP_Dropdown comboSkinDropdown;
     public Toggle reloadSkinsToggle;
 
-    public GameObject notePreview;
+    public Image notePreview;
     public GameObject vfxPrefab;
-    public GameObject comboTextPreview;
+    public Transform vfxContainer;
+    public ComboText comboPreview;
+
+    private System.Diagnostics.Stopwatch stopwatch;
+    private const float beatPerSecond = 1.5f;
+    private float previousBeat;
+    private bool showPreview;
+    private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
         string skinFolder, string currentSkinName)
@@ -58,11 +65,74 @@ public class SelectSkinPanel : MonoBehaviour
             Paths.GetComboSkinRootFolder(), Options.instance.comboSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
+
+        Scan.InjectLaneHeight(120f);
+        stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
+        previousBeat = 0f;
+        vfxInstances = new List<GameObject>();
+        RestartPreview();
     }
 
     private void OnDisable()
     {
         Options.instance.SaveToFile(Paths.GetOptionsFilePath());
+    }
+
+    private void Update()
+    {
+        Game.InjectBaseTimeAndOffset(
+            (float)stopwatch.Elapsed.TotalSeconds,
+            offset: 0f);
+        float beat = Game.Time * beatPerSecond;
+        while (beat > 4f) beat -= 4f;
+        bool noteVisible = beat < 2f;
+        bool resolveNote = (previousBeat < 2f && beat >= 2f);
+
+        if (showPreview)
+        {
+            notePreview.sprite = GlobalResource.noteSkin.basic.
+                    GetSpriteForFloatBeat(beat);
+            if (resolveNote)
+            {
+                // VFX
+                List<GameObject> remainingVfxInstances = new 
+                    List<GameObject>();
+                foreach (GameObject instance in vfxInstances)
+                {
+                    if (instance != null)
+                    {
+                        remainingVfxInstances.Add(instance);
+                    }
+                }
+                foreach (SpriteSheetForVfx layer in
+                    GlobalResource.vfxSkin.basicMax)
+                {
+                    GameObject vfx = Instantiate(
+                        vfxPrefab, vfxContainer);
+                    vfx.GetComponent<VFXDrawer>().Initialize(
+                        notePreview.transform.position,
+                        layer, loop: false);
+                    remainingVfxInstances.Add(vfx);
+                }
+                vfxInstances = remainingVfxInstances;
+
+                // Combo
+                Game.InjectFeverAndCombo(Game.FeverState.Idle,
+                    currentCombo: 123);
+                comboPreview.Show(null, Judgement.RainbowMax);
+            }
+        }
+        if (showPreview && noteVisible)
+        {
+            notePreview.color = Color.white;
+        }
+        else
+        {
+            notePreview.color = Color.clear;
+        }
+
+        previousBeat = beat;
     }
 
     public void OnNoteSkinChanged()
@@ -107,12 +177,31 @@ public class SelectSkinPanel : MonoBehaviour
 
     private void StopPreview()
     {
+        showPreview = false;
 
+        // VFX preview
+        foreach (GameObject o in vfxInstances)
+        {
+            Destroy(o);
+        }
+        vfxInstances.Clear();
+
+        // Combo preview
+        comboPreview.Hide();
     }
 
     private void RestartPreview()
     {
+        showPreview = true;
 
+        // Note preview
+        float noteScale = GlobalResource.noteSkin.basic.scale;
+        float noteSize = Scan.laneHeight * noteScale;
+        notePreview.GetComponent<RectTransform>().sizeDelta =
+            new Vector2(noteSize, noteSize);
+
+        // Combo preview
+        comboPreview.ResetSizes();
     }
 
     public void UIToMemory()

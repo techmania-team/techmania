@@ -22,19 +22,8 @@ public class ComboText : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        comboTextLayout.anchoredPosition = new Vector2(
-            0f, GlobalResource.comboSkin.distanceToNote);
-        comboTextLayout.sizeDelta = new Vector2(
-            comboTextLayout.sizeDelta.x,
-            GlobalResource.comboSkin.height);
-        space.sizeDelta = new Vector2(
-            GlobalResource.comboSkin.spaceBetweenJudgementAndCombo,
-            space.sizeDelta.y);
-
-        // Turn off everything for now.
-        judgementText.gameObject.SetActive(false);
-        space.gameObject.SetActive(false);
-        comboDigits.ForEach(i => i.gameObject.SetActive(false));
+        ResetSizes();
+        Hide();
 
         noteToFollow = null;
         judgementSpriteSheet = null;
@@ -55,10 +44,32 @@ public class ComboText : MonoBehaviour
         return height / ratio;
     }
 
+    public void ResetSizes()
+    {
+        comboTextLayout.anchoredPosition = new Vector2(
+            0f, GlobalResource.comboSkin.distanceToNote);
+        comboTextLayout.sizeDelta = new Vector2(
+            comboTextLayout.sizeDelta.x,
+            GlobalResource.comboSkin.height);
+        space.sizeDelta = new Vector2(
+            GlobalResource.comboSkin.spaceBetweenJudgementAndCombo,
+            space.sizeDelta.y);
+    }
+
+    public void Hide()
+    {
+        judgementText.gameObject.SetActive(false);
+        space.gameObject.SetActive(false);
+        comboDigits.ForEach(i => i.gameObject.SetActive(false));
+    }
+
     public void Show(NoteObject n, Judgement judgement)
     {
-        noteToFollow = n.GetComponent<NoteAppearance>()
-            .noteImage.transform;
+        if (n != null)
+        {
+            noteToFollow = n.GetComponent<NoteAppearance>()
+                .noteImage.transform;
+        }
         Follow();
 
         // Draw judgement.
@@ -191,15 +202,15 @@ public class ComboText : MonoBehaviour
 
     private void Update()
     {
-        if (noteToFollow != null)
-        {
-            Follow();
-        }
+        Follow();
         UpdateSprites();
     }
 
     private void Follow()
     {
-        transform.position = noteToFollow.position;
+        if (noteToFollow != null)
+        {
+            transform.position = noteToFollow.position;
+        }
     }
 }

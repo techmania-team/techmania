@@ -114,6 +114,13 @@ public class Game : MonoBehaviour
 
     private bool loading;
     private bool hitboxVisible;
+
+    public static void InjectFeverAndCombo(FeverState feverState,
+        int currentCombo)
+    {
+        Game.feverState = feverState;
+        Game.currentCombo = currentCombo;
+    }
     
     #region Timers
     // The stopwatch provides the "base time", which drives
