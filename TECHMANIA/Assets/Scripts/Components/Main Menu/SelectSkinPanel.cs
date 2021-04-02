@@ -135,6 +135,10 @@ public class SelectSkinPanel : MonoBehaviour
                 notePreview.color = Color.clear;
             }
         }
+        else
+        {
+            notePreview.color = Color.clear;
+        }
 
         previousBeat = beat;
     }
@@ -143,8 +147,7 @@ public class SelectSkinPanel : MonoBehaviour
     {
         UIToMemory();
 
-        StopPreview();
-        backButton.GetComponent<Button>().interactable = false;
+        PrepareToLoadSkin();
         resourceLoader.LoadNoteSkin(progressCallback: null,
             completeCallback: OnSkinLoaded);
     }
@@ -153,8 +156,7 @@ public class SelectSkinPanel : MonoBehaviour
     {
         UIToMemory();
 
-        StopPreview();
-        backButton.GetComponent<Button>().interactable = false;
+        PrepareToLoadSkin();
         resourceLoader.LoadVfxSkin(progressCallback: null,
             completeCallback: OnSkinLoaded);
     }
@@ -163,8 +165,7 @@ public class SelectSkinPanel : MonoBehaviour
     {
         UIToMemory();
 
-        StopPreview();
-        backButton.GetComponent<Button>().interactable = false;
+        PrepareToLoadSkin();
         resourceLoader.LoadComboSkin(progressCallback: null,
             completeCallback: OnSkinLoaded);
     }
@@ -176,12 +177,22 @@ public class SelectSkinPanel : MonoBehaviour
             messageDialog.Show(error);
         }
         RestartPreview();
+
         backButton.GetComponent<Button>().interactable = true;
+        noteSkinDropdown.interactable = true;
+        vfxSkinDropdown.interactable = true;
+        comboSkinDropdown.interactable = true;
     }
 
-    private void StopPreview()
+    private void PrepareToLoadSkin()
     {
         showPreview = false;
+
+        // Controls
+        backButton.GetComponent<Button>().interactable = false;
+        noteSkinDropdown.interactable = false;
+        vfxSkinDropdown.interactable = false;
+        comboSkinDropdown.interactable = false;
 
         // VFX preview
         foreach (GameObject o in vfxInstances)
