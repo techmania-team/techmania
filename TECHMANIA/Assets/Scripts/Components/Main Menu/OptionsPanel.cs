@@ -25,6 +25,9 @@ public class OptionsPanel : MonoBehaviour
     public TMP_Dropdown audioBufferDropdown;
     public AudioMixer audioMixer;
 
+    [Header("Appearance")]
+    public Toggle showLoadingBarToggle;
+
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
 
@@ -137,6 +140,11 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.audioBufferSize.ToString(),
             defaultValue: 0);
 
+        // Appearance
+
+        showLoadingBarToggle.SetIsOnWithoutNotify(
+            Options.instance.showLoadingBar);
+
         // Miscellaneous
 
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
@@ -237,6 +245,13 @@ public class OptionsPanel : MonoBehaviour
             AudioSettings.Reset(config);
             ResourceLoader.forceReload = true;
         }
+    }
+    #endregion
+
+    #region Appearance
+    public void OnAppearanceOptionsChanged()
+    {
+        Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
     }
     #endregion
 }

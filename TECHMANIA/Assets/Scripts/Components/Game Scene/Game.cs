@@ -188,6 +188,8 @@ public class Game : MonoBehaviour
         topBar.SetActive(false);
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
+        loadingBar.GetComponent<CanvasGroup>().alpha =
+            Options.instance.showLoadingBar ? 1f : 0f;
         loadingProgress.SetValue(0f);
         stopwatch = null;
 

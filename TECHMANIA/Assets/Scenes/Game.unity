@@ -2688,6 +2688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31300a704886f5b408f24af9556a6dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  globalResourceLoader: {fileID: 1097787870}
   backgroundImage: {fileID: 1885171969}
   videoPlayer: {fileID: 1450119605}
   bga: {fileID: 1450119606}
@@ -4665,6 +4666,7 @@ GameObject:
   - component: {fileID: 1097787866}
   - component: {fileID: 1097787865}
   - component: {fileID: 1097787869}
+  - component: {fileID: 1097787870}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4768,6 +4770,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5072c9b837fed949a2f36ecf6250b76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1097787870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097787864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c87d8964c2fc734d835474c832dcf2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1179233808
@@ -6180,6 +6194,7 @@ GameObject:
   - component: {fileID: 1660169075}
   - component: {fileID: 1660169077}
   - component: {fileID: 1660169076}
+  - component: {fileID: 1660169078}
   m_Layer: 5
   m_Name: Loading Bar
   m_TagString: Untagged
@@ -6246,6 +6261,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1660169074}
   m_CullTransparentMesh: 0
+--- !u!225 &1660169078
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660169074}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1670107517
 GameObject:
   m_ObjectHideFlags: 0
