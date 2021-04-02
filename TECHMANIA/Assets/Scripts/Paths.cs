@@ -22,9 +22,11 @@ public static class Paths
         string current = Directory.GetCurrentDirectory();
 #endif
 
-#if UNITY_EDITOR
-        current = Path.Combine(current, "Builds");
-#endif
+        string buildsFolder = Path.Combine(current, "Builds");
+        if (Directory.Exists(buildsFolder))
+        {
+            return buildsFolder;
+        }
 
         return current;
     }

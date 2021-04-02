@@ -68,8 +68,6 @@ public class SelectSkinPanel : MonoBehaviour
 
         Scan.InjectLaneHeight(120f);
         stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
-        previousBeat = 0f;
         vfxInstances = new List<GameObject>();
         RestartPreview();
     }
@@ -223,6 +221,10 @@ public class SelectSkinPanel : MonoBehaviour
         {
             comboPreview.ResetSizes();
         }
+
+        // Timing
+        stopwatch.Restart();
+        previousBeat = 0f;
     }
 
     public void UIToMemory()
