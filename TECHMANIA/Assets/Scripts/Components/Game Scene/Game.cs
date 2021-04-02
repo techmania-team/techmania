@@ -31,6 +31,8 @@ public enum InputDevice
 
 public class Game : MonoBehaviour
 {
+    public GlobalResourceLoader globalResourceLoader;
+
     [Header("Background")]
     public Image backgroundImage;
     public VideoPlayer videoPlayer;
@@ -235,7 +237,33 @@ public class Game : MonoBehaviour
             backgroundImage.color = Color.clear;
         }
 
-        // Step 2: load backing track, if any. This allows calculating
+        // Step 2: load skins, if told to.
+        if (Options.instance.reloadSkinsWhenLoadingPattern)
+        {
+            bool skinLoaded = false;
+            UnityAction<string> loadSkinCallback = (string error) =>
+            {
+                if (error != null)
+                {
+                    ReportFatalError(error);
+                }
+                else
+                {
+                    skinLoaded = true;
+                }
+            };
+
+            globalResourceLoader.LoadNoteSkin(null, loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            globalResourceLoader.LoadVfxSkin(null, loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            globalResourceLoader.LoadComboSkin(null, loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+        }
+
+        // Step 3: load backing track, if any. This allows calculating
         // the number of scans.
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
@@ -248,7 +276,7 @@ public class Game : MonoBehaviour
             yield return new WaitUntil(() => backingTrackLoaded);
         }
 
-        // Step 3: load keysounds, if any.
+        // Step 4: load keysounds, if any.
         keysoundsLoaded = false;
         ResourceLoader.CacheAllKeysounds(GameSetup.trackFolder,
             GameSetup.pattern,
@@ -256,7 +284,7 @@ public class Game : MonoBehaviour
             OnKeysoundLoadProgress);
         yield return new WaitUntil(() => keysoundsLoaded);
 
-        // Step 4: load BGA, if any.
+        // Step 5: load BGA, if any.
         bool hasBga;
         if (GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
@@ -277,7 +305,7 @@ public class Game : MonoBehaviour
             bga.color = Color.clear;
         }
 
-        // Step 5: initialize pattern. This sadly cannot be done
+        // Step 6: initialize pattern. This sadly cannot be done
         // asynchronously.
         InitializePattern();
 
