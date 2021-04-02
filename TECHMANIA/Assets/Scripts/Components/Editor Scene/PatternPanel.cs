@@ -3263,14 +3263,10 @@ public class PatternPanel : MonoBehaviour
     private DateTime systemTimeOnPlaybackStart;
     private float playbackBeatOnPreviousFrame;  // For metronome
 
-    // Each queue represents one lane; each lane is sorted by pulse.
-    // Played notes are popped from the corresponding queue. This
-    // makes it easy to tell if it's time to play the next note
-    // in each lane.
-    //
-    // This data structure is only used for playback, so it's not
-    // defined in the Internal Data Structures region.
-    private List<Queue<Note>> notesInLanes;
+    // When playing, sort all notes by pulse so it's easy to tell if
+    // it's time to play the next note in the queue. Once played,
+    // a note is removed from the queue.
+    private Queue<Note> sortedNotesForPlayback;
 
     private void OnResourceLoadComplete(string error)
     {
@@ -3317,20 +3313,31 @@ public class PatternPanel : MonoBehaviour
         playbackStartingTime = pattern.PulseToTime(
             (int)playbackStartingPulse);
 
-        // Put notes into queues, each corresponding to a lane.
-        // Use MaxTotalLanes instead of TotalLanes, so that, for
-        // example, when user sets hidden lanes to 4, lanes
-        // 8~11 are still played.
-        notesInLanes = new List<Queue<Note>>();
-        for (int i = 0; i < TotalLanes; i++)
+        // Go through all notes.
+        // For notes before playbackStartingTime, play their keysounds
+        // immediately if they last long enough.
+        // For notes after playbackStartingTime, put them into queue,
+        // and they will be played during UpdatePlayback.
+        sortedNotesForPlayback = new Queue<Note>();
+        foreach (Note n in EditorContext.Pattern.notes)
         {
-            notesInLanes.Add(new Queue<Note>());
-        }
-        foreach (Note n in EditorContext.Pattern.GetViewBetween(
-            (int)playbackStartingPulse,
-            int.MaxValue))
-        {
-            notesInLanes[n.lane].Enqueue(n);
+            if (n.time < playbackStartingTime)
+            {
+                AudioClip clip = ResourceLoader.GetCachedClip(
+                    n.sound);
+                if (clip == null) continue;
+                if (n.time + clip.length > playbackStartingTime)
+                {
+                    audioSourceManager.PlayKeysound(clip,
+                        n.lane > PlayableLanes,
+                        startTime: playbackStartingTime - n.time,
+                        n.volume, n.pan);
+                }
+            }
+            else
+            {
+                sortedNotesForPlayback.Enqueue(n);
+            }
         }
 
         systemTimeOnPlaybackStart = DateTime.Now;
@@ -3404,26 +3411,23 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Play keysounds if it's their time.
-        for (int i = 0; i < notesInLanes.Count; i++)
+        while (sortedNotesForPlayback.Count > 0)
         {
-            if (notesInLanes[i].Count == 0) continue;
-            Note nextNote = notesInLanes[i].Peek();
-            if (playbackCurrentTime >= nextNote.time)
-            {
-                AudioClip clip = ResourceLoader.GetCachedClip(
-                    nextNote.sound);
-                if (clip == null && Options.instance.editorOptions
-                    .assistTickOnSilentNotes)
-                {
-                    clip = assistTick;
-                }
-                audioSourceManager.PlayKeysound(clip,
-                    nextNote.lane > PlayableLanes,
-                    startTime: 0f,
-                    nextNote.volume, nextNote.pan);
+            Note nextNote = sortedNotesForPlayback.Peek();
+            if (playbackCurrentTime < nextNote.time) break;
 
-                notesInLanes[i].Dequeue();
+            sortedNotesForPlayback.Dequeue();
+            AudioClip clip = ResourceLoader.GetCachedClip(
+                nextNote.sound);
+            if (clip == null && Options.instance.editorOptions
+                .assistTickOnSilentNotes)
+            {
+                clip = assistTick;
             }
+            audioSourceManager.PlayKeysound(clip,
+                nextNote.lane > PlayableLanes,
+                startTime: 0f,
+                nextNote.volume, nextNote.pan);
         }
 
         // Move scanline.
