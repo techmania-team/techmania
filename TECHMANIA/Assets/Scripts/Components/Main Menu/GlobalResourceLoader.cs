@@ -39,34 +39,39 @@ public class GlobalResourceLoader : MonoBehaviour
             statusText = progress;
         };
         bool oneSkinLoaded = false;
+        string lastError = null;
         UnityAction<string> completeCallback = (string errorMessage) =>
         {
             oneSkinLoaded = true;
             if (errorMessage != null)
             {
-                state = State.Error;
-                error = errorMessage;
+                lastError = errorMessage;
             }
         };
 
         oneSkinLoaded = false;
         LoadNoteSkin(progressCallback, completeCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
-        if (state == State.Error) yield break;
 
         oneSkinLoaded = false;
         LoadVfxSkin(progressCallback, completeCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
-        if (state == State.Error) yield break;
 
         oneSkinLoaded = false;
         LoadComboSkin(progressCallback, completeCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
-        if (state == State.Error) yield break;
 
         yield return null;
-        GlobalResource.loaded = true;
-        state = State.Complete;
+        if (lastError == null)
+        {
+            GlobalResource.loaded = true;
+            state = State.Complete;
+        }
+        else
+        {
+            error = lastError;
+            state = State.Error;
+        }
     }
 
     // completeCallback's argument is error message; null if no error.
