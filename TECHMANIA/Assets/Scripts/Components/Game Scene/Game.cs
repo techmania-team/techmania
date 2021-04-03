@@ -338,7 +338,7 @@ public class Game : MonoBehaviour
             == ControlScheme.Touch ?
             Options.instance.touchOffsetMs :
             Options.instance.keyboardMouseOffsetMs;
-        offset = offsetMs * 0.001f;
+        offset = GameSetup.autoPlay ? 0f : offsetMs * 0.001f;
         BaseTime = initialTime;
     }
 
@@ -942,7 +942,7 @@ public class Game : MonoBehaviour
     {
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
-        return latencyMs * 0.001f;
+        return GameSetup.autoPlay ? 0f : latencyMs * 0.001f;
     }
     #endregion
 
@@ -1059,9 +1059,8 @@ public class Game : MonoBehaviour
                 if (GameSetup.autoPlay)
                 {
                     // Auto-play notes when it comes to their time.
-                    // Also, auto-play uses the base time.
-                    if (oldBaseTime < upcomingNote.note.time
-                        && BaseTime >= upcomingNote.note.time)
+                    if (oldTime < upcomingNote.note.time
+                        && Time >= upcomingNote.note.time)
                     {
                         HitNote(upcomingNote, 0f);
                     }
