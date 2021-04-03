@@ -6,10 +6,6 @@ using UnityEngine.UI;
 
 public class ScrollIntoViewOnSelect : MonoBehaviour, ISelectHandler
 {
-    private RectTransform rect;
-    private ScrollRect scrollRect;
-    private RectTransform viewPort;
-
     // Start is called before the first frame update
     void Start()
     {
