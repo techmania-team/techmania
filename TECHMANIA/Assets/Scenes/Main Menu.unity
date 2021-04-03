@@ -571,7 +571,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
-      objectReference: {fileID: 948273337}
+      objectReference: {fileID: 161803227}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
@@ -581,7 +581,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnLeft
       value: 
-      objectReference: {fileID: 948273337}
+      objectReference: {fileID: 2081285609}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnRight
@@ -2288,7 +2288,7 @@ PrefabInstance:
     - target: {fileID: 2808724599117514384, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
       propertyPath: m_Navigation.m_Mode
-      value: -1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2808724599117514384, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
@@ -2299,7 +2299,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1536996601}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c56afc9b10373e4486c4490701fa985, type: 3}
 --- !u!224 &178470413 stripped
@@ -6218,7 +6218,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
-      objectReference: {fileID: 948273337}
+      objectReference: {fileID: 161803227}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
@@ -8151,12 +8151,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
-      objectReference: {fileID: 793712425}
+      objectReference: {fileID: 139638447}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
       value: 
-      objectReference: {fileID: 709750997}
+      objectReference: {fileID: 1536996601}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
@@ -9110,18 +9110,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 442417d642143434f890065b382c7b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &948273337 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2808724599117514384, guid: 7c56afc9b10373e4486c4490701fa985,
-    type: 3}
-  m_PrefabInstance: {fileID: 1743496579}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &953386087
@@ -10854,6 +10842,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 571878462}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 161803227}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -10876,6 +10879,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnSliderValueChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimingCalibrationPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
@@ -14475,6 +14483,11 @@ PrefabInstance:
       objectReference: {fileID: 295252746}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
+      propertyPath: m_Navigation.m_SelectOnRight
+      value: 
+      objectReference: {fileID: 295252746}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -16395,8 +16408,18 @@ PrefabInstance:
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_Navigation.m_Mode
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 881671198}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 1114218184}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
@@ -17982,12 +18005,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
-      objectReference: {fileID: 161803227}
+      objectReference: {fileID: 0}
     - target: {fileID: 2808724599117514384, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 571878462}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c56afc9b10373e4486c4490701fa985, type: 3}
 --- !u!224 &1743496580 stripped
@@ -18156,6 +18179,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 295252746}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 571878462}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -18178,6 +18216,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnSliderValueChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimingCalibrationPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1435648448433131217, guid: 81241a192889eac4ba28f8f2b5bc4bcd,
         type: 3}
@@ -21020,9 +21063,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
       propertyPath: m_CharacterValidation
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 770351083}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 2081285609}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnLeft
+      value: 
+      objectReference: {fileID: 161803227}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_Navigation.m_SelectOnRight
+      value: 
+      objectReference: {fileID: 161803227}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.size
