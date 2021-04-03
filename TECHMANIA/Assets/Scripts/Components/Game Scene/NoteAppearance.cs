@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // and drag events on themselves. Instead, the Game component
 // performs ray tracing on all clicks and touches. This is so that
 // when a held down click/touch enters another lane, Game can
-// handle that has a new click/touch. This is necessary for chain
+// handle that as a new click/touch. This is necessary for chain
 // notes.
 public class NoteAppearance : MonoBehaviour,
     IPointsOnCurveProvider
@@ -684,7 +684,8 @@ public class NoteAppearance : MonoBehaviour,
             if (visiblePointsOnCurve.Count < 3) break;
             visiblePointsOnCurve.RemoveFirst();
         }
-        // Interpolate pointsOnCurve[0] and pointsOnCurve[1].
+        // Interpolate visiblePointsOnCurve[0] and
+        // visiblePointsOnCurve[1].
         float t = (scanlineX - visiblePointsOnCurve[0].x) /
             (visiblePointsOnCurve[1].x - visiblePointsOnCurve[0].x);
         visiblePointsOnCurve[0] = Vector2.Lerp(

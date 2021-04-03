@@ -177,8 +177,16 @@ public class UIUtils
     public static void RotateToward(RectTransform self,
         Vector2 selfPos, Vector2 targetPos)
     {
-        float angleInRadian = Mathf.Atan2(targetPos.y - selfPos.y,
-            targetPos.x - selfPos.x);
+        float deltaY = targetPos.y - selfPos.y;
+        float deltaX = targetPos.x - selfPos.x;
+        if (Mathf.Abs(deltaY) < Mathf.Epsilon &&
+            Mathf.Abs(deltaX) < Mathf.Epsilon)
+        {
+            // Do nothing.
+            return;
+        }
+
+        float angleInRadian = Mathf.Atan2(deltaY, deltaX);
         self.localRotation = Quaternion.Euler(0f, 0f,
             angleInRadian * Mathf.Rad2Deg);
     }
