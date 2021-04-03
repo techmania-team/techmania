@@ -692,58 +692,50 @@ public class Game : MonoBehaviour
 
     private void CalculateLastScan()
     {
-        SortedSet<Note> notes = GameSetup.pattern.notes;
-
-        lastScan = 0;
-        if (notes.Count > 0)
-        {
-            lastScan = notes.Max.pulse / PulsesPerScan;
-        }
+        float maxBaseTime = 0f;
         if (backingTrackClip != null)
         {
-            while (GameSetup.pattern.PulseToTime(
-                (lastScan + 1) * PulsesPerScan)
-                < backingTrackClip.length)
-            {
-                lastScan++;
-            }
+            maxBaseTime = Mathf.Max(maxBaseTime,
+                backingTrackClip.length);
         }
-        if (videoPlayer.url != "")
+        if (videoPlayer.url != null)
         {
-            while (GameSetup.pattern.PulseToTime(
-                (lastScan + 1) * PulsesPerScan)
-                < videoPlayer.length)
-            {
-                lastScan++;
-            }
+            maxBaseTime = Mathf.Max(maxBaseTime,
+                (float)videoPlayer.length);
         }
+        foreach (Note n in GameSetup.pattern.notes)
+        {
+            float noteStartTime = n.time;
+            float duration = 0f;
+            if (n.sound != "")
+            {
+                duration = ResourceLoader.GetCachedClip(n.sound).length;
+            }
+            float noteEndTime = noteStartTime + duration;
 
-        // Look at all hold and drag notes in the last few scans
-        // in case their duration outlasts the currently considered
-        // last scan.
-        int pulseBorder = (lastScan - 1) * PulsesPerScan;
-        foreach (Note n in GameSetup.pattern.GetViewBetween(
-            pulseBorder, int.MaxValue))
-        {
-            int endingPulse;
+            // For long notes, additionally check the note length, as
+            // they may be longer than the keysounds.
             if (n is HoldNote)
             {
-                endingPulse = n.pulse + (n as HoldNote).duration;
+                int noteEndPulse = n.pulse + (n as HoldNote).duration;
+                noteEndTime = Mathf.Max(noteEndTime,
+                    GameSetup.pattern.PulseToTime(noteEndPulse)
+                    + offset);
             }
-            else if (n is DragNote)
+            if (n is DragNote)
             {
-                endingPulse = n.pulse + (n as DragNote).Duration();
+                int noteEndPulse = n.pulse + (n as DragNote).Duration();
+                noteEndTime = Mathf.Max(noteEndTime,
+                    GameSetup.pattern.PulseToTime(noteEndPulse)
+                    + offset);
             }
-            else
-            {
-                continue;
-            }
-            int endingScan = endingPulse / PulsesPerScan;
-            if (endingScan > lastScan)
-            {
-                lastScan = endingScan;
-            }
+
+            maxBaseTime = Mathf.Max(maxBaseTime, noteEndTime);
         }
+
+        float maxPulse = GameSetup.pattern.TimeToPulse(maxBaseTime);
+        lastScan = Mathf.FloorToInt(
+            maxPulse / PulsesPerScan);
     }
 
     private NoteObject SpawnNoteObject(Note n,
@@ -984,6 +976,7 @@ public class Game : MonoBehaviour
         }
 
         UpdateTime();
+        CheckForEndOfPattern();
         UpdateFever();
         HandleInput();
         UpdateOngoingNotes();
@@ -1091,17 +1084,24 @@ public class Game : MonoBehaviour
                 }
             }
         }
+    }
 
-        // Check for end of pattern.
-        if (Scan > lastScan)
+    private void CheckForEndOfPattern()
+    {
+        // The pattern is over when:
+        // - All notes are resolved
+        // - BGA stop playing
+        // - All audio sources stop playing
+        if (!score.AllNotesResolved()) return;
+        if (videoPlayer.url != null && videoPlayer.isPlaying) return;
+        if (audioSourceManager.IsAnySourcePlaying()) return;
+
+        if (feverState == FeverState.Active)
         {
-            if (feverState == FeverState.Active)
-            {
-                feverState = FeverState.Idle;
-                score.FeverOff();
-            }
-            Curtain.DrawCurtainThenGoToScene("Result");
+            feverState = FeverState.Idle;
+            score.FeverOff();
         }
+        Curtain.DrawCurtainThenGoToScene("Result");
     }
 
     private void HandleInput()

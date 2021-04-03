@@ -102,4 +102,18 @@ public class AudioSourceManager : MonoBehaviour
         foreach (AudioSource s in playableLanes) s.Stop();
         foreach (AudioSource s in hiddenLanes) s.Stop();
     }
+
+    public bool IsAnySourcePlaying()
+    {
+        if (backingTrack.isPlaying) return true;
+        foreach (AudioSource s in playableLanes)
+        {
+            if (s.isPlaying) return true;
+        }
+        foreach (AudioSource s in hiddenLanes)
+        {
+            if (s.isPlaying) return true;
+        }
+        return false;
+    }
 }

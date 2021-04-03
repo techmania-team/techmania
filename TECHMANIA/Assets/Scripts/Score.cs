@@ -118,4 +118,15 @@ public class Score
                 totalNotes);
         }
     }
+
+    public bool AllNotesResolved()
+    {
+        int numNotesResolved = 0;
+        foreach (KeyValuePair<Judgement, int> pair in
+            notesPerJudgement)
+        {
+            numNotesResolved += pair.Value;
+        }
+        return numNotesResolved >= totalNotes;
+    }
 }
