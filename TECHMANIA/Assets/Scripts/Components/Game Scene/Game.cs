@@ -1095,6 +1095,7 @@ public class Game : MonoBehaviour
         if (!score.AllNotesResolved()) return;
         if (videoPlayer.url != null && videoPlayer.isPlaying) return;
         if (audioSourceManager.IsAnySourcePlaying()) return;
+        if (IsPaused()) return;
 
         if (feverState == FeverState.Active)
         {
@@ -1434,6 +1435,17 @@ public class Game : MonoBehaviour
     private void ProcessMouseOrFingerDown(
         List<RaycastResult> results)
     {
+        // This event may hit any number of the following things:
+        // - The hit box of a not-ongoing note (aka. a newly hit note)
+        // - The hit box of an ongoing note
+        // - An empty touch receiver
+        //
+        // Ultimately the event can only go towards 1 thing, so they
+        // are prioritized in the order listed.
+
+        bool hitOngoingNote = false;
+        EmptyTouchReceiver hitEmptyReceiver = null;
+
         foreach (RaycastResult r in results)
         {
             NoteHitbox touchReceiver = r.gameObject
@@ -1442,13 +1454,15 @@ public class Game : MonoBehaviour
             {
                 NoteObject n = touchReceiver
                     .GetComponentInParent<NoteObject>();
-
                 if (ongoingNotes.ContainsKey(n))
                 {
-                    // Ignore ongoing notes, and don't play sound
-                    // either.
-                    break;
+                    hitOngoingNote = true;
+                    // No need to check for empty touch receiver because
+                    // they are lower priority.
+                    continue;
                 }
+
+                bool ignoreNewlyHitNote = false;
                 if (GameSetup.pattern.patternMetadata.controlScheme
                     == ControlScheme.KM)
                 {
@@ -1459,7 +1473,7 @@ public class Game : MonoBehaviour
                         n.note.type == NoteType.RepeatHold)
                     {
                         // The mouse does not care about this note.
-                        continue;
+                        ignoreNewlyHitNote = true;
                     }
                 }
                 NoteObject noteToCheck = n;
@@ -1477,11 +1491,14 @@ public class Game : MonoBehaviour
                 {
                     // The touch or click is too early or too late
                     // for this note. Ignore.
-                    continue;
+                    ignoreNewlyHitNote = true;
                 }
-                else
+
+                if (!ignoreNewlyHitNote)
                 {
-                    // The touch or click lands on this note.
+                    // The touch or click lands on this note. Since
+                    // these are most prioritized, we can ignore
+                    // everything else.
                     HitNote(noteToCheck, difference);
                     break;
                 }
@@ -1491,9 +1508,20 @@ public class Game : MonoBehaviour
                 .GetComponent<EmptyTouchReceiver>();
             if (emptyReceiver != null)
             {
-                EmptyHit(emptyReceiver.lane);
-                break;
+                hitEmptyReceiver = emptyReceiver;
             }
+        }
+
+        // If control reaches here, we did not hit any new note. Process
+        // lower priority targets.
+        if (hitOngoingNote)
+        {
+            // Do nothing.
+            return;
+        }
+        if (hitEmptyReceiver != null)
+        {
+            EmptyHit(hitEmptyReceiver.lane);
         }
     }
 
