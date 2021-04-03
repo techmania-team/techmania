@@ -142,7 +142,6 @@ public class NoteSkin : NoteSkinBase
     public SpriteSheetForNote holdTrail;
     public SpriteSheet holdTrailEnd;
     public SpriteSheetForNote holdOngoingTrail;
-    public SpriteSheet holdOngoingTrailEnd;
 
     public SpriteSheetForNote repeatHead;
     public SpriteSheetForNote repeat;
@@ -172,7 +171,6 @@ public class NoteSkin : NoteSkinBase
         list.Add(holdTrail);
         list.Add(holdTrailEnd);
         list.Add(holdOngoingTrail);
-        list.Add(holdOngoingTrailEnd);
 
         list.Add(repeatHead);
         list.Add(repeat);

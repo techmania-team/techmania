@@ -71,7 +71,6 @@ public class HoldTrailManager : MonoBehaviour
         float durationTrailScale = 1f;
         float ongoingTrailScale = 1f;
         float durationTrailEndAspectRatio = 1f;
-        float ongoingTrailEndAspectRatio = 1f;
         if (noteType == NoteType.Hold)
         {
             durationTrailScale = GlobalResource.noteSkin.holdTrail.scale;
@@ -81,10 +80,6 @@ public class HoldTrailManager : MonoBehaviour
 
             ongoingTrailScale = GlobalResource.noteSkin
                 .holdOngoingTrail.scale;
-            rect = GlobalResource.noteSkin.holdOngoingTrailEnd
-                .sprites[0].rect;
-            ongoingTrailEndAspectRatio = rect.width / rect.height;
-
         }
         else
         {
@@ -113,12 +108,6 @@ public class HoldTrailManager : MonoBehaviour
                 ongoingTrail.localScale.x,
                 ongoingTrailScale * ongoingTrail.localScale.y,
                 ongoingTrail.localScale.z);
-            ongoingTrailEnd.localScale = new Vector3(
-                ongoingTrailScale * ongoingTrailEnd.localScale.x,
-                ongoingTrailEnd.localScale.y,
-                ongoingTrailEnd.localScale.z);
-            ongoingTrailEnd.GetComponent<AspectRatioFitter>()
-                .aspectRatio = ongoingTrailEndAspectRatio;
         }
     }
 
@@ -130,7 +119,6 @@ public class HoldTrailManager : MonoBehaviour
         if (ongoingTrail != null)
         {
             ongoingTrail.gameObject.SetActive(active);
-            ongoingTrailEnd.gameObject.SetActive(active);
         }
 
         Color color = (v == NoteAppearance.Visibility.Transparent) ?
@@ -141,7 +129,6 @@ public class HoldTrailManager : MonoBehaviour
         if (ongoingTrail != null)
         {
             ongoingTrail.GetComponent<Image>().color = color;
-            ongoingTrailEnd.GetComponent<Image>().color = color;
         }
     }
 
@@ -189,7 +176,6 @@ public class HoldTrailManager : MonoBehaviour
         Sprite durationTrailSprite = null;
         Sprite durationTrailEndSprite = null;
         Sprite ongoingTrailSprite = null;
-        Sprite ongoingTrailEndSprite = null;
         if (noteType == NoteType.Hold)
         {
             durationTrailSprite = GlobalResource.noteSkin.holdTrail
@@ -197,9 +183,6 @@ public class HoldTrailManager : MonoBehaviour
             durationTrailEndSprite = GlobalResource.noteSkin.holdTrailEnd
                 .GetSpriteForFloatBeat(Game.FloatBeat);
             ongoingTrailSprite = GlobalResource.noteSkin.holdOngoingTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
-            ongoingTrailEndSprite = 
-                GlobalResource.noteSkin.holdOngoingTrailEnd
                 .GetSpriteForFloatBeat(Game.FloatBeat);
         }
         else
@@ -219,8 +202,6 @@ public class HoldTrailManager : MonoBehaviour
         {
             ongoingTrail.GetComponent<Image>().sprite =
                 ongoingTrailSprite;
-            ongoingTrailEnd.GetComponent<Image>().sprite =
-                ongoingTrailEndSprite;
         }
     }
 }
