@@ -39,6 +39,7 @@ public class Options : OptionsBase
     // Appearance
 
     public bool showLoadingBar;
+    public bool showFps;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -76,6 +77,7 @@ public class Options : OptionsBase
         audioBufferSize = 512;
 
         showLoadingBar = true;
+        showFps = false;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";

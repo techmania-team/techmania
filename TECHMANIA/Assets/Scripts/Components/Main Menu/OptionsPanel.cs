@@ -27,6 +27,7 @@ public class OptionsPanel : MonoBehaviour
 
     [Header("Appearance")]
     public Toggle showLoadingBarToggle;
+    public Toggle showFpsToggle;
 
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
@@ -144,6 +145,8 @@ public class OptionsPanel : MonoBehaviour
 
         showLoadingBarToggle.SetIsOnWithoutNotify(
             Options.instance.showLoadingBar);
+        showFpsToggle.SetIsOnWithoutNotify(
+            Options.instance.showFps);
 
         // Miscellaneous
 
@@ -252,6 +255,7 @@ public class OptionsPanel : MonoBehaviour
     public void OnAppearanceOptionsChanged()
     {
         Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
+        Options.instance.showFps = showFpsToggle.isOn;
     }
     #endregion
 }

@@ -88,6 +88,7 @@ public class Game : MonoBehaviour
     public GameObject noFailIndicator;
     public GameObject loadingBar;
     public MaterialProgressBar loadingProgress;
+    public GameObject fpsCounter;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -191,6 +192,7 @@ public class Game : MonoBehaviour
         loadingBar.GetComponent<CanvasGroup>().alpha =
             Options.instance.showLoadingBar ? 1f : 0f;
         loadingProgress.SetValue(0f);
+        fpsCounter.SetActive(false);
         stopwatch = null;
 
         // Load options.
@@ -317,6 +319,10 @@ public class Game : MonoBehaviour
         noFailIndicator.SetActive(GameSetup.noFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
+        if (Options.instance.showFps)
+        {
+            fpsCounter.SetActive(true);
+        }
         if (hasBga)
         {
             backgroundImage.color = Color.clear;
