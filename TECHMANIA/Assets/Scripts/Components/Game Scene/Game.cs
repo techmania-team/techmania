@@ -140,6 +140,7 @@ public class Game : MonoBehaviour
     public static float FloatBeat { get; private set; }
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
+    private float endOfPatternBaseTime;
     private int lastScan;
     private Stopwatch feverTimer;
     private float initialTime;
@@ -432,7 +433,7 @@ public class Game : MonoBehaviour
 
         // Find last scan. Make sure it ends later than the backing
         // track and BGA, so we don't cut either short.
-        CalculateLastScan();
+        CalculateEndOfPattern();
 
         // Create scan objects.
         Dictionary<int, Scan> scanObjects =
@@ -690,17 +691,18 @@ public class Game : MonoBehaviour
         });
     }
 
-    private void CalculateLastScan()
+    private void CalculateEndOfPattern()
     {
-        float maxBaseTime = 0f;
+        endOfPatternBaseTime = 0f;
         if (backingTrackClip != null)
         {
-            maxBaseTime = Mathf.Max(maxBaseTime,
+            endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 backingTrackClip.length);
         }
         if (videoPlayer.url != null)
         {
-            maxBaseTime = Mathf.Max(maxBaseTime,
+            endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
+                (float)GameSetup.pattern.patternMetadata.bgaOffset +
                 (float)videoPlayer.length);
         }
         foreach (Note n in GameSetup.pattern.notes)
@@ -730,10 +732,12 @@ public class Game : MonoBehaviour
                     + offset);
             }
 
-            maxBaseTime = Mathf.Max(maxBaseTime, noteEndTime);
+            endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime, 
+                noteEndTime);
         }
 
-        float maxPulse = GameSetup.pattern.TimeToPulse(maxBaseTime);
+        float maxPulse = GameSetup.pattern.TimeToPulse(
+            endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
             maxPulse / PulsesPerScan);
     }
@@ -1088,14 +1092,8 @@ public class Game : MonoBehaviour
 
     private void CheckForEndOfPattern()
     {
-        // The pattern is over when:
-        // - All notes are resolved
-        // - BGA stop playing
-        // - All audio sources stop playing
-        if (!score.AllNotesResolved()) return;
-        if (videoPlayer.url != null && videoPlayer.isPlaying) return;
-        if (audioSourceManager.IsAnySourcePlaying()) return;
         if (IsPaused()) return;
+        if (BaseTime <= endOfPatternBaseTime) return;
 
         if (feverState == FeverState.Active)
         {
