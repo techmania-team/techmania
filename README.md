@@ -7,21 +7,22 @@ An open source rhythm game for Windows, written in Unity, playable with or witho
 
 [Discord](https://discord.gg/K4Nf7AnAZt)
 
+[Official website](https://techmania-team.github.io/#/)
+
 Head to [Releases](https://github.com/techmania-team/techmania/releases) to download the released versions.
 
 ## Licensing
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
 * Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
-* Included tracks in the releases may be under separate licenses. Refer to the release notes on each release for details.
+* Some included tracks in the releases are under separate licenses:
+  * f for fun is released under the [CC BY-NC-ND 4.0 License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+  * Yin-Yang Specialist (MUG ver) is released under the [CC BY-NC-NA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 ## Roadmap and progress
 Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
 
-## How to play
-The game includes tutorials, but you can also find textual instructions in the [Wiki](https://github.com/techmania-team/techmania/wiki/How-to-play).
-
-## How to edit
-The included editor is hopefully self-explanatory, but you can find additional notes in the [Wiki](https://github.com/techmania-team/techmania/wiki/Additional-notes-on-the-editor).
+## Manual and documentation
+Refer to the [wiki](https://github.com/techmania-team/techmania/wiki).
 
 ## Platform
 The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, I will not target Linux, macOS, Android or iOS/iPadOS.
