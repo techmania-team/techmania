@@ -32,6 +32,7 @@ public class SelectSkinPanel : MonoBehaviour
     {
         dropdown.options.Clear();
         int value = 0, index = 0;
+        bool foundOption = false;
         foreach (string folder in
             Directory.EnumerateDirectories(skinFolder))
         {
@@ -40,6 +41,7 @@ public class SelectSkinPanel : MonoBehaviour
             if (skinName == currentSkinName)
             {
                 value = index;
+                foundOption = true;
             }
             index++;
             dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
@@ -50,8 +52,15 @@ public class SelectSkinPanel : MonoBehaviour
             dropdown.options.Add(new TMP_Dropdown.OptionData(
                 UIUtils.kNone));
         }
+        if (!foundOption)
+        {
+            dropdown.onValueChanged.Invoke(0);  // This causes a reload
+        }
+        else
+        {
+            dropdown.SetValueWithoutNotify(value);
+        }
 
-        dropdown.SetValueWithoutNotify(value);
         dropdown.RefreshShownValue();
     }
 
@@ -193,11 +202,14 @@ public class SelectSkinPanel : MonoBehaviour
         comboSkinDropdown.interactable = false;
 
         // VFX preview
-        foreach (GameObject o in vfxInstances)
+        if (vfxInstances != null)
         {
-            Destroy(o);
+            foreach (GameObject o in vfxInstances)
+            {
+                Destroy(o);
+            }
+            vfxInstances.Clear();
         }
-        vfxInstances.Clear();
 
         // Combo preview
         comboPreview.Hide();

@@ -89,7 +89,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading note skin:\n\n{ex.Message}");
+            completeCallback?.Invoke($"An error occurred when loading note skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
             return;
         }
 
@@ -117,7 +117,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading VFX skin:\n\n{ex.Message}");
+            completeCallback?.Invoke($"An error occurred when loading VFX skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
             return;
         }
 
@@ -145,7 +145,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading combo skin:\n\n{ex.Message}");
+            completeCallback?.Invoke($"An error occurred when loading combo skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
             return;
         }
 
