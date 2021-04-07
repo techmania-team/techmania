@@ -147,6 +147,18 @@ public class OptionsPanel : MonoBehaviour
 
         // Appearance
 
+        languageDropdown.ClearOptions();
+        foreach (KeyValuePair<string, string> pair in
+            Locale.localeToLanguageName)
+        {
+            languageDropdown.options.Add(new TMP_Dropdown.OptionData(
+                pair.Value));
+            if (pair.Key == Options.instance.locale)
+            {
+                languageDropdown.SetValueWithoutNotify(
+                    languageDropdown.options.Count - 1);
+            }
+        }
         showLoadingBarToggle.SetIsOnWithoutNotify(
             Options.instance.showLoadingBar);
         showFpsToggle.SetIsOnWithoutNotify(
@@ -256,6 +268,20 @@ public class OptionsPanel : MonoBehaviour
     #endregion
 
     #region Appearance
+    public void OnLanguageChanged(int value)
+    {
+        foreach (KeyValuePair<string, string> pair in
+            Locale.localeToLanguageName)
+        {
+            if (pair.Value == languageDropdown.options[value].text)
+            {
+                Options.instance.locale = pair.Key;
+                Locale.Load(stringTable, Options.instance.locale);
+                return;
+            }
+        }
+    }
+
     public void OnAppearanceOptionsChanged()
     {
         Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
