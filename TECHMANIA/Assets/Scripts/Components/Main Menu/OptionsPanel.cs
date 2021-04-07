@@ -26,6 +26,8 @@ public class OptionsPanel : MonoBehaviour
     public AudioMixer audioMixer;
 
     [Header("Appearance")]
+    public TMP_Dropdown languageDropdown;
+    public TextAsset stringTable;
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
 
@@ -43,6 +45,8 @@ public class OptionsPanel : MonoBehaviour
             .GetComponentInChildren<OptionsPanel>(
             includeInactive: true);
         instance.LoadOrCreateOptions();
+
+        Locale.Load(instance.stringTable, Options.instance.locale);
         Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioBufferSize();
         instance.ApplyVolume();

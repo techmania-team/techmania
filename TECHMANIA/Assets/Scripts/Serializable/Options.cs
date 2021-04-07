@@ -38,6 +38,7 @@ public class Options : OptionsBase
 
     // Appearance
 
+    public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public string noteSkin;
@@ -76,6 +77,7 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
+        locale = "en";
         showLoadingBar = true;
         showFps = false;
         noteSkin = "Default";

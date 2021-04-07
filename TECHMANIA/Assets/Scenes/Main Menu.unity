@@ -10442,6 +10442,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1852209515}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: main_menu_editor_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -12588,6 +12593,8 @@ MonoBehaviour:
   sfxVolumeDisplay: {fileID: 2122113213}
   audioBufferDropdown: {fileID: 1469877637}
   audioMixer: {fileID: 24100000, guid: 298a58fc432ca944bb9e34d1cc2a69f8, type: 2}
+  languageDropdown: {fileID: 0}
+  stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
   showLoadingBarToggle: {fileID: 1835056395}
   showFpsToggle: {fileID: 2047212621}
   latencyDisplay: {fileID: 394731667}
@@ -14163,6 +14170,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_HorizontalFit
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8805977775998339934, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: key
+      value: main_menu_start_button
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
