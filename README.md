@@ -22,7 +22,7 @@ All code and assets are released under the [MIT License](LICENSE), with the foll
 Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
 
 ## Manual and documentation
-Refer to the [documentation repo](https://github.com/techmania-team/techmania-docs/).
+Refer to the [documentation website](https://techmania-team.github.io/techmania-docs/).
 
 ## Platform
 The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, I will not target Linux, macOS, Android or iOS/iPadOS.
