@@ -431,7 +431,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_text
-      value: Loading resources... (1 / 20)
+      value: (Placeholder)
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -1680,6 +1680,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1852209515}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: main_menu_quit_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -3824,6 +3829,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1852209515}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: main_menu_options_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -6115,6 +6125,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 673040182}
     m_Modifications:
+    - target: {fileID: 5427702333187942287, guid: 26f88fd551da9c247a8f0127571e99ac,
+        type: 3}
+      propertyPath: key
+      value: welcome_mat_instruction
+      objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_Pivot.x
@@ -23317,10 +23332,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 416503498}
     m_Modifications:
+    - target: {fileID: 59535631612947770, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: key
+      value: select_track_panel_title
+      objectReference: {fileID: 0}
+    - target: {fileID: 311687632712951744, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: key
+      value: select_track_error_card_artist
+      objectReference: {fileID: 0}
     - target: {fileID: 2692706080092387020, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018822482372428669, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: key
+      value: select_track_new_track_card_title
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018822483072200351, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: key
+      value: select_track_error_card_title
       objectReference: {fileID: 0}
     - target: {fileID: 3048397177846559816, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}
@@ -23356,6 +23391,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5216241545270039373, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: key
+      value: select_track_no_track_text
       objectReference: {fileID: 0}
     - target: {fileID: 5692625535482728929, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}

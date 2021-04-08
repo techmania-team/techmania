@@ -56,6 +56,12 @@ public class Locale
         fallbackStringTable = new Dictionary<string, string>();
         while (csvReader.Read())
         {
+            if (csvReader.FieldsCount == 0 ||
+                csvReader[0] == "")
+            {
+                // Empty line
+                continue;
+            }
             currentStringTable.Add(csvReader[0],
                 csvReader[localeIndex]);
             fallbackStringTable.Add(csvReader[0],
@@ -74,5 +80,12 @@ public class Locale
         }
         if (fallbackStringTable == null) return "";
         return fallbackStringTable[key];
+    }
+
+    public static string GetStringAndFormat(string formatKey,
+        params string[] args)
+    {
+        string format = GetString(formatKey);
+        return string.Format(format, args);
     }
 }

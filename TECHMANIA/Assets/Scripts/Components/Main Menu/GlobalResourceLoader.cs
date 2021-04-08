@@ -89,7 +89,9 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading note skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
+            completeCallback?.Invoke(Locale.GetStringAndFormat(
+                "resource_loader_note_skin_error_format",
+                ex.Message)); 
             return;
         }
 
@@ -97,7 +99,7 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(noteSkinFolder,
             spriteSheets,
-            "Loading note skin...",
+            Locale.GetString("resource_loader_loading_note_skin"),
             progressCallback,
             completeCallback));
     }
@@ -117,7 +119,9 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading VFX skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
+            completeCallback?.Invoke(Locale.GetStringAndFormat(
+                "resource_loader_vfx_skin_error_format",
+                ex.Message));
             return;
         }
 
@@ -125,7 +129,7 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(vfxSkinFolder,
             spriteSheets,
-            "Loading VFX skin...",
+            Locale.GetString("resource_loader_loading_vfx_skin"),
             progressCallback,
             completeCallback));
     }
@@ -145,7 +149,9 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke($"An error occurred when loading combo skin:\n\n{ex.Message}\n\nPlease select a valid skin from the options menu.");
+            completeCallback?.Invoke(Locale.GetStringAndFormat(
+                "resource_loader_combo_skin_error_format",
+                ex.Message));
             return;
         }
 
@@ -153,7 +159,7 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(comboSkinFolder,
             spriteSheets,
-            "Loading combo skin...",
+            Locale.GetString("resource_loader_loading_combo_skin"),
             progressCallback,
             completeCallback));
     }

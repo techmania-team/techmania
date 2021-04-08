@@ -22,14 +22,16 @@ public class VersionText : MonoBehaviour
         {
             if (messageDialog != null)
             {
-                messageDialog.Show("An error occurred when loading custom ruleset:\n\n"
-                    + ex.Message
-                    + "\n\nFor this session TECHMANIA will use the default ruleset.");
+                messageDialog.Show(
+                    Locale.GetStringAndFormat(
+                        "custom_ruleset_load_error_format",
+                        ex.Message));
             }
         }
         if (Ruleset.instance.isCustom)
         {
-            versionText.text += "\nCustom ruleset active";
+            versionText.text += "\n" + Locale.GetString(
+                "custom_ruleset_indicator");
         }
     }
 }

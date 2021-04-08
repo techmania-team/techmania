@@ -137,7 +137,10 @@ public class SelectTrackPanel : MonoBehaviour
             allTracksWithError)
         {
             GameObject card = null;
-            string message = $"An error occurred when loading {error.trackFile}:\n\n{error.message}";
+            string message = Locale.GetStringAndFormat(
+                "select_track_error_format",
+                error.trackFile,
+                error.message);
 
             // Instantiate card.
             card = Instantiate(errorCardTemplate, 

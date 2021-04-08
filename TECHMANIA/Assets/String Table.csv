@@ -1,5 +1,65 @@
-﻿key,comment,en,zh-Hans,zh-Hant,ja,ko,fr
-language_name,The language's name in itself. Used in option menu.,English,简体中文,???,???,???,???
-welcome_mat_instruction,,Click / Touch / Press any key,轻按屏幕/鼠标/任意键,,,,
-main_menu_start_button,,Start,开始,,,,
-main_menu_editor_button,,Editor,编辑,,,,
+﻿key,comment,en,zh-Hans,zh-Hant,ja,ko
+language_name,"The language's name in itself.
+Used in option menu.",English,简体中文,繁體中文,日本語,한국어
+localizer_names,"The list of localizer names, seperated by commas.
+Used in information menu.",N/A,DJ Hitori,,,
+,,,,,,
+welcome_mat_instruction,,Click / Touch / Press any key,轻按屏幕 / 鼠标 / 任意键,,,
+,,,,,,
+resource_loader_loading_note_skin,,Loading note skin...,正在读取音符皮肤……,,,
+resource_loader_note_skin_error_format,,"An error occurred when loading note skin:
+
+{0}
+
+Please select a valid skin from the options menu.","读取音符皮肤时发生错误：
+
+{0}
+
+请在设置菜单选择一个可用的皮肤。",,,
+resource_loader_loading_vfx_skin,,Loading VFX skin…,正在读取特效皮肤……,,,
+resource_loader_vfx_skin_error_format,,"An error occurred when loading VFX skin:
+
+{0}
+
+Please select a valid skin from the options menu.","读取特效皮肤时发生错误：
+
+{0}
+
+请在设置菜单选择一个可用的皮肤。",,,
+resource_loader_loading_combo_skin,,Loading combo skin…,正在读取连击皮肤……,,,
+resource_loader_combo_skin_error_format,,"An error occurred when loading combo skin:
+
+{0}
+
+Please select a valid skin from the options menu.","读取连击皮肤时发生错误：
+
+{0}
+
+请在设置菜单选择一个可用的皮肤。",,,
+,,,,,,
+main_menu_start_button,,Start,开始,,,
+main_menu_editor_button,,Editor,编辑,,,
+main_menu_options_button,,Options,设置,,,
+main_menu_quit_button,,Quit,退出,,,
+,,,,,,
+custom_ruleset_indicator,,Custom ruleset active,自定义规则使用中,,,
+custom_ruleset_load_error_format,,"An error occurred when loading custom ruleset:
+
+{0}
+
+For this session TECHMANIA will use the default ruleset.","读取自定义规则时发生错误：
+
+{0}
+
+本次游戏TECHMANIA将使用默认规则。",,,
+,,,,,,
+select_track_panel_title,,Select Track,选择曲目,,,
+select_track_error_card_title,,Could not load track,无法读取曲目,,,
+select_track_error_card_artist,,Open for details,点击查看详情,,,
+select_track_error_format,,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}",,,
+select_track_new_track_card_title,,New Track,新建曲目,,,
+select_track_no_track_text,,TECHMANIA cannot find any track.,TECHMANIA没有找到任何曲目。,,,
