@@ -97,6 +97,8 @@ public class OptionsPanel : MonoBehaviour
 
     private void MemoryToUI()
     {
+        MemoryToLocalizedUI();
+
         // Graphics
 
         resolutionDropdown.ClearOptions();
@@ -115,17 +117,6 @@ public class OptionsPanel : MonoBehaviour
             resolutionDropdown.SetValueWithoutNotify(1);
         }
         resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
-
-        fullscreenDropdown.ClearOptions();
-        foreach (FullScreenMode m in
-            System.Enum.GetValues(typeof(FullScreenMode)))
-        {
-            fullscreenDropdown.options.Add(
-                new TMP_Dropdown.OptionData(m.ToString()));
-        }
-        fullscreenDropdown.SetValueWithoutNotify(1);
-        fullscreenDropdown.SetValueWithoutNotify(
-            (int)Options.instance.fullScreenMode);
 
         vSyncToggle.SetIsOnWithoutNotify(Options.instance.vSync);
 
@@ -168,6 +159,26 @@ public class OptionsPanel : MonoBehaviour
         // Miscellaneous
 
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
+    }
+
+    // The portion of MemoryToUI that should respond to locale change.
+    private void MemoryToLocalizedUI()
+    {
+        fullscreenDropdown.ClearOptions();
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_exclusive_fullscreen")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_fullscreen_window")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_maximized_window")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_windowed")));
+        fullscreenDropdown.SetValueWithoutNotify(
+            (int)Options.instance.fullScreenMode);
     }
 
     #region Graphics
@@ -278,9 +289,11 @@ public class OptionsPanel : MonoBehaviour
             {
                 Options.instance.locale = pair.Key;
                 Locale.Load(stringTable, Options.instance.locale);
-                return;
+                break;
             }
         }
+
+        MemoryToLocalizedUI();
     }
 
     public void OnAppearanceOptionsChanged()

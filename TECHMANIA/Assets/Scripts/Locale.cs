@@ -79,6 +79,10 @@ public class Locale
             return currentStringTable[key];
         }
         if (fallbackStringTable == null) return "";
+        if (!fallbackStringTable.ContainsKey(key))
+        {
+            Debug.LogError("Key not found: " + key);
+        }
         return fallbackStringTable[key];
     }
 
