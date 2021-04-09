@@ -39,8 +39,9 @@ public class ResultsPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        title.text = Game.score.stageFailed ?
-            "Stage Failed" : "Stage Clear";
+        title.text = Locale.GetString(Game.score.stageFailed ?
+            "result_panel_stage_failed_title" :
+            "result_panel_stage_clear_title");
 
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
@@ -101,16 +102,19 @@ public class ResultsPanel : MonoBehaviour
             {
                 if (score == 300000)
                 {
-                    medalText.text = "ABSOLUTE PERFECT";
+                    medalText.text = Locale.GetString(
+                        "result_panel_absolute_perfect_medal");
                 }
                 else
                 {
-                    medalText.text = "PERFECT PLAY";
+                    medalText.text = Locale.GetString(
+                        "result_panel_perfect_play_medal");
                 }
             }
             else
             {
-                medalText.text = "FULL COMBO";
+                medalText.text = Locale.GetString(
+                    "result_panel_full_combo_medal");
             }
         }
         else

@@ -601,11 +601,13 @@ public class Game : MonoBehaviour
         switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
-                feverInstruction.text = "TOUCH";
+                feverInstruction.text = Locale.GetString(
+                    "game_fever_instruction_touch");
                 break;
             case ControlScheme.Keys:
             case ControlScheme.KM:
-                feverInstruction.text = "PRESS SPACE";
+                feverInstruction.text = Locale.GetString(
+                    "game_fever_instruction_keys_km");
                 break;
         }
         ongoingNotes = new Dictionary<NoteObject, Judgement>();
@@ -1364,7 +1366,8 @@ public class Game : MonoBehaviour
             feverTimer = null;
             feverState = FeverState.Idle;
             int feverBonus = score.FeverOff();
-            feverBonusText.text = "FEVER BONUS   +" + feverBonus;
+            feverBonusText.text = Locale.GetStringAndFormat(
+                "game_fever_bonus_text", feverBonus);
             feverBonusAnimator.SetTrigger("Show");
         }
     }
