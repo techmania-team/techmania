@@ -11,9 +11,6 @@ public class VersionText : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TextMeshProUGUI versionText = GetComponent<TextMeshProUGUI>();
-        versionText.text = Application.version;
-
         try
         {
             Ruleset.RefreshInstance();
@@ -28,7 +25,21 @@ public class VersionText : MonoBehaviour
                         ex.Message));
             }
         }
-        if (Ruleset.instance.isCustom)
+
+        Refresh();
+    }
+
+    private void OnEnable()
+    {
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        TextMeshProUGUI versionText = GetComponent<TextMeshProUGUI>();
+        versionText.text = Application.version;
+        if (Ruleset.instance != null &&
+            Ruleset.instance.isCustom)
         {
             versionText.text += "\n" + Locale.GetString(
                 "custom_ruleset_indicator");
