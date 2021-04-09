@@ -157,6 +157,7 @@ public class OptionsPanel : MonoBehaviour
             {
                 languageDropdown.SetValueWithoutNotify(
                     languageDropdown.options.Count - 1);
+                languageDropdown.RefreshShownValue();
             }
         }
         showLoadingBarToggle.SetIsOnWithoutNotify(
