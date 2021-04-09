@@ -9,8 +9,8 @@ using UnityEngine.Events;
 // First row: header
 // Second row: language names
 // Subsequent rows:
-//   Field 0 - key
 //   Field 1 - comment
+//   Field 0 - key
 //   Same field as the locale in header - string content
 
 public class Locale
@@ -57,14 +57,14 @@ public class Locale
         while (csvReader.Read())
         {
             if (csvReader.FieldsCount == 0 ||
-                csvReader[0] == "")
+                csvReader[1] == "")
             {
                 // Empty line
                 continue;
             }
-            currentStringTable.Add(csvReader[0],
+            currentStringTable.Add(csvReader[1],
                 csvReader[localeIndex]);
-            fallbackStringTable.Add(csvReader[0],
+            fallbackStringTable.Add(csvReader[1],
                 csvReader[fallbackLocaleIndex]);
         }
 
