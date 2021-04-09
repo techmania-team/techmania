@@ -87,7 +87,7 @@ public class Locale
     }
 
     public static string GetStringAndFormat(string formatKey,
-        params string[] args)
+        params object[] args)
     {
         string format = GetString(formatKey);
         return string.Format(format, args);

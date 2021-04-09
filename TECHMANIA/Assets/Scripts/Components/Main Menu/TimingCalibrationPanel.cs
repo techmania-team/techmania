@@ -284,15 +284,31 @@ public class TimingCalibrationPanel : MonoBehaviour
 
         // Write timing history.
         string historyLine;
-        char deviceLetter = device.ToString()[0];
+        string deviceAcronym = Locale.GetString(device switch
+        {
+            InputDevice.Touchscreen =>
+                "timing_calibration_touchscreen_acronym",
+            InputDevice.Keyboard =>
+                "timing_calibration_keyboard_acronym",
+            InputDevice.Mouse =>
+                "timing_calibration_mouse_acronym",
+            _ => ""
+        });
+        string earlyLateColor;
+        string earlyLateIndicator;
         if (clampedTime < correctTime)
         {
-            historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(earlyColor)}>early</color>";
+            earlyLateColor = ColorUtility.ToHtmlStringRGB(earlyColor);
+            earlyLateIndicator = Locale.GetString(
+                "timing_calibration_early_indicator");
         }
         else
         {
-            historyLine = $"{deviceLetter} {timeDifferenceInMs}ms <color=#{ColorUtility.ToHtmlStringRGB(lateColor)}>late</color>";
+            earlyLateColor = ColorUtility.ToHtmlStringRGB(lateColor);
+            earlyLateIndicator = Locale.GetString(
+                "timing_calibration_late_indicator");
         }
+        historyLine = $"{deviceAcronym} {timeDifferenceInMs}ms <color=#{earlyLateColor}>{earlyLateIndicator}</color>";
 
         timingHistory[id].Add(historyLine);
         StringBuilder history = new StringBuilder();
