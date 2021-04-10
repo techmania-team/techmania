@@ -70,20 +70,28 @@ public class Locale
 
         LocaleChanged?.Invoke();
     }
+    
+    private static string GetStringFrom(string key,
+        Dictionary<string, string> stringTable)
+    {
+        if (stringTable == null) return null;
+        if (!stringTable.ContainsKey(key)) return null;
+        if (stringTable[key] == "") return null;
+        return stringTable[key];
+    }
 
     public static string GetString(string key)
     {
-        if (currentStringTable != null &&
-            currentStringTable.ContainsKey(key))
-        {
-            return currentStringTable[key];
-        }
-        if (fallbackStringTable == null) return "";
-        if (!fallbackStringTable.ContainsKey(key))
+        string s = GetStringFrom(key, currentStringTable);
+        if (s != null) return s;
+
+        s = GetStringFrom(key, fallbackStringTable);
+        if (s == null)
         {
             Debug.LogError("Key not found: " + key);
+            s = "";
         }
-        return fallbackStringTable[key];
+        return s;
     }
 
     public static string GetStringAndFormat(string formatKey,
