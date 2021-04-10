@@ -3522,6 +3522,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Eyecatch image
       objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_eyecatch_image_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!1001 &127066116
@@ -7950,12 +7955,19 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: 'During pattern selection, the preview track will loop from the start
-        time to the end time (both in seconds).
+      value: 'During pattern selection, the preview track will loop
+
+        from
+        the start time to the end time (both in seconds).
 
 
-        Set both start and end
-        to 0 to play the entire file.'
+        Set both start
+        and end to 0 to play the entire file.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -9789,6 +9801,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Preview End Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_end_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!114 &397915151 stripped
@@ -9810,6 +9827,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106648}
     m_Modifications:
+    - target: {fileID: 776367256777566019, guid: e734c91c8068bb84082e470a64f006d4,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_additional_credit_label
+      objectReference: {fileID: 0}
     - target: {fileID: 7908023317527775550, guid: e734c91c8068bb84082e470a64f006d4,
         type: 3}
       propertyPath: m_text
@@ -11282,6 +11304,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 8805977775998339934, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_delete_track_button
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
 --- !u!1001 &440707362
@@ -12122,6 +12149,11 @@ PrefabInstance:
       propertyPath: m_TextStyleHashCode
       value: -1183493901
       objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_basics_header
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
 --- !u!1001 &460085314
@@ -12255,6 +12287,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_video_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
@@ -12439,6 +12476,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Title Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_title_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -14904,6 +14946,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Genre Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_genre_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!1001 &552870949
@@ -15915,6 +15962,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_audio_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
@@ -17393,6 +17445,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Eyecatch preview
       objectReference: {fileID: 0}
+    - target: {fileID: 6411952005419783192, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_eyecatch_preview
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
 --- !u!1 &716588238
@@ -17982,6 +18039,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8805977775998339934, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_import_button
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
@@ -22091,6 +22153,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Artist Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_artist_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!1001 &955662956
@@ -22284,6 +22351,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: Preview track
+      objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_track_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
@@ -23557,6 +23629,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 59.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 5355043530757925963, guid: 7c56afc9b10373e4486c4490701fa985,
+        type: 3}
+      propertyPath: key
+      value: track_setup_panel_title
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 397205363800239550, guid: 7c56afc9b10373e4486c4490701fa985, type: 3}
@@ -25400,8 +25477,17 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: Import audio, image and video files so they can later be used as keysounds,
-        backgrounds, and more.
+      value: 'Import audio, image and video files
+
+        so they can later be used
+        as keysounds,
+
+        backgrounds, and more.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_import_button_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -26203,6 +26289,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_image_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
@@ -28380,6 +28471,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Preview Start Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_start_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -35672,6 +35768,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8427768676454205075, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_title
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427768676837123308, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_title
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427768677631066942, guid: 3d180bf69f58bae4cb9bf2d0e8f05443,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_title
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d180bf69f58bae4cb9bf2d0e8f05443, type: 3}
 --- !u!224 &1752106647 stripped
@@ -41818,6 +41929,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}

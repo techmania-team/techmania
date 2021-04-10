@@ -160,3 +160,64 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 ,result_panel_full_combo_medal,FULL COMBO,全连,,,
 ,result_panel_continue_button,Continue,继续,,,
 ,result_panel_retry_button,Retry,重试,,,
+,,,,,,
+`===== Editor - Track setup =====,,,,,,
+,track_setup_panel_title,Track Setup,曲目设置,,,
+,track_setup_resource_tab_title,Resources,资源,,,
+,track_setup_resource_tab_audio_header,Audio files,音频文件,,,
+,track_setup_resource_tab_image_header,Image files,图像文件,,,
+,track_setup_resource_tab_video_header,Video files,视频文件,,,
+,track_setup_resource_tab_import_button,Import,导入,,,
+,track_setup_resource_tab_import_button_help,"Import audio, image and video files
+so they can later be used as keysounds,
+backgrounds, and more.","导入音频、图像、视频文件后，
+可以将它们用作按键音、谱面背景等。",,,
+"Strings in the open file dialog opened when
+the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,,,
+,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,,,
+,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,,,
+"A warning shown when the newly imported
+files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
+
+{0}
+
+If you choose to cancel, no file will be copied.","以下文件将被覆盖。是否继续？
+
+{0}
+
+如果选择取消，将不会复制任何文件。",,,
+"Shown in the above message if the number of
+files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,,,
+,track_setup_resource_tab_overwrite_confirm,Overwrite,覆盖,,,
+,track_setup_resource_tab_overwrite_cancel,Cancel,取消,,,
+,track_setup_resource_tab_import_error_format,"An error occurred when copying {0} to {1}:
+
+{2}","将{0}复制到{1}时发生错误：
+
+{2}",,,
+,,,,,,
+,track_setup_metadata_tab_title,Metadata,元数据,,,
+,track_setup_metadata_tab_eyecatch_preview,Eyecatch preview,封面预览,,,
+,track_setup_metadata_tab_basics_header,Basics,基本信息,,,
+,track_setup_metadata_tab_title_label,Title,标题,,,
+,track_setup_metadata_tab_artist_label,Artist,艺术家,,,
+,track_setup_metadata_tab_genre_label,Genre,流派,,,
+,track_setup_metadata_tab_additional_credit_label,Additional credits,其他制作人,,,
+,track_setup_metadata_tab_preview_header,Preview,预览,,,
+,track_setup_metadata_tab_eyecatch_image_label,Eyecatch image,封面,,,
+,track_setup_metadata_tab_preview_track_label,Preview track,预览曲,,,
+,track_setup_metadata_tab_preview_start_label,Preview start,预览开始时间,,,
+,track_setup_metadata_tab_preview_end_label,Preview end,预览结束时间,,,
+,track_setup_metadata_tab_preview_help,"During pattern selection, the preview track will loop
+from the start time to the end time (both in seconds).
+
+Set both start and end to 0 to play the entire file.","当玩家选择谱面时，预览曲将会在开始时间和
+结束时间之间循环播放（单位均为秒）。
+
+如果开始、结束时间都是0，将播放预览曲的全部内容。",,,
+,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,,,
+,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,,,
+,track_setup_metadata_tab_delete_track_confirm,Delete,删除,,,
+,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,,,
+,,,,,,
+,track_setup_patterns_tab_title,Patterns,谱面,,,
