@@ -7,8 +7,10 @@ using UnityEngine.UI;
 
 public class UIUtils
 {
-    // TODO: localize this
-    public const string kNone = "(None)";
+    public static string NoneOptionInDropdowns()
+    {
+        return Locale.GetString("none_option_in_dropdowns");
+    }
 
     #region ClampInputField
     public static void ClampInputField(TMP_InputField field, double min, double max)
@@ -111,7 +113,7 @@ public class UIUtils
         TMP_Dropdown dropdown, ref bool madeChange)
     {
         string newValueString = dropdown.options[dropdown.value].text;
-        if (newValueString == kNone &&
+        if (newValueString == NoneOptionInDropdowns() &&
             dropdown.value == 0)
         {
             newValueString = "";
@@ -134,7 +136,8 @@ public class UIUtils
         int value = 0;
 
         dropdown.options.Clear();
-        dropdown.options.Add(new TMP_Dropdown.OptionData(kNone));
+        dropdown.options.Add(new TMP_Dropdown.OptionData(
+            NoneOptionInDropdowns()));
         for (int i = 0; i < allOptions.Count; i++)
         {
             string name = new FileInfo(allOptions[i]).Name;

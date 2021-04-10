@@ -50,7 +50,7 @@ public class SelectSkinPanel : MonoBehaviour
         if (dropdown.options.Count == 0)
         {
             dropdown.options.Add(new TMP_Dropdown.OptionData(
-                UIUtils.kNone));
+                UIUtils.NoneOptionInDropdowns()));
         }
         if (!foundOption)
         {

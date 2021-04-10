@@ -286,8 +286,12 @@ public class PatternMetadata
     public PatternMetadata()
     {
         guid = Guid.NewGuid().ToString();
-        // TODO: localize this
+#if UNITY_2020
+        patternName = Locale.GetString(
+            "track_setup_patterns_tab_new_pattern_name");
+#else
         patternName = "New pattern";
+#endif
         level = Pattern.defaultLevel;
         initBpm = Pattern.defaultBpm;
         bps = Pattern.defaultBps;

@@ -169,6 +169,7 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 
 {1}",,,
 ,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,,,
+,eyecatch_no_image_text,No image,没有预览,,,
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
 ,new_track_dialog_create_button,Create,新建,,,
@@ -179,6 +180,8 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 
 {1}",,,
 ,,,,,,
+"Most dropdowns (eg. Backing track, BGA) in the
+editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,,,
 ,,,,,,
 ,track_setup_panel_title,Track Setup,曲目设置,,,
 ,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,,,
@@ -244,6 +247,7 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 ,,,,,,
 ,track_setup_patterns_tab_title,Patterns,谱面,,,
 ,track_setup_patterns_tab_new_pattern_button,New pattern,新建谱面,,,
+The default name of newly created patterns.,track_setup_patterns_tab_new_pattern_name,New pattern,新谱面,,,
 ,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,,,
 ,track_setup_patterns_tab_basics_header,Basics,基本信息,,,
 ,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,,,
@@ -307,6 +311,7 @@ instead of the next scan's beginning.","把这个音符绘制到前一扫描的�
 而不是下一个扫描的起点。",,,
 ,pattern_panel_keysounds_title,Keysounds,按键音,,,
 ,pattern_panel_keysounds_upcoming_label,Upcoming:,下一个：,,,
+Shown when no keysound is selected.,pattern_panel_keysounds_upcoming_none,(None),（无）,,,
 ,pattern_panel_keysounds_upcoming_help,"The next note you place will have this keysound.
 You can select multiple keysounds by holding
 Ctrl or Shift; they will apply sequentially.","下一个添加的音符将使用以下按键音。
