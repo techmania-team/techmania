@@ -8,6 +8,7 @@ public class EyecatchSelfLoader : MonoBehaviour
 {
     public Image image;
     public GameObject progressIndicator;
+    // TODO: localize this
     public GameObject noImageIndicator;
 
     private void NoImage()

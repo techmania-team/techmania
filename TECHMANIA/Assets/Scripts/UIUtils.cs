@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class UIUtils
 {
+    // TODO: localize this
     public const string kNone = "(None)";
 
     #region ClampInputField
@@ -167,6 +168,7 @@ public class UIUtils
     }
     #endregion
 
+    // TODO: localize this
     public const string kEmptyKeysoundDisplayText = "(None)";
     public static string StripAudioExtension(string filename)
     {

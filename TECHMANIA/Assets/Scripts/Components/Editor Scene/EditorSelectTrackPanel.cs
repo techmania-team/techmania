@@ -78,7 +78,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        BuildTrackList();
+        SetTrackListDirty();
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

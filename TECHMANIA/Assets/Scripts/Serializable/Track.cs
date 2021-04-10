@@ -286,6 +286,7 @@ public class PatternMetadata
     public PatternMetadata()
     {
         guid = Guid.NewGuid().ToString();
+        // TODO: localize this
         patternName = "New pattern";
         level = Pattern.defaultLevel;
         initBpm = Pattern.defaultBpm;
