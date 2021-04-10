@@ -380,7 +380,18 @@ public class TrackSetupPanel : MonoBehaviour
         PatternMetadata m = selectedPattern.patternMetadata;
         patternName.SetTextWithoutNotify(m.patternName);
         patternAuthor.SetTextWithoutNotify(m.author);
+        controlScheme.options.Clear();
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_touch")));
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_keys")));
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_km")));
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
+        controlScheme.RefreshShownValue();
         patternLevel.SetTextWithoutNotify(m.level.ToString());
 
         UIUtils.MemoryToDropdown(patternBackingTrack,

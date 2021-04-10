@@ -1368,6 +1368,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106649}
     m_Modifications:
+    - target: {fileID: 532432800814719921, guid: c492613baa5aa5443a2ff6505c7ee213,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_no_selection_text
+      objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481883, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: m_Name
@@ -1974,6 +1979,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: Background image
+      objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_background_image_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
@@ -2646,6 +2656,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BGA Offset Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bga_offset_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!1001 &102780181
@@ -3201,6 +3216,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8805977775998339934, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_open_button
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
@@ -5011,6 +5031,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Backing track
       objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_backing_track_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!114 &215824567 stripped
@@ -5382,6 +5407,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BPS Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bps_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -8259,6 +8289,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Background video (BGA)
       objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bga_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!1 &326492420
@@ -8538,6 +8573,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Level Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_level_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -9438,6 +9478,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: Control scheme
+      objectReference: {fileID: 0}
+    - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_control_scheme_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
@@ -12003,6 +12048,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Initial BPM Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_initial_bpm_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!114 &457533380 stripped
@@ -12625,6 +12675,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: Unlike BPM, you cannot change BPS throughout the pattern.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bps_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -13453,6 +13508,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 56732973}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_duplicate_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -16347,6 +16407,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106649}
     m_Modifications:
+    - target: {fileID: 3234181546940570730, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: key
+      value: select_pattern_dialog_no_pattern_text
+      objectReference: {fileID: 0}
     - target: {fileID: 6561828108665751752, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -18970,6 +19035,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: First Beat Offset Text Field
       objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_first_beat_offset_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
 --- !u!114 &792944799 stripped
@@ -19165,6 +19235,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Author Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_author_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -21881,8 +21956,17 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: The background music played during gameplay. BGA offset and First beat
-        offset are relative to the start of this audio file.
+      value: 'The background music played during gameplay.
+
+        BGA offset and
+        First beat offset are relative to
+
+        the start of this audio file.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_backing_track_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -26156,6 +26240,11 @@ PrefabInstance:
       propertyPath: m_TextStyleHashCode
       value: -1183493901
       objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_timing_header
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
 --- !u!1001 &1237995437
@@ -26437,8 +26526,15 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: The first beat of the pattern happens this many seconds after the backing
-        track starts.
+      value: 'The first beat of the pattern happens this many
+
+        seconds after
+        the backing track starts.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_first_beat_offset_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -28127,6 +28223,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_basics_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
@@ -30779,6 +30880,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 56732973}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_delete_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -31459,6 +31565,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106649}
     m_Modifications:
+    - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_new_pattern_button
+      objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152064, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_HorizontalFit
@@ -32729,6 +32840,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Name Text Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 8877813455001317820, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_pattern_name_label
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd215a7d6bbd0f498722381df931dcc, type: 3}
@@ -36056,6 +36172,11 @@ PrefabInstance:
 
         starts. Can be negative.'
       objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bga_offset_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -36457,6 +36578,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414411312942001106, guid: ab430c3b23fa3a046b8a0af014a2f552,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_background_header
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab430c3b23fa3a046b8a0af014a2f552, type: 3}
@@ -38066,7 +38192,15 @@ PrefabInstance:
     - target: {fileID: 3041710273112541997, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_text
-      value: BPM means Beats Per Minute. You can change BPM throughout the pattern.
+      value: 'BPM means Beats Per Minute.
+
+        You can change BPM throughout
+        the pattern.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_initial_bpm_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}

@@ -69,6 +69,7 @@ public class Locale
         }
 
         LocaleChanged?.Invoke();
+        Debug.Log("Locale loaded: " + locale);
     }
     
     private static string GetStringFrom(string key,
@@ -82,6 +83,12 @@ public class Locale
 
     public static string GetString(string key)
     {
+        if (currentStringTable == null)
+        {
+            // String table not yet loaded, nothing we can do.
+            return "";
+        }
+
         string s = GetStringFrom(key, currentStringTable);
         if (s != null) return s;
 

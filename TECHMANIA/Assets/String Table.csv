@@ -161,8 +161,15 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 ,result_panel_continue_button,Continue,继续,,,
 ,result_panel_retry_button,Retry,重试,,,
 ,,,,,,
+,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,,
+,game_no_fail_indicator,No fail,无失败,,,
+,,,,,,
 `===== Editor - Track setup =====,,,,,,
 ,track_setup_panel_title,Track Setup,曲目设置,,,
+,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,,,
+,track_setup_discard_changes_confirm,Discard,继续,,,
+,track_setup_discard_changes_cancel,Cancel,取消,,,
+,,,,,,
 ,track_setup_resource_tab_title,Resources,资源,,,
 ,track_setup_resource_tab_audio_header,Audio files,音频文件,,,
 ,track_setup_resource_tab_image_header,Image files,图像文件,,,
@@ -172,7 +179,7 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 so they can later be used as keysounds,
 backgrounds, and more.","导入音频、图像、视频文件后，
 可以将它们用作按键音、谱面背景等。",,,
-"Strings in the open file dialog opened when
+"Strings in the open file dialog shown when
 the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,,,
 ,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,,,
 ,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,,,
@@ -221,3 +228,41 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 ,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,,,
 ,,,,,,
 ,track_setup_patterns_tab_title,Patterns,谱面,,,
+,track_setup_patterns_tab_new_pattern_button,New pattern,新建谱面,,,
+,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,,,
+,track_setup_patterns_tab_basics_header,Basics,基本信息,,,
+,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,,,
+,track_setup_patterns_tab_author_label,Author,作者,,,
+,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,,,
+,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,,,
+,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,,,
+,track_setup_patterns_tab_control_scheme_km,KM,键鼠,,,
+,track_setup_patterns_tab_level_label,Level,难度,,,
+,track_setup_patterns_tab_background_header,Background,背景,,,
+,track_setup_patterns_tab_backing_track_label,Backing track,背景音乐,,,
+,track_setup_patterns_tab_backing_track_help,"The background music played during gameplay.
+BGA offset and First beat offset are relative to
+the start of this audio file.","“BGA开始时间”和“第一拍时间”
+均相对于背景音乐的开始时间。",,,
+,track_setup_patterns_tab_background_image_label,Background image,背景图片,,,
+,track_setup_patterns_tab_bga_label,Background video (BGA),BGA（背景动画）,,,
+,track_setup_patterns_tab_bga_offset_label,BGA offset,BGA开始时间,,,
+,track_setup_patterns_tab_bga_offset_help,"If a BGA is specified, it will start playing
+this many seconds after the backing track
+starts. Can be negative.","如果指定了BGA，它将于背景音乐播放到
+这一时间点（单位为秒）时开始播放。
+可以是负数。",,,
+,track_setup_patterns_tab_timing_header,Timing,时间,,,
+,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,,,
+,track_setup_patterns_tab_first_beat_offset_help,"The first beat of the pattern happens this many
+seconds after the backing track starts.","将背景音乐的这一时间点（单位为秒）
+视为谱面的第一拍。",,,
+,track_setup_patterns_tab_initial_bpm_label,Initial BPM,初始BPM,,,
+,track_setup_patterns_tab_initial_bpm_help,"BPM means Beats Per Minute.
+You can change BPM throughout the pattern.","BPM是指每分钟的拍数。
+可以在谱面中途变化。",,,
+,track_setup_patterns_tab_bps_label,BPS (Beats Per Scan),BPS（每扫描拍数）,,,
+,track_setup_patterns_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,,,
+,track_setup_patterns_tab_delete_button,Delete,删除,,,
+,track_setup_patterns_tab_duplicate_button,Duplicate,复制,,,
+,track_setup_patterns_tab_open_button,Open,打开,,,
