@@ -117,6 +117,7 @@ public class OptionsPanel : MonoBehaviour
             resolutionDropdown.SetValueWithoutNotify(1);
         }
         resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
+        resolutionDropdown.RefreshShownValue();
 
         vSyncToggle.SetIsOnWithoutNotify(Options.instance.vSync);
 
@@ -179,6 +180,7 @@ public class OptionsPanel : MonoBehaviour
                 "options_fullscreen_mode_windowed")));
         fullscreenDropdown.SetValueWithoutNotify(
             (int)Options.instance.fullScreenMode);
+        fullscreenDropdown.RefreshShownValue();
     }
 
     #region Graphics
