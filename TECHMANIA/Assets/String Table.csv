@@ -163,8 +163,23 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 ,,,,,,
 ,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,,
 ,game_no_fail_indicator,No fail,无失败,,,
+,resource_loader_error_format,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}",,,
+,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,,,
 ,,,,,,
-`===== Editor - Track setup =====,,,,,,
+`===== Editor - Select track and setup =====,,,,,,
+,new_track_dialog_create_button,Create,新建,,,
+,new_track_dialog_cancel_button,Cancel,取消,,,
+{0} is a folder or file's full path.,new_track_error_format,"An error occurred when creating or writing to {0}:
+
+{1}","写入{0}时发生错误：
+
+{1}",,,
+,,,,,,
+,,,,,,
 ,track_setup_panel_title,Track Setup,曲目设置,,,
 ,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,,,
 ,track_setup_discard_changes_confirm,Discard,继续,,,
@@ -370,3 +385,32 @@ Hold Ctrl, click and drag an anchor to reset its control points.","拖拽音符�
 用鼠标左键拖拽移动锚点和控制点。
 用鼠标右键点击可以删除锚点和控制点。
 按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。",,,
+"""Snackbar"" is the tiny message box shown at the
+bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold Notes cannot have zero length.,长按音符的长度不能为0。,,,
+,pattern_panel_snackbar_hold_note_covers_other_notes,Hold Notes cannot cover other notes.,长按音符不能遮盖其他音符。,,,
+,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,,,
+,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first Anchor in each Drag Note.,不能删除拖拽音符的第一个锚点。,,,
+,pattern_panel_snackbar_at_least_two_anchors,Drag Notes must contain at least 2 Anchors.,拖拽音符必须包含至少2个锚点。,,,
+,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,,,
+,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,,,
+,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,,,
+,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,,,
+,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,,,
+,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,,,
+,pattern_panel_snackbar_chain_note_at_same_pulse,No two Chain Notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,,,
+,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by Hold Notes.,音符不能被其他长按音符遮盖。,,,
+,pattern_panel_resource_loading_error_format,"An error occurred when loading resources:
+
+{0}
+
+You can continue to edit this pattern, but playback and preview will be disabled.","读取资源时发生错误：
+
+{0}
+
+你可以继续编辑谱面，但是将无法使用播放功能。",,,
+,,,,,,
+,bpm_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,,,
+,bpm_event_dialog_change_bpm_button,change BPM to,将BPM改为,,,
+,bpm_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,,,
+,bpm_event_dialog_ok_button,OK,确定,,,
+,bpm_event_dialog_cancel_button,Cancel,取消,,,
