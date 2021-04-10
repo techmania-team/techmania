@@ -266,3 +266,107 @@ You can change BPM throughout the pattern.","BPM是指每分钟的拍数。
 ,track_setup_patterns_tab_delete_button,Delete,删除,,,
 ,track_setup_patterns_tab_duplicate_button,Duplicate,复制,,,
 ,track_setup_patterns_tab_open_button,Open,打开,,,
+,,,,,,
+`===== Editor - Pattern =====,,,,,,
+,pattern_panel_title,Editing Pattern,编辑谱面,,,
+,pattern_panel_edit_tab_title,Edit,编辑,,,
+,pattern_panel_edit_tab_beat_snap_divisor_label,Beat snap divisor:,节拍划分数：,,,
+,pattern_panel_edit_tab_beat_snap_divisor_help,"Divide each beat into this many portions
+when snapping notes.","对齐音符时把每一拍
+划分成的份数。",,,
+,pattern_panel_edit_tab_bpm_event_button,BPM Event,BPM事件,,,
+,pattern_panel_edit_tab_visible_lanes_label,Visible lanes,可见轨道数,,,
+,pattern_panel_edit_tab_visible_lanes_help,Adjust vertical zoom.,调整每个轨道的高度。,,,
+,pattern_panel_edit_tab_time_display_legend,"Scan-Beat
+Time","扫描数-拍数
+时间",,,
+,pattern_panel_edit_tab_preview_button,Preview,预览,,,
+,pattern_panel_note_details_title,Note details,音符详情,,,
+,pattern_panel_note_details_no_selection_text,No note selected.,没有选中任何音符。,,,
+,pattern_panel_note_details_volume_label,Volume,音量,,,
+,pattern_panel_note_details_pan_label,Pan,立体声平衡,,,
+,pattern_panel_note_details_preview_button,Preview,预览,,,
+,pattern_panel_note_details_end_of_scan_label,End of scan,扫描末,,,
+,pattern_panel_note_details_end_of_scan_help,"Draw this note at the previous scan's end,
+instead of the next scan's beginning.","把这个音符绘制到前一扫描的末尾，
+而不是下一个扫描的起点。",,,
+,pattern_panel_keysounds_title,Keysounds,按键音,,,
+,pattern_panel_keysounds_upcoming_label,Upcoming:,下一个：,,,
+,pattern_panel_keysounds_upcoming_help,"The next note you place will have this keysound.
+You can select multiple keysounds by holding
+Ctrl or Shift; they will apply sequentially.","下一个添加的音符将使用以下按键音。
+你可以使用Ctrl和Shift来选择多个按键音，
+它们将依次作用于新添加的音符。",,,
+,,,,,,
+,pattern_panel_options_tab_title,Options,设置,,,
+,pattern_panel_options_appearance_header,Appearance,界面,,,
+,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,,,
+,pattern_panel_options_editing_header,Editing,编辑,,,
+,pattern_panel_options_apply_keysounds_label,Apply keysound to selection,选择按键音时作用于选区,,,
+,pattern_panel_options_apply_keysounds_description,"When you click a keysound, apply it to any notes selected.",选择按键音时，将所有选中音符的按键音改为新选择的按键音。,,,
+,pattern_panel_options_apply_note_type_label,Apply note type to selection,选择音符类型时作用于选区,,,
+,pattern_panel_options_apply_note_type_description,"When you click a note type, apply it to any notes selected.",选择音符类型时，将所有选中音符的类型改为新选择的类型。,,,
+,pattern_panel_options_lock_notes_label,Lock notes in time,锁定音符时间,,,
+,pattern_panel_options_lock_notes_description,Prevent dragging notes to a different time. Does not affect cut/copy/paste.,确保无法横向移动任何音符。对剪切、复制、粘贴没有影响。,,,
+,pattern_panel_options_lock_anchors_label,Lock drag anchors in time,锁定拖拽锚点时间,,,
+,pattern_panel_options_lock_anchors_description,Prevent dragging drag anchors to a different time.,确保无法横向移动任何拖拽音符的锚点。,,,
+,pattern_panel_options_snap_anchors_label,Snap drag note anchors,对齐拖拽锚点,,,
+,pattern_panel_options_snap_anchors_description,Snap anchors the same way as other notes.,按照对齐音符的方式对齐拖拽音符的锚点。,,,
+,pattern_panel_options_playback_header,Playback,播放,,,
+,pattern_panel_options_metronome_label,Metronome,节拍器,,,
+,pattern_panel_options_assist_tick_label,Play ticks on silent notes,在无声音符上播放辅助音效,,,
+,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,,,
+,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,,,
+,pattern_panel_options_help_header,Help,帮助,,,
+,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,,,
+,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
+Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
+` <indent=25%>Rectangle tool</indent>
+1-9 <indent=25%>Select note type</indent>
+P <indent=25%>Preview keysound of selected note</indent>
+Ctrl+A/D <indent=25%>Select / Deselect all notes</indent>
+Ctrl+X/C/V <indent=25%>Cut / Copy / Paste</indent>
+
+Space <indent=25%>Start/stop playback</indent>
+
+Scroll wheel <indent=35%>Scroll pattern horizontally</indent>
+Shift+Scroll wheel <indent=35%>Scroll pattern vertically</indent>
+Ctrl+Scroll wheel <indent=35%>Zoom in/out</indent>
+Alt+Scroll wheel <indent=35%>Change beat snap divisor</indent>
+
+Hold Ctrl or Shift when selecting notes or keysounds to select multiple.","Ctrl+S <indent=25%>保存</indent>
+Ctrl+Z/Y <indent=25%>撤销/重做</indent>
+` <indent=25%>选框工具</indent>
+1-9 <indent=25%>选择音符类型</indent>
+P <indent=25%>预览选中音符的按键音</indent>
+Ctrl+A/D <indent=25%>全选/取消全选所有音符</indent>
+Ctrl+X/C/V <indent=25%>剪切/复制/粘贴</indent>
+
+空格 <indent=25%>开始/结束播放</indent>
+
+滚轮 <indent=35%>横向滚动</indent>
+Shift+滚轮 <indent=35%>纵向滚动</indent>
+Ctrl+滚轮 <indent=35%>缩放</indent>
+Alt+滚轮 <indent=35%>调整节拍划分数</indent>
+
+按住Ctrl或Shift可以多选音符与按键音。",,,
+,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,,,
+,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
+Hold Shift to append to the current selection.
+Hold Alt to subtract from the current selection.
+Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
+按住Shift可以额外选中矩形内的音符。
+按住Alt可以取消选中矩形内的音符。
+按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。",,,
+,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,,,
+,pattern_panel_options_drag_control_help,"Drag notes are bezier curves controlled by anchors and control points.
+Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
+Click on the anchor receiver to add an anchor.
+Click and drag anchors and control points to move them.
+Right click to remove anchors and control points.
+Hold Ctrl, click and drag an anchor to reset its control points.","拖拽音符是由锚点和控制点所控制的贝塞尔曲线。
+选中一个拖拽音符可以显示其锚点和控制点，以及锚点接收线（音符中心的棕色曲线）。
+在锚点接收线上点击以增加锚点。
+用鼠标左键拖拽移动锚点和控制点。
+用鼠标右键点击可以删除锚点和控制点。
+按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。",,,
