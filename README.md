@@ -7,7 +7,7 @@ An open source rhythm game for Windows, written in Unity, playable with or witho
 
 [Discord](https://discord.gg/K4Nf7AnAZt)
 
-[Official website](https://techmania-team.github.io/#/)
+[Official website](https://techmania-team.herokuapp.com/)
 
 Head to [Releases](https://github.com/techmania-team/techmania/releases) to download the released versions.
 
