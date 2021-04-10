@@ -194,7 +194,10 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = $"Could not load {fullPath}:\n\n{request.error}";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_error_format",
+                fullPath,
+                request.error);
             return;
         }
         clip = DownloadHandlerAudioClip.GetContent(request);
@@ -202,14 +205,18 @@ public class ResourceLoader : MonoBehaviour
 
         if (clip == null)
         {
-            error = $"Could not load {fullPath}:\n\n{request.error}";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_error_format",
+                fullPath,
+                request.error);
             return;
         }
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = $"Could not load {fullPath}.\n\n" +
-                "The file may be corrupted, or be of an unsupported format.";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_unsupported_format_error_format",
+                fullPath);
             return;
         }
     }
@@ -241,7 +248,10 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath}:\n\n{request.error}");
+                Locale.GetStringAndFormat(
+                    "resource_loader_error_format",
+                    fullPath,
+                    request.error));
             yield break;
         }
 
@@ -249,14 +259,19 @@ public class ResourceLoader : MonoBehaviour
         if (texture == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath}:\n\n{request.error}");
+                Locale.GetStringAndFormat(
+                    "resource_loader_error_format",
+                    fullPath,
+                    request.error));
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath} as a 2D image.");
+                Locale.GetStringAndFormat(
+                    "resource_loader_unsupported_format_error_format",
+                    fullPath));
             yield break;
         }
 
