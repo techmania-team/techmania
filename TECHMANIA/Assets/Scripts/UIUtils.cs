@@ -171,8 +171,6 @@ public class UIUtils
     }
     #endregion
 
-    // TODO: localize this
-    public const string kEmptyKeysoundDisplayText = "(None)";
     public static string StripAudioExtension(string filename)
     {
         return filename.Replace(".wav", "").Replace(".ogg", "");
