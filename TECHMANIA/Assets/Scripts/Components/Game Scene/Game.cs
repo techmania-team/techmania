@@ -826,27 +826,30 @@ public class Game : MonoBehaviour
         headAppearance.DrawRepeatHeadBeforeRepeatNotes();
         if (notesToManage.Count > 0)
         {
+            int headScan = head.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+
             NoteObject lastRepeatNote = notesToManage[0];
+            int lastScan = lastRepeatNote.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
             int lastRepeatNotePulse = lastRepeatNote.note.pulse;
             if (lastRepeatNote.note is HoldNote)
             {
                 lastRepeatNotePulse +=
                     (lastRepeatNote.note as HoldNote).duration;
+
+                lastScan = lastRepeatNotePulse / PulsesPerScan;
+                if (lastRepeatNotePulse % PulsesPerScan == 0)
+                {
+                    lastScan--;
+                }
             }
             headAppearance.DrawRepeatPathTo(lastRepeatNotePulse,
                 positionEndOfScanOutOfBounds: 
-                !lastRepeatNote.note.endOfScan);
+                headScan != lastScan);
 
             // Create path extensions if the head and last
             // note are in different scans.
-            int headScan = head.note.GetScanNumber(
-                GameSetup.pattern.patternMetadata.bps);
-            int lastScan = lastRepeatNote.note.GetScanNumber(
-                GameSetup.pattern.patternMetadata.bps);
-            if (lastRepeatNote.note is HoldNote)
-            {
-                lastScan = lastRepeatNotePulse / PulsesPerScan;
-            }
             for (int crossedScan = headScan + 1;
                 crossedScan <= lastScan;
                 crossedScan++)
