@@ -126,6 +126,7 @@ public class NoteSkinBase : Serializable<NoteSkinBase> {}
 public class NoteSkin : NoteSkinBase
 {
     public const string kVersion = "1";
+    public string author;
 
     // Note skin's name is the folder's name.
 
@@ -190,6 +191,7 @@ public class VfxSkinBase : Serializable<VfxSkinBase> { }
 public class VfxSkin : VfxSkinBase
 {
     public const string kVersion = "1";
+    public string author;
 
     // VFX skin's name is the folder's name.
     // Each VFX (except for feverOverlay) is defined as multiple
@@ -255,6 +257,7 @@ public class ComboSkinBase : Serializable<ComboSkinBase> { }
 public class ComboSkin : ComboSkinBase
 {
     public const string kVersion = "1";
+    public string author;
 
     // Combo skin's name is the folder's name.
 
