@@ -3505,6 +3505,8 @@ public class PatternPanel : MonoBehaviour
 
     private void ScrollScanlineIntoView()
     {
+        if (!Options.instance.editorOptions.keepScanlineInView) return;
+
         float viewPortWidth = workspaceScrollRect
             .GetComponent<RectTransform>().rect.width;
         if (WorkspaceContentWidth <= viewPortWidth) return;

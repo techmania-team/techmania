@@ -149,6 +149,7 @@ public class EditorOptions
     // Appearance
 
     public bool showKeysounds;
+    public bool keepScanlineInView;
 
     // Editing
 
@@ -167,6 +168,7 @@ public class EditorOptions
     public EditorOptions()
     {
         showKeysounds = true;
+        keepScanlineInView = true;
 
         applyKeysoundToSelection = false;
         applyNoteTypeToSelection = false;
