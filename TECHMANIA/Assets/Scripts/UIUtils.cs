@@ -121,6 +121,18 @@ public class UIUtils
         UpdateMetadataInMemory(ref property,
             newValueString, ref madeChange);
     }
+
+    public static void UpdateMetadataInMemory(ref bool property,
+        bool newValue, ref bool madeChange)
+    {
+        if (property == newValue) return;
+        if (!madeChange)
+        {
+            EditorContext.PrepareToModifyMetadata();
+            madeChange = true;
+        }
+        property = newValue;
+    }
     #endregion
 
     #region MemoryToDropdown

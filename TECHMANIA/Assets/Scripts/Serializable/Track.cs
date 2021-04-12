@@ -273,6 +273,8 @@ public class PatternMetadata
     public string bga;
     // Play BGA this many seconds after the backing track begins.
     public double bgaOffset;
+    // Take BGA into account when calculating pattern length.
+    public bool waitForEndOfBga;
 
     // Timing.
 
@@ -293,6 +295,9 @@ public class PatternMetadata
         patternName = "New pattern";
 #endif
         level = Pattern.defaultLevel;
+
+        waitForEndOfBga = true;
+
         initBpm = Pattern.defaultBpm;
         bps = Pattern.defaultBps;
     }

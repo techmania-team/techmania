@@ -342,6 +342,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_Dropdown backgroundImage;
     public TMP_Dropdown backgroundVideo;
     public TMP_InputField bgaOffset;
+    public Toggle waitForEndOfBga;
     public TMP_InputField firstBeatOffset;
     public TMP_InputField initialBpm;
     public TMP_InputField bps;
@@ -402,6 +403,7 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.MemoryToDropdown(backgroundVideo,
             m.bga, videoFilesCache);
         bgaOffset.SetTextWithoutNotify(m.bgaOffset.ToString());
+        waitForEndOfBga.SetIsOnWithoutNotify(m.waitForEndOfBga);
 
         firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
         initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
@@ -461,7 +463,8 @@ public class TrackSetupPanel : MonoBehaviour
             ref m.bga, backgroundVideo, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
             ref m.bgaOffset, bgaOffset.text, ref madeChange);
-
+        UIUtils.UpdateMetadataInMemory(
+            ref m.waitForEndOfBga, waitForEndOfBga.isOn, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
             ref m.firstBeatOffset, firstBeatOffset.text,
             ref madeChange);

@@ -701,7 +701,8 @@ public class Game : MonoBehaviour
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 backingTrackClip.length);
         }
-        if (videoPlayer.url != null)
+        if (videoPlayer.url != null &&
+            GameSetup.pattern.patternMetadata.waitForEndOfBga)
         {
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 (float)GameSetup.pattern.patternMetadata.bgaOffset +
@@ -738,6 +739,7 @@ public class Game : MonoBehaviour
                 noteEndTime);
         }
 
+        Debug.Log("Pattern length is " + endOfPatternBaseTime);
         float maxPulse = GameSetup.pattern.TimeToPulse(
             endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
