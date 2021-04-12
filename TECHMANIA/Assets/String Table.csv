@@ -55,6 +55,7 @@ For this session TECHMANIA will use the default ruleset.","读取自定义规则
 本次游戏TECHMANIA将使用默认规则。",,,
 ,,,,,,
 ,select_track_panel_title,Select Track,选择曲目,,,
+,eyecatch_no_image_text,No image,没有预览,,,
 ,select_track_error_card_title,Could not load track,无法读取曲目,,,
 ,select_track_error_card_artist,Open for details,点击查看详情,,,
 ,select_track_error_format,"An error occurred when loading {0}:
@@ -123,6 +124,7 @@ to make acronyms.,timing_calibration_late_indicator,late,过晚,,,
 ,select_skin_combo_skin_label,Combo skin,连击皮肤,,,
 ,select_skin_reload_skin_when_loading_label,Reload skins when loading patterns,读取谱面时重新读取皮肤,,,
 ,,,,,,
+,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,,
 ,select_pattern_dialog_play_button,Play,开始,,,
 ,select_pattern_dialog_back_button,Back,返回,,,
 ,select_pattern_dialog_auto_play_no_fail_instruction,"Hold Shift and click Play to enable auto play.
@@ -132,6 +134,14 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 ,message_dialog_ok_button,OK,确定,,,
 ,,,,,,
 `===== Game scene =====,,,,,,
+,resource_loader_error_format,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}",,,
+,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,,,
+,,,,,,
+,game_no_fail_indicator,No fail,无失败,,,
 ,game_score_label,Score,分数,,,
 ,game_max_combo_label,Max Combo,最大连击,,,
 ,game_fever_off_indicator,FEVER OFF,FEVER已禁用,,,
@@ -160,16 +170,6 @@ Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以�
 ,result_panel_full_combo_medal,FULL COMBO,全连,,,
 ,result_panel_continue_button,Continue,继续,,,
 ,result_panel_retry_button,Retry,重试,,,
-,,,,,,
-,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,,
-,game_no_fail_indicator,No fail,无失败,,,
-,resource_loader_error_format,"An error occurred when loading {0}:
-
-{1}","读取{0}时发生错误：
-
-{1}",,,
-,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,,,
-,eyecatch_no_image_text,No image,没有预览,,,
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
 ,new_track_dialog_create_button,Create,新建,,,
