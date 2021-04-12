@@ -8,6 +8,8 @@ using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
+    public AudioClip emptyClip;
+
     private static ResourceLoader GetInstance()
     {
         return FindObjectOfType<ResourceLoader>();
@@ -117,6 +119,22 @@ public class ResourceLoader : MonoBehaviour
             string fileWithoutFolder = new FileInfo(file).Name;
             if (!audioClips.ContainsKey(fileWithoutFolder))
             {
+                // Handle empty files.
+                try
+                {
+                    if (IsEmptyFile(file))
+                    {
+                        Debug.Log($"{file} is a 0-byte file, loaded as empty clip.");
+                        audioClips.Add(fileWithoutFolder, emptyClip);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    cacheAudioCompleteCallback?.Invoke(ex.Message);
+                    yield break;
+                }
+
                 // Somehow passing in AudioType.UNKNOWN will make it
                 // magically work for every format.
                 UnityWebRequest request =
@@ -171,6 +189,22 @@ public class ResourceLoader : MonoBehaviour
     private IEnumerator InnerLoadAudio(string fullPath,
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
+        // Handle empty files.
+        try
+        {
+            if (IsEmptyFile(fullPath))
+            {
+                Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
+                loadAudioCompleteCallback?.Invoke(emptyClip, null);
+                yield break;
+            }
+        }
+        catch (Exception ex)
+        {
+            loadAudioCompleteCallback?.Invoke(null, ex.Message);
+            yield break;
+        }
+
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(fullPath), AudioType.UNKNOWN);
@@ -184,6 +218,12 @@ public class ResourceLoader : MonoBehaviour
             Debug.Log("Loaded: " + fullPath);
         }
         loadAudioCompleteCallback?.Invoke(clip, error);
+    }
+
+    private static bool IsEmptyFile(string fullPath)
+    {
+        FileInfo fileInfo = new FileInfo(fullPath);
+        return fileInfo.Length == 0;
     }
 
     public static void GetAudioClipFromWebRequest(
