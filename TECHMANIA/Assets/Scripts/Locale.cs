@@ -6,93 +6,148 @@ using UnityEngine.Events;
 
 // String table format
 //
-// First row: header
-// Second row: language names
+// Row 0: header
+// Row 1: language names
+// Row 2: localizer names
 // Subsequent rows:
-//   Field 1 - comment
-//   Field 0 - key
+//   Field 0 - comment
+//   Field 1 - key
 //   Same field as the locale in header - string content
 
 public class Locale
 {
-    public static event UnityAction LocaleChanged;
-    public static Dictionary<string, string> localeToLanguageName;
-    private static Dictionary<string, string> currentStringTable;
-    private static Dictionary<string, string> fallbackStringTable;
+    // Instance fields
+    private string languageName;
+    private List<string> localizers;
+    private Dictionary<string, string> strings;
+    public Locale()
+    {
+        localizers = new List<string>();
+        strings = new Dictionary<string, string>();
+    }
 
-    public static void Load(TextAsset stringTable, string locale)
+    // Static fields
+    public static event UnityAction LocaleChanged;
+    private static Dictionary<string, Locale> locales;
+    private static Locale current;
+    private static Locale fallback;
+    public const string kDefaultLocale = "en";
+
+    public static void Initialize(TextAsset stringTable)
     {
         NReco.Csv.CsvReader csvReader = new NReco.Csv.CsvReader(
             new StringReader(stringTable.text));
-        List<string> locales = new List<string>();
-        int localeIndex = 0;
-        int fallbackLocaleIndex = 0;
+        locales = new Dictionary<string, Locale>();
+        List<Locale> localeList = new List<Locale>();
 
         // Header
         csvReader.Read();
         for (int i = 2; i < csvReader.FieldsCount; i++)
         {
-            locales.Add(csvReader[i]);
-            if (csvReader[i] == locale) localeIndex = i;
-            if (csvReader[i] == "en") fallbackLocaleIndex = i;
+            string localeName = csvReader[i];
+            Locale l = new Locale();
+            locales.Add(localeName, l);
+            localeList.Add(l);
+
+            if (localeName == kDefaultLocale)
+            {
+                fallback = l;
+            }
+        }
+        if (fallback == null)
+        {
+            throw new System.Exception("Default locale not found.");
         }
 
         // Language names
         csvReader.Read();
-        localeToLanguageName = new Dictionary<string, string>();
         for (int i = 2; i < csvReader.FieldsCount; i++)
         {
-            localeToLanguageName.Add(locales[i - 2],
-                csvReader[i]);
+            localeList[i - 2].languageName = csvReader[i];
         }
 
-        if (localeIndex == 0)
+        // Localizer names
+        csvReader.Read();
+        for (int i = 2; i < csvReader.FieldsCount; i++)
         {
-            throw new System.Exception("Locale not found: " + locale);
+            foreach (string name in csvReader[i].Split(','))
+            {
+                localeList[i - 2].localizers.Add(name.Trim());
+            }
+            localeList[i - 2].localizers.Sort();
         }
 
-        // String table
-        currentStringTable = new Dictionary<string, string>();
-        fallbackStringTable = new Dictionary<string, string>();
+        // Strings
+        int stringCount = 0;
         while (csvReader.Read())
         {
-            if (csvReader.FieldsCount == 0 ||
-                csvReader[1] == "")
+            string key = csvReader[1];
+            if (key == "")
             {
                 // Empty line
                 continue;
             }
-            currentStringTable.Add(csvReader[1],
-                csvReader[localeIndex]);
-            fallbackStringTable.Add(csvReader[1],
-                csvReader[fallbackLocaleIndex]);
+            stringCount++;
+            for (int i = 2; i < csvReader.FieldsCount; i++)
+            {
+                localeList[i - 2].strings.Add(key, csvReader[i]);
+            }
         }
 
+        Debug.Log($"Loaded {stringCount} strings in {localeList.Count} locales.");
+    }
+
+    public static void SetLocale(string locale)
+    {
+        if (!locales.ContainsKey(locale))
+        {
+            throw new System.Exception("Locale not found: " + locale);
+        }
+        current = locales[locale];
+        Debug.Log($"Setting locale to {locale}.");
         LocaleChanged?.Invoke();
-        Debug.Log("Locale loaded: " + locale);
+    }
+    
+    public static Dictionary<string, string> GetLocaleToLanguageName()
+    {
+        Dictionary<string, string> d = new Dictionary<string, string>();
+        foreach (KeyValuePair<string, Locale> pair in locales)
+        {
+            d.Add(pair.Key, pair.Value.languageName);
+        }
+        return d;
+    }
+
+    public static Dictionary<string, string> GetLocaleToLocalizerNames()
+    {
+        Dictionary<string, string> d = new Dictionary<string, string>();
+        foreach (KeyValuePair<string, Locale> pair in locales)
+        {
+            d.Add(pair.Key, string.Join(", ", pair.Value.localizers));
+        }
+        return d;
     }
     
     private static string GetStringFrom(string key,
-        Dictionary<string, string> stringTable)
+        Locale locale)
     {
-        if (stringTable == null) return null;
-        if (!stringTable.ContainsKey(key)) return null;
-        if (stringTable[key] == "") return null;
-        return stringTable[key];
+        if (!locale.strings.ContainsKey(key)) return null;
+        if (locale.strings[key] == "") return null;
+        return locale.strings[key];
     }
 
     public static string GetString(string key)
     {
-        if (currentStringTable == null)
+        if (current == null)
         {
             // String table not yet loaded, nothing we can do.
             return "";
         }
 
-        string s = GetStringFrom(key, currentStringTable);
+        string s = GetStringFrom(key, current);
         if (s != null) return s;
 
-        s = GetStringFrom(key, fallbackStringTable);
+        s = GetStringFrom(key, fallback);
         if (s == null)
         {
             Debug.LogError("Key not found: " + key);

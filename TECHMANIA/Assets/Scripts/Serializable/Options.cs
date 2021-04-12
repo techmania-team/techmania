@@ -77,7 +77,7 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        locale = "en";
+        locale = Locale.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
         noteSkin = "Default";

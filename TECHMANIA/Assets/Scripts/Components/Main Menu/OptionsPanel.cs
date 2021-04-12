@@ -46,7 +46,8 @@ public class OptionsPanel : MonoBehaviour
             includeInactive: true);
         instance.LoadOrCreateOptions();
 
-        Locale.Load(instance.stringTable, Options.instance.locale);
+        Locale.Initialize(instance.stringTable);
+        Locale.SetLocale(Options.instance.locale);
         Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioBufferSize();
         instance.ApplyVolume();
@@ -141,7 +142,7 @@ public class OptionsPanel : MonoBehaviour
 
         languageDropdown.ClearOptions();
         foreach (KeyValuePair<string, string> pair in
-            Locale.localeToLanguageName)
+            Locale.GetLocaleToLanguageName())
         {
             languageDropdown.options.Add(new TMP_Dropdown.OptionData(
                 pair.Value));
@@ -285,12 +286,12 @@ public class OptionsPanel : MonoBehaviour
     public void OnLanguageChanged(int value)
     {
         foreach (KeyValuePair<string, string> pair in
-            Locale.localeToLanguageName)
+            Locale.GetLocaleToLanguageName())
         {
             if (pair.Value == languageDropdown.options[value].text)
             {
                 Options.instance.locale = pair.Key;
-                Locale.Load(stringTable, Options.instance.locale);
+                Locale.SetLocale(Options.instance.locale);
                 break;
             }
         }
