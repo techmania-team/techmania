@@ -7292,12 +7292,7 @@ PrefabInstance:
     - target: {fileID: 6024100903353481886, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: m_text
-      value: 'Name 1 (language 1)
-
-        Name 2, Name 3 (language 2)
-
-        Name
-        4, Name 5, Name 6 (language 3)'
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481886, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
@@ -21303,6 +21298,24 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1857812827}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1872549629 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6024100903353481883, guid: c492613baa5aa5443a2ff6505c7ee213,
+    type: 3}
+  m_PrefabInstance: {fileID: 584292706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1872549630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872549629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd2c6517707ce8438ab1b395534ce09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1875217456
 PrefabInstance:
   m_ObjectHideFlags: 0

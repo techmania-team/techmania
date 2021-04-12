@@ -72,7 +72,9 @@ public class Locale
         {
             foreach (string name in csvReader[i].Split(','))
             {
-                localeList[i - 2].localizers.Add(name.Trim());
+                string trimmedName = name.Trim();
+                if (trimmedName == "") continue;
+                localeList[i - 2].localizers.Add(trimmedName);
             }
             localeList[i - 2].localizers.Sort();
         }
@@ -118,12 +120,15 @@ public class Locale
         return d;
     }
 
-    public static Dictionary<string, string> GetLocaleToLocalizerNames()
+    public static Dictionary<string, List<string>>
+        GetLanguageNameToLocalizerNames()
     {
-        Dictionary<string, string> d = new Dictionary<string, string>();
+        Dictionary<string, List<string>> d =
+            new Dictionary<string, List<string>>();
         foreach (KeyValuePair<string, Locale> pair in locales)
         {
-            d.Add(pair.Key, string.Join(", ", pair.Value.localizers));
+            if (pair.Key == kDefaultLocale) continue;
+            d.Add(pair.Value.languageName, pair.Value.localizers);
         }
         return d;
     }
