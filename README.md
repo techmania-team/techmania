@@ -41,6 +41,8 @@ While other OSes are not supported, it may be possible to build the project on t
 * File - Build Settings
 * Choose your target platform, then build.
 
+Note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
+
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
 A running build on Android can be found on [samnyan's fork](https://github.com/samnyan/techmania/releases).
