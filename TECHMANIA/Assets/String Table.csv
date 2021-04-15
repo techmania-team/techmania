@@ -65,6 +65,7 @@ Please select a valid skin from the options menu.","读取连击皮肤时发生�
 ,main_menu_start_button,START,开始,,スタート,게임 시작
 ,main_menu_editor_button,EDITOR,编辑,,エディタ,편집기
 ,main_menu_options_button,OPTIONS,设置,,オプション,설정
+,main_menu_information_button,Information,须知,,情報,안내
 ,main_menu_quit_button,QUIT,退出,,終了,종료
 ,,,,,,
 ,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,,カスタムルールセット有効,사용자 지정 규칙 사용 중
@@ -135,13 +136,13 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,,開始,시작
 ,options_offset_latency_label,Offset & latency,偏移与延迟,,オフセット/遅延,오프셋/지연
-,options_offset_latency_button,CALIBRATE,校对,,判定調節,보정하기
+,options_offset_latency_button,CALIBRATE,校对,,調整,보정하기
 ,,,,,,
 ,touchscreen_test_panel_title,Touchscreen Test,触屏测试,,タッチスクリーンテスト,터치스크린 테스트
 ,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
 ,touchscreen_test_finger_indicator,Finger #{0},触点 #{0},,タップ #{0},터치 #{0}
 ,,,,,,
-,timing_calibration_panel_title,Timing Calibration,偏移与延迟校对,,タイミング調節,타이밍 보정
+,timing_calibration_panel_title,Timing Calibration,偏移与延迟校对,,タイミング調整,타이밍 보정
 ,timing_calibration_device_label,Input device,输入设备,,入力方法,입력 장치
 ,timing_calibration_device_touchscreen,Touchscreen,触屏,,タッチスクリーン,터치스크린
 ,timing_calibration_device_keyboard_mouse,Keyboard & Mouse,键盘鼠标,,キーボード・マウス,키보드/마우스
@@ -152,14 +153,11 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 2. <indent=5%>Adjust note offset until you feel the timing of notes and keysounds are correct.</indent>
 3. <indent=5%>Adjust input latency until the reported time differences get close to 0.</indent>","1. <indent=5%>选择待校对的输入设备，然后演奏下方的音符。（在键盘上可以使用任意字母、数字键）</indent>
 2. <indent=5%>调整音符偏移，直到你感觉音符以及按键音的时机与背景音乐完全同步。</indent>
-3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>",,"1. <indent=5%>タイミングを調節したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーが使用できます）</indent>
-2. <indent=5%>ノートのタイミングとノート音が合っていると感じられるまで調節してください。</indent>
-3. <indent=5%>時間差が0に近くなるまで入力遅延を調節してください。</indent>","1. <indent=5%>보정할 입력 장치를 선택하고, 아래 노트를 연주합니다. 키보드는 문자, 숫자 키 중 아무 키나 사용할 수 있습니다.</indent>
+3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>",,"1. <indent=5%>タイミングを調整したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーを使用できます）</indent>
+2. <indent=5%>ノートのタイミングとノート音が合っていると感じられるまで調整してください。</indent>
+3. <indent=5%>時間差が0に近くなるまで入力遅延を調整してください。</indent>","1. <indent=5%>보정할 입력 장치를 선택하고, 아래 노트를 연주합니다. 키보드는 문자, 숫자 키 중 아무 키나 사용할 수 있습니다.</indent>
 2. <indent=5%>연주음과 연주 타이밍이 일치할 때까지 오프셋을 조정하십시오.</indent>
 3. <indent=5%>시간차가 0에 최대한 가까워지도록 입력 지연을 조정하십시오.</indent>"
-"When the user plays a note, the game will show:",timing_calibration_touchscreen_acronym,T,触屏,,T,터치
-"the device name's acronym, then time difference,",timing_calibration_keyboard_acronym,K,键盘,,KB,키보드
-then early/late indicator.,timing_calibration_mouse_acronym,M,鼠标,,M,마우스
 "If the device's name is short, then there's no need",timing_calibration_early_indicator,early,过早,,EARLY,EARLY
 to make acronyms.,timing_calibration_late_indicator,late,过晚,,LATE,LATE
 ,,,,,,
@@ -168,6 +166,24 @@ to make acronyms.,timing_calibration_late_indicator,late,过晚,,LATE,LATE
 ,select_skin_vfx_skin_label,VFX,特效,,VFX,쿨밤
 ,select_skin_combo_skin_label,Combo,连击,,コンボ,판정/콤보
 ,select_skin_reload_skin_when_loading_label,Reload skins when loading patterns,读取谱面时重新读取皮肤,,トラックの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
+,,,,,,
+,information_panel_title,Information,须知,,情報,안내
+,information_panel_health_safety_header,Health & safety information,健康与安全须知,,健康と安全のために,안전과 건강을 위하여
+,information_panel_health_safety_text,"When playing with a touchscreen, please do not strike it violently. Doing so may cause damage to the touchscreen and/or yourself.
+
+Flashing lights may trigger seizures, even in people who never experienced it before. If you feel uncomfortable, stop playing and take a break.","使用触屏时请勿用力击打，否则可能对触屏或玩家自身造成伤害。
+
+闪烁的游戏图像有可能触发癫痫症状，无论是否有此病史。如果在游戏时感到不适，请停止游戏并休息。",,"タッチスクリーンは軽くタップしてください。衝撃を与える行為または指ではないものでタップする行為は故障の原因となります。
+
+まれに特定の光のパターンや点滅を見た場合にてんかん発作を起こす場合があります。これまでにてんかん発作やてんかん病状のない人でも同様に起きる可能性があります。ゲーム中にめまい、視覚変化、目元の痙攣、意識消失、方向感覚消失、あらゆる不随意運動、痙攣などの症状が生じた場合には直ちにゲームを中止し、十分に休息するか医師へご相談ください。","터치 스크린은 손가락으로 가볍게 눌러 주십시오.
+주먹으로 내려치거나 다른 도구를 사용하는 등의 다른 방법으로 터치 스크린을 누를 경우, 터치 스크린이 파손될 수 있습니다.
+
+극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
+
+현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
+,information_panel_credits_header,Credits,制作人,,クレジット,
+,information_panel_credits_program,Program,程序,,プログラミング,프로그래밍
+,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,,翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
 ,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,このトラックには譜面がありません。,이 음악에는 패턴이 없습니다.
 ,select_pattern_dialog_play_button,PLAY,开始,,プレイ,시작
@@ -211,8 +227,14 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 `===== Result scene =====,,,,,,
 ,result_panel_stage_clear_title,Stage Clear,挑战成功,,STAGE CLEARED,STAGE CLEARED
 ,result_panel_stage_failed_title,Stage Failed,挑战失败,,STAGE FAILED,STAGE FAILED
+,result_panel_rainbow_max_label,Rainbow Max,Rainbow Max,,RAINBOW MAX,RAINBOW MAX
+,result_panel_max_label,Max,Max,,MAX,MAX
+,result_panel_cool_label,Cool,Cool,,COOL,COOL
+,result_panel_good_label,Good,Good,,GOOD,GOOD
+,result_panel_miss_label,Miss,Miss,,MISS,MISS
+,result_panel_break_label,Break,Break,,BREAK,BREAK
 ,result_panel_max_combo_label,Max Combo,最大连击,,MAX COMBO,MAX COMBO
-,result_panel_fever_bonus_label,Fever Bonus   +{0},Fever奖励,,FEVER BONUS,FEVER BONUS
+,result_panel_fever_bonus_label,Fever Bonus,Fever奖励,,FEVER BONUS,FEVER BONUS
 ,result_panel_combo_bonus_label,Combo Bonus,连击奖励,,COMBO BONUS,COMBO BONUS
 ,result_panel_total_score_label,Score,总分,,SCORE,SCORE
 ,result_panel_rank_label,Rank,等级,,YOUR RANK,YOUR RANK
@@ -319,7 +341,7 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 ,track_setup_patterns_tab_title,Patterns,谱面,,譜面,패턴
 ,track_setup_patterns_tab_new_pattern_button,New pattern,新建谱面,,新しい譜面,새 패턴
 The default name of newly created patterns.,track_setup_patterns_tab_new_pattern_name,New pattern,新谱面,,新しい譜面,새 패턴
-,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,,既存の譜面を選択して編集または新しい譜面を作成します。,기존의 패턴을 선택하여 편집하거나 새 패턴을 추가하십시오.
+,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,,既存の譜面を選択して編集または新しい譜面を作成します。,기존 패턴을 선택하여 편집하거나 새 패턴을 추가하십시오.
 ,track_setup_patterns_tab_basics_header,Basics,基本信息,,基本情報,기본 정보
 ,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,,譜面名,패턴 이름
 ,track_setup_patterns_tab_author_label,Author,作者,,投稿者,작성자
@@ -333,26 +355,29 @@ The default name of newly created patterns.,track_setup_patterns_tab_new_pattern
 ,track_setup_patterns_tab_backing_track_help,"The background music played during gameplay.
 BGA offset and First beat offset are relative to
 the start of this audio file.","“BGA开始时间”和“第一拍时间”
-均相对于背景音乐的开始时间。",,ゲームのプレイ中に再生される背景音です。映像オフセットと最初ノートオフセットはこのファイルの再生開始点を基準とします。,"게임 플레이 중 재생되는 배경 음악입니다.
+均相对于背景音乐的开始时间。",,ゲームのプレイ中に再生される背景音です。BGAオフセットと最初ノートオフセットはこのファイルの再生開始点を基準とします。,"게임 플레이 중 재생되는 배경 음악입니다.
 BGA 오프셋과 시작 오프셋의 기준은 이 파일의 시작점이 됩니다."
 ,track_setup_patterns_tab_background_image_label,Background image,背景图片,,背景画像,배경 이미지
-,track_setup_patterns_tab_bga_label,Background video (BGA),BGA（背景动画）,,背景映像,배경 영상(BGA)
-,track_setup_patterns_tab_bga_offset_label,BGA offset,BGA开始时间,,映像オフセット,BGA 오프셋
+,track_setup_patterns_tab_bga_label,Background video (BGA),BGA（背景动画）,,BGA,배경 영상(BGA)
+,track_setup_patterns_tab_bga_offset_label,BGA offset,BGA开始时间,,BGAオフセット,BGA 오프셋
 ,track_setup_patterns_tab_bga_offset_help,"If a BGA is specified, it will start playing
 this many seconds after the backing track
 starts. Can be negative.","如果指定了BGA，它将于背景音乐播放到
 这一时间点（单位为秒）时开始播放。
-可以是负数。",,背景映像が指定されている場合、背景音楽が再生された後、映像オフセットだけの時間が過ぎてから映像が再生されます。（単位：秒、負数可）,"BGA를 지정하면, 배경 음악이 시작되고 BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다. (단위 : 초, 음수 입력 가능)"
+可以是负数。",,BGAが指定されている場合、背景音楽が再生された後、BGAオフセットだけの時間が過ぎてからBGAが再生されます。（単位：秒、負数可）,"BGA를 지정하면, 배경 음악이 시작되고 BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다. (단위 : 초, 음수 입력 가능)"
+,track_setup_patterns_tab_wait_for_bga_label,Wait for end of BGA,等待BGA结束,,BGAが終わるまで待機,BGA가 끝날 때까지 대기
+,track_setup_patterns_tab_wait_for_bga_help,"Don't end the pattern until the BGA
+has completed playing.",等到BGA结束播放后才结束游戏。,,BGAが終わるまで譜面のプレイが終わりません。,BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
 ,track_setup_patterns_tab_timing_header,Timing,时间,,タイミング,타이밍
 ,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,,最初ノートオフセット,시작 오프셋
 ,track_setup_patterns_tab_first_beat_offset_help,"The first beat of the pattern happens this many
 seconds after the backing track starts.","将背景音乐的这一时间点（单位为秒）
 视为谱面的第一拍。",,背景音楽が再生された後、最初ノートオフセットだけの時間が過ぎてから譜面が始まります。,배경 음악이 시작되고 시작 오프셋만큼의 시간이 지난 뒤 패턴의 첫 박이 시작됩니다.
-,track_setup_patterns_tab_initial_bpm_label,Initial BPM,初始BPM,,初期BPM,마스터 템포
+,track_setup_patterns_tab_initial_bpm_label,Initial BPM,初始BPM,,初期BPM,초기 BPM
 ,track_setup_patterns_tab_initial_bpm_help,"BPM means Beats Per Minute.
 You can change BPM throughout the pattern.","BPM是指每分钟的拍数。
 可以在谱面中途变化。",,"一分間の拍数（BPM）を指定します。
-譜面の再生中にBPMを変更できます。",초기 템포(BPM)를 지정합니다. 패턴 중간에 템포를 변경할 수 있습니다.
+譜面の再生中にBPMを変更できます。",분당 박자 수(BPM)를 지정합니다. 패턴 중간에 BPM을 변경할 수 있습니다.
 ,track_setup_patterns_tab_bps_label,BPS (Beats Per Scan),BPS（每扫描拍数）,,一小節の拍数（BPS）,마디당 박자 수(BPS)
 ,track_setup_patterns_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,,BPMとは+F202別に、BPSは譜面の再生中に変更できません。,BPM과 달리 BPS는 패턴 중간에 변경할 수 없습니다.
 ,track_setup_patterns_tab_delete_button,Delete,删除,,削除,삭제
@@ -398,6 +423,8 @@ Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로
 ,pattern_panel_options_tab_title,Options,设置,,オプション,옵션
 ,pattern_panel_options_appearance_header,Appearance,界面,,表示,표시
 ,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
+,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,,スキャンラインにビュー固定,판정선에 시점 고정
+,pattern_panel_options_keep_scanline_in_view_description,Automatically scroll the workspace whenever the scanline goes out of view.,当扫描线离开工作区时自动滚动工作区。,,プレイバックするときにスキャンラインが見えなくなった場合、自動でスクロールします。,작업 영역 밖으로 판정선이 이탈하면 자동으로 다음 구간으로 스크롤합니다.
 ,pattern_panel_options_editing_header,Editing,编辑,,編集,편집
 ,pattern_panel_options_apply_keysounds_label,Apply keysound to selection,选择按键音时作用于选区,,ノート音オート指定,연주음 자동 적용
 ,pattern_panel_options_apply_keysounds_description,"When you click a keysound, apply it to any notes selected.",选择按键音时，将所有选中音符的按键音改为新选择的按键音。,,ノート音を選択すると、選択した全てのノートに指定されます。,클릭한 사운드를 현재 선택한 모든 노트에 지정합니다.
@@ -502,7 +529,7 @@ Hold Ctrl, click and drag an anchor to reset its control points.","拖拽音符�
 在锚点接收线上点击以增加锚点。
 用鼠标左键拖拽移动锚点和控制点。
 用鼠标右键点击可以删除锚点和控制点。
-按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。",,"ドラッグノートはアンカーとコントロールポイントで決められるベジェ曲線です。
+按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。",,"ドラッグノートはアンカーとコントロールポイントで決められるベジェ曲線に沿って進行します。
 ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
 アンカーレシーバーをクリックしてアンカーを追加できます。
 アンカーとコントロールポイントをドラックして移します。
@@ -523,7 +550,7 @@ bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_
 ,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,,ノートは0番目の小説の前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,,ノートは0番目のトラックの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,,ノートは一番最後のトラックの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹쳐지도록 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_chain_note_at_same_pulse,No two Chain Notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,,二つのチェーン型ノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
 ,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by Hold Notes.,音符不能被其他长按音符遮盖。,,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
 ,pattern_panel_resource_loading_error_format,"An error occurred when loading resources:
@@ -549,27 +576,3 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,bpm_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,,BPMを変更しない,BPM을 변경하지 않음
 ,bpm_event_dialog_ok_button,OK,确定,,OK,확인
 ,bpm_event_dialog_cancel_button,Cancel,取消,,キャンセル,취소
-,,,,,,
-,main_menu_information_button,Information,须知,,情報,안내
-,information_panel_title,Information,须知,,情報,안내
-,information_panel_health_safety_header,Health & safety information,健康与安全须知,,健康と安全のために,안전과 건강을 위하여
-,information_panel_health_safety_text,"When playing with a touchscreen, please do not strike it violently. Doing so may cause damage to the touchscreen and/or yourself.
-
-Flashing lights may trigger seizures, even in people who never experienced it before. If you feel uncomfortable, stop playing and take a break.","使用触屏时请勿用力击打，否则可能对触屏或玩家自身造成伤害。
-
-闪烁的游戏图像有可能触发癫痫症状，无论是否有此病史。如果在游戏时感到不适，请停止游戏并休息。",,"タッチスクリーンは軽くタップしてください。衝撃を与える行為または指ではないものでタップする行為は故障の原因となります。
-
-まれに特定の光のパターンや点滅を見た場合にてんかん発作を起こす場合があります。これまでにてんかん発作やてんかん病状のない人でも同様に起きる可能性があります。ゲーム中にめまい、視覚変化、目元の痙攣、意識消失、方向感覚消失、あらゆる不随意運動、痙攣などの症状が生じた場合には直ちにゲームを中止し、十分に休息するか医師へご相談ください。","터치 스크린은 손가락으로 가볍게 눌러 주십시오.
-주먹으로 내려치거나 다른 도구를 사용하는 등의 다른 방법으로 터치 스크린을 누를 경우, 터치 스크린이 파손될 수 있습니다.
-
-극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
-
-현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
-,information_panel_credits_header,Credits,制作人,,クレジット,
-,information_panel_credits_program,Program,程序,,プログラミング,프로그래밍
-,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,,翻訳（アルファベット順）,번역
-,track_setup_patterns_tab_wait_for_bga_label,Wait for end of BGA,等待BGA结束,,映像が終わるまで待機,BGA가 끝날 때까지 대기
-,track_setup_patterns_tab_wait_for_bga_help,"Don't end the pattern until the BGA
-has completed playing.",等到BGA结束播放后才结束游戏。,,映像が終わるまで譜面のプレイが終わりません。,BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
-,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,,スキャンラインにビュー固定,판정선에 시점 고정
-,pattern_panel_options_keep_scanline_in_view_description,Automatically scroll the workspace whenever the scanline goes out of view.,当扫描线离开工作区时自动滚动工作区。,,プレイバックするときにスキャンラインが見えなくなった場合、自動でスクロールします。,작업 영역 밖으로 판정선이 이탈하면 자동으로 다음 구간으로 스크롤합니다.

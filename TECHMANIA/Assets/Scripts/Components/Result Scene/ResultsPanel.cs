@@ -25,7 +25,7 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI breakText;
     public TextMeshProUGUI maxCombo;
     public TextMeshProUGUI feverBonus;
-    public GameObject comboBonusTitle;
+    public GameObject comboBonusContainer;
     public TextMeshProUGUI comboBonus;
     public TextMeshProUGUI totalScore;
 
@@ -66,8 +66,7 @@ public class ResultsPanel : MonoBehaviour
         breakText.text = Game.score.notesPerJudgement
             [Judgement.Break].ToString();
         maxCombo.text = Game.maxCombo.ToString();
-        comboBonusTitle.SetActive(Ruleset.instance.comboBonus);
-        comboBonus.gameObject.SetActive(Ruleset.instance.comboBonus);
+        comboBonusContainer.SetActive(Ruleset.instance.comboBonus);
         Game.score.CalculateComboBonus();
         comboBonus.text = Game.score.comboBonus.ToString();
         feverBonus.text = Game.score.totalFeverBonus.ToString();
