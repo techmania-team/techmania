@@ -284,16 +284,13 @@ public class TimingCalibrationPanel : MonoBehaviour
 
         // Write timing history.
         string historyLine;
-        string deviceAcronym = Locale.GetString(device switch
+        string deviceAcronym = device switch
         {
-            InputDevice.Touchscreen =>
-                "timing_calibration_touchscreen_acronym",
-            InputDevice.Keyboard =>
-                "timing_calibration_keyboard_acronym",
-            InputDevice.Mouse =>
-                "timing_calibration_mouse_acronym",
+            InputDevice.Touchscreen => "T",
+            InputDevice.Keyboard => "K",
+            InputDevice.Mouse => "M",
             _ => ""
-        });
+        };
         string earlyLateColor;
         string earlyLateIndicator;
         if (clampedTime < correctTime)
