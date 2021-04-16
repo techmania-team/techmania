@@ -2,12 +2,12 @@
 "The language's name in itself.
 Used in option menu.",language_name,English,简体中文,繁體中文,日本語,한국어
 "The list of localizer names, seperated by commas.
-Used in information menu.",localizer_names,N/A,DJ Hitori,,"BrainInAVet, Sinby","Dino.B, Sinby, BrainInAVet"
+Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sinby","Dino.B, Sinby, BrainInAVet"
 ,,,,,,
 `===== Main Menu =====,,,,,,
-,welcome_mat_instruction,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
+,welcome_mat_instruction,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,,,,,,
-,resource_loader_loading_note_skin,Loading note skin...,正在读取音符皮肤……,,ノートスキンを読み込み中...,노트 스킨을 불러오는 중입니다...
+,resource_loader_loading_note_skin,Loading note skin...,正在读取音符皮肤……,正在載入音符造型......,ノートスキンを読み込み中...,노트 스킨을 불러오는 중입니다...
 ,resource_loader_note_skin_error_format,"An error occurred when loading note skin:
 
 {0}
@@ -16,7 +16,11 @@ Please select a valid skin from the options menu.","读取音符皮肤时发生�
 
 {0}
 
-请在设置菜单选择一个可用的皮肤。",,"ノートスキンの読み込み中にエラーが発生しました：
+请在设置菜单选择一个可用的皮肤。","載入音符造型時發生錯誤：
+
+{0}
+
+請在設定中選擇一個可用的造型。","ノートスキンの読み込み中にエラーが発生しました：
 
 {0}
 
@@ -25,7 +29,7 @@ Please select a valid skin from the options menu.","读取音符皮肤时发生�
 {0}
 
 옵션에서 노트 스킨을 다시 선택하십시오."
-,resource_loader_loading_vfx_skin,Loading VFX skin…,正在读取特效皮肤……,,VFXスキンを読み込み中...,쿨밤 스킨을 불러오는 중입니다...
+,resource_loader_loading_vfx_skin,Loading VFX skin…,正在读取特效皮肤……,正在載入特效造型......,VFXスキンを読み込み中...,쿨밤 스킨을 불러오는 중입니다...
 ,resource_loader_vfx_skin_error_format,"An error occurred when loading VFX skin:
 
 {0}
@@ -34,7 +38,11 @@ Please select a valid skin from the options menu.","读取特效皮肤时发生�
 
 {0}
 
-请在设置菜单选择一个可用的皮肤。",,"VFXスキンの読み込み中にエラーが発生しました：
+请在设置菜单选择一个可用的皮肤。","載入特效造型時發生錯誤：
+
+{0}
+
+請在設定中選擇一個可用的造型。","VFXスキンの読み込み中にエラーが発生しました：
 
 {0}
 
@@ -43,7 +51,7 @@ Please select a valid skin from the options menu.","读取特效皮肤时发生�
 {0}
 
 옵션에서 쿨밤 스킨을 다시 선택하십시오."
-,resource_loader_loading_combo_skin,Loading combo skin…,正在读取连击皮肤……,,コンボスキンを読み込み中...,콤보 스킨을 불러오는 중입니다...
+,resource_loader_loading_combo_skin,Loading combo skin…,正在读取连击皮肤……,正在載入連擊造型......,コンボスキンを読み込み中...,콤보 스킨을 불러오는 중입니다...
 ,resource_loader_combo_skin_error_format,"An error occurred when loading combo skin:
 
 {0}
@@ -52,7 +60,11 @@ Please select a valid skin from the options menu.","读取连击皮肤时发生�
 
 {0}
 
-请在设置菜单选择一个可用的皮肤。",,"コンボスキンの読み込み中にエラーが発生しました：
+请在设置菜单选择一个可用的皮肤。","載入連擊造型時發生錯誤：
+
+{0}
+
+請在設定中選擇一個可用的造型。","コンボスキンの読み込み中にエラーが発生しました：
 
 {0}
 
@@ -62,13 +74,13 @@ Please select a valid skin from the options menu.","读取连击皮肤时发生�
 
 옵션에서 콤보 스킨을 다시 선택하십시오."
 ,,,,,,
-,main_menu_start_button,START,开始,,スタート,게임 시작
-,main_menu_editor_button,EDITOR,编辑,,エディタ,편집기
-,main_menu_options_button,OPTIONS,设置,,オプション,설정
-,main_menu_information_button,Information,须知,,情報,안내
-,main_menu_quit_button,QUIT,退出,,終了,종료
+,main_menu_start_button,START,开始,開始,スタート,게임 시작
+,main_menu_editor_button,EDITOR,编辑,編輯,エディタ,편집기
+,main_menu_options_button,OPTIONS,设置,設定,オプション,설정
+,main_menu_information_button,Information,须知,須知,情報,안내
+,main_menu_quit_button,QUIT,退出,離開,終了,종료
 ,,,,,,
-,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,,カスタムルールセット有効,사용자 지정 규칙 사용 중
+,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,自訂規則使用中,カスタムルールセット有効,사용자 지정 규칙 사용 중
 ,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
 
 {0}
@@ -77,7 +89,11 @@ For this session TECHMANIA will use the default ruleset.","读取自定义规则
 
 {0}
 
-本次游戏TECHMANIA将使用默认规则。",,"カスタムルールセットの読み込み中にエラーが発生しました：
+本次游戏TECHMANIA将使用默认规则。","載入自訂規則時發生錯誤：
+
+{0}
+
+本次遊戲將使用預設規則。","カスタムルールセットの読み込み中にエラーが発生しました：
 
 {0}
 
@@ -87,93 +103,100 @@ For this session TECHMANIA will use the default ruleset.","读取自定义规则
 
 판정/점수 기본 설정을 사용합니다. "
 ,,,,,,
-,select_track_panel_title,Select Track,选择曲目,,トラック選択,Select Track
-,eyecatch_no_image_text,No image,没有预览,,No image,No image
+,select_track_panel_title,Select Track,选择曲目,選擇曲目,トラック選択,Select Track
+,eyecatch_no_image_text,No image,没有预览,沒有預覽,No image,No image
 "When there's an error with a track,
 the select track panel will create an ""error card"" for it,
-with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,,トラックを読み込めません。,음악을 불러올 수 없습니다.
-,select_track_error_card_artist,Open for details,点击查看详情,,詳細,자세히
+with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入曲目,トラックを読み込めません。,음악을 불러올 수 없습니다.
+,select_track_error_card_artist,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
 "{0} is track.tech's full path;
 {1} is the error message.",select_track_error_format,"An error occurred when loading {0}:
 
 {1}","读取{0}时发生错误：
 
-{1}",,"{0} の読み込み中にエラーが発生しました：
+{1}","載入 {0} 時發生錯誤：
+
+{1}","{0} の読み込み中にエラーが発生しました：
 
 {1}","{0}을(를) 불러오는 중 오류가 발생했습니다.
 
 {1}"
-,select_track_new_track_card_title,New,新建,,新しいトラック,새 음악
-,select_track_no_track_text,TECHMANIA cannot find any track.,TECHMANIA没有找到任何曲目。,,トラックがありません。,음악이 없습니다.
+,select_track_new_track_card_title,New,新建,新增,新しいトラック,새 음악
+,select_track_no_track_text,TECHMANIA cannot find any track.,TECHMANIA没有找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
 ,,,,,,
-,options_panel_title,Options,设置,,オプション,설정
-,options_graphics_header,Graphics,图像,,グラフィック,그래픽
-,options_resolution_label,Resolution,分辨率,,解像度,화면 해상도
-,options_fullscreen_mode_label,Fullscreen mode,全屏模式,,画面モード,출력 방식
-,options_fullscreen_mode_exclusive_fullscreen,Exclusive fullscreen,独占全屏,,フルスクリーン,전체화면
-,options_fullscreen_mode_fullscreen_window,Borderless window,全屏窗口,,ボーダーレス,윈도우(전체화면)
-,options_fullscreen_mode_maximized_window,Maximized window,最大化窗口,,ウィンドウ（最大）,윈도우(최대화)
-,options_fullscreen_mode_windowed,Windowed,窗口化,,ウィンドウ,윈도우
-,options_vsync_label,VSync,垂直同步,,VSync,수직 동기화
-,options_audio_header,Audio,音频,,オーディオ,오디오
-,options_master_volume_label,Master,主音量,,マスター,마스터 볼륨
-,options_music_volume_label,Music,音乐音量,,音楽,반주음
-,options_keysounds_volume_label,Keysounds,按键音音量,,ノート音,연주음
-,options_sfx_volume_label,Sound effects,音效音量,,効果音,효과음
-,options_audio_buffer_size_label,Audio buffer size,音频缓冲长度,,オーディオバッファ,오디오 버퍼 크기
+,options_panel_title,Options,设置,設定,オプション,설정
+,options_graphics_header,Graphics,图像,影像,グラフィック,그래픽
+,options_resolution_label,Resolution,分辨率,解析度,解像度,화면 해상도
+,options_fullscreen_mode_label,Fullscreen mode,全屏模式,顯示模式,画面モード,출력 방식
+,options_fullscreen_mode_exclusive_fullscreen,Exclusive fullscreen,独占全屏,全螢幕,フルスクリーン,전체화면
+,options_fullscreen_mode_fullscreen_window,Borderless window,全屏窗口,無邊框視窗,ボーダーレス,윈도우(전체화면)
+,options_fullscreen_mode_maximized_window,Maximized window,最大化窗口,最大化視窗,ウィンドウ（最大）,윈도우(최대화)
+,options_fullscreen_mode_windowed,Windowed,窗口化,視窗化,ウィンドウ,윈도우
+,options_vsync_label,VSync,垂直同步,垂直同步,VSync,수직 동기화
+,options_audio_header,Audio,音频,音效,オーディオ,오디오
+,options_master_volume_label,Master,主音量,主音量,マスター,마스터 볼륨
+,options_music_volume_label,Music,音乐音量,音樂音量,音楽,반주음
+,options_keysounds_volume_label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
+,options_sfx_volume_label,Sound effects,音效音量,音效音量,効果音,효과음
+,options_audio_buffer_size_label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
 ,options_audio_buffer_size_explanation,"Lower value reduces audio latency,
 but may cause audio issues such as stuttering.","数值越小，音频延迟越低，
-但也越可能出现卡壳等问题。",,"バッファを減らせば遅延が小さくなりますが、
+但也越可能出现卡壳等问题。","數值越小，音效延遲越低，
+但也越可能出現問題。","バッファを減らせば遅延が小さくなりますが、
 ノイズ、音ズレなどが発生することがあります。","버퍼 크기가 작을수록 오디오 지연이 감소하지만,
 노이즈, 싱크 밀림 등의 문제가 발생할 수 있습니다."
-,options_appearance_header,Appearance,界面,,表示,화면
-,options_language_label,Language,语言,,言語,언어
-,options_select_skins_label,Skins,皮肤,,スキン,스킨
-,options_select_skins_button,SELECT,选择,,選択,선택
-,options_show_loading_bar_label,Show loading bar,显示读取进度,,読み込みのプログレスバー表示,로딩 상태 표시
-,options_show_fps_label,Show FPS,显示帧数,,フレームレート表示,FPS 표시
-,options_miscellaneous_header,Miscellaneous,其他,,その他,기타
-,options_touchscreen_test_label,Touchscreen test,触屏测试,,タッチスクリーンテスト,터치스크린 테스트
-,options_touchscreen_test_button,START,开始,,開始,시작
-,options_offset_latency_label,Offset & latency,偏移与延迟,,オフセット/遅延,오프셋/지연
-,options_offset_latency_button,CALIBRATE,校对,,調整,보정하기
+,options_appearance_header,Appearance,界面,介面,表示,화면
+,options_language_label,Language,语言,語言,言語,언어
+,options_select_skins_label,Skins,皮肤,造型,スキン,스킨
+,options_select_skins_button,SELECT,选择,選擇,選択,선택
+,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
+,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
+,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
+,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
+,options_touchscreen_test_button,START,开始,開始,開始,시작
+,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
+,options_offset_latency_button,CALIBRATE,校对,校正,調整,보정하기
 ,,,,,,
-,touchscreen_test_panel_title,Touchscreen Test,触屏测试,,タッチスクリーンテスト,터치스크린 테스트
-,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
-,touchscreen_test_finger_indicator,Finger #{0},触点 #{0},,タップ #{0},터치 #{0}
+,touchscreen_test_panel_title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
+,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
+,touchscreen_test_finger_indicator,Finger #{0},触点 #{0},手指 #{0},タップ #{0},터치 #{0}
 ,,,,,,
-,timing_calibration_panel_title,Timing Calibration,偏移与延迟校对,,タイミング調整,타이밍 보정
-,timing_calibration_device_label,Input device,输入设备,,入力方法,입력 장치
-,timing_calibration_device_touchscreen,Touchscreen,触屏,,タッチスクリーン,터치스크린
-,timing_calibration_device_keyboard_mouse,Keyboard & Mouse,键盘鼠标,,キーボード・マウス,키보드/마우스
-,timing_calibration_offset_label,Note offset (ms),音符偏移（ms）,,ノートオフセット(ms),노트 오프셋 (ms)
-,timing_calibration_latency_label,Input latency (ms),输入延迟（ms）,,入力遅延(ms),입력 지연 (ms)
-,timing_calibration_instruction_label,Instructions,说明,,設定方法,설명
+,timing_calibration_panel_title,Timing Calibration,偏移与延迟校对,偏移與延遲校正,タイミング調整,타이밍 보정
+,timing_calibration_device_label,Input device,输入设备,輸入裝置,入力方法,입력 장치
+,timing_calibration_device_touchscreen,Touchscreen,触屏,觸控螢幕,タッチスクリーン,터치스크린
+,timing_calibration_device_keyboard_mouse,Keyboard & Mouse,键盘鼠标,鍵盤滑鼠,キーボード・マウス,키보드/마우스
+,timing_calibration_offset_label,Note offset (ms),音符偏移（ms）,音符偏移,ノートオフセット(ms),노트 오프셋 (ms)
+,timing_calibration_latency_label,Input latency (ms),输入延迟（ms）,輸入延遲,入力遅延(ms),입력 지연 (ms)
+,timing_calibration_instruction_label,Instructions,说明,說明,設定方法,설명
 ,timing_calibration_instruction,"1. <indent=5%>Choose the input device(s) you wish to calibrate, then play the notes below. (for keyboard you can use any letter or number key)</indent>
 2. <indent=5%>Adjust note offset until you feel the timing of notes and keysounds are correct.</indent>
 3. <indent=5%>Adjust input latency until the reported time differences get close to 0.</indent>","1. <indent=5%>选择待校对的输入设备，然后演奏下方的音符。（在键盘上可以使用任意字母、数字键）</indent>
 2. <indent=5%>调整音符偏移，直到你感觉音符以及按键音的时机与背景音乐完全同步。</indent>
-3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>",,"1. <indent=5%>タイミングを調整したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーを使用できます）</indent>
+3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>","1. <indent=5%>選擇待校正的輸入裝置，然後演奏下方的音符。（在鍵盤上可以使用任意字母、數字鍵）</indent>
+2. <indent=5%>調整音符偏移，直到您感覺音符以及按鍵音的時機與背景音樂完全同步。</indent>
+3. <indent=5%>調整輸入延遲，直到遊戲回報的時間差接近於 0</indent>","1. <indent=5%>タイミングを調整したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーを使用できます）</indent>
 2. <indent=5%>ノートのタイミングとノート音が合っていると感じられるまで調整してください。</indent>
 3. <indent=5%>時間差が0に近くなるまで入力遅延を調整してください。</indent>","1. <indent=5%>보정할 입력 장치를 선택하고, 아래 노트를 연주합니다. 키보드는 문자, 숫자 키 중 아무 키나 사용할 수 있습니다.</indent>
 2. <indent=5%>연주음과 연주 타이밍이 일치할 때까지 오프셋을 조정하십시오.</indent>
 3. <indent=5%>시간차가 0에 최대한 가까워지도록 입력 지연을 조정하십시오.</indent>"
-"If the device's name is short, then there's no need",timing_calibration_early_indicator,early,过早,,EARLY,EARLY
-to make acronyms.,timing_calibration_late_indicator,late,过晚,,LATE,LATE
+"If the device's name is short, then there's no need",timing_calibration_early_indicator,early,过早,太早,EARLY,EARLY
+to make acronyms.,timing_calibration_late_indicator,late,过晚,太晚,LATE,LATE
 ,,,,,,
-,select_skin_panel_title,Select Skin,选择皮肤,,スキン選択,스킨 선택
-,select_skin_note_skin_label,Note,音符,,ノート,노트
-,select_skin_vfx_skin_label,VFX,特效,,VFX,쿨밤
-,select_skin_combo_skin_label,Combo,连击,,コンボ,판정/콤보
-,select_skin_reload_skin_when_loading_label,Reload skins when loading patterns,读取谱面时重新读取皮肤,,トラックの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
+,select_skin_panel_title,Select Skin,选择皮肤,選擇造型,スキン選択,스킨 선택
+,select_skin_note_skin_label,Note,音符,音符,ノート,노트
+,select_skin_vfx_skin_label,VFX,特效,特效,VFX,쿨밤
+,select_skin_combo_skin_label,Combo,连击,連擊,コンボ,판정/콤보
+,select_skin_reload_skin_when_loading_label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,トラックの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
 ,,,,,,
-,information_panel_title,Information,须知,,情報,안내
-,information_panel_health_safety_header,Health & safety information,健康与安全须知,,健康と安全のために,안전과 건강을 위하여
+,information_panel_title,Information,须知,須知,情報,안내
+,information_panel_health_safety_header,Health & safety information,健康与安全须知,健康與安全須知,健康と安全のために,안전과 건강을 위하여
 ,information_panel_health_safety_text,"When playing with a touchscreen, please do not strike it violently. Doing so may cause damage to the touchscreen and/or yourself.
 
 Flashing lights may trigger seizures, even in people who never experienced it before. If you feel uncomfortable, stop playing and take a break.","使用触屏时请勿用力击打，否则可能对触屏或玩家自身造成伤害。
 
-闪烁的游戏图像有可能触发癫痫症状，无论是否有此病史。如果在游戏时感到不适，请停止游戏并休息。",,"タッチスクリーンは軽くタップしてください。衝撃を与える行為または指ではないものでタップする行為は故障の原因となります。
+闪烁的游戏图像有可能触发癫痫症状，无论是否有此病史。如果在游戏时感到不适，请停止游戏并休息。","使用觸控螢幕時請勿用力點擊，否則可能會對螢幕或玩家自身造成傷害。
+
+無論是否有此病史，閃爍的遊戲影像可能會觸發癲癇症狀。如果在遊戲時趕到不適，請停止遊戲並休息。","タッチスクリーンは軽くタップしてください。衝撃を与える行為または指ではないものでタップする行為は故障の原因となります。
 
 まれに特定の光のパターンや点滅を見た場合にてんかん発作を起こす場合があります。これまでにてんかん発作やてんかん病状のない人でも同様に起きる可能性があります。ゲーム中にめまい、視覚変化、目元の痙攣、意識消失、方向感覚消失、あらゆる不随意運動、痙攣などの症状が生じた場合には直ちにゲームを中止し、十分に休息するか医師へご相談ください。","터치 스크린은 손가락으로 가볍게 눌러 주십시오.
 주먹으로 내려치거나 다른 도구를 사용하는 등의 다른 방법으로 터치 스크린을 누를 경우, 터치 스크린이 파손될 수 있습니다.
@@ -181,103 +204,109 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
 
 현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
-,information_panel_credits_header,Credits,制作人,,クレジット,
-,information_panel_credits_program,Program,程序,,プログラミング,프로그래밍
-,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,,翻訳（アルファベット順）,번역(이름순)
+,information_panel_credits_header,Credits,制作人,製作者,クレジット,
+,information_panel_credits_program,Program,程序,程式,プログラミング,프로그래밍
+,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
-,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,,このトラックには譜面がありません。,이 음악에는 패턴이 없습니다.
-,select_pattern_dialog_play_button,PLAY,开始,,プレイ,시작
-,select_pattern_dialog_back_button,BACK,返回,,戻す,돌아가기
+,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックには譜面がありません。,이 음악에는 패턴이 없습니다.
+,select_pattern_dialog_play_button,PLAY,开始,開始,プレイ,시작
+,select_pattern_dialog_back_button,BACK,返回,返回,戻す,돌아가기
 ,select_pattern_dialog_auto_play_no_fail_instruction,"Hold Shift and click Play to enable auto play.
 Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以启用自动演奏。
-按Ctrl并点击“开始”以启用无失败。",,"Shift長押し＋プレイでオートプレイをオンにします。
+按Ctrl并点击“开始”以启用无失败。","按 Shift 並點擊開始以啟用自動演奏。
+按 Ctrl 並點擊開始以啟用無失敗模式。","Shift長押し＋プレイでオートプレイをオンにします。
 Ctrl長押し＋プレイでFail無しをオンにします。","오토플레이 - Shift를 누른 채 시작
 연습 모드 - Ctrl을 누른 채 시작"
 ,,,,,,
-,message_dialog_ok_button,OK,确定,,OK,확인
+,message_dialog_ok_button,OK,确定,確定,OK,확인
 ,,,,,,
 `===== Game scene =====,,,,,,
 ,resource_loader_error_format,"An error occurred when loading {0}:
 
 {1}","读取{0}时发生错误：
 
-{1}",,"{0} の読み込み中にエラーが発生しました：
+{1}","讀取 {0} 時發生錯誤：
+
+{1}","{0} の読み込み中にエラーが発生しました：
 
 {1}","{0}을/를 불러오는 중 오류가 발생했습니다.
 
 {1}"
-,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,,{0} を読み込めません。正しくないファイルまたは対応していないファイル形式です。,{0}을/를 불러올 수 없습니다. 파일이 잘못되었거나 지원하지 않는 형식입니다.
+,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,無法讀取 {0}。這個檔案可能損壞，或是不支援的格式。,{0} を読み込めません。正しくないファイルまたは対応していないファイル形式です。,{0}을/를 불러올 수 없습니다. 파일이 잘못되었거나 지원하지 않는 형식입니다.
 ,,,,,,
-Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,无失败,,No fail,No fail
-,game_score_label,Score,分数,,SCORE,SCORE
-,game_max_combo_label,Max Combo,最大连击,,MAX COMBO,MAX COMBO
-,game_fever_off_indicator,FEVER OFF,FEVER OFF,,FEVER OFF,FEVER OFF
-,game_fever_ready_indicator,FEVER,FEVER,,FEVER,FEVER
-,game_fever_instruction_touch,TOUCH,轻触,,TOUCH,TOUCH
-,game_fever_instruction_keys_km,PRESS SPACE,空格,,PRESS SPACE,PRESS SPACE
-,game_fever_bonus_text,FEVER BONUS   +{0},FEVER奖励    +{0},,FEVER BONUS   +{0},FEVER BONUS   +{0}
-,game_loading_text,Loading...,正在读取……,,読み込み中...,Loading...
-,game_stage_failed_title,STAGE FAILED,请再接再厉,,STAGE FAILED,STAGE FAILED
+Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,无失败,No fail,No fail,No fail
+,game_score_label,Score,分数,SCORE,SCORE,SCORE
+,game_max_combo_label,Max Combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
+,game_fever_off_indicator,FEVER OFF,FEVER OFF,FEVER OFF,FEVER OFF,FEVER OFF
+,game_fever_ready_indicator,FEVER,FEVER,FEVER,FEVER,FEVER
+,game_fever_instruction_touch,TOUCH,轻触,TOUCH,TOUCH,TOUCH
+,game_fever_instruction_keys_km,PRESS SPACE,空格,PRESS SPACE,PRESS SPACE,PRESS SPACE
+,game_fever_bonus_text,FEVER BONUS   +{0},FEVER奖励    +{0},FEVER BONUS   +{0},FEVER BONUS   +{0},FEVER BONUS   +{0}
+,game_loading_text,Loading...,正在读取……,載入中......,読み込み中...,Loading...
+,game_stage_failed_title,STAGE FAILED,请再接再厉,STAGE FAILED,STAGE FAILED,STAGE FAILED
 ,,,,,,
-,pause_dialog_title,PAUSE,暂停,,PAUSE,PAUSE
-,pause_resume_button,CONTINUE,继续,,CONTINUE,CONTINUE
-,pause_restart_button,RESTART,重试,,RESTART,RESTART
-,pause_quit_button,SELECT TRACK,选曲,,SELECT MUSIC,SELECT MUSIC
+,pause_dialog_title,PAUSE,暂停,暫停,PAUSE,PAUSE
+,pause_resume_button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
+,pause_restart_button,RESTART,重试,再試一次,RESTART,RESTART
+,pause_quit_button,SELECT TRACK,选曲,選擇曲目,SELECT MUSIC,SELECT MUSIC
 ,,,,,,
 `===== Result scene =====,,,,,,
-,result_panel_stage_clear_title,Stage Clear,挑战成功,,STAGE CLEARED,STAGE CLEARED
-,result_panel_stage_failed_title,Stage Failed,挑战失败,,STAGE FAILED,STAGE FAILED
-,result_panel_rainbow_max_label,Rainbow Max,Rainbow Max,,RAINBOW MAX,RAINBOW MAX
-,result_panel_max_label,Max,Max,,MAX,MAX
-,result_panel_cool_label,Cool,Cool,,COOL,COOL
-,result_panel_good_label,Good,Good,,GOOD,GOOD
-,result_panel_miss_label,Miss,Miss,,MISS,MISS
-,result_panel_break_label,Break,Break,,BREAK,BREAK
-,result_panel_max_combo_label,Max Combo,最大连击,,MAX COMBO,MAX COMBO
-,result_panel_fever_bonus_label,Fever Bonus,Fever奖励,,FEVER BONUS,FEVER BONUS
-,result_panel_combo_bonus_label,Combo Bonus,连击奖励,,COMBO BONUS,COMBO BONUS
-,result_panel_total_score_label,Score,总分,,SCORE,SCORE
-,result_panel_rank_label,Rank,等级,,YOUR RANK,YOUR RANK
-"Shown when the score is 300,000.",result_panel_absolute_perfect_medal,ABSOLUTE PERFECT,绝对完美,,ABSOLUTE PERFECT,ABSOLUTE PERFECT
-,result_panel_perfect_play_medal,PERFECT PLAY,完美,,PERFECT PLAY,PERFECT PLAY
-,result_panel_full_combo_medal,ALL COMBO,全连,,ALL COMBO,ALL COMBO
-,result_panel_continue_button,SELECT  TRACK,选曲,,SELECT MUSIC,SELECT MUSIC
-,result_panel_retry_button,RETRY,重试,,RETRY,RETRY
+,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,STAGE CLEARED,STAGE CLEARED
+,result_panel_stage_failed_title,Stage Failed,挑战失败,STAGE FAILED,STAGE FAILED,STAGE FAILED
+,result_panel_rainbow_max_label,Rainbow Max,Rainbow Max,RAINBOW MAX,RAINBOW MAX,RAINBOW MAX
+,result_panel_max_label,Max,Max,MAX,MAX,MAX
+,result_panel_cool_label,Cool,Cool,COOL,COOL,COOL
+,result_panel_good_label,Good,Good,GOOD,GOOD,GOOD
+,result_panel_miss_label,Miss,Miss,MISS,MISS,MISS
+,result_panel_break_label,Break,Break,BREAK,BREAK,BREAK
+,result_panel_max_combo_label,Max Combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
+,result_panel_fever_bonus_label,Fever Bonus,Fever奖励,FEVER BONUS,FEVER BONUS,FEVER BONUS
+,result_panel_combo_bonus_label,Combo Bonus,连击奖励,COMBO BONUS,COMBO BONUS,COMBO BONUS
+,result_panel_total_score_label,Score,总分,SCORE,SCORE,SCORE
+,result_panel_rank_label,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
+"Shown when the score is 300,000.",result_panel_absolute_perfect_medal,ABSOLUTE PERFECT,绝对完美,ABSOLUTE PERFECT,ABSOLUTE PERFECT,ABSOLUTE PERFECT
+,result_panel_perfect_play_medal,PERFECT PLAY,完美,PERFECT PLAY,PERFECT PLAY,PERFECT PLAY
+,result_panel_full_combo_medal,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
+,result_panel_continue_button,SELECT  TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
+,result_panel_retry_button,RETRY,重试,重新開始,RETRY,RETRY
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
-,new_track_dialog_create_button,Create,新建,,作成,생성
-,new_track_dialog_cancel_button,Cancel,取消,,キャンセル,취소
+,new_track_dialog_create_button,Create,新建,新增,作成,생성
+,new_track_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 {0} is a folder or file's full path.,new_track_error_format,"An error occurred when creating or writing to {0}:
 
 {1}","写入{0}时发生错误：
 
-{1}",,"{0} の書き込み中にエラーが発生しました：
+{1}","儲存 {0} 時發生錯誤：
+
+{1}","{0} の書き込み中にエラーが発生しました：
 
 {1}","{0}을/를 생성하는 중 오류가 발생했습니다.
 
 {1}"
 ,,,,,,
 "Most dropdowns (eg. Backing track, BGA) in the
-editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,,(None),(None)
+editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,(無),(None),(None)
 ,,,,,,
-,track_setup_panel_title,Track Setup,曲目设置,,トラック作成,음악 설정
-,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,,変更が保存されません。続けますか？,변경사항이 저장되지 않습니다. 계속하시겠습니까?
-,track_setup_discard_changes_confirm,Discard,继续,,終了,나가기
-,track_setup_discard_changes_cancel,Cancel,取消,,キャンセル,취소
+,track_setup_panel_title,Track Setup,曲目设置,曲目設定,トラック作成,음악 설정
+,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,未儲存的變更將遺失，是否繼續？,変更が保存されません。続けますか？,변경사항이 저장되지 않습니다. 계속하시겠습니까?
+,track_setup_discard_changes_confirm,Discard,继续,繼續,終了,나가기
+,track_setup_discard_changes_cancel,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-,track_setup_resource_tab_title,Resources,资源,,ファイル,파일
-,track_setup_resource_tab_audio_header,Audio files,音频文件,,音楽ファイル,오디오 파일
-,track_setup_resource_tab_image_header,Image files,图像文件,,画像ファイル,이미지 파일
-,track_setup_resource_tab_video_header,Video files,视频文件,,映像ファイル,비디오 파일
-,track_setup_resource_tab_import_button,Import,导入,,インポート,가져오기
+,track_setup_resource_tab_title,Resources,资源,檔案,ファイル,파일
+,track_setup_resource_tab_audio_header,Audio files,音频文件,音訊檔案,音楽ファイル,오디오 파일
+,track_setup_resource_tab_image_header,Image files,图像文件,圖片檔案,画像ファイル,이미지 파일
+,track_setup_resource_tab_video_header,Video files,视频文件,影像檔案,映像ファイル,비디오 파일
+,track_setup_resource_tab_import_button,Import,导入,匯入,インポート,가져오기
 ,track_setup_resource_tab_import_button_help,"Import audio, image and video files
 so they can later be used as keysounds,
 backgrounds, and more.","导入音频、图像、视频文件后，
-可以将它们用作按键音、谱面背景等。",,音楽/画像/映像をインポートしてノート音や背景などに使うことができます。,오디오/이미지/비디오 파일을 가져와 연주음 및 배경 등으로 사용할 수 있습니다.
+可以将它们用作按键音、谱面背景等。","匯入音訊、圖片、影像檔案後，
+可以將它們使用在按鍵音、譜面背景等。",音楽/画像/映像をインポートしてノート音や背景などに使うことができます。,오디오/이미지/비디오 파일을 가져와 연주음 및 배경 등으로 사용할 수 있습니다.
 "Strings in the open file dialog shown when
-the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,,インポートするファイルを選んでください,파일 가져오기
-,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,,対応するファイル,지원하는 파일
-,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,,全てのファイル,모든 파일
+the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
+,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,対応するファイル,지원하는 파일
+,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
 "A warning shown when the newly imported
 files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
 
@@ -287,7 +316,11 @@ If you choose to cancel, no file will be copied.","以下文件将被覆盖。�
 
 {0}
 
-如果选择取消，将不会复制任何文件。",,"次のファイルが上書きされます。操作を続けますか？
+如果选择取消，将不会复制任何文件。","以下檔案將被覆蓋，是否繼續？
+
+{0}
+
+如果選擇取消，將不會複製任何檔案。","次のファイルが上書きされます。操作を続けますか？
 
 {0}
 
@@ -297,152 +330,164 @@ If you choose to cancel, no file will be copied.","以下文件将被覆盖。�
 
 취소를 선택하면 파일을 가져오지 않습니다."
 "Shown in the above message if the number of
-files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,,...外 {0},... 외 {0}개
-,track_setup_resource_tab_overwrite_confirm,Overwrite,覆盖,,上書き,덮어쓰기
-,track_setup_resource_tab_overwrite_cancel,Cancel,取消,,キャンセル,취소
+files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,…… 以及 {0} 個檔案。,...外 {0},... 외 {0}개
+,track_setup_resource_tab_overwrite_confirm,Overwrite,覆盖,覆蓋,上書き,덮어쓰기
+,track_setup_resource_tab_overwrite_cancel,Cancel,取消,取消,キャンセル,취소
 ,track_setup_resource_tab_import_error_format,"An error occurred when copying {0} to {1}:
 
 {2}","将{0}复制到{1}时发生错误：
 
-{2}",,"{0}を{1}へコピー中にエラーが発生しました：
+{2}","將 {0} 複製到 {1} 時發生錯誤：
+
+{2}","{0}を{1}へコピー中にエラーが発生しました：
 
 {2}","{0}을/를 {1}(으)로 복사하는 중 오류가 발생했습니다.
 
 {2}"
 ,,,,,,
-,track_setup_metadata_tab_title,Metadata,元数据,,メタデータ,메타데이터
-,track_setup_metadata_tab_eyecatch_preview,Eyecatch preview,封面预览,,アイキャッチプレビュー,커버 이미지 미리보기
-,track_setup_metadata_tab_basics_header,Basics,基本信息,,基本情報,기본 정보
-,track_setup_metadata_tab_title_label,Title,标题,,タイトル,제목
-,track_setup_metadata_tab_artist_label,Artist,艺术家,,作曲家,작곡가
-,track_setup_metadata_tab_genre_label,Genre,流派,,ジャンル,장르
-,track_setup_metadata_tab_additional_credit_label,Additional credits,其他制作人,,その他,비고
-,track_setup_metadata_tab_preview_header,Preview,预览,,プレビュー,프리뷰
-,track_setup_metadata_tab_eyecatch_image_label,Eyecatch image,封面,,アイキャッチ画像,커버 이미지
-,track_setup_metadata_tab_preview_track_label,Preview track,预览曲,,プレビュー音楽,미리듣기 음악
-,track_setup_metadata_tab_preview_start_label,Preview start,预览开始时间,,プレビュー開始時点,미리듣기 시작 시점
-,track_setup_metadata_tab_preview_end_label,Preview end,预览结束时间,,プレビュー終了時点,미리듣기 종료 시점
+,track_setup_metadata_tab_title,Metadata,元数据,歌曲資訊,メタデータ,메타데이터
+,track_setup_metadata_tab_eyecatch_preview,Eyecatch preview,封面预览,封面預覽,アイキャッチプレビュー,커버 이미지 미리보기
+,track_setup_metadata_tab_basics_header,Basics,基本信息,基本資料,基本情報,기본 정보
+,track_setup_metadata_tab_title_label,Title,标题,標題,タイトル,제목
+,track_setup_metadata_tab_artist_label,Artist,艺术家,演出者,作曲家,작곡가
+,track_setup_metadata_tab_genre_label,Genre,流派,內容類型,ジャンル,장르
+,track_setup_metadata_tab_additional_credit_label,Additional credits,其他制作人,其他演出者,その他,비고
+,track_setup_metadata_tab_preview_header,Preview,预览,預覽,プレビュー,프리뷰
+,track_setup_metadata_tab_eyecatch_image_label,Eyecatch image,封面,封面圖,アイキャッチ画像,커버 이미지
+,track_setup_metadata_tab_preview_track_label,Preview track,预览曲,預覽歌曲,プレビュー音楽,미리듣기 음악
+,track_setup_metadata_tab_preview_start_label,Preview start,预览开始时间,預覽開始時間,プレビュー開始時点,미리듣기 시작 시점
+,track_setup_metadata_tab_preview_end_label,Preview end,预览结束时间,預覽結束時間,プレビュー終了時点,미리듣기 종료 시점
 ,track_setup_metadata_tab_preview_help,"During pattern selection, the preview track will loop
 from the start time to the end time (both in seconds).
 
 Set both start and end to 0 to play the entire file.","当玩家选择谱面时，预览曲将会在开始时间和
 结束时间之间循环播放（单位均为秒）。
 
-如果开始、结束时间都是0，将播放预览曲的全部内容。",,"譜面選択画面でプレビュー音楽が開始時点から終了時点までリピート再生されます。（単位：秒）
+如果开始、结束时间都是0，将播放预览曲的全部内容。","當玩家選擇譜面時，預覽歌曲將會在開始時間和結束時間之間循環播放
+（單位均為秒）。
+
+如果開始、結束時間都是 0 ，降播放預覽歌曲全部的內容。","譜面選択画面でプレビュー音楽が開始時点から終了時点までリピート再生されます。（単位：秒）
 
 プレビュー音楽全体を再生するには両方を0に設定してください。","패턴 선택 화면에서 미리듣기 음악이 시작 시점부터 종료 시점까지 반복해서 재생됩니다. (단위 : 초)
 
 미리듣기 음악 전체를 재생하려면 두 값을 모두 0으로 설정하십시오."
-,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,,トラック削除,곡 삭제
-,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구적으로 삭제합니다. 계속하시겠습니까?
-,track_setup_metadata_tab_delete_track_confirm,Delete,删除,,削除,삭제
-,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,,キャンセル,취소
+,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,刪除歌曲,トラック削除,곡 삭제
+,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구적으로 삭제합니다. 계속하시겠습니까?
+,track_setup_metadata_tab_delete_track_confirm,Delete,删除,刪除,削除,삭제
+,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-,track_setup_patterns_tab_title,Patterns,谱面,,譜面,패턴
-,track_setup_patterns_tab_new_pattern_button,New pattern,新建谱面,,新しい譜面,새 패턴
-The default name of newly created patterns.,track_setup_patterns_tab_new_pattern_name,New pattern,新谱面,,新しい譜面,새 패턴
-,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,,既存の譜面を選択して編集または新しい譜面を作成します。,기존 패턴을 선택하여 편집하거나 새 패턴을 추가하십시오.
-,track_setup_patterns_tab_basics_header,Basics,基本信息,,基本情報,기본 정보
-,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,,譜面名,패턴 이름
-,track_setup_patterns_tab_author_label,Author,作者,,投稿者,작성자
-,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,,プレイタイプ,플레이 방식
-,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,,タッチ,터치
-,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,,キーボード,키보드
-,track_setup_patterns_tab_control_scheme_km,KM,键鼠,,キーボード・マウス,키보드/마우스
-,track_setup_patterns_tab_level_label,Level,难度,,難易度,난이도
-,track_setup_patterns_tab_background_header,Background,背景,,背景,배경
-,track_setup_patterns_tab_backing_track_label,Backing track,背景音乐,,背景音楽,배경 음악
+,track_setup_patterns_tab_title,Patterns,谱面,譜面,譜面,패턴
+,track_setup_patterns_tab_new_pattern_button,New pattern,新建谱面,新建譜面,新しい譜面,새 패턴
+The default name of newly created patterns.,track_setup_patterns_tab_new_pattern_name,New pattern,新谱面,新建譜面,新しい譜面,새 패턴
+,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,請選擇或新建一個譜面。,既存の譜面を選択して編集または新しい譜面を作成します。,기존 패턴을 선택하여 편집하거나 새 패턴을 추가하십시오.
+,track_setup_patterns_tab_basics_header,Basics,基本信息,基本資料,基本情報,기본 정보
+,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,名稱,譜面名,패턴 이름
+,track_setup_patterns_tab_author_label,Author,作者,作者,投稿者,작성자
+,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,操作方式,プレイタイプ,플레이 방식
+,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,觸控,タッチ,터치
+,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
+,track_setup_patterns_tab_control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
+,track_setup_patterns_tab_level_label,Level,难度,難度,難易度,난이도
+,track_setup_patterns_tab_background_header,Background,背景,背景,背景,배경
+,track_setup_patterns_tab_backing_track_label,Backing track,背景音乐,背景音樂,背景音楽,배경 음악
 ,track_setup_patterns_tab_backing_track_help,"The background music played during gameplay.
 BGA offset and First beat offset are relative to
 the start of this audio file.","“BGA开始时间”和“第一拍时间”
-均相对于背景音乐的开始时间。",,ゲームのプレイ中に再生される背景音です。BGAオフセットと最初ノートオフセットはこのファイルの再生開始点を基準とします。,"게임 플레이 중 재생되는 배경 음악입니다.
+均相对于背景音乐的开始时间。","“BGA 開始時間” 和 “第一拍時間”
+均相對於背景音樂的開始時間。",ゲームのプレイ中に再生される背景音です。BGAオフセットと最初ノートオフセットはこのファイルの再生開始点を基準とします。,"게임 플레이 중 재생되는 배경 음악입니다.
 BGA 오프셋과 시작 오프셋의 기준은 이 파일의 시작점이 됩니다."
-,track_setup_patterns_tab_background_image_label,Background image,背景图片,,背景画像,배경 이미지
-,track_setup_patterns_tab_bga_label,Background video (BGA),BGA（背景动画）,,BGA,배경 영상(BGA)
-,track_setup_patterns_tab_bga_offset_label,BGA offset,BGA开始时间,,BGAオフセット,BGA 오프셋
+,track_setup_patterns_tab_background_image_label,Background image,背景图片,背景圖片,背景画像,배경 이미지
+,track_setup_patterns_tab_bga_label,Background video (BGA),BGA（背景动画）,BGA（背景動畫）,BGA,배경 영상(BGA)
+,track_setup_patterns_tab_bga_offset_label,BGA offset,BGA开始时间,BGA 開始時間,BGAオフセット,BGA 오프셋
 ,track_setup_patterns_tab_bga_offset_help,"If a BGA is specified, it will start playing
 this many seconds after the backing track
 starts. Can be negative.","如果指定了BGA，它将于背景音乐播放到
 这一时间点（单位为秒）时开始播放。
-可以是负数。",,BGAが指定されている場合、背景音楽が再生された後、BGAオフセットだけの時間が過ぎてからBGAが再生されます。（単位：秒、負数可）,"BGA를 지정하면, 배경 음악이 시작되고 BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다. (단위 : 초, 음수 입력 가능)"
-,track_setup_patterns_tab_wait_for_bga_label,Wait for end of BGA,等待BGA结束,,BGAが終わるまで待機,BGA가 끝날 때까지 대기
+可以是负数。","如果指定了 BGA，它將於背景音樂播放到這一時間點（單位為秒）時開始播放。
+可以是負數。",BGAが指定されている場合、背景音楽が再生された後、BGAオフセットだけの時間が過ぎてからBGAが再生されます。（単位：秒、負数可）,"BGA를 지정하면, 배경 음악이 시작되고 BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다. (단위 : 초, 음수 입력 가능)"
+,track_setup_patterns_tab_wait_for_bga_label,Wait for end of BGA,等待BGA结束,等待 BGA 結束,BGAが終わるまで待機,BGA가 끝날 때까지 대기
 ,track_setup_patterns_tab_wait_for_bga_help,"Don't end the pattern until the BGA
-has completed playing.",等到BGA结束播放后才结束游戏。,,BGAが終わるまで譜面のプレイが終わりません。,BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
-,track_setup_patterns_tab_timing_header,Timing,时间,,タイミング,타이밍
-,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,,最初ノートオフセット,시작 오프셋
+has completed playing.",等到BGA结束播放后才结束游戏。,等待 BGA 結束播放後才結束遊戲。,BGAが終わるまで譜面のプレイが終わりません。,BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
+,track_setup_patterns_tab_timing_header,Timing,时间,時間,タイミング,타이밍
+,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,第一拍時間,最初ノートオフセット,시작 오프셋
 ,track_setup_patterns_tab_first_beat_offset_help,"The first beat of the pattern happens this many
 seconds after the backing track starts.","将背景音乐的这一时间点（单位为秒）
-视为谱面的第一拍。",,背景音楽が再生された後、最初ノートオフセットだけの時間が過ぎてから譜面が始まります。,배경 음악이 시작되고 시작 오프셋만큼의 시간이 지난 뒤 패턴의 첫 박이 시작됩니다.
-,track_setup_patterns_tab_initial_bpm_label,Initial BPM,初始BPM,,初期BPM,초기 BPM
+视为谱面的第一拍。",將背景音樂的這一時間點（單位為秒）視為譜面的第一拍,背景音楽が再生された後、最初ノートオフセットだけの時間が過ぎてから譜面が始まります。,배경 음악이 시작되고 시작 오프셋만큼의 시간이 지난 뒤 패턴의 첫 박이 시작됩니다.
+,track_setup_patterns_tab_initial_bpm_label,Initial BPM,初始BPM,初始 BPM,初期BPM,초기 BPM
 ,track_setup_patterns_tab_initial_bpm_help,"BPM means Beats Per Minute.
 You can change BPM throughout the pattern.","BPM是指每分钟的拍数。
-可以在谱面中途变化。",,"一分間の拍数（BPM）を指定します。
+可以在谱面中途变化。","BPM 是指每分鐘的拍數。
+可以在譜面中途變化。","一分間の拍数（BPM）を指定します。
 譜面の再生中にBPMを変更できます。",분당 박자 수(BPM)를 지정합니다. 패턴 중간에 BPM을 변경할 수 있습니다.
-,track_setup_patterns_tab_bps_label,BPS (Beats Per Scan),BPS（每扫描拍数）,,一小節の拍数（BPS）,마디당 박자 수(BPS)
-,track_setup_patterns_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,,BPMとは+F202別に、BPSは譜面の再生中に変更できません。,BPM과 달리 BPS는 패턴 중간에 변경할 수 없습니다.
-,track_setup_patterns_tab_delete_button,Delete,删除,,削除,삭제
-,track_setup_patterns_tab_duplicate_button,Duplicate,复制,,コピー,복사
-,track_setup_patterns_tab_open_button,Open,打开,,開く,열기
+,track_setup_patterns_tab_bps_label,BPS (Beats Per Scan),BPS（每扫描拍数）,BPS（每掃描拍數）,一小節の拍数（BPS）,마디당 박자 수(BPS)
+,track_setup_patterns_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,與 BPM 不同，BPS 不能在譜面中途變化。,BPMとは+F202別に、BPSは譜面の再生中に変更できません。,BPM과 달리 BPS는 패턴 중간에 변경할 수 없습니다.
+,track_setup_patterns_tab_delete_button,Delete,删除,刪除,削除,삭제
+,track_setup_patterns_tab_duplicate_button,Duplicate,复制,複製,コピー,복사
+,track_setup_patterns_tab_open_button,Open,打开,開啟,開く,열기
 ,,,,,,
 `===== Editor - Pattern =====,,,,,,
-,pattern_panel_title,Editing Pattern,编辑谱面,,譜面編集,패턴 편집
-,pattern_panel_edit_tab_title,Edit,编辑,,編集,편집
-,pattern_panel_edit_tab_beat_snap_divisor_label,Beat snap divisor:,节拍划分数：,,ノートスナップ値,박자 스냅 고정:
+,pattern_panel_title,Editing Pattern,编辑谱面,編輯譜面,譜面編集,패턴 편집
+,pattern_panel_edit_tab_title,Edit,编辑,編輯,編集,편집
+,pattern_panel_edit_tab_beat_snap_divisor_label,Beat snap divisor:,节拍划分数：,節拍劃分數,ノートスナップ値,박자 스냅 고정:
 ,pattern_panel_edit_tab_beat_snap_divisor_help,"Divide each beat into this many portions
 when snapping notes.","对齐音符时把每一拍
-划分成的份数。",,指定した値の間隔を保つよう、ノートをスナップさせます。,노트 이동 시 지정한 박자만큼의 간격에 맞춥니다.
-,pattern_panel_edit_tab_bpm_event_button,BPM Event,BPM事件,,BPM変更,템포 변경
-,pattern_panel_edit_tab_visible_lanes_label,Visible lanes,可见轨道数,,表示トラック数,표시 트랙 수
-,pattern_panel_edit_tab_visible_lanes_help,Adjust vertical zoom.,调整每个轨道的高度。,,表示トラック数だけトラックが見えるよう、縦方向ズームを調整します。,표시 트랙 수만큼 트랙이 보이도록 세로 크기를 조절합니다.
+划分成的份数。",對齊音符時把每一拍劃分成的份數。,指定した値の間隔を保つよう、ノートをスナップさせます。,노트 이동 시 지정한 박자만큼의 간격에 맞춥니다.
+,pattern_panel_edit_tab_bpm_event_button,BPM Event,BPM事件,BPM 變更,BPM変更,템포 변경
+,pattern_panel_edit_tab_visible_lanes_label,Visible lanes,可见轨道数,可見音軌數,表示トラック数,표시 트랙 수
+,pattern_panel_edit_tab_visible_lanes_help,Adjust vertical zoom.,调整每个轨道的高度。,調整每個軌道的高度,表示トラック数だけトラックが見えるよう、縦方向ズームを調整します。,표시 트랙 수만큼 트랙이 보이도록 세로 크기를 조절합니다.
 ,pattern_panel_edit_tab_time_display_legend,"Scan-Beat
 Time","扫描数-拍数
-时间",,"小説-拍
+时间","掃描數 - 拍數
+時間","小説-拍
 時間","마디-박자
 시점"
-,pattern_panel_edit_tab_preview_button,Preview,预览,,プレビュー,프리뷰
-,pattern_panel_note_details_title,Note details,音符详情,,ノート詳細,노트 상세정보
-,pattern_panel_note_details_no_selection_text,No note selected.,没有选中任何音符。,,選択したノートがありません。,선택한 노트가 없습니다.
-,pattern_panel_note_details_volume_label,Volume,音量,,ボリューム,음량
-,pattern_panel_note_details_pan_label,Pan,立体声平衡,,パンニング,좌우 밸런스
-,pattern_panel_note_details_preview_button,Preview,预览,,プレビュー,프리뷰
-,pattern_panel_note_details_end_of_scan_label,End of scan,扫描末,,小節の最後にノートを配置,마디 끝 노트
+,pattern_panel_edit_tab_preview_button,Preview,预览,預覽,プレビュー,프리뷰
+,pattern_panel_note_details_title,Note details,音符详情,音符資訊,ノート詳細,노트 상세정보
+,pattern_panel_note_details_no_selection_text,No note selected.,没有选中任何音符。,沒有選取任何音符,選択したノートがありません。,선택한 노트가 없습니다.
+,pattern_panel_note_details_volume_label,Volume,音量,音量,ボリューム,음량
+,pattern_panel_note_details_pan_label,Pan,立体声平衡,立體聲平衡,パンニング,좌우 밸런스
+,pattern_panel_note_details_preview_button,Preview,预览,預覽,プレビュー,프리뷰
+,pattern_panel_note_details_end_of_scan_label,End of scan,扫描末,掃描結尾,小節の最後にノートを配置,마디 끝 노트
 ,pattern_panel_note_details_end_of_scan_help,"Draw this note at the previous scan's end,
 instead of the next scan's beginning.","把这个音符绘制到前一扫描的末尾，
-而不是下一个扫描的起点。",,小節の最初ではなく、以前の小節の最後にノートを配置します。,마디의 시작 지점이 아닌 이전 마디의 끝 지점에 노트를 배치합니다.
-,pattern_panel_keysounds_title,Keysounds,按键音,,ノート音,사운드
-,pattern_panel_keysounds_upcoming_label,Upcoming:,下一个：,,次のノート音,다음 사운드:
-Shown when no keysound is selected.,pattern_panel_keysounds_upcoming_none,(None),（无）,,（なし）,(없음)
+而不是下一个扫描的起点。","把這個音符渲染到前一掃描的結尾，
+而不是下一個掃描的起點。",小節の最初ではなく、以前の小節の最後にノートを配置します。,마디의 시작 지점이 아닌 이전 마디의 끝 지점에 노트를 배치합니다.
+,pattern_panel_keysounds_title,Keysounds,按键音,按鍵音,ノート音,사운드
+,pattern_panel_keysounds_upcoming_label,Upcoming:,下一个：,下一個按鍵音,次のノート音,다음 사운드:
+Shown when no keysound is selected.,pattern_panel_keysounds_upcoming_none,(None),（无）,(無),（なし）,(없음)
 ,pattern_panel_keysounds_upcoming_help,"The next note you place will have this keysound.
 You can select multiple keysounds by holding
 Ctrl or Shift; they will apply sequentially.","下一个添加的音符将使用以下按键音。
 你可以使用Ctrl和Shift来选择多个按键音，
-它们将依次作用于新添加的音符。",,"次のノートにこのノート音が指定されます。
+它们将依次作用于新添加的音符。","下一個放置的音符將使用以下按鍵音。
+您可以使用 Ctrl 和 Shift 來選擇多個按鍵音，
+它們將依次套用於新放置的音符。","次のノートにこのノート音が指定されます。
 CtrlまたはShiftを長押ししながら複数のノート音を選択できます。複数選択したノート音は順番に指定されます。","이 사운드를 다음에 생성하는 노트에 연주음으로 지정합니다.
 Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로 사용할 수 있습니다."
 ,,,,,,
-,pattern_panel_options_tab_title,Options,设置,,オプション,옵션
-,pattern_panel_options_appearance_header,Appearance,界面,,表示,표시
-,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
-,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,,スキャンラインにビュー固定,판정선에 시점 고정
-,pattern_panel_options_keep_scanline_in_view_description,Automatically scroll the workspace whenever the scanline goes out of view.,当扫描线离开工作区时自动滚动工作区。,,プレイバックするときにスキャンラインが見えなくなった場合、自動でスクロールします。,작업 영역 밖으로 판정선이 이탈하면 자동으로 다음 구간으로 스크롤합니다.
-,pattern_panel_options_editing_header,Editing,编辑,,編集,편집
-,pattern_panel_options_apply_keysounds_label,Apply keysound to selection,选择按键音时作用于选区,,ノート音オート指定,연주음 자동 적용
-,pattern_panel_options_apply_keysounds_description,"When you click a keysound, apply it to any notes selected.",选择按键音时，将所有选中音符的按键音改为新选择的按键音。,,ノート音を選択すると、選択した全てのノートに指定されます。,클릭한 사운드를 현재 선택한 모든 노트에 지정합니다.
-,pattern_panel_options_apply_note_type_label,Apply note type to selection,选择音符类型时作用于选区,,ノートタイプオート適用,노트 타입 자동 적용
-,pattern_panel_options_apply_note_type_description,"When you click a note type, apply it to any notes selected.",选择音符类型时，将所有选中音符的类型改为新选择的类型。,,ノートタイプを選択すると、選択した全てのノートがそのノートタイプに置き換えられます。,현재 선택한 모든 노트를 클릭한 노트 종류로 변경합니다.
-,pattern_panel_options_lock_notes_label,Lock notes in time,锁定音符时间,,ノート移動範囲固定,노트 시점 고정
-,pattern_panel_options_lock_notes_description,Prevent dragging notes to a different time. Does not affect cut/copy/paste.,确保无法横向移动任何音符。对剪切、复制、粘贴没有影响。,,ノートを移すとき、他の小節に移せなくなり、トラックのみ変更できるようになります。切り取り/コピー/貼り付けには影響しません。,"노트를 옮길 때 시점을 고정합니다. 트랙 위치만 변경할 수 있으며, 잘라내기/복사/붙여넣기 기능에는 영향을 주지 않습니다."
-,pattern_panel_options_lock_anchors_label,Lock drag anchors in time,锁定拖拽锚点时间,,ドラッグノートアンカー移動範囲固定,드래그 노트 고정점 시점 고정
-,pattern_panel_options_lock_anchors_description,Prevent dragging drag anchors to a different time.,确保无法横向移动任何拖拽音符的锚点。,,ドラッグノートのアンカーを移すとき、他の小節に移せなくなります。,드래그 노트의 고정점을 옮길 때 시점을 고정합니다.
-,pattern_panel_options_snap_anchors_label,Snap drag note anchors,对齐拖拽锚点,,ドラッグノートアンカースナップ,드래그 노트 고정점 스냅
-,pattern_panel_options_snap_anchors_description,Snap anchors the same way as other notes.,按照对齐音符的方式对齐拖拽音符的锚点。,,ドラッグノートのアンカーも他のノートのようにスナップされます。,드래그 노트의 고정점도 다른 노트처럼 스냅되도록 설정합니다.
-,pattern_panel_options_playback_header,Playback,播放,,プレイバック,재생
-,pattern_panel_options_metronome_label,Metronome,节拍器,,メトロノーム,메트로놈 기능
-,pattern_panel_options_assist_tick_label,Play ticks on silent notes,在无声音符上播放辅助音效,,無音ノートに打撃音再生,연주음이 없는 노트에서 클랩음 재생
-,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,,プレイバックの停止後スキャンラインを戻させる,판정선 되돌리기
-,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
-,pattern_panel_options_help_header,Help,帮助,,ヘルプ,도움말
-,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,,ショートカット,단축키
+,pattern_panel_options_tab_title,Options,设置,設定,オプション,옵션
+,pattern_panel_options_appearance_header,Appearance,界面,介面,表示,표시
+,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,在音符上顯示按鍵音。,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
+,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,保持掃描線在螢幕內。,スキャンラインにビュー固定,판정선에 시점 고정
+,pattern_panel_options_keep_scanline_in_view_description,Automatically scroll the workspace whenever the scanline goes out of view.,当扫描线离开工作区时自动滚动工作区。,當掃描線離開工作區自動捲動。,プレイバックするときにスキャンラインが見えなくなった場合、自動でスクロールします。,작업 영역 밖으로 판정선이 이탈하면 자동으로 다음 구간으로 스크롤합니다.
+,pattern_panel_options_editing_header,Editing,编辑,編輯,編集,편집
+,pattern_panel_options_apply_keysounds_label,Apply keysound to selection,选择按键音时作用于选区,選取區域套用按鍵音,ノート音オート指定,연주음 자동 적용
+,pattern_panel_options_apply_keysounds_description,"When you click a keysound, apply it to any notes selected.",选择按键音时，将所有选中音符的按键音改为新选择的按键音。,選擇按鍵音時，將所有選中的音符改為新選擇的按鍵音。,ノート音を選択すると、選択した全てのノートに指定されます。,클릭한 사운드를 현재 선택한 모든 노트에 지정합니다.
+,pattern_panel_options_apply_note_type_label,Apply note type to selection,选择音符类型时作用于选区,選擇區域套用音符類型,ノートタイプオート適用,노트 타입 자동 적용
+,pattern_panel_options_apply_note_type_description,"When you click a note type, apply it to any notes selected.",选择音符类型时，将所有选中音符的类型改为新选择的类型。,選擇音符類型時，將所有選中的音符類型改為新選擇的類型。,ノートタイプを選択すると、選択した全てのノートがそのノートタイプに置き換えられます。,현재 선택한 모든 노트를 클릭한 노트 종류로 변경합니다.
+,pattern_panel_options_lock_notes_label,Lock notes in time,锁定音符时间,鎖定音符時間,ノート移動範囲固定,노트 시점 고정
+,pattern_panel_options_lock_notes_description,Prevent dragging notes to a different time. Does not affect cut/copy/paste.,确保无法横向移动任何音符。对剪切、复制、粘贴没有影响。,確保無法橫向移動任何音符。不受剪下、複製、貼上影響。,ノートを移すとき、他の小節に移せなくなり、トラックのみ変更できるようになります。切り取り/コピー/貼り付けには影響しません。,"노트를 옮길 때 시점을 고정합니다. 트랙 위치만 변경할 수 있으며, 잘라내기/복사/붙여넣기 기능에는 영향을 주지 않습니다."
+,pattern_panel_options_lock_anchors_label,Lock drag anchors in time,锁定拖拽锚点时间,鎖定拖動錨點時間,ドラッグノートアンカー移動範囲固定,드래그 노트 고정점 시점 고정
+,pattern_panel_options_lock_anchors_description,Prevent dragging drag anchors to a different time.,确保无法横向移动任何拖拽音符的锚点。,確保無法橫向移動任何拖動音符的錨點。,ドラッグノートのアンカーを移すとき、他の小節に移せなくなります。,드래그 노트의 고정점을 옮길 때 시점을 고정합니다.
+,pattern_panel_options_snap_anchors_label,Snap drag note anchors,对齐拖拽锚点,對齊拖動錨點,ドラッグノートアンカースナップ,드래그 노트 고정점 스냅
+,pattern_panel_options_snap_anchors_description,Snap anchors the same way as other notes.,按照对齐音符的方式对齐拖拽音符的锚点。,按照對齊音符的方式對齊拖動音符的錨點。,ドラッグノートのアンカーも他のノートのようにスナップされます。,드래그 노트의 고정점도 다른 노트처럼 스냅되도록 설정합니다.
+,pattern_panel_options_playback_header,Playback,播放,播放,プレイバック,재생
+,pattern_panel_options_metronome_label,Metronome,节拍器,節拍器,メトロノーム,메트로놈 기능
+,pattern_panel_options_assist_tick_label,Play ticks on silent notes,在无声音符上播放辅助音效,在無聲音符上播放輔助音效。,無音ノートに打撃音再生,연주음이 없는 노트에서 클랩음 재생
+,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,播放後歸位掃描線,プレイバックの停止後スキャンラインを戻させる,판정선 되돌리기
+,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
+,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
+,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
 ,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
 Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
 ` <indent=25%>Rectangle tool</indent>
@@ -473,7 +518,22 @@ Shift+滚轮 <indent=35%>纵向滚动</indent>
 Ctrl+滚轮 <indent=35%>缩放</indent>
 Alt+滚轮 <indent=35%>调整节拍划分数</indent>
 
-按住Ctrl或Shift可以多选音符与按键音。",,"Ctrl+S <indent=25%>保存</indent>
+按住Ctrl或Shift可以多选音符与按键音。","Ctrl+S <indent=25%>儲存</indent>
+Ctrl+Z/Y <indent=25%>復原/重做</indent>
+` <indent=25%>框選工具</indent>
+1-9 <indent=25%>選擇音符類型</indent>
+P <indent=25%>預覽選中音符的按鍵音</indent>
+Ctrl+A/D <indent=25%>全選/取消全選所有音符</indent>
+Ctrl+X/C/V <indent=25%>剪下/複製/貼上</indent>
+
+空格 <indent=25%>開始/結束播放</indent>
+
+滾輪 <indent=35%>橫向滾動</indent>
+Shift+滾輪 <indent=35%>縱向滾動</indent>
+Ctrl+滾輪 <indent=35%>縮放</indent>
+Alt+滾輪 <indent=35%>調整節拍劃分數</indent>
+
+按住 Ctrl 或 Shift 可以多選音符與按鍵音。","Ctrl+S <indent=25%>保存</indent>
 Ctrl+Z/Y <indent=25%>元に戻す/やり直し</indent>
 ` <indent=25%>選択ツール</indent>
 1-9 <indent=25%>ノートタイプ選択</indent>
@@ -504,21 +564,24 @@ Ctrl+마우스 휠 <indent=35%>확대 / 축소</indent>
 Alt+마우스 휠 <indent=35%>박자 스냅 고정값 변경</indent>
 
 여러 노트를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
-,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,,選択ツール,선택 툴
+,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
 ,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
 Hold Shift to append to the current selection.
 Hold Alt to subtract from the current selection.
 Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
 按住Shift可以额外选中矩形内的音符。
 按住Alt可以取消选中矩形内的音符。
-按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。",,"選択ツールでドラッグして長方形範囲内の全てのノートを選択できます。
+按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。","用滑鼠左鍵畫出矩形選擇內部所有音符。
+按住 Shift 可以額外選取音符。
+按住 Alt 可以取消選取選中的音符。
+按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不再某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択できます。
 Shiftを長押ししながら選択すると選択済みのノートと一緒に選択されます。
 Altを長押ししながら選択すると選択済みのノートを選択解除します。
 Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用できます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
 노트를 선택한 후 다른 노트를 추가로 선택하려면 Shift를 누른 채로 선택하십시오.
 선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
 Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
-,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
+,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
 ,pattern_panel_options_drag_control_help,"Drag notes are bezier curves controlled by anchors and control points.
 Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
 Click on the anchor receiver to add an anchor.
@@ -529,7 +592,12 @@ Hold Ctrl, click and drag an anchor to reset its control points.","拖拽音符�
 在锚点接收线上点击以增加锚点。
 用鼠标左键拖拽移动锚点和控制点。
 用鼠标右键点击可以删除锚点和控制点。
-按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。",,"ドラッグノートはアンカーとコントロールポイントで決められるベジェ曲線に沿って進行します。
+按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
+選取一個拖動音符可以顯示它的錨點和控制點，以及錨點接收線（音符中心的棕色曲線）。
+點擊錨點接收線以增加錨點。
+用滑鼠左鍵拖曳移動錨點和控制點。
+用滑鼠右鍵點擊可以刪除錨點和控制點。
+按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線に沿って進行します。
 ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
 アンカーレシーバーをクリックしてアンカーを追加できます。
 アンカーとコントロールポイントをドラックして移します。
@@ -540,19 +608,19 @@ Ctrlを長押ししながらアンカーをクリックし、ドラッグする�
 고정점과 컨트롤 포인트를 우클릭하여 삭제할 수 있습니다.
 Ctrl를 누른 채로 고정점을 클릭하고 드래그하여 컨트롤 포인트를 배치할 수 있습니다."
 """Snackbar"" is the tiny message box shown at the
-bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold Notes cannot have zero length.,长按音符的长度不能为0。,,ホールドノートの長さは0になれません。,홀딩 노트의 길이는 0이 될 수 없습니다.
-,pattern_panel_snackbar_hold_note_covers_other_notes,Hold Notes cannot cover other notes.,长按音符不能遮盖其他音符。,,ホールドノートは他のノートの上に配置できません。,홀딩 노트는 다른 노트를 가릴 수 없습니다.
-,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,,アンカーの追加位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
-,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first Anchor in each Drag Note.,不能删除拖拽音符的第一个锚点。,,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
-,pattern_panel_snackbar_at_least_two_anchors,Drag Notes must contain at least 2 Anchors.,拖拽音符必须包含至少2个锚点。,,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
-,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
-,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
-,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,,ノートは0番目の小説の前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,,ノートは0番目のトラックの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,,ノートは一番最後のトラックの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_chain_note_at_same_pulse,No two Chain Notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,,二つのチェーン型ノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
-,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by Hold Notes.,音符不能被其他长按音符遮盖。,,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
+bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold Notes cannot have zero length.,长按音符的长度不能为0。,長按音符的長度不能為 0。,ホールドノートの長さは0になれません。,홀딩 노트의 길이는 0이 될 수 없습니다.
+,pattern_panel_snackbar_hold_note_covers_other_notes,Hold Notes cannot cover other notes.,长按音符不能遮盖其他音符。,長按音符不能蓋過其他音符,ホールドノートは他のノートの上に配置できません。,홀딩 노트는 다른 노트를 가릴 수 없습니다.
+,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの追加位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
+,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first Anchor in each Drag Note.,不能删除拖拽音符的第一个锚点。,不能刪除拖動音符的第一個錨點。,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
+,pattern_panel_snackbar_at_least_two_anchors,Drag Notes must contain at least 2 Anchors.,拖拽音符必须包含至少2个锚点。,拖動音符必須包含至少兩個錨點,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
+,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,錨點必須從左向右排列。,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
+,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
+,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目の小説の前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番目のトラックの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは一番最後のトラックの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,音符不能和其他音符位於同一位置。,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_chain_note_at_same_pulse,No two Chain Notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,鎖鏈音符不能位於同一個時間點,二つのチェーン型ノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
+,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by Hold Notes.,音符不能被其他长按音符遮盖。,音符不能被其他長按音符蓋過,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
 ,pattern_panel_resource_loading_error_format,"An error occurred when loading resources:
 
 {0}
@@ -561,7 +629,11 @@ You can continue to edit this pattern, but playback and preview will be disabled
 
 {0}
 
-你可以继续编辑谱面，但是将无法使用播放功能。",,"ファイルの読み込み中にエラーが発生しました：
+你可以继续编辑谱面，但是将无法使用播放功能。","載入資源時發生錯誤：
+
+{0}
+
+您可以繼續編輯譜面，但是無法使用播放功能。","ファイルの読み込み中にエラーが発生しました：
 
 {0}
 
@@ -571,8 +643,8 @@ You can continue to edit this pattern, but playback and preview will be disabled
 
 패턴 편집을 계속할 수 있으나, 재생 및 프리뷰 기능은 이용할 수 없습니다."
 ,,,,,,
-,bpm_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
-,bpm_event_dialog_change_bpm_button,change BPM to,将BPM改为,,BPMを次のように変更,BPM을 다음으로 변경:
-,bpm_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,,BPMを変更しない,BPM을 변경하지 않음
-,bpm_event_dialog_ok_button,OK,确定,,OK,확인
-,bpm_event_dialog_cancel_button,Cancel,取消,,キャンセル,취소
+,bpm_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
+,bpm_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
+,bpm_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
+,bpm_event_dialog_ok_button,OK,确定,確定,OK,확인
+,bpm_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
