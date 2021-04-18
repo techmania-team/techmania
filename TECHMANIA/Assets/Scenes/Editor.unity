@@ -4752,7 +4752,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -27.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7199733101771171798, guid: 07ee9ca45a9964f47b902078d0c137c7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 07ee9ca45a9964f47b902078d0c137c7, type: 3}
 --- !u!224 &209284562 stripped
 RectTransform:
@@ -10560,7 +10561,8 @@ PrefabInstance:
       propertyPath: key
       value: new_track_dialog_create_button
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 738836231607621284, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
 --- !u!224 &420724750 stripped
 RectTransform:
@@ -19445,7 +19447,8 @@ PrefabInstance:
       propertyPath: key
       value: bpm_event_dialog_ok_button
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 738836231607621284, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}
 --- !u!1 &850804222 stripped
 GameObject:
@@ -29177,7 +29180,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -27.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7199733101771171798, guid: 07ee9ca45a9964f47b902078d0c137c7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 07ee9ca45a9964f47b902078d0c137c7, type: 3}
 --- !u!224 &1406043706 stripped
 RectTransform:
@@ -43818,6 +43822,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -27.5
       objectReference: {fileID: 0}
+    - target: {fileID: 380057948981831913, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
+      propertyPath: m_text
+      value: cancel
+      objectReference: {fileID: 0}
     - target: {fileID: 1112059796444342807, guid: b48d74dca4ecac24ca4b8c252966270e,
         type: 3}
       propertyPath: m_SizeDelta.y
@@ -43825,8 +43834,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4814026229485880327, guid: b48d74dca4ecac24ca4b8c252966270e,
         type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814026229485880327, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814026229485880327, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814026229485880327, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
       propertyPath: m_SizeDelta.x
       value: 287.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814026229485880327, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176675099638078401, guid: b48d74dca4ecac24ca4b8c252966270e,
+        type: 3}
+      propertyPath: m_text
+      value: Blah blah blah blah
       objectReference: {fileID: 0}
     - target: {fileID: 6176675099638078403, guid: b48d74dca4ecac24ca4b8c252966270e,
         type: 3}
@@ -44030,6 +44064,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6176675099638078402, guid: b48d74dca4ecac24ca4b8c252966270e, type: 3}
+    - {fileID: 380057947676473911, guid: b48d74dca4ecac24ca4b8c252966270e, type: 3}
+    - {fileID: 7333132884793749739, guid: b48d74dca4ecac24ca4b8c252966270e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b48d74dca4ecac24ca4b8c252966270e, type: 3}
 --- !u!224 &7915151681796255251 stripped
 RectTransform:
