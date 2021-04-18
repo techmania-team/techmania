@@ -606,6 +606,8 @@ public class NoteAppearance : MonoBehaviour,
             {
                 extensionIndex = holdExtensions.Count - 1;
             }
+            // TODO: sometimes this throws out of range exceptions.
+            // Why?
             return holdExtensions[extensionIndex]
                 .ongoingTrailEnd.position;
         }

@@ -1460,7 +1460,15 @@ public class Game : MonoBehaviour
             {
                 NoteObject n = touchReceiver
                     .GetComponentInParent<NoteObject>();
-                if (ongoingNotes.ContainsKey(n))
+                NoteObject noteToCheck = n;
+                if (n.note.type == NoteType.RepeatHead ||
+                    n.note.type == NoteType.RepeatHeadHold)
+                {
+                    noteToCheck = n.GetComponent<NoteAppearance>()
+                        .GetFirstUnresolvedRepeatNote();
+                }
+
+                if (ongoingNotes.ContainsKey(noteToCheck))
                 {
                     hitOngoingNote = true;
                     // No need to check for empty touch receiver because
@@ -1482,13 +1490,7 @@ public class Game : MonoBehaviour
                         ignoreNewlyHitNote = true;
                     }
                 }
-                NoteObject noteToCheck = n;
-                if (n.note.type == NoteType.RepeatHead ||
-                    n.note.type == NoteType.RepeatHeadHold)
-                {
-                    noteToCheck = n.GetComponent<NoteAppearance>()
-                        .GetFirstUnresolvedRepeatNote();
-                }
+                
                 float correctTime = noteToCheck.note.time
                     + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;
