@@ -8,6 +8,8 @@ using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
+    public AudioClip emptyClip;
+
     private static ResourceLoader GetInstance()
     {
         return FindObjectOfType<ResourceLoader>();
@@ -117,6 +119,22 @@ public class ResourceLoader : MonoBehaviour
             string fileWithoutFolder = new FileInfo(file).Name;
             if (!audioClips.ContainsKey(fileWithoutFolder))
             {
+                // Handle empty files.
+                try
+                {
+                    if (IsEmptyFile(file))
+                    {
+                        Debug.Log($"{file} is a 0-byte file, loaded as empty clip.");
+                        audioClips.Add(fileWithoutFolder, emptyClip);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    cacheAudioCompleteCallback?.Invoke(ex.Message);
+                    yield break;
+                }
+
                 // Somehow passing in AudioType.UNKNOWN will make it
                 // magically work for every format.
                 UnityWebRequest request =
@@ -171,6 +189,22 @@ public class ResourceLoader : MonoBehaviour
     private IEnumerator InnerLoadAudio(string fullPath,
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
+        // Handle empty files.
+        try
+        {
+            if (IsEmptyFile(fullPath))
+            {
+                Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
+                loadAudioCompleteCallback?.Invoke(emptyClip, null);
+                yield break;
+            }
+        }
+        catch (Exception ex)
+        {
+            loadAudioCompleteCallback?.Invoke(null, ex.Message);
+            yield break;
+        }
+
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(fullPath), AudioType.UNKNOWN);
@@ -186,6 +220,12 @@ public class ResourceLoader : MonoBehaviour
         loadAudioCompleteCallback?.Invoke(clip, error);
     }
 
+    private static bool IsEmptyFile(string fullPath)
+    {
+        FileInfo fileInfo = new FileInfo(fullPath);
+        return fileInfo.Length == 0;
+    }
+
     public static void GetAudioClipFromWebRequest(
         UnityWebRequest request,
         out AudioClip clip, out string error)
@@ -194,7 +234,10 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = $"Could not load {fullPath}:\n\n{request.error}";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_error_format",
+                fullPath,
+                request.error);
             return;
         }
         clip = DownloadHandlerAudioClip.GetContent(request);
@@ -202,14 +245,18 @@ public class ResourceLoader : MonoBehaviour
 
         if (clip == null)
         {
-            error = $"Could not load {fullPath}:\n\n{request.error}";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_error_format",
+                fullPath,
+                request.error);
             return;
         }
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = $"Could not load {fullPath}.\n\n" +
-                "The file may be corrupted, or be of an unsupported format.";
+            error = Locale.GetStringAndFormat(
+                "resource_loader_unsupported_format_error_format",
+                fullPath);
             return;
         }
     }
@@ -241,7 +288,10 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath}:\n\n{request.error}");
+                Locale.GetStringAndFormat(
+                    "resource_loader_error_format",
+                    fullPath,
+                    request.error));
             yield break;
         }
 
@@ -249,14 +299,19 @@ public class ResourceLoader : MonoBehaviour
         if (texture == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath}:\n\n{request.error}");
+                Locale.GetStringAndFormat(
+                    "resource_loader_error_format",
+                    fullPath,
+                    request.error));
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                $"Could not load {fullPath} as a 2D image.");
+                Locale.GetStringAndFormat(
+                    "resource_loader_unsupported_format_error_format",
+                    fullPath));
             yield break;
         }
 

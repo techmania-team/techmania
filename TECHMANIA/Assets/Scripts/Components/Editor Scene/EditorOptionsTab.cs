@@ -8,6 +8,7 @@ public class EditorOptionsTab : MonoBehaviour
 {
     [Header("Appearance")]
     public Toggle showKeysoundsToggle;
+    public Toggle keepScanlineInViewToggle;
 
     [Header("Editing")]
     public Toggle applyKeysoundToSelectionToggle;
@@ -40,6 +41,8 @@ public class EditorOptionsTab : MonoBehaviour
     {
         showKeysoundsToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.showKeysounds);
+        keepScanlineInViewToggle.SetIsOnWithoutNotify(
+            Options.instance.editorOptions.keepScanlineInView);
 
         applyKeysoundToSelectionToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.applyKeysoundToSelection);
@@ -65,6 +68,8 @@ public class EditorOptionsTab : MonoBehaviour
     {
         Options.instance.editorOptions.showKeysounds =
             showKeysoundsToggle.isOn;
+        Options.instance.editorOptions.keepScanlineInView =
+            keepScanlineInViewToggle.isOn;
 
         Options.instance.editorOptions.applyKeysoundToSelection =
             applyKeysoundToSelectionToggle.isOn;

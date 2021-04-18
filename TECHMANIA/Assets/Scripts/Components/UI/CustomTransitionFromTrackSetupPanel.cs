@@ -12,9 +12,12 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
         if (EditorContext.Dirty)
         {
             confirmDialog.Show(
-                "Unsaved changes to the track will be discarded. Continue?",
-                "discard",
-                "cancel",
+                Locale.GetString(
+                    "track_setup_discard_changes_confirmation"),
+                Locale.GetString(
+                    "track_setup_discard_changes_confirm"),
+                Locale.GetString(
+                    "track_setup_discard_changes_cancel"),
                 ForceTransition);
         }
         else

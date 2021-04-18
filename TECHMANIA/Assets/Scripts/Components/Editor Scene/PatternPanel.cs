@@ -1562,14 +1562,16 @@ public class PatternPanel : MonoBehaviour
             newDuration = oldDuration + deltaDuration;
             if (newDuration <= 0)
             {
-                snackbar.Show("Hold Notes cannot have zero length.");
+                snackbar.Show(Locale.GetString(
+                    "pattern_panel_snackbar_hold_note_zero_length"));
                 adjustable = false;
                 break;
             }
             if (HoldNoteCoversAnotherNote(holdNote.pulse, holdNote.lane,
                 newDuration, ignoredExistingNotes: null))
             {
-                snackbar.Show("Hold Notes cannot cover other notes.");
+                snackbar.Show(Locale.GetString(
+                    "pattern_panel_snackbar_hold_note_covers_other_notes"));
                 adjustable = false;
                 break;
             }
@@ -1643,7 +1645,8 @@ public class PatternPanel : MonoBehaviour
             return node.anchor.pulse == newAnchor.pulse;
         }) != null)
         {
-            snackbar.Show("The Anchor you are trying to add is too close to an existing Anchor.");
+            snackbar.Show(Locale.GetString(
+                "pattern_panel_snackbar_anchor_too_close_to_existing"));
             return;
         }
 
@@ -1694,7 +1697,8 @@ public class PatternPanel : MonoBehaviour
 
         if (anchorIndex == 0)
         {
-            snackbar.Show("Cannot delete the first Anchor in each Drag Note.");
+            snackbar.Show(Locale.GetString(
+                "pattern_panel_snackbar_cannot_delete_first_anchor"));
             return;
         }
 
@@ -1702,7 +1706,8 @@ public class PatternPanel : MonoBehaviour
             .GetComponentInParent<NoteObject>().note as DragNote;
         if (dragNote.nodes.Count == 2)
         {
-            snackbar.Show("Drag Notes must contain at least 2 Anchors.");
+            snackbar.Show(Locale.GetString(
+                "pattern_panel_snackbar_at_least_two_anchors"));
             return;
         }
 
@@ -1868,7 +1873,8 @@ public class PatternPanel : MonoBehaviour
         }
         if (!anchorsInOrder)
         {
-            invalidReason = "Anchors must flow from left to right.";
+            invalidReason = Locale.GetString(
+                "pattern_panel_snackbar_anchors_flow_left_ro_right");
             return false;
         }
 
@@ -2067,7 +2073,8 @@ public class PatternPanel : MonoBehaviour
             && cloneAtEndDrag.GetControlPoint(1).pulse >= 0f;
         if (!valid)
         {
-            snackbar.Show("Left and Right Control Points must stay on the respective sides of the Anchor Point.");
+            snackbar.Show(Locale.GetString(
+                "pattern_panel_snackbar_control_point_on_correct_sides"));
             NoteInEditor noteInEditor = draggedControlPoint
                 .GetComponentInParent<NoteInEditor>();
             noteInEditor.ResetCurve();
@@ -2688,17 +2695,20 @@ public class PatternPanel : MonoBehaviour
         // Boundary check.
         if (pulse < 0)
         {
-            reason = "Cannot place notes before scan 0.";
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_before_scan_0");
             return false;
         }
         if (lane < 0)
         {
-            reason = "Cannot place notes above the topmost lane.";
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_above_topmost_lane");
             return false;
         }
         if (lane >= TotalLanes)
         {
-            reason = "Cannot place notes below the bottommost lane.";
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_below_bottommost_lane");
             return false;
         }
 
@@ -2709,7 +2719,8 @@ public class PatternPanel : MonoBehaviour
             !ignoredExistingNotes.Contains(
                 GetGameObjectFromNote(noteAtSamePulseAndLane)))
         {
-            reason = "Cannot place notes on top of an existing note.";
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_on_top_of_existing_note");
             return false;
         }
 
@@ -2728,7 +2739,8 @@ public class PatternPanel : MonoBehaviour
                 if (noteAtPulse.type == NoteType.ChainHead ||
                     noteAtPulse.type == NoteType.ChainNode)
                 {
-                    reason = "No two Chain Notes may occupy the same timepoint.";
+                    reason = Locale.GetString(
+                        "pattern_panel_snackbar_chain_note_at_same_pulse");
                     return false;
                 }
             }
@@ -2750,7 +2762,8 @@ public class PatternPanel : MonoBehaviour
             HoldNote holdNote = holdNoteBeforePivot as HoldNote;
             if (holdNote.pulse + holdNote.duration >= pulse)
             {
-                reason = "Notes cannot be covered by Hold Notes.";
+                reason = Locale.GetString(
+                    "pattern_panel_snackbar_covered_by_hold_note");
                 return false;
             }
         }
@@ -2777,7 +2790,8 @@ public class PatternPanel : MonoBehaviour
         if (HoldNoteCoversAnotherNote(pulse, lane, duration,
             ignoredExistingNotes))
         {
-            reason = "Hold Notes cannot cover other notes.";
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_hold_note_covers_other_notes");
             return false;
         }
 
@@ -3272,8 +3286,9 @@ public class PatternPanel : MonoBehaviour
     {
         if (error != null)
         {
-            messageDialog.Show(error + "\n\n" +
-                "You can continue to edit this pattern, but playback and preview will be disabled.");
+            messageDialog.Show(Locale.GetStringAndFormat(
+                "pattern_panel_resource_loading_error_format",
+                error));
         }
         audioLoaded = true;
         playButton.GetComponent<Button>().interactable =
@@ -3490,6 +3505,8 @@ public class PatternPanel : MonoBehaviour
 
     private void ScrollScanlineIntoView()
     {
+        if (!Options.instance.editorOptions.keepScanlineInView) return;
+
         float viewPortWidth = workspaceScrollRect
             .GetComponent<RectTransform>().rect.width;
         if (WorkspaceContentWidth <= viewPortWidth) return;

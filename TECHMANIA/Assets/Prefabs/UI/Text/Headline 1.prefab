@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8905956753094978175}
   - component: {fileID: 8905956753094978168}
   - component: {fileID: 8905956753094978169}
+  - component: {fileID: 5810938076695873462}
   m_Layer: 5
   m_Name: Headline 1
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -149,3 +151,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &5810938076695873462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8905956753094978171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dc0c2e64a808dd44877f823093e989e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 

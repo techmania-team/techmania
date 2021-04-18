@@ -94,7 +94,9 @@ public class TrackSetupPanel : MonoBehaviour
         SFB.ExtensionFilter[] extensionFilters =
             new SFB.ExtensionFilter[2];
         extensionFilters[0] = new SFB.ExtensionFilter(
-            "Supported files", new string[] {
+            Locale.GetString(
+                "track_setup_resource_tab_import_dialog_supported_formats"),
+            new string[] {
                 "wav",
                 "ogg",
                 "jpg",
@@ -103,9 +105,13 @@ public class TrackSetupPanel : MonoBehaviour
                 "wmv"
             });
         extensionFilters[1] = new SFB.ExtensionFilter(
-            "All files", new string[] { "*" });
+            Locale.GetString(
+                "track_setup_resource_tab_import_dialog_all_files"),
+            new string[] { "*" });
         string[] sources = SFB.StandaloneFileBrowser.OpenFilePanel(
-            "Select resource to import", "",
+            Locale.GetString(
+                "track_setup_resource_tab_import_dialog_title"),
+            "",
             extensionFilters, multiselect: true);
         string trackFolder = EditorContext.trackFolder;
 
@@ -131,17 +137,27 @@ public class TrackSetupPanel : MonoBehaviour
             {
                 if (i == 10)
                 {
-                    fileList += $"... and {filesToBeOverwritten.Count - 10} more.\n";
+                    fileList += "\n";
+                    fileList += Locale.GetStringAndFormat(
+                        "track_setup_resource_tab_overwrite_omitted_files",
+                        filesToBeOverwritten.Count - 10);
                     break;
                 }
                 else
                 {
-                    fileList += filesToBeOverwritten[i] + "\n";
+                    if (fileList != "") fileList += "\n";
+                    fileList += filesToBeOverwritten[i];
                 }
             }
             confirmDialog.Show(
-                $"The following files will be overwritten. Continue?\n\n{fileList}\nIf you choose to cancel, no file will be copied.",
-                "overwrite", "cancel", () =>
+                Locale.GetStringAndFormat(
+                    "track_setup_resource_tab_overwrite_warning",
+                    fileList),
+                Locale.GetString(
+                    "track_setup_resource_tab_overwrite_confirm"),
+                Locale.GetString(
+                    "track_setup_resource_tab_overwrite_cancel"),
+                () =>
                 {
                     StartCopy(pairs);
                 });
@@ -163,8 +179,11 @@ public class TrackSetupPanel : MonoBehaviour
             catch (Exception e)
             {
                 messageDialog.Show(
-                    $"An error occurred when copying {pair.Item1} to {pair.Item2}:\n\n"
-                    + e.Message);
+                    Locale.GetStringAndFormat(
+                        "track_setup_resource_tab_import_error_format",
+                        pair.Item1,
+                        pair.Item2,
+                        e.Message));
                 break;
             }
         }
@@ -289,13 +308,21 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDeleteTrackButtonClick()
     {
         confirmDialog.Show(
-            $"This will permanently delete \"{EditorContext.trackFolder}\" and every file in it. Continue?",
-            "delete",
-            "cancel",
+            Locale.GetStringAndFormat(
+                "track_setup_metadata_tab_delete_track_confirmation",
+                EditorContext.trackFolder),
+            Locale.GetString(
+                "track_setup_metadata_tab_delete_track_confirm"),
+            Locale.GetString(
+                "track_setup_metadata_tab_delete_track_cancel"),
             () =>
             {
-                Directory.Delete(EditorContext.trackFolder, recursive: true);
-                GetComponentInChildren<CustomTransitionFromTrackSetupPanel>().ForceTransition();
+                Directory.Delete(EditorContext.trackFolder,
+                    recursive: true);
+                SelectTrackPanel.SetTrackListDirty();
+                GetComponentInChildren<
+                    CustomTransitionFromTrackSetupPanel>().
+                ForceTransition();
             });
     }
 
@@ -315,6 +342,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_Dropdown backgroundImage;
     public TMP_Dropdown backgroundVideo;
     public TMP_InputField bgaOffset;
+    public Toggle waitForEndOfBga;
     public TMP_InputField firstBeatOffset;
     public TMP_InputField initialBpm;
     public TMP_InputField bps;
@@ -354,7 +382,18 @@ public class TrackSetupPanel : MonoBehaviour
         PatternMetadata m = selectedPattern.patternMetadata;
         patternName.SetTextWithoutNotify(m.patternName);
         patternAuthor.SetTextWithoutNotify(m.author);
+        controlScheme.options.Clear();
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_touch")));
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_keys")));
+        controlScheme.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "track_setup_patterns_tab_control_scheme_km")));
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
+        controlScheme.RefreshShownValue();
         patternLevel.SetTextWithoutNotify(m.level.ToString());
 
         UIUtils.MemoryToDropdown(patternBackingTrack,
@@ -364,6 +403,7 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.MemoryToDropdown(backgroundVideo,
             m.bga, videoFilesCache);
         bgaOffset.SetTextWithoutNotify(m.bgaOffset.ToString());
+        waitForEndOfBga.SetIsOnWithoutNotify(m.waitForEndOfBga);
 
         firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
         initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
@@ -423,7 +463,8 @@ public class TrackSetupPanel : MonoBehaviour
             ref m.bga, backgroundVideo, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
             ref m.bgaOffset, bgaOffset.text, ref madeChange);
-
+        UIUtils.UpdateMetadataInMemory(
+            ref m.waitForEndOfBga, waitForEndOfBga.isOn, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
             ref m.firstBeatOffset, firstBeatOffset.text,
             ref madeChange);

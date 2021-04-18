@@ -54,8 +54,11 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            messageDialog.Show($"An error occurred when " +
-                $"creating {newDir}:\n\n{e.Message}");
+            messageDialog.Show(
+                Locale.GetStringAndFormat(
+                    "new_track_error_format",
+                    newDir,
+                    e.Message));
             return;
         }
 
@@ -68,12 +71,14 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            messageDialog.Show($"An error occurred when " +
-                $"writing to {filename}:\n\n{e.Message}");
+            messageDialog.Show(Locale.GetStringAndFormat(
+                "new_track_error_format",
+                    filename,
+                    e.Message));
             return;
         }
 
-        BuildTrackList();
+        SetTrackListDirty();
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

@@ -602,10 +602,8 @@ public class NoteAppearance : MonoBehaviour,
         else
         {
             int extensionIndex = Game.Scan - scanRef.scanNumber - 1;
-            if (extensionIndex > holdExtensions.Count - 1)
-            {
-                extensionIndex = holdExtensions.Count - 1;
-            }
+            extensionIndex = Mathf.Clamp(extensionIndex,
+                0, holdExtensions.Count - 1);
             return holdExtensions[extensionIndex]
                 .ongoingTrailEnd.position;
         }

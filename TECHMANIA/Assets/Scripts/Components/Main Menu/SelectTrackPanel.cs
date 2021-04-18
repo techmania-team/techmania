@@ -22,6 +22,11 @@ public class SelectTrackPanel : MonoBehaviour
     protected static List<TrackInFolder> allTracks;
     // Cached
     protected static List<ErrorInTrack> allTracksWithError;
+    protected static bool trackListDirty;
+    public static void SetTrackListDirty()
+    {
+        trackListDirty = true;
+    }
 
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
@@ -82,6 +87,7 @@ public class SelectTrackPanel : MonoBehaviour
             return string.Compare(t1.track.trackMetadata.title,
                 t2.track.trackMetadata.title);
         });
+        trackListDirty = false;
     }
 
     protected void Refresh()
@@ -96,7 +102,9 @@ public class SelectTrackPanel : MonoBehaviour
             Destroy(o);
         }
 
-        if (allTracks == null || allTracksWithError == null)
+        if (trackListDirty || 
+            allTracks == null || 
+            allTracksWithError == null)
         {
             BuildTrackList();
         }
@@ -137,7 +145,10 @@ public class SelectTrackPanel : MonoBehaviour
             allTracksWithError)
         {
             GameObject card = null;
-            string message = $"An error occurred when loading {error.trackFile}:\n\n{error.message}";
+            string message = Locale.GetStringAndFormat(
+                "select_track_error_format",
+                error.trackFile,
+                error.message);
 
             // Instantiate card.
             card = Instantiate(errorCardTemplate, 

@@ -76,7 +76,8 @@ public class KeysoundSideSheet : MonoBehaviour
         string upcoming = UpcomingKeysound();
         if (upcoming == "")
         {
-            upcoming = "(None)";
+            upcoming = Locale.GetString(
+                "pattern_panel_keysounds_upcoming_none");
         }
         upcomingKeysoundDisplay.text = upcoming;
     }

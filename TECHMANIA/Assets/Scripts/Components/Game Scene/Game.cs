@@ -601,11 +601,13 @@ public class Game : MonoBehaviour
         switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
-                feverInstruction.text = "TOUCH";
+                feverInstruction.text = Locale.GetString(
+                    "game_fever_instruction_touch");
                 break;
             case ControlScheme.Keys:
             case ControlScheme.KM:
-                feverInstruction.text = "PRESS SPACE";
+                feverInstruction.text = Locale.GetString(
+                    "game_fever_instruction_keys_km");
                 break;
         }
         ongoingNotes = new Dictionary<NoteObject, Judgement>();
@@ -699,7 +701,8 @@ public class Game : MonoBehaviour
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 backingTrackClip.length);
         }
-        if (videoPlayer.url != null)
+        if (videoPlayer.url != null &&
+            GameSetup.pattern.patternMetadata.waitForEndOfBga)
         {
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 (float)GameSetup.pattern.patternMetadata.bgaOffset +
@@ -736,6 +739,7 @@ public class Game : MonoBehaviour
                 noteEndTime);
         }
 
+        Debug.Log("Pattern length is " + endOfPatternBaseTime);
         float maxPulse = GameSetup.pattern.TimeToPulse(
             endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
@@ -824,27 +828,30 @@ public class Game : MonoBehaviour
         headAppearance.DrawRepeatHeadBeforeRepeatNotes();
         if (notesToManage.Count > 0)
         {
+            int headScan = head.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
+
             NoteObject lastRepeatNote = notesToManage[0];
+            int lastScan = lastRepeatNote.note.GetScanNumber(
+                GameSetup.pattern.patternMetadata.bps);
             int lastRepeatNotePulse = lastRepeatNote.note.pulse;
             if (lastRepeatNote.note is HoldNote)
             {
                 lastRepeatNotePulse +=
                     (lastRepeatNote.note as HoldNote).duration;
+
+                lastScan = lastRepeatNotePulse / PulsesPerScan;
+                if (lastRepeatNotePulse % PulsesPerScan == 0)
+                {
+                    lastScan--;
+                }
             }
             headAppearance.DrawRepeatPathTo(lastRepeatNotePulse,
                 positionEndOfScanOutOfBounds: 
-                !lastRepeatNote.note.endOfScan);
+                headScan != lastScan);
 
             // Create path extensions if the head and last
             // note are in different scans.
-            int headScan = head.note.GetScanNumber(
-                GameSetup.pattern.patternMetadata.bps);
-            int lastScan = lastRepeatNote.note.GetScanNumber(
-                GameSetup.pattern.patternMetadata.bps);
-            if (lastRepeatNote.note is HoldNote)
-            {
-                lastScan = lastRepeatNotePulse / PulsesPerScan;
-            }
             for (int crossedScan = headScan + 1;
                 crossedScan <= lastScan;
                 crossedScan++)
@@ -1364,7 +1371,8 @@ public class Game : MonoBehaviour
             feverTimer = null;
             feverState = FeverState.Idle;
             int feverBonus = score.FeverOff();
-            feverBonusText.text = "FEVER BONUS   +" + feverBonus;
+            feverBonusText.text = Locale.GetStringAndFormat(
+                "game_fever_bonus_text", feverBonus);
             feverBonusAnimator.SetTrigger("Show");
         }
     }
@@ -1452,7 +1460,15 @@ public class Game : MonoBehaviour
             {
                 NoteObject n = touchReceiver
                     .GetComponentInParent<NoteObject>();
-                if (ongoingNotes.ContainsKey(n))
+                NoteObject noteToCheck = n;
+                if (n.note.type == NoteType.RepeatHead ||
+                    n.note.type == NoteType.RepeatHeadHold)
+                {
+                    noteToCheck = n.GetComponent<NoteAppearance>()
+                        .GetFirstUnresolvedRepeatNote();
+                }
+
+                if (ongoingNotes.ContainsKey(noteToCheck))
                 {
                     hitOngoingNote = true;
                     // No need to check for empty touch receiver because
@@ -1474,13 +1490,7 @@ public class Game : MonoBehaviour
                         ignoreNewlyHitNote = true;
                     }
                 }
-                NoteObject noteToCheck = n;
-                if (n.note.type == NoteType.RepeatHead ||
-                    n.note.type == NoteType.RepeatHeadHold)
-                {
-                    noteToCheck = n.GetComponent<NoteAppearance>()
-                        .GetFirstUnresolvedRepeatNote();
-                }
+                
                 float correctTime = noteToCheck.note.time
                     + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;

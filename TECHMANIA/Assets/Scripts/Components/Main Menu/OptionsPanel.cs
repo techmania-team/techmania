@@ -26,6 +26,8 @@ public class OptionsPanel : MonoBehaviour
     public AudioMixer audioMixer;
 
     [Header("Appearance")]
+    public TMP_Dropdown languageDropdown;
+    public TextAsset stringTable;
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
 
@@ -43,6 +45,9 @@ public class OptionsPanel : MonoBehaviour
             .GetComponentInChildren<OptionsPanel>(
             includeInactive: true);
         instance.LoadOrCreateOptions();
+
+        Locale.Initialize(instance.stringTable);
+        Locale.SetLocale(Options.instance.locale);
         Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioBufferSize();
         instance.ApplyVolume();
@@ -93,6 +98,8 @@ public class OptionsPanel : MonoBehaviour
 
     private void MemoryToUI()
     {
+        MemoryToLocalizedUI();
+
         // Graphics
 
         resolutionDropdown.ClearOptions();
@@ -111,17 +118,7 @@ public class OptionsPanel : MonoBehaviour
             resolutionDropdown.SetValueWithoutNotify(1);
         }
         resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
-
-        fullscreenDropdown.ClearOptions();
-        foreach (FullScreenMode m in
-            System.Enum.GetValues(typeof(FullScreenMode)))
-        {
-            fullscreenDropdown.options.Add(
-                new TMP_Dropdown.OptionData(m.ToString()));
-        }
-        fullscreenDropdown.SetValueWithoutNotify(1);
-        fullscreenDropdown.SetValueWithoutNotify(
-            (int)Options.instance.fullScreenMode);
+        resolutionDropdown.RefreshShownValue();
 
         vSyncToggle.SetIsOnWithoutNotify(Options.instance.vSync);
 
@@ -143,6 +140,19 @@ public class OptionsPanel : MonoBehaviour
 
         // Appearance
 
+        languageDropdown.ClearOptions();
+        foreach (KeyValuePair<string, string> pair in
+            Locale.GetLocaleToLanguageName())
+        {
+            languageDropdown.options.Add(new TMP_Dropdown.OptionData(
+                pair.Value));
+            if (pair.Key == Options.instance.locale)
+            {
+                languageDropdown.SetValueWithoutNotify(
+                    languageDropdown.options.Count - 1);
+                languageDropdown.RefreshShownValue();
+            }
+        }
         showLoadingBarToggle.SetIsOnWithoutNotify(
             Options.instance.showLoadingBar);
         showFpsToggle.SetIsOnWithoutNotify(
@@ -151,6 +161,27 @@ public class OptionsPanel : MonoBehaviour
         // Miscellaneous
 
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
+    }
+
+    // The portion of MemoryToUI that should respond to locale change.
+    private void MemoryToLocalizedUI()
+    {
+        fullscreenDropdown.ClearOptions();
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_exclusive_fullscreen")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_fullscreen_window")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_maximized_window")));
+        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
+            Locale.GetString(
+                "options_fullscreen_mode_windowed")));
+        fullscreenDropdown.SetValueWithoutNotify(
+            (int)Options.instance.fullScreenMode);
+        fullscreenDropdown.RefreshShownValue();
     }
 
     #region Graphics
@@ -252,6 +283,22 @@ public class OptionsPanel : MonoBehaviour
     #endregion
 
     #region Appearance
+    public void OnLanguageChanged(int value)
+    {
+        foreach (KeyValuePair<string, string> pair in
+            Locale.GetLocaleToLanguageName())
+        {
+            if (pair.Value == languageDropdown.options[value].text)
+            {
+                Options.instance.locale = pair.Key;
+                Locale.SetLocale(Options.instance.locale);
+                break;
+            }
+        }
+
+        MemoryToLocalizedUI();
+    }
+
     public void OnAppearanceOptionsChanged()
     {
         Options.instance.showLoadingBar = showLoadingBarToggle.isOn;

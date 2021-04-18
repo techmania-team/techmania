@@ -38,6 +38,7 @@ public class Options : OptionsBase
 
     // Appearance
 
+    public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public string noteSkin;
@@ -76,6 +77,7 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
+        locale = Locale.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
         noteSkin = "Default";
@@ -147,6 +149,7 @@ public class EditorOptions
     // Appearance
 
     public bool showKeysounds;
+    public bool keepScanlineInView;
 
     // Editing
 
@@ -165,6 +168,7 @@ public class EditorOptions
     public EditorOptions()
     {
         showKeysounds = true;
+        keepScanlineInView = true;
 
         applyKeysoundToSelection = false;
         applyNoteTypeToSelection = false;

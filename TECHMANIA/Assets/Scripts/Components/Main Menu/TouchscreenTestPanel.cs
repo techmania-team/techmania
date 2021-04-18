@@ -48,8 +48,11 @@ public class TouchscreenTestPanel : MonoBehaviour
                             fingerIndicator, transform);
                         indicator.GetComponent<RectTransform>()
                             .anchoredPosition = TouchPositionToAnchoredPosition(t.position);
-                        indicator.GetComponentInChildren<TextMeshProUGUI>()
-                            .text = "Finger #" + t.fingerId;
+                        indicator.GetComponentInChildren
+                            <TextMeshProUGUI>()
+                            .text = Locale.GetStringAndFormat(
+                                "touchscreen_test_finger_indicator",
+                                t.fingerId);
                         fingerIdToIndicator.Add(t.fingerId, indicator);
                     }
                     break;
