@@ -13,10 +13,16 @@ public class UIUtils
     }
 
     #region ClampInputField
-    public static void ClampInputField(TMP_InputField field, double min, double max)
+    public static void ClampInputField(TMP_InputField field,
+        double min, double max)
     {
-        double value = double.Parse(field.text);
+        double value = 0;
         bool clamped = false;
+        if (!double.TryParse(field.text, out value))
+        {
+            clamped = true;
+        }
+        
         if (value < min)
         {
             clamped = true;
@@ -34,10 +40,16 @@ public class UIUtils
         }
     }
 
-    public static void ClampInputField(TMP_InputField field, int min, int max)
+    public static void ClampInputField(TMP_InputField field,
+        int min, int max)
     {
-        int value = int.Parse(field.text);
+        int value = 0;
         bool clamped = false;
+        if (!int.TryParse(field.text, out value))
+        {
+            clamped = true;
+        }
+
         if (value < min)
         {
             clamped = true;

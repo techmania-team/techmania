@@ -364,7 +364,8 @@ from the start time to the end time (both in seconds).
 Set both start and end to 0 to play the entire file.","当玩家选择谱面时，预览曲将会在开始时间和
 结束时间之间循环播放（单位均为秒）。
 
-如果开始、结束时间都是0，将播放预览曲的全部内容。","當玩家選擇譜面時，預覽歌曲將會在開始時間和結束時間之間循環播放
+如果开始、结束时间都是0，将播放预览曲的全部内容。","當玩家選擇譜面時，預覽歌曲將會在開始時間和
+結束時間之間循環播放
 （單位均為秒）。
 
 如果開始、結束時間都是 0 ，降播放預覽歌曲全部的內容。","譜面選択画面でプレビュー音楽が開始時点から
@@ -411,7 +412,8 @@ BGA 오프셋과 시작 오프셋의 기준은 이 파일의
 this many seconds after the backing track
 starts. Can be negative.","如果指定了BGA，它将于背景音乐播放到
 这一时间点（单位为秒）时开始播放。
-可以是负数。","如果指定了 BGA，它將於背景音樂播放到這一時間點（單位為秒）時開始播放。
+可以是负数。","如果指定了 BGA，它將於背景音樂播放到
+這一時間點（單位為秒）時開始播放。
 可以是負數。","BGAが指定されている場合、背景音楽が
 再生された後、BGAオフセットだけの時間が
 過ぎてからBGAが再生されます。（単位：秒、負数可）","BGA를 지정하면, 배경 음악이 시작되고
@@ -646,7 +648,7 @@ bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_
 ,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
 ,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目の小説の前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番目のトラックの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは一番最後のトラックの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは63番目のトラックの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,音符不能和其他音符位於同一位置。,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_chain_note_at_same_pulse,No two Chain Notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,鎖鏈音符不能位於同一個時間點,二つのチェーン型ノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
 ,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by Hold Notes.,音符不能被其他长按音符遮盖。,音符不能被其他長按音符蓋過,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
