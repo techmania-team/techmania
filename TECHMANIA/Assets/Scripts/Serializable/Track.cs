@@ -47,6 +47,13 @@ public enum NoteType
     Repeat,
     RepeatHold
 }
+
+[Serializable]
+public enum CurveType
+{
+    Bezier = 0,
+    BSpline = 1
+}
 #endregion
 
 [Serializable]
@@ -341,7 +348,7 @@ public class Note
         endOfScan = false;
     }
 
-    public bool IsExtended()
+    public virtual bool IsExtended()
     {
         if (volume != defaultVolume) return true;
         if (pan != defaultPan) return true;
@@ -516,6 +523,8 @@ public class HoldNote : Note
 
 public class DragNote : Note
 {
+    public CurveType curveType;
+
     // There must be at least 2 nodes, with nodes[0]
     // describing the note head.
     // controlBefore of the first node and controlAfter
@@ -529,6 +538,7 @@ public class DragNote : Note
 
     public DragNote()
     {
+        curveType = CurveType.Bezier;
         nodes = new List<DragNode>();
     }
 
@@ -537,11 +547,38 @@ public class DragNote : Note
         return (int)nodes[nodes.Count - 1].anchor.pulse;
     }
 
+    #region Interpolation
     // Returns a list of points on the bezier curve defined by
     // this note. All points are relative to the note head.
     public List<FloatPoint> Interpolate()
     {
         List<FloatPoint> result = new List<FloatPoint>();
+        if (nodes.Count == 2)
+        {
+            InterpolateAsLine(result);
+            return result;
+        }
+
+        switch (curveType)
+        {
+            case CurveType.Bezier:
+                InterpolateAsBezierCurve(result);
+                break;
+            case CurveType.BSpline:
+                InterpolateAsBSpline(result);
+                break;
+        }
+        return result;
+    }
+
+    private void InterpolateAsLine(List<FloatPoint> result)
+    {
+        result.Add(nodes[0].anchor);
+        result.Add(nodes[1].anchor);
+    }
+
+    private void InterpolateAsBezierCurve(List<FloatPoint> result)
+    {
         result.Add(nodes[0].anchor);
         const int numSteps = 50;
         for (int i = 0; i < nodes.Count - 1; i++)
@@ -565,14 +602,68 @@ public class DragNote : Note
                     coeff3 * p3);
             }
         }
+    }
 
-        return result;
+    private void InterpolateAsBSpline(List<FloatPoint> result)
+    {
+        result.Add(nodes[0].anchor);
+        const int numSteps = 10;
+        Func<int, int> clampIndex = (int index) =>
+        {
+            if (index <= 0) return 0;
+            if (index >= nodes.Count - 1) return nodes.Count - 1;
+            return index;
+        };
+        for (int i = -2; i < nodes.Count - 1; i++)
+        {
+            int index0 = clampIndex(i);
+            int index1 = clampIndex(i + 1);
+            int index2 = clampIndex(i + 2);
+            int index3 = clampIndex(i + 3);
+            FloatPoint p0 = nodes[index0].anchor;
+            FloatPoint p1 = nodes[index1].anchor;
+            FloatPoint p2 = nodes[index2].anchor;
+            FloatPoint p3 = nodes[index3].anchor;
+            for (int step = 1; step <= numSteps; step++)
+            {
+                float t = (float)step / numSteps;
+                float tSquared = t * t;
+                float tCubed = tSquared * t;
+
+                float coeff0 = -tCubed + 3f * tSquared - 3f * t + 1f;
+                float coeff1 = 3f * tCubed - 6f * tSquared + 4f;
+                float coeff2 = -3f * tCubed + 3f * tSquared + 3f * t + 1f;
+                float coeff3 = tCubed;
+
+                result.Add((coeff0 * p0 +
+                    coeff1 * p1 +
+                    coeff2 * p2 +
+                    coeff3 * p3) / 6f);
+            }
+        }
+    }
+    #endregion
+
+    public override bool IsExtended()
+    {
+        if (volume != defaultVolume) return true;
+        if (pan != defaultPan) return true;
+        if (curveType != CurveType.Bezier) return true;
+        return false;
     }
 
     public new PackedDragNote Pack()
     {
         PackedDragNote packed = new PackedDragNote();
-        packed.packedNote = base.Pack();
+        if (IsExtended())
+        {
+            // Enums will be formatted as strings.
+            packed.packedNote = $"E|{type}|{pulse}|{lane}|{volume}|{pan}|{(int)curveType}|{sound}";
+        }
+        else
+        {
+            packed.packedNote = $"{type}|{pulse}|{lane}|{sound}";
+        }
         foreach (DragNode node in nodes)
         {
             packed.packedNodes.Add(node.Pack());
@@ -582,18 +673,38 @@ public class DragNote : Note
 
     public static DragNote Unpack(PackedDragNote packed)
     {
-        Note unpackedNote = Note.Unpack(packed.packedNote);
-        DragNote dragNote = new DragNote()
+        char[] delim = new char[] { '|' };
+        // Beware that the "sound" portion may contain |.
+        string[] splits = packed.packedNote.Split(delim, 2);
+        DragNote dragNote;
+        // Extended?
+        if (splits[0] == "E")
         {
-            type = unpackedNote.type,
-            pulse = unpackedNote.pulse,
-            lane = unpackedNote.lane,
-            volume = unpackedNote.volume,
-            pan = unpackedNote.pan,
-            endOfScan = unpackedNote.endOfScan,
-            sound = unpackedNote.sound,
-            nodes = new List<DragNode>()
-        };
+            splits = packed.packedNote.Split(delim, 8);
+            dragNote = new DragNote()
+            {
+                pulse = int.Parse(splits[2]),
+                lane = int.Parse(splits[3]),
+                volume = float.Parse(splits[4]),
+                pan = float.Parse(splits[5]),
+                curveType = (CurveType)int.Parse(splits[6]),
+                sound = splits[7]
+            };
+        }
+        else
+        {
+            splits = packed.packedNote.Split(delim, 4);
+            dragNote = new DragNote()
+            {
+                pulse = int.Parse(splits[1]),
+                lane = int.Parse(splits[2]),
+                sound = splits[3]
+            };
+        }
+
+        dragNote.type = NoteType.Drag;
+        dragNote.endOfScan = false;
+        dragNote.nodes = new List<DragNode>();
         foreach (string packedNode in packed.packedNodes)
         {
             dragNote.nodes.Add(DragNode.Unpack(packedNode));
@@ -671,6 +782,12 @@ public class FloatPoint
     {
         return new FloatPoint(coeff * point.pulse,
             coeff * point.lane);
+    }
+
+    public static FloatPoint operator /(FloatPoint point, float coeff)
+    {
+        return new FloatPoint(point.pulse / coeff,
+            point.lane / coeff);
     }
 }
 
