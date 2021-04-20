@@ -436,7 +436,7 @@ public class PatternPanel : MonoBehaviour
             case NoteType.Drag:
                 AddDragNote(n.pulse, n.lane,
                     (n as DragNote).nodes, n.sound,
-                    n.volume, n.pan, n.endOfScan);
+                    n.volume, n.pan, (n as DragNote).curveType);
                 break;
         }
     }
@@ -1132,7 +1132,7 @@ public class PatternPanel : MonoBehaviour
                     DeleteNote(o);
                     newObject = AddDragNote(pulse, lane,
                         nodes: null, sound,
-                        volume, pan, endOfScan);
+                        volume, pan);
                     EditorContext.RecordAddedNote(
                         GetNoteFromGameObject(newObject));
                     break;
@@ -1444,7 +1444,7 @@ public class PatternPanel : MonoBehaviour
                             movedNote.sound,
                             movedNote.volume,
                             movedNote.pan,
-                            movedNote.endOfScan);
+                            (movedNote as DragNote).curveType);
                         break;
                 }
                 EditorContext.RecordAddedNote(
@@ -2923,7 +2923,7 @@ public class PatternPanel : MonoBehaviour
         List<DragNode> nodes, string sound,
         float volume = Note.defaultVolume,
         float pan = Note.defaultPan,
-        bool endOfScan = false)
+        CurveType curveType = CurveType.Bezier)
     {
         if (nodes == null)
         {
@@ -2952,7 +2952,7 @@ public class PatternPanel : MonoBehaviour
             nodes = nodes,
             volume = volume,
             pan = pan,
-            endOfScan = endOfScan
+            curveType = curveType
         };
         return FinishAddNote(n);
     }
@@ -3242,7 +3242,7 @@ public class PatternPanel : MonoBehaviour
                     newObject = AddDragNote(newPulse, n.lane,
                         (n as DragNote).nodes,
                         n.sound,
-                        n.volume, n.pan, n.endOfScan);
+                        n.volume, n.pan, (n as DragNote).curveType);
                     break;
             }
             EditorContext.RecordAddedNote(
