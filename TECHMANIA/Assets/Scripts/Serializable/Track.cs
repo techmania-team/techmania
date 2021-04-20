@@ -441,6 +441,7 @@ public class Note
             {
                 d.nodes.Add(node.Clone());
             }
+            d.curveType = (other as DragNote).curveType;
         }
     }
 
