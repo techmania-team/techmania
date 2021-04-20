@@ -1679,6 +1679,7 @@ public class PatternPanel : MonoBehaviour
     private DragNode draggedDragNode;
     private DragNode draggedDragNodeClone;
     private bool ctrlHeldOnAnchorBeginDrag;
+    private bool dragCurveIsBSpline;
     private Vector2 mousePositionRelativeToDraggedAnchor;
     private void OnAnchorClick(PointerEventData eventData)
     {
@@ -1739,17 +1740,18 @@ public class PatternPanel : MonoBehaviour
         GameObject anchor = eventData.pointerDrag;
         draggedAnchor = anchor
             .GetComponentInParent<DragNoteAnchor>().gameObject;
-        
+
+        DragNote dragNote = anchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
-        draggedDragNode = (anchor
-            .GetComponentInParent<NoteObject>().note as DragNote)
-            .nodes[anchorIndex];
+        draggedDragNode = dragNote.nodes[anchorIndex];
         draggedDragNodeClone = draggedDragNode.Clone();
 
         ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
             || Input.GetKey(KeyCode.RightControl);
-        if (ctrlHeldOnAnchorBeginDrag)
+        dragCurveIsBSpline = dragNote.curveType == CurveType.BSpline;
+        if (ctrlHeldOnAnchorBeginDrag && !dragCurveIsBSpline)
         {
             // Reset control points.
             mousePositionRelativeToDraggedAnchor = new Vector2();
@@ -1840,7 +1842,10 @@ public class PatternPanel : MonoBehaviour
 
         if (ctrlHeldOnAnchorBeginDrag)
         {
-            MoveControlPointsBeingReset(delta);
+            if (!dragCurveIsBSpline)
+            {
+                MoveControlPointsBeingReset(delta);
+            }
         }
         else
         {
@@ -1895,6 +1900,10 @@ public class PatternPanel : MonoBehaviour
         if (!ctrlHeldOnAnchorBeginDrag &&
             draggedAnchor.GetComponentInParent<DragNoteAnchor>()
                 .anchorIndex == 0)
+        {
+            return;
+        }
+        if (ctrlHeldOnAnchorBeginDrag && dragCurveIsBSpline)
         {
             return;
         }

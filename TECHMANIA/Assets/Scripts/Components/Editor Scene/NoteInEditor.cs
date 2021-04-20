@@ -80,6 +80,11 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             UpdateKeysoundVisibility;
     }
 
+    private Note GetNote()
+    {
+        return GetComponent<NoteObject>().note;
+    }
+
     public void UseHiddenSprite()
     {
         noteImage.GetComponent<Image>().sprite = hiddenSprite;
@@ -120,7 +125,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     public void UpdateEndOfScanIndicator()
     {
-        Note n = GetComponent<NoteObject>().note;
+        Note n = GetNote();
         bool showIndicator = n.endOfScan;
         if (showIndicator)
         {
@@ -152,10 +157,9 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     public void SetKeysoundText()
     {
-        NoteObject noteObject = GetComponent<NoteObject>();
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
             .text = UIUtils.StripAudioExtension(
-                noteObject.note.sound);
+                GetNote().sound);
     }
 
     private void Update()
@@ -556,6 +560,10 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         int index)
     {
         FloatPoint point = dragNode.GetControlPoint(index);
+        if ((GetNote() as DragNote).curveType == CurveType.BSpline)
+        {
+            point = new FloatPoint(0f, 0f);
+        }
         Vector2 position = new Vector2(
             point.pulse * PatternPanel.PulseWidth,
             -point.lane * PatternPanel.LaneHeight);

@@ -15,6 +15,8 @@ public class NoteDetailSideSheet : MonoBehaviour
     public Button previewButton;
     public GameObject endOfScanOptions;
     public Toggle endOfScanToggle;
+    public GameObject bSplineOptions;
+    public Toggle bSplineToggle;
     public PatternPanel patternPanel;
 
     private HashSet<GameObject> selection;
@@ -56,10 +58,11 @@ public class NoteDetailSideSheet : MonoBehaviour
             volumeSlider.SetValueWithoutNotify(notes[0].volume * 100f);
             panSlider.SetValueWithoutNotify(notes[0].pan * 100f);
         }
-        RefreshDisplays();
+        RefreshVolumeAndPanDisplay();
         previewButton.interactable = !multiple;
 
         bool allNotesOnScanDividers = true;
+        bool allNotesAreDragNotes = true;
         int pulsesPerScan = Pattern.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps;
         foreach (Note n in notes)
@@ -67,18 +70,35 @@ public class NoteDetailSideSheet : MonoBehaviour
             if (n.pulse % pulsesPerScan != 0)
             {
                 allNotesOnScanDividers = false;
-                break;
+            }
+            if (n.type != NoteType.Drag)
+            {
+                allNotesAreDragNotes = false;
             }
         }
-        endOfScanOptions.SetActive(allNotesOnScanDividers);
-        if (allNotesOnScanDividers)
+
+        if (allNotesAreDragNotes)
         {
+            bSplineOptions.SetActive(true);
+            bSplineToggle.SetIsOnWithoutNotify(
+                (notes[0] as DragNote).curveType == CurveType.BSpline);
+            endOfScanOptions.SetActive(false);
+        }
+        else if (allNotesOnScanDividers)
+        {
+            bSplineOptions.SetActive(false);
+            endOfScanOptions.SetActive(true);
             endOfScanToggle.SetIsOnWithoutNotify(notes[0].endOfScan);
+        }
+        else
+        {
+            bSplineOptions.SetActive(false);
+            endOfScanOptions.SetActive(false);
         }
     }
 
     // Assumes at least 1 note selected.
-    private void RefreshDisplays()
+    private void RefreshVolumeAndPanDisplay()
     {
         bool sameValue = true;
         float volume = notes[0].volume;
@@ -136,7 +156,7 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
         EditorContext.EndTransaction();
 
-        RefreshDisplays();
+        RefreshVolumeAndPanDisplay();
     }
 
     public void OnPanSliderEndEdit(float newValue)
@@ -152,7 +172,7 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
         EditorContext.EndTransaction();
 
-        RefreshDisplays();
+        RefreshVolumeAndPanDisplay();
     }
 
     public void OnPreviewButtonClick()
@@ -176,6 +196,28 @@ public class NoteDetailSideSheet : MonoBehaviour
         foreach (GameObject o in selection)
         {
             o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
+        }
+    }
+
+    public void OnBSplineToggleValueChanged(bool newValue)
+    {
+        EditorContext.BeginTransaction();
+        foreach (Note n in notes)
+        {
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            (n as DragNote).curveType = newValue ?
+                CurveType.BSpline : CurveType.Bezier;
+            op.noteAfterOp = n.Clone();
+        }
+        EditorContext.EndTransaction();
+
+        foreach (GameObject o in selection)
+        {
+            o.GetComponent<NoteInEditor>().ResetCurve();
+            o.GetComponent<NoteInEditor>().
+                ResetAllAnchorsAndControlPoints();
         }
     }
 }

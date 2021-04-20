@@ -479,6 +479,12 @@ instead of the next scan's beginning.","把这个音符绘制到前一扫描的�
 而不是下一個掃描的起點。","小節の最初ではなく、
 以前の小節の最後にノートを配置します。","이 노트를 마디의 시작 지점이 아닌 
 이전 마디의 끝 지점에 배치합니다."
+New to 0.6.,pattern_panel_note_details_bspline_label,B-spline,B-样条,,,
+New to 0.6.,pattern_panel_note_details_bspline_help,"Draw this drag note as a B-spline instead of a Bezier Curve.
+B-splines are smoother, but don't go through all anchors,
+and ignore all control points.","把这个拖拽音符绘制为B-样条而不是贝塞尔曲线。
+B-样条更为平滑，但是不经过所有的锚点，
+也不受控制点的影响。",,,
 ,pattern_panel_keysounds_title,Keysounds,按键音,按鍵音,ノート音,사운드
 ,pattern_panel_keysounds_upcoming_label,Upcoming:,下一个：,下一個按鍵音,次のノート音,다음 사운드:
 Shown when no keysound is selected.,pattern_panel_keysounds_upcoming_none,(None),（无）,(無),（なし）,(없음)
@@ -613,17 +619,19 @@ Ctrlを長押ししながら選択したノートを移します。この機能�
 선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
 Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
 ,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
-,pattern_panel_options_drag_control_help,"Drag notes are bezier curves controlled by anchors and control points.
+Updated in 0.6.,pattern_panel_options_drag_control_help,"Drag notes are bezier curves or B-splines controlled by anchors and control points.
 Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
 Click on the anchor receiver to add an anchor.
 Click and drag anchors and control points to move them.
 Right click to remove anchors and control points.
-Hold Ctrl, click and drag an anchor to reset its control points.","拖拽音符是由锚点和控制点所控制的贝塞尔曲线。
+Hold Ctrl, click and drag an anchor to reset its control points.
+When using B-spline, control points are hidden.","拖拽音符是由锚点和控制点所控制的贝塞尔曲线或者B-样条。
 选中一个拖拽音符可以显示其锚点和控制点，以及锚点接收线（音符中心的棕色曲线）。
 在锚点接收线上点击以增加锚点。
 用鼠标左键拖拽移动锚点和控制点。
 用鼠标右键点击可以删除锚点和控制点。
-按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
+按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。
+使用B-样条时，将不会显示控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
 選取一個拖動音符可以顯示它的錨點和控制點，以及錨點接收線（音符中心的棕色曲線）。
 點擊錨點接收線以增加錨點。
 用滑鼠左鍵拖曳移動錨點和控制點。
