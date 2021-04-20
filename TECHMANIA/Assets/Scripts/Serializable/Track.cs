@@ -614,7 +614,7 @@ public class DragNote : Note
             if (index >= nodes.Count - 1) return nodes.Count - 1;
             return index;
         };
-        for (int i = -2; i < nodes.Count - 1; i++)
+        for (int i = -2; i < nodes.Count - 2; i++)
         {
             int index0 = clampIndex(i);
             int index1 = clampIndex(i + 1);
