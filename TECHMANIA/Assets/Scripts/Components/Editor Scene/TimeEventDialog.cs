@@ -4,13 +4,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class BpmEventDialog : MonoBehaviour
+public class TimeEventDialog : MonoBehaviour
 {
-    public MaterialRadioButton changeRadioButton;
+    public MaterialRadioButton changeBpmButton;
     public TMP_InputField bpmInputField;
-    public MaterialRadioButton noChangeRadioButton;
+    public MaterialRadioButton dontChangeBpmButton;
+
+    public MaterialRadioButton stopTimeButton;
+    public TMP_InputField timeStopInputField;
+    public MaterialRadioButton dontStopTimeButton;
 
     private double? newBpm;
+    private double? newTimeStop;
     private UnityAction<double?> confirmCallback;
 
     public void Show(BpmEvent currentEvent,
@@ -34,8 +39,8 @@ public class BpmEventDialog : MonoBehaviour
 
     private void UpdateRadioButtons()
     {
-        changeRadioButton.SetIsOn(newBpm.HasValue);
-        noChangeRadioButton.SetIsOn(!newBpm.HasValue);
+        changeBpmButton.SetIsOn(newBpm.HasValue);
+        dontChangeBpmButton.SetIsOn(!newBpm.HasValue);
     }
 
     public void OnChangeRadioButtonClick()

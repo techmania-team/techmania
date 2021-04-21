@@ -7,7 +7,7 @@ public class Marker : MonoBehaviour
 {
     public TextMeshProUGUI scanBeatText;
     public TextMeshProUGUI timeText;
-    public TextMeshProUGUI bpmOrTimeStopText;
+    public TextMeshProUGUI timeEventText;
 
     [HideInInspector]
     public int pulse;
@@ -35,11 +35,11 @@ public class Marker : MonoBehaviour
 
     public void SetBpmText(double bpm)
     {
-        bpmOrTimeStopText.text = bpm.ToString();
+        timeEventText.text = bpm.ToString();
     }
 
     public void SetTimeStopText(double beats)
     {
-        bpmOrTimeStopText.text = beats.ToString();
+        timeEventText.text = beats.ToString();
     }
 }

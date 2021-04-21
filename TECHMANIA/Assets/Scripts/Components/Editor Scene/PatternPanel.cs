@@ -71,7 +71,7 @@ public class PatternPanel : MonoBehaviour
     public Slider scanlinePositionSlider;
     public Snackbar snackbar;
     public MessageDialog messageDialog;
-    public BpmEventDialog bpmEventDialog;
+    public TimeEventDialog timeEventDialog;
 
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
@@ -260,7 +260,7 @@ public class PatternPanel : MonoBehaviour
             UpdatePlayback();
         }
         if (messageDialog.gameObject.activeSelf ||
-            bpmEventDialog.gameObject.activeSelf ||
+            timeEventDialog.gameObject.activeSelf ||
             optionsTab.activeSelf)
         {
             return;
@@ -982,7 +982,7 @@ public class PatternPanel : MonoBehaviour
         beatSnapDividerDisplay.text = beatSnapDivisor.ToString();
     }
 
-    public void OnBpmEventButtonClick()
+    public void OnTimeEventButtonClick()
     {
         int scanlineIntPulse = (int)scanline.floatPulse;
         BpmEvent currentEvent = EditorContext.Pattern.bpmEvents.
@@ -990,7 +990,7 @@ public class PatternPanel : MonoBehaviour
         {
             return e.pulse == scanlineIntPulse;
         });
-        bpmEventDialog.Show(currentEvent, (double? newBpm) =>
+        timeEventDialog.Show(currentEvent, (double? newBpm) =>
         {
             if (currentEvent == null && newBpm == null)
             {

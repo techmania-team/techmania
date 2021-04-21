@@ -455,7 +455,7 @@ when snapping notes.","对齐音符时把每一拍
 划分成的份数。",對齊音符時把每一拍劃分成的份數。,"指定した値の間隔を保つよう、
 ノートをスナップさせます。","노트 이동 시 한 번에 지정한 박자 간격만큼
 움직이도록 위치를 맞춥니다."
-,pattern_panel_edit_tab_bpm_event_button,BPM Event,BPM事件,BPM 變更,BPM変更,템포 변경
+Changed in 0.6.,pattern_panel_edit_tab_time_event_button,Time Event,时间事件,BPM 變更,BPM変更,템포 변경
 ,pattern_panel_edit_tab_visible_lanes_label,Visible lanes,可见轨道数,可見音軌數,表示トラック数,표시 트랙 수
 ,pattern_panel_edit_tab_visible_lanes_help,Adjust vertical zoom.,调整每个轨道的高度。,調整每個軌道的高度,"表示トラック数だけトラックが見えるよう、
 縦方向ズームを調整します。","지정한 수만큼의 트랙이 한 화면에 들어오도록
@@ -686,8 +686,12 @@ You can continue to edit this pattern, but playback and preview will be disabled
 
 패턴 편집을 계속할 수 있으나, 재생 및 프리뷰 기능은 이용할 수 없습니다."
 ,,,,,,
-,bpm_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
-,bpm_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
-,bpm_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
-,bpm_event_dialog_ok_button,OK,确定,確定,OK,확인
-,bpm_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
+Key changed in 0.6.,time_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
+Key changed in 0.6.,time_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
+Key changed in 0.6.,time_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
+New in 0.6.,time_event_dialog_stop_time_button,stop time for,停止时间,,,
+New in 0.6.,time_event_dialog_stop_time_button_after_text_field,beats,（拍）,,,
+New in 0.6.,time_event_dialog_dont_stop_time_button,don't stop time,不停止时间,,,
+New in 0.6.,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,,,
+Key changed in 0.6.,time_event_dialog_ok_button,OK,确定,確定,OK,확인
+Key changed in 0.6.,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
