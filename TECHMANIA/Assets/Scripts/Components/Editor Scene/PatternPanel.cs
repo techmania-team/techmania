@@ -30,6 +30,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject scanMarkerInHeaderTemplate;
     public GameObject beatMarkerInHeaderTemplate;
     public GameObject bpmMarkerTemplate;
+    public GameObject timeStopMarkerTemplate;
     public Transform markerContainer;
     public GameObject scanMarkerTemplate;
     public GameObject beatMarkerTemplate;
@@ -2204,12 +2205,6 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Spawning
-    private enum MarkerPriority
-    {
-        Bpm,
-        Other
-    }
-
     private void DestroyAndRespawnAllMarkers()
     {
         for (int i = 0; i < markerInHeaderContainer.childCount; i++)
@@ -2219,6 +2214,7 @@ public class PatternPanel : MonoBehaviour
             if (child == scanMarkerInHeaderTemplate) continue;
             if (child == beatMarkerInHeaderTemplate) continue;
             if (child == bpmMarkerTemplate) continue;
+            if (child == timeStopMarkerTemplate) continue;
             Destroy(child);
         }
         for (int i = 0; i < markerContainer.childCount; i++)
@@ -2232,12 +2228,6 @@ public class PatternPanel : MonoBehaviour
 
         EditorContext.Pattern.PrepareForTimeCalculation();
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        // BPM markers in the header need to be drawn on top of
-        // other markers, so we sort them. No need to do this for
-        // markers in the workspace.
-        List<KeyValuePair<Transform, MarkerPriority>> 
-            allMarkersInHeader =
-            new List<KeyValuePair<Transform, MarkerPriority>>();
 
         for (int scan = 0; scan < numScans; scan++)
         {
@@ -2256,10 +2246,6 @@ public class PatternPanel : MonoBehaviour
             m = marker.GetComponent<Marker>();
             m.pulse = pulse;
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-
-            allMarkersInHeader.Add(new KeyValuePair<
-                Transform, MarkerPriority>(
-                markerInHeader.transform, MarkerPriority.Other));
 
             for (int beat = 1; beat < bps; beat++)
             {
@@ -2283,10 +2269,6 @@ public class PatternPanel : MonoBehaviour
                 m.pulse = pulse;
                 m.GetComponent<SelfPositionerInEditor>()
                     .Reposition();
-
-                allMarkersInHeader.Add(new KeyValuePair<
-                    Transform, MarkerPriority>(
-                    markerInHeader.transform, MarkerPriority.Other));
             }
         }
 
@@ -2299,28 +2281,6 @@ public class PatternPanel : MonoBehaviour
             m.pulse = e.pulse;
             m.SetBpmText(e.bpm);
             m.GetComponent<SelfPositionerInEditor>().Reposition();
-            allMarkersInHeader.Add(new KeyValuePair<
-                Transform, MarkerPriority>(
-                marker.transform, MarkerPriority.Bpm));
-        }
-
-        // Sort all markers in the header.
-        allMarkersInHeader.Sort((
-            KeyValuePair<Transform, MarkerPriority> p1,
-            KeyValuePair<Transform, MarkerPriority> p2) =>
-        {
-            float deltaX = p1.Key.position.x - p2.Key.position.x;
-            if (deltaX < 0) return -1;
-            if (deltaX > 0) return 1;
-            // At the same position, BPM markers should be
-            // drawn later.
-            if (p1.Value == MarkerPriority.Bpm) return 1;
-            if (p2.Value == MarkerPriority.Bpm) return -1;
-            return 0;
-        });
-        for (int i = 0; i < allMarkersInHeader.Count; i++)
-        {
-            allMarkersInHeader[i].Key.SetSiblingIndex(i);
         }
     }
 

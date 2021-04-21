@@ -43,21 +43,28 @@ public class SelfPositionerInEditor : MonoBehaviour
         float x = PatternPanel.ScanWidth * scan;
 
         float y = 0;
-        if (noteObject != null)
+        if (marker != null)
         {
-            y = -PatternPanel.LaneHeight * (noteObject.note.lane + 0.5f);
+            // Don't change y.
+            y = GetComponent<RectTransform>().anchoredPosition.y;
+        }
+        else if (scanline != null)
+        {
+            // y is 0.
+        }
+        else if (noteObject != null)
+        {
+            y = -PatternPanel.LaneHeight *
+                (noteObject.note.lane + 0.5f);
         }
 
         RectTransform rect = GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(x, y);
         if (noteObject != null)
         {
             rect.anchoredPosition = new Vector2(x, y);
             rect.sizeDelta = new Vector2(
                 PatternPanel.LaneHeight, PatternPanel.LaneHeight);
-        }
-        else
-        {
-            rect.anchoredPosition = new Vector2(x, 0f);
         }
     }
 }

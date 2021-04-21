@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Marker : MonoBehaviour
 {
+    public TextMeshProUGUI scanBeatText;
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI bpmOrTimeStopText;
+
     [HideInInspector]
     public int pulse;
 
@@ -25,17 +29,17 @@ public class Marker : MonoBehaviour
         int milliSecond = Mathf.FloorToInt(time * 1000f);
 
         string sign = negative ? "-" : "";
-        SetText($"{scan}-{beatInScan}\n{sign}{minute}:{second:D2}.{milliSecond:D3}");
+        scanBeatText.text = $"{scan}-{beatInScan}";
+        timeText.text = $"{sign}{minute}:{second:D2}.{milliSecond:D3}";
     }
 
     public void SetBpmText(double bpm)
     {
-        SetText($"BPM={bpm}");
+        bpmOrTimeStopText.text = bpm.ToString();
     }
 
-    private void SetText(string s)
+    public void SetTimeStopText(double beats)
     {
-        GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
-            .text = s;
+        bpmOrTimeStopText.text = beats.ToString();
     }
 }
