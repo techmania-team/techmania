@@ -56,17 +56,21 @@ public enum CurveType
 }
 #endregion
 
-[Serializable]
-public class BpmEvent
+public class TimeEvent
 {
     public int pulse;
-    public double bpm;
 #if UNITY_2020
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
     public float time;
+}
+
+[Serializable]
+public class BpmEvent : TimeEvent
+{
+    public double bpm;
 
     public BpmEvent Clone()
     {
@@ -74,6 +78,21 @@ public class BpmEvent
         {
             pulse = pulse,
             bpm = bpm
+        };
+    }
+}
+
+[Serializable]
+public class TimeStop : TimeEvent
+{
+    public int duration;  // In beats
+
+    public TimeStop Clone()
+    {
+        return new TimeStop()
+        {
+            pulse = pulse,
+            duration = duration
         };
     }
 }
@@ -170,6 +189,7 @@ public partial class Pattern
 {
     public PatternMetadata patternMetadata;
     public List<BpmEvent> bpmEvents;
+    public List<TimeStop> timeStops;
 
 #if UNITY_2020
     [NonSerialized]
@@ -195,6 +215,7 @@ public partial class Pattern
     {
         patternMetadata = new PatternMetadata();
         bpmEvents = new List<BpmEvent>();
+        timeStops = new List<TimeStop>();
         notes = new SortedSet<Note>(new NoteComparer());
     }
 

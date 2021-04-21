@@ -119,6 +119,8 @@ public partial class Pattern
     #endregion
 
     #region Timing
+    // TODO: take time stops into account.
+
     // Sort BPM events by pulse, then fill their time fields.
     // Enables CalculateTimeOfAllNotes, TimeToPulse and PulseToTime.
     public void PrepareForTimeCalculation()
