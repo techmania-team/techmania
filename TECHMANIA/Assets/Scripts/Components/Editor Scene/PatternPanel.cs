@@ -1623,11 +1623,16 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorReceiverClick(PointerEventData eventData,
         GameObject note)
     {
-        if (tool == Tool.Rectangle ||
-            eventData.button != PointerEventData.InputButton.Left)
+        if (tool == Tool.Rectangle)
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
+            return;
+        }
+
+        if (eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Do nothing.
             return;
         }
 

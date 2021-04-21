@@ -222,8 +222,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         resizeCursorState--;
         if (resizeCursorState <= 0)
         {
-            UnityEngine.Cursor.SetCursor(null,
-                Vector2.zero, CursorMode.Auto);
+            UIUtils.UseDefaultCursor();
         }
     }
 
@@ -274,8 +273,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     public void OnAnchorReceiverPointerExit()
     {
-        UnityEngine.Cursor.SetCursor(null,
-            Vector2.zero, CursorMode.Auto);
+        UIUtils.UseDefaultCursor();
     }
 
     public void OnAnchorReceiverClick(BaseEventData eventData)

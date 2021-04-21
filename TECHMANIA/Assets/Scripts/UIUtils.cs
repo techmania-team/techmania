@@ -245,4 +245,9 @@ public class UIUtils
         PointToward(self, selfPos, targetPos);
     }
     #endregion
+
+    public static void UseDefaultCursor()
+    {
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
 }
