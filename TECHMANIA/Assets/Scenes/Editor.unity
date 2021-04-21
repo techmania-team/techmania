@@ -20679,7 +20679,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -20719,6 +20719,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: FadeOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
@@ -28584,7 +28589,7 @@ MonoBehaviour:
   scanlinePositionSlider: {fileID: 1114461274}
   snackbar: {fileID: 5183661607719462379}
   messageDialog: {fileID: 8369197524032551023}
-  timeEventDialog: {fileID: 0}
+  timeEventDialog: {fileID: 1929698320}
 --- !u!1 &1282714421
 GameObject:
   m_ObjectHideFlags: 0
@@ -32236,7 +32241,7 @@ PrefabInstance:
     - target: {fileID: 532432800814719921, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: key
-      value: time_event_dialog_stop_time_button_suffix
+      value: time_event_dialog_stop_time_button_after_text_field
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481883, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}

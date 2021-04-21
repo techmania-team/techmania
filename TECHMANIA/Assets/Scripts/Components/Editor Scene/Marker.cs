@@ -38,8 +38,9 @@ public class Marker : MonoBehaviour
         timeEventText.text = bpm.ToString();
     }
 
-    public void SetTimeStopText(double beats)
+    public void SetTimeStopText(int pulses)
     {
-        timeEventText.text = beats.ToString();
+        float beats = (float)pulses / Pattern.pulsesPerBeat;
+        timeEventText.text = beats.ToString("G5");
     }
 }

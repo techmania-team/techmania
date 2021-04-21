@@ -999,15 +999,33 @@ public class PatternPanel : MonoBehaviour
         timeEventDialog.Show(currentBpmEvent, currentTimeStop,
             (double? newBpm, int? newTimeStopPulses) =>
         {
+            bool bpmEventChanged = true, timeStopChanged = true;
             if (currentBpmEvent == null && newBpm == null)
             {
-                // No change.
-                return;
+                bpmEventChanged = false;
             }
-            if (currentBpmEvent != null && newBpm.HasValue &&
+            if (currentBpmEvent != null && newBpm != null &&
                 currentBpmEvent.bpm == newBpm.Value)
             {
-                // No change.
+                bpmEventChanged = false;
+            }
+            if (newTimeStopPulses.HasValue &&
+                newTimeStopPulses.Value == 0)
+            {
+                newTimeStopPulses = null;
+            }
+            if (currentTimeStop == null && newTimeStopPulses == null)
+            {
+                timeStopChanged = false;
+            }
+            if (currentTimeStop != null && newTimeStopPulses != null
+                && currentTimeStop.duration == newTimeStopPulses.Value)
+            {
+                timeStopChanged = false;
+            }
+            bool anyChange = bpmEventChanged || timeStopChanged;
+            if (!anyChange)
+            {
                 return;
             }
 
@@ -1017,6 +1035,10 @@ public class PatternPanel : MonoBehaviour
             {
                 return e.pulse == scanlineIntPulse;
             });
+            EditorContext.Pattern.timeStops.RemoveAll((TimeStop t) =>
+            {
+                return t.pulse == scanlineIntPulse;
+            });
             // Add event if there is one.
             if (newBpm.HasValue)
             {
@@ -1024,6 +1046,14 @@ public class PatternPanel : MonoBehaviour
                 {
                     pulse = scanlineIntPulse,
                     bpm = newBpm.Value
+                });
+            }
+            if (newTimeStopPulses.HasValue)
+            {
+                EditorContext.Pattern.timeStops.Add(new TimeStop()
+                {
+                    pulse = scanlineIntPulse,
+                    duration = newTimeStopPulses.Value
                 });
             }
 
@@ -2287,6 +2317,17 @@ public class PatternPanel : MonoBehaviour
             Marker m = marker.GetComponent<Marker>();
             m.pulse = e.pulse;
             m.SetBpmText(e.bpm);
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+        }
+
+        foreach (TimeStop t in EditorContext.Pattern.timeStops)
+        {
+            GameObject marker = Instantiate(
+                timeStopMarkerTemplate, markerInHeaderContainer);
+            marker.SetActive(true);
+            Marker m = marker.GetComponent<Marker>();
+            m.pulse = t.pulse;
+            m.SetTimeStopText(t.duration);
             m.GetComponent<SelfPositionerInEditor>().Reposition();
         }
     }
