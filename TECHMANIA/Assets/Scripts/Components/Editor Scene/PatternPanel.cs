@@ -327,7 +327,6 @@ public class PatternPanel : MonoBehaviour
                             Debug.LogError("Note not found when trying to undo AddNote.");
                             break;
                         }
-                        selectedNoteObjects.Remove(optionsTab);
                         GameObject o = GetGameObjectFromNote(n);
                         selectedNoteObjects.Remove(o);
                         DeleteNote(o);
@@ -387,7 +386,6 @@ public class PatternPanel : MonoBehaviour
                             Debug.LogError("Note not found when trying to redo DeleteNote.");
                             break;
                         }
-                        selectedNoteObjects.Remove(optionsTab);
                         GameObject o = GetGameObjectFromNote(n);
                         selectedNoteObjects.Remove(o);
                         DeleteNote(o);
@@ -954,6 +952,8 @@ public class PatternPanel : MonoBehaviour
         selectedNoteObjects.Remove(o);
         DeleteNote(o);
         EditorContext.EndTransaction();
+
+        SelectionChanged?.Invoke(selectedNoteObjects);
     }
     #endregion
 
@@ -2434,6 +2434,7 @@ public class PatternPanel : MonoBehaviour
         dragNotes = new HashSet<NoteInEditor>();
         lastSelectedNoteWithoutShift = null;
         selectedNoteObjects = new HashSet<GameObject>();
+        SelectionChanged?.Invoke(selectedNoteObjects);
 
         foreach (Note n in EditorContext.Pattern.notes)
         {
@@ -3267,6 +3268,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.EndTransaction();
 
         selectedNoteObjects.Clear();
+        SelectionChanged?.Invoke(selectedNoteObjects);
     }
     #endregion
 

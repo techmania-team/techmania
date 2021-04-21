@@ -549,7 +549,7 @@ public class DragNote : Note
     }
 
     #region Interpolation
-    // Returns a list of points on the bezier curve defined by
+    // Returns a list of points on the curve defined by
     // this note. All points are relative to the note head.
     public List<FloatPoint> Interpolate()
     {
