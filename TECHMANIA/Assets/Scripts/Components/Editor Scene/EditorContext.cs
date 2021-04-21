@@ -13,7 +13,7 @@ public class EditOperation
         // - modifying pattern metadata
         Metadata,
         // Add, modify or delete.
-        BpmEvent,
+        TimeEvent,
         AddNote,
         DeleteNote,
         // Any field other than pulse and lane.
@@ -32,15 +32,21 @@ public class EditOperation
     // It's up to EditorContext to take appropriate snapshot
     // upon undo/redo.
 
-    // BpmEvent
+    // TimeEvent
 
     public List<BpmEvent> bpmEventsBeforeOp;
-    public void TakeBpmEventSnapshot()
+    public List<TimeStop> timeStopsBeforeOp;
+    public void TakeTimeEventSnapshot()
     {
         bpmEventsBeforeOp = new List<BpmEvent>();
+        timeStopsBeforeOp = new List<TimeStop>();
         foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
         {
             bpmEventsBeforeOp.Add(e.Clone());
+        }
+        foreach (TimeStop t in EditorContext.Pattern.timeStops)
+        {
+            timeStopsBeforeOp.Add(t.Clone());
         }
     }
     // It's up to EditorContext to clone BPM events upon undo/redo.
@@ -169,8 +175,8 @@ public class EditorContext : MonoBehaviour
             case EditOperation.Type.Metadata:
                 op.TakeTrackSnapshot();
                 break;
-            case EditOperation.Type.BpmEvent:
-                op.TakeBpmEventSnapshot();
+            case EditOperation.Type.TimeEvent:
+                op.TakeTimeEventSnapshot();
                 break;
         }
         return op;
@@ -190,10 +196,10 @@ public class EditorContext : MonoBehaviour
 
     // Call this shortcut before making any change to BPM events.
     // Afterwards there's no need to call anything else.
-    public static void PrepareToModifyBpmEvent()
+    public static void PrepareToModifyTimeEvent()
     {
         BeginTransaction();
-        BeginOperation(EditOperation.Type.BpmEvent);
+        BeginOperation(EditOperation.Type.TimeEvent);
         EndTransaction();
     }
 
@@ -291,18 +297,23 @@ public class EditorContext : MonoBehaviour
                             op.trackSnapsnotBeforeOp) as Track;
                     }
                     break;
-                case EditOperation.Type.BpmEvent:
+                case EditOperation.Type.TimeEvent:
                     {
                         EditOperation convertedOp =
                             new EditOperation();
                         convertedOp.type = op.type;
-                        convertedOp.TakeBpmEventSnapshot();
+                        convertedOp.TakeTimeEventSnapshot();
                         output.ops.Add(convertedOp);
 
                         Pattern.bpmEvents.Clear();
+                        Pattern.timeStops.Clear();
                         foreach (BpmEvent e in op.bpmEventsBeforeOp)
                         {
                             Pattern.bpmEvents.Add(e.Clone());
+                        }
+                        foreach (TimeStop t in op.timeStopsBeforeOp)
+                        {
+                            Pattern.timeStops.Add(t.Clone());
                         }
                     }
                     break;

@@ -1372,7 +1372,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1381,7 +1381,12 @@ PrefabInstance:
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnNoChangeRadioButtonClick
+      value: OnDontChangeBpmButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
@@ -1877,7 +1882,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1886,7 +1891,12 @@ PrefabInstance:
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnChangeRadioButtonClick
+      value: OnChangeBpmButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
@@ -7243,12 +7253,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -7262,12 +7272,22 @@ PrefabInstance:
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnBpmInputFieldSelect
+      value: OnTimeStopInputFieldSelect
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnBpmInputFieldEndEdit
+      value: OnTimeStopInputFieldEndEdit
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -26724,7 +26744,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -26733,7 +26753,12 @@ PrefabInstance:
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnNoChangeRadioButtonClick
+      value: OnDontStopTimeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
@@ -31400,12 +31425,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -31425,6 +31450,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnBpmInputFieldEndEdit
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
+        type: 3}
+      propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -32485,7 +32520,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1929698320}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -32494,7 +32529,12 @@ PrefabInstance:
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnChangeRadioButtonClick
+      value: OnStopTimeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TimeEventDialog, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3208107748900552353, guid: 50bc850747095204e822218d499ebab8,
         type: 3}
@@ -39892,7 +39932,7 @@ PrefabInstance:
     - target: {fileID: 4293786901056261330, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_text
-      value: "\u8868\u793A\u30C8\u30E9\u30C3\u30AF\u6570"
+      value: Visible lanes
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}

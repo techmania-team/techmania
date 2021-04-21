@@ -315,7 +315,7 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.Metadata:
                     // Do nothing.
                     break;
-                case EditOperation.Type.BpmEvent:
+                case EditOperation.Type.TimeEvent:
                     DestroyAndRespawnAllMarkers();
                     break;
                 case EditOperation.Type.AddNote:
@@ -368,7 +368,7 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.Metadata:
                     // Do nothing.
                     break;
-                case EditOperation.Type.BpmEvent:
+                case EditOperation.Type.TimeEvent:
                     DestroyAndRespawnAllMarkers();
                     break;
                 case EditOperation.Type.AddNote:
@@ -985,26 +985,33 @@ public class PatternPanel : MonoBehaviour
     public void OnTimeEventButtonClick()
     {
         int scanlineIntPulse = (int)scanline.floatPulse;
-        BpmEvent currentEvent = EditorContext.Pattern.bpmEvents.
+        BpmEvent currentBpmEvent = EditorContext.Pattern.bpmEvents.
             Find((BpmEvent e) =>
         {
             return e.pulse == scanlineIntPulse;
         });
-        timeEventDialog.Show(currentEvent, (double? newBpm) =>
+        TimeStop currentTimeStop = EditorContext.Pattern.timeStops.
+            Find((TimeStop t) =>
         {
-            if (currentEvent == null && newBpm == null)
+            return t.pulse == scanlineIntPulse;
+        });
+
+        timeEventDialog.Show(currentBpmEvent, currentTimeStop,
+            (double? newBpm, int? newTimeStopPulses) =>
+        {
+            if (currentBpmEvent == null && newBpm == null)
             {
                 // No change.
                 return;
             }
-            if (currentEvent != null && newBpm.HasValue &&
-                currentEvent.bpm == newBpm.Value)
+            if (currentBpmEvent != null && newBpm.HasValue &&
+                currentBpmEvent.bpm == newBpm.Value)
             {
                 // No change.
                 return;
             }
 
-            EditorContext.PrepareToModifyBpmEvent();
+            EditorContext.PrepareToModifyTimeEvent();
             // Delete event.
             EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
             {
