@@ -119,15 +119,21 @@ public partial class Pattern
     #endregion
 
     #region Timing
-    // TODO: take time stops into account.
-
     // Sort BPM events by pulse, then fill their time fields.
     // Enables CalculateTimeOfAllNotes, TimeToPulse and PulseToTime.
     public void PrepareForTimeCalculation()
     {
-        bpmEvents.Sort((BpmEvent e1, BpmEvent e2) =>
+        timeEvents = new List<TimeEvent>();
+        bpmEvents.ForEach(e => timeEvents.Add(e));
+        timeStops.ForEach(t => timeEvents.Add(t));
+        timeEvents.Sort((TimeEvent e1, TimeEvent e2) =>
         {
-            return e1.pulse - e2.pulse;
+            if (e1.pulse != e2.pulse)
+            {
+                return e1.pulse - e2.pulse;
+            }
+            if (e1 is BpmEvent) return -1;
+            return 1;
         });
 
         float currentBpm = (float)patternMetadata.initBpm;
@@ -143,15 +149,27 @@ public partial class Pattern
         // second / pulse = 60f / (pulsesPerBeat * currentBpm)
         float secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
 
-        foreach (BpmEvent e in bpmEvents)
+        foreach (TimeEvent e in timeEvents)
         {
             e.time = currentTime +
                 secondsPerPulse * (e.pulse - currentPulse);
 
-            currentBpm = (float)e.bpm;
-            currentTime = e.time;
+            if (e is BpmEvent)
+            {
+                currentTime = e.time;
+                currentBpm = (float)(e as BpmEvent).bpm;
+                secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
+            }
+            else if (e is TimeStop)
+            {
+                float durationInSeconds = (e as TimeStop).duration *
+                    secondsPerPulse;
+                currentTime = e.time + durationInSeconds;
+                (e as TimeStop).endTime = currentTime;
+                (e as TimeStop).bpmAtStart = currentBpm;
+            }
+
             currentPulse = e.pulse;
-            secondsPerPulse = 60f / (pulsesPerBeat * currentBpm);
         }
     }
 
@@ -190,17 +208,29 @@ public partial class Pattern
         float referenceTime = (float)patternMetadata.firstBeatOffset;
         int referencePulse = 0;
 
-        // Find the immediate BpmEvent before specified pulse.
-        for (int i = bpmEvents.Count - 1; i >= 0; i--)
+        // Find the immediate TimeEvent before specified pulse.
+        for (int i = timeEvents.Count - 1; i >= 0; i--)
         {
-            BpmEvent e = bpmEvents[i];
-            if (e.time <= time)
+            TimeEvent e = timeEvents[i];
+            if (e.time > time) continue;
+            if (e.time == time) return e.pulse;
+
+            if (e is BpmEvent)
             {
-                referenceBpm = (float)e.bpm;
+                referenceBpm = (float)(e as BpmEvent).bpm;
                 referenceTime = e.time;
-                referencePulse = e.pulse;
-                break;
             }
+            else if (e is TimeStop)
+            {
+                if ((e as TimeStop).endTime >= time)
+                {
+                    return e.pulse;
+                }
+                referenceBpm = (float)(e as TimeStop).bpmAtStart;
+                referenceTime = (e as TimeStop).endTime;
+            }
+            referencePulse = e.pulse;
+            break;
         }
 
         float secondsPerPulse = 60f / (pulsesPerBeat * referenceBpm);
@@ -216,17 +246,25 @@ public partial class Pattern
         float referenceTime = (float)patternMetadata.firstBeatOffset;
         int referencePulse = 0;
 
-        // Find the immediate BpmEvent before specified pulse.
-        for (int i = bpmEvents.Count - 1; i >= 0; i--)
+        // Find the immediate TimeEvent before specified pulse.
+        for (int i = timeEvents.Count - 1; i >= 0; i--)
         {
-            BpmEvent e = bpmEvents[i];
-            if (e.pulse <= pulse)
+            TimeEvent e = timeEvents[i];
+            if (e.pulse > pulse) continue;
+            if (e.pulse == pulse) return e.time;
+
+            if (e is BpmEvent)
             {
-                referenceBpm = (float)e.bpm;
+                referenceBpm = (float)(e as BpmEvent).bpm;
                 referenceTime = e.time;
-                referencePulse = e.pulse;
-                break;
             }
+            else if (e is TimeStop)
+            {
+                referenceBpm = (float)(e as TimeStop).bpmAtStart;
+                referenceTime = (e as TimeStop).endTime;
+            }
+            referencePulse = e.pulse;
+            break;
         }
 
         float secondsPerPulse = 60f / (pulsesPerBeat * referenceBpm);

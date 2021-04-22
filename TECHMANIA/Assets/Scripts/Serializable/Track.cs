@@ -87,6 +87,22 @@ public class TimeStop : TimeEvent
 {
     public int duration;  // In beats
 
+#if UNITY_2020
+    [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+    public float endTime;
+
+#if UNITY_2020
+    [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+    // The BPM at the time of this event, purely meant for
+    // simplifying time calculation.
+    public double bpmAtStart;
+
     public TimeStop Clone()
     {
         return new TimeStop()
@@ -197,6 +213,13 @@ public partial class Pattern
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
     public SortedSet<Note> notes;
+
+#if UNITY_2020
+    [NonSerialized]
+#else
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+    public List<TimeEvent> timeEvents;  // bpmEvents + timeStops
 
     // Only used in serialization and deserialization.
     public List<string> packedNotes;
