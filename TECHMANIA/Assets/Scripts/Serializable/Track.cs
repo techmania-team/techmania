@@ -589,7 +589,17 @@ public class DragNote : Note
 
     public int Duration()
     {
-        return (int)nodes[nodes.Count - 1].anchor.pulse;
+        if (curveType == CurveType.Bezier ||
+            nodes.Count == 2)
+        {
+            return (int)nodes[nodes.Count - 1].anchor.pulse;
+        }
+
+        // B-spline removes the last segment so we need a bit of
+        // interpolation here.
+        float p1 = nodes[nodes.Count - 2].anchor.pulse;
+        float p2 = nodes[nodes.Count - 1].anchor.pulse;
+        return (int)((p1 + p2 * 5f) / 6f);
     }
 
     #region Interpolation
