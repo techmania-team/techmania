@@ -251,6 +251,23 @@ public class SelectTrackPanel : MonoBehaviour
         trackList[currentLocation] = new List<TrackInFolder>();
         errorTrackList[currentLocation] = new List<ErrorInTrack>();
 
+        foreach (string file in Directory.EnumerateFiles(
+            currentLocation, "*.zip"))
+        {
+            // Attempt to unpack this archive.
+            builderProgress = Locale.GetStringAndFormat(
+                "select_track_unpacking_text", file);
+            try
+            {
+                UnpackZipFile(file);
+            }
+            catch (Exception ex)
+            {
+                // Log error and move on.
+                Debug.LogError(ex.ToString());
+            }
+        }
+
         foreach (string dir in Directory.EnumerateDirectories(
             currentLocation))
         {
@@ -306,6 +323,50 @@ public class SelectTrackPanel : MonoBehaviour
         {
             Debug.LogError(e.Error);
         }
+    }
+
+    private void UnpackZipFile(string zipFilename)
+    {
+        Debug.Log("Unpacking: " + zipFilename);
+
+        using (FileStream fileStream = File.OpenRead(zipFilename))
+        using (ICSharpCode.SharpZipLib.Zip.ZipFile zipFile = new
+            ICSharpCode.SharpZipLib.Zip.ZipFile(fileStream))
+        {
+            byte[] buffer = new byte[4096];  // Recommended length
+
+            foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
+                zipFile)
+            {
+                if (string.IsNullOrEmpty(
+                    Path.GetDirectoryName(entry.Name)))
+                {
+                    Debug.Log($"Ignoring due to not being in a folder: {entry.Name} in {zipFilename}");
+                    continue;
+                }
+
+                if (entry.IsDirectory)
+                {
+                    Debug.Log($"Ignoring empty folder: {entry.Name} in {zipFilename}");
+                    continue;
+                }
+
+                string unpackedFilename = Path.Combine(
+                    currentLocation, entry.Name);
+                Debug.Log($"Unpacking {entry.Name} in {zipFilename} to: {unpackedFilename}");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(
+                    unpackedFilename));
+                using var inputStream = zipFile.GetInputStream(entry);
+                using FileStream outputStream = File.Create(
+                    unpackedFilename);
+                ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
+                    inputStream, outputStream, buffer);
+            }
+        }
+
+        Debug.Log($"Unpack successful. Deleting: {zipFilename}");
+        File.Delete(zipFilename);
     }
     #endregion
 
