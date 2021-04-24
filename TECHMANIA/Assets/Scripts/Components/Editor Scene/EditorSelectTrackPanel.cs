@@ -24,7 +24,8 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     protected override void OnClickCard(GameObject o)
     {
         EditorContext.Reset();
-        EditorContext.trackPath = Path.Combine(cardToTrack[o].folder, Paths.kTrackFilename);
+        EditorContext.trackPath = Path.Combine(cardToTrack[o].folder, 
+            Paths.kTrackFilename);
         EditorContext.track = cardToTrack[o].track;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
             TransitionToPanel.Direction.Right);
@@ -47,7 +48,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         string filteredArtist = Paths.FilterString(artist);
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        string newDir = Path.Combine(currentPath,
+        string newDir = Path.Combine(currentLocation,
             $"{filteredArtist} - {filteredTitle} - {timestamp}");
         try
         {
@@ -79,7 +80,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        RemoveCachedListsAtCurrentPath();
+        RemoveCachedListsAtCurrentLocation();
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

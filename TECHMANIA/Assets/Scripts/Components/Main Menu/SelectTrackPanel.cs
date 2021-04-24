@@ -22,7 +22,7 @@ public class SelectTrackPanel : MonoBehaviour
         public string message;
     }
 
-    protected static string currentPath;
+    protected static string currentLocation;
     // Cached, keyed by track folder's parent folder.
     protected static Dictionary<string, List<string>> subfolderList;
     protected static Dictionary<string, List<TrackInFolder>> trackList;
@@ -30,23 +30,23 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList;
     static SelectTrackPanel()
     {
-        currentPath = Paths.GetTrackRootFolder();
+        currentLocation = Paths.GetTrackRootFolder();
         subfolderList = new Dictionary<string, List<string>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
     }
 
-    public static void RemoveCachedListsAtCurrentPath()
+    public static void RemoveCachedListsAtCurrentLocation()
     {
-        subfolderList.Remove(currentPath);
-        trackList.Remove(currentPath);
-        errorTrackList.Remove(currentPath);
+        subfolderList.Remove(currentLocation);
+        trackList.Remove(currentLocation);
+        errorTrackList.Remove(currentLocation);
     }
 
     public Button backButton;
     public Button refreshButton;
     public GridLayoutGroup trackGrid;
-    public TextMeshProUGUI pathDisplay;
+    public TextMeshProUGUI locationDisplay;
     public GameObject goUpCard;
     public GameObject subfolderCardTemplate;
     public GameObject trackCardTemplate;
@@ -69,13 +69,13 @@ public class SelectTrackPanel : MonoBehaviour
     protected IEnumerator Refresh()
     {
         // Disaster recovery.
-        if (!Directory.Exists(currentPath))
+        if (!Directory.Exists(currentLocation))
         {
-            currentPath = Paths.GetTrackRootFolder();
+            currentLocation = Paths.GetTrackRootFolder();
         }
 
-        // Show path.
-        pathDisplay.text = currentPath;
+        // Show location.
+        locationDisplay.text = currentLocation;
 
         // Remove all objects from grid, except for templates.
         for (int i = 0; i < trackGrid.transform.childCount; i++)
@@ -89,7 +89,7 @@ public class SelectTrackPanel : MonoBehaviour
             Destroy(o);
         }
 
-        if (!trackList.ContainsKey(currentPath))
+        if (!trackList.ContainsKey(currentLocation))
         {
             backButton.interactable = false;
             refreshButton.interactable = false;
@@ -118,12 +118,12 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Show go up card if applicable.
-        goUpCard.SetActive(currentPath != Paths.GetTrackRootFolder());
+        goUpCard.SetActive(currentLocation != Paths.GetTrackRootFolder());
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
-        foreach (string subfolder in subfolderList[currentPath])
+        foreach (string subfolder in subfolderList[currentLocation])
         {
             GameObject card = Instantiate(subfolderCardTemplate,
                 trackGrid.transform);
@@ -150,7 +150,7 @@ public class SelectTrackPanel : MonoBehaviour
         // Instantiate track cards.
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
         foreach (TrackInFolder trackInFolder in 
-            trackList[currentPath])
+            trackList[currentLocation])
         {
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
@@ -178,7 +178,7 @@ public class SelectTrackPanel : MonoBehaviour
         // Instantiate error cards.
         cardToError = new Dictionary<GameObject, string>();
         foreach (ErrorInTrack error in 
-            errorTrackList[currentPath])
+            errorTrackList[currentLocation])
         {
             GameObject card = null;
             string message = Locale.GetStringAndFormat(
@@ -246,13 +246,13 @@ public class SelectTrackPanel : MonoBehaviour
     private void TrackListBuilderDoWork(object sender,
         DoWorkEventArgs e)
     {
-        RemoveCachedListsAtCurrentPath();
-        subfolderList[currentPath] = new List<string>();
-        trackList[currentPath] = new List<TrackInFolder>();
-        errorTrackList[currentPath] = new List<ErrorInTrack>();
+        RemoveCachedListsAtCurrentLocation();
+        subfolderList[currentLocation] = new List<string>();
+        trackList[currentLocation] = new List<TrackInFolder>();
+        errorTrackList[currentLocation] = new List<ErrorInTrack>();
 
         foreach (string dir in Directory.EnumerateDirectories(
-            currentPath))
+            currentLocation))
         {
             builderProgress = Locale.GetStringAndFormat(
                 "select_track_scanning_text", dir);
@@ -263,7 +263,7 @@ public class SelectTrackPanel : MonoBehaviour
             if (!File.Exists(possibleTrackFile))
             {
                 // Record as a subfolder.
-                subfolderList[currentPath].Add(dir);
+                subfolderList[currentLocation].Add(dir);
                 continue;
             }
 
@@ -275,7 +275,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception ex)
             {
-                errorTrackList[currentPath].Add(new ErrorInTrack()
+                errorTrackList[currentLocation].Add(new ErrorInTrack()
                 {
                     trackFile = possibleTrackFile,
                     message = ex.Message
@@ -283,14 +283,14 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            trackList[currentPath].Add(new TrackInFolder()
+            trackList[currentLocation].Add(new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
 
-        trackList[currentPath].Sort(
+        trackList[currentLocation].Sort(
             (TrackInFolder t1, TrackInFolder t2) =>
             {
                 return string.Compare(t1.track.trackMetadata.title,
@@ -312,19 +312,19 @@ public class SelectTrackPanel : MonoBehaviour
     #region Clicks on cards
     public void OnRefreshButtonClick()
     {
-        RemoveCachedListsAtCurrentPath();
+        RemoveCachedListsAtCurrentLocation();
         StartCoroutine(Refresh());
     }
 
     public void OnClickGoUpCard()
     {
-        currentPath = new DirectoryInfo(currentPath).Parent.FullName;
+        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
         StartCoroutine(Refresh());
     }
 
     private void OnClickSubfolderCard(GameObject o)
     {
-        currentPath = cardToSubfolder[o];
+        currentLocation = cardToSubfolder[o];
         StartCoroutine(Refresh());
     }
 
