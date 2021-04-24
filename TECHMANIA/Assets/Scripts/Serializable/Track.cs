@@ -608,12 +608,6 @@ public class DragNote : Note
     public List<FloatPoint> Interpolate()
     {
         List<FloatPoint> result = new List<FloatPoint>();
-        if (nodes.Count == 2)
-        {
-            InterpolateAsLine(result);
-            return result;
-        }
-
         switch (curveType)
         {
             case CurveType.Bezier:
@@ -639,6 +633,12 @@ public class DragNote : Note
 
     private void InterpolateAsBezierCurve(List<FloatPoint> result)
     {
+        if (nodes.Count == 2)
+        {
+            InterpolateAsLine(result);
+            return;
+        }
+
         result.Add(nodes[0].anchor);
         const int numSteps = 50;
         for (int i = 0; i < nodes.Count - 1; i++)
