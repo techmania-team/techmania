@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -41,6 +43,8 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Remove(currentPath);
     }
 
+    public Button backButton;
+    public Button refreshButton;
     public GridLayoutGroup trackGrid;
     public TextMeshProUGUI pathDisplay;
     public GameObject goUpCard;
@@ -48,6 +52,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
     public GameObject newTrackCard;
+    public TextMeshProUGUI trackListBuildingProgress;
     public GameObject noTrackText;
     public SelectPatternDialog selectPatternDialog;
     public MessageDialog messageDialog;
@@ -58,62 +63,17 @@ public class SelectTrackPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        Refresh();
+        StartCoroutine(Refresh());
     }
 
-    protected void BuildTrackList()
+    protected IEnumerator Refresh()
     {
-        RemoveCachedListsAtCurrentPath();
-        subfolderList[currentPath] = new List<string>();
-        trackList[currentPath] = new List<TrackInFolder>();
-        errorTrackList[currentPath] = new List<ErrorInTrack>();
-
-        foreach (string dir in Directory.EnumerateDirectories(
-            currentPath))
+        // Disaster recovery.
+        if (!Directory.Exists(currentPath))
         {
-            // Is there a track?
-            string possibleTrackFile = Path.Combine(
-                dir, Paths.kTrackFilename);
-            if (!File.Exists(possibleTrackFile))
-            {
-                // Record as a subfolder.
-                subfolderList[currentPath].Add(dir);
-                continue;
-            }
-
-            // Attempt to load track.
-            Track track = null;
-            try
-            {
-                track = Track.LoadFromFile(possibleTrackFile) as Track;
-            }
-            catch (Exception e)
-            {
-                errorTrackList[currentPath].Add(new ErrorInTrack()
-                {
-                    trackFile = possibleTrackFile,
-                    message = e.Message
-                });
-                continue;
-            }
-
-            trackList[currentPath].Add(new TrackInFolder()
-            {
-                folder = dir,
-                track = track
-            });
+            currentPath = Paths.GetTrackRootFolder();
         }
 
-        trackList[currentPath].Sort(
-            (TrackInFolder t1, TrackInFolder t2) =>
-        {
-            return string.Compare(t1.track.trackMetadata.title,
-                t2.track.trackMetadata.title);
-        });
-    }
-
-    protected void Refresh()
-    {
         // Show path.
         pathDisplay.text = currentPath;
 
@@ -131,7 +91,30 @@ public class SelectTrackPanel : MonoBehaviour
 
         if (!trackList.ContainsKey(currentPath))
         {
-            BuildTrackList();
+            backButton.interactable = false;
+            refreshButton.interactable = false;
+            goUpCard.gameObject.SetActive(false);
+            newTrackCard.gameObject.SetActive(false);
+            trackListBuildingProgress.gameObject.SetActive(true);
+
+            // Launch background worker to rebuild track list.
+            trackListBuilder = new BackgroundWorker();
+            trackListBuilder.DoWork += TrackListBuilderDoWork;
+            trackListBuilder.RunWorkerCompleted +=
+                TrackListBuilderCompleted;
+            builderDone = false;
+            builderProgress = "";
+            trackListBuilder.RunWorkerAsync();
+            do
+            {
+                trackListBuildingProgress.text =
+                    builderProgress;
+                yield return null;
+            } while (!builderDone);
+
+            trackListBuildingProgress.gameObject.SetActive(false);
+            refreshButton.interactable = true;
+            backButton.interactable = true;
         }
 
         // Show go up card if applicable.
@@ -242,6 +225,10 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
+        if (firstCard == null && goUpCard.activeSelf)
+        {
+            firstCard = goUpCard;
+        }
         EventSystem.current.SetSelectedGameObject(firstCard);
         noTrackText.SetActive(firstCard == null);
     }
@@ -251,22 +238,94 @@ public class SelectTrackPanel : MonoBehaviour
         return false;
     }
 
+    #region Background worker
+    private BackgroundWorker trackListBuilder;
+    private string builderProgress;
+    private bool builderDone;
+
+    private void TrackListBuilderDoWork(object sender,
+        DoWorkEventArgs e)
+    {
+        RemoveCachedListsAtCurrentPath();
+        subfolderList[currentPath] = new List<string>();
+        trackList[currentPath] = new List<TrackInFolder>();
+        errorTrackList[currentPath] = new List<ErrorInTrack>();
+
+        foreach (string dir in Directory.EnumerateDirectories(
+            currentPath))
+        {
+            builderProgress = Locale.GetStringAndFormat(
+                "select_track_scanning_text", dir);
+
+            // Is there a track?
+            string possibleTrackFile = Path.Combine(
+                dir, Paths.kTrackFilename);
+            if (!File.Exists(possibleTrackFile))
+            {
+                // Record as a subfolder.
+                subfolderList[currentPath].Add(dir);
+                continue;
+            }
+
+            // Attempt to load track.
+            Track track = null;
+            try
+            {
+                track = Track.LoadFromFile(possibleTrackFile) as Track;
+            }
+            catch (Exception ex)
+            {
+                errorTrackList[currentPath].Add(new ErrorInTrack()
+                {
+                    trackFile = possibleTrackFile,
+                    message = ex.Message
+                });
+                continue;
+            }
+
+            trackList[currentPath].Add(new TrackInFolder()
+            {
+                folder = dir,
+                track = track
+            });
+        }
+
+        trackList[currentPath].Sort(
+            (TrackInFolder t1, TrackInFolder t2) =>
+            {
+                return string.Compare(t1.track.trackMetadata.title,
+                    t2.track.trackMetadata.title);
+            });
+    }
+
+    private void TrackListBuilderCompleted(object sender, 
+        RunWorkerCompletedEventArgs e)
+    {
+        builderDone = true;
+        if (e.Error != null)
+        {
+            Debug.LogError(e.Error);
+        }
+    }
+    #endregion
+
+    #region Clicks on cards
     public void OnRefreshButtonClick()
     {
-        BuildTrackList();
-        Refresh();
+        RemoveCachedListsAtCurrentPath();
+        StartCoroutine(Refresh());
     }
 
     public void OnClickGoUpCard()
     {
         currentPath = new DirectoryInfo(currentPath).Parent.FullName;
-        Refresh();
+        StartCoroutine(Refresh());
     }
 
     private void OnClickSubfolderCard(GameObject o)
     {
         currentPath = cardToSubfolder[o];
-        Refresh();
+        StartCoroutine(Refresh());
     }
 
     protected virtual void OnClickCard(GameObject o)
@@ -288,4 +347,5 @@ public class SelectTrackPanel : MonoBehaviour
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");
     }
+    #endregion
 }

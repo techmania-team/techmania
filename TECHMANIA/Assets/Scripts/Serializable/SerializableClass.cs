@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Anything that will be serialized to disk (tracks, options, rulesets,
-// skins, etc.) should be defined as a subclass to Serializable<T> and
-// take advantage of its methods, so it can be ready for future format
-// updates. Refer to SerializableDemoBase for an example.
+// skins, etc.) should be defined as a subclass to SerializableClass<T>
+// and take advantage of its methods, so it can be ready for future
+// format updates. Refer to SerializableDemoBase for an example.
 //
 // Each base class can implement:
 // - (optional) PrepareToSerialize

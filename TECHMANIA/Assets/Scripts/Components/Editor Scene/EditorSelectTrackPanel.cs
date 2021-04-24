@@ -13,7 +13,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
     private void OnEnable()
     {
-        Refresh();
+        StartCoroutine(Refresh());
     }
 
     protected override bool ShowNewTrackCard()
