@@ -24,7 +24,7 @@ public class PauseDialog : MonoBehaviour
         Curtain.DrawCurtainThenGoToScene("Game");
     }
 
-    public void OnQuitButtonClick()
+    public void OnSelectTrackButtonClick()
     {
         closeCallback = null;
         MainMenuPanel.skipToTrackSelect = true;

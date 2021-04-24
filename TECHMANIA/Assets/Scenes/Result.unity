@@ -2287,7 +2287,7 @@ PrefabInstance:
     - target: {fileID: 738836231381878599, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_text
-      value: continue
+      value: Select Track
       objectReference: {fileID: 0}
     - target: {fileID: 738836231607621280, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
@@ -2397,7 +2397,7 @@ PrefabInstance:
     - target: {fileID: 738836231607621281, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_Name
-      value: Continue Button
+      value: Select Track Button
       objectReference: {fileID: 0}
     - target: {fileID: 738836231607621284, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
@@ -2427,7 +2427,12 @@ PrefabInstance:
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnContinueButtonClick
+      value: OnSelectTrackButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ResultsPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
@@ -2437,7 +2442,7 @@ PrefabInstance:
     - target: {fileID: 8805977775998339934, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: key
-      value: result_panel_continue_button
+      value: result_panel_select_track_button
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 738836231607621284, guid: ae7a546545397f24082cdb0ac3b747c5, type: 3}

@@ -122,7 +122,7 @@ public class ResultsPanel : MonoBehaviour
         }
     }
 
-    public void OnContinueButtonClick()
+    public void OnSelectTrackButtonClick()
     {
         MainMenuPanel.skipToTrackSelect = true;
         Curtain.DrawCurtainThenGoToScene("Main Menu");
