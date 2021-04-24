@@ -10,7 +10,7 @@ using UnityEngine.Audio;
 
 [Serializable]
 [FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
-public class OptionsBase : Serializable<OptionsBase> {}
+public class OptionsBase : SerializableClass<OptionsBase> {}
 
 // Deserialization will call the constructor, so we can set whatever
 // weird default values in the constructor, and they will naturally

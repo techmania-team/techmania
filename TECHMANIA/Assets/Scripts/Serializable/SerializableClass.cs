@@ -34,7 +34,7 @@ public class FormatVersionAttribute : Attribute
 }
 
 [Serializable]
-public abstract class Serializable<T> where T : Serializable<T>
+public abstract class SerializableClass<T> where T : SerializableClass<T>
 {
     public string version;
 
@@ -140,7 +140,7 @@ public abstract class Serializable<T> where T : Serializable<T>
 [FormatVersion(SerializableDemoV2.kVersion,
     typeof(SerializableDemoV2), isLatest: true)]
 public class SerializableDemoBase :
-    Serializable<SerializableDemoBase> {}
+    SerializableClass<SerializableDemoBase> {}
 
 [Serializable]
 public class SerializableDemoV1 : SerializableDemoBase

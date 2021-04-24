@@ -120,7 +120,7 @@ public class SpriteSheetForVfx : SpriteSheetForCombo
 
 [Serializable]
 [FormatVersion(NoteSkin.kVersion, typeof(NoteSkin), isLatest: true)]
-public class NoteSkinBase : Serializable<NoteSkinBase> {}
+public class NoteSkinBase : SerializableClass<NoteSkinBase> {}
 
 [Serializable]
 public class NoteSkin : NoteSkinBase
@@ -185,7 +185,7 @@ public class NoteSkin : NoteSkinBase
 
 [Serializable]
 [FormatVersion(VfxSkin.kVersion, typeof(VfxSkin), isLatest: true)]
-public class VfxSkinBase : Serializable<VfxSkinBase> { }
+public class VfxSkinBase : SerializableClass<VfxSkinBase> { }
 
 [Serializable]
 public class VfxSkin : VfxSkinBase
@@ -251,7 +251,7 @@ public class VfxSkin : VfxSkinBase
 
 [Serializable]
 [FormatVersion(ComboSkin.kVersion, typeof(ComboSkin), isLatest: true)]
-public class ComboSkinBase : Serializable<ComboSkinBase> { }
+public class ComboSkinBase : SerializableClass<ComboSkinBase> { }
 
 [Serializable]
 public class ComboSkin : ComboSkinBase

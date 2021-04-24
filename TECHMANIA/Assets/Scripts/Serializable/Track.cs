@@ -23,7 +23,7 @@ using System.Collections.Generic;
 [Serializable]
 [FormatVersion(TrackV1.kVersion, typeof(TrackV1), isLatest: false)]
 [FormatVersion(Track.kVersion, typeof(Track), isLatest: true)]
-public class TrackBase : Serializable<TrackBase> {}
+public class TrackBase : SerializableClass<TrackBase> {}
 
 #region Enums
 [Serializable]

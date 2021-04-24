@@ -8,7 +8,7 @@ using UnityEngine;
 
 [Serializable]
 [FormatVersion(Ruleset.kVersion, typeof(Ruleset), isLatest: true)]
-public class RulesetBase : Serializable<RulesetBase> {}
+public class RulesetBase : SerializableClass<RulesetBase> {}
 
 [Serializable]
 public class Ruleset : RulesetBase
