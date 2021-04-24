@@ -18,10 +18,13 @@ public class MaterialToggle : MonoBehaviour,
     public Color thumbColorOff;
     public Color overlayColorOn;
     public Color overlayColorOff;
+    [Range(0f, 1f)]
+    public float opacityWhenNotInteractable;
 
     private Toggle toggle;
     private RectTransform thumbRect;
     private bool displayedValue;
+    private bool interactable;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +35,8 @@ public class MaterialToggle : MonoBehaviour,
     // Update is called once per frame
     void Update()
     {
-        if (toggle.isOn != displayedValue)
+        if (toggle.isOn != displayedValue ||
+            toggle.IsInteractable() != interactable)
         {
             UpdateAppearance();
         }
@@ -49,8 +53,16 @@ public class MaterialToggle : MonoBehaviour,
             thumbRect = thumb.GetComponent<RectTransform>();
         }
         displayedValue = toggle.isOn;
-        track.color = toggle.isOn ? trackColorOn : trackColorOff;
-        thumb.color = toggle.isOn ? thumbColorOn : thumbColorOff;
+        interactable = toggle.IsInteractable();
+
+        Color trackColor = toggle.isOn ? trackColorOn : trackColorOff;
+        if (!interactable) trackColor.a *= opacityWhenNotInteractable;
+        track.color = trackColor;
+
+        Color thumbColor = toggle.isOn ? thumbColorOn : thumbColorOff;
+        if (!interactable) thumbColor.a *= opacityWhenNotInteractable;
+        thumb.color = thumbColor;
+
         overlay.color = toggle.isOn ? overlayColorOn : overlayColorOff;
         thumbRect.anchorMin = new Vector2(
             toggle.isOn ? 1f : 0f, 0f);
@@ -62,7 +74,7 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnSelect(BaseEventData eventData)
     {
-        if (eventData is AxisEventData)
+        if (eventData is AxisEventData && interactable)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -71,12 +83,16 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnSubmit(BaseEventData eventData)
     {
-        MenuSfx.instance.PlayClickSound();
+        if (interactable)
+        {
+            MenuSfx.instance.PlayClickSound();
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData)
+            && interactable)
         {
             MenuSfx.instance.PlaySelectSound();
         }
@@ -84,6 +100,9 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        MenuSfx.instance.PlayClickSound();
+        if (interactable)
+        {
+            MenuSfx.instance.PlayClickSound();
+        }
     }
 }

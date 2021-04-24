@@ -12,8 +12,6 @@ using UnityEngine.UI;
 
 public class TestScript : MonoBehaviour
 {
-    private bool done;
-
     // Start is called before the first frame update
     void Start()
     {
