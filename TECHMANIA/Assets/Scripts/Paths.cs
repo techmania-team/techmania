@@ -31,7 +31,7 @@ public static class Paths
         return current;
     }
 
-    public static string GetTrackFolder()
+    public static string GetTrackRootFolder()
     {
         string tracks = Path.Combine(GetWorkingDirectory(), "Tracks");
         Directory.CreateDirectory(tracks);  // No error if already exists

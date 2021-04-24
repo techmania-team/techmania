@@ -47,7 +47,8 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         string filteredArtist = Paths.FilterString(artist);
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        string newDir = Path.Combine(Paths.GetTrackFolder(), $"{filteredArtist} - {filteredTitle} - {timestamp}");
+        string newDir = Path.Combine(currentPath,
+            $"{filteredArtist} - {filteredTitle} - {timestamp}");
         try
         {
             Directory.CreateDirectory(newDir);
@@ -78,7 +79,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        SetTrackListDirty();
+        RemoveCachedListsAtCurrentPath();
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

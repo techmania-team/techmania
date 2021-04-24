@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -18,17 +19,32 @@ public class SelectTrackPanel : MonoBehaviour
         public string trackFile;
         public string message;
     }
-    // Cached
-    protected static List<TrackInFolder> allTracks;
-    // Cached
-    protected static List<ErrorInTrack> allTracksWithError;
-    protected static bool trackListDirty;
-    public static void SetTrackListDirty()
+
+    protected static string currentPath;
+    // Cached, keyed by track folder's parent folder.
+    protected static Dictionary<string, List<string>> subfolderList;
+    protected static Dictionary<string, List<TrackInFolder>> trackList;
+    protected static Dictionary<string, List<ErrorInTrack>>
+        errorTrackList;
+    static SelectTrackPanel()
     {
-        trackListDirty = true;
+        currentPath = Paths.GetTrackRootFolder();
+        subfolderList = new Dictionary<string, List<string>>();
+        trackList = new Dictionary<string, List<TrackInFolder>>();
+        errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
+    }
+
+    public static void RemoveCachedListsAtCurrentPath()
+    {
+        subfolderList.Remove(currentPath);
+        trackList.Remove(currentPath);
+        errorTrackList.Remove(currentPath);
     }
 
     public GridLayoutGroup trackGrid;
+    public TextMeshProUGUI pathDisplay;
+    public GameObject goUpCard;
+    public GameObject subfolderCardTemplate;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
     public GameObject newTrackCard;
@@ -36,6 +52,7 @@ public class SelectTrackPanel : MonoBehaviour
     public SelectPatternDialog selectPatternDialog;
     public MessageDialog messageDialog;
 
+    protected Dictionary<GameObject, string> cardToSubfolder;
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
@@ -46,16 +63,21 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected void BuildTrackList()
     {
-        allTracks = new List<TrackInFolder>();
-        allTracksWithError = new List<ErrorInTrack>();
+        RemoveCachedListsAtCurrentPath();
+        subfolderList[currentPath] = new List<string>();
+        trackList[currentPath] = new List<TrackInFolder>();
+        errorTrackList[currentPath] = new List<ErrorInTrack>();
+
         foreach (string dir in Directory.EnumerateDirectories(
-            Paths.GetTrackFolder()))
+            currentPath))
         {
             // Is there a track?
             string possibleTrackFile = Path.Combine(
                 dir, Paths.kTrackFilename);
             if (!File.Exists(possibleTrackFile))
             {
+                // Record as a subfolder.
+                subfolderList[currentPath].Add(dir);
                 continue;
             }
 
@@ -67,7 +89,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception e)
             {
-                allTracksWithError.Add(new ErrorInTrack()
+                errorTrackList[currentPath].Add(new ErrorInTrack()
                 {
                     trackFile = possibleTrackFile,
                     message = e.Message
@@ -75,47 +97,77 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            allTracks.Add(new TrackInFolder()
+            trackList[currentPath].Add(new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
 
-        allTracks.Sort((TrackInFolder t1, TrackInFolder t2) =>
+        trackList[currentPath].Sort(
+            (TrackInFolder t1, TrackInFolder t2) =>
         {
             return string.Compare(t1.track.trackMetadata.title,
                 t2.track.trackMetadata.title);
         });
-        trackListDirty = false;
     }
 
     protected void Refresh()
     {
+        // Show path.
+        pathDisplay.text = currentPath;
+
         // Remove all objects from grid, except for templates.
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
+            if (o == goUpCard) continue;
+            if (o == subfolderCardTemplate) continue;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
             if (o == newTrackCard) continue;
             Destroy(o);
         }
 
-        if (trackListDirty || 
-            allTracks == null || 
-            allTracksWithError == null)
+        if (!trackList.ContainsKey(currentPath))
         {
             BuildTrackList();
         }
 
-        // Instantiate track cards.
-        cardToTrack = new Dictionary<
-            GameObject, TrackInFolder>();
-        cardToError = new Dictionary<GameObject, string>();
+        // Show go up card if applicable.
+        goUpCard.SetActive(currentPath != Paths.GetTrackRootFolder());
+
+        // Instantiate subfolder cards.
+        cardToSubfolder = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
+        foreach (string subfolder in subfolderList[currentPath])
+        {
+            GameObject card = Instantiate(subfolderCardTemplate,
+                trackGrid.transform);
+            card.name = "Subfolder Card";
+            card.GetComponent<SubfolderCard>().Initialize(
+                new DirectoryInfo(subfolder).Name);
+            card.SetActive(true);
+
+            // Record mapping.
+            cardToSubfolder.Add(card, subfolder);
+
+            // Bind click event.
+            card.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                OnClickSubfolderCard(card);
+            });
+
+            if (firstCard == null)
+            {
+                firstCard = card;
+            }
+        }
+
+        // Instantiate track cards.
+        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
         foreach (TrackInFolder trackInFolder in 
-            allTracks)
+            trackList[currentPath])
         {
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
@@ -141,8 +193,9 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Instantiate error cards.
+        cardToError = new Dictionary<GameObject, string>();
         foreach (ErrorInTrack error in 
-            allTracksWithError)
+            errorTrackList[currentPath])
         {
             GameObject card = null;
             string message = Locale.GetStringAndFormat(
@@ -201,6 +254,18 @@ public class SelectTrackPanel : MonoBehaviour
     public void OnRefreshButtonClick()
     {
         BuildTrackList();
+        Refresh();
+    }
+
+    public void OnClickGoUpCard()
+    {
+        currentPath = new DirectoryInfo(currentPath).Parent.FullName;
+        Refresh();
+    }
+
+    private void OnClickSubfolderCard(GameObject o)
+    {
+        currentPath = cardToSubfolder[o];
         Refresh();
     }
 
