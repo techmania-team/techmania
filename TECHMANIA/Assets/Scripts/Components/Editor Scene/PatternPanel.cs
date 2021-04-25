@@ -1114,6 +1114,16 @@ public class PatternPanel : MonoBehaviour
             float pan = n.note.pan;
             bool endOfScan = n.note.endOfScan;
 
+            int currentDuration = 0;
+            if (n.note is HoldNote)
+            {
+                currentDuration = (n.note as HoldNote).duration;
+            }
+            if (n.note is DragNote)
+            {
+                currentDuration = (n.note as DragNote).Duration();
+            }
+
             GameObject newObject = null;
             string invalidReason = "";
             switch (noteType)
@@ -1141,40 +1151,33 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
                 case NoteType.RepeatHold:
-                    // No need to call CanAddHoldNote because
-                    // duration is flexible.
-                    if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes:
-                        new HashSet<GameObject>() { o },
-                        out invalidReason))
+                    if (currentDuration == 0)
                     {
-                        snackbar.Show(invalidReason);
-                        break;
+                        currentDuration = HoldNoteDefaultDuration(
+                            pulse, lane);
                     }
                     EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddHoldNote(noteType, pulse, lane,
-                        duration: null, sound,
+                        duration: currentDuration, sound,
                         volume, pan, endOfScan);
                     EditorContext.RecordAddedNote(
                         GetNoteFromGameObject(newObject));
                     break;
                 case NoteType.Drag:
-                    // No need to call CanAddDragNote because
-                    // curve is flexible.
-                    if (!CanAddNote(noteType, pulse, lane,
-                        ignoredExistingNotes:
-                        new HashSet<GameObject>() { o },
-                        out invalidReason))
+                    if (currentDuration == 0)
                     {
-                        snackbar.Show(invalidReason);
-                        break;
+                        currentDuration = HoldNoteDefaultDuration(
+                            pulse, lane);
                     }
+                    List<DragNode> nodes = new List<DragNode>();
+                    nodes.Add(new DragNode());
+                    nodes.Add(new DragNode());
+                    nodes[1].anchor.pulse = currentDuration;
                     EditorContext.RecordDeletedNote(n.note.Clone());
                     DeleteNote(o);
                     newObject = AddDragNote(pulse, lane,
-                        nodes: null, sound,
-                        volume, pan);
+                        nodes, sound, volume, pan);
                     EditorContext.RecordAddedNote(
                         GetNoteFromGameObject(newObject));
                     break;
