@@ -343,6 +343,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_Dropdown backgroundVideo;
     public TMP_InputField bgaOffset;
     public Toggle waitForEndOfBga;
+    public Toggle playBgaOnLoop;
     public TMP_InputField firstBeatOffset;
     public TMP_InputField initialBpm;
     public TMP_InputField bps;
@@ -404,6 +405,8 @@ public class TrackSetupPanel : MonoBehaviour
             m.bga, videoFilesCache);
         bgaOffset.SetTextWithoutNotify(m.bgaOffset.ToString());
         waitForEndOfBga.SetIsOnWithoutNotify(m.waitForEndOfBga);
+        waitForEndOfBga.interactable = !m.playBgaOnLoop;
+        playBgaOnLoop.SetIsOnWithoutNotify(m.playBgaOnLoop);
 
         firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
         initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
@@ -466,6 +469,8 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.UpdateMetadataInMemory(
             ref m.waitForEndOfBga, waitForEndOfBga.isOn, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
+            ref m.playBgaOnLoop, playBgaOnLoop.isOn, ref madeChange);
+        UIUtils.UpdateMetadataInMemory(
             ref m.firstBeatOffset, firstBeatOffset.text,
             ref madeChange);
         UIUtils.ClampInputField(initialBpm,
@@ -475,6 +480,18 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
         UIUtils.UpdateMetadataInMemory(
             ref m.bps, bps.text, ref madeChange);
+
+        // Disable waitForEndOfBga if playBgaOnLoop is turned on.
+        if (m.playBgaOnLoop)
+        {
+            m.waitForEndOfBga = false;
+            waitForEndOfBga.SetIsOnWithoutNotify(false);
+            waitForEndOfBga.interactable = false;
+        }
+        else
+        {
+            waitForEndOfBga.interactable = true;
+        }
 
         if (madeChange)
         {

@@ -326,6 +326,9 @@ public class PatternMetadata
     public double bgaOffset;
     // Take BGA into account when calculating pattern length.
     public bool waitForEndOfBga;
+    // If true, game will not wait for BGA regardless of
+    // waitForEndOfBga's value.
+    public bool playBgaOnLoop;
 
     // Timing.
 
@@ -348,6 +351,7 @@ public class PatternMetadata
         level = Pattern.defaultLevel;
 
         waitForEndOfBga = true;
+        playBgaOnLoop = false;
 
         initBpm = Pattern.defaultBpm;
         bps = Pattern.defaultBps;
