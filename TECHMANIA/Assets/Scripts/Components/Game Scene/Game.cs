@@ -701,8 +701,13 @@ public class Game : MonoBehaviour
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 backingTrackClip.length);
         }
-        if (videoPlayer.url != null &&
-            GameSetup.pattern.patternMetadata.waitForEndOfBga)
+        bool waitForEndOfBga = GameSetup.pattern.patternMetadata
+            .waitForEndOfBga;
+        if (GameSetup.pattern.patternMetadata.playBgaOnLoop)
+        {
+            waitForEndOfBga = false;
+        }
+        if (videoPlayer.url != null && waitForEndOfBga)
         {
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 (float)GameSetup.pattern.patternMetadata.bgaOffset +
@@ -900,6 +905,8 @@ public class Game : MonoBehaviour
             (int)videoPlayer.height,
             depth: 0);
         videoPlayer.targetTexture = renderTexture;
+        videoPlayer.isLooping = GameSetup.pattern.patternMetadata
+            .playBgaOnLoop;
         bga.texture = renderTexture;
         bga.color = Color.white;
         bga.GetComponent<AspectRatioFitter>().aspectRatio =
