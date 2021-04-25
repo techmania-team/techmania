@@ -37456,6 +37456,8 @@ GameObject:
   - component: {fileID: 1736220996}
   - component: {fileID: 1736220999}
   - component: {fileID: 1736220998}
+  - component: {fileID: 1736221001}
+  - component: {fileID: 1736221000}
   m_Layer: 5
   m_Name: Time Display Legend Background
   m_TagString: Untagged
@@ -37564,6 +37566,30 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1736221000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736220994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d21bad2cab75ed644811fd5e0b99cd6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!225 &1736221001
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736220994}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1740596115
 GameObject:
   m_ObjectHideFlags: 0
@@ -39896,7 +39922,7 @@ PrefabInstance:
     - target: {fileID: 1397902320140785393, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 125.08
+      value: 103.12
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775931, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
@@ -40116,12 +40142,12 @@ PrefabInstance:
     - target: {fileID: 4293786901056261328, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 125.08
+      value: 103.12
       objectReference: {fileID: 0}
     - target: {fileID: 4293786901056261328, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 23.69
+      value: 19.21
       objectReference: {fileID: 0}
     - target: {fileID: 4293786901056261328, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
