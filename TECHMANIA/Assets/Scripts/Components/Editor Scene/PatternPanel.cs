@@ -586,6 +586,10 @@ public class PatternPanel : MonoBehaviour
             {
                 PasteAtScanline();
             }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ToggleEndOfScanOnSelectedNotes();
+            }
         }
         if (Input.GetKeyDown(KeyCode.Delete))
         {
@@ -2996,6 +3000,41 @@ public class PatternPanel : MonoBehaviour
         o.transform.SetParent(noteCemetary);
         Destroy(o);
         UpdateNumScansAndRelatedUI();
+    }
+
+    private void ToggleEndOfScanOnSelectedNotes()
+    {
+        if (selectedNoteObjects.Count == 0) return;
+        bool currentValue = false;
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            currentValue = GetNoteFromGameObject(o).endOfScan;
+            break;
+        }
+        SetEndOfScanOnSelectedNotes(!currentValue);
+
+        // Force the side sheet to update.
+        SelectionChanged?.Invoke(selectedNoteObjects);
+    }
+
+    public void SetEndOfScanOnSelectedNotes(bool newValue)
+    {
+        EditorContext.BeginTransaction();
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            Note n = o.GetComponent<NoteObject>().note;
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            n.endOfScan = newValue;
+            op.noteAfterOp = n.Clone();
+        }
+        EditorContext.EndTransaction();
+
+        foreach (GameObject o in selectedNoteObjects)
+        {
+            o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
+        }
     }
     #endregion
 

@@ -182,21 +182,7 @@ public class NoteDetailSideSheet : MonoBehaviour
 
     public void OnEndOfScanToggleValueChanged(bool newValue)
     {
-        EditorContext.BeginTransaction();
-        foreach (Note n in notes)
-        {
-            EditOperation op = EditorContext
-                .BeginModifyNoteOperation();
-            op.noteBeforeOp = n.Clone();
-            n.endOfScan = newValue;
-            op.noteAfterOp = n.Clone();
-        }
-        EditorContext.EndTransaction();
-
-        foreach (GameObject o in selection)
-        {
-            o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
-        }
+        patternPanel.SetEndOfScanOnSelectedNotes(newValue);
     }
 
     public void OnBSplineToggleValueChanged(bool newValue)

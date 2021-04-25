@@ -137,6 +137,12 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             {
                 showIndicator = false;
             }
+
+            // Don't show indicator on drag notes.
+            if (n.type == NoteType.Drag)
+            {
+                showIndicator = false;
+            }
         }
 
         if (showIndicator)
