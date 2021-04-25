@@ -7,9 +7,11 @@ public class AudioSourceManager : MonoBehaviour
     public AudioSource backingTrack;
     public Transform playableLanesContainer;
     public Transform hiddenLanesContainer;
+    public Transform sfxContainer;
 
     private AudioSource[] playableLanes;
     private AudioSource[] hiddenLanes;
+    private AudioSource[] sfxSources;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +19,8 @@ public class AudioSourceManager : MonoBehaviour
         playableLanes = playableLanesContainer
             .GetComponentsInChildren<AudioSource>();
         hiddenLanes = hiddenLanesContainer
+            .GetComponentsInChildren<AudioSource>();
+        sfxSources = sfxContainer
             .GetComponentsInChildren<AudioSource>();
     }
 
@@ -44,24 +48,15 @@ public class AudioSourceManager : MonoBehaviour
             volume: 1f, pan: 0f);
     }
 
-    // Returns the AudioSource chosen to play the clip, if not null.
-    public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
-        float startTime = 0f,
-        float volume = Note.defaultVolume,
-        float pan = Note.defaultPan)
+    private AudioSource FindSource(AudioSource[] sources,
+        string clipTypeForLogging)
     {
-        if (clip == null) return null;
-
-        AudioSource[] sources = hiddenLane ?
-            hiddenLanes : playableLanes;
-
         AudioSource sourceWithLeastRemainingTime = null;
         float leastRemainingTime = float.MaxValue;
         foreach (AudioSource s in sources)
         {
             if (!s.isPlaying)
             {
-                PlaySound(s, clip, startTime, volume, pan);
                 return s;
             }
 
@@ -73,13 +68,39 @@ public class AudioSourceManager : MonoBehaviour
                 sourceWithLeastRemainingTime = s;
             }
         }
-
-        // If no source is available, cut off the source with least
-        // remaining time.
-        Debug.LogWarning($"Out of available audio sources, cutting one off. hiddenLane={hiddenLane}");
-        PlaySound(sourceWithLeastRemainingTime, clip, startTime,
-            volume, pan);
+        Debug.Log($"Out of available audio sources to play {clipTypeForLogging}; cutting one off.");
         return sourceWithLeastRemainingTime;
+    }
+
+    // Returns the AudioSource chosen to play the clip, if not null.
+    public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
+        float startTime = 0f,
+        float volume = Note.defaultVolume,
+        float pan = Note.defaultPan)
+    {
+        if (clip == null) return null;
+
+        AudioSource source;
+        if (hiddenLane)
+        {
+            source = FindSource(hiddenLanes,
+                "keysound in hidden lane");
+        }
+        else
+        {
+            source = FindSource(playableLanes,
+                "keysound in playable lane");
+        }
+
+        PlaySound(source, clip, startTime, volume, pan);
+        return source;
+    }
+
+    public void PlaySfx(AudioClip clip)
+    {
+        AudioSource source = FindSource(sfxSources,
+            "SFX");
+        PlaySound(source, clip, 0f, 1f, 0f);
     }
 
     public void PauseAll()
@@ -105,12 +126,15 @@ public class AudioSourceManager : MonoBehaviour
 
     public bool IsAnySourcePlaying()
     {
-        if (backingTrack.isPlaying) return true;
         foreach (AudioSource s in playableLanes)
         {
             if (s.isPlaying) return true;
         }
         foreach (AudioSource s in hiddenLanes)
+        {
+            if (s.isPlaying) return true;
+        }
+        foreach (AudioSource s in sfxSources)
         {
             if (s.isPlaying) return true;
         }

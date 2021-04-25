@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Curtain : MonoBehaviour
 {
-    public AudioSource sfxSource;
+    public AudioSourceManager audioSourceManager;
 
     private Image image;
     private bool transitioning;
@@ -71,7 +71,7 @@ public class Curtain : MonoBehaviour
         }
         yield return new WaitUntil(() =>
         {
-            return !sfxSource.isPlaying;
+            return !audioSourceManager.IsAnySourcePlaying();
         });
 
         SceneManager.LoadScene(name);
@@ -90,7 +90,7 @@ public class Curtain : MonoBehaviour
         }
         yield return new WaitUntil(() =>
         {
-            return !sfxSource.isPlaying;
+            return !audioSourceManager.IsAnySourcePlaying();
         });
 
 #if UNITY_EDITOR
