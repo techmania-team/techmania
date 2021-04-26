@@ -55,7 +55,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         }
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
-            typeof(T),
+            GetType(),
             new System.Text.Json.JsonSerializerOptions()
             {
                 IncludeFields = true,
