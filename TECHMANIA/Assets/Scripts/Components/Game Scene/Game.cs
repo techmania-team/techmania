@@ -404,6 +404,14 @@ public class Game : MonoBehaviour
             initialTime = GameSetup.pattern.PulseToTime(Pulse);
         }
 
+        // Rewind further until 1 scan before the BGA starts.
+        while (initialTime > GameSetup.pattern.patternMetadata.bgaOffset)
+        {
+            Scan--;
+            Pulse -= PulsesPerScan;
+            initialTime = GameSetup.pattern.PulseToTime(Pulse);
+        }
+
         // Resize empty touch receivers to fit scan margins.
         float laneHeightRelative =
             (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
@@ -1958,13 +1966,13 @@ public class Game : MonoBehaviour
         stopwatch.Stop();
         feverTimer?.Stop();
         audioSourceManager.PauseAll();
-        if (videoPlayer.isPrepared) videoPlayer.Pause();
+        if (videoPlayer.isPlaying) videoPlayer.Pause();
         pauseDialog.Show(closeCallback: () =>
         {
             stopwatch.Start();
             feverTimer?.Start();
             audioSourceManager.UnpauseAll();
-            if (videoPlayer.isPrepared) videoPlayer.Play();
+            if (videoPlayer.isPaused) videoPlayer.Play();
         });
         MenuSfx.instance.PlayPauseSound();
     }
