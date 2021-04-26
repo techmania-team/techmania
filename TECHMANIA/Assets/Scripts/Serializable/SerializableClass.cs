@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_2020
 using UnityEngine;
+#endif
 
 // Anything that will be serialized to disk (tracks, options, rulesets,
 // skins, etc.) should be defined as a subclass to SerializableClass<T>
@@ -150,7 +152,9 @@ public class SerializableDemoV1 : SerializableDemoBase
 
     public SerializableDemoV1()
     {
+#if UNITY_2020
         Debug.Log("V1 constructor called");
+#endif
         version = kVersion;
     }
 
@@ -171,7 +175,9 @@ public class SerializableDemoV2 : SerializableDemoBase
 
     public SerializableDemoV2()
     {
+#if UNITY_2020
         Debug.Log("V2 constructor called");
+#endif
         version = kVersion;
     }
 }
