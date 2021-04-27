@@ -254,12 +254,12 @@ public class SelectTrackPanel : MonoBehaviour
         foreach (string file in Directory.EnumerateFiles(
             currentLocation, "*.zip"))
         {
-            // Attempt to unpack this archive.
+            // Attempt to extract this archive.
             builderProgress = Locale.GetStringAndFormat(
-                "select_track_unpacking_text", file);
+                "select_track_extracting_text", file);
             try
             {
-                UnpackZipFile(file);
+                ExtractZipFile(file);
             }
             catch (Exception ex)
             {
@@ -325,9 +325,9 @@ public class SelectTrackPanel : MonoBehaviour
         }
     }
 
-    private void UnpackZipFile(string zipFilename)
+    private void ExtractZipFile(string zipFilename)
     {
-        Debug.Log("Unpacking: " + zipFilename);
+        Debug.Log("Extracting: " + zipFilename);
 
         using (FileStream fileStream = File.OpenRead(zipFilename))
         using (ICSharpCode.SharpZipLib.Zip.ZipFile zipFile = new
@@ -351,21 +351,21 @@ public class SelectTrackPanel : MonoBehaviour
                     continue;
                 }
 
-                string unpackedFilename = Path.Combine(
+                string extractedFilename = Path.Combine(
                     currentLocation, entry.Name);
-                Debug.Log($"Unpacking {entry.Name} in {zipFilename} to: {unpackedFilename}");
+                Debug.Log($"Extracting {entry.Name} in {zipFilename} to: {extractedFilename}");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(
-                    unpackedFilename));
+                    extractedFilename));
                 using var inputStream = zipFile.GetInputStream(entry);
                 using FileStream outputStream = File.Create(
-                    unpackedFilename);
+                    extractedFilename);
                 ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
                     inputStream, outputStream, buffer);
             }
         }
 
-        Debug.Log($"Unpack successful. Deleting: {zipFilename}");
+        Debug.Log($"Extract successful. Deleting: {zipFilename}");
         File.Delete(zipFilename);
     }
     #endregion
