@@ -638,12 +638,6 @@ public class DragNote : Note
 
     private void InterpolateAsBezierCurve(List<FloatPoint> result)
     {
-        if (nodes.Count == 2)
-        {
-            InterpolateAsLine(result);
-            return;
-        }
-
         result.Add(nodes[0].anchor);
         const int numSteps = 50;
         for (int i = 0; i < nodes.Count - 1; i++)
@@ -671,6 +665,12 @@ public class DragNote : Note
 
     private void InterpolateAsBSpline(List<FloatPoint> result)
     {
+        if (nodes.Count == 2)
+        {
+            InterpolateAsLine(result);
+            return;
+        }
+
         result.Add(nodes[0].anchor);
         const int numSteps = 10;
         Func<int, int> clampIndex = (int index) =>
