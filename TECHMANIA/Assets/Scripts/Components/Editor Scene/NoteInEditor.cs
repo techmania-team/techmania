@@ -606,23 +606,34 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             return false;
         }
 
-        float minDistanceSquared = PatternPanel.LaneHeight * 
-            PatternPanel.LaneHeight * 0.25f;
-        foreach (Vector2 v in pointsOnCurve)
+        // Should be laneHeight^2 * 0.25f, but leave some room for
+        // error.
+        float minSquaredDistance = PatternPanel.LaneHeight * 
+            PatternPanel.LaneHeight * 0.3f;
+        for (int i = 0; i < pointsOnCurve.Count - 1; i++)
         {
-            Vector2 distance = new Vector2(
-                noteImage.transform.position.x + v.x 
-                    - screenPosition.x,
-                noteImage.transform.position.y + v.y
-                    - screenPosition.y);
-            float squareDistance = distance.sqrMagnitude;
-            if (squareDistance <= minDistanceSquared)
+            float squaredDistance = 
+                SquaredDistanceFromPointToLineSegment(
+                    pointsOnCurve[i],
+                    pointsOnCurve[i + 1],
+                    screenPosition - noteImage.transform.position);
+            if (squaredDistance <= minSquaredDistance)
             {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private float SquaredDistanceFromPointToLineSegment(
+        Vector2 v, Vector2 w, Vector2 p)
+    {
+        // https://stackoverflow.com/a/1501725
+        float l2 = (v - w).sqrMagnitude;
+        float t = Mathf.Clamp01(Vector2.Dot(p - v, w - v) / l2);
+        Vector2 projection = v + t * (w - v);
+        return (p - projection).sqrMagnitude;
     }
     #endregion
 }

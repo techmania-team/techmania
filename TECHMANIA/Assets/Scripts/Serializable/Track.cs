@@ -627,13 +627,8 @@ public class DragNote : Note
 
     private void InterpolateAsLine(List<FloatPoint> result)
     {
-        const int numSteps = 30;
-        for (int step = 0; step <= numSteps; step++)
-        {
-            float t = (float)step / numSteps;
-            result.Add((1f - t) * nodes[0].anchor +
-                t * nodes[1].anchor);
-        }
+        result.Add(nodes[0].anchor);
+        result.Add(nodes[1].anchor);
     }
 
     private void InterpolateAsBezierCurve(List<FloatPoint> result)
