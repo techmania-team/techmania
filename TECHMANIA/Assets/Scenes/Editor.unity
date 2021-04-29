@@ -19378,7 +19378,8 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_legend_scan_beat
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3034328191725606140, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
 --- !u!224 &768067026 stripped
 RectTransform:
@@ -24296,7 +24297,8 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_legend_time_stop
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3034328191725606140, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
 --- !u!224 &1023920611 stripped
 RectTransform:
@@ -34419,7 +34421,8 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_legend_bpm
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3034328191725606140, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
 --- !u!224 &1566657932 stripped
 RectTransform:
@@ -37561,7 +37564,7 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -45203,7 +45206,8 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_legend_time
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3034328191725606140, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0159e2c2d7d31f8459b93f9392689828, type: 3}
 --- !u!224 &2104499744 stripped
 RectTransform:
