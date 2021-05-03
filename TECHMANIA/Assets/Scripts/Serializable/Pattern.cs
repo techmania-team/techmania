@@ -132,6 +132,7 @@ public partial class Pattern
             {
                 return e1.pulse - e2.pulse;
             }
+            if (e1.GetType() == e2.GetType()) return 0;
             if (e1 is BpmEvent) return -1;
             return 1;
         });
