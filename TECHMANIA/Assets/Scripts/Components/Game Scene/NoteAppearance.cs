@@ -742,7 +742,7 @@ public class NoteAppearance : MonoBehaviour,
         Vector2 pointAfterHitbox =
             pointsOnCurve[pointIndexAfterHitbox];
         float t = (compensatedScanlineX - pointBeforeHitbox.x) /
-            (pointBeforeHitbox.x - pointAfterHitbox.x);
+            (pointAfterHitbox.x - pointBeforeHitbox.x);
         hitbox.anchoredPosition = Vector2.Lerp(pointBeforeHitbox,
             pointAfterHitbox, t);
     }
