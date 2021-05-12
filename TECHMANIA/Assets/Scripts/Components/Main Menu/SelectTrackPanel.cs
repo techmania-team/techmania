@@ -30,7 +30,7 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList;
     static SelectTrackPanel()
     {
-        currentLocation = Paths.GetTrackRootFolder();
+        currentLocation = "";
         subfolderList = new Dictionary<string, List<string>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
@@ -68,8 +68,9 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected IEnumerator Refresh()
     {
-        // Disaster recovery.
-        if (!Directory.Exists(currentLocation))
+        // Initialization and/or disaster recovery.
+        if (currentLocation == "" ||
+            !Directory.Exists(currentLocation))
         {
             currentLocation = Paths.GetTrackRootFolder();
         }
