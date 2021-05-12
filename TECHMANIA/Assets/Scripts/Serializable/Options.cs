@@ -122,7 +122,11 @@ public class Options : OptionsBase
 
     public void ApplyGraphicSettings()
     {
+#if !UNITY_ANDROID
+        // Setting resolution on Android causes the graphics to
+        // be stretched in the wrong direction.
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
+#endif
         QualitySettings.vSyncCount = vSync ? 1 : 0;
     }
 
