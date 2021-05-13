@@ -45,4 +45,6 @@ Note that the default skins are not part of the project, so you'll need to copy 
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
-A running build on Android can be found on [samnyan's fork](https://github.com/samnyan/techmania/releases).
+There are a few unofficial Android builds available:
+* This one built by MoonLight on 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
+* This one built by samnyan on 0.2: https://github.com/samnyan/techmania/releases
