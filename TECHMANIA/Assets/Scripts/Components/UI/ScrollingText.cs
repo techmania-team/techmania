@@ -20,30 +20,36 @@ public class ScrollingText : MonoBehaviour
 
     void OnEnable()
     {
+        SetUp();
+    }
+
+    public void SetUp()
+    {
         rect = GetComponent<RectTransform>();
         innerRect = rect.GetChild(0).GetComponent<RectTransform>();
-        TextMeshProUGUI[] allTexts = 
+        TextMeshProUGUI[] allTexts =
             GetComponentsInChildren<TextMeshProUGUI>();
 
         contentSize = 0f;
         switch (direction)
         {
             case Direction.Horizontal:
-                maskSize = rect.sizeDelta.x;
+                maskSize = rect.rect.width;
                 foreach (TextMeshProUGUI t in allTexts)
                 {
                     contentSize += t.preferredWidth;
                 }
                 break;
             case Direction.Vertical:
-                maskSize = rect.sizeDelta.y;
+                maskSize = rect.rect.height;
                 foreach (TextMeshProUGUI t in allTexts)
                 {
                     contentSize += t.preferredHeight;
                 }
                 break;
         }
-
+        Debug.Log($"contentSize: {contentSize} maskSize: {maskSize}");
+        StopAllCoroutines();
         if (contentSize > maskSize)
         {
             StartCoroutine(Scroll());

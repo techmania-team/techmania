@@ -211,10 +211,10 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 ,information_panel_credits_program,Program,程序,程式,プログラミング,프로그래밍
 ,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
-,select_pattern_dialog_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
-,select_pattern_dialog_play_button,PLAY,开始,開始,プレイ,시작
-,select_pattern_dialog_back_button,BACK,返回,返回,戻す,돌아가기
-,select_pattern_dialog_auto_play_no_fail_instruction,"Hold Shift and click Play to enable auto play.
+key change in 0.7.,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
+key change in 0.7.,select_pattern_play_button,PLAY,开始,開始,プレイ,시작
+deleted in 0.7.,select_pattern_dialog_back_button,BACK,返回,返回,戻す,돌아가기
+deleted in 0.7.,select_pattern_dialog_auto_play_no_fail_instruction,"Hold Shift and click Play to enable auto play.
 Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以启用自动演奏。
 按Ctrl并点击“开始”以启用无失败。","按 Shift 並點擊開始以啟用自動演奏。
 按 Ctrl 並點擊開始以啟用無失敗模式。","Shift長押し＋プレイでオートプレイをオンにします。
@@ -704,3 +704,11 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선적으로 적용됩니다."
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
+,,,,,,
+0.7 strings start here.,select_pattern_panel_title,Select Pattern,,,,
+,select_pattern_modifier_button,Modifiers,,,,
+,select_pattern_length_title,Length,,,,
+,select_pattern_notes_title,Notes,,,,
+,select_pattern_radar_title,Radar,,,,
+,select_pattern_my_record_title,My record,,,,
+,select_pattern_modifier_title,Modifiers,,,,

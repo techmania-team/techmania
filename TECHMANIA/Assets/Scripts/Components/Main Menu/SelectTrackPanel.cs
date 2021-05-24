@@ -54,7 +54,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
     public GameObject noTrackText;
-    public SelectPatternDialog selectPatternDialog;
+    public Panel selectPatternPanel;
     public MessageDialog messageDialog;
 
     protected Dictionary<GameObject, string> cardToSubfolder;
@@ -395,7 +395,8 @@ public class SelectTrackPanel : MonoBehaviour
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
         GameSetup.track = cardToTrack[o].track;
-        selectPatternDialog.Show();
+        PanelTransitioner.TransitionTo(selectPatternPanel,
+            TransitionToPanel.Direction.Right);
     }
 
     private void OnClickErrorCard(GameObject o)
