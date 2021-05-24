@@ -120,7 +120,8 @@ public partial class Pattern
 
     #region Timing
     // Sort BPM events by pulse, then fill their time fields.
-    // Enables CalculateTimeOfAllNotes, TimeToPulse and PulseToTime.
+    // Enables CalculateTimeOfAllNotes, GetLengthInSeconds,
+    // TimeToPulse and PulseToTime.
     public void PrepareForTimeCalculation()
     {
         timeEvents = new List<TimeEvent>();
@@ -172,6 +173,43 @@ public partial class Pattern
 
             currentPulse = e.pulse;
         }
+    }
+
+    // Returns the time between the start of the first non-empty
+    // scan, and the end of t he last non-empty scan. Ignores
+    // end-of-scan.
+    public float GetLengthInSeconds()
+    {
+        if (notes.Count == 0) return 0f;
+
+        int pulsesPerScan = pulsesPerBeat * patternMetadata.bps;
+        int minPulse = int.MaxValue;
+        int maxPulse = int.MinValue;
+
+        foreach (Note n in notes)
+        {
+            int pulse = n.pulse;
+            int endPulse = pulse;
+            if (n is HoldNote)
+            {
+                endPulse += (n as HoldNote).duration;
+            }
+            if (n is DragNote)
+            {
+                endPulse += (n as DragNote).Duration();
+            }
+
+            if (pulse < minPulse) minPulse = pulse;
+            if (endPulse > maxPulse) maxPulse = endPulse;
+        }
+
+        int firstScan = minPulse / pulsesPerScan;
+        float startOfFirstScan = PulseToTime(
+            firstScan * pulsesPerScan);
+        int lastScan = maxPulse / pulsesPerScan;
+        float endOfLastScan = PulseToTime(
+            (lastScan + 1) * pulsesPerScan);
+        return endOfLastScan - startOfFirstScan;
     }
 
     public void CalculateTimeOfAllNotes()
@@ -272,6 +310,18 @@ public partial class Pattern
 
         return referenceTime +
             secondsPerPulse * (pulse - referencePulse);
+    }
+    #endregion
+
+    #region Statistics and Radar
+    public int NumPlayableNotes(int playableLanes = 4)
+    {
+        int count = 0;
+        foreach (Note n in notes)
+        {
+            if (n.lane < playableLanes) count++;
+        }
+        return count;
     }
     #endregion
 }

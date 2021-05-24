@@ -250,4 +250,26 @@ public class UIUtils
     {
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
+
+    public static string FormatTime(float time,
+        bool includeMillisecond)
+    {
+        bool negative = time < 0f;
+        time = Mathf.Abs(time);
+        int minute = Mathf.FloorToInt(time / 60f);
+        time -= minute * 60f;
+        int second = Mathf.FloorToInt(time);
+        time -= second;
+        int milliSecond = Mathf.FloorToInt(time * 1000f);
+
+        string sign = negative ? "-" : "";
+        if (includeMillisecond)
+        {
+            return $"{sign}{minute}:{second:D2}.{milliSecond:D3}";
+        }
+        else
+        {
+            return $"{sign}{minute}:{second:D2}";
+        }
+    }
 }

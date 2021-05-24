@@ -48,7 +48,7 @@ public class SelectPatternPanel : MonoBehaviour
             OnSelectedPatternObjectChanged;
 
         // Other UI elements.
-        RefreshPlayButton();
+        RefreshPatternDetails(p: null);
         if (firstObject == null)
         {
             firstObject = backButton.gameObject;
@@ -68,16 +68,31 @@ public class SelectPatternPanel : MonoBehaviour
         previewPlayer.Stop();
     }
 
-    private void RefreshPlayButton()
+    private void RefreshPatternDetails(Pattern p)
     {
-        playButton.interactable =
-            patternList.GetSelectedPattern() != null;
+        if (p == null)
+        {
+            authorText.text = "-";
+            lengthText.text = "-";
+            notesText.text = "-";
+            playButton.interactable = false;
+        }
+        else
+        {
+            p.PrepareForTimeCalculation();
+            float length = p.GetLengthInSeconds();
+
+            authorText.text = p.patternMetadata.author;
+            lengthText.text = UIUtils.FormatTime(length,
+                includeMillisecond: false);
+            notesText.text = p.NumPlayableNotes().ToString();
+            playButton.interactable = true;
+        }
     }
 
     private void OnSelectedPatternObjectChanged(Pattern p)
     {
-        // TODO: show author, length, note count.
-        RefreshPlayButton();
+        RefreshPatternDetails(p);
     }
 
     public void OnPlayButtonClick()
