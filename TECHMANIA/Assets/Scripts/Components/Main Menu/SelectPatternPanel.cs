@@ -28,6 +28,7 @@ public class SelectPatternPanel : MonoBehaviour
     public TextMeshProUGUI specialModifiersText;
 
     [Header("Buttons")]
+    public Sidesheet modifierSidesheet;
     public Button playButton;
 
     private void OnEnable()
@@ -93,6 +94,11 @@ public class SelectPatternPanel : MonoBehaviour
     private void OnSelectedPatternObjectChanged(Pattern p)
     {
         RefreshPatternDetails(p);
+    }
+
+    public void OnModifierButtonClick()
+    {
+        modifierSidesheet.FadeIn();
     }
 
     public void OnPlayButtonClick()

@@ -12,6 +12,8 @@ public class Dialog : MonoBehaviour
     private GameObject previousSelected;
     private CanvasGroup currentGroup;
     private bool transitioning;
+    protected Vector2 restingAnchoredPosition;
+    protected const float kFadeDistance = 100f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +34,8 @@ public class Dialog : MonoBehaviour
     {
         previousGroup = Panel.current.GetComponent<CanvasGroup>();
         previousGroup.interactable = false;
-        previousSelected = EventSystem.current.currentSelectedGameObject;
+        previousSelected = 
+            EventSystem.current.currentSelectedGameObject;
 
         currentGroup = GetComponent<CanvasGroup>();
         currentGroup.alpha = 0f;
@@ -53,28 +56,34 @@ public class Dialog : MonoBehaviour
     {
         transitioning = true;
         RectTransform rect = GetComponent<RectTransform>();
+        restingAnchoredPosition = rect.anchoredPosition;
 
         const float kLength = 0.2f;
-        const float kMovement = 100f;
 
         for (float time = 0f; time < kLength; time += Time.deltaTime)
         {
             float progress = time / kLength;
             currentGroup.alpha = progress;
-            rect.anchoredPosition = new Vector2(
-                0f,
-                PanelTransitioner.Damp(-kMovement, 0f, progress));
+            rect.anchoredPosition = FadeInStep(progress);
             yield return null;
         }
 
         currentGroup.alpha = 1f;
-        rect.anchoredPosition = Vector2.zero;
+        rect.anchoredPosition = restingAnchoredPosition;
         transitioning = false;
 
         if (defaultSelected != null)
         {
-            EventSystem.current.SetSelectedGameObject(defaultSelected);
+            EventSystem.current.SetSelectedGameObject(
+                defaultSelected);
         }
+    }
+
+    protected virtual Vector2 FadeInStep(float progress)
+    {
+        return new Vector2(
+            0f,
+            PanelTransitioner.Damp(-kFadeDistance, 0f, progress));
     }
 
     private IEnumerator InternalFadeOut()
@@ -83,15 +92,12 @@ public class Dialog : MonoBehaviour
         RectTransform rect = GetComponent<RectTransform>();
 
         const float kLength = 0.2f;
-        const float kMovement = 100f;
 
         for (float time = 0f; time < kLength; time += Time.deltaTime)
         {
             float progress = time / kLength;
             currentGroup.alpha = 1f - progress;
-            rect.anchoredPosition = new Vector2(
-                0f,
-                PanelTransitioner.Damp(0f, -kMovement, progress));
+            rect.anchoredPosition = FadeOutStep(progress);
             yield return null;
         }
 
@@ -99,6 +105,14 @@ public class Dialog : MonoBehaviour
         previousGroup.interactable = true;
         EventSystem.current.SetSelectedGameObject(previousSelected);
         transitioning = false;
+        rect.anchoredPosition = restingAnchoredPosition;
         gameObject.SetActive(false);
+    }
+
+    protected virtual Vector2 FadeOutStep(float progress)
+    {
+        return new Vector2(
+            0f,
+            PanelTransitioner.Damp(0f, -kFadeDistance, progress));
     }
 }

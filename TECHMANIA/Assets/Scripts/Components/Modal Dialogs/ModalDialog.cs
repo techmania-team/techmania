@@ -12,7 +12,9 @@ public class ModalDialog : MonoBehaviour
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<Canvas>().GetComponentInChildren<ModalDialog>(includeInactive: true);
+            instance = FindObjectOfType<Canvas>()
+                .GetComponentInChildren<ModalDialog>(
+                includeInactive: true);
         }
         return instance;
     }

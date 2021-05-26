@@ -36,7 +36,7 @@ public class Options : OptionsBase
     public float sfxVolume;
     public int audioBufferSize;
 
-    // Interface
+    // Appearance
 
     public string locale;
     public bool showLoadingBar;
@@ -203,7 +203,7 @@ public class EditorOptions
 [Serializable]
 public class Modifiers
 {
-    public enum NoteAppearance
+    public enum NoteOpacity
     {
         Normal,
         FadeOut,
@@ -211,16 +211,16 @@ public class Modifiers
         FadeIn,
         FadeIn2
     }
-    public NoteAppearance noteAppearance;
+    public NoteOpacity noteOpacity;
 
-    public enum ScanlineAppearance
+    public enum ScanlineOpacity
     {
         Normal,
         Blink,
         Blink2,
         Blind
     }
-    public ScanlineAppearance scanlineAppearance;
+    public ScanlineOpacity scanlineOpacity;
 
     public enum ScanDirection
     {
