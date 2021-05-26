@@ -36,11 +36,12 @@ public class Options : OptionsBase
     public float sfxVolume;
     public int audioBufferSize;
 
-    // Appearance
+    // Interface
 
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
+    public bool showJudgementTally;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -56,6 +57,16 @@ public class Options : OptionsBase
     // Editor options
 
     public EditorOptions editorOptions;
+
+    // Modifiers
+
+    public Modifiers modifiers;
+
+    // Per-track options.
+    // This should be a dictionary, but dictionaries are not
+    // directly serializable, and we don't expect more than a
+    // few hundred elements anyway.
+    public List<PerTrackOptions> perTrackOptions;
 
     public Options()
     {
@@ -91,6 +102,8 @@ public class Options : OptionsBase
         keyboardMouseLatencyMs = 0;
 
         editorOptions = new EditorOptions();
+        modifiers = new Modifiers();
+        perTrackOptions = new List<PerTrackOptions>();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -184,4 +197,103 @@ public class EditorOptions
         assistTickOnSilentNotes = false;
         returnScanlineAfterPlayback = true;
     }
+}
+
+// All enums reserve the first option as the "normal" one.
+[Serializable]
+public class Modifiers
+{
+    public enum NoteAppearance
+    {
+        Normal,
+        FadeOut,
+        FadeOut2,
+        FadeIn,
+        FadeIn2
+    }
+    public NoteAppearance noteAppearance;
+
+    public enum ScanlineAppearance
+    {
+        Normal,
+        Blink,
+        Blink2,
+        Blind
+    }
+    public ScanlineAppearance scanlineAppearance;
+
+    public enum ScanDirection
+    {
+        Normal,
+        RR,
+        LR,
+        LL
+    }
+    public ScanDirection scanDirection;
+
+    public enum NotePosition
+    {
+        Normal,
+        Mirror
+    }
+    public NotePosition notePosition;
+
+    public enum ScanPosition
+    {
+        Normal,
+        Swap
+    }
+    public ScanPosition scanPosition;
+
+    public enum Fever
+    {
+        Normal,
+        FeverOff,
+        AutoFever
+    }
+    public Fever fever;
+
+    public enum Keysound
+    {
+        Normal,
+        AutoKeysound,
+        AutoKeysoundAndTicks,
+        AutoKeysoundAndAutoTicks
+    }
+    public Keysound keysound;
+
+    // Special modifiers
+
+    public enum Mode
+    {
+        Normal,
+        NoFail,
+        AutoPlay,
+        Practice
+    }
+    public Mode mode;
+
+    public enum ControlOverride
+    {
+        Normal,
+        OverrideToTouch,
+        OverrideToKeys,
+        OverrideToKM
+    }
+    public ControlOverride controlOverride;
+
+    public enum ScrollSpeed
+    {
+        Normal,
+        HalfSpeed
+    }
+    public ScrollSpeed scrollSpeed;
+}
+
+[Serializable]
+public class PerTrackOptions
+{
+    public string trackGuid;
+    public bool noVideo;
+    public int backgroundBrightness;  // 0-10
 }

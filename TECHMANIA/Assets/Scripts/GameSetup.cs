@@ -16,9 +16,4 @@ public class GameSetup
         }
     }
     public static Pattern pattern;
-
-    // Gameplay options
-
-    public static bool noFail;
-    public static bool autoPlay;
 }

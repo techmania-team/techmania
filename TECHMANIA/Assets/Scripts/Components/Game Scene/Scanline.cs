@@ -22,7 +22,9 @@ public class Scanline : MonoBehaviour
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
 
-        autoPlayIndicator.SetActive(GameSetup.autoPlay);
+        autoPlayIndicator.SetActive(
+            Options.instance.modifiers.mode ==
+            Modifiers.Mode.AutoPlay);
     }
 
     private void Update()

@@ -99,10 +99,23 @@ public class SelectPatternPanel : MonoBehaviour
     {
         GameSetup.pattern = patternList.GetSelectedPattern();
         if (GameSetup.pattern == null) return;
-        GameSetup.noFail = Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl);
-        GameSetup.autoPlay = Input.GetKey(KeyCode.LeftShift) ||
-            Input.GetKey(KeyCode.RightShift);
+
+        Modifiers.Mode mode = Modifiers.Mode.Normal;
+        if (Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl))
+        {
+            mode = Modifiers.Mode.NoFail;
+        }
+        if (Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift))
+        {
+            mode = Modifiers.Mode.AutoPlay;
+        }
+        Options.instance.modifiers.mode = mode;
+
+        // Save to disk because the game scene will reload options.
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
+
         Curtain.DrawCurtainThenGoToScene("Game");
     }
 }
