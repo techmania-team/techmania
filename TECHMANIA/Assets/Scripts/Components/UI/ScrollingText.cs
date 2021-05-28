@@ -60,6 +60,14 @@ public class ScrollingText : MonoBehaviour
         }
     }
 
+    // Convenience method to reset the text within, and then
+    // call SetUp.
+    public void SetUp(string text)
+    {
+        GetComponentInChildren<TextMeshProUGUI>().text = text;
+        SetUp();
+    }
+
     private void ScrollTo(float t)
     {
         switch (direction)

@@ -91,6 +91,7 @@ public class Options : OptionsBase
         locale = Locale.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
+        showJudgementTally = false;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
@@ -158,6 +159,21 @@ public class Options : OptionsBase
         }
     }
     #endregion
+
+    #region Per-track options
+    public PerTrackOptions GetPerTrackOptions(Track t)
+    {
+        string guid = t.trackMetadata.guid;
+        foreach (PerTrackOptions options in perTrackOptions)
+        {
+            if (options.trackGuid == guid) return options;
+        }
+
+        PerTrackOptions newOptions = new PerTrackOptions(guid);
+        perTrackOptions.Add(newOptions);  // Not written to disk yet.
+        return newOptions;
+    }
+    #endregion
 }
 
 [Serializable]
@@ -203,6 +219,13 @@ public class EditorOptions
 [Serializable]
 public class Modifiers
 {
+    public static Modifiers instance 
+    { 
+        get { return Options.instance.modifiers; }
+    }
+
+    // Regular modifiers
+
     public enum NoteOpacity
     {
         Normal,
@@ -296,4 +319,11 @@ public class PerTrackOptions
     public string trackGuid;
     public bool noVideo;
     public int backgroundBrightness;  // 0-10
+
+    public PerTrackOptions(string trackGuid)
+    {
+        this.trackGuid = trackGuid;
+        noVideo = false;
+        backgroundBrightness = 10;
+    }
 }

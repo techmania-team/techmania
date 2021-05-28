@@ -23,7 +23,7 @@ public class Scanline : MonoBehaviour
         rect.sizeDelta = new Vector2(height, height);
 
         autoPlayIndicator.SetActive(
-            Options.instance.modifiers.mode ==
+            Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay);
     }
 

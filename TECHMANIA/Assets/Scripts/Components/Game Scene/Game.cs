@@ -318,7 +318,7 @@ public class Game : MonoBehaviour
         loading = false;
         topBar.SetActive(true);
         noFailIndicator.SetActive(
-            Options.instance.modifiers.mode == 
+            Modifiers.instance.mode == 
                 Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
@@ -342,7 +342,7 @@ public class Game : MonoBehaviour
             == ControlScheme.Touch ?
             Options.instance.touchOffsetMs :
             Options.instance.keyboardMouseOffsetMs;
-        offset = Options.instance.modifiers.mode ==
+        offset = Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay
             ? 0f : offsetMs * 0.001f;
         BaseTime = initialTime;
@@ -965,8 +965,7 @@ public class Game : MonoBehaviour
     {
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
-        return Options.instance.modifiers.mode ==
-            Modifiers.Mode.AutoPlay
+        return Modifiers.instance.mode == Modifiers.Mode.AutoPlay
             ? 0f : latencyMs * 0.001f;
     }
     #endregion
@@ -1082,7 +1081,7 @@ public class Game : MonoBehaviour
 
             if (laneIndex < kPlayableLanes)
             {
-                if (Options.instance.modifiers.mode ==
+                if (Modifiers.instance.mode ==
                     Modifiers.Mode.AutoPlay)
                 {
                     // Auto-play notes when it comes to their time.
@@ -1139,7 +1138,7 @@ public class Game : MonoBehaviour
         {
             return;
         }
-        if (Options.instance.modifiers.mode ==
+        if (Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay)
         {
             return;
@@ -1307,7 +1306,7 @@ public class Game : MonoBehaviour
             }
 
             if (pair.Value == false
-                && Options.instance.modifiers.mode !=
+                && Modifiers.instance.mode !=
                     Modifiers.Mode.AutoPlay
                 && Time < gracePeriodStart)
             {
@@ -1370,7 +1369,7 @@ public class Game : MonoBehaviour
     public void OnFeverButtonPointerDown()
     {
         if (feverState != FeverState.Ready) return;
-        if (Options.instance.modifiers.mode ==
+        if (Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay) return;
         feverState = FeverState.Active;
         score.FeverOn();
@@ -1872,7 +1871,7 @@ public class Game : MonoBehaviour
                  judgement == Judgement.Max))
             {
                 feverAmount += feverCoefficient / numPlayableNotes;
-                if (Options.instance.modifiers.mode ==
+                if (Modifiers.instance.mode ==
                     Modifiers.Mode.AutoPlay)
                 {
                     feverAmount = 0f;
@@ -1892,7 +1891,7 @@ public class Game : MonoBehaviour
                 Ruleset.instance.hpLoss;
             if (hp < 0) hp = 0;
             if (hp <= 0 &&
-                Options.instance.modifiers.mode !=
+                Modifiers.instance.mode !=
                 Modifiers.Mode.NoFail)
             {
                 // Stage failed.

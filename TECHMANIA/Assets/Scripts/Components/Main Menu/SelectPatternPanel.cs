@@ -28,7 +28,7 @@ public class SelectPatternPanel : MonoBehaviour
     public TextMeshProUGUI specialModifiersText;
 
     [Header("Buttons")]
-    public Sidesheet modifierSidesheet;
+    public ModifierSidesheet modifierSidesheet;
     public Button playButton;
 
     private void OnEnable()
@@ -49,6 +49,9 @@ public class SelectPatternPanel : MonoBehaviour
             OnSelectedPatternObjectChanged;
 
         // Other UI elements.
+        modifierSidesheet.Prepare();
+        ModifierSidesheet.ModifierChanged += OnModifierChanged;
+        OnModifierChanged();
         RefreshPatternDetails(p: null);
         if (firstObject == null)
         {
@@ -66,6 +69,8 @@ public class SelectPatternPanel : MonoBehaviour
     {
         PatternRadioList.SelectedPatternChanged -= 
             OnSelectedPatternObjectChanged;
+        ModifierSidesheet.ModifierChanged -=
+            OnModifierChanged;
         previewPlayer.Stop();
     }
 
@@ -96,9 +101,19 @@ public class SelectPatternPanel : MonoBehaviour
         RefreshPatternDetails(p);
     }
 
+    private void OnModifierChanged()
+    {
+        string modifierLine1, modifierLine2;
+        modifierSidesheet.GetModifierDisplay(
+            out modifierLine1, out modifierLine2);
+
+        modifiersText.text = modifierLine1;
+        specialModifiersText.text = modifierLine2;
+    }
+
     public void OnModifierButtonClick()
     {
-        modifierSidesheet.FadeIn();
+        modifierSidesheet.GetComponent<Sidesheet>().FadeIn();
     }
 
     public void OnPlayButtonClick()
@@ -117,7 +132,7 @@ public class SelectPatternPanel : MonoBehaviour
         {
             mode = Modifiers.Mode.AutoPlay;
         }
-        Options.instance.modifiers.mode = mode;
+        Modifiers.instance.mode = mode;
 
         // Save to disk because the game scene will reload options.
         Options.instance.SaveToFile(Paths.GetOptionsFilePath());
