@@ -163,7 +163,8 @@ public class OptionsPanel : MonoBehaviour
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
     }
 
-    // The portion of MemoryToUI that should respond to locale change.
+    // The portion of MemoryToUI that should respond to
+    // locale change.
     private void MemoryToLocalizedUI()
     {
         UIUtils.InitializeDropdownWithLocalizedOptions(

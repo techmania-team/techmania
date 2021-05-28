@@ -48,7 +48,7 @@ public class ScrollingText : MonoBehaviour
                 }
                 break;
         }
-        Debug.Log($"contentSize: {contentSize} maskSize: {maskSize}");
+
         StopAllCoroutines();
         if (contentSize > maskSize)
         {
