@@ -12,6 +12,8 @@ public class ScrollingText : MonoBehaviour
         Vertical
     }
     public Direction direction;
+    [Range(0f, 1f)]
+    public float restingPosition;
 
     private RectTransform rect;
     private RectTransform innerRect;
@@ -56,7 +58,7 @@ public class ScrollingText : MonoBehaviour
         }
         else
         {
-            ScrollTo(direction == Direction.Horizontal ? 0.5f : 0f);
+            ScrollTo(restingPosition);
         }
     }
 

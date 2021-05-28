@@ -24,8 +24,8 @@ public class SelectPatternPanel : MonoBehaviour
     public TextMeshProUGUI authorText;
     public TextMeshProUGUI lengthText;
     public TextMeshProUGUI notesText;
-    public TextMeshProUGUI modifiersText;
-    public TextMeshProUGUI specialModifiersText;
+    public ScrollingText modifiersText;
+    public ScrollingText specialModifiersText;
 
     [Header("Buttons")]
     public ModifierSidesheet modifierSidesheet;
@@ -107,8 +107,8 @@ public class SelectPatternPanel : MonoBehaviour
         modifierSidesheet.GetModifierDisplay(
             out modifierLine1, out modifierLine2);
 
-        modifiersText.text = modifierLine1;
-        specialModifiersText.text = modifierLine2;
+        modifiersText.SetUp(modifierLine1);
+        specialModifiersText.SetUp(modifierLine2);
     }
 
     public void OnModifierButtonClick()
