@@ -9513,7 +9513,7 @@ MonoBehaviour:
   newTrackCard: {fileID: 1508468628}
   trackListBuildingProgress: {fileID: 5692625536388981622}
   noTrackText: {fileID: 312476007}
-  selectPatternDialog: {fileID: 0}
+  selectPatternPanel: {fileID: 0}
   messageDialog: {fileID: 8369197524032551023}
   newTrackDialog: {fileID: 1818850824}
   trackSetupPanel: {fileID: 1032894074}
@@ -16992,10 +16992,40 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106649}
     m_Modifications:
+    - target: {fileID: 505800864981149070, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 505800864981149070, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 505800864981149070, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 490
+      objectReference: {fileID: 0}
+    - target: {fileID: 505800864981149070, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 245
+      objectReference: {fileID: 0}
+    - target: {fileID: 505800864981149070, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -35
+      objectReference: {fileID: 0}
     - target: {fileID: 3234181546940570730, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
         type: 3}
       propertyPath: key
       value: select_pattern_no_pattern_text
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746696282945767670, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 142.28
       objectReference: {fileID: 0}
     - target: {fileID: 6561828108665751752, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
         type: 3}
@@ -17146,6 +17176,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6561828110251054892, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8653787553778468167, guid: 0f4d8df3d189a7f4eb45319d9fe2a275,
         type: 3}
@@ -46814,6 +46849,11 @@ PrefabInstance:
         type: 3}
       propertyPath: target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6287088579844573958, guid: 3a51faf5a17d9ce45839976a67c5503f,
+        type: 3}
+      propertyPath: m_text
+      value: C:\Code\techmania\TECHMANIA\Builds\Tracks
       objectReference: {fileID: 0}
     - target: {fileID: 6793468683103968699, guid: 3a51faf5a17d9ce45839976a67c5503f,
         type: 3}

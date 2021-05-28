@@ -9,7 +9,7 @@ public class PatternBanner : MonoBehaviour
     public Sprite keysIcon;
     public Sprite kmIcon;
     public TextMeshProUGUI levelText;
-    public TextMeshProUGUI nameText;
+    public ScrollingText nameText;
     
     public void Initialize(PatternMetadata p)
     {
@@ -26,6 +26,6 @@ public class PatternBanner : MonoBehaviour
                 break;
         }
         levelText.text = p.level.ToString();
-        nameText.text = p.patternName;
+        nameText.SetUp(p.patternName);
     }
 }

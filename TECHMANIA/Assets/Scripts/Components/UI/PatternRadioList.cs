@@ -33,7 +33,8 @@ public class PatternRadioList : MonoBehaviour
         foreach (Pattern p in t.patterns)
         {
             // Instantiate pattern representation.
-            GameObject patternObject = Instantiate(patternTemplate, list.transform);
+            GameObject patternObject = Instantiate(
+                patternTemplate, list.transform);
             patternObject.name = "Pattern Radio Button";
             patternObject.GetComponentInChildren<PatternBanner>()
                 .Initialize(p.patternMetadata);
@@ -46,14 +47,16 @@ public class PatternRadioList : MonoBehaviour
             {
                 selectedPatternObject = patternObject;
             }
-            patternObject.GetComponentInChildren<MaterialRadioButton>().
-                SetIsOn(p == initialSelectedPattern);
+            patternObject
+                .GetComponentInChildren<MaterialRadioButton>()
+                .SetIsOn(p == initialSelectedPattern);
 
             // Record mapping.
             objectToPattern.Add(patternObject, p);
 
             // Bind click event.
-            patternObject.GetComponent<Button>().onClick.AddListener(() =>
+            patternObject.GetComponent<Button>().onClick
+                .AddListener(() =>
             {
                 OnPatternObjectClick(patternObject);
             });
@@ -76,7 +79,9 @@ public class PatternRadioList : MonoBehaviour
     {
         if (selectedPatternObject != null)
         {
-            selectedPatternObject.GetComponent<MaterialRadioButton>().SetIsOn(false);
+            selectedPatternObject
+                .GetComponent<MaterialRadioButton>()
+                .SetIsOn(false);
         }
         if (!objectToPattern.ContainsKey(o))
         {
@@ -85,7 +90,9 @@ public class PatternRadioList : MonoBehaviour
         else
         {
             selectedPatternObject = o;
-            selectedPatternObject.GetComponent<MaterialRadioButton>().SetIsOn(true);
+            selectedPatternObject
+                .GetComponent<MaterialRadioButton>()
+                .SetIsOn(true);
         }
         SelectedPatternChanged?.Invoke(GetSelectedPattern());
     }

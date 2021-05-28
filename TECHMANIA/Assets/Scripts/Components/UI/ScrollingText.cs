@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectMask2D))]
 public class ScrollingText : MonoBehaviour
 {
     public enum Direction
@@ -54,7 +55,10 @@ public class ScrollingText : MonoBehaviour
         StopAllCoroutines();
         if (contentSize > maskSize)
         {
-            StartCoroutine(Scroll());
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(Scroll());
+            }
         }
         else
         {

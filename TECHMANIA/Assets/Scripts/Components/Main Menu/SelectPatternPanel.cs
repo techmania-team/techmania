@@ -21,7 +21,7 @@ public class SelectPatternPanel : MonoBehaviour
     public PatternRadioList patternList;
 
     [Header("Pattern details")]
-    public TextMeshProUGUI authorText;
+    public ScrollingText authorText;
     public TextMeshProUGUI lengthText;
     public TextMeshProUGUI notesText;
     public ScrollingText modifiersText;
@@ -78,7 +78,7 @@ public class SelectPatternPanel : MonoBehaviour
     {
         if (p == null)
         {
-            authorText.text = "-";
+            authorText.SetUp("-");
             lengthText.text = "-";
             notesText.text = "-";
             playButton.interactable = false;
@@ -88,7 +88,7 @@ public class SelectPatternPanel : MonoBehaviour
             p.PrepareForTimeCalculation();
             float length = p.GetLengthInSeconds();
 
-            authorText.text = p.patternMetadata.author;
+            authorText.SetUp(p.patternMetadata.author);
             lengthText.text = UIUtils.FormatTime(length,
                 includeMillisecond: false);
             notesText.text = p.NumPlayableNotes().ToString();
