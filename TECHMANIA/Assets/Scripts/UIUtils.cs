@@ -272,4 +272,15 @@ public class UIUtils
             return $"{sign}{minute}:{second:D2}";
         }
     }
+
+    public static void InitializeDropdownWithLocalizedOptions(
+        TMP_Dropdown dropdown, params string[] optionKeys)
+    {
+        dropdown.ClearOptions();
+        foreach (string key in optionKeys)
+        {
+            dropdown.options.Add(new TMP_Dropdown.OptionData(
+                Locale.GetString(key)));
+        }
+    }
 }

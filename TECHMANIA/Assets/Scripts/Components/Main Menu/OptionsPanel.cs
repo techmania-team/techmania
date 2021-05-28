@@ -166,19 +166,12 @@ public class OptionsPanel : MonoBehaviour
     // The portion of MemoryToUI that should respond to locale change.
     private void MemoryToLocalizedUI()
     {
-        fullscreenDropdown.ClearOptions();
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_exclusive_fullscreen")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_fullscreen_window")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_maximized_window")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_windowed")));
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            fullscreenDropdown,
+            "options_fullscreen_mode_exclusive_fullscreen",
+            "options_fullscreen_mode_fullscreen_window",
+            "options_fullscreen_mode_maximized_window",
+            "options_fullscreen_mode_windowed");
         fullscreenDropdown.SetValueWithoutNotify(
             (int)Options.instance.fullScreenMode);
         fullscreenDropdown.RefreshShownValue();

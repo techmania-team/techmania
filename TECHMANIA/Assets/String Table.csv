@@ -154,6 +154,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_select_skins_button,SELECT,选择,選擇,選択,선택
 ,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
 ,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
+New to 0.7.,options_show_judgement_tallies_label,Show judgement tallies,显示判定统计,,,
 ,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
@@ -705,10 +706,27 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-0.7 strings start here.,select_pattern_panel_title,Select Pattern,,,,
-,select_pattern_modifier_button,Modifiers,,,,
-,select_pattern_length_title,Length,,,,
-,select_pattern_notes_title,Notes,,,,
-,select_pattern_radar_title,Radar,,,,
-,select_pattern_my_record_title,My record,,,,
-,select_pattern_modifier_title,Modifiers,,,,
+0.7 strings start here.,select_pattern_panel_title,Select Pattern,选择谱面,,,
+,select_pattern_length_title,Length,长度,,,
+,select_pattern_notes_title,Notes,音符数,,,
+,select_pattern_radar_title,Radar,雷达,,,
+,select_pattern_my_record_title,My record,最高纪录,,,
+,select_pattern_modifier_title,Modifiers,游戏选项,,,
+,select_pattern_modifier_button,Modifiers,游戏选项,,,
+,,,,,,
+,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,,,
+,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,,,
+,modifier_sidesheet_scanline_opacity_label,Scanline opacity,扫描线透明度,,,
+,modifier_sidesheet_scan_direction_label,Scan direction,扫描方向,,,
+,modifier_sidesheet_note_position_label,Note position,音符位置,,,
+,modifier_sidesheet_scan_position_label,Scan position,扫描位置,,,
+,modifier_sidesheet_fever_label,Fever,Fever,,,
+,modifier_sidesheet_keysound_label,Keysound,按键音,,,
+,modifier_sidesheet_appearance_title,Appearance,界面,,,
+,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,,,
+,modifier_sidesheet_no_video_label,No video,不播放视频,,,
+,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,,,
+,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,,,
+,modifier_sidesheet_mode_label,Mode,模式,,,
+,modifier_sidesheet_control_override_label,Control override,操作方式,,,
+,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,,,
