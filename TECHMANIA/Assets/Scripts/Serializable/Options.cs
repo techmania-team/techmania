@@ -235,6 +235,14 @@ public class Modifiers
         FadeIn2
     }
     public NoteOpacity noteOpacity;
+    public static readonly string[] noteOpacityDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_fade_out",
+        "modifier_fade_out_2",
+        "modifier_fade_in",
+        "modifier_fade_in_2"
+    };
 
     public enum ScanlineOpacity
     {
@@ -244,15 +252,29 @@ public class Modifiers
         Blind
     }
     public ScanlineOpacity scanlineOpacity;
+    public static readonly string[] scanlineOpacityDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_blink",
+        "modifier_blink_2",
+        "modifier_blind"
+    };
 
     public enum ScanDirection
     {
-        Normal,
+        Normal,  // RL
         RR,
         LR,
         LL
     }
     public ScanDirection scanDirection;
+    public static readonly string[] scanDirectionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_right_right",
+        "modifier_left_right",
+        "modifier_left_left"
+    };
 
     public enum NotePosition
     {
@@ -260,6 +282,11 @@ public class Modifiers
         Mirror
     }
     public NotePosition notePosition;
+    public static readonly string[] notePositionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_mirror"
+    };
 
     public enum ScanPosition
     {
@@ -267,6 +294,11 @@ public class Modifiers
         Swap
     }
     public ScanPosition scanPosition;
+    public static readonly string[] scanPositionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_swap"
+    };
 
     public enum Fever
     {
@@ -275,15 +307,28 @@ public class Modifiers
         AutoFever
     }
     public Fever fever;
+    public static readonly string[] feverDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_fever_off",
+        "modifier_auto_fever"
+    };
 
     public enum Keysound
     {
         Normal,
         AutoKeysound,
-        AutoKeysoundAndTicks,
-        AutoKeysoundAndAutoTicks
+        AutoKeysoundPlusTicks,
+        AutoKeysoundPlusAutoTicks
     }
     public Keysound keysound;
+    public static readonly string[] keysoundDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_auto_keysound",
+        "modifier_auto_keysound_plus_ticks",
+        "modifier_auto_keysound_plus_auto_ticks"
+    };
 
     // Special modifiers
 
@@ -295,6 +340,13 @@ public class Modifiers
         Practice
     }
     public Mode mode;
+    public static readonly string[] modeDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_no_fail",
+        "modifier_auto_play",
+        "modifier_practice"
+    };
 
     public enum ControlOverride
     {
@@ -304,6 +356,13 @@ public class Modifiers
         OverrideToKM
     }
     public ControlOverride controlOverride;
+    public static readonly string[] controlOverrideDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_override_to_touch",
+        "modifier_override_to_keys",
+        "modifier_override_to_km"
+    };
 
     public enum ScrollSpeed
     {
@@ -311,6 +370,71 @@ public class Modifiers
         HalfSpeed
     }
     public ScrollSpeed scrollSpeed;
+    public static readonly string[] scrollSpeedDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_half_speed"
+    };
+
+    // Display
+
+    // Does not add "none" segments when all options are 0; does not
+    // add per-track options.
+    public void ToDisplaySegments(List<string> regularSegments,
+        List<string> specialSegments)
+    {
+        if (noteOpacity != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                noteOpacityDisplayKeys[(int)noteOpacity]));
+        }
+        if (scanlineOpacity != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
+        }
+        if (scanDirection != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanDirectionDisplayKeys[(int)scanDirection]));
+        }
+        if (notePosition != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                notePositionDisplayKeys[(int)notePosition]));
+        }
+        if (scanPosition != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanPositionDisplayKeys[(int)scanPosition]));
+        }
+        if (fever != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                feverDisplayKeys[(int)fever]));
+        }
+        if (keysound != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                keysoundDisplayKeys[(int)keysound]));
+        }
+
+        if (mode != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                modeDisplayKeys[(int)mode]));
+        }
+        if (controlOverride != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                controlOverrideDisplayKeys[(int)controlOverride]));
+        }
+        if (scrollSpeed != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                scrollSpeedDisplayKeys[(int)scrollSpeed]));
+        }
+    }
 }
 
 [Serializable]
