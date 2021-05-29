@@ -201,11 +201,6 @@ public class ModifierSidesheet : MonoBehaviour
         ModifierChanged?.Invoke();
     }
 
-    public void OnSelectSkinButtonClick()
-    {
-
-    }
-
     // Line 1 contains modifiers and appearance options;
     // Line 2 contains special modifiers.
     public void GetModifierDisplay(

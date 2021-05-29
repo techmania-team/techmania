@@ -74,6 +74,18 @@ public class SelectPatternPanel : MonoBehaviour
         previewPlayer.Stop();
     }
 
+    private void Update()
+    {
+        // Synchronize alpha with sidesheet because the
+        // CanvasGroup on the sidesheet ignores parent.
+        if (PanelTransitioner.transitioning &&
+            modifierSidesheet.gameObject.activeSelf)
+        {
+            modifierSidesheet.GetComponent<CanvasGroup>().alpha
+                = GetComponent<CanvasGroup>().alpha;
+        }
+    }
+
     private void RefreshPatternDetails(Pattern p)
     {
         if (p == null)
