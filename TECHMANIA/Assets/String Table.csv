@@ -154,7 +154,6 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_select_skins_button,SELECT,选择,選擇,選択,선택
 ,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
 ,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
-New to 0.7.,options_show_judgement_tally_label,Show judgement tally,显示判定统计,,,
 ,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
@@ -212,15 +211,8 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 ,information_panel_credits_program,Program,程序,程式,プログラミング,프로그래밍
 ,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
-key change in 0.7.,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
-key change in 0.7.,select_pattern_play_button,PLAY,开始,開始,プレイ,시작
-deleted in 0.7.,select_pattern_dialog_back_button,BACK,返回,返回,戻す,돌아가기
-deleted in 0.7.,select_pattern_dialog_auto_play_no_fail_instruction,"Hold Shift and click Play to enable auto play.
-Hold Ctrl and click Play to enable no fail.","按Shift并点击“开始”以启用自动演奏。
-按Ctrl并点击“开始”以启用无失败。","按 Shift 並點擊開始以啟用自動演奏。
-按 Ctrl 並點擊開始以啟用無失敗模式。","Shift長押し＋プレイでオートプレイをオンにします。
-Ctrl長押し＋プレイでFail無しをオンにします。","오토플레이 - Shift를 누른 채 시작
-연습 모드 - Ctrl을 누른 채 시작"
+,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
+,select_pattern_play_button,PLAY,开始,開始,プレイ,시작
 ,,,,,,
 ,message_dialog_ok_button,OK,确定,確定,OK,확인
 ,,,,,,
@@ -732,6 +724,8 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,modifier_sidesheet_control_override_label,Control override,操作方式,,,
 ,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,,,
 ,,,,,,
+,options_show_judgement_tally_label,Show judgement tally,显示判定统计,,,
+,,,,,,
 ,modifier_normal,Normal,正常,,,
 ,modifier_fade_out,Fade out,淡出,,,
 ,modifier_fade_out_2,Fade out 2,淡出II,,,
@@ -765,6 +759,6 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,practice_mode_auto_play_label,Auto play,自动演奏,,,
 ,,,,,,
 ,result_panel_ruleset_label,Ruleset,规则,,,
-,result_panel_ruleset_default,Default,默认规则,,,
-,result_panel_ruleset_custom,Custom,自定义规则,,,
-,result_panel_my_record_label,My record,纪录,,,
+,result_panel_ruleset_default,Default,默认,,,
+,result_panel_ruleset_custom,Custom,自定义,,,
+,result_panel_my_record_label,My record,最高纪录,,,

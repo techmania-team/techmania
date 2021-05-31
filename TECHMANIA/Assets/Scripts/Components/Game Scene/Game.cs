@@ -64,6 +64,7 @@ public class Game : MonoBehaviour
     public GameObject repeatHoldPrefab;
     public GameObject repeatPathExtensionPrefab;
     public GameObject repeatHoldExtensionPrefab;
+    public GameObject hiddenNotePrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -768,39 +769,46 @@ public class Game : MonoBehaviour
         Scan scan, bool hidden)
     {
         GameObject prefab = null;
-        switch (n.type)
+        if (hidden)
         {
-            case NoteType.Basic:
-                prefab = basicNotePrefab;
-                break;
-            case NoteType.ChainHead:
-                prefab = chainHeadPrefab;
-                break;
-            case NoteType.ChainNode:
-                prefab = chainNodePrefab;
-                break;
-            case NoteType.Hold:
-                prefab = holdNotePrefab;
-                break;
-            case NoteType.Drag:
-                prefab = dragNotePrefab;
-                break;
-            case NoteType.RepeatHead:
-                prefab = repeatHeadPrefab;
-                break;
-            case NoteType.RepeatHeadHold:
-                prefab = repeatHeadHoldPrefab;
-                break;
-            case NoteType.Repeat:
-                prefab = repeatNotePrefab;
-                break;
-            case NoteType.RepeatHold:
-                prefab = repeatHoldPrefab;
-                break;
-            default:
-                Debug.LogError("Unsupported note type: " +
-                    n.type);
-                break;
+            prefab = hiddenNotePrefab;
+        }
+        else
+        {
+            switch (n.type)
+            {
+                case NoteType.Basic:
+                    prefab = basicNotePrefab;
+                    break;
+                case NoteType.ChainHead:
+                    prefab = chainHeadPrefab;
+                    break;
+                case NoteType.ChainNode:
+                    prefab = chainNodePrefab;
+                    break;
+                case NoteType.Hold:
+                    prefab = holdNotePrefab;
+                    break;
+                case NoteType.Drag:
+                    prefab = dragNotePrefab;
+                    break;
+                case NoteType.RepeatHead:
+                    prefab = repeatHeadPrefab;
+                    break;
+                case NoteType.RepeatHeadHold:
+                    prefab = repeatHeadHoldPrefab;
+                    break;
+                case NoteType.Repeat:
+                    prefab = repeatNotePrefab;
+                    break;
+                case NoteType.RepeatHold:
+                    prefab = repeatHoldPrefab;
+                    break;
+                default:
+                    Debug.LogError("Unsupported note type: " +
+                        n.type);
+                    break;
+            }
         }
         return scan.SpawnNoteObject(prefab, n, hidden);
     }

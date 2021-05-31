@@ -9,6 +9,8 @@ using UnityEngine.UI;
 // when a held down click/touch enters another lane, Game can
 // handle that as a new click/touch. This is necessary for chain
 // notes.
+//
+// TODO: break this into derived classes, one for each note type.
 public class NoteAppearance : MonoBehaviour,
     IPointsOnCurveProvider
 {
@@ -49,16 +51,10 @@ public class NoteAppearance : MonoBehaviour,
     [Header("Repeat")]
     public RectTransform pathToLastRepeatNote;
 
-    private bool hidden;
     private Scan scanRef;
     private Scanline scanlineRef;
 
     #region State Interfaces
-    public void SetHidden(bool hidden)
-    {
-        this.hidden = hidden;
-    }
-
     public void Prepare()
     {
         state = State.Prepare;
@@ -190,20 +186,6 @@ public class NoteAppearance : MonoBehaviour,
 
     private void UpdateState()
     {
-        // Is the note image visible and targetable?
-        if (hidden)
-        {
-            SetNoteImageVisibility(Visibility.Hidden);
-            SetFeverOverlayVisibility(Visibility.Hidden);
-            SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
-            SetDurationTrailVisibility(Visibility.Hidden);
-            SetHoldExtensionVisibility(Visibility.Hidden);
-            SetCurveVisibility(Visibility.Hidden);
-            SetRepeatPathVisibility(Visibility.Hidden);
-            SetRepeatPathExtensionVisibility(Visibility.Hidden);
-            return;
-        }
-
         switch (state)
         {
             case State.Inactive:
@@ -321,7 +303,6 @@ public class NoteAppearance : MonoBehaviour,
     #region Update
     private void Update()
     {
-        if (hidden) return;
         if (state == State.Inactive || state == State.Resolved) return;
 
         UpdateSprites();

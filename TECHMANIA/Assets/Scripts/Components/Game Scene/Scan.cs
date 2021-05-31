@@ -56,6 +56,8 @@ public class Scan : MonoBehaviour
         NoteObject noteObject = o.GetComponent<NoteObject>();
         noteObject.note = n;
 
+        if (hidden) return noteObject;
+
         float x = FloatPulseToXPosition(n.pulse);
         float y = FloatLaneToYPosition(n.lane);
         RectTransform rect = o.GetComponent<RectTransform>();
@@ -66,7 +68,6 @@ public class Scan : MonoBehaviour
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
-        appearance.SetHidden(hidden);
         appearance.SetScanAndScanlineRef(this, scanline);
         appearance.InitializeScale();
         noteAppearances.Add(appearance);
