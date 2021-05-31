@@ -208,7 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4938960492040002542}
   - component: {fileID: 7334993887986592855}
-  - component: {fileID: 885913038887205672}
+  - component: {fileID: 935030074555372396}
   m_Layer: 5
   m_Name: Drag Note
   m_TagString: Untagged
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153a7f1c972350145bc6be4cfb22bfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &885913038887205672
+--- !u!114 &935030074555372396
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -261,16 +261,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 4938960492040002543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e152195c553e64c489b482b5a958623a, type: 3}
+  m_Script: {fileID: 11500000, guid: d2b26e08c8956404a9c1d39fc78784ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   noteImage: {fileID: 679015273133456939}
   feverOverlay: {fileID: 6953956412375015768}
   hitbox: {fileID: 2833327469382064950}
-  pathToPreviousNote: {fileID: 0}
+  pathToLastRepeatNote: {fileID: 0}
   curve: {fileID: 1550434767153967095}
   curveEnd: {fileID: 6710745115077381308}
-  pathToLastRepeatNote: {fileID: 0}
 --- !u!1 &8415943198152145458
 GameObject:
   m_ObjectHideFlags: 0

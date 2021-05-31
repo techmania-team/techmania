@@ -576,7 +576,8 @@ public class Game : MonoBehaviour
             // move their hitboxes accordingly.
             if (n.type == NoteType.Drag)
             {
-                appearance.SetInputLatency(LatencyForNote(n));
+                (appearance as DragNoteAppearance)
+                    .SetInputLatency(LatencyForNote(n));
             }
         }
 

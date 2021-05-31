@@ -11,8 +11,7 @@ using UnityEngine.UI;
 // notes.
 //
 // TODO: break this into derived classes, one for each note type.
-public class NoteAppearance : MonoBehaviour,
-    IPointsOnCurveProvider
+public class NoteAppearance : MonoBehaviour
 {
     public enum State
     {
@@ -44,14 +43,13 @@ public class NoteAppearance : MonoBehaviour,
     public GameObject feverOverlay;
     public RectTransform hitbox;
 
-    [Header("Drag")]
-    public CurvedImage curve;
-    public RectTransform curveEnd;
     [Header("Repeat")]
     public RectTransform pathToLastRepeatNote;
 
-    private Scan scanRef;
-    private Scanline scanlineRef;
+    protected Scan scanRef;
+    protected Scanline scanlineRef;
+
+    public virtual void TypeSpecificInitialize() { }
 
     #region State Interfaces
     public void Prepare()
@@ -72,15 +70,10 @@ public class NoteAppearance : MonoBehaviour,
         UpdateState();
     }
 
-    public void SetOngoing()
+    public virtual void SetOngoing()
     {
         state = State.Ongoing;
         UpdateState();
-        if (GetNoteType() == NoteType.Drag)
-        {
-            SetHitboxSize(Ruleset.instance.ongoingDragHitboxWidth,
-                Ruleset.instance.ongoingDragHitboxHeight);
-        }
     }
 
     public void Resolve()
@@ -144,15 +137,6 @@ public class NoteAppearance : MonoBehaviour,
         }
     }
 
-    protected void SetCurveVisibility(Visibility v)
-    {
-        if (curve == null) return;
-        curve.gameObject.SetActive(v != Visibility.Hidden);
-        curve.color = (v == Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
-    }
-
     protected void SetRepeatPathVisibility(Visibility v)
     {
         if (pathToLastRepeatNote == null) return;
@@ -179,7 +163,6 @@ public class NoteAppearance : MonoBehaviour,
                 SetFeverOverlayVisibility(Visibility.Hidden);
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
-                SetCurveVisibility(Visibility.Hidden);
                 SetRepeatPathVisibility(Visibility.Hidden);
                 SetRepeatPathExtensionVisibility(Visibility.Hidden);
                 break;
@@ -201,7 +184,6 @@ public class NoteAppearance : MonoBehaviour,
                     SetDurationTrailVisibility(
                         Visibility.Transparent);
                 }
-                SetCurveVisibility(Visibility.Transparent);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
@@ -210,7 +192,6 @@ public class NoteAppearance : MonoBehaviour,
                 SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
-                SetCurveVisibility(Visibility.Visible);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
@@ -226,7 +207,6 @@ public class NoteAppearance : MonoBehaviour,
                 }
                 SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
-                SetCurveVisibility(Visibility.Visible);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
@@ -294,14 +274,6 @@ public class NoteAppearance : MonoBehaviour,
                 extension.UpdateSprites();
             }
         }
-        if (state == State.Ongoing)
-        {
-            if (curve != null)
-            {
-                UpdateOngoingCurve();
-                PlaceNoteImageAndHitboxOnCurve();
-            }
-        }
     }
 
     protected virtual void TypeSpecificUpdate() { }
@@ -324,13 +296,6 @@ public class NoteAppearance : MonoBehaviour,
         float noteImageScaleY = 1f;
         switch (GetNoteType())
         {
-            case NoteType.Drag:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    dragHead.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    dragHead.scale;
-                curve.scale = GlobalResource.noteSkin.dragCurve.scale;
-                break;
             case NoteType.Hold:
                 noteImageScaleX = GlobalResource.noteSkin.
                     holdHead.scale;
@@ -369,12 +334,6 @@ public class NoteAppearance : MonoBehaviour,
     {
         switch (GetNoteType())
         {
-            case NoteType.Drag:
-                noteImage.sprite = GlobalResource.noteSkin.dragHead
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                curve.sprite = GlobalResource.noteSkin.dragCurve
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
             case NoteType.Hold:
                 noteImage.sprite = GlobalResource.noteSkin.holdHead
                     .GetSpriteForFloatBeat(Game.FloatBeat);
@@ -414,7 +373,7 @@ public class NoteAppearance : MonoBehaviour,
         SetHitboxSize(hitboxWidth, 1f);
     }
 
-    private void SetHitboxSize(float width, float height)
+    protected void SetHitboxSize(float width, float height)
     {
         if (hitbox == null) return;
 
@@ -497,149 +456,6 @@ public class NoteAppearance : MonoBehaviour,
             return holdExtensions[extensionIndex]
                 .ongoingTrailEnd.position;
         }
-    }
-    #endregion
-
-    #region Curve
-    // All positions relative to note head.
-    private ListView<Vector2> visiblePointsOnCurve;
-    private List<Vector2> pointsOnCurve;
-    private float curveXDirection;
-    private float inputLatency;
-
-    public IList<Vector2> GetVisiblePointsOnCurve()
-    {
-        return visiblePointsOnCurve;
-    }
-
-    public void SetInputLatency(float latency)
-    {
-        inputLatency = latency;
-    }
-
-    public void InitializeCurve()
-    {
-        DragNote dragNote = GetComponent<NoteObject>().note
-            as DragNote;
-        visiblePointsOnCurve = new ListView<Vector2>();
-        pointsOnCurve = new List<Vector2>();
-
-        Vector2 headPosition = GetComponent<RectTransform>()
-            .anchoredPosition;
-        foreach (FloatPoint p in dragNote.Interpolate())
-        {
-            Vector2 pointOnCurve = new Vector2(
-                scanRef.FloatPulseToXPosition(
-                    dragNote.pulse + p.pulse)
-                - headPosition.x,
-                scanRef.FloatLaneToYPosition(
-                    dragNote.lane + p.lane)
-                - headPosition.y);
-            visiblePointsOnCurve.Add(pointOnCurve);
-            pointsOnCurve.Add(pointOnCurve);
-        }
-
-        curveEnd.anchoredPosition =
-            visiblePointsOnCurve[visiblePointsOnCurve.Count - 1];
-        curveXDirection = Mathf.Sign(
-            visiblePointsOnCurve[visiblePointsOnCurve.Count - 1].x
-            - visiblePointsOnCurve[0].x);
-        curve.SetVerticesDirty();
-
-        noteImage.rectTransform.anchoredPosition = Vector2.zero;
-        feverOverlay.GetComponent<RectTransform>().anchoredPosition =
-            Vector2.zero;
-        hitbox.anchoredPosition = Vector2.zero;
-        UIUtils.RotateToward(noteImage.rectTransform,
-                selfPos: pointsOnCurve[0],
-                targetPos: pointsOnCurve[1]);
-    }
-
-    public void UpdateOngoingCurve()
-    {
-        if (visiblePointsOnCurve.Count < 2)
-        {
-            return;
-        }
-        float scanlineX = scanlineRef
-            .GetComponent<RectTransform>().anchoredPosition.x -
-            GetComponent<RectTransform>().anchoredPosition.x;
-        // Make sure scanline is before pointsOnCurve[1]; remove
-        // points if necessary.
-        while ((scanlineX - visiblePointsOnCurve[1].x)
-            * curveXDirection >= 0f)
-        {
-            if (visiblePointsOnCurve.Count < 3) break;
-            visiblePointsOnCurve.RemoveFirst();
-        }
-        // Interpolate visiblePointsOnCurve[0] and
-        // visiblePointsOnCurve[1].
-        float t = (scanlineX - visiblePointsOnCurve[0].x) /
-            (visiblePointsOnCurve[1].x - visiblePointsOnCurve[0].x);
-        visiblePointsOnCurve[0] = Vector2.Lerp(
-            visiblePointsOnCurve[0],
-            visiblePointsOnCurve[1], t);
-        curve.SetVerticesDirty();
-    }
-
-    public void PlaceNoteImageAndHitboxOnCurve()
-    {
-        RectTransform imageRect = noteImage
-            .GetComponent<RectTransform>();
-        imageRect.anchoredPosition = visiblePointsOnCurve[0];
-        feverOverlay.GetComponent<RectTransform>()
-            .anchoredPosition = visiblePointsOnCurve[0];
-        if (visiblePointsOnCurve.Count > 1)
-        {
-            UIUtils.RotateToward(imageRect,
-                selfPos: visiblePointsOnCurve[0],
-                targetPos: visiblePointsOnCurve[1]);
-        }
-
-        // To calculate the hitbox's position, we need to compensate
-        // for latency.
-        float compensatedPulse = GameSetup.pattern.TimeToPulse(
-            Game.Time - inputLatency);
-        float compensatedScanlineX = scanRef.FloatPulseToXPosition(
-            compensatedPulse) -
-            GetComponent<RectTransform>().anchoredPosition.x;
-        int pointIndexAfterHitbox = -1;
-        // Find the first point after the compensated scanline's
-        // position.
-        for (int i = 0; i < pointsOnCurve.Count; i++)
-        {
-            if ((pointsOnCurve[i].x - compensatedScanlineX) *
-                curveXDirection >= 0f)
-            {
-                pointIndexAfterHitbox = i;
-                break;
-            }
-        }
-        if (pointIndexAfterHitbox < 0)
-        {
-            // All points are before the compensated scanline.
-            pointIndexAfterHitbox = pointsOnCurve.Count - 1;
-        }
-        else if (pointIndexAfterHitbox == 0)
-        {
-            // All points are after the compensated scanline.
-            pointIndexAfterHitbox = 1;
-        }
-        // Interpolate pointsOnCurve[pointIndexAfterHitbox - 1]
-        // and pointsOnCurve[pointIndexAfterHitbox].
-        Vector2 pointBeforeHitbox =
-            pointsOnCurve[pointIndexAfterHitbox - 1];
-        Vector2 pointAfterHitbox =
-            pointsOnCurve[pointIndexAfterHitbox];
-        float t = (compensatedScanlineX - pointBeforeHitbox.x) /
-            (pointAfterHitbox.x - pointBeforeHitbox.x);
-        hitbox.anchoredPosition = Vector2.Lerp(pointBeforeHitbox,
-            pointAfterHitbox, t);
-    }
-
-    public Vector3 GetCurveEndPosition()
-    {
-        return curveEnd.position;
     }
     #endregion
 

@@ -165,7 +165,7 @@ public class VFXSpawner : MonoBehaviour
                     judgement != Judgement.Break)
                 {
                     SpawnVfxAt(
-                        note.GetComponent<NoteAppearance>()
+                        note.GetComponent<DragNoteAppearance>()
                             .GetCurveEndPosition(),
                         GlobalResource.vfxSkin.dragComplete);
                 }

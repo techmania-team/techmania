@@ -70,6 +70,7 @@ public class Scan : MonoBehaviour
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
         appearance.SetScanAndScanlineRef(this, scanline);
         appearance.InitializeScale();
+        appearance.TypeSpecificInitialize();
         noteAppearances.Add(appearance);
 
         switch (n.type)
@@ -78,9 +79,6 @@ public class Scan : MonoBehaviour
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
                 appearance.InitializeTrail();
-                break;
-            case NoteType.Drag:
-                appearance.InitializeCurve();
                 break;
         }
 
