@@ -43,8 +43,7 @@ public class NoteAppearance : MonoBehaviour,
     public Image noteImage;
     public GameObject feverOverlay;
     public RectTransform hitbox;
-    [Header("Chain")]
-    public RectTransform pathToPreviousNote;
+
     [Header("Drag")]
     public CurvedImage curve;
     public RectTransform curveEnd;
@@ -109,7 +108,7 @@ public class NoteAppearance : MonoBehaviour,
     #endregion
 
     #region States
-    private void SetNoteImageVisibility(Visibility v)
+    protected void SetNoteImageVisibility(Visibility v)
     {
         noteImage.gameObject.SetActive(v != Visibility.Hidden);
         if (hitbox != null)
@@ -121,28 +120,14 @@ public class NoteAppearance : MonoBehaviour,
             Color.white;
     }
 
-    private void SetFeverOverlayVisibility(Visibility v)
+    protected void SetFeverOverlayVisibility(Visibility v)
     {
         if (feverOverlay == null) return;
         feverOverlay.GetComponent<Image>().enabled =
             v != Visibility.Hidden;
     }
 
-    private void SetPathToPreviousChainNodeVisibility(Visibility v)
-    {
-        if (pathToPreviousNote == null) return;
-        pathToPreviousNote.gameObject.SetActive(
-            v != Visibility.Hidden);
-    }
-
-    private void SetPathFromNextChainNodeVisibility(Visibility v)
-    {
-        if (nextChainNode == null) return;
-        nextChainNode.GetComponent<NoteAppearance>()
-            .SetPathToPreviousChainNodeVisibility(v);
-    }
-
-    private void SetDurationTrailVisibility(Visibility v)
+    protected void SetDurationTrailVisibility(Visibility v)
     {
         HoldTrailManager holdTrailManager = 
             GetComponent<HoldTrailManager>();
@@ -150,7 +135,7 @@ public class NoteAppearance : MonoBehaviour,
         holdTrailManager.SetVisibility(v);
     }
 
-    private void SetHoldExtensionVisibility(Visibility v)
+    protected void SetHoldExtensionVisibility(Visibility v)
     {
         if (holdExtensions == null) return;
         foreach (HoldExtension e in holdExtensions)
@@ -159,7 +144,7 @@ public class NoteAppearance : MonoBehaviour,
         }
     }
 
-    private void SetCurveVisibility(Visibility v)
+    protected void SetCurveVisibility(Visibility v)
     {
         if (curve == null) return;
         curve.gameObject.SetActive(v != Visibility.Hidden);
@@ -168,14 +153,14 @@ public class NoteAppearance : MonoBehaviour,
             Color.white;
     }
 
-    private void SetRepeatPathVisibility(Visibility v)
+    protected void SetRepeatPathVisibility(Visibility v)
     {
         if (pathToLastRepeatNote == null) return;
         pathToLastRepeatNote.gameObject.SetActive(
             v != Visibility.Hidden);
     }
 
-    private void SetRepeatPathExtensionVisibility(Visibility v)
+    protected void SetRepeatPathExtensionVisibility(Visibility v)
     {
         if (repeatPathExtensions == null) return;
         foreach (RepeatPathExtension e in repeatPathExtensions)
@@ -184,7 +169,7 @@ public class NoteAppearance : MonoBehaviour,
         }
     }
 
-    private void UpdateState()
+    protected virtual void UpdateState()
     {
         switch (state)
         {
@@ -192,8 +177,6 @@ public class NoteAppearance : MonoBehaviour,
             case State.Resolved:
                 SetNoteImageVisibility(Visibility.Hidden);
                 SetFeverOverlayVisibility(Visibility.Hidden);
-                SetPathFromNextChainNodeVisibility(
-                    Visibility.Hidden);
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
                 SetCurveVisibility(Visibility.Hidden);
@@ -202,21 +185,12 @@ public class NoteAppearance : MonoBehaviour,
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
-                // - Basic Note
+                // - Basic Note (handled in subclass)
                 // - Trail of Hold Note
                 // - Curve
                 NoteType type = GetNoteType();
-                if (type == NoteType.Basic)
-                {
-                    SetNoteImageVisibility(Visibility.Transparent);
-                }
-                else
-                {
-                    SetNoteImageVisibility(Visibility.Visible);
-                }
+                SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
-                SetPathFromNextChainNodeVisibility(
-                    Visibility.Visible);
                 if (type == NoteType.RepeatHeadHold ||
                     type == NoteType.RepeatHold)
                 {
@@ -235,8 +209,6 @@ public class NoteAppearance : MonoBehaviour,
             case State.Active:
                 SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
-                SetPathFromNextChainNodeVisibility(
-                    Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
                 SetCurveVisibility(Visibility.Visible);
                 SetRepeatPathVisibility(Visibility.Visible);
@@ -253,8 +225,6 @@ public class NoteAppearance : MonoBehaviour,
                     SetNoteImageVisibility(Visibility.Visible);
                 }
                 SetFeverOverlayVisibility(Visibility.Visible);
-                SetPathFromNextChainNodeVisibility(
-                    Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
                 SetCurveVisibility(Visibility.Visible);
                 SetRepeatPathVisibility(Visibility.Visible);
@@ -272,25 +242,27 @@ public class NoteAppearance : MonoBehaviour,
     }
     #endregion
 
-    private void Start()
+    protected void Start()
     {
         state = State.Inactive;
         UpdateState();
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         if (hitbox != null)
         {
-            Game.HitboxVisibilityChanged += OnHitboxVisibilityChanged;
+            Game.HitboxVisibilityChanged += 
+                OnHitboxVisibilityChanged;
         }
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         if (hitbox != null)
         {
-            Game.HitboxVisibilityChanged -= OnHitboxVisibilityChanged;
+            Game.HitboxVisibilityChanged -= 
+                OnHitboxVisibilityChanged;
         }
     }
 
@@ -301,11 +273,13 @@ public class NoteAppearance : MonoBehaviour,
     }
 
     #region Update
-    private void Update()
+    protected void Update()
     {
-        if (state == State.Inactive || state == State.Resolved) return;
+        if (state == State.Inactive || state == State.Resolved) 
+            return;
 
         UpdateSprites();
+        TypeSpecificUpdate();
         if (GetComponent<HoldTrailManager>() != null)
         {
             // Do this in all visible states because it updates
@@ -329,34 +303,27 @@ public class NoteAppearance : MonoBehaviour,
             }
         }
     }
+
+    protected virtual void TypeSpecificUpdate() { }
     #endregion
 
     #region Note skin
+    protected virtual void GetNoteImageScale(out float x,
+        out float y)
+    {
+        x = 1f;
+        y = 1f;
+    }
+
+    // For paths and trails and stuff.
+    protected virtual void TypeSpecificInitializeScale() { }
+
     public void InitializeScale()
     {
         float noteImageScaleX = 1f;
         float noteImageScaleY = 1f;
         switch (GetNoteType())
         {
-            case NoteType.Basic:
-                noteImageScaleX = GlobalResource.noteSkin.basic.scale;
-                noteImageScaleY = GlobalResource.noteSkin.basic.scale;
-                break;
-            case NoteType.ChainHead:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    chainHead.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    chainHead.scale;
-                break;
-            case NoteType.ChainNode:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    chainNode.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    chainNode.scale;
-                pathToPreviousNote.localScale = new Vector3(1f,
-                    GlobalResource.noteSkin.chainPath.scale,
-                    1f);
-                break;
             case NoteType.Drag:
                 noteImageScaleX = GlobalResource.noteSkin.
                     dragHead.scale;
@@ -388,30 +355,20 @@ public class NoteAppearance : MonoBehaviour,
                 noteImageScaleY = GlobalResource.noteSkin.
                     repeat.scale;
                 break;
+            default:
+                GetNoteImageScale(out noteImageScaleX, out noteImageScaleY);
+                break;
         }
         noteImage.transform.localScale = new Vector3(
             noteImageScaleX, noteImageScaleY, 1f);
+
+        TypeSpecificInitializeScale();
     }
 
-    private void UpdateSprites()
+    protected virtual void UpdateSprites()
     {
         switch (GetNoteType())
         {
-            case NoteType.Basic:
-                noteImage.sprite = GlobalResource.noteSkin.basic
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
-            case NoteType.ChainHead:
-                noteImage.sprite = GlobalResource.noteSkin.chainHead
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
-            case NoteType.ChainNode:
-                noteImage.sprite = GlobalResource.noteSkin.chainNode
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                pathToPreviousNote.GetComponent<Image>().sprite =
-                    GlobalResource.noteSkin.chainPath
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
             case NoteType.Drag:
                 noteImage.sprite = GlobalResource.noteSkin.dragHead
                     .GetSpriteForFloatBeat(Game.FloatBeat);
@@ -445,23 +402,15 @@ public class NoteAppearance : MonoBehaviour,
     }
 
     #region Hitbox
-    public void InitializeHitbox()
+    protected virtual float GetHitboxWidth()
+    {
+        return Ruleset.instance.hitboxWidth;
+    }
+
+    private void InitializeHitbox()
     {
         if (hitbox == null) return;
-
-        float hitboxWidth;
-        switch (GetNoteType())
-        {
-            case NoteType.ChainHead:
-                hitboxWidth = Ruleset.instance.chainHeadHitboxWidth;
-                break;
-            case NoteType.ChainNode:
-                hitboxWidth = Ruleset.instance.chainNodeHitboxWidth;
-                break;
-            default:
-                hitboxWidth = Ruleset.instance.hitboxWidth;
-                break;
-        }
+        float hitboxWidth = GetHitboxWidth();
         SetHitboxSize(hitboxWidth, 1f);
     }
 
@@ -485,46 +434,6 @@ public class NoteAppearance : MonoBehaviour,
             hitboxImage.color.g,
             hitboxImage.color.b,
             visible ? 1f : 0f);
-    }
-    #endregion
-
-    #region Path
-    // A little complication here is that, to achieve the correct
-    // draw order, each Chain Node draws a path to its previous
-    // Chain Head/Node, the same way as in the editor.
-    // However, when a Chain Head/Node gets resolved, it should
-    // also take away the path pointing to it. Therefore, it's
-    // necessary for each Chain Head/Node to be aware of, and
-    // eventually control, the next Chain Node.
-    private GameObject nextChainNode;
-    public void SetNextChainNode(GameObject nextChainNode)
-    {
-        this.nextChainNode = null;
-        if (nextChainNode != null)
-        {
-            this.nextChainNode = nextChainNode;
-            nextChainNode.GetComponent<NoteAppearance>()
-                .PointPathTowards(GetComponent<RectTransform>());
-            if (GetNoteType() == NoteType.ChainHead)
-            {
-                UIUtils.RotateToward(
-                    noteImage.GetComponent<RectTransform>(),
-                    selfPos: GetComponent<RectTransform>()
-                        .anchoredPosition,
-                    targetPos: nextChainNode
-                        .GetComponent<RectTransform>()
-                        .anchoredPosition);
-            }
-        }
-    }
-
-    private void PointPathTowards(RectTransform previousNote)
-    {
-        if (pathToPreviousNote == null) return;
-        UIUtils.PointToward(pathToPreviousNote,
-            selfPos: GetComponent<RectTransform>().anchoredPosition,
-            targetPos: previousNote
-                .GetComponent<RectTransform>().anchoredPosition);
     }
     #endregion
 

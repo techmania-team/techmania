@@ -248,7 +248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4938960492040002542}
   - component: {fileID: 7334993887986592855}
-  - component: {fileID: 885913038887205672}
+  - component: {fileID: 2417967788405046303}
   m_Layer: 5
   m_Name: Chain Node
   m_TagString: Untagged
@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153a7f1c972350145bc6be4cfb22bfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &885913038887205672
+--- !u!114 &2417967788405046303
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -299,13 +299,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4938960492040002543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e152195c553e64c489b482b5a958623a, type: 3}
+  m_Script: {fileID: 11500000, guid: 3994b5d114891b344878f08ba4236afa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   noteImage: {fileID: 1889145054254741463}
   feverOverlay: {fileID: 0}
   hitbox: {fileID: 3791766084542590935}
-  pathToPreviousNote: {fileID: 5749253827553177662}
   curve: {fileID: 0}
   curveEnd: {fileID: 0}
   pathToLastRepeatNote: {fileID: 0}
+  pathToPreviousNote: {fileID: 5749253827553177662}

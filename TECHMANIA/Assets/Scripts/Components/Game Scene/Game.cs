@@ -544,7 +544,7 @@ public class Game : MonoBehaviour
             if (n.type == NoteType.ChainHead ||
                 n.type == NoteType.ChainNode)
             {
-                appearance.SetNextChainNode(
+                (appearance as ChainAppearanceBase).SetNextChainNode(
                     nextChainNode?.gameObject);
                 if (n.type == NoteType.ChainHead)
                 {
