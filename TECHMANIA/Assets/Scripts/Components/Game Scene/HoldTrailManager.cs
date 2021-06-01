@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Common routines between NoteAppearance and HoldExtension.
-// This handles the initialization, visibility and
-// updating of duration trails and ongoing trails.
-//
-// Works for both hold notes and repeat hold notes.
-
+// Handles the duration trails, ongoing trails and trail extensions
+// of hold notes, repeat head hold notes and repeat hold notes.
 public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;

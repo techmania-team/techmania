@@ -24,7 +24,7 @@ public class DragNoteAppearance : NoteAppearance,
             Color.white;
     }
 
-    protected override void UpdateState()
+    protected override void TypeSpecificUpdateState()
     {
         switch (state)
         {

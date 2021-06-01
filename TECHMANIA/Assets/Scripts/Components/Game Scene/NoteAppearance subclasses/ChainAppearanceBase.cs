@@ -42,7 +42,7 @@ public class ChainAppearanceBase : NoteAppearance
             .SetPathToPreviousChainNodeVisibility(v);
     }
 
-    protected override void UpdateState()
+    protected override void TypeSpecificUpdateState()
     {
         switch (state)
         {

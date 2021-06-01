@@ -30,7 +30,7 @@ public class NoteAppearance : MonoBehaviour
         // Note is resolved and no longer visible.
         Resolved
     }
-    public State state { get; private set; }
+    public State state { get; protected set; }
 
     public enum Visibility
     {
@@ -43,13 +43,23 @@ public class NoteAppearance : MonoBehaviour
     public GameObject feverOverlay;
     public RectTransform hitbox;
 
-    [Header("Repeat")]
-    public RectTransform pathToLastRepeatNote;
-
     protected Scan scanRef;
     protected Scanline scanlineRef;
 
+    public NoteType GetNoteType()
+    {
+        return GetComponent<NoteObject>().note.type;
+    }
+
+    #region Initialization
     public virtual void TypeSpecificInitialize() { }
+
+    public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
+    {
+        scanRef = scan;
+        scanlineRef = scanline;
+    }
+    #endregion
 
     #region State Interfaces
     public void Prepare()
@@ -76,26 +86,14 @@ public class NoteAppearance : MonoBehaviour
         UpdateState();
     }
 
+    protected virtual void TypeSpecificResolve() 
+    {
+        state = State.Resolved;
+    }
+
     public void Resolve()
     {
-        switch (GetNoteType())
-        {
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-                state = State.PendingResolve;
-                // Only fully resolved when all managed repeat notes
-                // get resolved.
-                ManagedRepeatNoteResolved();
-                break;
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                state = State.Resolved;
-                repeatHead.ManagedRepeatNoteResolved();
-                break;
-            default:
-                state = State.Resolved;
-                break;
-        }
+        TypeSpecificResolve();
         UpdateState();
     }
     #endregion
@@ -137,43 +135,29 @@ public class NoteAppearance : MonoBehaviour
         }
     }
 
-    protected void SetRepeatPathVisibility(Visibility v)
+    protected virtual void TypeSpecificUpdateState() { }
+
+    private void UpdateState()
     {
-        if (pathToLastRepeatNote == null) return;
-        pathToLastRepeatNote.gameObject.SetActive(
-            v != Visibility.Hidden);
+        TypeSpecificUpdateState();
+        UpdateTrailAndHoldExtension();
     }
 
-    protected void SetRepeatPathExtensionVisibility(Visibility v)
-    {
-        if (repeatPathExtensions == null) return;
-        foreach (RepeatPathExtension e in repeatPathExtensions)
-        {
-            e.SetExtensionVisibility(v);
-        }
-    }
-
-    protected virtual void UpdateState()
+    private void UpdateTrailAndHoldExtension()
     {
         switch (state)
         {
             case State.Inactive:
             case State.Resolved:
-                SetNoteImageVisibility(Visibility.Hidden);
-                SetFeverOverlayVisibility(Visibility.Hidden);
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
-                SetRepeatPathVisibility(Visibility.Hidden);
-                SetRepeatPathExtensionVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
                 // Only the following should be transparent:
                 // - Basic Note (handled in subclass)
                 // - Trail of Hold Note
-                // - Curve
+                // - Curve (handled in subclass)
                 NoteType type = GetNoteType();
-                SetNoteImageVisibility(Visibility.Visible);
-                SetFeverOverlayVisibility(Visibility.Visible);
                 if (type == NoteType.RepeatHeadHold ||
                     type == NoteType.RepeatHold)
                 {
@@ -184,44 +168,28 @@ public class NoteAppearance : MonoBehaviour
                     SetDurationTrailVisibility(
                         Visibility.Transparent);
                 }
-                SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
             case State.Active:
-                SetNoteImageVisibility(Visibility.Visible);
-                SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
-                SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
             case State.Ongoing:
-                if (GetNoteType() == NoteType.RepeatHold)
-                {
-                    SetNoteImageVisibility(Visibility.Hidden);
-                }
-                else
-                {
-                    SetNoteImageVisibility(Visibility.Visible);
-                }
-                SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Visible);
-                SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
             case State.PendingResolve:
-                SetNoteImageVisibility(Visibility.Visible);
-                SetFeverOverlayVisibility(Visibility.Visible);
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
-                SetRepeatPathVisibility(Visibility.Visible);
                 break;
         }
     }
     #endregion
 
+    #region Monobehaviuor
     protected void Start()
     {
         state = State.Inactive;
@@ -246,16 +214,11 @@ public class NoteAppearance : MonoBehaviour
         }
     }
 
-    public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
-    {
-        scanRef = scan;
-        scanlineRef = scanline;
-    }
+    protected virtual void TypeSpecificUpdate() { }
 
-    #region Update
     protected void Update()
     {
-        if (state == State.Inactive || state == State.Resolved) 
+        if (state == State.Inactive || state == State.Resolved)
             return;
 
         UpdateSprites();
@@ -266,17 +229,7 @@ public class NoteAppearance : MonoBehaviour
             // sprites.
             UpdateOngoingTrail();
         }
-        if (repeatPathExtensions != null)
-        {
-            foreach (RepeatPathExtension extension in
-                repeatPathExtensions)
-            {
-                extension.UpdateSprites();
-            }
-        }
     }
-
-    protected virtual void TypeSpecificUpdate() { }
     #endregion
 
     #region Note skin
@@ -292,73 +245,15 @@ public class NoteAppearance : MonoBehaviour
 
     public void InitializeScale()
     {
-        float noteImageScaleX = 1f;
-        float noteImageScaleY = 1f;
-        switch (GetNoteType())
-        {
-            case NoteType.Hold:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    holdHead.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    holdHead.scale;
-                break;
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    repeatHead.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    repeatHead.scale;
-                pathToLastRepeatNote.localScale = new Vector3(
-                    pathToLastRepeatNote.localScale.x,
-                    GlobalResource.noteSkin.repeatPath.scale,
-                    1f);
-                break;
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                noteImageScaleX = GlobalResource.noteSkin.
-                    repeat.scale;
-                noteImageScaleY = GlobalResource.noteSkin.
-                    repeat.scale;
-                break;
-            default:
-                GetNoteImageScale(out noteImageScaleX, out noteImageScaleY);
-                break;
-        }
-        noteImage.transform.localScale = new Vector3(
-            noteImageScaleX, noteImageScaleY, 1f);
+        float x, y;
+        GetNoteImageScale(out x, out y);
+        noteImage.transform.localScale = new Vector3(x, y, 1f);
 
         TypeSpecificInitializeScale();
     }
 
-    protected virtual void UpdateSprites()
-    {
-        switch (GetNoteType())
-        {
-            case NoteType.Hold:
-                noteImage.sprite = GlobalResource.noteSkin.holdHead
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-                noteImage.sprite = GlobalResource.noteSkin.repeatHead
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                pathToLastRepeatNote.GetComponent<Image>().sprite =
-                    GlobalResource.noteSkin.repeatPath
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                noteImage.sprite = GlobalResource.noteSkin.repeat
-                    .GetSpriteForFloatBeat(Game.FloatBeat);
-                break;
-        }
-    }
+    protected virtual void UpdateSprites() { }
     #endregion
-
-    public NoteType GetNoteType()
-    {
-        return GetComponent<NoteObject>().note.type;
-    }
 
     #region Hitbox
     protected virtual float GetHitboxWidth()
@@ -457,109 +352,5 @@ public class NoteAppearance : MonoBehaviour
                 .ongoingTrailEnd.position;
         }
     }
-    #endregion
-
-    #region Repeat
-    // Repeat heads and repeat hold heads store references to
-    // all repeat notes and repeat hold notes after it.
-    private List<NoteObject> managedRepeatNotes;
-    // Counting backwards because notes are drawn backwards.
-    // A value equal to managedRepeatNotes.Count means
-    // the head itself.
-    private int nextUnresolvedRepeatNoteIndex;
-    // Repeat notes and repeat hold notes store references to
-    // the repeat head or repeat hold head before it.
-    private NoteAppearance repeatHead;
-    private List<RepeatPathExtension> repeatPathExtensions;
-
-    public void ManageRepeatNotes(List<NoteObject> repeatNotes)
-    {
-        // Clone the list because it will be cleared later.
-        managedRepeatNotes = new List<NoteObject>(repeatNotes);
-        foreach (NoteObject n in managedRepeatNotes)
-        {
-            n.GetComponent<NoteAppearance>().repeatHead
-                = this;
-        }
-        nextUnresolvedRepeatNoteIndex = managedRepeatNotes.Count;
-    }
-
-    public NoteAppearance GetRepeatHead()
-    {
-        return repeatHead;
-    }
-
-    public NoteObject GetFirstUnresolvedRepeatNote()
-    {
-        if (nextUnresolvedRepeatNoteIndex == 
-            managedRepeatNotes.Count)
-        {
-            return GetComponent<NoteObject>();
-        }
-        else
-        {
-            return managedRepeatNotes
-                [nextUnresolvedRepeatNoteIndex];
-        }
-    }
-
-    private void ManagedRepeatNoteResolved()
-    {
-        nextUnresolvedRepeatNoteIndex--;
-        if (nextUnresolvedRepeatNoteIndex < 0)
-        {
-            state = State.Resolved;
-            UpdateState();
-        }
-    }
-
-    public void DrawRepeatHeadBeforeRepeatNotes()
-    {
-        // Since notes are drawn from back to front, we look
-        // for the 1st note in the same scan, and draw
-        // before that one.
-        foreach (NoteObject n in managedRepeatNotes)
-        {
-            if (n.transform.parent == transform.parent)
-            {
-                transform.SetSiblingIndex(
-                    n.transform.GetSiblingIndex());
-                return;
-            }
-        }
-    }
-
-    public void DrawRepeatPathTo(int lastRepeatNotePulse,
-        bool positionEndOfScanOutOfBounds)
-    {
-        float startX = GetComponent<RectTransform>()
-            .anchoredPosition.x;
-        float endX = scanRef.FloatPulseToXPosition(
-            lastRepeatNotePulse,
-            positionEndOfScanOutOfBounds,
-            positionAfterScanOutOfBounds: true);
-        float width = Mathf.Abs(startX - endX);
-
-        pathToLastRepeatNote.sizeDelta = new Vector2(width,
-            pathToLastRepeatNote.sizeDelta.y);
-        if (endX < startX)
-        {
-            pathToLastRepeatNote.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
-            pathToLastRepeatNote.localScale = new Vector3(
-                pathToLastRepeatNote.localScale.x,
-                -pathToLastRepeatNote.localScale.y,
-                pathToLastRepeatNote.localScale.z);
-        }
-
-        repeatPathExtensions = new List<RepeatPathExtension>();
-    }
-
-    public void RegisterRepeatPathExtension(
-        RepeatPathExtension extension)
-    {
-        repeatPathExtensions.Add(extension);
-    }
-
     #endregion
 }

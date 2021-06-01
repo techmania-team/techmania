@@ -849,8 +849,8 @@ public class Game : MonoBehaviour
         List<NoteObject> notesToManage,
         Dictionary<int, Scan> scanObjects)
     {
-        NoteAppearance headAppearance = 
-            head.GetComponent<NoteAppearance>();
+        RepeatHeadAppearanceBase headAppearance = 
+            head.GetComponent<RepeatHeadAppearanceBase>();
         headAppearance.ManageRepeatNotes(notesToManage);
         headAppearance.DrawRepeatHeadBeforeRepeatNotes();
         if (notesToManage.Count > 0)
@@ -1339,13 +1339,19 @@ public class Game : MonoBehaviour
     private void UpdateUI()
     {
         // Fever
-        feverButtonFilling.anchorMax = new Vector2(feverAmount, 1f);
-        feverButtonAnimator.SetBool("Fever Ready", feverState == FeverState.Ready);
-        middleFeverBarFilling.anchorMin = new Vector2(
-            0.5f - feverAmount * 0.5f, 0f);
-        middleFeverBarFilling.anchorMax = new Vector2(
-            0.5f + feverAmount * 0.5f, 1f);
-        middleFeverText.SetActive(feverState == FeverState.Ready);
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
+            //feverButtonFilling.anchorMax =
+            //    new Vector2(feverAmount, 1f);
+            //feverButtonAnimator.SetBool("Fever Ready",
+            //    feverState == FeverState.Ready);
+            //middleFeverBarFilling.anchorMin = new Vector2(
+            //    0.5f - feverAmount * 0.5f, 0f);
+            //middleFeverBarFilling.anchorMax = new Vector2(
+            //    0.5f + feverAmount * 0.5f, 1f);
+            //middleFeverText.SetActive(
+            //    feverState == FeverState.Ready);
+        }
 
         // Other
         hpBar.anchorMax = new Vector2(
@@ -1498,7 +1504,8 @@ public class Game : MonoBehaviour
                 if (n.note.type == NoteType.RepeatHead ||
                     n.note.type == NoteType.RepeatHeadHold)
                 {
-                    noteToCheck = n.GetComponent<NoteAppearance>()
+                    noteToCheck = n
+                        .GetComponent<RepeatHeadAppearanceBase>()
                         .GetFirstUnresolvedRepeatNote();
                 }
 
@@ -1594,7 +1601,8 @@ public class Game : MonoBehaviour
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
-                noteToCheck = n.GetComponent<NoteAppearance>()
+                noteToCheck = n
+                    .GetComponent<RepeatHeadAppearanceBase>()
                     .GetFirstUnresolvedRepeatNote();
             }
             if (ongoingNoteIsHitOnThisFrame.ContainsKey(noteToCheck))

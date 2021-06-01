@@ -90,8 +90,8 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.RepeatHold:
                 // Spawn the head VFX on repeat head.
                 NoteObject repeatHead = note
-                    .GetComponent<NoteAppearance>()
-                    .GetRepeatHead().GetComponent<NoteObject>();
+                    .GetComponent<RepeatNoteAppearanceBase>()
+                    .repeatHead.GetComponent<NoteObject>();
                 holdNoteToOngoingHeadVfx.Add(repeatHead,
                     SpawnVfxAt(repeatHead,
                         GlobalResource.vfxSkin.repeatHoldOngoingHead,
@@ -188,8 +188,8 @@ public class VFXSpawner : MonoBehaviour
                 SpawnVfxAt(note,
                     GlobalResource.vfxSkin.repeatNote);
                 SpawnVfxAt( 
-                    note.GetComponent<NoteAppearance>()
-                        .GetRepeatHead().GetComponent<NoteObject>(),
+                    note.GetComponent<RepeatNoteAppearanceBase>()
+                        .repeatHead.GetComponent<NoteObject>(),
                     GlobalResource.vfxSkin.repeatHead);
                 break;
             case NoteType.RepeatHeadHold:
@@ -216,8 +216,8 @@ public class VFXSpawner : MonoBehaviour
                 break;
             case NoteType.RepeatHold:
                 NoteObject repeatHeadNote = note
-                    .GetComponent<NoteAppearance>()
-                    .GetRepeatHead().GetComponent<NoteObject>();
+                    .GetComponent<RepeatNoteAppearanceBase>()
+                    .repeatHead.GetComponent<NoteObject>();
                 if (holdNoteToOngoingHeadVfx
                     .ContainsKey(repeatHeadNote))
                 {

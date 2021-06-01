@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicNoteAppearance : NoteAppearance
+// This class is specific to hold notes, and does not handle trails.
+public class HoldNoteAppearance : NoteAppearance
 {
     protected override void TypeSpecificUpdateState()
     {
@@ -14,10 +15,8 @@ public class BasicNoteAppearance : NoteAppearance
                 SetFeverOverlayVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
-                SetNoteImageVisibility(Visibility.Transparent);
-                SetFeverOverlayVisibility(Visibility.Visible);
-                break;
             case State.Active:
+            case State.Ongoing:
                 SetNoteImageVisibility(Visibility.Visible);
                 SetFeverOverlayVisibility(Visibility.Visible);
                 break;
@@ -27,13 +26,13 @@ public class BasicNoteAppearance : NoteAppearance
     protected override void GetNoteImageScale(
         out float x, out float y)
     {
-        x = GlobalResource.noteSkin.basic.scale;
-        y = GlobalResource.noteSkin.basic.scale;
+        x = GlobalResource.noteSkin.holdHead.scale;
+        y = GlobalResource.noteSkin.holdHead.scale;
     }
 
     protected override void UpdateSprites()
     {
-        noteImage.sprite = GlobalResource.noteSkin.basic
+        noteImage.sprite = GlobalResource.noteSkin.holdHead
             .GetSpriteForFloatBeat(Game.FloatBeat);
     }
 }
