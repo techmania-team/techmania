@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Handles the duration trails, ongoing trails and trail extensions
-// of hold notes, repeat head hold notes and repeat hold notes.
+// Handles the duration trails and ongoing trails of hold notes,
+// repeat head hold notes and repeat hold notes.
+//
+// Note that each hold extension has its own instance of
+// HoldTrailManager.
 public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;
@@ -69,7 +72,8 @@ public class HoldTrailManager : MonoBehaviour
         float durationTrailEndAspectRatio = 1f;
         if (noteType == NoteType.Hold)
         {
-            durationTrailScale = GlobalResource.noteSkin.holdTrail.scale;
+            durationTrailScale = GlobalResource.noteSkin
+                .holdTrail.scale;
             Rect rect = GlobalResource.noteSkin.holdTrailEnd
                 .sprites[0].rect;
             durationTrailEndAspectRatio = rect.width / rect.height;
@@ -96,7 +100,8 @@ public class HoldTrailManager : MonoBehaviour
             durationTrailScale * durationTrailEnd.localScale.x,
             durationTrailEnd.localScale.y,
             durationTrailEnd.localScale.z);
-        durationTrailEnd.GetComponent<AspectRatioFitter>().aspectRatio =
+        durationTrailEnd.GetComponent<AspectRatioFitter>()
+            .aspectRatio =
             durationTrailEndAspectRatio;
         if (ongoingTrail != null)
         {
@@ -149,25 +154,25 @@ public class HoldTrailManager : MonoBehaviour
             width = 0f;
         }
 
+        // Draw ongoing trail on hold notes.
         if (noteType == NoteType.Hold)
         {
             ongoingTrail.sizeDelta = new Vector2(width,
                 ongoingTrail.sizeDelta.y);
         }
-        else
-        {
-            durationTrail.anchoredPosition = new Vector2(
-                trailExtendsLeft ? -width : width,
-                0f);
-            durationTrail.sizeDelta = new Vector2(
-                durationTrailInitialWidth - width,
-                durationTrail.sizeDelta.y);
-        }
+
+        // Shorten duration trail regardless of note type.
+        durationTrail.anchoredPosition = new Vector2(
+            trailExtendsLeft ? -width : width,
+            0f);
+        durationTrail.sizeDelta = new Vector2(
+            durationTrailInitialWidth - width,
+            durationTrail.sizeDelta.y);
 
         UpdateSprites();
     }
 
-    public void UpdateSprites()
+    private void UpdateSprites()
     {
         Sprite durationTrailSprite = null;
         Sprite durationTrailEndSprite = null;
@@ -176,15 +181,18 @@ public class HoldTrailManager : MonoBehaviour
         {
             durationTrailSprite = GlobalResource.noteSkin.holdTrail
                 .GetSpriteForFloatBeat(Game.FloatBeat);
-            durationTrailEndSprite = GlobalResource.noteSkin.holdTrailEnd
-                .GetSpriteForFloatBeat(Game.FloatBeat);
-            ongoingTrailSprite = GlobalResource.noteSkin.holdOngoingTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+            durationTrailEndSprite = GlobalResource.noteSkin
+                .holdTrailEnd.GetSpriteForFloatBeat(
+                Game.FloatBeat);
+            ongoingTrailSprite = GlobalResource.noteSkin
+                .holdOngoingTrail.GetSpriteForFloatBeat(
+                Game.FloatBeat);
         }
         else
         {
-            durationTrailSprite = GlobalResource.noteSkin.repeatHoldTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+            durationTrailSprite = GlobalResource.noteSkin
+                .repeatHoldTrail.GetSpriteForFloatBeat(
+                Game.FloatBeat);
             durationTrailEndSprite = 
                 GlobalResource.noteSkin.repeatHoldTrailEnd
                 .GetSpriteForFloatBeat(Game.FloatBeat);

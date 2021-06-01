@@ -10,14 +10,36 @@ using UnityEngine.UI;
 // handle that as a new click/touch. This is necessary for chain
 // notes.
 //
-// TODO: break this into derived classes, one for each note type.
+// Each note type has a corresponding subclass, and note prefabs
+// contain the subclass instead of this class. However, due to
+// multiple note types containing a hold trail, and C# not allowing
+// multiple inheritance, the logic to handle hold trails remains
+// in this base class.
+//
+// Inheritance graph:
+// NoteAppearance
+//   |-- BasicNoteAppearance
+//   |-- ChainAppearanceBase
+//   |     |-- ChainHeadAppearance
+//   |     |-- ChainNodeAppearance
+//   |
+//   |-- HoldNoteAppearance
+//   |-- DragNoteAppearance
+//   |-- RepeatHeadApearanceBase
+//   |     |-- RepeatHeadAppearance
+//   |     |-- RepeatHeadHoldAppearance
+//   |
+//   |-- RepeatNoteAppearanceBase
+//         |-- RepeatNoteAppearance
+//         |-- RepeatHoldAppearance
 public class NoteAppearance : MonoBehaviour
 {
     public enum State
     {
         // Note has not appeared yet; starting state.
         Inactive,
-        // Some notes become transparent, other opaque.
+        // Some note parts become transparent (basic note,
+        // hold trail, drag curve), others opaque.
         Prepare,
         // Note is opaque and can be played.
         Active,
@@ -80,6 +102,7 @@ public class NoteAppearance : MonoBehaviour
         UpdateState();
     }
 
+    // Drag note overrides this to additionaly adjust hitbox size.
     public virtual void SetOngoing()
     {
         state = State.Ongoing;
@@ -145,10 +168,13 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateTrailAndHoldExtension()
     {
+        if (GetComponent<HoldTrailManager>() == null) return;
+
         switch (state)
         {
             case State.Inactive:
             case State.Resolved:
+            case State.PendingResolve:
                 SetDurationTrailVisibility(Visibility.Hidden);
                 SetHoldExtensionVisibility(Visibility.Hidden);
                 break;
@@ -172,24 +198,16 @@ public class NoteAppearance : MonoBehaviour
                 // by the scan they belong to.
                 break;
             case State.Active:
-                SetDurationTrailVisibility(Visibility.Visible);
-                // Not set for extensions: these will be controlled
-                // by the scan they belong to.
-                break;
             case State.Ongoing:
                 SetDurationTrailVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
-            case State.PendingResolve:
-                SetDurationTrailVisibility(Visibility.Hidden);
-                SetHoldExtensionVisibility(Visibility.Hidden);
-                break;
         }
     }
     #endregion
 
-    #region Monobehaviuor
+    #region Monobehaviour
     protected void Start()
     {
         state = State.Inactive;
@@ -236,6 +254,7 @@ public class NoteAppearance : MonoBehaviour
     protected virtual void GetNoteImageScale(out float x,
         out float y)
     {
+        // The base implementation is unused.
         x = 1f;
         y = 1f;
     }
@@ -256,6 +275,7 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region Hitbox
+    // Chain heads and chain nodes override this.
     protected virtual float GetHitboxWidth()
     {
         return Ruleset.instance.hitboxWidth;
@@ -291,7 +311,7 @@ public class NoteAppearance : MonoBehaviour
     }
     #endregion
 
-    #region Trail
+    #region Trail and hold extensions
     private List<HoldExtension> holdExtensions;
 
     public void InitializeTrail()
