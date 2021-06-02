@@ -47,8 +47,8 @@ public class RepeatPathExtension : MonoBehaviour
 
     public void DrawBeforeRepeatNotes()
     {
-        // Hack
-        transform.SetSiblingIndex(0);
+        // Hack. Sibling #0 is the scanline, so set as sibling #1.
+        transform.SetSiblingIndex(1);
     }
 
     public void SetExtensionVisibility(

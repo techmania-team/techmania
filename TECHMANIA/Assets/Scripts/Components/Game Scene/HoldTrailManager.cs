@@ -16,13 +16,18 @@ public class HoldTrailManager : MonoBehaviour
     public RectTransform ongoingTrailEnd;
 
     private Scanline scanlineRef;
+    [HideInInspector]
+    public NoteAppearance noteRef;
+
     public NoteType noteType { get; private set; }
     private float durationTrailInitialWidth;
     private bool trailExtendsLeft;
 
-    public void Initialize(Scan scanRef, Scanline scanlineRef,
+    public void Initialize(NoteAppearance noteRef,
+        Scan scanRef, Scanline scanlineRef,
         HoldNote holdNote)
     {
+        this.noteRef = noteRef;
         this.scanlineRef = scanlineRef;
         noteType = holdNote.type;
 
@@ -122,14 +127,20 @@ public class HoldTrailManager : MonoBehaviour
             ongoingTrail.gameObject.SetActive(active);
         }
 
-        Color color = (v == NoteAppearance.Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
-        durationTrail.GetComponent<Image>().color = color;
-        durationTrailEnd.GetComponent<Image>().color = color;
+        Color durationTrailColor = new Color(1f, 1f, 1f,
+            noteRef.VisibilityToAlpha(v));
+        durationTrail.GetComponent<Image>().color = 
+            durationTrailColor;
+        durationTrailEnd.GetComponent<Image>().color = 
+            durationTrailColor;
+
         if (ongoingTrail != null)
         {
-            ongoingTrail.GetComponent<Image>().color = color;
+            Color ongoingTrailColor = new Color(1f, 1f, 1f,
+            noteRef.VisibilityToAlpha(v,
+            bypassNoteOpacityModifier: true));
+            ongoingTrail.GetComponent<Image>().color = 
+                ongoingTrailColor;
         }
     }
 

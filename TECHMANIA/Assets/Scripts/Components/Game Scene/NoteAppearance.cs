@@ -141,7 +141,7 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region States
-    protected float VisibilityToAlpha(Visibility v,
+    public float VisibilityToAlpha(Visibility v,
         bool bypassNoteOpacityModifier = false)
     {
         float alpha = 0f;
@@ -230,20 +230,14 @@ public class NoteAppearance : MonoBehaviour
                 SetHoldExtensionVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
-                // Only the following should be transparent:
-                // - Basic Note (handled in subclass)
-                // - Trail of Hold Note
-                // - Curve (handled in subclass)
-                NoteType type = GetNoteType();
-                if (type == NoteType.RepeatHeadHold ||
-                    type == NoteType.RepeatHold)
-                {
-                    SetDurationTrailVisibility(Visibility.Visible);
-                }
-                else
+                if (GetNoteType() == NoteType.Hold)
                 {
                     SetDurationTrailVisibility(
                         Visibility.Transparent);
+                }
+                else
+                {
+                    SetDurationTrailVisibility(Visibility.Visible);
                 }
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
@@ -336,8 +330,13 @@ public class NoteAppearance : MonoBehaviour
             != Modifiers.NoteOpacity.Normal)
         {
             UpdateAlphaUpperBound();
-            // Reset visibility of note parts every frame
+            // Reset visibility of note parts every frame.
             UpdateState();
+            if (holdExtensions == null) return;
+            foreach (HoldExtension e in holdExtensions)
+            {
+                e.ResetVisibility();
+            }
         }
         if (GetComponent<HoldTrailManager>() != null)
         {
@@ -426,7 +425,7 @@ public class NoteAppearance : MonoBehaviour
             as HoldNote;
 
         GetComponent<HoldTrailManager>().Initialize(
-            scanRef, scanlineRef, holdNote);
+            this, scanRef, scanlineRef, holdNote);
     }
 
     public void RegisterHoldExtension(HoldExtension e)
