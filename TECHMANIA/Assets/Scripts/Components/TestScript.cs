@@ -27,10 +27,7 @@ public class TestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TestClassWithDict o = new TestClassWithDict();
-        o.dict = new Dictionary<string, TestElement>();
-        o.dict.Add("a", new TestElement() { n = 1 });
-
-        Debug.Log(JsonUtility.ToJson(o));
+        Debug.Log(Mathf.InverseLerp(5f, 15f, 7f));
+        Debug.Log(Mathf.InverseLerp(15f, 5f, 7f));
     }
 }

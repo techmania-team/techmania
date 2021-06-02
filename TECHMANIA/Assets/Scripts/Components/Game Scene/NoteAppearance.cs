@@ -77,7 +77,24 @@ public class NoteAppearance : MonoBehaviour
     }
 
     #region Initialization
-    public virtual void TypeSpecificInitialize() { }
+    protected virtual void TypeSpecificInitialize() { }
+
+    public void Initialize()
+    {
+        alphaUpperBound = 1f;
+        if (Modifiers.instance.noteOpacity ==
+            Modifiers.NoteOpacity.FadeIn ||
+            Modifiers.instance.noteOpacity ==
+            Modifiers.NoteOpacity.FadeIn2)
+        {
+            alphaUpperBound = 0f;
+        }
+        hitboxVisible = false;
+
+        InitializeHitbox();
+        InitializeScale();
+        TypeSpecificInitialize();
+    }
 
     public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
     {
@@ -90,21 +107,7 @@ public class NoteAppearance : MonoBehaviour
     public void Prepare()
     {
         state = State.Prepare;
-
-        // Initialize alpha upper bound before making anything
-        // appear.
-        alphaUpperBound = 1f;
-        hitboxVisible = false;
-        if (Modifiers.instance.noteOpacity ==
-            Modifiers.NoteOpacity.FadeIn ||
-            Modifiers.instance.noteOpacity ==
-            Modifiers.NoteOpacity.FadeIn2)
-        {
-            alphaUpperBound = 0f;
-        }
-
         UpdateState();
-        InitializeHitbox();
     }
 
     public void Activate()
@@ -138,14 +141,9 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region States
-    protected void SetNoteImageVisibility(Visibility v)
+    protected float VisibilityToAlpha(Visibility v,
+        bool bypassNoteOpacityModifier = false)
     {
-        noteImage.gameObject.SetActive(v != Visibility.Hidden);
-        if (hitbox != null)
-        {
-            hitbox.gameObject.SetActive(v != Visibility.Hidden);
-        }
-
         float alpha = 0f;
         switch (v)
         {
@@ -163,17 +161,35 @@ public class NoteAppearance : MonoBehaviour
                 break;
             case Visibility.Hidden: alpha = 0f; break;
         }
-        alpha = Mathf.Min(alpha, alphaUpperBound);
-        noteImage.color = new Color(1f, 1f, 1f, alpha);
+        if (!bypassNoteOpacityModifier)
+        {
+            alpha = Mathf.Min(alpha, alphaUpperBound);
+        }
+        return alpha;
     }
 
-    protected void SetFeverOverlayVisibility(Visibility v)
+    protected void SetNoteImageVisibility(Visibility v,
+        bool bypassNoteOpacityModifier = false)
+    {
+        noteImage.gameObject.SetActive(v != Visibility.Hidden);
+        if (hitbox != null)
+        {
+            hitbox.gameObject.SetActive(v != Visibility.Hidden);
+        }
+
+        noteImage.color = new Color(1f, 1f, 1f,
+            VisibilityToAlpha(v, bypassNoteOpacityModifier));
+    }
+
+    protected void SetFeverOverlayVisibility(Visibility v,
+        bool bypassNoteOpacityModifier = false)
     {
         if (feverOverlay == null) return;
         feverOverlay.GetComponent<Image>().enabled =
             v != Visibility.Hidden;
         feverOverlay.GetComponent<Image>().color = new Color(
-            1f, 1f, 1f, alphaUpperBound);
+            1f, 1f, 1f,
+            VisibilityToAlpha(v, bypassNoteOpacityModifier));
     }
 
     protected void SetDurationTrailVisibility(Visibility v)
@@ -281,71 +297,31 @@ public class NoteAppearance : MonoBehaviour
         switch (Modifiers.instance.noteOpacity)
         {
             case Modifiers.NoteOpacity.FadeOut:
-                if (currentScan < correctScan - 0.5f)
-                {
-                    alphaUpperBound = 1f;
-                }
-                else if (currentScan < correctScan - 0.25f)
-                {
-                    alphaUpperBound = 
-                        (correctScan - 0.25f - currentScan)
-                        * 4f;
-                }
-                else
-                {
-                    alphaUpperBound = 0f;
-                }
+                alphaUpperBound = Mathf.InverseLerp(
+                    correctScan - 0.25f,
+                    correctScan - 0.5f,
+                    currentScan);
                 break;
             case Modifiers.NoteOpacity.FadeOut2:
-                if (currentScan < correctScan - 1f)
-                {
-                    alphaUpperBound = 1f;
-                }
-                else if (currentScan < correctScan - 0.5f)
-                {
-                    alphaUpperBound = 
-                        (correctScan - 0.5f - currentScan)
-                        * 2f;
-                }
-                else
-                {
-                    alphaUpperBound = 0f;
-                }
+                alphaUpperBound = Mathf.InverseLerp(
+                   correctScan - 0.5f,
+                   correctScan - 1f,
+                   currentScan);
                 break;
             case Modifiers.NoteOpacity.FadeIn:
-                if (currentScan < correctScan - 0.5f)
-                {
-                    alphaUpperBound = 0f;
-                }
-                else if (currentScan < correctScan - 0.25f)
-                {
-                    alphaUpperBound = 1f - 
-                        (correctScan - 0.25f - currentScan) * 4f;
-                }
-                else
-                {
-                    alphaUpperBound = 1f;
-                }
+                alphaUpperBound = Mathf.InverseLerp(
+                   correctScan - 0.5f,
+                   correctScan - 0.25f,
+                   currentScan);
                 break;
             case Modifiers.NoteOpacity.FadeIn2:
-                if (currentScan < correctScan - 0.25f)
-                {
-                    alphaUpperBound = 0f;
-                }
-                else if (currentScan < correctScan - 0.125f)
-                {
-                    alphaUpperBound = 1f -
-                        (correctScan - 0.125f - currentScan) * 8f;
-                }
-                else
-                {
-                    alphaUpperBound = 1f;
-                }
+                alphaUpperBound = Mathf.InverseLerp(
+                   correctScan - 0.25f,
+                   correctScan - 0.125f,
+                   currentScan);
                 break;
         }
     }
-
-    protected virtual void UpdateAlpha() { }
 
     protected void Update()
     {
@@ -360,7 +336,8 @@ public class NoteAppearance : MonoBehaviour
             != Modifiers.NoteOpacity.Normal)
         {
             UpdateAlphaUpperBound();
-            UpdateAlpha();
+            // Reset visibility of note parts every frame
+            UpdateState();
         }
         if (GetComponent<HoldTrailManager>() != null)
         {
@@ -383,7 +360,7 @@ public class NoteAppearance : MonoBehaviour
     // For paths and trails and stuff.
     protected virtual void TypeSpecificInitializeScale() { }
 
-    public void InitializeScale()
+    private void InitializeScale()
     {
         float x, y;
         GetNoteImageScale(out x, out y);

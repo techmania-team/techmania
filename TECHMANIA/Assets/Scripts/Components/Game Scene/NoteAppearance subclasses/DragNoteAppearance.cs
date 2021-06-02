@@ -19,9 +19,7 @@ public class DragNoteAppearance : NoteAppearance,
     {
         if (curve == null) return;
         curve.gameObject.SetActive(v != Visibility.Hidden);
-        curve.color = (v == Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
+        curve.color = new Color(1f, 1f, 1f, VisibilityToAlpha(v));
     }
 
     protected override void TypeSpecificUpdateState()
@@ -129,7 +127,7 @@ public class DragNoteAppearance : NoteAppearance,
                 targetPos: pointsOnCurve[1]);
     }
 
-    public override void TypeSpecificInitialize()
+    protected override void TypeSpecificInitialize()
     {
         InitializeCurve();
     }

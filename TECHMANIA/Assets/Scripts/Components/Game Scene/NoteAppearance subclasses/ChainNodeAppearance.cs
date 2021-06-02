@@ -12,6 +12,8 @@ public class ChainNodeAppearance : ChainAppearanceBase
         if (pathToPreviousNote == null) return;
         pathToPreviousNote.gameObject.SetActive(
             v != Visibility.Hidden);
+        pathToPreviousNote.GetComponent<Image>().color =
+            new Color(1f, 1f, 1f, VisibilityToAlpha(v));
     }
 
     public void PointPathTowards(RectTransform previousNote)

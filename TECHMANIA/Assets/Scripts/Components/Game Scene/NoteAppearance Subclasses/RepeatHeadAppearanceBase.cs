@@ -39,24 +39,30 @@ public class RepeatHeadAppearanceBase : NoteAppearance
         {
             case State.Inactive:
             case State.Resolved:
-                SetNoteImageVisibility(Visibility.Hidden);
-                SetFeverOverlayVisibility(Visibility.Hidden);
+                SetNoteImageVisibility(Visibility.Hidden,
+                    bypassNoteOpacityModifier: true);
+                SetFeverOverlayVisibility(Visibility.Hidden,
+                    bypassNoteOpacityModifier: true);
                 SetRepeatPathVisibility(Visibility.Hidden);
                 SetRepeatPathExtensionVisibility(Visibility.Hidden);
                 break;
             case State.Prepare:
             case State.Active:
             case State.PendingResolve:
-                SetNoteImageVisibility(Visibility.Visible);
-                SetFeverOverlayVisibility(Visibility.Visible);
+                SetNoteImageVisibility(Visibility.Visible,
+                    bypassNoteOpacityModifier: true);
+                SetFeverOverlayVisibility(Visibility.Visible,
+                    bypassNoteOpacityModifier: true);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
                 break;
             case State.Ongoing:
                 // Only applies to repeat head hold.
-                SetNoteImageVisibility(Visibility.Visible);
-                SetFeverOverlayVisibility(Visibility.Visible);
+                SetNoteImageVisibility(Visibility.Visible,
+                    bypassNoteOpacityModifier: true);
+                SetFeverOverlayVisibility(Visibility.Visible,
+                    bypassNoteOpacityModifier: true);
                 SetRepeatPathVisibility(Visibility.Visible);
                 // Not set for extensions: these will be controlled
                 // by the scan they belong to.
