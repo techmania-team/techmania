@@ -1512,8 +1512,8 @@ public class Game : MonoBehaviour
                 if (ongoingNotes.ContainsKey(noteToCheck))
                 {
                     hitOngoingNote = true;
-                    // No need to check for empty touch receiver because
-                    // they are lower priority.
+                    // No need to check for empty touch
+                    // receiver because they are lower priority.
                     continue;
                 }
 

@@ -68,6 +68,9 @@ public class NoteAppearance : MonoBehaviour
     protected Scan scanRef;
     protected Scanline scanlineRef;
 
+    private float alphaUpperBound;
+    private bool hitboxVisible;
+
     public NoteType GetNoteType()
     {
         return GetComponent<NoteObject>().note.type;
@@ -87,6 +90,19 @@ public class NoteAppearance : MonoBehaviour
     public void Prepare()
     {
         state = State.Prepare;
+
+        // Initialize alpha upper bound before making anything
+        // appear.
+        alphaUpperBound = 1f;
+        hitboxVisible = false;
+        if (Modifiers.instance.noteOpacity ==
+            Modifiers.NoteOpacity.FadeIn ||
+            Modifiers.instance.noteOpacity ==
+            Modifiers.NoteOpacity.FadeIn2)
+        {
+            alphaUpperBound = 0f;
+        }
+
         UpdateState();
         InitializeHitbox();
     }
@@ -129,9 +145,26 @@ public class NoteAppearance : MonoBehaviour
         {
             hitbox.gameObject.SetActive(v != Visibility.Hidden);
         }
-        noteImage.color = (v == Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
+
+        float alpha = 0f;
+        switch (v)
+        {
+            case Visibility.Visible: alpha = 1f; break;
+            case Visibility.Transparent:
+                if (Modifiers.instance.noteOpacity ==
+                    Modifiers.NoteOpacity.Normal)
+                {
+                    alpha = 0.6f;
+                }
+                else
+                {
+                    alpha = 1f;
+                }
+                break;
+            case Visibility.Hidden: alpha = 0f; break;
+        }
+        alpha = Mathf.Min(alpha, alphaUpperBound);
+        noteImage.color = new Color(1f, 1f, 1f, alpha);
     }
 
     protected void SetFeverOverlayVisibility(Visibility v)
@@ -139,6 +172,8 @@ public class NoteAppearance : MonoBehaviour
         if (feverOverlay == null) return;
         feverOverlay.GetComponent<Image>().enabled =
             v != Visibility.Hidden;
+        feverOverlay.GetComponent<Image>().color = new Color(
+            1f, 1f, 1f, alphaUpperBound);
     }
 
     protected void SetDurationTrailVisibility(Visibility v)
@@ -234,13 +269,99 @@ public class NoteAppearance : MonoBehaviour
 
     protected virtual void TypeSpecificUpdate() { }
 
+    private void UpdateAlphaUpperBound()
+    {
+        if (Modifiers.instance.noteOpacity
+            == Modifiers.NoteOpacity.Normal) return;
+
+        float correctScan = 
+            (float)GetComponent<NoteObject>().note.pulse
+            / Game.PulsesPerScan;
+        float currentScan = Game.FloatPulse / Game.PulsesPerScan;
+        switch (Modifiers.instance.noteOpacity)
+        {
+            case Modifiers.NoteOpacity.FadeOut:
+                if (currentScan < correctScan - 0.5f)
+                {
+                    alphaUpperBound = 1f;
+                }
+                else if (currentScan < correctScan - 0.25f)
+                {
+                    alphaUpperBound = 
+                        (correctScan - 0.25f - currentScan)
+                        * 4f;
+                }
+                else
+                {
+                    alphaUpperBound = 0f;
+                }
+                break;
+            case Modifiers.NoteOpacity.FadeOut2:
+                if (currentScan < correctScan - 1f)
+                {
+                    alphaUpperBound = 1f;
+                }
+                else if (currentScan < correctScan - 0.5f)
+                {
+                    alphaUpperBound = 
+                        (correctScan - 0.5f - currentScan)
+                        * 2f;
+                }
+                else
+                {
+                    alphaUpperBound = 0f;
+                }
+                break;
+            case Modifiers.NoteOpacity.FadeIn:
+                if (currentScan < correctScan - 0.5f)
+                {
+                    alphaUpperBound = 0f;
+                }
+                else if (currentScan < correctScan - 0.25f)
+                {
+                    alphaUpperBound = 1f - 
+                        (correctScan - 0.25f - currentScan) * 4f;
+                }
+                else
+                {
+                    alphaUpperBound = 1f;
+                }
+                break;
+            case Modifiers.NoteOpacity.FadeIn2:
+                if (currentScan < correctScan - 0.25f)
+                {
+                    alphaUpperBound = 0f;
+                }
+                else if (currentScan < correctScan - 0.125f)
+                {
+                    alphaUpperBound = 1f -
+                        (correctScan - 0.125f - currentScan) * 8f;
+                }
+                else
+                {
+                    alphaUpperBound = 1f;
+                }
+                break;
+        }
+    }
+
+    protected virtual void UpdateAlpha() { }
+
     protected void Update()
     {
         if (state == State.Inactive || state == State.Resolved)
             return;
 
+        UpdateHitboxImage();
         UpdateSprites();
         TypeSpecificUpdate();
+        if ((state == State.Prepare || state == State.Active) &&
+            Modifiers.instance.noteOpacity
+            != Modifiers.NoteOpacity.Normal)
+        {
+            UpdateAlphaUpperBound();
+            UpdateAlpha();
+        }
         if (GetComponent<HoldTrailManager>() != null)
         {
             // Do this in all visible states because it updates
@@ -300,14 +421,21 @@ public class NoteAppearance : MonoBehaviour
 
     private void OnHitboxVisibilityChanged(bool visible)
     {
+        hitboxVisible = visible;
+    }
+
+    private void UpdateHitboxImage()
+    {
         if (hitbox == null) return;
 
+        float alpha = noteImage.color.a;
+        if (!hitboxVisible) alpha = 0f;
         Image hitboxImage = hitbox.GetComponent<Image>();
         hitboxImage.color = new Color(
             hitboxImage.color.r,
             hitboxImage.color.g,
             hitboxImage.color.b,
-            visible ? 1f : 0f);
+            alpha);
     }
     #endregion
 

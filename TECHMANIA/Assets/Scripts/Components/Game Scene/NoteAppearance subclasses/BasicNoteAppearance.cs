@@ -24,6 +24,12 @@ public class BasicNoteAppearance : NoteAppearance
         }
     }
 
+    protected override void UpdateAlpha()
+    {
+        SetNoteImageVisibility(Visibility.Visible);
+        SetFeverOverlayVisibility(Visibility.Visible);
+    }
+
     protected override void GetNoteImageScale(
         out float x, out float y)
     {

@@ -59,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -142,10 +142,6 @@ MonoBehaviour:
   noteImage: {fileID: 679015273133456939}
   feverOverlay: {fileID: 6953956412375015768}
   hitbox: {fileID: 4033029867692035851}
-  pathToPreviousNote: {fileID: 0}
-  curve: {fileID: 0}
-  curveEnd: {fileID: 0}
-  pathToLastRepeatNote: {fileID: 0}
 --- !u!1 &7085501402361908540
 GameObject:
   m_ObjectHideFlags: 0
