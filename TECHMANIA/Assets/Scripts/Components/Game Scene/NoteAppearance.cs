@@ -315,6 +315,8 @@ public class NoteAppearance : MonoBehaviour
                    currentScan);
                 break;
         }
+
+        alphaUpperBound = Mathf.SmoothStep(0f, 1f, alphaUpperBound);
     }
 
     protected void Update()
