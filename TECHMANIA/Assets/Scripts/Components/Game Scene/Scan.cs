@@ -1,10 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Scan : MonoBehaviour
 {
+    public enum Direction
+    {
+        Left,
+        Right
+    }
+    [HideInInspector]
+    public Direction direction;
     [HideInInspector]
     public int scanNumber;
 
@@ -29,7 +37,7 @@ public class Scan : MonoBehaviour
         Game.ScanAboutToChange -= OnScanAboutToChange;
     }
 
-    public void Initialize()
+    public void Initialize(int scanNumber, Direction direction)
     {
         Game.ScanChanged += OnScanChanged;
         Game.ScanAboutToChange += OnScanAboutToChange;
@@ -43,6 +51,8 @@ public class Scan : MonoBehaviour
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
 
+        this.scanNumber = scanNumber;
+        this.direction = direction;
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
         scanline.Initialize(this, scanHeight);
@@ -168,8 +178,7 @@ public class Scan : MonoBehaviour
     #region Positioning
     private float NormalizedXToXPosition(float normalizedX)
     {
-        // Even scans are from right to left.
-        if (scanNumber % 2 == 0)
+        if (direction == Direction.Left)
         {
             normalizedX = 1f - normalizedX;
         }

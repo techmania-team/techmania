@@ -72,29 +72,11 @@
       "source": "builtin",
       "dependencies": {}
     },
-    "com.unity.collab-proxy": {
-      "version": "1.5.7",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "2.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.ide.rider": {
-      "version": "2.0.7",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.1"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
@@ -127,16 +109,9 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.nuget.newtonsoft-json": {
-      "version": "2.0.0",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.test-framework": {
       "version": "1.1.24",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6",

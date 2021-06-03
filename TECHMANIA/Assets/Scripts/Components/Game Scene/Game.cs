@@ -259,18 +259,20 @@ public class Game : MonoBehaviour
                 }
             };
 
-            globalResourceLoader.LoadNoteSkin(null, loadSkinCallback);
+            globalResourceLoader.LoadNoteSkin(null, 
+                loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
             globalResourceLoader.LoadVfxSkin(null, loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
-            globalResourceLoader.LoadComboSkin(null, loadSkinCallback);
+            globalResourceLoader.LoadComboSkin(null, 
+                loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
         }
 
-        // Step 3: load backing track, if any. This allows calculating
-        // the number of scans.
+        // Step 3: load backing track, if any.
+        // This allows calculating the number of scans.
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
         {
@@ -411,7 +413,8 @@ public class Game : MonoBehaviour
         }
 
         // Rewind further until 1 scan before the BGA starts.
-        while (initialTime > GameSetup.pattern.patternMetadata.bgaOffset)
+        while (initialTime > GameSetup.pattern
+            .patternMetadata.bgaOffset)
         {
             Scan--;
             Pulse -= PulsesPerScan;
@@ -452,18 +455,47 @@ public class Game : MonoBehaviour
         // Create scan objects.
         Dictionary<int, Scan> scanObjects =
             new Dictionary<int, Scan>();
+        global::Scan.Direction
+            topScanDirection = global::Scan.Direction.Right,
+            bottomScanDirection = global::Scan.Direction.Left;
+        switch (Modifiers.instance.scanDirection)
+        {
+            case Modifiers.ScanDirection.Normal:
+                topScanDirection = global::Scan.Direction.Right;
+                bottomScanDirection = global::Scan.Direction.Left;
+                break;
+            case Modifiers.ScanDirection.RR:
+                topScanDirection = global::Scan.Direction.Right;
+                bottomScanDirection = global::Scan.Direction.Right;
+                break;
+            case Modifiers.ScanDirection.LR:
+                topScanDirection = global::Scan.Direction.Left;
+                bottomScanDirection = global::Scan.Direction.Right;
+                break;
+            case Modifiers.ScanDirection.LL:
+                topScanDirection = global::Scan.Direction.Left;
+                bottomScanDirection = global::Scan.Direction.Left;
+                break;
+        }
         for (int i = Scan; i <= lastScan; i++)
         {
-            Transform parent = (i % 2 == 0) ?
+            bool isBottomScan = i % 2 == 0;
+            if (Modifiers.instance.scanPosition == 
+                Modifiers.ScanPosition.Swap)
+            {
+                isBottomScan = !isBottomScan;
+            }
+            Transform parent = isBottomScan ?
                 bottomScanContainer : topScanContainer;
-            GameObject template = (i % 2 == 0) ?
+            GameObject template = isBottomScan ?
                 bottomScanTemplate : topScanTemplate;
             GameObject scanObject = Instantiate(template, parent);
             scanObject.SetActive(true);
 
             Scan s = scanObject.GetComponent<Scan>();
-            s.scanNumber = i;
-            s.Initialize();
+            global::Scan.Direction direction = isBottomScan ?
+                bottomScanDirection : topScanDirection;
+            s.Initialize(scanNumber: i, direction);
             scanObjects.Add(i, s);
         }
 
@@ -585,7 +617,8 @@ public class Game : MonoBehaviour
         hitboxVisible = false;
         HitboxVisibilityChanged?.Invoke(hitboxVisible);
 
-        // Ensure that a ScanChanged event is fired at the first update.
+        // Ensure that a ScanChanged event is fired at
+        // the first update.
         Scan--;
 
         // Calculate Fever coefficient. The goal is for the Fever bar
