@@ -104,6 +104,14 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region State Interfaces
+    public void SetInactive()
+    {
+        state = State.Inactive;
+        InitializeHitbox();
+        TypeSpecificInitialize();
+        UpdateState();
+    }
+
     public void Prepare()
     {
         state = State.Prepare;

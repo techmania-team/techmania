@@ -81,8 +81,17 @@ public class Game : MonoBehaviour
     public Animator feverButtonAnimator;
     public AudioSource feverSoundSource;
 
+    [Header("UI - Practice")]
+    public GameObject practiceTopBar;
+    public TextMeshProUGUI scanDisplay;
+    public TextMeshProUGUI loopDisplay;
+    public TextMeshProUGUI speedDisplay;
+    public Toggle showHitboxToggle;
+    public Toggle autoPlayToggle;
+
     [Header("UI - Other")]
     public GameObject topBar;
+    public GameObject regularTopBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
@@ -154,24 +163,21 @@ public class Game : MonoBehaviour
     }
     #endregion
 
+    private Dictionary<int, Scan> scanObjects;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
     public static event UnityAction<bool> HitboxVisibilityChanged;
 
     private static List<List<KeyCode>> keysForLane;
 
-    // Each linked list represents one lane; each lane is
-    // sorted by pulse. Resolved notes are removed
-    // from the corresponding linked list. This makes it easy to
-    // find the upcoming note in each lane, and in turn:
-    // - play keysounds on empty hits
-    // - check the Break condition on upcoming notes
-    private List<LinkedList<NoteObject>> noteObjectsInLane;
+    // Each NoteList represents one lane; each lane is sorted by
+    // pulse.
+    private List<NoteList> noteObjectsInLane;
     // noteObjectsInLane separated into mouse and keyboard notes.
     // In KM, Each input device only care about notes in its
     // corresponding list.
-    private List<LinkedList<NoteObject>> notesForMouseInLane;
-    private List<LinkedList<NoteObject>> notesForKeyboardInLane;
+    private List<NoteList> notesForMouseInLane;
+    private List<NoteList> notesForKeyboardInLane;
     private int numPlayableNotes;
 
     // Value is the judgement at note's head.
@@ -189,6 +195,10 @@ public class Game : MonoBehaviour
         score = new Score();
         loading = true;
         topBar.SetActive(false);
+        practiceTopBar.SetActive(Modifiers.instance.mode
+            == Modifiers.Mode.Practice);
+        regularTopBar.SetActive(Modifiers.instance.mode
+            != Modifiers.Mode.Practice);
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
@@ -453,8 +463,7 @@ public class Game : MonoBehaviour
         CalculateEndOfPattern();
 
         // Create scan objects.
-        Dictionary<int, Scan> scanObjects =
-            new Dictionary<int, Scan>();
+        scanObjects = new Dictionary<int, Scan>();
         global::Scan.Direction
             topScanDirection = global::Scan.Direction.Right,
             bottomScanDirection = global::Scan.Direction.Left;
@@ -503,20 +512,20 @@ public class Game : MonoBehaviour
         // are drawn on the top.
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
-        noteObjectsInLane = new List<LinkedList<NoteObject>>();
-        notesForMouseInLane = new List<LinkedList<NoteObject>>();
-        notesForKeyboardInLane = new List<LinkedList<NoteObject>>();
+        noteObjectsInLane = new List<NoteList>();
+        notesForMouseInLane = new List<NoteList>();
+        notesForKeyboardInLane = new List<NoteList>();
         numPlayableNotes = 0;
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
+        // Create at least as many lists as playable lanes, or
+        // empty hits on the noteless lanes will generate errors.
         for (int i = 0; i < kPlayableLanes; i++)
         {
-            noteObjectsInLane.Add(new LinkedList<NoteObject>());
-            notesForMouseInLane.Add(
-                new LinkedList<NoteObject>());
-            notesForKeyboardInLane.Add(
-                new LinkedList<NoteObject>());
+            noteObjectsInLane.Add(new NoteList());
+            notesForMouseInLane.Add(new NoteList());
+            notesForKeyboardInLane.Add(new NoteList());
             unmanagedRepeatNotes.Add(new List<NoteObject>());
         }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
@@ -533,22 +542,19 @@ public class Game : MonoBehaviour
 
             while (noteObjectsInLane.Count <= n.lane)
             {
-                noteObjectsInLane.Add(new LinkedList<NoteObject>());
-                notesForMouseInLane.Add(
-                    new LinkedList<NoteObject>());
-                notesForKeyboardInLane.Add(
-                    new LinkedList<NoteObject>());
+                noteObjectsInLane.Add(new NoteList());
+                notesForMouseInLane.Add(new NoteList());
+                notesForKeyboardInLane.Add(new NoteList());
                 unmanagedRepeatNotes.Add(new List<NoteObject>());
             }
-            noteObjectsInLane[n.lane].AddFirst(noteObject);
+            noteObjectsInLane[n.lane].Add(noteObject);
             switch (n.type)
             {
                 case NoteType.Basic:
                 case NoteType.ChainHead:
                 case NoteType.ChainNode:
                 case NoteType.Drag:
-                    notesForMouseInLane[n.lane]
-                        .AddFirst(noteObject);
+                    notesForMouseInLane[n.lane].Add(noteObject);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHead:
@@ -556,7 +562,7 @@ public class Game : MonoBehaviour
                 case NoteType.Repeat:
                 case NoteType.RepeatHold:
                     notesForKeyboardInLane[n.lane]
-                        .AddFirst(noteObject);
+                        .Add(noteObject);
                     break;
             }
 
@@ -612,6 +618,9 @@ public class Game : MonoBehaviour
                     .SetInputLatency(LatencyForNote(n));
             }
         }
+        foreach (NoteList l in noteObjectsInLane) l.Reverse();
+        foreach (NoteList l in notesForKeyboardInLane) l.Reverse();
+        foreach (NoteList l in notesForMouseInLane) l.Reverse();
 
         // Broadcast the initial hitbox visibility.
         hitboxVisible = false;
@@ -792,7 +801,6 @@ public class Game : MonoBehaviour
                 noteEndTime);
         }
 
-        Debug.Log("Pattern length is " + endOfPatternBaseTime);
         float maxPulse = GameSetup.pattern.TimeToPulse(
             endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
@@ -1062,7 +1070,8 @@ public class Game : MonoBehaviour
     {
         float oldBaseTime = BaseTime;
         float oldTime = Time;
-        BaseTime = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
+        BaseTime = (float)stopwatch.Elapsed.TotalSeconds
+            + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
         int newPulse = Mathf.FloorToInt(FloatPulse);
@@ -1077,8 +1086,10 @@ public class Game : MonoBehaviour
         }
 
         // Play bga if base time hits bgaOffset.
-        if (oldBaseTime < GameSetup.pattern.patternMetadata.bgaOffset &&
-            BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset &&
+        if (oldBaseTime <
+            GameSetup.pattern.patternMetadata.bgaOffset &&
+            BaseTime >=
+            GameSetup.pattern.patternMetadata.bgaOffset &&
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
@@ -1116,10 +1127,9 @@ public class Game : MonoBehaviour
             laneIndex < noteObjectsInLane.Count;
             laneIndex++)
         {
-            LinkedList<NoteObject> lane =
-                noteObjectsInLane[laneIndex];
+            NoteList lane = noteObjectsInLane[laneIndex];
             if (lane.Count == 0) continue;
-            NoteObject upcomingNote = lane.First.Value;
+            NoteObject upcomingNote = lane.First();
 
             if (laneIndex < kPlayableLanes)
             {
@@ -1155,7 +1165,7 @@ public class Game : MonoBehaviour
                 {
                     PlayKeysound(upcomingNote);
                     upcomingNote.gameObject.SetActive(false);
-                    lane.RemoveFirst();
+                    lane.Remove(upcomingNote);
                 }
             }
         }
@@ -1374,16 +1384,16 @@ public class Game : MonoBehaviour
         // Fever
         if (Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
-            //feverButtonFilling.anchorMax =
-            //    new Vector2(feverAmount, 1f);
-            //feverButtonAnimator.SetBool("Fever Ready",
-            //    feverState == FeverState.Ready);
-            //middleFeverBarFilling.anchorMin = new Vector2(
-            //    0.5f - feverAmount * 0.5f, 0f);
-            //middleFeverBarFilling.anchorMax = new Vector2(
-            //    0.5f + feverAmount * 0.5f, 1f);
-            //middleFeverText.SetActive(
-            //    feverState == FeverState.Ready);
+            feverButtonFilling.anchorMax =
+                new Vector2(feverAmount, 1f);
+            feverButtonAnimator.SetBool("Fever Ready",
+                feverState == FeverState.Ready);
+            middleFeverBarFilling.anchorMin = new Vector2(
+                0.5f - feverAmount * 0.5f, 0f);
+            middleFeverBarFilling.anchorMax = new Vector2(
+                0.5f + feverAmount * 0.5f, 1f);
+            middleFeverText.SetActive(
+                feverState == FeverState.Ready);
         }
 
         // Other
@@ -1410,6 +1420,42 @@ public class Game : MonoBehaviour
             brightnessCover.color.g,
             brightnessCover.color.b,
             a);
+    }
+    #endregion
+
+    #region Scan Navigation
+    public void JumpToScan(int scan)
+    {
+        // Set timer.
+        Scan = scan;
+        FloatBeat = Scan * GameSetup.pattern.patternMetadata.bps;
+        Pulse = PulsesPerScan * Scan;
+        FloatPulse = Pulse;
+        BaseTime = GameSetup.pattern.PulseToTime(Pulse);
+        initialTime = BaseTime - 
+            (float)stopwatch.Elapsed.TotalSeconds;
+
+        // Reset all notes.
+        foreach (Scan s in scanObjects.Values)
+        {
+            s.SetAllNotesInactive();
+        }
+
+        // TODO: Rebuild data structures.
+        List<LinkedList<NoteObject>> noteObjectsInLane;
+        List<LinkedList<NoteObject>> notesForMouseInLane;
+        List<LinkedList<NoteObject>> notesForKeyboardInLane;
+        ongoingNotes.Clear();
+        ongoingNoteIsHitOnThisFrame.Clear();
+
+        // Fire scan events.
+        ScanAboutToChange?.Invoke(Scan);
+        ScanChanged?.Invoke(Scan);
+
+        // TODO: Start/stop backing track and BGA.
+        // TODO: Call this from the initialization routine and
+        // remove duplicate code, including: Game, Scan,
+        // NoteAppearance.
     }
     #endregion
 
@@ -1656,8 +1702,7 @@ public class Game : MonoBehaviour
             // Do nothing.
             return;
         }
-        NoteObject earliestNote = noteObjectsInLane[lane]
-            .First.Value;
+        NoteObject earliestNote = noteObjectsInLane[lane].First();
         if (ongoingNotes.ContainsKey(earliestNote))
         {
             // Do nothing.
@@ -1691,7 +1736,7 @@ public class Game : MonoBehaviour
             {
                 continue;
             }
-            NoteObject n = notesForKeyboardInLane[i].First.Value;
+            NoteObject n = notesForKeyboardInLane[i].First();
             if (ongoingNotes.ContainsKey(n))
             {
                 continue;
@@ -1859,15 +1904,13 @@ public class Game : MonoBehaviour
             case ControlScheme.Touch:
                 if (noteObjectsInLane[lane].Count > 0)
                 {
-                    upcomingNote = noteObjectsInLane[lane]
-                        .First.Value;
+                    upcomingNote = noteObjectsInLane[lane].First();
                 }
                 break;
             case ControlScheme.KM:
                 if (notesForMouseInLane[lane].Count > 0)
                 {
-                    upcomingNote = notesForMouseInLane[lane]
-                        .First.Value;
+                    upcomingNote = notesForMouseInLane[lane].First();
                 }
                 break;
             case ControlScheme.Keys:

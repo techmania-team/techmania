@@ -137,6 +137,16 @@ public class Scan : MonoBehaviour
         return extension;
     }
 
+    public void SetAllNotesInactive()
+    {
+        foreach (NoteAppearance n in noteAppearances)
+        {
+            // This will take care of hold extensions and
+            // repeat path extensions.
+            n.SetInactive();
+        }
+    }
+
     private void OnScanAboutToChange(int scan)
     {
         if (scan == scanNumber)
