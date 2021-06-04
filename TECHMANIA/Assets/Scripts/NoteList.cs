@@ -33,6 +33,7 @@ public class NoteList
         count++;
     }
 
+    // After calling this, we assume notes are sorted by pulse.
     public void Reverse()
     {
         list.Reverse();
@@ -56,6 +57,25 @@ public class NoteList
                 return;
             }
         }
+    }
+
+    public void RemoveUpTo(int pulseExclusive)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].note.pulse < pulseExclusive &&
+                active[i])
+            {
+                active[i] = false;
+                count--;
+            }
+            if (list[i].note.pulse >= pulseExclusive)
+            {
+                first = i;
+                return;
+            }
+        }
+        first = list.Count;
     }
 
     public NoteObject First()

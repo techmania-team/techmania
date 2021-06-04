@@ -348,8 +348,6 @@ public class Game : MonoBehaviour
 
         // Start timer. Backing track will start when timer hits 0;
         // BGA will start when timer hits bgaOffset.
-        stopwatch = new Stopwatch();
-        stopwatch.Start();
         int offsetMs = 
             GameSetup.pattern.patternMetadata.controlScheme
             == ControlScheme.Touch ?
@@ -359,6 +357,9 @@ public class Game : MonoBehaviour
             Modifiers.Mode.AutoPlay
             ? 0f : offsetMs * 0.001f;
         BaseTime = initialTime;
+        stopwatch = new Stopwatch();
+        stopwatch.Start();
+        JumpToScan(Scan);
     }
 
     private void OnImageLoadComplete(Texture2D texture, string error)
@@ -628,7 +629,7 @@ public class Game : MonoBehaviour
 
         // Ensure that a ScanChanged event is fired at
         // the first update.
-        Scan--;
+        // Scan--;
 
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.
@@ -1441,10 +1442,22 @@ public class Game : MonoBehaviour
             s.SetAllNotesInactive();
         }
 
-        // TODO: Rebuild data structures.
-        List<LinkedList<NoteObject>> noteObjectsInLane;
-        List<LinkedList<NoteObject>> notesForMouseInLane;
-        List<LinkedList<NoteObject>> notesForKeyboardInLane;
+        // Rebuild data structures.
+        foreach (NoteList l in noteObjectsInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
+        foreach (NoteList l in notesForKeyboardInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
+        foreach (NoteList l in notesForMouseInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
         ongoingNotes.Clear();
         ongoingNoteIsHitOnThisFrame.Clear();
 
@@ -1452,7 +1465,23 @@ public class Game : MonoBehaviour
         ScanAboutToChange?.Invoke(Scan);
         ScanChanged?.Invoke(Scan);
 
-        // TODO: Start/stop backing track and BGA.
+        // Start/stop backing track and BGA.
+        audioSourceManager.StopAll();
+        if (BaseTime >= 0f && backingTrackClip != null)
+        {
+            audioSourceManager.PlayBackingTrack(backingTrackClip,
+                BaseTime);
+        }
+        videoPlayer.Stop();
+        if (BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset
+            && GameSetup.pattern.patternMetadata.bga != null
+            && GameSetup.pattern.patternMetadata.bga != "")
+        {
+            videoPlayer.time = BaseTime -
+                GameSetup.pattern.patternMetadata.bgaOffset;
+            videoPlayer.Play();
+        }
+
         // TODO: Call this from the initialization routine and
         // remove duplicate code, including: Game, Scan,
         // NoteAppearance.
