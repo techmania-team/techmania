@@ -356,7 +356,6 @@ public class Game : MonoBehaviour
         offset = Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay
             ? 0f : offsetMs * 0.001f;
-        BaseTime = initialTime;
         stopwatch = new Stopwatch();
         stopwatch.Start();
         JumpToScan(Scan);
@@ -407,9 +406,6 @@ public class Game : MonoBehaviour
         // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
         GameSetup.pattern.CalculateTimeOfAllNotes();
-        initialTime = (float)GameSetup.pattern.patternMetadata
-            .firstBeatOffset;
-        Pulse = 0;
         Scan = 0;
         previousComboTick = 0;
 
@@ -419,8 +415,8 @@ public class Game : MonoBehaviour
         while (initialTime >= 0f)
         {
             Scan--;
-            Pulse -= PulsesPerScan;
-            initialTime = GameSetup.pattern.PulseToTime(Pulse);
+            initialTime = GameSetup.pattern.PulseToTime(
+                Scan * PulsesPerScan);
         }
 
         // Rewind further until 1 scan before the BGA starts.
@@ -428,8 +424,8 @@ public class Game : MonoBehaviour
             .patternMetadata.bgaOffset)
         {
             Scan--;
-            Pulse -= PulsesPerScan;
-            initialTime = GameSetup.pattern.PulseToTime(Pulse);
+            initialTime = GameSetup.pattern.PulseToTime(
+                Scan * PulsesPerScan);
         }
 
         // Resize empty touch receivers to fit scan margins.
@@ -626,10 +622,6 @@ public class Game : MonoBehaviour
         // Broadcast the initial hitbox visibility.
         hitboxVisible = false;
         HitboxVisibilityChanged?.Invoke(hitboxVisible);
-
-        // Ensure that a ScanChanged event is fired at
-        // the first update.
-        // Scan--;
 
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.

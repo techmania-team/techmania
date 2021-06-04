@@ -59,17 +59,32 @@ public class NoteList
         }
     }
 
-    public void RemoveUpTo(int pulseExclusive)
+    // For notes whose pulse is equal to pulseThreshold, they will
+    // be removed if end-of-scan, and vice versa.
+    public void RemoveUpTo(int pulseThreshold)
     {
         for (int i = 0; i < list.Count; i++)
         {
-            if (list[i].note.pulse < pulseExclusive &&
-                active[i])
+            bool beforeThreshold;
+            if (list[i].note.pulse < pulseThreshold)
+            {
+                beforeThreshold = true;
+            }
+            else if (list[i].note.pulse == pulseThreshold)
+            {
+                beforeThreshold = list[i].note.endOfScan;
+            }
+            else
+            {
+                beforeThreshold = false;
+            }
+
+            if (beforeThreshold && active[i])
             {
                 active[i] = false;
                 count--;
             }
-            if (list[i].note.pulse >= pulseExclusive)
+            if (!beforeThreshold)
             {
                 first = i;
                 return;

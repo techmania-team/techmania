@@ -90,10 +90,7 @@ public class NoteAppearance : MonoBehaviour
             alphaUpperBound = 0f;
         }
         hitboxVisible = false;
-
-        InitializeHitbox();
         InitializeScale();
-        TypeSpecificInitialize();
     }
 
     public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
