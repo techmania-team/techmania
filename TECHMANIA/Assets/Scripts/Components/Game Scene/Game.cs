@@ -164,7 +164,7 @@ public class Game : MonoBehaviour
     }
     #endregion
 
-    #region Practice Mode
+    #region Practice Mode Config
     private int loopStart;
     private int loopEnd;
     private float speed;
@@ -351,11 +351,7 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
-
-        yield return null;  // Wait 1 more frame just in case.
-
-        // Start timer. Backing track will start when timer hits 0;
-        // BGA will start when timer hits bgaOffset.
+        
         int offsetMs = 
             GameSetup.pattern.patternMetadata.controlScheme
             == ControlScheme.Touch ?
@@ -364,6 +360,11 @@ public class Game : MonoBehaviour
         offset = Modifiers.instance.mode ==
             Modifiers.Mode.AutoPlay
             ? 0f : offsetMs * 0.001f;
+
+        yield return null;  // Wait 1 more frame just in case.
+
+        // Start timer. Backing track will start when timer hits 0;
+        // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
         stopwatch.Start();
         JumpToScan(firstScan);
@@ -647,6 +648,11 @@ public class Game : MonoBehaviour
             feverCoefficient = trackLength / 12.5f;
         }
         Debug.Log("Fever coefficient is: " + feverCoefficient);
+
+        // Initialize practice mode.
+        loopStart = firstScan;
+        loopEnd = lastScan;
+        speed = 1f;
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
@@ -1100,7 +1106,7 @@ public class Game : MonoBehaviour
                 GameSetup.pattern.patternMetadata.bgaOffset;
         }
 
-        // Fire ScanAboutToChange if we are 7/8 into the next scan.
+        // Fire scan events if applicable.
         if (RoundingDownIntDivision(
                 Pulse + PulsesPerScan / 8, PulsesPerScan) !=
             RoundingDownIntDivision(
@@ -1112,6 +1118,7 @@ public class Game : MonoBehaviour
         if (newScan > Scan)
         {
             ScanChanged?.Invoke(newScan);
+            ProcessScanChangeInPracticeMode(newScan);
         }
         Pulse = newPulse;
         Scan = newScan;
@@ -1177,6 +1184,7 @@ public class Game : MonoBehaviour
     {
         if (IsPaused()) return;
         if (BaseTime <= endOfPatternBaseTime) return;
+        if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
 
         if (feverState == FeverState.Active)
         {
@@ -1406,6 +1414,8 @@ public class Game : MonoBehaviour
 
         // Practice mode
         scanDisplay.text = $"{Scan} / {lastScan}";
+        loopDisplay.text = $"{loopStart} - {loopEnd}";
+        speedDisplay.text = $"{speed}x";
     }
 
     private void UpdateBrightness()
@@ -1431,6 +1441,7 @@ public class Game : MonoBehaviour
     #region Practice Mode
     private void UpdatePracticeMode()
     {
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
         if (Input.GetKeyDown(KeyCode.F5))
         {
             JumpToPreviousScan();
@@ -1438,6 +1449,14 @@ public class Game : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F6))
         {
             JumpToNextScan();
+        }
+        if (Input.GetKeyDown(KeyCode.F7))
+        {
+            SetLoopStart();
+        }    
+        if (Input.GetKeyDown(KeyCode.F8))
+        {
+            SetLoopEnd();
         }
     }
 
@@ -1495,14 +1514,14 @@ public class Game : MonoBehaviour
                 GameSetup.pattern.patternMetadata.bgaOffset;
         }
 
+        // TODO: play keysounds before this moment.
+
         // Scoring.
         currentCombo = 0;
     }
 
     public void JumpToPreviousScan()
     {
-        // TODO: scan bounds.
-        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
         float floatScan = FloatPulse / PulsesPerScan;
         floatScan -= Mathf.Floor(floatScan);
         if (floatScan > 0.25f)
@@ -1517,9 +1536,31 @@ public class Game : MonoBehaviour
 
     public void JumpToNextScan()
     {
-        // TODO: scan bounds.
-        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
         JumpToScan(Scan + 1);
+    }
+
+    public void SetLoopStart()
+    {
+        loopStart = Scan;
+        if (loopEnd < loopStart) loopEnd = loopStart;
+    }
+
+    public void SetLoopEnd()
+    {
+        loopEnd = Scan;
+        if (loopStart > loopEnd) loopStart = loopEnd;
+    }
+
+    private void ProcessScanChangeInPracticeMode(int newScan)
+    {
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
+            return;
+        }
+        if (newScan > loopEnd)
+        {
+            JumpToScan(loopStart);
+        }
     }
     #endregion
 
