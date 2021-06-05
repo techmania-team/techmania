@@ -119,7 +119,9 @@ public class NoteAppearance : MonoBehaviour
     {
         if (state == State.Resolved)
         {
-            // Do nothing.
+            // It is possible to resolve a note before it's activated
+            // (eg. by hitting it very early), so we should not
+            // activate it again.
             return;
         }
         state = State.Active;
@@ -207,7 +209,6 @@ public class NoteAppearance : MonoBehaviour
 
     protected void SetHoldExtensionVisibility(Visibility v)
     {
-        Debug.Log("NoteAppearance.SetHoldExtensionVisibility(" + v + ")");
         if (holdExtensions == null) return;
         foreach (HoldExtension e in holdExtensions)
         {
@@ -219,6 +220,7 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateState()
     {
+        // Debug.Log(GetNoteType() + " setting state to " + state);
         TypeSpecificUpdateState();
         UpdateTrailAndHoldExtension();
     }

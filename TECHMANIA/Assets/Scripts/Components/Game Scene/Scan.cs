@@ -35,12 +35,14 @@ public class Scan : MonoBehaviour
     {
         Game.ScanChanged -= OnScanChanged;
         Game.ScanAboutToChange -= OnScanAboutToChange;
+        Game.JumpedToScan -= OnJumpedToScan;
     }
 
     public void Initialize(int scanNumber, Direction direction)
     {
         Game.ScanChanged += OnScanChanged;
         Game.ScanAboutToChange += OnScanAboutToChange;
+        Game.JumpedToScan += OnJumpedToScan;
 
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
@@ -147,22 +149,43 @@ public class Scan : MonoBehaviour
         }
     }
 
+    private void Activate()
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            o.Activate();
+        }
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.Activate();
+        }
+        foreach (RepeatPathExtension e in repeatPathExtensions)
+        {
+            e.Activate();
+        }
+    }
+
     private void OnScanAboutToChange(int scan)
     {
         if (scan == scanNumber)
         {
-            foreach (NoteAppearance o in noteAppearances)
-            {
-                o.Activate();
-            }
-            foreach (HoldExtension e in holdExtensions)
-            {
-                e.Activate();
-            }
-            foreach (RepeatPathExtension e in repeatPathExtensions)
-            {
-                e.Activate();
-            }
+            Activate();
+        }
+    }
+
+    private void Prepare()
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            o.Prepare();
+        }
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.Prepare();
+        }
+        foreach (RepeatPathExtension e in repeatPathExtensions)
+        {
+            e.Prepare();
         }
     }
 
@@ -170,18 +193,35 @@ public class Scan : MonoBehaviour
     {
         if (scan == scanNumber - 1)
         {
+            Prepare();
+        }
+    }
+
+    private void OnJumpedToScan(int scan)
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            // This will take care of hold extensions and repeat
+            // extensions.
+            o.SetInactive();
+        }
+
+        if (scan > scanNumber)
+        {
             foreach (NoteAppearance o in noteAppearances)
             {
-                o.Prepare();
+                // This will take care of hold extensions and repeat
+                // extensions.
+                o.Resolve();
             }
-            foreach (HoldExtension e in holdExtensions)
-            {
-                e.Prepare();
-            }
-            foreach (RepeatPathExtension e in repeatPathExtensions)
-            {
-                e.Prepare();
-            }
+        }
+        else if (scan == scanNumber)
+        {
+            Activate();
+        }
+        else if (scan == scanNumber - 1)
+        {
+            Prepare();
         }
     }
 

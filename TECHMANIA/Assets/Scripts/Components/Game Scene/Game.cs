@@ -166,6 +166,7 @@ public class Game : MonoBehaviour
     private Dictionary<int, Scan> scanObjects;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
+    public static event UnityAction<int> JumpedToScan;
     public static event UnityAction<bool> HitboxVisibilityChanged;
 
     private static List<List<KeyCode>> keysForLane;
@@ -1442,12 +1443,6 @@ public class Game : MonoBehaviour
             (float)stopwatch.Elapsed.TotalSeconds;
         previousComboTick = Pulse;
 
-        // Reset all notes.
-        foreach (Scan s in scanObjects.Values)
-        {
-            s.SetAllNotesInactive();
-        }
-
         // Rebuild data structures.
         foreach (NoteList l in noteObjectsInLane)
         {
@@ -1468,8 +1463,7 @@ public class Game : MonoBehaviour
         ongoingNoteIsHitOnThisFrame.Clear();
 
         // Fire scan events.
-        ScanAboutToChange?.Invoke(Scan);
-        ScanChanged?.Invoke(Scan);
+        JumpedToScan?.Invoke(Scan);
 
         // Start/stop backing track and BGA.
         audioSourceManager.StopAll();
@@ -1498,7 +1492,7 @@ public class Game : MonoBehaviour
         if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
         float floatScan = FloatPulse / PulsesPerScan;
         floatScan -= Mathf.Floor(floatScan);
-        if (floatScan > 0.125f)
+        if (floatScan > 0.25f)
         {
             JumpToScan(Scan);
         }

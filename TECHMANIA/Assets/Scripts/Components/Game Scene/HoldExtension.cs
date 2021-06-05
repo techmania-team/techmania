@@ -25,7 +25,6 @@ public class HoldExtension : MonoBehaviour
     public void SetVisibility(
         NoteAppearance.Visibility v)
     {
-        Debug.Log("HoldExtension.SetHoldExtensionVisibility(" + v + ")");
         currentVisibility = v;
         GetComponent<HoldTrailManager>().SetVisibility(v);
     }
