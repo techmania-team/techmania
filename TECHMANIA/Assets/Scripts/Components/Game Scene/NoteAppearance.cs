@@ -207,6 +207,7 @@ public class NoteAppearance : MonoBehaviour
 
     protected void SetHoldExtensionVisibility(Visibility v)
     {
+        Debug.Log("NoteAppearance.SetHoldExtensionVisibility(" + v + ")");
         if (holdExtensions == null) return;
         foreach (HoldExtension e in holdExtensions)
         {

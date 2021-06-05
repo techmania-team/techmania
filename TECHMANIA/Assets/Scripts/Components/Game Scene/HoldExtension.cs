@@ -25,6 +25,7 @@ public class HoldExtension : MonoBehaviour
     public void SetVisibility(
         NoteAppearance.Visibility v)
     {
+        Debug.Log("HoldExtension.SetHoldExtensionVisibility(" + v + ")");
         currentVisibility = v;
         GetComponent<HoldTrailManager>().SetVisibility(v);
     }
@@ -53,7 +54,8 @@ public class HoldExtension : MonoBehaviour
 
     public void Activate()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved ||
+        if (noteRef.state == NoteAppearance.State.Inactive ||
+            noteRef.state == NoteAppearance.State.Resolved ||
             noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         SetVisibility(
@@ -62,7 +64,8 @@ public class HoldExtension : MonoBehaviour
 
     public void Prepare()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved ||
+        if (noteRef.state == NoteAppearance.State.Inactive || 
+            noteRef.state == NoteAppearance.State.Resolved ||
             noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         if (noteRef.GetNoteType() == NoteType.Hold)
