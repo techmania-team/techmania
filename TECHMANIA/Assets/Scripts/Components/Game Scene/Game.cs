@@ -1440,6 +1440,7 @@ public class Game : MonoBehaviour
         BaseTime = GameSetup.pattern.PulseToTime(Pulse);
         initialTime = BaseTime - 
             (float)stopwatch.Elapsed.TotalSeconds;
+        previousComboTick = Pulse;
 
         // Reset all notes.
         foreach (Scan s in scanObjects.Values)
