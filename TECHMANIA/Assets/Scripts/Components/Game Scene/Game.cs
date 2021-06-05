@@ -151,6 +151,7 @@ public class Game : MonoBehaviour
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private float endOfPatternBaseTime;
+    private int firstScan;
     private int lastScan;
     private Stopwatch feverTimer;
     private float initialTime;
@@ -161,6 +162,12 @@ public class Game : MonoBehaviour
         BaseTime = baseTime;
         Game.offset = offset;
     }
+    #endregion
+
+    #region Practice Mode
+    private int loopStart;
+    private int loopEnd;
+    private float speed;
     #endregion
 
     private Dictionary<int, Scan> scanObjects;
@@ -359,7 +366,7 @@ public class Game : MonoBehaviour
             ? 0f : offsetMs * 0.001f;
         stopwatch = new Stopwatch();
         stopwatch.Start();
-        JumpToScan(Scan);
+        JumpToScan(firstScan);
     }
 
     private void OnImageLoadComplete(Texture2D texture, string error)
@@ -407,7 +414,7 @@ public class Game : MonoBehaviour
         // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
         GameSetup.pattern.CalculateTimeOfAllNotes();
-        Scan = 0;
+        firstScan = 0;
         previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
@@ -415,18 +422,18 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bps;
         while (initialTime >= 0f)
         {
-            Scan--;
+            firstScan--;
             initialTime = GameSetup.pattern.PulseToTime(
-                Scan * PulsesPerScan);
+                firstScan * PulsesPerScan);
         }
 
         // Rewind further until 1 scan before the BGA starts.
         while (initialTime > GameSetup.pattern
             .patternMetadata.bgaOffset)
         {
-            Scan--;
+            firstScan--;
             initialTime = GameSetup.pattern.PulseToTime(
-                Scan * PulsesPerScan);
+                firstScan * PulsesPerScan);
         }
 
         // Resize empty touch receivers to fit scan margins.
@@ -484,7 +491,7 @@ public class Game : MonoBehaviour
                 bottomScanDirection = global::Scan.Direction.Left;
                 break;
         }
-        for (int i = Scan; i <= lastScan; i++)
+        for (int i = firstScan; i <= lastScan; i++)
         {
             bool isBottomScan = i % 2 == 0;
             if (Modifiers.instance.scanPosition == 
@@ -1396,6 +1403,9 @@ public class Game : MonoBehaviour
             (float)hp / Ruleset.instance.maxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
+
+        // Practice mode
+        scanDisplay.text = $"{Scan} / {lastScan}";
     }
 
     private void UpdateBrightness()
@@ -1433,6 +1443,9 @@ public class Game : MonoBehaviour
 
     private void JumpToScan(int scan)
     {
+        // Clamp scan into bounds.
+        scan = Mathf.Clamp(scan, firstScan, lastScan);
+
         // Set timer.
         Scan = scan;
         FloatBeat = Scan * GameSetup.pattern.patternMetadata.bps;

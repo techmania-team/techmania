@@ -131,6 +131,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 118657414}
     m_Modifications:
+    - target: {fileID: 1260019629886154122, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1209,6 +1214,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Set Start Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
@@ -3358,6 +3373,51 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Next Scan Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 589608923}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: JumpToNextScan
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Game, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
@@ -6724,6 +6784,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 118657414}
     m_Modifications:
+    - target: {fileID: 1260019629886154122, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_Pivot.x
@@ -8159,6 +8224,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Set End Button
       objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
       propertyPath: m_Sprite
@@ -9413,6 +9488,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: Previous Scan Button
       objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 589608923}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: JumpToPreviousScan
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Game, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204713, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
       propertyPath: m_Sprite
@@ -10371,6 +10491,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Faster Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
@@ -11391,6 +11521,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Slower Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: silent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 220256918485204708, guid: 0acdb09f926770a42b5b997f9250cde2,
+        type: 3}
+      propertyPath: useClickSoundOverride
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3252712830111495932, guid: 0acdb09f926770a42b5b997f9250cde2,
         type: 3}
