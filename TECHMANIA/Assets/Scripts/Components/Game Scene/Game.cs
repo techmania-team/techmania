@@ -1514,7 +1514,26 @@ public class Game : MonoBehaviour
                 GameSetup.pattern.patternMetadata.bgaOffset;
         }
 
-        // TODO: play keysounds before this moment.
+        // Play keysounds before this moment if they last enough.
+        foreach (NoteList l in noteObjectsInLane)
+        {
+            l.ForEach((NoteObject noteObject) =>
+            {
+                Note n = noteObject.note;
+                if (n.time > BaseTime) return;
+
+                AudioClip clip = ResourceLoader.GetCachedClip(
+                    n.sound);
+                if (clip == null) return;
+                if (n.time + clip.length > BaseTime)
+                {
+                    audioSourceManager.PlayKeysound(clip,
+                        n.lane > kPlayableLanes,
+                        startTime: BaseTime - n.time,
+                        n.volume, n.pan);
+                }
+            });
+        }
 
         // Scoring.
         currentCombo = 0;

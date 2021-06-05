@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -106,5 +107,11 @@ public class NoteList
     {
         count = list.Count;
         for (int i = 0; i < Count; i++) active[i] = true;
+    }
+
+    // This applies to inactive elements too.
+    public void ForEach(Action<NoteObject> action)
+    {
+        list.ForEach(action);
     }
 }
