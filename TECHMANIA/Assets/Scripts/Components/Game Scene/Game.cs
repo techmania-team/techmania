@@ -1044,7 +1044,7 @@ public class Game : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.F5))
+        if (Input.GetKeyDown(KeyCode.F12))
         {
             hitboxVisible = !hitboxVisible;
             HitboxVisibilityChanged?.Invoke(hitboxVisible);
@@ -1054,6 +1054,7 @@ public class Game : MonoBehaviour
         CheckForEndOfPattern();
         UpdateFever();
         HandleInput();
+        UpdatePracticeMode();
         UpdateOngoingNotes();
         UpdateUI();
         UpdateBrightness();
@@ -1086,9 +1087,9 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
+            videoPlayer.Play();
             videoPlayer.time = BaseTime - 
                 GameSetup.pattern.patternMetadata.bgaOffset;
-            videoPlayer.Play();
         }
 
         // Fire ScanAboutToChange if we are 7/8 into the next scan.
@@ -1416,8 +1417,20 @@ public class Game : MonoBehaviour
     }
     #endregion
 
-    #region Scan Navigation
-    public void JumpToScan(int scan)
+    #region Practice Mode
+    private void UpdatePracticeMode()
+    {
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            JumpToPreviousScan();
+        }
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            JumpToNextScan();
+        }
+    }
+
+    private void JumpToScan(int scan)
     {
         // Set timer.
         Scan = scan;
@@ -1469,14 +1482,36 @@ public class Game : MonoBehaviour
             && GameSetup.pattern.patternMetadata.bga != null
             && GameSetup.pattern.patternMetadata.bga != "")
         {
+            videoPlayer.Play();
             videoPlayer.time = BaseTime -
                 GameSetup.pattern.patternMetadata.bgaOffset;
-            videoPlayer.Play();
         }
 
-        // TODO: Call this from the initialization routine and
-        // remove duplicate code, including: Game, Scan,
-        // NoteAppearance.
+        // Scoring.
+        currentCombo = 0;
+    }
+
+    public void JumpToPreviousScan()
+    {
+        // TODO: scan bounds.
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
+        float floatScan = FloatPulse / PulsesPerScan;
+        floatScan -= Mathf.Floor(floatScan);
+        if (floatScan > 0.125f)
+        {
+            JumpToScan(Scan);
+        }
+        else
+        {
+            JumpToScan(Scan - 1);
+        }
+    }
+
+    public void JumpToNextScan()
+    {
+        // TODO: scan bounds.
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
+        JumpToScan(Scan + 1);
     }
     #endregion
 
@@ -1972,64 +2007,73 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             SetCombo(currentCombo + 1);
-            hp += feverState == FeverState.Active ? 
-                Ruleset.instance.hpRecoveryDuringFever : 
-                Ruleset.instance.hpRecovery;
-            if (hp >= Ruleset.instance.maxHp)
-            {
-                hp = Ruleset.instance.maxHp;
-            }
 
-            if (feverState == FeverState.Idle &&
-                (judgement == Judgement.RainbowMax ||
-                 judgement == Judgement.Max))
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                feverAmount += feverCoefficient / numPlayableNotes;
-                if (Modifiers.instance.mode ==
-                    Modifiers.Mode.AutoPlay)
+                hp += feverState == FeverState.Active ?
+                Ruleset.instance.hpRecoveryDuringFever :
+                Ruleset.instance.hpRecovery;
+                if (hp >= Ruleset.instance.maxHp)
                 {
-                    feverAmount = 0f;
+                    hp = Ruleset.instance.maxHp;
                 }
-                if (feverAmount >= 1f)
+
+                if (feverState == FeverState.Idle &&
+                    (judgement == Judgement.RainbowMax ||
+                     judgement == Judgement.Max))
                 {
-                    feverState = FeverState.Ready;
-                    feverAmount = 1f;
+                    feverAmount += feverCoefficient / numPlayableNotes;
+                    if (Modifiers.instance.mode ==
+                        Modifiers.Mode.AutoPlay)
+                    {
+                        feverAmount = 0f;
+                    }
+                    if (feverAmount >= 1f)
+                    {
+                        feverState = FeverState.Ready;
+                        feverAmount = 1f;
+                    }
                 }
             }
         }
         else
         {
             SetCombo(0);
-            hp -= feverState == FeverState.Active ? 
-                Ruleset.instance.hpLossDuringFever :
-                Ruleset.instance.hpLoss;
-            if (hp < 0) hp = 0;
-            if (hp <= 0 &&
-                Modifiers.instance.mode !=
-                Modifiers.Mode.NoFail)
-            {
-                // Stage failed.
-                score.stageFailed = true;
-                stopwatch.Stop();
-                audioSourceManager.StopAll();
-                StartCoroutine(StageFailedSequence());
-            }
 
-            if (feverState == FeverState.Idle ||
-                feverState == FeverState.Ready)
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                if (judgement == Judgement.Miss)
+                hp -= feverState == FeverState.Active ?
+                   Ruleset.instance.hpLossDuringFever :
+                   Ruleset.instance.hpLoss;
+                if (hp < 0) hp = 0;
+                if (hp <= 0 &&
+                    Modifiers.instance.mode !=
+                    Modifiers.Mode.NoFail)
                 {
-                    feverAmount *= 0.75f;
+                    // Stage failed.
+                    score.stageFailed = true;
+                    stopwatch.Stop();
+                    audioSourceManager.StopAll();
+                    StartCoroutine(StageFailedSequence());
                 }
-                else  // Break
+
+                if (feverState == FeverState.Idle ||
+                    feverState == FeverState.Ready)
                 {
-                    feverAmount *= 0.5f;
+                    if (judgement == Judgement.Miss)
+                    {
+                        feverAmount *= 0.75f;
+                    }
+                    else  // Break
+                    {
+                        feverAmount *= 0.5f;
+                    }
+                    feverState = FeverState.Idle;
                 }
-                feverState = FeverState.Idle;
             }
         }
-        score.LogNote(judgement);
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+            score.LogNote(judgement);
 
         // Appearances and VFX.
         vfxSpawner.SpawnVFXOnResolve(n, judgement);

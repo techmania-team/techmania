@@ -125,6 +125,11 @@ public class RepeatHeadAppearanceBase : NoteAppearance
             n.GetComponent<RepeatNoteAppearanceBase>().repeatHead
                 = this;
         }
+        TypeSpecificInitialize();
+    }
+
+    protected override void TypeSpecificInitialize()
+    {
         nextUnresolvedRepeatNoteIndex = managedRepeatNotes.Count;
     }
 
