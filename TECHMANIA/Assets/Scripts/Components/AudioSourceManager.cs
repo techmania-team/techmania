@@ -124,6 +124,13 @@ public class AudioSourceManager : MonoBehaviour
         foreach (AudioSource s in hiddenLanes) s.Stop();
     }
 
+    public void SetSpeed(float speed)
+    {
+        backingTrack.pitch = speed;
+        foreach (AudioSource s in playableLanes) s.pitch = speed;
+        foreach (AudioSource s in hiddenLanes) s.pitch = speed;
+    }
+
     public bool IsAnySourcePlaying()
     {
         foreach (AudioSource s in playableLanes)

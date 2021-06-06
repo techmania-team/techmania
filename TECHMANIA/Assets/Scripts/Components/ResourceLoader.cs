@@ -205,7 +205,7 @@ public class ResourceLoader : MonoBehaviour
             yield break;
         }
 
-        UnityWebRequest request = 
+        UnityWebRequest request =
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(fullPath), AudioType.UNKNOWN);
         yield return request.SendWebRequest();

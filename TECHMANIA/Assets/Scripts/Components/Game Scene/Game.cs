@@ -86,8 +86,8 @@ public class Game : MonoBehaviour
     public TextMeshProUGUI scanDisplay;
     public TextMeshProUGUI loopDisplay;
     public TextMeshProUGUI speedDisplay;
-    public Toggle showHitboxToggle;
     public Toggle autoPlayToggle;
+    public Toggle showHitboxToggle;
 
     [Header("UI - Other")]
     public GameObject topBar;
@@ -167,7 +167,8 @@ public class Game : MonoBehaviour
     #region Practice Mode Config
     private int loopStart;
     private int loopEnd;
-    private float speed;
+    private int speedPercentage;
+    private float speed { get => speedPercentage * 0.01f; }
     #endregion
 
     private Dictionary<int, Scan> scanObjects;
@@ -652,7 +653,7 @@ public class Game : MonoBehaviour
         // Initialize practice mode.
         loopStart = firstScan;
         loopEnd = lastScan;
-        speed = 1f;
+        speedPercentage = 100;
 
         // Miscellaneous initialization.
         fingerInLane = new Dictionary<int, int>();
@@ -1078,7 +1079,7 @@ public class Game : MonoBehaviour
     {
         float oldBaseTime = BaseTime;
         float oldTime = Time;
-        BaseTime = (float)stopwatch.Elapsed.TotalSeconds
+        BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
@@ -1158,7 +1159,7 @@ public class Game : MonoBehaviour
                     // playable lane.
                     if (Time > upcomingNote.note.time
                             + LatencyForNote(upcomingNote.note)
-                            + Ruleset.instance.breakThreshold
+                            + Ruleset.instance.breakThreshold * speed
                         && !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         ResolveNote(upcomingNote, Judgement.Break);
@@ -1458,6 +1459,20 @@ public class Game : MonoBehaviour
         {
             SetLoopEnd();
         }
+        if (Input.GetKeyDown(KeyCode.F9))
+        {
+            DecreaseSpeed();
+        }
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            IncreaseSpeed();
+        }
+    }
+
+    private void ResetInitialTime()
+    {
+        initialTime = BaseTime -
+            (float)stopwatch.Elapsed.TotalSeconds * speed;
     }
 
     private void JumpToScan(int scan)
@@ -1471,8 +1486,7 @@ public class Game : MonoBehaviour
         Pulse = PulsesPerScan * Scan;
         FloatPulse = Pulse;
         BaseTime = GameSetup.pattern.PulseToTime(Pulse);
-        initialTime = BaseTime - 
-            (float)stopwatch.Elapsed.TotalSeconds;
+        ResetInitialTime();
         previousComboTick = Pulse;
 
         // Rebuild data structures.
@@ -1580,6 +1594,27 @@ public class Game : MonoBehaviour
         {
             JumpToScan(loopStart);
         }
+    }
+
+    private void SetSpeed(int newSpeed)
+    {
+        newSpeed = Mathf.Clamp(newSpeed, 50, 200);
+        if (speedPercentage == newSpeed) return;
+
+        speedPercentage = newSpeed;
+        ResetInitialTime();
+        audioSourceManager.SetSpeed(speed);
+        videoPlayer.playbackSpeed = speed;
+    }
+
+    public void DecreaseSpeed()
+    {
+        SetSpeed(speedPercentage - 5);
+    }
+
+    public void IncreaseSpeed()
+    {
+        SetSpeed(speedPercentage + 5);
     }
     #endregion
 
@@ -1967,6 +2002,8 @@ public class Game : MonoBehaviour
 
         Judgement judgement;
         float absDifference = Mathf.Abs(timeDifference);
+        // Compensate for speed.
+        absDifference /= speed;
         if (absDifference <= Ruleset.instance.rainbowMaxWindow)
         {
             judgement = Judgement.RainbowMax;
