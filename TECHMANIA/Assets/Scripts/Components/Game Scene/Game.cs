@@ -1344,20 +1344,15 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             float latency = LatencyForNote(pair.Key.note);
-            float gracePeriodStart = 0f;
             float endTime = 0f;
             if (pair.Key.note is HoldNote)
             {
                 HoldNote holdNote = pair.Key.note as HoldNote;
-                gracePeriodStart = holdNote.gracePeriodStart +
-                    latency;
                 endTime = holdNote.endTime + latency;
             }
             else if (pair.Key.note is DragNote)
             {
                 DragNote dragNote = pair.Key.note as DragNote;
-                gracePeriodStart = dragNote.gracePeriodStart +
-                    latency;
                 endTime = dragNote.endTime + latency;
             }
             if (Time >= endTime)
@@ -1368,6 +1363,8 @@ public class Game : MonoBehaviour
                 continue;
             }
 
+            float gracePeriodStart = endTime - 
+                Ruleset.instance.longNoteGracePeriod * speed;
             if (pair.Value == false
                 && Modifiers.instance.mode !=
                     Modifiers.Mode.AutoPlay

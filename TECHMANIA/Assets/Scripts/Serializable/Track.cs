@@ -517,7 +517,6 @@ public class HoldNote : Note
 
     // Calculated at runtime:
 
-    public float gracePeriodStart;
     public float endTime;
 
     public override string Pack()
@@ -583,7 +582,6 @@ public class DragNote : Note
 
     // Calculated at runtime:
 
-    public float gracePeriodStart;
     public float endTime;
 
     public DragNote()
