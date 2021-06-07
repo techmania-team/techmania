@@ -15,6 +15,7 @@ public class ModifierSidesheet : MonoBehaviour
     public TMP_Dropdown scanPosition;
     public TMP_Dropdown fever;
     public TMP_Dropdown keysound;
+    public TMP_Dropdown assistTick;
 
     [Header("Appearance")]
     public Toggle showJudgementTally;
@@ -61,6 +62,9 @@ public class ModifierSidesheet : MonoBehaviour
             keysound,
             Modifiers.keysoundDisplayKeys);
         UIUtils.InitializeDropdownWithLocalizedOptions(
+            assistTick,
+            Modifiers.assistTickDisplayKeys);
+        UIUtils.InitializeDropdownWithLocalizedOptions(
             mode,
             Modifiers.modeDisplayKeys);
         UIUtils.InitializeDropdownWithLocalizedOptions(
@@ -105,6 +109,10 @@ public class ModifierSidesheet : MonoBehaviour
         keysound.SetValueWithoutNotify(
             (int)Modifiers.instance.keysound);
         keysound.RefreshShownValue();
+
+        assistTick.SetValueWithoutNotify(
+            (int)Modifiers.instance.assistTick);
+        assistTick.RefreshShownValue();
 
         // Appearance
 
@@ -155,6 +163,8 @@ public class ModifierSidesheet : MonoBehaviour
             (Modifiers.Fever)fever.value;
         Modifiers.instance.keysound =
             (Modifiers.Keysound)keysound.value;
+        Modifiers.instance.assistTick =
+            (Modifiers.AssistTick)assistTick.value;
 
         // Appearance
 

@@ -703,7 +703,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,select_pattern_notes_label,Notes,音符数,音符數,ノート数,노트 수
 ,select_pattern_radar_title,Radar,雷达,詳細,詳細,세부 지표
 ,select_pattern_my_record_title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
-,select_pattern_modifier_title,Modifiers,游戏选项,,モディファイア,옵션
+,select_pattern_modifier_title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 "Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
 ,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,,,,,,
@@ -715,6 +715,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,modifier_sidesheet_scan_position_label,Scan position,扫描位置,掃描位置,スキャン位置,마디 배치
 ,modifier_sidesheet_fever_label,Fever,Fever,Fever,Fever,피버
 ,modifier_sidesheet_keysound_label,Keysound,按键音,按鍵音,ノート音,연주음
+Added on 6/6/2021.,modifier_sidesheet_assist_tick_label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
 ,modifier_sidesheet_appearance_title,Appearance,界面,介面,表示,화면 표시
 ,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
 ,modifier_sidesheet_no_video_label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
@@ -727,6 +728,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,,실시간 판정 보기
 ,,,,,,
 ,modifier_normal,Normal,正常,正常,ノーマル,기본
+Added on 6/6/2021.,modifier_none,None,无,無,なし,없음
 ,modifier_fade_out,Fade out,淡出,淡出,FADE OUT,FADE OUT
 ,modifier_fade_out_2,Fade out 2,淡出II,淡出II,FADE OUT 2,FADE OUT 2
 ,modifier_fade_in,Fade in,淡入,淡入,FADE IN,FADE IN
@@ -741,9 +743,9 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,modifier_swap,Swap,调换,調換,反転,반전
 ,modifier_fever_off,Fever off,关闭Fever,關閉 Fever,Fever オフ,끄기
 ,modifier_auto_fever,Auto Fever,自动Fever,自動 Fever,オート Fever,자동
-,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생 / 클릭음 없음
-,modifier_auto_keysound_plus_ticks,Auto keysound + ticks,自动按键音+辅助音效,自動按鍵音 + 輔助音效,オートノート音 / 打撃音,자동 재생 / 클릭음 수동
-,modifier_auto_keysound_plus_auto_ticks,Auto keysound + auto ticks,自动按键音+自动辅助音效,自動按鍵音 + 自動輔助音效,オートノート音 / オート打撃音,자동 재생 / 클릭음 자동
+,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생
+Added on 6/6/2021.,modifier_assist_tick,Assist tick,辅助音效,輔助音效,打撃音,클릭음 수동
+Added on 6/6/2021.,modifier_auto_assist_tick,Auto assist tick,自动辅助音效,自動輔助音效,オート打撃音,클릭음 자동
 ,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
 ,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
 ,modifier_practice,Practice,练习,練習,練習,연습 모드

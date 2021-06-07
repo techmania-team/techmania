@@ -317,17 +317,27 @@ public class Modifiers
     public enum Keysound
     {
         Normal,
-        AutoKeysound,
-        AutoKeysoundPlusTicks,
-        AutoKeysoundPlusAutoTicks
+        AutoKeysound
     }
     public Keysound keysound;
     public static readonly string[] keysoundDisplayKeys =
     {
         "modifier_normal",
-        "modifier_auto_keysound",
-        "modifier_auto_keysound_plus_ticks",
-        "modifier_auto_keysound_plus_auto_ticks"
+        "modifier_auto_keysound"
+    };
+
+    public enum AssistTick
+    {
+        None,
+        AssistTick,
+        AutoAssistTick
+    }
+    public AssistTick assistTick;
+    public static readonly string[] assistTickDisplayKeys =
+    {
+        "modifier_none",
+        "modifier_assist_tick",
+        "modifier_auto_assist_tick"
     };
 
     // Special modifiers
@@ -350,7 +360,7 @@ public class Modifiers
 
     public enum ControlOverride
     {
-        Normal,
+        None,
         OverrideToTouch,
         OverrideToKeys,
         OverrideToKM
@@ -358,7 +368,7 @@ public class Modifiers
     public ControlOverride controlOverride;
     public static readonly string[] controlOverrideDisplayKeys =
     {
-        "modifier_normal",
+        "modifier_none",
         "modifier_override_to_touch",
         "modifier_override_to_keys",
         "modifier_override_to_km"
