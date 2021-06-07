@@ -209,7 +209,7 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
 ,information_panel_credits_header,Credits,制作人,製作者,クレジット,
 ,information_panel_credits_program,Program,程序,程式,プログラミング,프로그래밍
-,information_panel_credits_localizer,Localizer (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
+,information_panel_credits_localizer,Localization (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
 ,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
 ,select_pattern_play_button,PLAY,开始,開始,プレイ,시작
@@ -384,7 +384,7 @@ The default name of newly created patterns.,track_setup_patterns_tab_new_pattern
 ,track_setup_patterns_tab_no_selection_text,Select or create a pattern to get started.,请选择或新建一个谱面。,請選擇或新建一個譜面。,既存のパターンを選択して編集または新しいパターンを作成します。,기존 패턴을 선택하여 편집하거나 새 패턴을 추가하십시오.
 ,track_setup_patterns_tab_basics_header,Basics,基本信息,基本資料,基本情報,기본 정보
 ,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,名稱,パターン名,패턴 이름
-,track_setup_patterns_tab_author_label,Author,谱面作者,作者,投稿者,작성자
+,track_setup_patterns_tab_author_label,Author,作者,作者,投稿者,작성자
 ,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,操作方式,プレイタイプ,플레이 방식
 ,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,觸控,タッチ,터치
 ,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
@@ -694,71 +694,71 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_stop_time_button,stop time for,停止时间,停止時間,の停止時間,중지 시간
 ,time_event_dialog_stop_time_button_after_text_field,beats,（拍）,（拍）,拍,박자
 ,time_event_dialog_dont_stop_time_button,don't stop time,不停止时间,不停止時間,時間を止めない,시간을 멈추지 않습니다.
-,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선적으로 적용됩니다."
+,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선 적용됩니다."
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-0.7 strings start here.,select_pattern_panel_title,Select Pattern,选择谱面,,,
-,select_pattern_length_label,Length,长度,,,
-,select_pattern_notes_label,Notes,音符数,,,
-,select_pattern_radar_title,Radar,雷达,,,
-,select_pattern_my_record_title,My record,最高纪录,,,
-,select_pattern_modifier_title,Modifiers,游戏选项,,,
-"Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,,,
-,select_pattern_modifier_button,Modifiers,游戏选项,,,
+0.7 strings start here.,select_pattern_panel_title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
+,select_pattern_length_label,Length,长度,長度,長さ,재생 시간
+,select_pattern_notes_label,Notes,音符数,音符數,ノート数,노트 수
+,select_pattern_radar_title,Radar,雷达,詳細,詳細,세부 지표
+,select_pattern_my_record_title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
+,select_pattern_modifier_title,Modifiers,游戏选项,,モディファイア,옵션
+"Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
+,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,,,,,,
-,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,,,
-,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,,,
-,modifier_sidesheet_scanline_opacity_label,Scanline opacity,扫描线透明度,,,
-,modifier_sidesheet_scan_direction_label,Scan direction,扫描方向,,,
-,modifier_sidesheet_note_position_label,Note position,音符位置,,,
-,modifier_sidesheet_scan_position_label,Scan position,扫描位置,,,
-,modifier_sidesheet_fever_label,Fever,Fever,,,
-,modifier_sidesheet_keysound_label,Keysound,按键音,,,
-,modifier_sidesheet_appearance_title,Appearance,界面,,,
-,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,,,
-,modifier_sidesheet_no_video_label,No video,不播放视频,,,
-,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,,,
-,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,,,
-,modifier_sidesheet_mode_label,Mode,模式,,,
-,modifier_sidesheet_control_override_label,Control override,操作方式,,,
-,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,,,
+,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,音符透明度,ノート透明度,노트 이펙터
+,modifier_sidesheet_scanline_opacity_label,Scanline opacity,扫描线透明度,掃描線透明度,スキャンライン透明度,타임라인 이펙터
+,modifier_sidesheet_scan_direction_label,Scan direction,扫描方向,掃描方向,スキャン方向,스크롤 이펙터
+,modifier_sidesheet_note_position_label,Note position,音符位置,音符位置,ノート位置,노트 배치
+,modifier_sidesheet_scan_position_label,Scan position,扫描位置,掃描位置,スキャン位置,마디 배치
+,modifier_sidesheet_fever_label,Fever,Fever,Fever,Fever,피버
+,modifier_sidesheet_keysound_label,Keysound,按键音,按鍵音,ノート音,연주음
+,modifier_sidesheet_appearance_title,Appearance,界面,介面,表示,화면 표시
+,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
+,modifier_sidesheet_no_video_label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
+,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,特殊選項,特殊モディファイア,기타 옵션
+,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,警告：這些選項會使成績無效,注意：このオプションを有効にするとスコアが無効になります。,주의: 아래 옵션을 사용하면 스코어를 등록할 수 없습니다.
+,modifier_sidesheet_mode_label,Mode,模式,模式,モード,모드
+,modifier_sidesheet_control_override_label,Control override,操作方式,操作方式,プレイ方式,입력 방식
+,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,掃描速度,スクロール速度,스크롤 속도
 ,,,,,,
-,options_show_judgement_tally_label,Show judgement tally,显示判定统计,,,
+,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,,실시간 판정 보기
 ,,,,,,
-,modifier_normal,Normal,正常,,,
-,modifier_fade_out,Fade out,淡出,,,
-,modifier_fade_out_2,Fade out 2,淡出II,,,
-,modifier_fade_in,Fade in,淡入,,,
-,modifier_fade_in_2,Fade in 2,淡入II,,,
-,modifier_blink,Blink,闪烁,,,
-,modifier_blink_2,Blink 2,闪烁II,,,
-,modifier_blind,Blind,隐藏扫描线,,,
-,modifier_right_right,Right - Right,右 - 右,,,
-,modifier_left_right,Left - Right,左 - 右,,,
-,modifier_left_left,Left - Left,左 - 左,,,
-,modifier_mirror,Mirror,镜像,,,
-,modifier_swap,Swap,调换,,,
-,modifier_fever_off,Fever off,关闭Fever,,,
-,modifier_auto_fever,Auto Fever,自动Fever,,,
-,modifier_auto_keysound,Auto keysound,自动按键音,,,
-,modifier_auto_keysound_plus_ticks,Auto keysound + ticks,自动按键音+辅助音效,,,
-,modifier_auto_keysound_plus_auto_ticks,Auto keysound + auto ticks,自动按键音+自动辅助音效,,,
-,modifier_no_fail,No fail,无失败,,,
-,modifier_auto_play,Auto play,自动演奏,,,
-,modifier_practice,Practice,练习,,,
-,modifier_override_to_touch,Override to Touch,强制使用触控,,,
-,modifier_override_to_keys,Override to Keys,强制使用键盘,,,
-,modifier_override_to_km,Override to KM,强制使用键鼠,,,
-,modifier_half_speed,Half speed,半速,,,
+,modifier_normal,Normal,正常,正常,ノーマル,기본
+,modifier_fade_out,Fade out,淡出,淡出,FADE OUT,FADE OUT
+,modifier_fade_out_2,Fade out 2,淡出II,淡出II,FADE OUT 2,FADE OUT 2
+,modifier_fade_in,Fade in,淡入,淡入,FADE IN,FADE IN
+,modifier_fade_in_2,Fade in 2,淡入II,淡入II,FADE IN 2,FADE IN 2
+,modifier_blink,Blink,闪烁,閃爍,BLINK,BLINK
+,modifier_blink_2,Blink 2,闪烁II,閃爍II,BLINK 2,BLINK 2
+,modifier_blind,Blind,隐藏扫描线,隱藏掃描線,BLIND,BLIND
+,modifier_right_right,Right - Right,右 - 右,右 - 右,右 - 右,오른쪽
+,modifier_left_right,Left - Right,左 - 右,左 - 右,左 - 右,역방향
+,modifier_left_left,Left - Left,左 - 左,左 - 左,左 - 左,왼쪽
+,modifier_mirror,Mirror,镜像,鏡像,MIRROR,MIRROR
+,modifier_swap,Swap,调换,調換,反転,반전
+,modifier_fever_off,Fever off,关闭Fever,關閉 Fever,Fever オフ,끄기
+,modifier_auto_fever,Auto Fever,自动Fever,自動 Fever,オート Fever,자동
+,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생 / 클릭음 없음
+,modifier_auto_keysound_plus_ticks,Auto keysound + ticks,自动按键音+辅助音效,自動按鍵音 + 輔助音效,オートノート音 / 打撃音,자동 재생 / 클릭음 수동
+,modifier_auto_keysound_plus_auto_ticks,Auto keysound + auto ticks,自动按键音+自动辅助音效,自動按鍵音 + 自動輔助音效,オートノート音 / オート打撃音,자동 재생 / 클릭음 자동
+,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
+,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
+,modifier_practice,Practice,练习,練習,練習,연습 모드
+,modifier_override_to_touch,Override to Touch,强制使用触控,強制使用觸控,タッチで操作,터치
+,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
+,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드 + 마우스
+,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
 ,,,,,,
-,practice_mode_scan_label,Scan,扫描,,,
-,practice_mode_loop_label,Loop,循环,,,
-,practice_mode_speed_label,Speed,速度,,,
-,practice_mode_show_hitbox_label,Show hitbox,显示操作范围,,,
-,practice_mode_auto_play_label,Auto play,自动演奏,,,
+,practice_mode_scan_label,Scan,扫描,掃描,スキャン,마디
+,practice_mode_loop_label,Loop,循环,循環,ループ,구간 반복
+,practice_mode_speed_label,Speed,速度,速度,速度,재생 속도
+,practice_mode_show_hitbox_label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
+,practice_mode_auto_play_label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
 ,,,,,,
-,result_panel_ruleset_label,Ruleset,规则,,,
-,result_panel_ruleset_default,Default,默认,,,
-,result_panel_ruleset_custom,Custom,自定义,,,
-,result_panel_my_record_label,My record,最高纪录,,,
+,result_panel_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
+,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
+,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
+,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
