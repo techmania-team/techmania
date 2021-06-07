@@ -69,7 +69,6 @@ public class NoteAppearance : MonoBehaviour
     protected Scanline scanlineRef;
 
     private float alphaUpperBound;
-    private bool hitboxVisible;
 
     public NoteType GetNoteType()
     {
@@ -89,7 +88,6 @@ public class NoteAppearance : MonoBehaviour
         {
             alphaUpperBound = 0f;
         }
-        hitboxVisible = false;
         InitializeScale();
     }
 
@@ -267,24 +265,6 @@ public class NoteAppearance : MonoBehaviour
         UpdateState();
     }
 
-    protected void OnEnable()
-    {
-        if (hitbox != null)
-        {
-            Game.HitboxVisibilityChanged += 
-                OnHitboxVisibilityChanged;
-        }
-    }
-
-    protected void OnDisable()
-    {
-        if (hitbox != null)
-        {
-            Game.HitboxVisibilityChanged -= 
-                OnHitboxVisibilityChanged;
-        }
-    }
-
     protected virtual void TypeSpecificUpdate() { }
 
     private void UpdateAlphaUpperBound()
@@ -405,17 +385,12 @@ public class NoteAppearance : MonoBehaviour
             0.5f + height * 0.5f);
     }
 
-    private void OnHitboxVisibilityChanged(bool visible)
-    {
-        hitboxVisible = visible;
-    }
-
     private void UpdateHitboxImage()
     {
         if (hitbox == null) return;
 
         float alpha = noteImage.color.a;
-        if (!hitboxVisible) alpha = 0f;
+        if (!Game.hitboxVisible) alpha = 0f;
         Image hitboxImage = hitbox.GetComponent<Image>();
         hitboxImage.color = new Color(
             hitboxImage.color.r,

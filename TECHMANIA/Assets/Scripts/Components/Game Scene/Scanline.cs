@@ -23,10 +23,6 @@ public class Scanline : MonoBehaviour
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
-
-        autoPlayIndicator.SetActive(
-            Modifiers.instance.mode ==
-            Modifiers.Mode.AutoPlay);
     }
 
     private void Update()
@@ -34,6 +30,10 @@ public class Scanline : MonoBehaviour
         float x = scanRef.FloatPulseToXPosition(Game.FloatPulse);
         GetComponent<RectTransform>().anchoredPosition =
             new Vector2(x, 0f);
+        if (autoPlayIndicator.activeSelf != Game.autoPlay)
+        {
+            autoPlayIndicator.SetActive(Game.autoPlay);
+        }
 
         float alpha;
         switch (Modifiers.instance.scanlineOpacity)

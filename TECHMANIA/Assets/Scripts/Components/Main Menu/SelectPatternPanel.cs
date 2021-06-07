@@ -137,11 +137,13 @@ public class SelectPatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightControl))
         {
             Modifiers.instance.mode = Modifiers.Mode.NoFail;
+            OnModifierChanged();
         }
         if (Input.GetKey(KeyCode.LeftShift) ||
             Input.GetKey(KeyCode.RightShift))
         {
             Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+            OnModifierChanged();
         }
 
         // Save to disk because the game scene will reload options.

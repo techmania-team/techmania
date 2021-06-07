@@ -77,16 +77,10 @@ public class DragNoteAppearance : NoteAppearance,
     private ListView<Vector2> visiblePointsOnCurve;
     private List<Vector2> pointsOnCurve;
     private float curveXDirection;
-    private float inputLatency;
 
     public IList<Vector2> GetVisiblePointsOnCurve()
     {
         return visiblePointsOnCurve;
-    }
-
-    public void SetInputLatency(float latency)
-    {
-        inputLatency = latency;
     }
 
     private void InitializeCurve()
@@ -175,14 +169,28 @@ public class DragNoteAppearance : NoteAppearance,
 
         // To calculate the hitbox's position, we need to compensate
         // for latency.
+        float compensatedTime = Game.Time;
+        if (!Game.autoPlay)
+        {
+            if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Touch)
+            {
+                compensatedTime -= Options.instance.touchLatencyMs;
+            }
+            else
+            {
+                compensatedTime -= Options.instance.
+                    keyboardMouseLatencyMs;
+            }
+        }
         float compensatedPulse = GameSetup.pattern.TimeToPulse(
-            Game.Time - inputLatency);
+            compensatedTime);
         float compensatedScanlineX = scanRef.FloatPulseToXPosition(
             compensatedPulse) -
             GetComponent<RectTransform>().anchoredPosition.x;
-        int pointIndexAfterHitbox = -1;
+
         // Find the first point after the compensated scanline's
         // position.
+        int pointIndexAfterHitbox = -1;
         for (int i = 0; i < pointsOnCurve.Count; i++)
         {
             if ((pointsOnCurve[i].x - compensatedScanlineX) *

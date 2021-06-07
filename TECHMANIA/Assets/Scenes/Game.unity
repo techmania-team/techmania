@@ -136,6 +136,46 @@ PrefabInstance:
       propertyPath: silent
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 589608923}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ToggleHitboxVisibility
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MaterialToggle, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Game, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: m_Pivot.x
@@ -4073,8 +4113,8 @@ MonoBehaviour:
   scanDisplay: {fileID: 1245007359}
   loopDisplay: {fileID: 1870872721}
   speedDisplay: {fileID: 2145772319}
-  showHitboxToggle: {fileID: 6020811}
   autoPlayToggle: {fileID: 1175312438}
+  showHitboxToggle: {fileID: 6020811}
   topBar: {fileID: 1007545788}
   regularTopBar: {fileID: 830541331}
   scoreText: {fileID: 1440527849}
@@ -6823,6 +6863,46 @@ PrefabInstance:
         type: 3}
       propertyPath: silent
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 589608923}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ToggleAutoPlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MaterialToggle, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Game, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154126, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}

@@ -126,7 +126,6 @@ public class Game : MonoBehaviour
     private int previousComboTick;
 
     private bool loading;
-    private bool hitboxVisible;
 
     public static void InjectFeverAndCombo(FeverState feverState,
         int currentCombo)
@@ -144,7 +143,14 @@ public class Game : MonoBehaviour
     private static float offset;
     // The public timer is compensated for offset, to be used for
     // scanlines and notes. All public timers are based on this time.
-    public static float Time => BaseTime - offset;
+    public static float Time
+    {
+        get
+        {
+            if (autoPlay) return BaseTime;
+            return BaseTime - offset;
+        }
+    }
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
     public static float FloatBeat { get; private set; }
@@ -160,6 +166,7 @@ public class Game : MonoBehaviour
         float offset)
     {
         BaseTime = baseTime;
+        autoPlay = false;
         Game.offset = offset;
     }
     #endregion
@@ -169,13 +176,15 @@ public class Game : MonoBehaviour
     private int loopEnd;
     private int speedPercentage;
     private float speed { get => speedPercentage * 0.01f; }
+
+    public static bool hitboxVisible { get; private set; }
+    public static bool autoPlay { get; private set; }
     #endregion
 
     private Dictionary<int, Scan> scanObjects;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
     public static event UnityAction<int> JumpedToScan;
-    public static event UnityAction<bool> HitboxVisibilityChanged;
 
     private static List<List<KeyCode>> keysForLane;
 
@@ -358,9 +367,7 @@ public class Game : MonoBehaviour
             == ControlScheme.Touch ?
             Options.instance.touchOffsetMs :
             Options.instance.keyboardMouseOffsetMs;
-        offset = Modifiers.instance.mode ==
-            Modifiers.Mode.AutoPlay
-            ? 0f : offsetMs * 0.001f;
+        offset = offsetMs * 0.001f;
 
         yield return null;  // Wait 1 more frame just in case.
 
@@ -616,22 +623,10 @@ public class Game : MonoBehaviour
                     unmanagedRepeatNotes[n.lane],
                     scanObjects);
             }
-
-            // Tell drag notes about their input latency so they can
-            // move their hitboxes accordingly.
-            if (n.type == NoteType.Drag)
-            {
-                (appearance as DragNoteAppearance)
-                    .SetInputLatency(LatencyForNote(n));
-            }
         }
         foreach (NoteList l in noteObjectsInLane) l.Reverse();
         foreach (NoteList l in notesForKeyboardInLane) l.Reverse();
         foreach (NoteList l in notesForMouseInLane) l.Reverse();
-
-        // Broadcast the initial hitbox visibility.
-        hitboxVisible = false;
-        HitboxVisibilityChanged?.Invoke(hitboxVisible);
 
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.
@@ -656,6 +651,8 @@ public class Game : MonoBehaviour
         speedPercentage = 100;
 
         // Miscellaneous initialization.
+        hitboxVisible = false;
+        autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
         fingerInLane = new Dictionary<int, int>();
         currentCombo = 0;
         maxCombo = 0;
@@ -995,7 +992,7 @@ public class Game : MonoBehaviour
         return (a / b) - 1;
     }
 
-    private InputDevice DeviceForNote(Note n)
+    private static InputDevice DeviceForNote(Note n)
     {
         if (GameSetup.pattern.patternMetadata.controlScheme
             == ControlScheme.Touch)
@@ -1019,12 +1016,11 @@ public class Game : MonoBehaviour
         }
     }
 
-    private float LatencyForNote(Note n)
+    private static float LatencyForNote(Note n)
     {
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
-        return Modifiers.instance.mode == Modifiers.Mode.AutoPlay
-            ? 0f : latencyMs * 0.001f;
+        return autoPlay ? 0f : latencyMs * 0.001f;
     }
     #endregion
 
@@ -1057,12 +1053,6 @@ public class Game : MonoBehaviour
             {
                 OnFeverButtonPointerDown();
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.F12))
-        {
-            hitboxVisible = !hitboxVisible;
-            HitboxVisibilityChanged?.Invoke(hitboxVisible);
         }
 
         UpdateTime();
@@ -1143,8 +1133,7 @@ public class Game : MonoBehaviour
 
             if (laneIndex < kPlayableLanes)
             {
-                if (Modifiers.instance.mode ==
-                    Modifiers.Mode.AutoPlay)
+                if (autoPlay)
                 {
                     // Auto-play notes when it comes to their time.
                     if (oldTime < upcomingNote.note.time
@@ -1201,8 +1190,7 @@ public class Game : MonoBehaviour
         {
             return;
         }
-        if (Modifiers.instance.mode ==
-            Modifiers.Mode.AutoPlay)
+        if (autoPlay)
         {
             return;
         }
@@ -1366,8 +1354,7 @@ public class Game : MonoBehaviour
             float gracePeriodStart = endTime - 
                 Ruleset.instance.longNoteGracePeriod * speed;
             if (pair.Value == false
-                && Modifiers.instance.mode !=
-                    Modifiers.Mode.AutoPlay
+                && !autoPlay
                 && Time < gracePeriodStart)
             {
                 // No hit on this note during this frame, resolve
@@ -1414,6 +1401,8 @@ public class Game : MonoBehaviour
         scanDisplay.text = $"{Scan} / {lastScan}";
         loopDisplay.text = $"{loopStart} - {loopEnd}";
         speedDisplay.text = $"{speed}x";
+        autoPlayToggle.SetIsOnWithoutNotify(autoPlay);
+        showHitboxToggle.SetIsOnWithoutNotify(hitboxVisible);
     }
 
     private void UpdateBrightness()
@@ -1463,6 +1452,14 @@ public class Game : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F10))
         {
             IncreaseSpeed();
+        }
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            ToggleAutoPlay();
+        }
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            ToggleHitboxVisibility();
         }
     }
 
@@ -1613,14 +1610,23 @@ public class Game : MonoBehaviour
     {
         SetSpeed(speedPercentage + 5);
     }
+
+    public void ToggleAutoPlay()
+    {
+        autoPlay = !autoPlay;
+    }
+
+    public void ToggleHitboxVisibility()
+    {
+        hitboxVisible = !hitboxVisible;
+    }
     #endregion
 
     #region Fever
     public void OnFeverButtonPointerDown()
     {
         if (feverState != FeverState.Ready) return;
-        if (Modifiers.instance.mode ==
-            Modifiers.Mode.AutoPlay) return;
+        if (autoPlay) return;
         feverState = FeverState.Active;
         score.FeverOn();
         feverSoundSource.Play();
@@ -2125,8 +2131,7 @@ public class Game : MonoBehaviour
                      judgement == Judgement.Max))
                 {
                     feverAmount += feverCoefficient / numPlayableNotes;
-                    if (Modifiers.instance.mode ==
-                        Modifiers.Mode.AutoPlay)
+                    if (autoPlay)
                     {
                         feverAmount = 0f;
                     }
