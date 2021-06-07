@@ -1136,8 +1136,8 @@ public class Game : MonoBehaviour
                 if (autoPlay)
                 {
                     // Auto-play notes when it comes to their time.
-                    if (oldTime < upcomingNote.note.time
-                        && Time >= upcomingNote.note.time)
+                    if (Time >= upcomingNote.note.time &&
+                        !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         HitNote(upcomingNote, 0f);
                     }
@@ -1159,8 +1159,7 @@ public class Game : MonoBehaviour
             {
                 // Play keyounds of upcoming notes in each
                 // hidden lane, regardless of note type.
-                if (oldBaseTime < upcomingNote.note.time &&
-                    BaseTime >= upcomingNote.note.time)
+                if (BaseTime >= upcomingNote.note.time)
                 {
                     PlayKeysound(upcomingNote);
                     upcomingNote.gameObject.SetActive(false);
