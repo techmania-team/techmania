@@ -130,8 +130,16 @@ public class SelectPatternPanel : MonoBehaviour
 
     public void OnPlayButtonClick()
     {
-        GameSetup.pattern = patternList.GetSelectedPattern();
-        if (GameSetup.pattern == null) return;
+        // Create a clone of the pattern with modifiers applied.
+        // Game will operate on the clone.
+        // The original pattern is kept in memory so its GUID and
+        // fingerprint are still available later.
+        GameSetup.patternBeforeApplyingModifier = 
+            patternList.GetSelectedPattern();
+        if (GameSetup.patternBeforeApplyingModifier == null)
+            return;
+        GameSetup.pattern = GameSetup.patternBeforeApplyingModifier
+            .ApplyModifiers(Modifiers.instance);
 
         if (Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl))

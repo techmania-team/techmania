@@ -172,7 +172,8 @@ public class DragNoteAppearance : NoteAppearance,
         float compensatedTime = Game.Time;
         if (!Game.autoPlay)
         {
-            if (GameSetup.pattern.patternMetadata.controlScheme == ControlScheme.Touch)
+            if (GameSetup.pattern.patternMetadata.controlScheme
+                == ControlScheme.Touch)
             {
                 compensatedTime -= Options.instance.touchLatencyMs;
             }

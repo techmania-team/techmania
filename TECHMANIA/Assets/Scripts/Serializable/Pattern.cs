@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public partial class Pattern
 {
-    // The "main" part is defined in Track.cs. This part contains
-    // editing routines and timing calculations.
+    // The "main" part is defined in Track.cs.
+
     #region Editing
     public bool HasNoteAt(int pulse, int lane)
     {
@@ -312,6 +312,82 @@ public partial class Pattern
             if (n.lane < playableLanes) count++;
         }
         return count;
+    }
+    #endregion
+
+    #region Modifiers
+    // Returns a clone with the modifiers applied:
+    // - NotePosition
+    // - Keysound
+    // - ControlOverride
+    // - ScrollSpeed
+    //
+    // Warning: the clone has different GUID and fingerprint.
+    public Pattern ApplyModifiers(Modifiers modifiers)
+    {
+        Pattern p = CloneWithDifferentGuid();
+        const int kPlayableLanes = 4;
+        const int kAutoKeysoundFirstLane = 64;
+
+        if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
+        {
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                n.lane = kPlayableLanes - 1 - n.lane;
+                if (n is DragNote)
+                {
+                    foreach (DragNode node in (n as DragNote).nodes)
+                    {
+                        node.anchor.lane = -node.anchor.lane;
+                        node.controlLeft.lane =
+                            -node.controlLeft.lane;
+                        node.controlRight.lane =
+                            -node.controlRight.lane;
+                    }
+                }
+            }
+        }
+
+        if (modifiers.keysound == Modifiers.Keysound.AutoKeysound)
+        {
+            List<Note> addedNotes = new List<Note>();
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                if (n.sound == null || n.sound == "") continue;
+                Note hiddenNote = n.Clone();
+                hiddenNote.lane += kAutoKeysoundFirstLane;
+                addedNotes.Add(hiddenNote);
+                n.sound = "";
+            }
+            foreach (Note n in addedNotes)
+            {
+                p.notes.Add(n);
+            }
+        }
+
+        switch (modifiers.controlOverride)
+        {
+            case Modifiers.ControlOverride.None:
+                break;
+            case Modifiers.ControlOverride.OverrideToTouch:
+                p.patternMetadata.controlScheme = ControlScheme.Touch;
+                break;
+            case Modifiers.ControlOverride.OverrideToKeys:
+                p.patternMetadata.controlScheme = ControlScheme.Keys;
+                break;
+            case Modifiers.ControlOverride.OverrideToKM:
+                p.patternMetadata.controlScheme = ControlScheme.KM;
+                break;
+        }
+
+        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
+        {
+            p.patternMetadata.bps *= 2;
+        }
+
+        return p;
     }
     #endregion
 }
