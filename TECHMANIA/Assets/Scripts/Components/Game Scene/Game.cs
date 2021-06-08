@@ -1626,6 +1626,15 @@ public class Game : MonoBehaviour
     {
         if (feverState != FeverState.Ready) return;
         if (autoPlay) return;
+        if (Modifiers.instance.fever == Modifiers.Fever.AutoFever)
+        {
+            return;
+        }
+        ActivateFever();
+    }
+
+    private void ActivateFever()
+    {
         feverState = FeverState.Active;
         score.FeverOn();
         feverSoundSource.Play();
@@ -2130,7 +2139,9 @@ public class Game : MonoBehaviour
                      judgement == Judgement.Max))
                 {
                     feverAmount += feverCoefficient / numPlayableNotes;
-                    if (autoPlay)
+                    if (autoPlay ||
+                        Modifiers.instance.fever
+                        == Modifiers.Fever.FeverOff)
                     {
                         feverAmount = 0f;
                     }
@@ -2138,6 +2149,11 @@ public class Game : MonoBehaviour
                     {
                         feverState = FeverState.Ready;
                         feverAmount = 1f;
+                        if (Modifiers.instance.fever
+                            == Modifiers.Fever.AutoFever)
+                        {
+                            ActivateFever();
+                        }
                     }
                 }
             }
