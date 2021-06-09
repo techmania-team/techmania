@@ -267,4 +267,9 @@ public class VFXSpawner : MonoBehaviour
             }
         }
     }
+
+    public void RemoveAll()
+    {
+
+    }
 }

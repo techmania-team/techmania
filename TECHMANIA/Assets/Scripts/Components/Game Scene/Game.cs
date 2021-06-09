@@ -1106,13 +1106,17 @@ public class Game : MonoBehaviour
             ScanAboutToChange?.Invoke(
                 (newPulse + PulsesPerScan / 8) / PulsesPerScan);
         }
+        bool jumpedScan = false;
         if (newScan > Scan)
         {
             ScanChanged?.Invoke(newScan);
-            ProcessScanChangeInPracticeMode(newScan);
+            jumpedScan = ProcessScanChangeInPracticeMode(newScan);
         }
-        Pulse = newPulse;
-        Scan = newScan;
+        if (!jumpedScan)
+        {
+            Pulse = newPulse;
+            Scan = newScan;
+        }
 
         // Handle combo ticks, if one occurred in this frame.
         while (previousComboTick + kComboTickInterval <=
@@ -1577,16 +1581,24 @@ public class Game : MonoBehaviour
         if (loopStart > loopEnd) loopStart = loopEnd;
     }
 
-    private void ProcessScanChangeInPracticeMode(int newScan)
+    // Returns whether the scan was changed in this method.
+    private bool ProcessScanChangeInPracticeMode(int newScan)
     {
         if (Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
-            return;
+            return false;
         }
         if (newScan > loopEnd)
         {
             JumpToScan(loopStart);
+            return true;
         }
+        if (newScan > lastScan)
+        {
+            JumpToScan(firstScan);
+            return true;
+        }
+        return false;
     }
 
     private void SetSpeed(int newSpeed)
