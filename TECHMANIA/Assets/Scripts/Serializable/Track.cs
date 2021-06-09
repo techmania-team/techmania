@@ -771,6 +771,10 @@ public class DragNote : Note
     }
 }
 
+// Used to play auto assist ticks. Inaccessible to players and pattern
+// authors.
+public class AssistTickNote : Note { }
+
 public class NoteComparer : IComparer<Note>
 {
     public int Compare(Note x, Note y)

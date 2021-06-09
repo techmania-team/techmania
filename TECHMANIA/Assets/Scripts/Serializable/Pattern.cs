@@ -319,6 +319,7 @@ public partial class Pattern
     // Returns a clone with the modifiers applied:
     // - NotePosition
     // - Keysound
+    // - AssistTick (only the AutoAssistTick option)
     // - ControlOverride
     // - ScrollSpeed
     //
@@ -328,6 +329,7 @@ public partial class Pattern
         Pattern p = CloneWithDifferentGuid();
         const int kPlayableLanes = 4;
         const int kAutoKeysoundFirstLane = 64;
+        const int kAutoAssistTickFirstLane = 68;
 
         if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
         {
@@ -360,6 +362,27 @@ public partial class Pattern
                 hiddenNote.lane += kAutoKeysoundFirstLane;
                 addedNotes.Add(hiddenNote);
                 n.sound = "";
+            }
+            foreach (Note n in addedNotes)
+            {
+                p.notes.Add(n);
+            }
+        }
+
+        if (modifiers.assistTick == 
+            Modifiers.AssistTick.AutoAssistTick)
+        {
+            List<AssistTickNote> addedNotes =
+                new List<AssistTickNote>();
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                AssistTickNote assistTickNote = new AssistTickNote()
+                {
+                    pulse = n.pulse,
+                    lane = n.lane + kAutoAssistTickFirstLane
+                };
+                addedNotes.Add(assistTickNote);
             }
             foreach (Note n in addedNotes)
             {

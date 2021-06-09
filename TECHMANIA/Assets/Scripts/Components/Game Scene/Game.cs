@@ -780,9 +780,10 @@ public class Game : MonoBehaviour
         {
             float noteStartTime = n.time;
             float duration = 0f;
-            if (n.sound != "")
+            if (n.sound != null && n.sound != "")
             {
-                duration = ResourceLoader.GetCachedClip(n.sound).length;
+                duration = ResourceLoader.GetCachedClip(
+                    n.sound).length;
             }
             float noteEndTime = noteStartTime + duration;
 
@@ -2251,10 +2252,15 @@ public class Game : MonoBehaviour
             && !hidden
             && !emptyHit)
         {
-            audioSourceManager.PlayKeysound(assistTick, hidden);
+            audioSourceManager.PlaySfx(assistTick);
         }
 
-        if (n.note.sound == "") return;
+        if (n.note is AssistTickNote)
+        {
+            audioSourceManager.PlaySfx(assistTick);
+        }
+
+        if (n.note.sound == null || n.note.sound == "") return;
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         AudioSource source = audioSourceManager.PlayKeysound(clip,

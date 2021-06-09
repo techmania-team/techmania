@@ -97,7 +97,7 @@ public class ResourceLoader : MonoBehaviour
         HashSet<string> filenames = new HashSet<string>();
         foreach (Note n in pattern.notes)
         {
-            if (n.sound != "")
+            if (n.sound != null && n.sound != "")
             {
                 filenames.Add(Path.Combine(trackFolder, n.sound));
             }
