@@ -428,6 +428,11 @@ public class Modifiers
             regularSegments.Add(Locale.GetString(
                 keysoundDisplayKeys[(int)keysound]));
         }
+        if (assistTick != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                assistTickDisplayKeys[(int)assistTick]));
+        }
 
         if (mode != 0)
         {

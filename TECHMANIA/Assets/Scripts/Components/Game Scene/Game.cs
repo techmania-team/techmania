@@ -50,6 +50,7 @@ public class Game : MonoBehaviour
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
+    public AudioClip assistTick;
 
     [Header("Prefabs")]
     public GameObject basicNotePrefab;
@@ -1165,7 +1166,7 @@ public class Game : MonoBehaviour
                 // hidden lane, regardless of note type.
                 if (BaseTime >= upcomingNote.note.time)
                 {
-                    PlayKeysound(upcomingNote);
+                    PlayKeysound(upcomingNote, emptyHit: false);
                     upcomingNote.gameObject.SetActive(false);
                     lane.Remove(upcomingNote);
                 }
@@ -1900,7 +1901,7 @@ public class Game : MonoBehaviour
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
-            PlayKeysound(earliestNote);
+            PlayKeysound(earliestNote, emptyHit: true);
         }
         else
         {
@@ -1973,7 +1974,7 @@ public class Game : MonoBehaviour
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
-            PlayKeysound(earliestNote);
+            PlayKeysound(earliestNote, emptyHit: true);
         }
         else
         {
@@ -2079,7 +2080,7 @@ public class Game : MonoBehaviour
 
         if (judgement != Judgement.Miss)
         {
-            PlayKeysound(n);
+            PlayKeysound(n, emptyHit: false);
         }
     }
 
@@ -2108,7 +2109,7 @@ public class Game : MonoBehaviour
         if (upcomingNote != null &&
             !ongoingNotes.ContainsKey(upcomingNote))
         {
-            PlayKeysound(upcomingNote);
+            PlayKeysound(upcomingNote, emptyHit: true);
         }
     }
 
@@ -2239,15 +2240,25 @@ public class Game : MonoBehaviour
 
     #region Keysound
     // Records which AudioSource is playing the keysounds of which
-    // note, so they can be stopped later.
+    // note, so they can be stopped later. This is meant for long
+    // notes, and do not care about assist ticks.
     private Dictionary<Note, AudioSource> noteToAudioSource;
-    private void PlayKeysound(NoteObject n)
+    private void PlayKeysound(NoteObject n, bool emptyHit)
     {
+        bool hidden = n.note.lane >= kPlayableLanes;
+        if (Modifiers.instance.assistTick == 
+            Modifiers.AssistTick.AssistTick
+            && !hidden
+            && !emptyHit)
+        {
+            audioSourceManager.PlayKeysound(assistTick, hidden);
+        }
+
         if (n.note.sound == "") return;
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         AudioSource source = audioSourceManager.PlayKeysound(clip,
-            n.note.lane >= kPlayableLanes,
+            hidden,
             startTime: 0f,
             n.note.volume, n.note.pan);
         noteToAudioSource[n.note] = source;
