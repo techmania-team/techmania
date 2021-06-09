@@ -1548,6 +1548,9 @@ public class Game : MonoBehaviour
 
         // Scoring.
         currentCombo = 0;
+
+        // VFX.
+        vfxSpawner.RemoveAll();
     }
 
     public void JumpToPreviousScan()
