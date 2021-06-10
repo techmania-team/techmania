@@ -130,6 +130,8 @@ public class SelectPatternPanel : MonoBehaviour
 
     public void OnPlayButtonClick()
     {
+        previewPlayer.Stop();
+
         // Create a clone of the pattern with modifiers applied.
         // Game will operate on the clone.
         // The original pattern is kept in memory so its GUID and
