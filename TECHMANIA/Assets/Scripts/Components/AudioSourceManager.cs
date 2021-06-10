@@ -24,6 +24,42 @@ public class AudioSourceManager : MonoBehaviour
             .GetComponentsInChildren<AudioSource>();
     }
 
+    private void PrintReportOnAudioSource(string name,
+        AudioSource s)
+    {
+        if (s.clip == null)
+        {
+            Debug.Log($"name:{name} isPlaying:{s.isPlaying} time:{s.time} timeSamples:{s.timeSamples} volume:{s.volume} clip:null");
+        }
+        else
+        {
+            Debug.Log($"name:{name} isPlaying:{s.isPlaying} time:{s.time} timeSamples:{s.timeSamples} volume:{s.volume} clip.length:{s.clip?.length} clip.samples:{s.clip?.samples}");
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) &&
+            Input.GetKeyDown(KeyCode.R))
+        {
+            Debug.Log("===== Beginning of AudioSourceManager report =====");
+            PrintReportOnAudioSource("backing track", backingTrack);
+            for (int i = 0; i < playableLanes.Length; i++)
+            {
+                PrintReportOnAudioSource($"playable lane #{i}", playableLanes[i]);
+            }
+            for (int i = 0; i < hiddenLanes.Length; i++)
+            {
+                PrintReportOnAudioSource($"hidden lane #{i}", hiddenLanes[i]);
+            }
+            for (int i = 0; i < sfxSources.Length; i++)
+            {
+                PrintReportOnAudioSource($"sfx #{i}", sfxSources[i]);
+            }
+            Debug.Log("===== End of AudioSourceManager report =====");
+        }
+    }
+
     private void PlaySound(AudioSource source, AudioClip clip,
         float startTime, float volume, float pan)
     {
@@ -133,6 +169,7 @@ public class AudioSourceManager : MonoBehaviour
 
     public bool IsAnySourcePlaying()
     {
+        if (backingTrack.isPlaying) return true;
         foreach (AudioSource s in playableLanes)
         {
             if (s.isPlaying) return true;
