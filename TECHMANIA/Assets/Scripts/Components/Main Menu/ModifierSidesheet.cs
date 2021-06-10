@@ -22,7 +22,6 @@ public class ModifierSidesheet : MonoBehaviour
     public Slider backgroundBrightnessSlider;
     public TextMeshProUGUI backgroundBrightnessDisplay;
     public Toggle noVideo;
-    private PerTrackOptions perTrackOptions;
 
     [Header("Special modifiers")]
     public TMP_Dropdown mode;
@@ -73,9 +72,6 @@ public class ModifierSidesheet : MonoBehaviour
         UIUtils.InitializeDropdownWithLocalizedOptions(
             scrollSpeed,
             Modifiers.scrollSpeedDisplayKeys);
-
-        perTrackOptions = Options.instance.GetPerTrackOptions(
-            GameSetup.track);
     }
 
     private void MemoryToUI()
@@ -119,10 +115,10 @@ public class ModifierSidesheet : MonoBehaviour
         showJudgementTally.SetIsOnWithoutNotify(
             Options.instance.showJudgementTally);
         backgroundBrightnessSlider.SetValueWithoutNotify(
-            perTrackOptions.backgroundBrightness);
+            GameSetup.trackOptions.backgroundBrightness);
         RefreshBrightnessDisplay();
         noVideo.SetIsOnWithoutNotify(
-            perTrackOptions.noVideo);
+            GameSetup.trackOptions.noVideo);
 
         // Special modifiers
 
@@ -142,7 +138,7 @@ public class ModifierSidesheet : MonoBehaviour
     public void RefreshBrightnessDisplay()
     {
         backgroundBrightnessDisplay.text =
-            perTrackOptions.backgroundBrightness.ToString();
+            GameSetup.trackOptions.backgroundBrightness.ToString();
     }
 
     public void UIToMemory()
@@ -170,9 +166,9 @@ public class ModifierSidesheet : MonoBehaviour
 
         Options.instance.showJudgementTally =
             showJudgementTally.isOn;
-        perTrackOptions.backgroundBrightness =
+        GameSetup.trackOptions.backgroundBrightness =
             Mathf.FloorToInt(backgroundBrightnessSlider.value);
-        perTrackOptions.noVideo =
+        GameSetup.trackOptions.noVideo =
             noVideo.isOn;
 
         // Special modifiers
@@ -197,7 +193,7 @@ public class ModifierSidesheet : MonoBehaviour
         Modifiers.instance.ToDisplaySegments(
             regularSegments, specialSegments);
 
-        if (perTrackOptions.noVideo)
+        if (GameSetup.trackOptions.noVideo)
         {
             regularSegments.Add(Locale.GetString(
                 "modifier_sidesheet_no_video_label"));

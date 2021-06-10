@@ -395,6 +395,8 @@ public class SelectTrackPanel : MonoBehaviour
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
         GameSetup.track = cardToTrack[o].track;
+        GameSetup.trackOptions = Options.instance
+            .GetPerTrackOptions(GameSetup.track);
         PanelTransitioner.TransitionTo(selectPatternPanel,
             TransitionToPanel.Direction.Right);
     }

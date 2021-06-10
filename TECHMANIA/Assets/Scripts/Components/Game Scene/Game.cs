@@ -229,6 +229,9 @@ public class Game : MonoBehaviour
         // Load options.
         Options.RefreshInstance();
         Ruleset.RefreshInstance();
+        GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
+            GameSetup.track);
+        SetBrightness();
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
@@ -236,6 +239,7 @@ public class Game : MonoBehaviour
 
     private void OnDestroy()
     {
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
         Input.simulateMouseWithTouches = true;
     }
 
@@ -323,7 +327,8 @@ public class Game : MonoBehaviour
 
         // Step 5: load BGA, if any.
         bool hasBga;
-        if (GameSetup.pattern.patternMetadata.bga != null &&
+        if (!GameSetup.trackOptions.noVideo &&
+            GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
             hasBga = true;
@@ -379,7 +384,8 @@ public class Game : MonoBehaviour
         JumpToScan(firstScan);
     }
 
-    private void OnImageLoadComplete(Texture2D texture, string error)
+    private void OnImageLoadComplete(Texture2D texture,
+        string error)
     {
         if (error != null)
         {
@@ -1186,6 +1192,7 @@ public class Game : MonoBehaviour
             feverState = FeverState.Idle;
             score.FeverOff();
         }
+        
         Curtain.DrawCurtainThenGoToScene("Result");
     }
 
@@ -1412,21 +1419,30 @@ public class Game : MonoBehaviour
 
     private void UpdateBrightness()
     {
-        float a = brightnessCover.color.a;
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
-            a -= 0.1f;
+            GameSetup.trackOptions.backgroundBrightness++;
         }
         if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            a += 0.1f;
+            GameSetup.trackOptions.backgroundBrightness--;
         }
-        a = Mathf.Clamp01(a);
+        GameSetup.trackOptions.backgroundBrightness =
+            Mathf.Clamp(GameSetup.trackOptions.backgroundBrightness,
+            0, 10);
+        
+        SetBrightness();
+    }
+
+    private void SetBrightness()
+    {
+        float coverAlpha = 1f - 
+            0.1f * GameSetup.trackOptions.backgroundBrightness;
         brightnessCover.color = new Color(
             brightnessCover.color.r,
             brightnessCover.color.g,
             brightnessCover.color.b,
-            a);
+            coverAlpha);
     }
     #endregion
 
@@ -2235,6 +2251,7 @@ public class Game : MonoBehaviour
     {
         stageFailedScreen.SetActive(true);
         yield return new WaitForSeconds(4f);
+
         Curtain.DrawCurtainThenGoToScene("Result");
     }
     #endregion

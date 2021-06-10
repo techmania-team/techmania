@@ -15,6 +15,8 @@ public class GameSetup
             return new FileInfo(trackPath).DirectoryName;
         }
     }
+    public static PerTrackOptions trackOptions;
+
     public static Pattern pattern;
     public static Pattern patternBeforeApplyingModifier;
 }
