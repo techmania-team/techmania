@@ -30,6 +30,7 @@ public class OptionsPanel : MonoBehaviour
     public TextAsset stringTable;
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
+    public Toggle showJudgementTallyToggle;
 
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
@@ -157,6 +158,8 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.showLoadingBar);
         showFpsToggle.SetIsOnWithoutNotify(
             Options.instance.showFps);
+        showJudgementTallyToggle.SetIsOnWithoutNotify(
+            Options.instance.showJudgementTally);
 
         // Miscellaneous
 
@@ -297,6 +300,8 @@ public class OptionsPanel : MonoBehaviour
     {
         Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
         Options.instance.showFps = showFpsToggle.isOn;
+        Options.instance.showJudgementTally =
+            showJudgementTallyToggle.isOn;
     }
     #endregion
 }

@@ -15477,6 +15477,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 442417d642143434f890065b382c7b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &861513315 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
+    type: 3}
+  m_PrefabInstance: {fileID: 861513310}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861513312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &863113550
 GameObject:
   m_ObjectHideFlags: 0
@@ -22232,6 +22244,7 @@ MonoBehaviour:
   stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
   showLoadingBarToggle: {fileID: 1835056395}
   showFpsToggle: {fileID: 2047212621}
+  showJudgementTallyToggle: {fileID: 861513315}
   latencyDisplay: {fileID: 394731667}
 --- !u!1 &1201520981
 GameObject:

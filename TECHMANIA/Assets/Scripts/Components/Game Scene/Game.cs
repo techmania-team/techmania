@@ -100,6 +100,7 @@ public class Game : MonoBehaviour
     public GameObject loadingBar;
     public MaterialProgressBar loadingProgress;
     public GameObject fpsCounter;
+    public JudgementTally judgementTally;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -224,6 +225,7 @@ public class Game : MonoBehaviour
             Options.instance.showLoadingBar ? 1f : 0f;
         loadingProgress.SetValue(0f);
         fpsCounter.SetActive(false);
+        judgementTally.gameObject.SetActive(false);
         stopwatch = null;
 
         // Load options.
@@ -362,6 +364,12 @@ public class Game : MonoBehaviour
         if (Options.instance.showFps)
         {
             fpsCounter.SetActive(true);
+        }
+        if (Options.instance.showJudgementTally &&
+            Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
+            judgementTally.gameObject.SetActive(true);
+            judgementTally.Refresh(score);
         }
         if (hasBga)
         {
@@ -2228,7 +2236,10 @@ public class Game : MonoBehaviour
             }
         }
         if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
             score.LogNote(judgement);
+            judgementTally.Refresh(score);
+        }
 
         // Appearances and VFX.
         vfxSpawner.SpawnVFXOnResolve(n, judgement);
