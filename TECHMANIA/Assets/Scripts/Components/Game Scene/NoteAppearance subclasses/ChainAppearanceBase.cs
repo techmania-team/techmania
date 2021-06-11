@@ -22,10 +22,22 @@ public class ChainAppearanceBase : NoteAppearance
             this.nextChainNode = nextChainNode;
             nextChainNode.GetComponent<ChainNodeAppearance>()
                 .PointPathTowards(GetComponent<RectTransform>());
-            if (GetNoteType() == NoteType.ChainHead)
+            UIUtils.RotateToward(
+                noteImage.GetComponent<RectTransform>(),
+                selfPos: GetComponent<RectTransform>()
+                    .anchoredPosition,
+                targetPos: nextChainNode
+                    .GetComponent<RectTransform>()
+                    .anchoredPosition);
+
+            if (nextChainNode.GetComponent<ChainNodeAppearance>()
+                .nextChainNode == null)
             {
+                // Next node is the last node in the chain, so we
+                // also rotate that node.
                 UIUtils.RotateToward(
-                    noteImage.GetComponent<RectTransform>(),
+                    nextChainNode.GetComponent<NoteAppearance>()
+                        .noteImage.GetComponent<RectTransform>(),
                     selfPos: GetComponent<RectTransform>()
                         .anchoredPosition,
                     targetPos: nextChainNode
