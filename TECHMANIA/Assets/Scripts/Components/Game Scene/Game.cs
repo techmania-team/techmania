@@ -32,6 +32,7 @@ public enum InputDevice
 public class Game : MonoBehaviour
 {
     public GlobalResourceLoader globalResourceLoader;
+    public bool inEditor;
 
     [Header("Background")]
     public Image backgroundImage;
@@ -43,9 +44,11 @@ public class Game : MonoBehaviour
     public GraphicRaycaster raycaster;
     public Transform topScanContainer;
     public GameObject topScanTemplate;
+    public GameObject topScanEmptyTouchReceiverParent;
     public List<RectTransform> topScanEmptyTouchReceivers;
     public Transform bottomScanContainer;
     public GameObject bottomScanTemplate;
+    public GameObject bottomScanEmptyTouchReceiverParent;
     public List<RectTransform> bottomScanEmptyTouchReceivers;
 
     [Header("Audio")]
@@ -93,6 +96,7 @@ public class Game : MonoBehaviour
     [Header("UI - Other")]
     public GameObject topBar;
     public GameObject regularTopBar;
+    public GameObject editorPreviewTopBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
@@ -183,6 +187,10 @@ public class Game : MonoBehaviour
     public static bool autoPlay { get; private set; }
     #endregion
 
+    #region Editor Preview
+    public Options optionsBackup;
+    #endregion
+
     private Dictionary<int, Scan> scanObjects;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
@@ -205,7 +213,7 @@ public class Game : MonoBehaviour
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
     // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
         if (GameSetup.track == null)
         {
@@ -215,10 +223,19 @@ public class Game : MonoBehaviour
         score = new Score();
         loading = true;
         topBar.SetActive(false);
-        practiceTopBar.SetActive(Modifiers.instance.mode
-            == Modifiers.Mode.Practice);
-        regularTopBar.SetActive(Modifiers.instance.mode
-            != Modifiers.Mode.Practice);
+        if (inEditor)
+        {
+            regularTopBar.SetActive(false);
+            practiceTopBar.SetActive(false);
+            editorPreviewTopBar.SetActive(true);
+        }
+        else
+        {
+            practiceTopBar.SetActive(Modifiers.instance.mode
+                == Modifiers.Mode.Practice);
+            regularTopBar.SetActive(Modifiers.instance.mode
+                != Modifiers.Mode.Practice);
+        }
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
@@ -234,9 +251,44 @@ public class Game : MonoBehaviour
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
             GameSetup.track);
         SetBrightness();
+        if (inEditor)
+        {
+            Options.MakeBackup();
+            Options.instance.modifiers = new Modifiers();
+            Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+        }
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
+    }
+
+    private void OnDisable()
+    {
+        if (inEditor)
+        {
+            Options.RestoreBackup();
+            audioSourceManager.StopAll();
+
+            // Clear out scans.
+            for (int i = 0; i < topScanContainer.childCount; i++)
+            {
+                Transform child = topScanContainer.GetChild(i);
+                if (child == topScanTemplate.transform) continue;
+                if (child ==
+                    topScanEmptyTouchReceiverParent.transform) 
+                    continue;
+                Destroy(child.gameObject);
+            }
+            for (int i = 0; i < bottomScanContainer.childCount; i++)
+            {
+                Transform child = bottomScanContainer.GetChild(i);
+                if (child == bottomScanTemplate.transform) continue;
+                if (child ==
+                    bottomScanEmptyTouchReceiverParent.transform)
+                    continue;
+                Destroy(child.gameObject);
+            }
+        }
     }
 
     private void OnDestroy()
@@ -294,14 +346,14 @@ public class Game : MonoBehaviour
                 }
             };
 
-            globalResourceLoader.LoadNoteSkin(null, 
+            globalResourceLoader.LoadNoteSkin(null,
                 loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
             globalResourceLoader.LoadVfxSkin(null, loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
-            globalResourceLoader.LoadComboSkin(null, 
+            globalResourceLoader.LoadComboSkin(null,
                 loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
         }
@@ -357,8 +409,7 @@ public class Game : MonoBehaviour
         loading = false;
         topBar.SetActive(true);
         noFailIndicator.SetActive(
-            Modifiers.instance.mode == 
-                Modifiers.Mode.NoFail);
+            Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
         if (Options.instance.showFps)
@@ -366,7 +417,8 @@ public class Game : MonoBehaviour
             fpsCounter.SetActive(true);
         }
         if (Options.instance.showJudgementTally &&
-            Modifiers.instance.mode != Modifiers.Mode.Practice)
+            Modifiers.instance.mode != Modifiers.Mode.Practice &&
+            !inEditor)
         {
             judgementTally.gameObject.SetActive(true);
             judgementTally.Refresh(score);
@@ -375,8 +427,8 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
-        
-        int offsetMs = 
+
+        int offsetMs =
             GameSetup.pattern.patternMetadata.controlScheme
             == ControlScheme.Touch ?
             Options.instance.touchOffsetMs :
@@ -389,7 +441,14 @@ public class Game : MonoBehaviour
         // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
         stopwatch.Start();
-        JumpToScan(firstScan);
+        if (inEditor)
+        {
+            JumpToScan(GameSetup.beginningScanInEditorPreview);
+        }
+        else
+        {
+            JumpToScan(firstScan);
+        }
     }
 
     private void OnImageLoadComplete(Texture2D texture,
@@ -1056,7 +1115,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        if (!IsPaused() && !loading)
+        if (!IsPaused() && !loading && !inEditor)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -1200,8 +1259,15 @@ public class Game : MonoBehaviour
             feverState = FeverState.Idle;
             score.FeverOff();
         }
-        
-        Curtain.DrawCurtainThenGoToScene("Result");
+
+        if (inEditor)
+        {
+            GetComponentInChildren<TransitionToPanel>().Invoke();
+        }
+        else
+        {
+            Curtain.DrawCurtainThenGoToScene("Result");
+        }
     }
 
     private void HandleInput()
@@ -1397,7 +1463,7 @@ public class Game : MonoBehaviour
     private void UpdateUI()
     {
         // Fever
-        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        if (regularTopBar.activeSelf)
         {
             feverButtonFilling.anchorMax =
                 new Vector2(feverAmount, 1f);
@@ -2314,6 +2380,7 @@ public class Game : MonoBehaviour
     #region Pausing
     public bool IsPaused()
     {
+        if (pauseDialog == null) return false;
         return pauseDialog.gameObject.activeSelf;
     }
 

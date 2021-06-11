@@ -157,6 +157,7 @@ public class Options : OptionsBase
 
     #region Instance
     public static Options instance { get; private set; }
+    private static Options backupInstance;
     public static void RefreshInstance()
     {
         try
@@ -168,6 +169,16 @@ public class Options : OptionsBase
         {
             instance = new Options();
         }
+    }
+
+    public static void MakeBackup()
+    {
+        backupInstance = instance.Clone() as Options;
+    }
+
+    public static void RestoreBackup()
+    {
+        instance = backupInstance;
     }
     #endregion
 

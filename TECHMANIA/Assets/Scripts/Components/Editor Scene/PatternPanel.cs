@@ -73,6 +73,10 @@ public class PatternPanel : MonoBehaviour
     public MessageDialog messageDialog;
     public TimeEventDialog timeEventDialog;
 
+    [Header("Preview")]
+    public Button previewButton;
+    public TransitionToPanel transitionToGamePanel;
+
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
     // dictionary is the reverse of that. Must be updated alongside
@@ -1277,6 +1281,22 @@ public class PatternPanel : MonoBehaviour
     {
         canvasGroup.alpha = 1f;
         KeysoundVisibilityChanged?.Invoke();
+    }
+
+    public void OnPreviewButtonClicked()
+    {
+        GameSetup.track = EditorContext.track;
+        GameSetup.trackPath = EditorContext.trackPath;
+        GameSetup.pattern = EditorContext.Pattern;
+        GameSetup.beginningScanInEditorPreview =
+            Mathf.FloorToInt(
+                scanline.floatPulse / 
+                Pattern.pulsesPerBeat /
+                GameSetup.pattern.patternMetadata.bps);
+        transitionToGamePanel.Invoke();
+
+        // TODO: find a way to restore scanline position after
+        // returning to this panel.
     }
     #endregion
 
@@ -3376,6 +3396,7 @@ public class PatternPanel : MonoBehaviour
         }
         audioLoadingIndicator.SetActive(!audioLoaded);
         scanlinePositionSlider.interactable = !isPlaying;
+        previewButton.interactable = audioLoaded;
     }
 
     public void StartPlayback()

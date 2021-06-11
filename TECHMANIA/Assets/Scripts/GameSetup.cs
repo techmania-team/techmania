@@ -19,4 +19,5 @@ public class GameSetup
 
     public static Pattern pattern;
     public static Pattern patternBeforeApplyingModifier;
+    public static int beginningScanInEditorPreview;
 }
