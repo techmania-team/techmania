@@ -36,9 +36,9 @@ public class HoldExtension : MonoBehaviour
             currentVisibility);
     }
 
-    public void UpdateTrails()
+    public void UpdateTrails(bool ongoing)
     {
-        GetComponent<HoldTrailManager>().UpdateTrails();
+        GetComponent<HoldTrailManager>().UpdateTrails(ongoing);
     }
     #endregion
 

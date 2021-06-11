@@ -144,8 +144,14 @@ public class HoldTrailManager : MonoBehaviour
         }
     }
 
-    public void UpdateTrails()
+    public void UpdateTrails(bool ongoing)
     {
+        if (!ongoing)
+        {
+            UpdateSprites();
+            return;
+        }
+
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
         float endX = scanlineRef.GetComponent<RectTransform>()

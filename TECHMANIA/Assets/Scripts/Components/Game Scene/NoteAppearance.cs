@@ -436,11 +436,11 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateOngoingTrail()
     {
-        GetComponent<HoldTrailManager>().UpdateTrails();
-
+        GetComponent<HoldTrailManager>().UpdateTrails(
+            state == State.Ongoing);
         foreach (HoldExtension e in holdExtensions)
         {
-            e.UpdateTrails();
+            e.UpdateTrails(state == State.Ongoing);
         }
     }
 
