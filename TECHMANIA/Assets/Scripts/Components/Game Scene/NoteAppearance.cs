@@ -69,6 +69,8 @@ public class NoteAppearance : MonoBehaviour
     protected Scanline scanlineRef;
 
     private float alphaUpperBound;
+    [Tooltip("This NoteAppearance shall not update itself.")]
+    public bool controlledExternally;
 
     public NoteType GetNoteType()
     {
@@ -89,6 +91,13 @@ public class NoteAppearance : MonoBehaviour
             alphaUpperBound = 0f;
         }
         InitializeScale();
+    }
+
+    private void InitializeForUI()
+    {
+        alphaUpperBound = 1f;
+        InitializeScale();
+        Activate();
     }
 
     public void SetScanAndScanlineRef(Scan scan, Scanline scanline)
@@ -218,7 +227,7 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateState()
     {
-        // Debug.Log(GetNoteType() + " setting state to " + state);
+        Debug.Log("setting state to " + state);
         TypeSpecificUpdateState();
         UpdateTrailAndHoldExtension();
     }
@@ -261,8 +270,15 @@ public class NoteAppearance : MonoBehaviour
     #region Monobehaviour
     protected void Start()
     {
-        state = State.Inactive;
-        UpdateState();
+        if (controlledExternally)
+        {
+            InitializeForUI();
+        }
+        else
+        {
+            state = State.Inactive;
+            UpdateState();
+        }
     }
 
     protected virtual void TypeSpecificUpdate() { }
@@ -311,6 +327,7 @@ public class NoteAppearance : MonoBehaviour
     {
         if (state == State.Inactive || state == State.Resolved)
             return;
+        if (controlledExternally) return;
 
         UpdateHitboxImage();
         UpdateSprites();
