@@ -201,8 +201,7 @@ public class NoteAppearance : MonoBehaviour
         if (feverOverlay == null) return;
         feverOverlay.GetComponent<Image>().enabled =
             v != Visibility.Hidden;
-        feverOverlay.GetComponent<Image>().color = new Color(
-            1f, 1f, 1f,
+        feverOverlay.GetComponent<FeverOverlay>().SetNoteAlpha(
             VisibilityToAlpha(v, bypassNoteOpacityModifier));
     }
 
@@ -227,7 +226,6 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateState()
     {
-        Debug.Log("setting state to " + state);
         TypeSpecificUpdateState();
         UpdateTrailAndHoldExtension();
     }

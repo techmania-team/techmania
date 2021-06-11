@@ -7,15 +7,22 @@ public class FeverOverlay : MonoBehaviour
 {
     private RectTransform rect;
     private Image image;  // May be enabled/disabled by NoteAppearance.
+    private float noteAlpha;
 
     // Start is called before the first frame update
     void Start()
     {
         rect = GetComponent<RectTransform>();
         image = GetComponent<Image>();
+        image.color = Color.clear;
 
         float scale = GlobalResource.vfxSkin.feverOverlay.scale;
         rect.localScale = new Vector3(scale, scale, 1f);
+    }
+
+    public void SetNoteAlpha(float bound)
+    {
+        noteAlpha = bound;
     }
 
     // Update is called once per frame
@@ -32,6 +39,7 @@ public class FeverOverlay : MonoBehaviour
             {
                 alpha = Game.feverAmount * 6f;
             }
+            alpha *= noteAlpha;
             image.color = new Color(1f, 1f, 1f, alpha);
         }
         else
