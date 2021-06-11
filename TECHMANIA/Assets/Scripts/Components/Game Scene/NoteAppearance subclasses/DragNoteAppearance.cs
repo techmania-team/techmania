@@ -175,12 +175,12 @@ public class DragNoteAppearance : NoteAppearance,
             if (GameSetup.pattern.patternMetadata.controlScheme
                 == ControlScheme.Touch)
             {
-                compensatedTime -= Options.instance.touchLatencyMs;
+                compensatedTime -= Options.instance.touchLatencyMs * 0.001f;
             }
             else
             {
                 compensatedTime -= Options.instance.
-                    keyboardMouseLatencyMs;
+                    keyboardMouseLatencyMs * 0.001f;
             }
         }
         float compensatedPulse = GameSetup.pattern.TimeToPulse(
