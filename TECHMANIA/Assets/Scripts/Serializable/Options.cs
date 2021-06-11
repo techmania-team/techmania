@@ -144,6 +144,17 @@ public class Options : OptionsBase
         QualitySettings.vSyncCount = vSync ? 1 : 0;
     }
 
+    // Used for loading stuff when limited to 1 frame per asset.
+    public static void TemporarilyDisableVSync()
+    {
+        QualitySettings.vSyncCount = 0;
+    }
+
+    public static void RestoreVSync()
+    {
+        QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
+    }
+
     #region Instance
     public static Options instance { get; private set; }
     public static void RefreshInstance()

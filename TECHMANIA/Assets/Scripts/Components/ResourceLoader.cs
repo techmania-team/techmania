@@ -113,6 +113,7 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
+        Options.TemporarilyDisableVSync();
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
@@ -162,6 +163,7 @@ public class ResourceLoader : MonoBehaviour
 
         yield return null;  // Wait 1 more frame just in case
         cacheAudioCompleteCallback?.Invoke(null);
+        Options.RestoreVSync();
     }
 
     public static AudioClip GetCachedClip(string filenameWithoutFolder)

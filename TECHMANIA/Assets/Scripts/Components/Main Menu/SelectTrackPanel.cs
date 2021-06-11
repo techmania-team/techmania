@@ -105,6 +105,7 @@ public class SelectTrackPanel : MonoBehaviour
                 TrackListBuilderCompleted;
             builderDone = false;
             builderProgress = "";
+            Options.TemporarilyDisableVSync();
             trackListBuilder.RunWorkerAsync();
             do
             {
@@ -112,6 +113,7 @@ public class SelectTrackPanel : MonoBehaviour
                     builderProgress;
                 yield return null;
             } while (!builderDone);
+            Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
             refreshButton.interactable = true;
@@ -119,7 +121,8 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Show go up card if applicable.
-        goUpCard.SetActive(currentLocation != Paths.GetTrackRootFolder());
+        goUpCard.SetActive(currentLocation !=
+            Paths.GetTrackRootFolder());
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
