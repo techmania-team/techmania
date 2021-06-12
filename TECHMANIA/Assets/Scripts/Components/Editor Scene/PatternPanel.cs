@@ -75,7 +75,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Preview")]
     public Button previewButton;
-    public TransitionToPanel transitionToGamePanel;
+    private float? scanlinePulseBeforePreview;
 
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
@@ -224,6 +224,17 @@ public class PatternPanel : MonoBehaviour
             OnSelectedKeysoundsUpdated;
         EditorOptionsTab.Opened += OnOptionsTabOpened;
         EditorOptionsTab.Closed += OnOptionsTabClosed;
+
+        // Restore editing session
+        if (scanlinePulseBeforePreview.HasValue)
+        {
+            scanline.floatPulse = scanlinePulseBeforePreview.Value;
+            scanline.GetComponent<SelfPositionerInEditor>()
+                .Reposition();
+            scanlinePulseBeforePreview = null;
+            ScrollScanlineIntoView();
+            RefreshScanlinePositionSlider();
+        }
     }
 
     private void OnDisable()
@@ -1293,10 +1304,8 @@ public class PatternPanel : MonoBehaviour
                 scanline.floatPulse / 
                 Pattern.pulsesPerBeat /
                 GameSetup.pattern.patternMetadata.bps);
-        transitionToGamePanel.Invoke();
-
-        // TODO: find a way to restore scanline position after
-        // returning to this panel.
+        scanlinePulseBeforePreview = scanline.floatPulse;
+        previewButton.GetComponent<TransitionToPanel>().Invoke();
     }
     #endregion
 
