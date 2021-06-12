@@ -1524,21 +1524,25 @@ public class Game : MonoBehaviour
     private void UpdatePracticeMode()
     {
         if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
-        if (Input.GetKeyDown(KeyCode.F5))
+        if (Input.GetKeyDown(KeyCode.F3))
         {
             JumpToPreviousScan();
         }
-        if (Input.GetKeyDown(KeyCode.F6))
+        if (Input.GetKeyDown(KeyCode.F4))
         {
             JumpToNextScan();
         }
-        if (Input.GetKeyDown(KeyCode.F7))
+        if (Input.GetKeyDown(KeyCode.F5))
         {
             SetLoopStart();
         }    
-        if (Input.GetKeyDown(KeyCode.F8))
+        if (Input.GetKeyDown(KeyCode.F6))
         {
             SetLoopEnd();
+        }
+        if (Input.GetKeyDown(KeyCode.F7))
+        {
+            ResetLoop();
         }
         if (Input.GetKeyDown(KeyCode.F9))
         {
@@ -1624,6 +1628,7 @@ public class Game : MonoBehaviour
             {
                 Note n = noteObject.note;
                 if (n.time > BaseTime) return;
+                if (n.sound == null || n.sound == "") return;
 
                 AudioClip clip = ResourceLoader.GetCachedClip(
                     n.sound);
@@ -1674,6 +1679,12 @@ public class Game : MonoBehaviour
     {
         loopEnd = Scan;
         if (loopStart > loopEnd) loopStart = loopEnd;
+    }
+
+    public void ResetLoop()
+    {
+        loopStart = firstScan;
+        loopEnd = lastScan;
     }
 
     // Returns whether the scan was changed in this method.
