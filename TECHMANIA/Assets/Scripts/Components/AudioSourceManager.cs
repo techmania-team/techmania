@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -169,18 +170,26 @@ public class AudioSourceManager : MonoBehaviour
 
     public bool IsAnySourcePlaying()
     {
-        if (backingTrack.isPlaying) return true;
+        Func<AudioSource, bool> SourceIsPlaying = (AudioSource s) =>
+        {
+            if (!s.isPlaying) return false;
+            // It's still unknown why but sometimes an audio source
+            // reports that it's playing when in fact it's not.
+            if (s.timeSamples == 0) return false;
+            return true;
+        };
+        if (SourceIsPlaying(backingTrack)) return true;
         foreach (AudioSource s in playableLanes)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         foreach (AudioSource s in hiddenLanes)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         foreach (AudioSource s in sfxSources)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         return false;
     }
