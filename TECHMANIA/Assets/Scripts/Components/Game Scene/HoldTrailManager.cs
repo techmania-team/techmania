@@ -146,12 +146,6 @@ public class HoldTrailManager : MonoBehaviour
 
     public void UpdateTrails(bool ongoing)
     {
-        if (!ongoing)
-        {
-            UpdateSprites();
-            return;
-        }
-
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
         float endX = scanlineRef.GetComponent<RectTransform>()
@@ -167,6 +161,12 @@ public class HoldTrailManager : MonoBehaviour
             scanlineRef.transform.position.x -
             transform.position.x;
         if (durationTrailDirection * scanlineDirection < 0f)
+        {
+            width = 0f;
+        }
+
+        // Don't draw ongoing trail if not in ongoing state.
+        if (!ongoing)
         {
             width = 0f;
         }
