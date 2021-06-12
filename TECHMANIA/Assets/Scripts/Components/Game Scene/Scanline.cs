@@ -30,6 +30,7 @@ public class Scanline : MonoBehaviour
         float x = scanRef.FloatPulseToXPosition(Game.FloatPulse);
         GetComponent<RectTransform>().anchoredPosition =
             new Vector2(x, 0f);
+
         if (autoPlayIndicator.activeSelf != Game.autoPlay)
         {
             autoPlayIndicator.SetActive(Game.autoPlay);
