@@ -44,6 +44,14 @@ public class PanelTransitioner : MonoBehaviour
     {
         transitioning = true;
 
+        BackButton backButton = to
+            .GetComponentInChildren<BackButton>();
+        if (backButton != null && backButton.recordTransitionSource)
+        {
+            backButton.GetComponent<TransitionToPanel>()
+                .target = from;
+        }
+
         CanvasGroup fromGroup = from.GetComponent<CanvasGroup>();
         RectTransform fromRect = from.GetComponent<RectTransform>();
         CanvasGroup toGroup = to.GetComponent<CanvasGroup>();

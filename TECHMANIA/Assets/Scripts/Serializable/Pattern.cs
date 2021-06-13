@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public partial class Pattern
 {
-    // The "main" part is defined in Track.cs. This part contains
-    // editing routines and timing calculations.
+    // The "main" part is defined in Track.cs.
+
     #region Editing
     public bool HasNoteAt(int pulse, int lane)
     {
@@ -120,7 +120,8 @@ public partial class Pattern
 
     #region Timing
     // Sort BPM events by pulse, then fill their time fields.
-    // Enables CalculateTimeOfAllNotes, TimeToPulse and PulseToTime.
+    // Enables CalculateTimeOfAllNotes, GetLengthInSeconds,
+    // TimeToPulse and PulseToTime.
     public void PrepareForTimeCalculation()
     {
         timeEvents = new List<TimeEvent>();
@@ -174,6 +175,43 @@ public partial class Pattern
         }
     }
 
+    // Returns the time between the start of the first non-empty
+    // scan, and the end of t he last non-empty scan. Ignores
+    // end-of-scan.
+    public float GetLengthInSeconds()
+    {
+        if (notes.Count == 0) return 0f;
+
+        int pulsesPerScan = pulsesPerBeat * patternMetadata.bps;
+        int minPulse = int.MaxValue;
+        int maxPulse = int.MinValue;
+
+        foreach (Note n in notes)
+        {
+            int pulse = n.pulse;
+            int endPulse = pulse;
+            if (n is HoldNote)
+            {
+                endPulse += (n as HoldNote).duration;
+            }
+            if (n is DragNote)
+            {
+                endPulse += (n as DragNote).Duration();
+            }
+
+            if (pulse < minPulse) minPulse = pulse;
+            if (endPulse > maxPulse) maxPulse = endPulse;
+        }
+
+        int firstScan = minPulse / pulsesPerScan;
+        float startOfFirstScan = PulseToTime(
+            firstScan * pulsesPerScan);
+        int lastScan = maxPulse / pulsesPerScan;
+        float endOfLastScan = PulseToTime(
+            (lastScan + 1) * pulsesPerScan);
+        return endOfLastScan - startOfFirstScan;
+    }
+
     public void CalculateTimeOfAllNotes()
     {
         foreach (Note n in notes)
@@ -183,21 +221,11 @@ public partial class Pattern
             {
                 HoldNote h = n as HoldNote;
                 h.endTime = PulseToTime(h.pulse + h.duration);
-                if (Ruleset.instance != null)
-                {
-                    h.gracePeriodStart = h.endTime -
-                        Ruleset.instance.longNoteGracePeriod;
-                }
             }
             if (n is DragNote)
             {
                 DragNote d = n as DragNote;
                 d.endTime = PulseToTime(d.pulse + d.Duration());
-                if (Ruleset.instance != null)
-                {
-                    d.gracePeriodStart = d.endTime -
-                        Ruleset.instance.longNoteGracePeriod;
-                }
             }
         }
     }
@@ -272,6 +300,117 @@ public partial class Pattern
 
         return referenceTime +
             secondsPerPulse * (pulse - referencePulse);
+    }
+    #endregion
+
+    #region Statistics and Radar
+    public int NumPlayableNotes(int playableLanes = 4)
+    {
+        int count = 0;
+        foreach (Note n in notes)
+        {
+            if (n.lane < playableLanes) count++;
+        }
+        return count;
+    }
+    #endregion
+
+    #region Modifiers
+    // Returns a clone with the modifiers applied:
+    // - NotePosition
+    // - Keysound
+    // - AssistTick (only the AutoAssistTick option)
+    // - ControlOverride
+    // - ScrollSpeed
+    //
+    // Warning: the clone has different GUID and fingerprint.
+    public Pattern ApplyModifiers(Modifiers modifiers)
+    {
+        Pattern p = CloneWithDifferentGuid();
+        const int kPlayableLanes = 4;
+        const int kAutoKeysoundFirstLane = 64;
+        const int kAutoAssistTickFirstLane = 68;
+
+        if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
+        {
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                n.lane = kPlayableLanes - 1 - n.lane;
+                if (n is DragNote)
+                {
+                    foreach (DragNode node in (n as DragNote).nodes)
+                    {
+                        node.anchor.lane = -node.anchor.lane;
+                        node.controlLeft.lane =
+                            -node.controlLeft.lane;
+                        node.controlRight.lane =
+                            -node.controlRight.lane;
+                    }
+                }
+            }
+        }
+
+        if (modifiers.keysound == Modifiers.Keysound.AutoKeysound)
+        {
+            List<Note> addedNotes = new List<Note>();
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                if (n.sound == null || n.sound == "") continue;
+                Note hiddenNote = n.Clone();
+                hiddenNote.lane += kAutoKeysoundFirstLane;
+                addedNotes.Add(hiddenNote);
+                n.sound = "";
+            }
+            foreach (Note n in addedNotes)
+            {
+                p.notes.Add(n);
+            }
+        }
+
+        if (modifiers.assistTick == 
+            Modifiers.AssistTick.AutoAssistTick)
+        {
+            List<AssistTickNote> addedNotes =
+                new List<AssistTickNote>();
+            foreach (Note n in p.notes)
+            {
+                if (n.lane >= kPlayableLanes) continue;
+                AssistTickNote assistTickNote = new AssistTickNote()
+                {
+                    pulse = n.pulse,
+                    lane = n.lane + kAutoAssistTickFirstLane
+                };
+                addedNotes.Add(assistTickNote);
+            }
+            foreach (Note n in addedNotes)
+            {
+                p.notes.Add(n);
+            }
+        }
+
+        switch (modifiers.controlOverride)
+        {
+            case Modifiers.ControlOverride.None:
+                break;
+            case Modifiers.ControlOverride.OverrideToTouch:
+                p.patternMetadata.controlScheme = ControlScheme.Touch;
+                break;
+            case Modifiers.ControlOverride.OverrideToKeys:
+                p.patternMetadata.controlScheme = ControlScheme.Keys;
+                break;
+            case Modifiers.ControlOverride.OverrideToKM:
+                p.patternMetadata.controlScheme = ControlScheme.KM;
+                break;
+        }
+
+        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
+        {
+            p.patternMetadata.bps *= 2;
+        }
+
+        return p;
     }
     #endregion
 }

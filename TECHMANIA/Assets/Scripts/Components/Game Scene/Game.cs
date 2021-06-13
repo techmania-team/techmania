@@ -32,6 +32,7 @@ public enum InputDevice
 public class Game : MonoBehaviour
 {
     public GlobalResourceLoader globalResourceLoader;
+    public bool inEditor;
 
     [Header("Background")]
     public Image backgroundImage;
@@ -43,13 +44,16 @@ public class Game : MonoBehaviour
     public GraphicRaycaster raycaster;
     public Transform topScanContainer;
     public GameObject topScanTemplate;
+    public GameObject topScanEmptyTouchReceiverParent;
     public List<RectTransform> topScanEmptyTouchReceivers;
     public Transform bottomScanContainer;
     public GameObject bottomScanTemplate;
+    public GameObject bottomScanEmptyTouchReceiverParent;
     public List<RectTransform> bottomScanEmptyTouchReceivers;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
+    public AudioClip assistTick;
 
     [Header("Prefabs")]
     public GameObject basicNotePrefab;
@@ -64,6 +68,7 @@ public class Game : MonoBehaviour
     public GameObject repeatHoldPrefab;
     public GameObject repeatPathExtensionPrefab;
     public GameObject repeatHoldExtensionPrefab;
+    public GameObject hiddenNotePrefab;
 
     [Header("VFX")]
     public VFXSpawner vfxSpawner;
@@ -80,8 +85,18 @@ public class Game : MonoBehaviour
     public Animator feverButtonAnimator;
     public AudioSource feverSoundSource;
 
+    [Header("UI - Practice")]
+    public GameObject practiceTopBar;
+    public TextMeshProUGUI scanDisplay;
+    public TextMeshProUGUI loopDisplay;
+    public TextMeshProUGUI speedDisplay;
+    public Toggle autoPlayToggle;
+    public Toggle showHitboxToggle;
+
     [Header("UI - Other")]
     public GameObject topBar;
+    public GameObject regularTopBar;
+    public GameObject editorPreviewTopBar;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
@@ -89,6 +104,7 @@ public class Game : MonoBehaviour
     public GameObject loadingBar;
     public MaterialProgressBar loadingProgress;
     public GameObject fpsCounter;
+    public JudgementTally judgementTally;
     public PauseDialog pauseDialog;
     public MessageDialog messageDialog;
     public GameObject stageFailedScreen;
@@ -116,7 +132,6 @@ public class Game : MonoBehaviour
     private int previousComboTick;
 
     private bool loading;
-    private bool hitboxVisible;
 
     public static void InjectFeverAndCombo(FeverState feverState,
         int currentCombo)
@@ -134,13 +149,21 @@ public class Game : MonoBehaviour
     private static float offset;
     // The public timer is compensated for offset, to be used for
     // scanlines and notes. All public timers are based on this time.
-    public static float Time => BaseTime - offset;
+    public static float Time
+    {
+        get
+        {
+            if (autoPlay) return BaseTime;
+            return BaseTime - offset;
+        }
+    }
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
     public static float FloatBeat { get; private set; }
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private float endOfPatternBaseTime;
+    private int firstScan;
     private int lastScan;
     private Stopwatch feverTimer;
     private float initialTime;
@@ -149,28 +172,40 @@ public class Game : MonoBehaviour
         float offset)
     {
         BaseTime = baseTime;
+        autoPlay = false;
         Game.offset = offset;
     }
     #endregion
 
+    #region Practice Mode Config
+    private int loopStart;
+    private int loopEnd;
+    private int speedPercentage;
+    private float speed { get => speedPercentage * 0.01f; }
+
+    public static bool hitboxVisible { get; private set; }
+    public static bool autoPlay { get; private set; }
+    #endregion
+
+    #region Editor Preview
+    public Options optionsBackup;
+    #endregion
+
+    private Dictionary<int, Scan> scanObjects;
     public static event UnityAction<int> ScanChanged;
     public static event UnityAction<int> ScanAboutToChange;
-    public static event UnityAction<bool> HitboxVisibilityChanged;
+    public static event UnityAction<int> JumpedToScan;
 
     private static List<List<KeyCode>> keysForLane;
 
-    // Each linked list represents one lane; each lane is
-    // sorted by pulse. Resolved notes are removed
-    // from the corresponding linked list. This makes it easy to
-    // find the upcoming note in each lane, and in turn:
-    // - play keysounds on empty hits
-    // - check the Break condition on upcoming notes
-    private List<LinkedList<NoteObject>> noteObjectsInLane;
+    // Each NoteList represents one lane; each lane is sorted by
+    // pulse.
+    private List<NoteList> noteObjectsInLane;
     // noteObjectsInLane separated into mouse and keyboard notes.
     // In KM, Each input device only care about notes in its
     // corresponding list.
-    private List<LinkedList<NoteObject>> notesForMouseInLane;
-    private List<LinkedList<NoteObject>> notesForKeyboardInLane;
+    private List<NoteList> notesForMouseInLane;
+    private List<NoteList> notesForKeyboardInLane;
     private int numPlayableNotes;
 
     // Value is the judgement at note's head.
@@ -178,7 +213,7 @@ public class Game : MonoBehaviour
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
     // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
         if (GameSetup.track == null)
         {
@@ -188,24 +223,77 @@ public class Game : MonoBehaviour
         score = new Score();
         loading = true;
         topBar.SetActive(false);
+        if (inEditor)
+        {
+            regularTopBar.SetActive(false);
+            practiceTopBar.SetActive(false);
+            editorPreviewTopBar.SetActive(true);
+        }
+        else
+        {
+            practiceTopBar.SetActive(Modifiers.instance.mode
+                == Modifiers.Mode.Practice);
+            regularTopBar.SetActive(Modifiers.instance.mode
+                != Modifiers.Mode.Practice);
+        }
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
             Options.instance.showLoadingBar ? 1f : 0f;
         loadingProgress.SetValue(0f);
         fpsCounter.SetActive(false);
+        judgementTally.gameObject.SetActive(false);
         stopwatch = null;
 
         // Load options.
         Options.RefreshInstance();
         Ruleset.RefreshInstance();
+        GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
+            GameSetup.track);
+        SetBrightness();
+        if (inEditor)
+        {
+            Options.MakeBackup();
+            Options.instance.modifiers = new Modifiers();
+            Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+        }
 
         // Start the load sequence.
         StartCoroutine(LoadSequence());
     }
 
+    private void OnDisable()
+    {
+        if (inEditor)
+        {
+            Options.RestoreBackup();
+            audioSourceManager.StopAll();
+
+            // Clear out scans.
+            for (int i = 0; i < topScanContainer.childCount; i++)
+            {
+                Transform child = topScanContainer.GetChild(i);
+                if (child == topScanTemplate.transform) continue;
+                if (child ==
+                    topScanEmptyTouchReceiverParent.transform) 
+                    continue;
+                Destroy(child.gameObject);
+            }
+            for (int i = 0; i < bottomScanContainer.childCount; i++)
+            {
+                Transform child = bottomScanContainer.GetChild(i);
+                if (child == bottomScanTemplate.transform) continue;
+                if (child ==
+                    bottomScanEmptyTouchReceiverParent.transform)
+                    continue;
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
     private void OnDestroy()
     {
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
         Input.simulateMouseWithTouches = true;
     }
 
@@ -258,18 +346,20 @@ public class Game : MonoBehaviour
                 }
             };
 
-            globalResourceLoader.LoadNoteSkin(null, loadSkinCallback);
+            globalResourceLoader.LoadNoteSkin(null,
+                loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
             globalResourceLoader.LoadVfxSkin(null, loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
-            globalResourceLoader.LoadComboSkin(null, loadSkinCallback);
+            globalResourceLoader.LoadComboSkin(null,
+                loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
         }
 
-        // Step 3: load backing track, if any. This allows calculating
-        // the number of scans.
+        // Step 3: load backing track, if any.
+        // This allows calculating the number of scans.
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
         {
@@ -291,7 +381,8 @@ public class Game : MonoBehaviour
 
         // Step 5: load BGA, if any.
         bool hasBga;
-        if (GameSetup.pattern.patternMetadata.bga != null &&
+        if (!GameSetup.trackOptions.noVideo &&
+            GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
             hasBga = true;
@@ -317,17 +408,32 @@ public class Game : MonoBehaviour
         // Loading complete.
         loading = false;
         topBar.SetActive(true);
-        noFailIndicator.SetActive(GameSetup.noFail);
+        noFailIndicator.SetActive(
+            Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
         if (Options.instance.showFps)
         {
             fpsCounter.SetActive(true);
         }
+        if (Options.instance.showJudgementTally &&
+            Modifiers.instance.mode != Modifiers.Mode.Practice &&
+            !inEditor)
+        {
+            judgementTally.gameObject.SetActive(true);
+            judgementTally.Refresh(score);
+        }
         if (hasBga)
         {
             backgroundImage.color = Color.clear;
         }
+
+        int offsetMs =
+            GameSetup.pattern.patternMetadata.controlScheme
+            == ControlScheme.Touch ?
+            Options.instance.touchOffsetMs :
+            Options.instance.keyboardMouseOffsetMs;
+        offset = offsetMs * 0.001f;
 
         yield return null;  // Wait 1 more frame just in case.
 
@@ -335,15 +441,18 @@ public class Game : MonoBehaviour
         // BGA will start when timer hits bgaOffset.
         stopwatch = new Stopwatch();
         stopwatch.Start();
-        int offsetMs = GameSetup.pattern.patternMetadata.controlScheme
-            == ControlScheme.Touch ?
-            Options.instance.touchOffsetMs :
-            Options.instance.keyboardMouseOffsetMs;
-        offset = GameSetup.autoPlay ? 0f : offsetMs * 0.001f;
-        BaseTime = initialTime;
+        if (inEditor)
+        {
+            JumpToScan(GameSetup.beginningScanInEditorPreview);
+        }
+        else
+        {
+            JumpToScan(firstScan);
+        }
     }
 
-    private void OnImageLoadComplete(Texture2D texture, string error)
+    private void OnImageLoadComplete(Texture2D texture,
+        string error)
     {
         if (error != null)
         {
@@ -388,10 +497,7 @@ public class Game : MonoBehaviour
         // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
         GameSetup.pattern.CalculateTimeOfAllNotes();
-        initialTime = (float)GameSetup.pattern.patternMetadata
-            .firstBeatOffset;
-        Pulse = 0;
-        Scan = 0;
+        firstScan = 0;
         previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
@@ -399,17 +505,18 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bps;
         while (initialTime >= 0f)
         {
-            Scan--;
-            Pulse -= PulsesPerScan;
-            initialTime = GameSetup.pattern.PulseToTime(Pulse);
+            firstScan--;
+            initialTime = GameSetup.pattern.PulseToTime(
+                firstScan * PulsesPerScan);
         }
 
         // Rewind further until 1 scan before the BGA starts.
-        while (initialTime > GameSetup.pattern.patternMetadata.bgaOffset)
+        while (initialTime > GameSetup.pattern
+            .patternMetadata.bgaOffset)
         {
-            Scan--;
-            Pulse -= PulsesPerScan;
-            initialTime = GameSetup.pattern.PulseToTime(Pulse);
+            firstScan--;
+            initialTime = GameSetup.pattern.PulseToTime(
+                firstScan * PulsesPerScan);
         }
 
         // Resize empty touch receivers to fit scan margins.
@@ -444,20 +551,48 @@ public class Game : MonoBehaviour
         CalculateEndOfPattern();
 
         // Create scan objects.
-        Dictionary<int, Scan> scanObjects =
-            new Dictionary<int, Scan>();
-        for (int i = Scan; i <= lastScan; i++)
+        scanObjects = new Dictionary<int, Scan>();
+        global::Scan.Direction
+            topScanDirection = global::Scan.Direction.Right,
+            bottomScanDirection = global::Scan.Direction.Left;
+        switch (Modifiers.instance.scanDirection)
         {
-            Transform parent = (i % 2 == 0) ?
+            case Modifiers.ScanDirection.Normal:
+                topScanDirection = global::Scan.Direction.Right;
+                bottomScanDirection = global::Scan.Direction.Left;
+                break;
+            case Modifiers.ScanDirection.RR:
+                topScanDirection = global::Scan.Direction.Right;
+                bottomScanDirection = global::Scan.Direction.Right;
+                break;
+            case Modifiers.ScanDirection.LR:
+                topScanDirection = global::Scan.Direction.Left;
+                bottomScanDirection = global::Scan.Direction.Right;
+                break;
+            case Modifiers.ScanDirection.LL:
+                topScanDirection = global::Scan.Direction.Left;
+                bottomScanDirection = global::Scan.Direction.Left;
+                break;
+        }
+        for (int i = firstScan; i <= lastScan; i++)
+        {
+            bool isBottomScan = i % 2 == 0;
+            if (Modifiers.instance.scanPosition == 
+                Modifiers.ScanPosition.Swap)
+            {
+                isBottomScan = !isBottomScan;
+            }
+            Transform parent = isBottomScan ?
                 bottomScanContainer : topScanContainer;
-            GameObject template = (i % 2 == 0) ?
+            GameObject template = isBottomScan ?
                 bottomScanTemplate : topScanTemplate;
             GameObject scanObject = Instantiate(template, parent);
             scanObject.SetActive(true);
 
             Scan s = scanObject.GetComponent<Scan>();
-            s.scanNumber = i;
-            s.Initialize();
+            global::Scan.Direction direction = isBottomScan ?
+                bottomScanDirection : topScanDirection;
+            s.Initialize(scanNumber: i, direction);
             scanObjects.Add(i, s);
         }
 
@@ -465,20 +600,20 @@ public class Game : MonoBehaviour
         // are drawn on the top.
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
-        noteObjectsInLane = new List<LinkedList<NoteObject>>();
-        notesForMouseInLane = new List<LinkedList<NoteObject>>();
-        notesForKeyboardInLane = new List<LinkedList<NoteObject>>();
+        noteObjectsInLane = new List<NoteList>();
+        notesForMouseInLane = new List<NoteList>();
+        notesForKeyboardInLane = new List<NoteList>();
         numPlayableNotes = 0;
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
             new List<List<NoteObject>>();
+        // Create at least as many lists as playable lanes, or
+        // empty hits on the noteless lanes will generate errors.
         for (int i = 0; i < kPlayableLanes; i++)
         {
-            noteObjectsInLane.Add(new LinkedList<NoteObject>());
-            notesForMouseInLane.Add(
-                new LinkedList<NoteObject>());
-            notesForKeyboardInLane.Add(
-                new LinkedList<NoteObject>());
+            noteObjectsInLane.Add(new NoteList());
+            notesForMouseInLane.Add(new NoteList());
+            notesForKeyboardInLane.Add(new NoteList());
             unmanagedRepeatNotes.Add(new List<NoteObject>());
         }
         foreach (Note n in GameSetup.pattern.notes.Reverse())
@@ -495,22 +630,19 @@ public class Game : MonoBehaviour
 
             while (noteObjectsInLane.Count <= n.lane)
             {
-                noteObjectsInLane.Add(new LinkedList<NoteObject>());
-                notesForMouseInLane.Add(
-                    new LinkedList<NoteObject>());
-                notesForKeyboardInLane.Add(
-                    new LinkedList<NoteObject>());
+                noteObjectsInLane.Add(new NoteList());
+                notesForMouseInLane.Add(new NoteList());
+                notesForKeyboardInLane.Add(new NoteList());
                 unmanagedRepeatNotes.Add(new List<NoteObject>());
             }
-            noteObjectsInLane[n.lane].AddFirst(noteObject);
+            noteObjectsInLane[n.lane].Add(noteObject);
             switch (n.type)
             {
                 case NoteType.Basic:
                 case NoteType.ChainHead:
                 case NoteType.ChainNode:
                 case NoteType.Drag:
-                    notesForMouseInLane[n.lane]
-                        .AddFirst(noteObject);
+                    notesForMouseInLane[n.lane].Add(noteObject);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHead:
@@ -518,7 +650,7 @@ public class Game : MonoBehaviour
                 case NoteType.Repeat:
                 case NoteType.RepeatHold:
                     notesForKeyboardInLane[n.lane]
-                        .AddFirst(noteObject);
+                        .Add(noteObject);
                     break;
             }
 
@@ -538,7 +670,7 @@ public class Game : MonoBehaviour
             if (n.type == NoteType.ChainHead ||
                 n.type == NoteType.ChainNode)
             {
-                appearance.SetNextChainNode(
+                (appearance as ChainAppearanceBase).SetNextChainNode(
                     nextChainNode?.gameObject);
                 if (n.type == NoteType.ChainHead)
                 {
@@ -565,21 +697,10 @@ public class Game : MonoBehaviour
                     unmanagedRepeatNotes[n.lane],
                     scanObjects);
             }
-
-            // Tell drag notes about their input latency so they can
-            // move their hitboxes accordingly.
-            if (n.type == NoteType.Drag)
-            {
-                appearance.SetInputLatency(LatencyForNote(n));
-            }
         }
-
-        // Broadcast the initial hitbox visibility.
-        hitboxVisible = false;
-        HitboxVisibilityChanged?.Invoke(hitboxVisible);
-
-        // Ensure that a ScanChanged event is fired at the first update.
-        Scan--;
+        foreach (NoteList l in noteObjectsInLane) l.Reverse();
+        foreach (NoteList l in notesForKeyboardInLane) l.Reverse();
+        foreach (NoteList l in notesForMouseInLane) l.Reverse();
 
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.
@@ -598,7 +719,14 @@ public class Game : MonoBehaviour
         }
         Debug.Log("Fever coefficient is: " + feverCoefficient);
 
+        // Initialize practice mode.
+        loopStart = firstScan;
+        loopEnd = lastScan;
+        speedPercentage = 100;
+
         // Miscellaneous initialization.
+        hitboxVisible = false;
+        autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
         fingerInLane = new Dictionary<int, int>();
         currentCombo = 0;
         maxCombo = 0;
@@ -725,9 +853,10 @@ public class Game : MonoBehaviour
         {
             float noteStartTime = n.time;
             float duration = 0f;
-            if (n.sound != "")
+            if (n.sound != null && n.sound != "")
             {
-                duration = ResourceLoader.GetCachedClip(n.sound).length;
+                duration = ResourceLoader.GetCachedClip(
+                    n.sound).length;
             }
             float noteEndTime = noteStartTime + duration;
 
@@ -752,7 +881,6 @@ public class Game : MonoBehaviour
                 noteEndTime);
         }
 
-        Debug.Log("Pattern length is " + endOfPatternBaseTime);
         float maxPulse = GameSetup.pattern.TimeToPulse(
             endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
@@ -763,39 +891,46 @@ public class Game : MonoBehaviour
         Scan scan, bool hidden)
     {
         GameObject prefab = null;
-        switch (n.type)
+        if (hidden)
         {
-            case NoteType.Basic:
-                prefab = basicNotePrefab;
-                break;
-            case NoteType.ChainHead:
-                prefab = chainHeadPrefab;
-                break;
-            case NoteType.ChainNode:
-                prefab = chainNodePrefab;
-                break;
-            case NoteType.Hold:
-                prefab = holdNotePrefab;
-                break;
-            case NoteType.Drag:
-                prefab = dragNotePrefab;
-                break;
-            case NoteType.RepeatHead:
-                prefab = repeatHeadPrefab;
-                break;
-            case NoteType.RepeatHeadHold:
-                prefab = repeatHeadHoldPrefab;
-                break;
-            case NoteType.Repeat:
-                prefab = repeatNotePrefab;
-                break;
-            case NoteType.RepeatHold:
-                prefab = repeatHoldPrefab;
-                break;
-            default:
-                Debug.LogError("Unsupported note type: " +
-                    n.type);
-                break;
+            prefab = hiddenNotePrefab;
+        }
+        else
+        {
+            switch (n.type)
+            {
+                case NoteType.Basic:
+                    prefab = basicNotePrefab;
+                    break;
+                case NoteType.ChainHead:
+                    prefab = chainHeadPrefab;
+                    break;
+                case NoteType.ChainNode:
+                    prefab = chainNodePrefab;
+                    break;
+                case NoteType.Hold:
+                    prefab = holdNotePrefab;
+                    break;
+                case NoteType.Drag:
+                    prefab = dragNotePrefab;
+                    break;
+                case NoteType.RepeatHead:
+                    prefab = repeatHeadPrefab;
+                    break;
+                case NoteType.RepeatHeadHold:
+                    prefab = repeatHeadHoldPrefab;
+                    break;
+                case NoteType.Repeat:
+                    prefab = repeatNotePrefab;
+                    break;
+                case NoteType.RepeatHold:
+                    prefab = repeatHoldPrefab;
+                    break;
+                default:
+                    Debug.LogError("Unsupported note type: " +
+                        n.type);
+                    break;
+            }
         }
         return scan.SpawnNoteObject(prefab, n, hidden);
     }
@@ -835,8 +970,8 @@ public class Game : MonoBehaviour
         List<NoteObject> notesToManage,
         Dictionary<int, Scan> scanObjects)
     {
-        NoteAppearance headAppearance = 
-            head.GetComponent<NoteAppearance>();
+        RepeatHeadAppearanceBase headAppearance = 
+            head.GetComponent<RepeatHeadAppearanceBase>();
         headAppearance.ManageRepeatNotes(notesToManage);
         headAppearance.DrawRepeatHeadBeforeRepeatNotes();
         if (notesToManage.Count > 0)
@@ -932,7 +1067,7 @@ public class Game : MonoBehaviour
         return (a / b) - 1;
     }
 
-    private InputDevice DeviceForNote(Note n)
+    private static InputDevice DeviceForNote(Note n)
     {
         if (GameSetup.pattern.patternMetadata.controlScheme
             == ControlScheme.Touch)
@@ -956,11 +1091,11 @@ public class Game : MonoBehaviour
         }
     }
 
-    private float LatencyForNote(Note n)
+    private static float LatencyForNote(Note n)
     {
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
-        return GameSetup.autoPlay ? 0f : latencyMs * 0.001f;
+        return autoPlay ? 0f : latencyMs * 0.001f;
     }
     #endregion
 
@@ -980,7 +1115,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        if (!IsPaused() && !loading)
+        if (!IsPaused() && !loading && !inEditor)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -995,16 +1130,11 @@ public class Game : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            hitboxVisible = !hitboxVisible;
-            HitboxVisibilityChanged?.Invoke(hitboxVisible);
-        }
-
         UpdateTime();
         CheckForEndOfPattern();
         UpdateFever();
         HandleInput();
+        UpdatePracticeMode();
         UpdateOngoingNotes();
         UpdateUI();
         UpdateBrightness();
@@ -1014,7 +1144,8 @@ public class Game : MonoBehaviour
     {
         float oldBaseTime = BaseTime;
         float oldTime = Time;
-        BaseTime = (float)stopwatch.Elapsed.TotalSeconds + initialTime;
+        BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
+            + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
         int newPulse = Mathf.FloorToInt(FloatPulse);
@@ -1029,17 +1160,19 @@ public class Game : MonoBehaviour
         }
 
         // Play bga if base time hits bgaOffset.
-        if (oldBaseTime < GameSetup.pattern.patternMetadata.bgaOffset &&
-            BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset &&
+        if (oldBaseTime <
+            GameSetup.pattern.patternMetadata.bgaOffset &&
+            BaseTime >=
+            GameSetup.pattern.patternMetadata.bgaOffset &&
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
+            videoPlayer.Play();
             videoPlayer.time = BaseTime - 
                 GameSetup.pattern.patternMetadata.bgaOffset;
-            videoPlayer.Play();
         }
 
-        // Fire ScanAboutToChange if we are 7/8 into the next scan.
+        // Fire scan events if applicable.
         if (RoundingDownIntDivision(
                 Pulse + PulsesPerScan / 8, PulsesPerScan) !=
             RoundingDownIntDivision(
@@ -1048,12 +1181,17 @@ public class Game : MonoBehaviour
             ScanAboutToChange?.Invoke(
                 (newPulse + PulsesPerScan / 8) / PulsesPerScan);
         }
+        bool jumpedScan = false;
         if (newScan > Scan)
         {
             ScanChanged?.Invoke(newScan);
+            jumpedScan = ProcessScanChangeInPracticeMode(newScan);
         }
-        Pulse = newPulse;
-        Scan = newScan;
+        if (!jumpedScan)
+        {
+            Pulse = newPulse;
+            Scan = newScan;
+        }
 
         // Handle combo ticks, if one occurred in this frame.
         while (previousComboTick + kComboTickInterval <=
@@ -1068,18 +1206,17 @@ public class Game : MonoBehaviour
             laneIndex < noteObjectsInLane.Count;
             laneIndex++)
         {
-            LinkedList<NoteObject> lane =
-                noteObjectsInLane[laneIndex];
+            NoteList lane = noteObjectsInLane[laneIndex];
             if (lane.Count == 0) continue;
-            NoteObject upcomingNote = lane.First.Value;
+            NoteObject upcomingNote = lane.First();
 
             if (laneIndex < kPlayableLanes)
             {
-                if (GameSetup.autoPlay)
+                if (autoPlay)
                 {
                     // Auto-play notes when it comes to their time.
-                    if (oldTime < upcomingNote.note.time
-                        && Time >= upcomingNote.note.time)
+                    if (Time >= upcomingNote.note.time &&
+                        !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         HitNote(upcomingNote, 0f);
                     }
@@ -1090,7 +1227,7 @@ public class Game : MonoBehaviour
                     // playable lane.
                     if (Time > upcomingNote.note.time
                             + LatencyForNote(upcomingNote.note)
-                            + Ruleset.instance.breakThreshold
+                            + Ruleset.instance.breakThreshold * speed
                         && !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         ResolveNote(upcomingNote, Judgement.Break);
@@ -1101,12 +1238,11 @@ public class Game : MonoBehaviour
             {
                 // Play keyounds of upcoming notes in each
                 // hidden lane, regardless of note type.
-                if (oldBaseTime < upcomingNote.note.time &&
-                    BaseTime >= upcomingNote.note.time)
+                if (BaseTime >= upcomingNote.note.time)
                 {
-                    PlayKeysound(upcomingNote);
+                    PlayKeysound(upcomingNote, emptyHit: false);
                     upcomingNote.gameObject.SetActive(false);
-                    lane.RemoveFirst();
+                    lane.Remove(upcomingNote);
                 }
             }
         }
@@ -1116,13 +1252,22 @@ public class Game : MonoBehaviour
     {
         if (IsPaused()) return;
         if (BaseTime <= endOfPatternBaseTime) return;
+        if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
 
         if (feverState == FeverState.Active)
         {
             feverState = FeverState.Idle;
             score.FeverOff();
         }
-        Curtain.DrawCurtainThenGoToScene("Result");
+
+        if (inEditor)
+        {
+            GetComponentInChildren<TransitionToPanel>().Invoke();
+        }
+        else
+        {
+            Curtain.DrawCurtainThenGoToScene("Result");
+        }
     }
 
     private void HandleInput()
@@ -1131,7 +1276,7 @@ public class Game : MonoBehaviour
         {
             return;
         }
-        if (GameSetup.autoPlay)
+        if (autoPlay)
         {
             return;
         }
@@ -1273,20 +1418,15 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             float latency = LatencyForNote(pair.Key.note);
-            float gracePeriodStart = 0f;
             float endTime = 0f;
             if (pair.Key.note is HoldNote)
             {
                 HoldNote holdNote = pair.Key.note as HoldNote;
-                gracePeriodStart = holdNote.gracePeriodStart +
-                    latency;
                 endTime = holdNote.endTime + latency;
             }
             else if (pair.Key.note is DragNote)
             {
                 DragNote dragNote = pair.Key.note as DragNote;
-                gracePeriodStart = dragNote.gracePeriodStart +
-                    latency;
                 endTime = dragNote.endTime + latency;
             }
             if (Time >= endTime)
@@ -1297,8 +1437,10 @@ public class Game : MonoBehaviour
                 continue;
             }
 
+            float gracePeriodStart = endTime - 
+                Ruleset.instance.longNoteGracePeriod * speed;
             if (pair.Value == false
-                && !GameSetup.autoPlay
+                && !autoPlay
                 && Time < gracePeriodStart)
             {
                 // No hit on this note during this frame, resolve
@@ -1321,38 +1463,279 @@ public class Game : MonoBehaviour
     private void UpdateUI()
     {
         // Fever
-        feverButtonFilling.anchorMax = new Vector2(feverAmount, 1f);
-        feverButtonAnimator.SetBool("Fever Ready", feverState == FeverState.Ready);
-        middleFeverBarFilling.anchorMin = new Vector2(
-            0.5f - feverAmount * 0.5f, 0f);
-        middleFeverBarFilling.anchorMax = new Vector2(
-            0.5f + feverAmount * 0.5f, 1f);
-        middleFeverText.SetActive(feverState == FeverState.Ready);
+        if (regularTopBar.activeSelf)
+        {
+            feverButtonFilling.anchorMax =
+                new Vector2(feverAmount, 1f);
+            feverButtonAnimator.SetBool("Fever Ready",
+                feverState == FeverState.Ready);
+            middleFeverBarFilling.anchorMin = new Vector2(
+                0.5f - feverAmount * 0.5f, 0f);
+            middleFeverBarFilling.anchorMax = new Vector2(
+                0.5f + feverAmount * 0.5f, 1f);
+            middleFeverText.SetActive(
+                feverState == FeverState.Ready);
+        }
 
         // Other
         hpBar.anchorMax = new Vector2(
             (float)hp / Ruleset.instance.maxHp, 1f);
         scoreText.text = score.CurrentScore().ToString();
         maxComboText.text = maxCombo.ToString();
+
+        // Practice mode
+        scanDisplay.text = $"{Scan} / {lastScan}";
+        loopDisplay.text = $"{loopStart} - {loopEnd}";
+        speedDisplay.text = $"{speed}x";
+        autoPlayToggle.SetIsOnWithoutNotify(autoPlay);
+        showHitboxToggle.SetIsOnWithoutNotify(hitboxVisible);
     }
 
     private void UpdateBrightness()
     {
-        float a = brightnessCover.color.a;
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
-            a -= 0.1f;
+            GameSetup.trackOptions.backgroundBrightness++;
         }
         if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            a += 0.1f;
+            GameSetup.trackOptions.backgroundBrightness--;
         }
-        a = Mathf.Clamp01(a);
+        GameSetup.trackOptions.backgroundBrightness =
+            Mathf.Clamp(GameSetup.trackOptions.backgroundBrightness,
+            0, 10);
+        
+        SetBrightness();
+    }
+
+    private void SetBrightness()
+    {
+        float coverAlpha = 1f - 
+            0.1f * GameSetup.trackOptions.backgroundBrightness;
         brightnessCover.color = new Color(
             brightnessCover.color.r,
             brightnessCover.color.g,
             brightnessCover.color.b,
-            a);
+            coverAlpha);
+    }
+    #endregion
+
+    #region Practice Mode
+    private void UpdatePracticeMode()
+    {
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            JumpToPreviousScan();
+        }
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            JumpToNextScan();
+        }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            SetLoopStart();
+        }    
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            SetLoopEnd();
+        }
+        if (Input.GetKeyDown(KeyCode.F7))
+        {
+            ResetLoop();
+        }
+        if (Input.GetKeyDown(KeyCode.F9))
+        {
+            DecreaseSpeed();
+        }
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            IncreaseSpeed();
+        }
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            ToggleAutoPlay();
+        }
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            ToggleHitboxVisibility();
+        }
+    }
+
+    private void ResetInitialTime()
+    {
+        initialTime = BaseTime -
+            (float)stopwatch.Elapsed.TotalSeconds * speed;
+    }
+
+    private void JumpToScan(int scan)
+    {
+        // Clamp scan into bounds.
+        scan = Mathf.Clamp(scan, firstScan, lastScan);
+
+        // Set timer.
+        Scan = scan;
+        FloatBeat = Scan * GameSetup.pattern.patternMetadata.bps;
+        Pulse = PulsesPerScan * Scan;
+        FloatPulse = Pulse;
+        BaseTime = GameSetup.pattern.PulseToTime(Pulse);
+        ResetInitialTime();
+        previousComboTick = Pulse;
+
+        // Rebuild data structures.
+        foreach (NoteList l in noteObjectsInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
+        foreach (NoteList l in notesForKeyboardInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
+        foreach (NoteList l in notesForMouseInLane)
+        {
+            l.Reset();
+            l.RemoveUpTo(Pulse);
+        }
+        ongoingNotes.Clear();
+        ongoingNoteIsHitOnThisFrame.Clear();
+
+        // Fire scan events.
+        JumpedToScan?.Invoke(Scan);
+
+        // Start/stop backing track and BGA.
+        audioSourceManager.StopAll();
+        if (BaseTime >= 0f && backingTrackClip != null)
+        {
+            audioSourceManager.PlayBackingTrack(backingTrackClip,
+                BaseTime);
+        }
+        videoPlayer.Stop();
+        if (BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset
+            && GameSetup.pattern.patternMetadata.bga != null
+            && GameSetup.pattern.patternMetadata.bga != "")
+        {
+            videoPlayer.Play();
+            videoPlayer.time = BaseTime -
+                GameSetup.pattern.patternMetadata.bgaOffset;
+        }
+
+        // Play keysounds before this moment if they last enough.
+        foreach (NoteList l in noteObjectsInLane)
+        {
+            l.ForEach((NoteObject noteObject) =>
+            {
+                Note n = noteObject.note;
+                if (n.time > BaseTime) return;
+                if (n.sound == null || n.sound == "") return;
+
+                AudioClip clip = ResourceLoader.GetCachedClip(
+                    n.sound);
+                if (clip == null) return;
+                if (n.time + clip.length > BaseTime)
+                {
+                    audioSourceManager.PlayKeysound(clip,
+                        n.lane > kPlayableLanes,
+                        startTime: BaseTime - n.time,
+                        n.volume, n.pan);
+                }
+            });
+        }
+
+        // Scoring.
+        currentCombo = 0;
+
+        // VFX.
+        vfxSpawner.RemoveAll();
+    }
+
+    public void JumpToPreviousScan()
+    {
+        float floatScan = FloatPulse / PulsesPerScan;
+        floatScan -= Mathf.Floor(floatScan);
+        if (floatScan > 0.25f)
+        {
+            JumpToScan(Scan);
+        }
+        else
+        {
+            JumpToScan(Scan - 1);
+        }
+    }
+
+    public void JumpToNextScan()
+    {
+        JumpToScan(Scan + 1);
+    }
+
+    public void SetLoopStart()
+    {
+        loopStart = Scan;
+        if (loopEnd < loopStart) loopEnd = loopStart;
+    }
+
+    public void SetLoopEnd()
+    {
+        loopEnd = Scan;
+        if (loopStart > loopEnd) loopStart = loopEnd;
+    }
+
+    public void ResetLoop()
+    {
+        loopStart = firstScan;
+        loopEnd = lastScan;
+    }
+
+    // Returns whether the scan was changed in this method.
+    private bool ProcessScanChangeInPracticeMode(int newScan)
+    {
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
+            return false;
+        }
+        if (newScan > loopEnd)
+        {
+            JumpToScan(loopStart);
+            return true;
+        }
+        if (newScan > lastScan)
+        {
+            JumpToScan(firstScan);
+            return true;
+        }
+        return false;
+    }
+
+    private void SetSpeed(int newSpeed)
+    {
+        newSpeed = Mathf.Clamp(newSpeed, 50, 200);
+        if (speedPercentage == newSpeed) return;
+
+        speedPercentage = newSpeed;
+        ResetInitialTime();
+        audioSourceManager.SetSpeed(speed);
+        videoPlayer.playbackSpeed = speed;
+    }
+
+    public void DecreaseSpeed()
+    {
+        SetSpeed(speedPercentage - 5);
+    }
+
+    public void IncreaseSpeed()
+    {
+        SetSpeed(speedPercentage + 5);
+    }
+
+    public void ToggleAutoPlay()
+    {
+        autoPlay = !autoPlay;
+    }
+
+    public void ToggleHitboxVisibility()
+    {
+        hitboxVisible = !hitboxVisible;
     }
     #endregion
 
@@ -1360,7 +1743,16 @@ public class Game : MonoBehaviour
     public void OnFeverButtonPointerDown()
     {
         if (feverState != FeverState.Ready) return;
-        if (GameSetup.autoPlay) return;
+        if (autoPlay) return;
+        if (Modifiers.instance.fever == Modifiers.Fever.AutoFever)
+        {
+            return;
+        }
+        ActivateFever();
+    }
+
+    private void ActivateFever()
+    {
         feverState = FeverState.Active;
         score.FeverOn();
         feverSoundSource.Play();
@@ -1479,15 +1871,16 @@ public class Game : MonoBehaviour
                 if (n.note.type == NoteType.RepeatHead ||
                     n.note.type == NoteType.RepeatHeadHold)
                 {
-                    noteToCheck = n.GetComponent<NoteAppearance>()
+                    noteToCheck = n
+                        .GetComponent<RepeatHeadAppearanceBase>()
                         .GetFirstUnresolvedRepeatNote();
                 }
 
                 if (ongoingNotes.ContainsKey(noteToCheck))
                 {
                     hitOngoingNote = true;
-                    // No need to check for empty touch receiver because
-                    // they are lower priority.
+                    // No need to check for empty touch
+                    // receiver because they are lower priority.
                     continue;
                 }
 
@@ -1575,7 +1968,8 @@ public class Game : MonoBehaviour
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
-                noteToCheck = n.GetComponent<NoteAppearance>()
+                noteToCheck = n
+                    .GetComponent<RepeatHeadAppearanceBase>()
                     .GetFirstUnresolvedRepeatNote();
             }
             if (ongoingNoteIsHitOnThisFrame.ContainsKey(noteToCheck))
@@ -1596,8 +1990,7 @@ public class Game : MonoBehaviour
             // Do nothing.
             return;
         }
-        NoteObject earliestNote = noteObjectsInLane[lane]
-            .First.Value;
+        NoteObject earliestNote = noteObjectsInLane[lane].First();
         if (ongoingNotes.ContainsKey(earliestNote))
         {
             // Do nothing.
@@ -1610,7 +2003,7 @@ public class Game : MonoBehaviour
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
-            PlayKeysound(earliestNote);
+            PlayKeysound(earliestNote, emptyHit: true);
         }
         else
         {
@@ -1631,7 +2024,7 @@ public class Game : MonoBehaviour
             {
                 continue;
             }
-            NoteObject n = notesForKeyboardInLane[i].First.Value;
+            NoteObject n = notesForKeyboardInLane[i].First();
             if (ongoingNotes.ContainsKey(n))
             {
                 continue;
@@ -1683,7 +2076,7 @@ public class Game : MonoBehaviour
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
-            PlayKeysound(earliestNote);
+            PlayKeysound(earliestNote, emptyHit: true);
         }
         else
         {
@@ -1738,6 +2131,8 @@ public class Game : MonoBehaviour
 
         Judgement judgement;
         float absDifference = Mathf.Abs(timeDifference);
+        // Compensate for speed.
+        absDifference /= speed;
         if (absDifference <= Ruleset.instance.rainbowMaxWindow)
         {
             judgement = Judgement.RainbowMax;
@@ -1787,7 +2182,7 @@ public class Game : MonoBehaviour
 
         if (judgement != Judgement.Miss)
         {
-            PlayKeysound(n);
+            PlayKeysound(n, emptyHit: false);
         }
     }
 
@@ -1799,15 +2194,13 @@ public class Game : MonoBehaviour
             case ControlScheme.Touch:
                 if (noteObjectsInLane[lane].Count > 0)
                 {
-                    upcomingNote = noteObjectsInLane[lane]
-                        .First.Value;
+                    upcomingNote = noteObjectsInLane[lane].First();
                 }
                 break;
             case ControlScheme.KM:
                 if (notesForMouseInLane[lane].Count > 0)
                 {
-                    upcomingNote = notesForMouseInLane[lane]
-                        .First.Value;
+                    upcomingNote = notesForMouseInLane[lane].First();
                 }
                 break;
             case ControlScheme.Keys:
@@ -1818,7 +2211,7 @@ public class Game : MonoBehaviour
         if (upcomingNote != null &&
             !ongoingNotes.ContainsKey(upcomingNote))
         {
-            PlayKeysound(upcomingNote);
+            PlayKeysound(upcomingNote, emptyHit: true);
         }
     }
 
@@ -1848,58 +2241,82 @@ public class Game : MonoBehaviour
             judgement != Judgement.Break)
         {
             SetCombo(currentCombo + 1);
-            hp += feverState == FeverState.Active ? 
-                Ruleset.instance.hpRecoveryDuringFever : 
-                Ruleset.instance.hpRecovery;
-            if (hp >= Ruleset.instance.maxHp)
-            {
-                hp = Ruleset.instance.maxHp;
-            }
 
-            if (feverState == FeverState.Idle &&
-                (judgement == Judgement.RainbowMax ||
-                 judgement == Judgement.Max))
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                feverAmount += feverCoefficient / numPlayableNotes;
-                if (GameSetup.autoPlay) feverAmount = 0f;
-                if (feverAmount >= 1f)
+                hp += feverState == FeverState.Active ?
+                Ruleset.instance.hpRecoveryDuringFever :
+                Ruleset.instance.hpRecovery;
+                if (hp >= Ruleset.instance.maxHp)
                 {
-                    feverState = FeverState.Ready;
-                    feverAmount = 1f;
+                    hp = Ruleset.instance.maxHp;
+                }
+
+                if (feverState == FeverState.Idle &&
+                    (judgement == Judgement.RainbowMax ||
+                     judgement == Judgement.Max))
+                {
+                    feverAmount += feverCoefficient / numPlayableNotes;
+                    if (autoPlay ||
+                        Modifiers.instance.fever
+                        == Modifiers.Fever.FeverOff)
+                    {
+                        feverAmount = 0f;
+                    }
+                    if (feverAmount >= 1f)
+                    {
+                        feverState = FeverState.Ready;
+                        feverAmount = 1f;
+                        if (Modifiers.instance.fever
+                            == Modifiers.Fever.AutoFever)
+                        {
+                            ActivateFever();
+                        }
+                    }
                 }
             }
         }
         else
         {
             SetCombo(0);
-            hp -= feverState == FeverState.Active ? 
-                Ruleset.instance.hpLossDuringFever :
-                Ruleset.instance.hpLoss;
-            if (hp < 0) hp = 0;
-            if (hp <= 0 && !GameSetup.noFail)
-            {
-                // Stage failed.
-                score.stageFailed = true;
-                stopwatch.Stop();
-                audioSourceManager.StopAll();
-                StartCoroutine(StageFailedSequence());
-            }
 
-            if (feverState == FeverState.Idle ||
-                feverState == FeverState.Ready)
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                if (judgement == Judgement.Miss)
+                hp -= feverState == FeverState.Active ?
+                   Ruleset.instance.hpLossDuringFever :
+                   Ruleset.instance.hpLoss;
+                if (hp < 0) hp = 0;
+                if (hp <= 0 &&
+                    Modifiers.instance.mode !=
+                    Modifiers.Mode.NoFail)
                 {
-                    feverAmount *= 0.75f;
+                    // Stage failed.
+                    score.stageFailed = true;
+                    stopwatch.Stop();
+                    audioSourceManager.StopAll();
+                    StartCoroutine(StageFailedSequence());
                 }
-                else  // Break
+
+                if (feverState == FeverState.Idle ||
+                    feverState == FeverState.Ready)
                 {
-                    feverAmount *= 0.5f;
+                    if (judgement == Judgement.Miss)
+                    {
+                        feverAmount *= 0.75f;
+                    }
+                    else  // Break
+                    {
+                        feverAmount *= 0.5f;
+                    }
+                    feverState = FeverState.Idle;
                 }
-                feverState = FeverState.Idle;
             }
         }
-        score.LogNote(judgement);
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+        {
+            score.LogNote(judgement);
+            judgementTally.Refresh(score);
+        }
 
         // Appearances and VFX.
         vfxSpawner.SpawnVFXOnResolve(n, judgement);
@@ -1922,21 +2339,37 @@ public class Game : MonoBehaviour
     {
         stageFailedScreen.SetActive(true);
         yield return new WaitForSeconds(4f);
+
         Curtain.DrawCurtainThenGoToScene("Result");
     }
     #endregion
 
     #region Keysound
     // Records which AudioSource is playing the keysounds of which
-    // note, so they can be stopped later.
+    // note, so they can be stopped later. This is meant for long
+    // notes, and do not care about assist ticks.
     private Dictionary<Note, AudioSource> noteToAudioSource;
-    private void PlayKeysound(NoteObject n)
+    private void PlayKeysound(NoteObject n, bool emptyHit)
     {
-        if (n.note.sound == "") return;
+        bool hidden = n.note.lane >= kPlayableLanes;
+        if (Modifiers.instance.assistTick == 
+            Modifiers.AssistTick.AssistTick
+            && !hidden
+            && !emptyHit)
+        {
+            audioSourceManager.PlaySfx(assistTick);
+        }
+
+        if (n.note is AssistTickNote)
+        {
+            audioSourceManager.PlaySfx(assistTick);
+        }
+
+        if (n.note.sound == null || n.note.sound == "") return;
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.note.sound);
         AudioSource source = audioSourceManager.PlayKeysound(clip,
-            n.note.lane >= kPlayableLanes,
+            hidden,
             startTime: 0f,
             n.note.volume, n.note.pan);
         noteToAudioSource[n.note] = source;
@@ -1958,6 +2391,7 @@ public class Game : MonoBehaviour
     #region Pausing
     public bool IsPaused()
     {
+        if (pauseDialog == null) return false;
         return pauseDialog.gameObject.activeSelf;
     }
 

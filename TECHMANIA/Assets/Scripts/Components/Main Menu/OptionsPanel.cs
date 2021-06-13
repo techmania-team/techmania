@@ -30,6 +30,7 @@ public class OptionsPanel : MonoBehaviour
     public TextAsset stringTable;
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
+    public Toggle showJudgementTallyToggle;
 
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
@@ -157,28 +158,24 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.showLoadingBar);
         showFpsToggle.SetIsOnWithoutNotify(
             Options.instance.showFps);
+        showJudgementTallyToggle.SetIsOnWithoutNotify(
+            Options.instance.showJudgementTally);
 
         // Miscellaneous
 
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
     }
 
-    // The portion of MemoryToUI that should respond to locale change.
+    // The portion of MemoryToUI that should respond to
+    // locale change.
     private void MemoryToLocalizedUI()
     {
-        fullscreenDropdown.ClearOptions();
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_exclusive_fullscreen")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_fullscreen_window")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_maximized_window")));
-        fullscreenDropdown.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
-                "options_fullscreen_mode_windowed")));
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            fullscreenDropdown,
+            "options_fullscreen_mode_exclusive_fullscreen",
+            "options_fullscreen_mode_fullscreen_window",
+            "options_fullscreen_mode_maximized_window",
+            "options_fullscreen_mode_windowed");
         fullscreenDropdown.SetValueWithoutNotify(
             (int)Options.instance.fullScreenMode);
         fullscreenDropdown.RefreshShownValue();
@@ -303,6 +300,8 @@ public class OptionsPanel : MonoBehaviour
     {
         Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
         Options.instance.showFps = showFpsToggle.isOn;
+        Options.instance.showJudgementTally =
+            showJudgementTallyToggle.isOn;
     }
     #endregion
 }

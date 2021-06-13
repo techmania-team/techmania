@@ -30,7 +30,7 @@ public class MaterialSlider : MonoBehaviour,
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData) &&
-            slider.interactable)
+            slider.IsInteractable())
         {
             MenuSfx.instance.PlaySelectSound();
         }
@@ -39,7 +39,7 @@ public class MaterialSlider : MonoBehaviour,
     public void OnSelect(BaseEventData eventData)
     {
         if (eventData is AxisEventData &&
-            slider.interactable)
+            slider.IsInteractable())
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();

@@ -90,8 +90,8 @@ public class VFXSpawner : MonoBehaviour
             case NoteType.RepeatHold:
                 // Spawn the head VFX on repeat head.
                 NoteObject repeatHead = note
-                    .GetComponent<NoteAppearance>()
-                    .GetRepeatHead().GetComponent<NoteObject>();
+                    .GetComponent<RepeatNoteAppearanceBase>()
+                    .repeatHead.GetComponent<NoteObject>();
                 holdNoteToOngoingHeadVfx.Add(repeatHead,
                     SpawnVfxAt(repeatHead,
                         GlobalResource.vfxSkin.repeatHoldOngoingHead,
@@ -165,7 +165,7 @@ public class VFXSpawner : MonoBehaviour
                     judgement != Judgement.Break)
                 {
                     SpawnVfxAt(
-                        note.GetComponent<NoteAppearance>()
+                        note.GetComponent<DragNoteAppearance>()
                             .GetCurveEndPosition(),
                         GlobalResource.vfxSkin.dragComplete);
                 }
@@ -188,8 +188,8 @@ public class VFXSpawner : MonoBehaviour
                 SpawnVfxAt(note,
                     GlobalResource.vfxSkin.repeatNote);
                 SpawnVfxAt( 
-                    note.GetComponent<NoteAppearance>()
-                        .GetRepeatHead().GetComponent<NoteObject>(),
+                    note.GetComponent<RepeatNoteAppearanceBase>()
+                        .repeatHead.GetComponent<NoteObject>(),
                     GlobalResource.vfxSkin.repeatHead);
                 break;
             case NoteType.RepeatHeadHold:
@@ -216,8 +216,8 @@ public class VFXSpawner : MonoBehaviour
                 break;
             case NoteType.RepeatHold:
                 NoteObject repeatHeadNote = note
-                    .GetComponent<NoteAppearance>()
-                    .GetRepeatHead().GetComponent<NoteObject>();
+                    .GetComponent<RepeatNoteAppearanceBase>()
+                    .repeatHead.GetComponent<NoteObject>();
                 if (holdNoteToOngoingHeadVfx
                     .ContainsKey(repeatHeadNote))
                 {
@@ -266,5 +266,27 @@ public class VFXSpawner : MonoBehaviour
                     .noteImage.transform.position;
             }
         }
+    }
+
+    public void RemoveAll()
+    {
+        foreach (List<GameObject> list in 
+            holdNoteToOngoingHeadVfx.Values)
+        {
+            foreach (GameObject o in list) Destroy(o);
+        }
+        holdNoteToOngoingHeadVfx.Clear();
+        foreach (List<GameObject> list in
+            holdNoteToOngoingTrailVfx.Values)
+        {
+            foreach (GameObject o in list) Destroy(o);
+        }
+        holdNoteToOngoingTrailVfx.Clear();
+        foreach (List<GameObject> list in
+            dragNoteToOngoingVfx.Values)
+        {
+            foreach (GameObject o in list) Destroy(o);
+        }
+        dragNoteToOngoingVfx.Clear();
     }
 }

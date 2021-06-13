@@ -1,10 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Scan : MonoBehaviour
 {
+    public enum Direction
+    {
+        Left,
+        Right
+    }
+    [HideInInspector]
+    public Direction direction;
     [HideInInspector]
     public int scanNumber;
 
@@ -27,12 +35,14 @@ public class Scan : MonoBehaviour
     {
         Game.ScanChanged -= OnScanChanged;
         Game.ScanAboutToChange -= OnScanAboutToChange;
+        Game.JumpedToScan -= OnJumpedToScan;
     }
 
-    public void Initialize()
+    public void Initialize(int scanNumber, Direction direction)
     {
         Game.ScanChanged += OnScanChanged;
         Game.ScanAboutToChange += OnScanAboutToChange;
+        Game.JumpedToScan += OnJumpedToScan;
 
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
@@ -43,6 +53,8 @@ public class Scan : MonoBehaviour
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
 
+        this.scanNumber = scanNumber;
+        this.direction = direction;
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
         scanline.Initialize(this, scanHeight);
@@ -56,6 +68,8 @@ public class Scan : MonoBehaviour
         NoteObject noteObject = o.GetComponent<NoteObject>();
         noteObject.note = n;
 
+        if (hidden) return noteObject;
+
         float x = FloatPulseToXPosition(n.pulse);
         float y = FloatLaneToYPosition(n.lane);
         RectTransform rect = o.GetComponent<RectTransform>();
@@ -66,9 +80,8 @@ public class Scan : MonoBehaviour
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
-        appearance.SetHidden(hidden);
         appearance.SetScanAndScanlineRef(this, scanline);
-        appearance.InitializeScale();
+        appearance.Initialize();
         noteAppearances.Add(appearance);
 
         switch (n.type)
@@ -77,9 +90,6 @@ public class Scan : MonoBehaviour
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
                 appearance.InitializeTrail();
-                break;
-            case NoteType.Drag:
-                appearance.InitializeCurve();
                 break;
         }
 
@@ -129,22 +139,53 @@ public class Scan : MonoBehaviour
         return extension;
     }
 
+    public void SetAllNotesInactive()
+    {
+        foreach (NoteAppearance n in noteAppearances)
+        {
+            // This will take care of hold extensions and
+            // repeat path extensions.
+            n.SetInactive();
+        }
+    }
+
+    private void Activate()
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            o.Activate();
+        }
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.Activate();
+        }
+        foreach (RepeatPathExtension e in repeatPathExtensions)
+        {
+            e.Activate();
+        }
+    }
+
     private void OnScanAboutToChange(int scan)
     {
         if (scan == scanNumber)
         {
-            foreach (NoteAppearance o in noteAppearances)
-            {
-                o.Activate();
-            }
-            foreach (HoldExtension e in holdExtensions)
-            {
-                e.Activate();
-            }
-            foreach (RepeatPathExtension e in repeatPathExtensions)
-            {
-                e.Activate();
-            }
+            Activate();
+        }
+    }
+
+    private void Prepare()
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            o.Prepare();
+        }
+        foreach (HoldExtension e in holdExtensions)
+        {
+            e.Prepare();
+        }
+        foreach (RepeatPathExtension e in repeatPathExtensions)
+        {
+            e.Prepare();
         }
     }
 
@@ -152,26 +193,42 @@ public class Scan : MonoBehaviour
     {
         if (scan == scanNumber - 1)
         {
+            Prepare();
+        }
+    }
+
+    private void OnJumpedToScan(int scan)
+    {
+        foreach (NoteAppearance o in noteAppearances)
+        {
+            // This will take care of hold extensions and repeat
+            // extensions.
+            o.SetInactive();
+        }
+
+        if (scan > scanNumber)
+        {
             foreach (NoteAppearance o in noteAppearances)
             {
-                o.Prepare();
+                // This will take care of hold extensions and repeat
+                // extensions.
+                o.Resolve();
             }
-            foreach (HoldExtension e in holdExtensions)
-            {
-                e.Prepare();
-            }
-            foreach (RepeatPathExtension e in repeatPathExtensions)
-            {
-                e.Prepare();
-            }
+        }
+        else if (scan == scanNumber)
+        {
+            Activate();
+        }
+        else if (scan == scanNumber - 1)
+        {
+            Prepare();
         }
     }
 
     #region Positioning
     private float NormalizedXToXPosition(float normalizedX)
     {
-        // Even scans are from right to left.
-        if (scanNumber % 2 == 0)
+        if (direction == Direction.Left)
         {
             normalizedX = 1f - normalizedX;
         }

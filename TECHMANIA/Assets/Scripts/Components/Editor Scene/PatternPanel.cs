@@ -73,6 +73,10 @@ public class PatternPanel : MonoBehaviour
     public MessageDialog messageDialog;
     public TimeEventDialog timeEventDialog;
 
+    [Header("Preview")]
+    public Button previewButton;
+    private float? scanlinePulseBeforePreview;
+
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
     // dictionary is the reverse of that. Must be updated alongside
@@ -220,6 +224,17 @@ public class PatternPanel : MonoBehaviour
             OnSelectedKeysoundsUpdated;
         EditorOptionsTab.Opened += OnOptionsTabOpened;
         EditorOptionsTab.Closed += OnOptionsTabClosed;
+
+        // Restore editing session
+        if (scanlinePulseBeforePreview.HasValue)
+        {
+            scanline.floatPulse = scanlinePulseBeforePreview.Value;
+            scanline.GetComponent<SelfPositionerInEditor>()
+                .Reposition();
+            scanlinePulseBeforePreview = null;
+            ScrollScanlineIntoView();
+            RefreshScanlinePositionSlider();
+        }
     }
 
     private void OnDisable()
@@ -1277,6 +1292,20 @@ public class PatternPanel : MonoBehaviour
     {
         canvasGroup.alpha = 1f;
         KeysoundVisibilityChanged?.Invoke();
+    }
+
+    public void OnPreviewButtonClicked()
+    {
+        GameSetup.track = EditorContext.track;
+        GameSetup.trackPath = EditorContext.trackPath;
+        GameSetup.pattern = EditorContext.Pattern;
+        GameSetup.beginningScanInEditorPreview =
+            Mathf.FloorToInt(
+                scanline.floatPulse / 
+                Pattern.pulsesPerBeat /
+                GameSetup.pattern.patternMetadata.bps);
+        scanlinePulseBeforePreview = scanline.floatPulse;
+        previewButton.GetComponent<TransitionToPanel>().Invoke();
     }
     #endregion
 
@@ -3376,6 +3405,7 @@ public class PatternPanel : MonoBehaviour
         }
         audioLoadingIndicator.SetActive(!audioLoaded);
         scanlinePositionSlider.interactable = !isPlaying;
+        previewButton.interactable = audioLoaded;
     }
 
     public void StartPlayback()

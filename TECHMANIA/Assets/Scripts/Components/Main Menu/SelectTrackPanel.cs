@@ -54,7 +54,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
     public GameObject noTrackText;
-    public SelectPatternDialog selectPatternDialog;
+    public Panel selectPatternPanel;
     public MessageDialog messageDialog;
 
     protected Dictionary<GameObject, string> cardToSubfolder;
@@ -105,6 +105,7 @@ public class SelectTrackPanel : MonoBehaviour
                 TrackListBuilderCompleted;
             builderDone = false;
             builderProgress = "";
+            Options.TemporarilyDisableVSync();
             trackListBuilder.RunWorkerAsync();
             do
             {
@@ -112,6 +113,7 @@ public class SelectTrackPanel : MonoBehaviour
                     builderProgress;
                 yield return null;
             } while (!builderDone);
+            Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
             refreshButton.interactable = true;
@@ -119,7 +121,8 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Show go up card if applicable.
-        goUpCard.SetActive(currentLocation != Paths.GetTrackRootFolder());
+        goUpCard.SetActive(currentLocation !=
+            Paths.GetTrackRootFolder());
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
@@ -395,7 +398,10 @@ public class SelectTrackPanel : MonoBehaviour
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
         GameSetup.track = cardToTrack[o].track;
-        selectPatternDialog.Show();
+        GameSetup.trackOptions = Options.instance
+            .GetPerTrackOptions(GameSetup.track);
+        PanelTransitioner.TransitionTo(selectPatternPanel,
+            TransitionToPanel.Direction.Right);
     }
 
     private void OnClickErrorCard(GameObject o)

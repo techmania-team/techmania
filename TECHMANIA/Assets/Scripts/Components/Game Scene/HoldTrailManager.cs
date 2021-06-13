@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Common routines between NoteAppearance and HoldExtension.
-// This handles the initialization, visibility and
-// updating of duration trails and ongoing trails.
+// Handles the duration trails and ongoing trails of hold notes,
+// repeat head hold notes and repeat hold notes.
 //
-// Works for both hold notes and repeat hold notes.
-
+// Note that each hold extension has its own instance of
+// HoldTrailManager.
 public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;
@@ -17,13 +16,18 @@ public class HoldTrailManager : MonoBehaviour
     public RectTransform ongoingTrailEnd;
 
     private Scanline scanlineRef;
+    [HideInInspector]
+    public NoteAppearance noteRef;
+
     public NoteType noteType { get; private set; }
     private float durationTrailInitialWidth;
     private bool trailExtendsLeft;
 
-    public void Initialize(Scan scanRef, Scanline scanlineRef,
+    public void Initialize(NoteAppearance noteRef,
+        Scan scanRef, Scanline scanlineRef,
         HoldNote holdNote)
     {
+        this.noteRef = noteRef;
         this.scanlineRef = scanlineRef;
         noteType = holdNote.type;
 
@@ -73,7 +77,8 @@ public class HoldTrailManager : MonoBehaviour
         float durationTrailEndAspectRatio = 1f;
         if (noteType == NoteType.Hold)
         {
-            durationTrailScale = GlobalResource.noteSkin.holdTrail.scale;
+            durationTrailScale = GlobalResource.noteSkin
+                .holdTrail.scale;
             Rect rect = GlobalResource.noteSkin.holdTrailEnd
                 .sprites[0].rect;
             durationTrailEndAspectRatio = rect.width / rect.height;
@@ -100,7 +105,8 @@ public class HoldTrailManager : MonoBehaviour
             durationTrailScale * durationTrailEnd.localScale.x,
             durationTrailEnd.localScale.y,
             durationTrailEnd.localScale.z);
-        durationTrailEnd.GetComponent<AspectRatioFitter>().aspectRatio =
+        durationTrailEnd.GetComponent<AspectRatioFitter>()
+            .aspectRatio =
             durationTrailEndAspectRatio;
         if (ongoingTrail != null)
         {
@@ -121,18 +127,24 @@ public class HoldTrailManager : MonoBehaviour
             ongoingTrail.gameObject.SetActive(active);
         }
 
-        Color color = (v == NoteAppearance.Visibility.Transparent) ?
-            new Color(1f, 1f, 1f, 0.6f) :
-            Color.white;
-        durationTrail.GetComponent<Image>().color = color;
-        durationTrailEnd.GetComponent<Image>().color = color;
+        Color durationTrailColor = new Color(1f, 1f, 1f,
+            noteRef.VisibilityToAlpha(v));
+        durationTrail.GetComponent<Image>().color = 
+            durationTrailColor;
+        durationTrailEnd.GetComponent<Image>().color = 
+            durationTrailColor;
+
         if (ongoingTrail != null)
         {
-            ongoingTrail.GetComponent<Image>().color = color;
+            Color ongoingTrailColor = new Color(1f, 1f, 1f,
+            noteRef.VisibilityToAlpha(v,
+            bypassNoteOpacityModifier: true));
+            ongoingTrail.GetComponent<Image>().color = 
+                ongoingTrailColor;
         }
     }
 
-    public void UpdateTrails()
+    public void UpdateTrails(bool ongoing)
     {
         float startX = GetComponent<RectTransform>()
             .anchoredPosition.x;
@@ -153,25 +165,31 @@ public class HoldTrailManager : MonoBehaviour
             width = 0f;
         }
 
+        // Don't draw ongoing trail if not in ongoing state.
+        if (!ongoing)
+        {
+            width = 0f;
+        }
+
+        // Draw ongoing trail on hold notes.
         if (noteType == NoteType.Hold)
         {
             ongoingTrail.sizeDelta = new Vector2(width,
                 ongoingTrail.sizeDelta.y);
         }
-        else
-        {
-            durationTrail.anchoredPosition = new Vector2(
-                trailExtendsLeft ? -width : width,
-                0f);
-            durationTrail.sizeDelta = new Vector2(
-                durationTrailInitialWidth - width,
-                durationTrail.sizeDelta.y);
-        }
+
+        // Shorten duration trail regardless of note type.
+        durationTrail.anchoredPosition = new Vector2(
+            trailExtendsLeft ? -width : width,
+            0f);
+        durationTrail.sizeDelta = new Vector2(
+            durationTrailInitialWidth - width,
+            durationTrail.sizeDelta.y);
 
         UpdateSprites();
     }
 
-    public void UpdateSprites()
+    private void UpdateSprites()
     {
         Sprite durationTrailSprite = null;
         Sprite durationTrailEndSprite = null;
@@ -180,15 +198,18 @@ public class HoldTrailManager : MonoBehaviour
         {
             durationTrailSprite = GlobalResource.noteSkin.holdTrail
                 .GetSpriteForFloatBeat(Game.FloatBeat);
-            durationTrailEndSprite = GlobalResource.noteSkin.holdTrailEnd
-                .GetSpriteForFloatBeat(Game.FloatBeat);
-            ongoingTrailSprite = GlobalResource.noteSkin.holdOngoingTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+            durationTrailEndSprite = GlobalResource.noteSkin
+                .holdTrailEnd.GetSpriteForFloatBeat(
+                Game.FloatBeat);
+            ongoingTrailSprite = GlobalResource.noteSkin
+                .holdOngoingTrail.GetSpriteForFloatBeat(
+                Game.FloatBeat);
         }
         else
         {
-            durationTrailSprite = GlobalResource.noteSkin.repeatHoldTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+            durationTrailSprite = GlobalResource.noteSkin
+                .repeatHoldTrail.GetSpriteForFloatBeat(
+                Game.FloatBeat);
             durationTrailEndSprite = 
                 GlobalResource.noteSkin.repeatHoldTrailEnd
                 .GetSpriteForFloatBeat(Game.FloatBeat);

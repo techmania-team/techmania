@@ -18,29 +18,43 @@ public class HoldExtension : MonoBehaviour
         HoldNote holdNote)
     {
         GetComponent<HoldTrailManager>().Initialize(
+            noteRef: null,  // Filled later
             scanRef, scanlineRef, holdNote);
     }
 
     public void SetVisibility(
         NoteAppearance.Visibility v)
     {
+        currentVisibility = v;
         GetComponent<HoldTrailManager>().SetVisibility(v);
     }
 
-    public void UpdateTrails()
+    // Used for fade in/out.
+    public void ResetVisibility()
     {
-        GetComponent<HoldTrailManager>().UpdateTrails();
+        GetComponent<HoldTrailManager>().SetVisibility(
+            currentVisibility);
+    }
+
+    public void UpdateTrails(bool ongoing)
+    {
+        GetComponent<HoldTrailManager>().UpdateTrails(ongoing);
     }
     #endregion
+
+    private NoteAppearance.Visibility currentVisibility;
 
     public void RegisterNoteAppearance(NoteAppearance noteRef)
     {
         this.noteRef = noteRef;
+        GetComponent<HoldTrailManager>().noteRef = noteRef;
+        currentVisibility = NoteAppearance.Visibility.Hidden;
     }
 
     public void Activate()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved ||
+        if (noteRef.state == NoteAppearance.State.Inactive ||
+            noteRef.state == NoteAppearance.State.Resolved ||
             noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         SetVisibility(
@@ -49,7 +63,8 @@ public class HoldExtension : MonoBehaviour
 
     public void Prepare()
     {
-        if (noteRef.state == NoteAppearance.State.Resolved ||
+        if (noteRef.state == NoteAppearance.State.Inactive || 
+            noteRef.state == NoteAppearance.State.Resolved ||
             noteRef.state == NoteAppearance.State.PendingResolve)
             return;
         if (noteRef.GetNoteType() == NoteType.Hold)

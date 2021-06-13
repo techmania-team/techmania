@@ -17,6 +17,7 @@ public class MaterialButton : MonoBehaviour,
     public GameObject selectedOutline;
     public bool useClickSoundOverride;
     public AudioClip clickSoundOverride;
+    public bool silent;
 
     private Button button;
     private Image buttonImage;
@@ -44,7 +45,8 @@ public class MaterialButton : MonoBehaviour,
         buttonContent.color = textColor;
         rippleAnimator = GetComponentInChildren<Animator>();
         rippleRect = rippleAnimator.GetComponent<RectTransform>();
-        rippleParentRect = rippleRect.parent.GetComponent<RectTransform>();
+        rippleParentRect = rippleRect.parent
+            .GetComponent<RectTransform>();
         interactable = true;
         isBackButton = GetComponent<BackButton>() != null;
     }
@@ -74,7 +76,7 @@ public class MaterialButton : MonoBehaviour,
         selected = true;
         selectedOutline.SetActive(selected);
 
-        if (eventData is AxisEventData)
+        if (eventData is AxisEventData && !silent)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -91,19 +93,22 @@ public class MaterialButton : MonoBehaviour,
     {
         StartRippleAt(Vector2.zero);
 
-        if (useClickSoundOverride)
+        if (useClickSoundOverride && !silent)
         {
             MenuSfx.instance.PlaySound(clickSoundOverride);
             return;
         }
 
-        if (isBackButton)
+        if (!silent)
         {
-            MenuSfx.instance.PlayBackSound();
-        }
-        else
-        {
-            MenuSfx.instance.PlayClickSound();
+            if (isBackButton)
+            {
+                MenuSfx.instance.PlayBackSound();
+            }
+            else
+            {
+                MenuSfx.instance.PlayClickSound();
+            }
         }
     }
 
@@ -114,19 +119,22 @@ public class MaterialButton : MonoBehaviour,
             return;
         }
 
-        if (useClickSoundOverride)
+        if (useClickSoundOverride && !silent)
         {
             MenuSfx.instance.PlaySound(clickSoundOverride);
             return;
         }
 
-        if (isBackButton)
+        if (!silent)
         {
-            MenuSfx.instance.PlayBackSound();
-        }
-        else
-        {
-            MenuSfx.instance.PlayClickSound();
+            if (isBackButton)
+            {
+                MenuSfx.instance.PlayBackSound();
+            }
+            else
+            {
+                MenuSfx.instance.PlayClickSound();
+            }
         }
     }
 
@@ -134,7 +142,7 @@ public class MaterialButton : MonoBehaviour,
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData))
         {
-            if (interactable)
+            if (interactable && !silent)
             {
                 MenuSfx.instance.PlaySelectSound();
             }

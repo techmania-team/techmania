@@ -41,6 +41,7 @@ public class Options : OptionsBase
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
+    public bool showJudgementTally;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -56,6 +57,16 @@ public class Options : OptionsBase
     // Editor options
 
     public EditorOptions editorOptions;
+
+    // Modifiers
+
+    public Modifiers modifiers;
+
+    // Per-track options.
+    // This should be a dictionary, but dictionaries are not
+    // directly serializable, and we don't expect more than a
+    // few hundred elements anyway.
+    public List<PerTrackOptions> perTrackOptions;
 
     public Options()
     {
@@ -80,6 +91,7 @@ public class Options : OptionsBase
         locale = Locale.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
+        showJudgementTally = false;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
@@ -91,6 +103,8 @@ public class Options : OptionsBase
         keyboardMouseLatencyMs = 0;
 
         editorOptions = new EditorOptions();
+        modifiers = new Modifiers();
+        perTrackOptions = new List<PerTrackOptions>();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -130,8 +144,20 @@ public class Options : OptionsBase
         QualitySettings.vSyncCount = vSync ? 1 : 0;
     }
 
+    // Used for loading stuff when limited to 1 frame per asset.
+    public static void TemporarilyDisableVSync()
+    {
+        QualitySettings.vSyncCount = 0;
+    }
+
+    public static void RestoreVSync()
+    {
+        QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
+    }
+
     #region Instance
     public static Options instance { get; private set; }
+    private static Options backupInstance;
     public static void RefreshInstance()
     {
         try
@@ -143,6 +169,31 @@ public class Options : OptionsBase
         {
             instance = new Options();
         }
+    }
+
+    public static void MakeBackup()
+    {
+        backupInstance = instance.Clone() as Options;
+    }
+
+    public static void RestoreBackup()
+    {
+        instance = backupInstance;
+    }
+    #endregion
+
+    #region Per-track options
+    public PerTrackOptions GetPerTrackOptions(Track t)
+    {
+        string guid = t.trackMetadata.guid;
+        foreach (PerTrackOptions options in perTrackOptions)
+        {
+            if (options.trackGuid == guid) return options;
+        }
+
+        PerTrackOptions newOptions = new PerTrackOptions(guid);
+        perTrackOptions.Add(newOptions);  // Not written to disk yet.
+        return newOptions;
     }
     #endregion
 }
@@ -183,5 +234,257 @@ public class EditorOptions
         metronome = false;
         assistTickOnSilentNotes = false;
         returnScanlineAfterPlayback = true;
+    }
+}
+
+// All enums reserve the first option as the "normal" one.
+[Serializable]
+public class Modifiers
+{
+    public static Modifiers instance 
+    { 
+        get { return Options.instance.modifiers; }
+    }
+
+    // Regular modifiers
+
+    public enum NoteOpacity
+    {
+        Normal,
+        FadeOut,
+        FadeOut2,
+        FadeIn,
+        FadeIn2
+    }
+    public NoteOpacity noteOpacity;
+    public static readonly string[] noteOpacityDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_fade_out",
+        "modifier_fade_out_2",
+        "modifier_fade_in",
+        "modifier_fade_in_2"
+    };
+
+    public enum ScanlineOpacity
+    {
+        Normal,
+        Blink,
+        Blink2,
+        Blind
+    }
+    public ScanlineOpacity scanlineOpacity;
+    public static readonly string[] scanlineOpacityDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_blink",
+        "modifier_blink_2",
+        "modifier_blind"
+    };
+
+    public enum ScanDirection
+    {
+        Normal,  // RL
+        RR,
+        LR,
+        LL
+    }
+    public ScanDirection scanDirection;
+    public static readonly string[] scanDirectionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_right_right",
+        "modifier_left_right",
+        "modifier_left_left"
+    };
+
+    public enum NotePosition
+    {
+        Normal,
+        Mirror
+    }
+    public NotePosition notePosition;
+    public static readonly string[] notePositionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_mirror"
+    };
+
+    public enum ScanPosition
+    {
+        Normal,
+        Swap
+    }
+    public ScanPosition scanPosition;
+    public static readonly string[] scanPositionDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_swap"
+    };
+
+    public enum Fever
+    {
+        Normal,
+        FeverOff,
+        AutoFever
+    }
+    public Fever fever;
+    public static readonly string[] feverDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_fever_off",
+        "modifier_auto_fever"
+    };
+
+    public enum Keysound
+    {
+        Normal,
+        AutoKeysound
+    }
+    public Keysound keysound;
+    public static readonly string[] keysoundDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_auto_keysound"
+    };
+
+    public enum AssistTick
+    {
+        None,
+        AssistTick,
+        AutoAssistTick
+    }
+    public AssistTick assistTick;
+    public static readonly string[] assistTickDisplayKeys =
+    {
+        "modifier_none",
+        "modifier_assist_tick",
+        "modifier_auto_assist_tick"
+    };
+
+    // Special modifiers
+
+    public enum Mode
+    {
+        Normal,
+        NoFail,
+        AutoPlay,
+        Practice
+    }
+    public Mode mode;
+    public static readonly string[] modeDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_no_fail",
+        "modifier_auto_play",
+        "modifier_practice"
+    };
+
+    public enum ControlOverride
+    {
+        None,
+        OverrideToTouch,
+        OverrideToKeys,
+        OverrideToKM
+    }
+    public ControlOverride controlOverride;
+    public static readonly string[] controlOverrideDisplayKeys =
+    {
+        "modifier_none",
+        "modifier_override_to_touch",
+        "modifier_override_to_keys",
+        "modifier_override_to_km"
+    };
+
+    public enum ScrollSpeed
+    {
+        Normal,
+        HalfSpeed
+    }
+    public ScrollSpeed scrollSpeed;
+    public static readonly string[] scrollSpeedDisplayKeys =
+    {
+        "modifier_normal",
+        "modifier_half_speed"
+    };
+
+    // Display
+
+    // Does not add "none" segments when all options are 0; does not
+    // add per-track options.
+    public void ToDisplaySegments(List<string> regularSegments,
+        List<string> specialSegments)
+    {
+        if (noteOpacity != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                noteOpacityDisplayKeys[(int)noteOpacity]));
+        }
+        if (scanlineOpacity != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
+        }
+        if (scanDirection != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanDirectionDisplayKeys[(int)scanDirection]));
+        }
+        if (notePosition != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                notePositionDisplayKeys[(int)notePosition]));
+        }
+        if (scanPosition != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                scanPositionDisplayKeys[(int)scanPosition]));
+        }
+        if (fever != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                feverDisplayKeys[(int)fever]));
+        }
+        if (keysound != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                keysoundDisplayKeys[(int)keysound]));
+        }
+        if (assistTick != 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                assistTickDisplayKeys[(int)assistTick]));
+        }
+
+        if (mode != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                modeDisplayKeys[(int)mode]));
+        }
+        if (controlOverride != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                controlOverrideDisplayKeys[(int)controlOverride]));
+        }
+        if (scrollSpeed != 0)
+        {
+            specialSegments.Add(Locale.GetString(
+                scrollSpeedDisplayKeys[(int)scrollSpeed]));
+        }
+    }
+}
+
+[Serializable]
+public class PerTrackOptions
+{
+    public string trackGuid;
+    public bool noVideo;
+    public int backgroundBrightness;  // 0-10
+
+    public PerTrackOptions(string trackGuid)
+    {
+        this.trackGuid = trackGuid;
+        noVideo = false;
+        backgroundBrightness = 10;
     }
 }

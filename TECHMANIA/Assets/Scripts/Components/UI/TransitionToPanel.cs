@@ -21,7 +21,7 @@ public class TransitionToPanel : MonoBehaviour, IPointerClickHandler, ISubmitHan
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!GetComponent<Button>().interactable)
+        if (!GetComponent<Button>().IsInteractable())
         {
             return;
         }

@@ -27,14 +27,14 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI feverBonus;
     public GameObject comboBonusContainer;
     public TextMeshProUGUI comboBonus;
+
+    [Header("Other")]
     public TextMeshProUGUI totalScore;
-
-    [Header("Rank")]
-    public TextMeshProUGUI rankText;
-
-    [Header("Medals")]
     public GameObject performanceMedal;
-    public GameObject newRecordMedal;
+    public TextMeshProUGUI rankText;
+    public TextMeshProUGUI ruleset;
+    public ScrollingText modifierDisplay;
+    public ScrollingText specialModifierDisplay;
 
     // Start is called before the first frame update
     void Start()
@@ -71,24 +71,10 @@ public class ResultsPanel : MonoBehaviour
         comboBonus.text = Game.score.comboBonus.ToString();
         feverBonus.text = Game.score.totalFeverBonus.ToString();
 
+        // Score and medal
         int score = Game.score.CurrentScore() + Game.score.comboBonus;
         totalScore.text = score.ToString();
 
-        // Rank
-        // The choice of rank is quite arbitrary.
-        string rank = "C";
-        if (score > 220000) rank = "B";
-        if (score > 260000) rank = "A";
-        if (score > 270000) rank = "A<size=64>+</size>";
-        if (score > 280000) rank = "A<size=64>++</size>";
-        if (score > 285000) rank = "S";
-        if (score > 290000) rank = "S<size=64>+</size>";
-        if (score > 295000) rank = "S<size=64>++</size>";
-        if (Game.score.stageFailed) rank = "F";
-        rankText.text = rank;
-
-        // Medals
-        newRecordMedal.SetActive(false);
         if (Game.score.notesPerJudgement[Judgement.Miss] == 0 &&
             Game.score.notesPerJudgement[Judgement.Break] == 0)
         {
@@ -120,6 +106,40 @@ public class ResultsPanel : MonoBehaviour
         {
             performanceMedal.SetActive(false);
         }
+
+        // Rank
+        // The choice of rank is quite arbitrary.
+        string rank = "C";
+        if (score > 220000) rank = "B";
+        if (score > 260000) rank = "A";
+        if (score > 270000) rank = "A+";
+        if (score > 280000) rank = "A++";
+        if (score > 285000) rank = "S";
+        if (score > 290000) rank = "S+";
+        if (score > 295000) rank = "S++";
+        if (Game.score.stageFailed) rank = "F";
+        rankText.text = rank;
+
+        // Ruleset
+        ruleset.text = Locale.GetString(
+            Ruleset.instance.isCustom ?
+            "result_panel_ruleset_custom" :
+            "result_panel_ruleset_default");
+
+        // Modifier display
+        List<string> regularSegments = new List<string>();
+        List<string> specialSegments = new List<string>();
+        Modifiers.instance.ToDisplaySegments(
+            regularSegments, specialSegments);
+        // This panel does not display "No video".
+        if (regularSegments.Count == 0)
+        {
+            regularSegments.Add(Locale.GetString(
+                "select_pattern_modifier_none"));
+        }
+        modifierDisplay.SetUp(string.Join(" / ", regularSegments));
+        specialModifierDisplay.SetUp(string.Join(" / ",
+            specialSegments));
     }
 
     public void OnSelectTrackButtonClick()

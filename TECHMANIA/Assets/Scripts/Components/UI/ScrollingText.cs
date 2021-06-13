@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectMask2D))]
 public class ScrollingText : MonoBehaviour
 {
     public enum Direction
@@ -12,6 +13,8 @@ public class ScrollingText : MonoBehaviour
         Vertical
     }
     public Direction direction;
+    [Range(0f, 1f)]
+    public float restingPosition;
 
     private RectTransform rect;
     private RectTransform innerRect;
@@ -20,23 +23,28 @@ public class ScrollingText : MonoBehaviour
 
     void OnEnable()
     {
+        SetUp();
+    }
+
+    public void SetUp()
+    {
         rect = GetComponent<RectTransform>();
         innerRect = rect.GetChild(0).GetComponent<RectTransform>();
-        TextMeshProUGUI[] allTexts = 
+        TextMeshProUGUI[] allTexts =
             GetComponentsInChildren<TextMeshProUGUI>();
 
         contentSize = 0f;
         switch (direction)
         {
             case Direction.Horizontal:
-                maskSize = rect.sizeDelta.x;
+                maskSize = rect.rect.width;
                 foreach (TextMeshProUGUI t in allTexts)
                 {
                     contentSize += t.preferredWidth;
                 }
                 break;
             case Direction.Vertical:
-                maskSize = rect.sizeDelta.y;
+                maskSize = rect.rect.height;
                 foreach (TextMeshProUGUI t in allTexts)
                 {
                     contentSize += t.preferredHeight;
@@ -44,14 +52,26 @@ public class ScrollingText : MonoBehaviour
                 break;
         }
 
+        StopAllCoroutines();
         if (contentSize > maskSize)
         {
-            StartCoroutine(Scroll());
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(Scroll());
+            }
         }
         else
         {
-            ScrollTo(direction == Direction.Horizontal ? 0.5f : 0f);
+            ScrollTo(restingPosition);
         }
+    }
+
+    // Convenience method to reset the text within, and then
+    // call SetUp.
+    public void SetUp(string text)
+    {
+        GetComponentInChildren<TextMeshProUGUI>().text = text;
+        SetUp();
     }
 
     private void ScrollTo(float t)

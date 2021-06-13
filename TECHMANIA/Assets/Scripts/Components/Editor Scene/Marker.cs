@@ -20,17 +20,10 @@ public class Marker : MonoBehaviour
         int beatInScan = beat % bps;
 
         float time = EditorContext.Pattern.PulseToTime(pulse);
-        bool negative = time < 0f;
-        time = Mathf.Abs(time);
-        int minute = Mathf.FloorToInt(time / 60f);
-        time -= minute * 60f;
-        int second = Mathf.FloorToInt(time);
-        time -= second;
-        int milliSecond = Mathf.FloorToInt(time * 1000f);
 
-        string sign = negative ? "-" : "";
         scanBeatText.text = $"{scan}-{beatInScan}";
-        timeText.text = $"{sign}{minute}:{second:D2}.{milliSecond:D3}";
+        timeText.text = UIUtils.FormatTime(time,
+            includeMillisecond: true);
     }
 
     public void SetBpmText(double bpm)

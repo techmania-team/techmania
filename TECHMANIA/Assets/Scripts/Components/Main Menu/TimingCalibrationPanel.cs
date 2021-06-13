@@ -86,8 +86,6 @@ public class TimingCalibrationPanel : MonoBehaviour
         float noteScale = GlobalResource.noteSkin.basic.scale;
         for (int i = 0; i < pulses.Length; i++)
         {
-            notes[i].sizeDelta = new Vector2
-                (laneHeight * noteScale, laneHeight * noteScale);
             float scan = PulseToFloatScan(pulses[i]);
             notes[i].anchorMin = new Vector2(
                 FloatScanToAnchorX(scan),

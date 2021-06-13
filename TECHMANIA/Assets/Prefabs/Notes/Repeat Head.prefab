@@ -222,7 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -248,7 +248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4938960492040002542}
   - component: {fileID: 7334993887986592855}
-  - component: {fileID: 885913038887205672}
+  - component: {fileID: 8276103466823886219}
   m_Layer: 5
   m_Name: Repeat Head
   m_TagString: Untagged
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153a7f1c972350145bc6be4cfb22bfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &885913038887205672
+--- !u!114 &8276103466823886219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -300,15 +300,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4938960492040002543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e152195c553e64c489b482b5a958623a, type: 3}
+  m_Script: {fileID: 11500000, guid: adeecbc31f80bc0408fb437b300feeb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   noteImage: {fileID: 1889145054254741463}
   feverOverlay: {fileID: 6953956412375015768}
   hitbox: {fileID: 5733672961990448216}
-  pathToPreviousNote: {fileID: 0}
-  curve: {fileID: 0}
-  curveEnd: {fileID: 0}
   pathToLastRepeatNote: {fileID: 8130734685249038196}
 --- !u!1001 &7308482784058417584
 PrefabInstance:

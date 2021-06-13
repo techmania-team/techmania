@@ -97,7 +97,7 @@ public class ResourceLoader : MonoBehaviour
         HashSet<string> filenames = new HashSet<string>();
         foreach (Note n in pattern.notes)
         {
-            if (n.sound != "")
+            if (n.sound != null && n.sound != "")
             {
                 filenames.Add(Path.Combine(trackFolder, n.sound));
             }
@@ -113,6 +113,7 @@ public class ResourceLoader : MonoBehaviour
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
+        Options.TemporarilyDisableVSync();
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
@@ -162,6 +163,7 @@ public class ResourceLoader : MonoBehaviour
 
         yield return null;  // Wait 1 more frame just in case
         cacheAudioCompleteCallback?.Invoke(null);
+        Options.RestoreVSync();
     }
 
     public static AudioClip GetCachedClip(string filenameWithoutFolder)
@@ -205,7 +207,7 @@ public class ResourceLoader : MonoBehaviour
             yield break;
         }
 
-        UnityWebRequest request = 
+        UnityWebRequest request =
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(fullPath), AudioType.UNKNOWN);
         yield return request.SendWebRequest();

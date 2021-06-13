@@ -15,10 +15,9 @@ public class GameSetup
             return new FileInfo(trackPath).DirectoryName;
         }
     }
+    public static PerTrackOptions trackOptions;
+
     public static Pattern pattern;
-
-    // Gameplay options
-
-    public static bool noFail;
-    public static bool autoPlay;
+    public static Pattern patternBeforeApplyingModifier;
+    public static int beginningScanInEditorPreview;
 }

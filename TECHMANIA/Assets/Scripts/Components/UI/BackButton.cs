@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class BackButton : MonoBehaviour
 {
+    [Tooltip("When transitioning to this panel, remember which " +
+        "panel we came from, and set the transition target of " +
+        "this button to that source panel.")]
+    public bool recordTransitionSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,7 +30,7 @@ public class BackButton : MonoBehaviour
             {
                 return;
             }
-            if (!GetComponent<Button>().interactable)
+            if (!GetComponent<Button>().IsInteractable())
             {
                 return;
             }

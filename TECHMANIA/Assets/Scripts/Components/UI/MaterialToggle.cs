@@ -20,6 +20,7 @@ public class MaterialToggle : MonoBehaviour,
     public Color overlayColorOff;
     [Range(0f, 1f)]
     public float opacityWhenNotInteractable;
+    public bool silent;
 
     private Toggle toggle;
     private RectTransform thumbRect;
@@ -74,7 +75,7 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnSelect(BaseEventData eventData)
     {
-        if (eventData is AxisEventData && interactable)
+        if (eventData is AxisEventData && interactable && !silent)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -83,7 +84,7 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnSubmit(BaseEventData eventData)
     {
-        if (interactable)
+        if (interactable && !silent)
         {
             MenuSfx.instance.PlayClickSound();
         }
@@ -92,7 +93,7 @@ public class MaterialToggle : MonoBehaviour,
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData)
-            && interactable)
+            && interactable && !silent)
         {
             MenuSfx.instance.PlaySelectSound();
         }
@@ -100,7 +101,7 @@ public class MaterialToggle : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (interactable)
+        if (interactable && !silent)
         {
             MenuSfx.instance.PlayClickSound();
         }

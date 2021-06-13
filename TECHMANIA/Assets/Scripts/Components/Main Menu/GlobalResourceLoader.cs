@@ -171,6 +171,7 @@ public class GlobalResourceLoader : MonoBehaviour
         UnityAction<string> progressCallback,
         UnityAction<string> completeCallback)
     {
+        Options.TemporarilyDisableVSync();
         for (int i = 0; i < spriteSheetReferences.Count; i++)
         {
             progressCallback?.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
@@ -202,5 +203,6 @@ public class GlobalResourceLoader : MonoBehaviour
             spriteSheetReferences[i].GenerateSprites();
         }
         completeCallback?.Invoke(null);
+        Options.RestoreVSync();
     }
 }

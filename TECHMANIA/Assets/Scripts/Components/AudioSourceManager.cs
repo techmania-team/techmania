@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,6 +23,42 @@ public class AudioSourceManager : MonoBehaviour
             .GetComponentsInChildren<AudioSource>();
         sfxSources = sfxContainer
             .GetComponentsInChildren<AudioSource>();
+    }
+
+    private void PrintReportOnAudioSource(string name,
+        AudioSource s)
+    {
+        if (s.clip == null)
+        {
+            Debug.Log($"name:{name} isPlaying:{s.isPlaying} time:{s.time} timeSamples:{s.timeSamples} volume:{s.volume} clip:null");
+        }
+        else
+        {
+            Debug.Log($"name:{name} isPlaying:{s.isPlaying} time:{s.time} timeSamples:{s.timeSamples} volume:{s.volume} clip.length:{s.clip?.length} clip.samples:{s.clip?.samples}");
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) &&
+            Input.GetKeyDown(KeyCode.R))
+        {
+            Debug.Log("===== Beginning of AudioSourceManager report =====");
+            PrintReportOnAudioSource("backing track", backingTrack);
+            for (int i = 0; i < playableLanes.Length; i++)
+            {
+                PrintReportOnAudioSource($"playable lane #{i}", playableLanes[i]);
+            }
+            for (int i = 0; i < hiddenLanes.Length; i++)
+            {
+                PrintReportOnAudioSource($"hidden lane #{i}", hiddenLanes[i]);
+            }
+            for (int i = 0; i < sfxSources.Length; i++)
+            {
+                PrintReportOnAudioSource($"sfx #{i}", sfxSources[i]);
+            }
+            Debug.Log("===== End of AudioSourceManager report =====");
+        }
     }
 
     private void PlaySound(AudioSource source, AudioClip clip,
@@ -124,19 +161,35 @@ public class AudioSourceManager : MonoBehaviour
         foreach (AudioSource s in hiddenLanes) s.Stop();
     }
 
+    public void SetSpeed(float speed)
+    {
+        backingTrack.pitch = speed;
+        foreach (AudioSource s in playableLanes) s.pitch = speed;
+        foreach (AudioSource s in hiddenLanes) s.pitch = speed;
+    }
+
     public bool IsAnySourcePlaying()
     {
+        Func<AudioSource, bool> SourceIsPlaying = (AudioSource s) =>
+        {
+            if (!s.isPlaying) return false;
+            // It's still unknown why but sometimes an audio source
+            // reports that it's playing when in fact it's not.
+            if (s.timeSamples == 0) return false;
+            return true;
+        };
+        if (SourceIsPlaying(backingTrack)) return true;
         foreach (AudioSource s in playableLanes)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         foreach (AudioSource s in hiddenLanes)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         foreach (AudioSource s in sfxSources)
         {
-            if (s.isPlaying) return true;
+            if (SourceIsPlaying(s)) return true;
         }
         return false;
     }
