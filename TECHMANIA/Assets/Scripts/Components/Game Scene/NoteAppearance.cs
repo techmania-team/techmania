@@ -276,6 +276,7 @@ public class NoteAppearance : MonoBehaviour
         {
             state = State.Inactive;
             UpdateState();
+            UpdateHitboxImage();
         }
     }
 
