@@ -127,6 +127,60 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 ,select_track_new_track_card_title,New,新建,新增,新しいトラック,새 음악
 ,select_track_no_track_text,TECHMANIA cannot find any track.,TECHMANIA没有找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
 ,,,,,,
+,select_pattern_panel_title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
+,select_pattern_length_label,Length,长度,長度,長さ,재생 시간
+,select_pattern_notes_label,Notes,音符数,音符數,ノート数,노트 수
+,select_pattern_radar_title,Radar,雷达,詳細,詳細,세부 지표
+,select_pattern_my_record_title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
+,select_pattern_modifier_title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
+"Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
+,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,,,,,,
+,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,音符透明度,ノート透明度,노트 이펙터
+,modifier_sidesheet_scanline_opacity_label,Scanline opacity,扫描线透明度,掃描線透明度,スキャンライン透明度,타임라인 이펙터
+,modifier_sidesheet_scan_direction_label,Scan direction,扫描方向,掃描方向,スキャン方向,스크롤 방향
+,modifier_sidesheet_note_position_label,Note position,音符位置,音符位置,ノート位置,노트 배치
+,modifier_sidesheet_scan_position_label,Scan position,扫描位置,掃描位置,スキャン位置,마디 배치
+,modifier_sidesheet_fever_label,Fever,Fever,Fever,Fever,피버
+,modifier_sidesheet_keysound_label,Keysound,按键音,按鍵音,ノート音,연주음
+,modifier_sidesheet_assist_tick_label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
+,modifier_sidesheet_appearance_title,Appearance,界面,介面,表示,화면 표시
+,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
+,modifier_sidesheet_no_video_label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
+,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,特殊選項,特殊モディファイア,기타 옵션
+,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,警告：這些選項會使成績無效,注意：このオプションを有効にするとスコアが無効になります。,주의: 아래 옵션을 사용하면 스코어를 등록할 수 없습니다.
+,modifier_sidesheet_mode_label,Mode,模式,模式,モード,모드
+,modifier_sidesheet_control_override_label,Control override,操作方式,操作方式,プレイ方式,입력 방식
+,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,掃描速度,スクロール速度,스크롤 속도
+,,,,,,
+,modifier_normal,Normal,正常,正常,ノーマル,기본
+,modifier_none,None,无,無,なし,없음
+,modifier_fade_out,Fade out,淡出,淡出,FADE OUT,FADE OUT
+,modifier_fade_out_2,Fade out 2,淡出II,淡出II,FADE OUT 2,FADE OUT 2
+,modifier_fade_in,Fade in,淡入,淡入,FADE IN,FADE IN
+,modifier_fade_in_2,Fade in 2,淡入II,淡入II,FADE IN 2,FADE IN 2
+,modifier_blink,Blink,闪烁,閃爍,BLINK,BLINK
+,modifier_blink_2,Blink 2,闪烁II,閃爍II,BLINK 2,BLINK 2
+,modifier_blind,Blind,隐藏扫描线,隱藏掃描線,BLIND,BLIND
+,modifier_right_right,Right - Right,右 - 右,右 - 右,右 - 右,오른쪽
+,modifier_left_right,Left - Right,左 - 右,左 - 右,左 - 右,역방향
+,modifier_left_left,Left - Left,左 - 左,左 - 左,左 - 左,왼쪽
+,modifier_mirror,Mirror,镜像,鏡像,MIRROR,MIRROR
+,modifier_swap,Swap,调换,調換,反転,반전
+,modifier_fever_off,Fever off,关闭Fever,關閉 Fever,Fever オフ,끄기
+,modifier_auto_fever,Auto Fever,自动Fever,自動 Fever,オート Fever,자동
+,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생
+,modifier_assist_tick,Assist tick,辅助音效,輔助音效,打撃音,수동
+,modifier_auto_assist_tick,Auto assist tick,自动辅助音效,自動輔助音效,オート打撃音,자동
+,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
+,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
+,modifier_practice,Practice,练习,練習,練習,연습 모드
+,modifier_override_to_touch,Override to Touch,强制使用触控,強制使用觸控,タッチで操作,터치
+,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
+,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드 + 마우스
+,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
+,,,,,,
 ,options_panel_title,Options,设置,設定,オプション,설정
 ,options_graphics_header,Graphics,图像,影像,グラフィック,그래픽
 ,options_resolution_label,Resolution,分辨率,解析度,解像度,화면 해상도
@@ -154,6 +208,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_select_skins_button,SELECT,选择,選擇,選択,선택
 ,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
 ,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
+,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
 ,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
@@ -241,6 +296,12 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,game_loading_text,Loading...,正在读取……,載入中......,読み込み中...,Loading...
 ,game_stage_failed_title,STAGE FAILED,请再接再厉,STAGE FAILED,STAGE FAILED,STAGE FAILED
 ,,,,,,
+,practice_mode_scan_label,Scan,扫描,掃描,スキャン,마디
+,practice_mode_loop_label,Loop,循环,循環,ループ,구간 반복
+,practice_mode_speed_label,Speed,速度,速度,速度,재생 속도
+,practice_mode_show_hitbox_label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
+,practice_mode_auto_play_label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
+,,,,,,
 ,pause_dialog_title,PAUSE,暂停,暫停,PAUSE,PAUSE
 ,pause_resume_button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
 ,pause_restart_button,RESTART,重试,再試一次,RESTART,RESTART
@@ -259,10 +320,14 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,result_panel_fever_bonus_label,Fever Bonus,Fever奖励,FEVER BONUS,FEVER BONUS,FEVER BONUS
 ,result_panel_combo_bonus_label,Combo Bonus,连击奖励,COMBO BONUS,COMBO BONUS,COMBO BONUS
 ,result_panel_total_score_label,Score,总分,SCORE,SCORE,SCORE
-,result_panel_rank_label,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
 "Shown when the score is 300,000.",result_panel_absolute_perfect_medal,ABSOLUTE PERFECT,绝对完美,ABSOLUTE PERFECT,ABSOLUTE PERFECT,ABSOLUTE PERFECT
 ,result_panel_perfect_play_medal,PERFECT PLAY,完美,PERFECT PLAY,PERFECT PLAY,PERFECT PLAY
 ,result_panel_full_combo_medal,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
+,result_panel_rank_label,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
+,result_panel_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
+,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
+,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
+,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
 ,result_panel_select_track_button,SELECT TRACK,选曲,選擇曲目,SELECT MUSIC,SELECT MUSIC
 ,result_panel_retry_button,RETRY,重试,重新開始,RETRY,RETRY
 ,,,,,,
@@ -698,69 +763,8 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-0.7 strings start here.,select_pattern_panel_title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
-,select_pattern_length_label,Length,长度,長度,長さ,재생 시간
-,select_pattern_notes_label,Notes,音符数,音符數,ノート数,노트 수
-,select_pattern_radar_title,Radar,雷达,詳細,詳細,세부 지표
-,select_pattern_my_record_title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
-,select_pattern_modifier_title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
-"Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
-,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,,,,,,
-,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
-,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,音符透明度,ノート透明度,노트 이펙터
-,modifier_sidesheet_scanline_opacity_label,Scanline opacity,扫描线透明度,掃描線透明度,スキャンライン透明度,타임라인 이펙터
-,modifier_sidesheet_scan_direction_label,Scan direction,扫描方向,掃描方向,スキャン方向,스크롤 이펙터
-,modifier_sidesheet_note_position_label,Note position,音符位置,音符位置,ノート位置,노트 배치
-,modifier_sidesheet_scan_position_label,Scan position,扫描位置,掃描位置,スキャン位置,마디 배치
-,modifier_sidesheet_fever_label,Fever,Fever,Fever,Fever,피버
-,modifier_sidesheet_keysound_label,Keysound,按键音,按鍵音,ノート音,연주음
-Added on 6/6/2021.,modifier_sidesheet_assist_tick_label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
-,modifier_sidesheet_appearance_title,Appearance,界面,介面,表示,화면 표시
-,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
-,modifier_sidesheet_no_video_label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
-,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,特殊選項,特殊モディファイア,기타 옵션
-,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,警告：這些選項會使成績無效,注意：このオプションを有効にするとスコアが無効になります。,주의: 아래 옵션을 사용하면 스코어를 등록할 수 없습니다.
-,modifier_sidesheet_mode_label,Mode,模式,模式,モード,모드
-,modifier_sidesheet_control_override_label,Control override,操作方式,操作方式,プレイ方式,입력 방식
-,modifier_sidesheet_scroll_speed_label,Scroll speed,扫描速度,掃描速度,スクロール速度,스크롤 속도
 ,,,,,,
-,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,,실시간 판정 보기
 ,,,,,,
-,modifier_normal,Normal,正常,正常,ノーマル,기본
-Added on 6/6/2021.,modifier_none,None,无,無,なし,없음
-,modifier_fade_out,Fade out,淡出,淡出,FADE OUT,FADE OUT
-,modifier_fade_out_2,Fade out 2,淡出II,淡出II,FADE OUT 2,FADE OUT 2
-,modifier_fade_in,Fade in,淡入,淡入,FADE IN,FADE IN
-,modifier_fade_in_2,Fade in 2,淡入II,淡入II,FADE IN 2,FADE IN 2
-,modifier_blink,Blink,闪烁,閃爍,BLINK,BLINK
-,modifier_blink_2,Blink 2,闪烁II,閃爍II,BLINK 2,BLINK 2
-,modifier_blind,Blind,隐藏扫描线,隱藏掃描線,BLIND,BLIND
-,modifier_right_right,Right - Right,右 - 右,右 - 右,右 - 右,오른쪽
-,modifier_left_right,Left - Right,左 - 右,左 - 右,左 - 右,역방향
-,modifier_left_left,Left - Left,左 - 左,左 - 左,左 - 左,왼쪽
-,modifier_mirror,Mirror,镜像,鏡像,MIRROR,MIRROR
-,modifier_swap,Swap,调换,調換,反転,반전
-,modifier_fever_off,Fever off,关闭Fever,關閉 Fever,Fever オフ,끄기
-,modifier_auto_fever,Auto Fever,自动Fever,自動 Fever,オート Fever,자동
-,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생
-Added on 6/6/2021.,modifier_assist_tick,Assist tick,辅助音效,輔助音效,打撃音,클릭음 수동
-Added on 6/6/2021.,modifier_auto_assist_tick,Auto assist tick,自动辅助音效,自動輔助音效,オート打撃音,클릭음 자동
-,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
-,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
-,modifier_practice,Practice,练习,練習,練習,연습 모드
-,modifier_override_to_touch,Override to Touch,强制使用触控,強制使用觸控,タッチで操作,터치
-,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
-,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드 + 마우스
-,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
 ,,,,,,
-,practice_mode_scan_label,Scan,扫描,掃描,スキャン,마디
-,practice_mode_loop_label,Loop,循环,循環,ループ,구간 반복
-,practice_mode_speed_label,Speed,速度,速度,速度,재생 속도
-,practice_mode_show_hitbox_label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
-,practice_mode_auto_play_label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
 ,,,,,,
-,result_panel_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
-,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
-,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
-,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
