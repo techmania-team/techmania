@@ -25,9 +25,12 @@ Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
 Refer to the [documentation website](https://techmania-team.github.io/techmania-docs/).
 
 ## Platform
-The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, I will not target Linux, macOS, Android or iOS/iPadOS.
+The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, we do not officially support Linux, macOS, Android or iOS/iPadOS.
 
-The game may be ported to WebGL in the future so it can be played on any web-enabled device. However there are no concrete plans to make such a port at this moment.
+## Content policy
+Per the MIT license, you are free to produce any Content with TECHMANIA, including but not limited to screenshots, videos and livestreams. Attributions are appreciated, but not required. However, please keep the following in mind:
+* If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
+* If your Content features unofficial [skins](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
 
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
