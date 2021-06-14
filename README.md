@@ -49,5 +49,7 @@ Note that the default skins are not part of the project, so you'll need to copy 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
 There are a few unofficial Android builds available:
-* This one built by MoonLight on 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
-* This one built by samnyan on 0.2: https://github.com/samnyan/techmania/releases
+* MoonLight's builds:
+  * 0.7: https://drive.google.com/file/d/11jgs4E46cm6swlt6CN4j7kkwjljSiDdj/view?usp=sharing
+  * 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
+* samnyan's build on 0.2: https://github.com/samnyan/techmania/releases
