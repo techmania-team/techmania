@@ -38,10 +38,19 @@ public class Options : OptionsBase
 
     // Appearance
 
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public bool showJudgementTally;
+    public bool showLaneDividers;
+    public BeatMarkerVisibility beatMarker;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -92,6 +101,8 @@ public class Options : OptionsBase
         showLoadingBar = true;
         showFps = false;
         showJudgementTally = false;
+        showLaneDividers = false;
+        beatMarker = BeatMarkerVisibility.Hidden;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";

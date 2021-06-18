@@ -31,6 +31,8 @@ public class OptionsPanel : MonoBehaviour
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
     public Toggle showJudgementTallyToggle;
+    public Toggle showLaneDividersToggle;
+    public TMP_Dropdown beatMarkersDropdown;
 
     [Header("Miscellaneous")]
     public TMP_Text latencyDisplay;
@@ -160,6 +162,8 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.showFps);
         showJudgementTallyToggle.SetIsOnWithoutNotify(
             Options.instance.showJudgementTally);
+        showLaneDividersToggle.SetIsOnWithoutNotify(
+            Options.instance.showLaneDividers);
 
         // Miscellaneous
 
@@ -179,6 +183,15 @@ public class OptionsPanel : MonoBehaviour
         fullscreenDropdown.SetValueWithoutNotify(
             (int)Options.instance.fullScreenMode);
         fullscreenDropdown.RefreshShownValue();
+
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            beatMarkersDropdown,
+            "options_beat_markers_hidden",
+            "options_beat_markers_show_beat_markers",
+            "options_beat_markers_show_half_beat_markers");
+        beatMarkersDropdown.SetValueWithoutNotify(
+           (int)Options.instance.beatMarker);
+        beatMarkersDropdown.RefreshShownValue();
     }
 
     #region Graphics
@@ -302,6 +315,10 @@ public class OptionsPanel : MonoBehaviour
         Options.instance.showFps = showFpsToggle.isOn;
         Options.instance.showJudgementTally =
             showJudgementTallyToggle.isOn;
+        Options.instance.showLaneDividers =
+            showLaneDividersToggle.isOn;
+        Options.instance.beatMarker = (Options.BeatMarkerVisibility)
+            beatMarkersDropdown.value;
     }
     #endregion
 }
