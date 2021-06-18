@@ -42,14 +42,12 @@ public class Game : MonoBehaviour
 
     [Header("Scans")]
     public GraphicRaycaster raycaster;
+    public ScanBackground topScanBackground;
     public Transform topScanContainer;
     public GameObject topScanTemplate;
-    public GameObject topScanEmptyTouchReceiverParent;
-    public List<RectTransform> topScanEmptyTouchReceivers;
+    public ScanBackground bottomScanBackground;
     public Transform bottomScanContainer;
     public GameObject bottomScanTemplate;
-    public GameObject bottomScanEmptyTouchReceiverParent;
-    public List<RectTransform> bottomScanEmptyTouchReceivers;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
@@ -274,18 +272,12 @@ public class Game : MonoBehaviour
             {
                 Transform child = topScanContainer.GetChild(i);
                 if (child == topScanTemplate.transform) continue;
-                if (child ==
-                    topScanEmptyTouchReceiverParent.transform) 
-                    continue;
                 Destroy(child.gameObject);
             }
             for (int i = 0; i < bottomScanContainer.childCount; i++)
             {
                 Transform child = bottomScanContainer.GetChild(i);
                 if (child == bottomScanTemplate.transform) continue;
-                if (child ==
-                    bottomScanEmptyTouchReceiverParent.transform)
-                    continue;
                 Destroy(child.gameObject);
             }
         }
@@ -427,6 +419,10 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
+        topScanBackground.Initialize(
+            Modifiers.instance.GetTopScanDirection());
+        bottomScanBackground.Initialize(
+            Modifiers.instance.GetBottomScanDirection());
 
         int offsetMs =
             GameSetup.pattern.patternMetadata.controlScheme
@@ -519,61 +515,16 @@ public class Game : MonoBehaviour
                 firstScan * PulsesPerScan);
         }
 
-        // Resize empty touch receivers to fit scan margins.
-        float laneHeightRelative =
-            (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
-        topScanEmptyTouchReceivers[0].anchorMin = new Vector2(
-            0f, 0.5f + laneHeightRelative);
-        topScanEmptyTouchReceivers[0].anchorMax = new Vector2(
-            1f, 1f);
-        topScanEmptyTouchReceivers[1].anchorMin = new Vector2(
-            0f, 0.5f);
-        topScanEmptyTouchReceivers[1].anchorMax = new Vector2(
-            1f, 0.5f + laneHeightRelative);
-        topScanEmptyTouchReceivers[2].anchorMin = new Vector2(
-            0f, 0.5f - laneHeightRelative);
-        topScanEmptyTouchReceivers[2].anchorMax = new Vector2(
-            1f, 0.5f);
-        topScanEmptyTouchReceivers[3].anchorMin = new Vector2(
-            0f, 0f);
-        topScanEmptyTouchReceivers[3].anchorMax = new Vector2(
-            1f, 0.5f - laneHeightRelative);
-        for (int i = 0; i < 4; i++)
-        {
-            bottomScanEmptyTouchReceivers[i].anchorMin =
-                topScanEmptyTouchReceivers[i].anchorMin;
-            bottomScanEmptyTouchReceivers[i].anchorMax =
-                topScanEmptyTouchReceivers[i].anchorMax;
-        }
-
         // Find last scan. Make sure it ends later than the backing
         // track and BGA, so we don't cut either short.
         CalculateEndOfPattern();
 
         // Create scan objects.
         scanObjects = new Dictionary<int, Scan>();
-        global::Scan.Direction
-            topScanDirection = global::Scan.Direction.Right,
-            bottomScanDirection = global::Scan.Direction.Left;
-        switch (Modifiers.instance.scanDirection)
-        {
-            case Modifiers.ScanDirection.Normal:
-                topScanDirection = global::Scan.Direction.Right;
-                bottomScanDirection = global::Scan.Direction.Left;
-                break;
-            case Modifiers.ScanDirection.RR:
-                topScanDirection = global::Scan.Direction.Right;
-                bottomScanDirection = global::Scan.Direction.Right;
-                break;
-            case Modifiers.ScanDirection.LR:
-                topScanDirection = global::Scan.Direction.Left;
-                bottomScanDirection = global::Scan.Direction.Right;
-                break;
-            case Modifiers.ScanDirection.LL:
-                topScanDirection = global::Scan.Direction.Left;
-                bottomScanDirection = global::Scan.Direction.Left;
-                break;
-        }
+        Scan.Direction topScanDirection = 
+            Modifiers.instance.GetTopScanDirection();
+        Scan.Direction bottomScanDirection =
+            Modifiers.instance.GetBottomScanDirection();
         for (int i = firstScan; i <= lastScan; i++)
         {
             bool isBottomScan = i % 2 == 0;

@@ -50,7 +50,7 @@ public class Options : OptionsBase
     public bool showFps;
     public bool showJudgementTally;
     public bool showLaneDividers;
-    public BeatMarkerVisibility beatMarker;
+    public BeatMarkerVisibility beatMarkers;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -102,7 +102,7 @@ public class Options : OptionsBase
         showFps = false;
         showJudgementTally = false;
         showLaneDividers = false;
-        beatMarker = BeatMarkerVisibility.Hidden;
+        beatMarkers = BeatMarkerVisibility.Hidden;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
@@ -419,7 +419,7 @@ public class Modifiers
         "modifier_half_speed"
     };
 
-    // Display
+    // Utilities
 
     // Does not add "none" segments when all options are 0; does not
     // add per-track options.
@@ -481,6 +481,36 @@ public class Modifiers
         {
             specialSegments.Add(Locale.GetString(
                 scrollSpeedDisplayKeys[(int)scrollSpeed]));
+        }
+    }
+
+    public Scan.Direction GetTopScanDirection()
+    {
+        switch (scanDirection)
+        {
+            case ScanDirection.Normal:
+            case ScanDirection.RR:
+                return Scan.Direction.Right;
+            case ScanDirection.LR:
+            case ScanDirection.LL:
+                return Scan.Direction.Left;
+            default:
+                throw new Exception();
+        }
+    }
+
+    public Scan.Direction GetBottomScanDirection()
+    {
+        switch (scanDirection)
+        {
+            case ScanDirection.Normal:
+            case ScanDirection.LL:
+                return Scan.Direction.Left;
+            case ScanDirection.LR:
+            case ScanDirection.RR:
+                return Scan.Direction.Right;
+            default:
+                throw new Exception();
         }
     }
 }

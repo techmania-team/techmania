@@ -33854,7 +33854,12 @@ PrefabInstance:
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnGraphicsOptionsUpdated
+      value: OnAppearanceOptionsChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OptionsPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606290775933, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}

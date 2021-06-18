@@ -190,7 +190,7 @@ public class OptionsPanel : MonoBehaviour
             "options_beat_markers_show_beat_markers",
             "options_beat_markers_show_half_beat_markers");
         beatMarkersDropdown.SetValueWithoutNotify(
-           (int)Options.instance.beatMarker);
+           (int)Options.instance.beatMarkers);
         beatMarkersDropdown.RefreshShownValue();
     }
 
@@ -317,7 +317,7 @@ public class OptionsPanel : MonoBehaviour
             showJudgementTallyToggle.isOn;
         Options.instance.showLaneDividers =
             showLaneDividersToggle.isOn;
-        Options.instance.beatMarker = (Options.BeatMarkerVisibility)
+        Options.instance.beatMarkers = (Options.BeatMarkerVisibility)
             beatMarkersDropdown.value;
     }
     #endregion
