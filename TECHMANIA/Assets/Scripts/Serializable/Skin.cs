@@ -159,6 +159,7 @@ public class NoteSkin : NoteSkinBase
         list.Add(repeatHoldTrail);
         list.Add(repeatHoldTrailEnd);
         list.Add(repeatPath);
+        list.Add(repeatPathEnd);
 
         return list;
     }

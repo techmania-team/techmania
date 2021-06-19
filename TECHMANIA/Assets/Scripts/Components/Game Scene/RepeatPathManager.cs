@@ -21,12 +21,25 @@ public class RepeatPathManager : MonoBehaviour
             path.localScale.y * 
                 GlobalResource.noteSkin.repeatPath.scale,
             path.localScale.z);
+
+        pathEnd.localScale = new Vector3(
+            pathEnd.localScale.x *
+                GlobalResource.noteSkin.repeatPath.scale,
+            pathEnd.localScale.y,
+            pathEnd.localScale.z);
+        Rect rect = GlobalResource.noteSkin.repeatPathEnd
+            .sprites[0].rect;
+        pathEnd.GetComponent<AspectRatioFitter>()
+            .aspectRatio = rect.width / rect.height;
     }
 
     public void UpdateSprites()
     {
         path.GetComponent<Image>().sprite =
             GlobalResource.noteSkin.repeatPath
+            .GetSpriteForFloatBeat(Game.FloatBeat);
+        pathEnd.GetComponent<Image>().sprite =
+            GlobalResource.noteSkin.repeatPathEnd
             .GetSpriteForFloatBeat(Game.FloatBeat);
     }
 
