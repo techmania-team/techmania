@@ -258,7 +258,7 @@ public class TimingCalibrationPanel : MonoBehaviour
         // The usual stuff: explosion and keysound.
         if (timeDifferenceInMs <= 200)
         {
-            foreach (SpriteSheetForVfx layer in
+            foreach (SpriteSheet layer in
                 GlobalResource.vfxSkin.basicMax)
             {
                 GameObject vfx = Instantiate(

@@ -13,6 +13,12 @@ public class SpriteSheet
     public int lastIndex;
     public bool bilinearFilter;
 
+    // Not used by all skins
+
+    public float scale;  // Relative to 1x lane height
+    public float speed;  // Relative to 60 fps
+    public bool additiveShader;
+
     [NonSerialized]  // Loaded at runtime
     public Texture2D texture;
     [NonSerialized]
@@ -25,6 +31,10 @@ public class SpriteSheet
         firstIndex = 0;
         lastIndex = 0;
         bilinearFilter = true;
+
+        scale = 1f;
+        speed = 1f;
+        additiveShader = false;
     }
 
     // Call after loading texture.
@@ -61,6 +71,7 @@ public class SpriteSheet
         }
     }
 
+    // For animations that cycle once per beat.
     public Sprite GetSpriteForFloatBeat(float beat)
     {
         if (sprites == null) return null;
@@ -69,31 +80,12 @@ public class SpriteSheet
         index = Mathf.Clamp(index, 0, sprites.Count - 1);
         return sprites[index];
     }
-}
 
-[Serializable]
-public class SpriteSheetForNote : SpriteSheet
-{
-    public float scale;  // Relative to 1x lane height
-
-    public SpriteSheetForNote() : base()
-    {
-        scale = 1f;
-    }
-}
-
-[Serializable]
-public class SpriteSheetForCombo : SpriteSheet
-{
-    public float speed;  // Relative to 60 fps
-    public SpriteSheetForCombo() : base()
-    {
-        speed = 1f;
-    }
-
+    // For animations that cycle on a fixed time. Relies on speed.
     // Returns null if the end of animation is reached.
     public Sprite GetSpriteForTime(float time, bool loop)
     {
+        if (sprites == null) return null;
         float fps = 60f * speed;
         int index = Mathf.FloorToInt(time * fps);
         if (loop)
@@ -106,22 +98,10 @@ public class SpriteSheetForCombo : SpriteSheet
 }
 
 [Serializable]
-public class SpriteSheetForVfx : SpriteSheetForCombo
-{
-    public float scale;  // Relative to 1x lane height
-    public bool additiveShader;
-
-    public SpriteSheetForVfx() : base()
-    {
-        scale = 1f;
-        additiveShader = false;
-    }
-}
-
-[Serializable]
 [FormatVersion(NoteSkin.kVersion, typeof(NoteSkin), isLatest: true)]
 public class NoteSkinBase : SerializableClass<NoteSkinBase> {}
 
+// Most sprite sheets use scale, except for the "...end"s.
 [Serializable]
 public class NoteSkin : NoteSkinBase
 {
@@ -130,25 +110,26 @@ public class NoteSkin : NoteSkinBase
 
     // Note skin's name is the folder's name.
 
-    public SpriteSheetForNote basic;
+    public SpriteSheet basic;
 
-    public SpriteSheetForNote chainHead;
-    public SpriteSheetForNote chainNode;
-    public SpriteSheetForNote chainPath;
+    public SpriteSheet chainHead;
+    public SpriteSheet chainNode;
+    public SpriteSheet chainPath;
 
-    public SpriteSheetForNote dragHead;
-    public SpriteSheetForNote dragCurve;
+    public SpriteSheet dragHead;
+    public SpriteSheet dragCurve;
 
-    public SpriteSheetForNote holdHead;
-    public SpriteSheetForNote holdTrail;
+    public SpriteSheet holdHead;
+    public SpriteSheet holdTrail;
     public SpriteSheet holdTrailEnd;
-    public SpriteSheetForNote holdOngoingTrail;
+    public SpriteSheet holdOngoingTrail;
 
-    public SpriteSheetForNote repeatHead;
-    public SpriteSheetForNote repeat;
-    public SpriteSheetForNote repeatHoldTrail;
+    public SpriteSheet repeatHead;
+    public SpriteSheet repeat;
+    public SpriteSheet repeatHoldTrail;
     public SpriteSheet repeatHoldTrailEnd;
-    public SpriteSheetForNote repeatPath;
+    public SpriteSheet repeatPath;
+    public SpriteSheet repeatPathEnd;
 
     public NoteSkin()
     {
@@ -187,6 +168,7 @@ public class NoteSkin : NoteSkinBase
 [FormatVersion(VfxSkin.kVersion, typeof(VfxSkin), isLatest: true)]
 public class VfxSkinBase : SerializableClass<VfxSkinBase> { }
 
+// All sprite sheets use scale, speed and additiveShader.
 [Serializable]
 public class VfxSkin : VfxSkinBase
 {
@@ -198,24 +180,24 @@ public class VfxSkin : VfxSkinBase
     // layers of sprite sheets, each element in List corresponding
     // to one layer.
 
-    public SpriteSheetForVfx feverOverlay;
+    public SpriteSheet feverOverlay;
 
-    public List<SpriteSheetForVfx> basicMax;
-    public List<SpriteSheetForVfx> basicCool;
-    public List<SpriteSheetForVfx> basicGood;
+    public List<SpriteSheet> basicMax;
+    public List<SpriteSheet> basicCool;
+    public List<SpriteSheet> basicGood;
 
-    public List<SpriteSheetForVfx> dragOngoing;
-    public List<SpriteSheetForVfx> dragComplete;
+    public List<SpriteSheet> dragOngoing;
+    public List<SpriteSheet> dragComplete;
 
-    public List<SpriteSheetForVfx> holdOngoingHead;
-    public List<SpriteSheetForVfx> holdOngoingTrail;
-    public List<SpriteSheetForVfx> holdComplete;
+    public List<SpriteSheet> holdOngoingHead;
+    public List<SpriteSheet> holdOngoingTrail;
+    public List<SpriteSheet> holdComplete;
 
-    public List<SpriteSheetForVfx> repeatHead;
-    public List<SpriteSheetForVfx> repeatNote;
-    public List<SpriteSheetForVfx> repeatHoldOngoingHead;
-    public List<SpriteSheetForVfx> repeatHoldOngoingTrail;
-    public List<SpriteSheetForVfx> repeatHoldComplete;
+    public List<SpriteSheet> repeatHead;
+    public List<SpriteSheet> repeatNote;
+    public List<SpriteSheet> repeatHoldOngoingHead;
+    public List<SpriteSheet> repeatHoldOngoingTrail;
+    public List<SpriteSheet> repeatHoldComplete;
 
     public VfxSkin()
     {
@@ -253,6 +235,7 @@ public class VfxSkin : VfxSkinBase
 [FormatVersion(ComboSkin.kVersion, typeof(ComboSkin), isLatest: true)]
 public class ComboSkinBase : SerializableClass<ComboSkinBase> { }
 
+// All sprite sheets use speed.
 [Serializable]
 public class ComboSkin : ComboSkinBase
 {
@@ -265,19 +248,19 @@ public class ComboSkin : ComboSkinBase
     public float height;  // In pixels
     public float spaceBetweenJudgementAndCombo;  // In pixels
 
-    public SpriteSheetForCombo feverMaxJudgement;
-    public SpriteSheetForCombo rainbowMaxJudgement;
-    public SpriteSheetForCombo maxJudgement;
-    public SpriteSheetForCombo coolJudgement;
-    public SpriteSheetForCombo goodJudgement;
-    public SpriteSheetForCombo missJudgement;
-    public SpriteSheetForCombo breakJudgement;
+    public SpriteSheet feverMaxJudgement;
+    public SpriteSheet rainbowMaxJudgement;
+    public SpriteSheet maxJudgement;
+    public SpriteSheet coolJudgement;
+    public SpriteSheet goodJudgement;
+    public SpriteSheet missJudgement;
+    public SpriteSheet breakJudgement;
 
-    public List<SpriteSheetForCombo> feverMaxDigits;
-    public List<SpriteSheetForCombo> rainbowMaxDigits;
-    public List<SpriteSheetForCombo> maxDigits;
-    public List<SpriteSheetForCombo> coolDigits;
-    public List<SpriteSheetForCombo> goodDigits;
+    public List<SpriteSheet> feverMaxDigits;
+    public List<SpriteSheet> rainbowMaxDigits;
+    public List<SpriteSheet> maxDigits;
+    public List<SpriteSheet> coolDigits;
+    public List<SpriteSheet> goodDigits;
 
     public ComboSkin()
     {
@@ -304,4 +287,39 @@ public class ComboSkin : ComboSkinBase
 
         return list;
     }
+}
+
+[Serializable]
+[FormatVersion(GameUISkin.kVersion, typeof(GameUISkin),
+    isLatest: true)]
+public class GameUISkinBase : SerializableClass<GameUISkinBase> { }
+
+[Serializable]
+public class GameUISkin : GameUISkinBase
+{
+    public const string kVersion = "1";
+    public string author;
+
+    // Scanline animations play one cycle per beat.
+    public SpriteSheet scanline;
+    public SpriteSheet autoPlayScanline;
+
+    // Plays through the last 3 beats of every scan (or last 3
+    // half-beats or quarter-beats, if bps is low).
+    // Background is flipped for right-to-left scans, number is not.
+    // These two sprite sheets use additiveShader.
+    public SpriteSheet scanCountdownBackground;
+    public SpriteSheet scanCountdownNumbers;
+
+    // Uses scale, speed and additiveShader.
+    public SpriteSheet touchFeedback;
+    // Scaled to fill the entire lane. Uses speed and additiveShader.
+    public SpriteSheet keystrokeFeedback;
+
+    // Uses scale.
+    public SpriteSheet approachOverlay;
+
+    public string feverSound;
+    [NonSerialized]
+    public AudioClip feverSoundClip;
 }

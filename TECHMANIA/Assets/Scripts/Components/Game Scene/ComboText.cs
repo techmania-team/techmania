@@ -15,8 +15,8 @@ public class ComboText : MonoBehaviour
 
     private Transform noteToFollow;
 
-    private SpriteSheetForCombo judgementSpriteSheet;
-    private List<SpriteSheetForCombo> comboDigitSpriteSheet;
+    private SpriteSheet judgementSpriteSheet;
+    private List<SpriteSheet> comboDigitSpriteSheet;
     private float startTime;
 
     // Start is called before the first frame update
@@ -27,7 +27,7 @@ public class ComboText : MonoBehaviour
 
         noteToFollow = null;
         judgementSpriteSheet = null;
-        comboDigitSpriteSheet = new List<SpriteSheetForCombo>();
+        comboDigitSpriteSheet = new List<SpriteSheet>();
         foreach (Image i in comboDigits)
         {
             comboDigitSpriteSheet.Add(null);
@@ -77,7 +77,7 @@ public class ComboText : MonoBehaviour
 
         // Draw judgement.
 
-        List<SpriteSheetForCombo> comboDigitSpriteSheetList = null;
+        List<SpriteSheet> comboDigitSpriteSheetList = null;
         if (Game.feverState == Game.FeverState.Active &&
             (judgement == Judgement.RainbowMax ||
              judgement == Judgement.Max))
