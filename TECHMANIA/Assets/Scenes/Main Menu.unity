@@ -3200,6 +3200,7 @@ GameObject:
   - component: {fileID: 160241026}
   - component: {fileID: 160241028}
   - component: {fileID: 160241027}
+  - component: {fileID: 160241029}
   m_Layer: 5
   m_Name: Scanline Preview
   m_TagString: Untagged
@@ -3264,6 +3265,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160241025}
   m_CullTransparentMesh: 1
+--- !u!114 &160241029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160241025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 2
+  m_AspectRatio: 1
 --- !u!1 &161797599
 GameObject:
   m_ObjectHideFlags: 0
