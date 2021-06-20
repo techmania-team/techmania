@@ -197,22 +197,22 @@ public class HoldTrailManager : MonoBehaviour
         if (noteType == NoteType.Hold)
         {
             durationTrailSprite = GlobalResource.noteSkin.holdTrail
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+                .GetSpriteAtFloatIndex(Game.FloatBeat);
             durationTrailEndSprite = GlobalResource.noteSkin
-                .holdTrailEnd.GetSpriteForFloatBeat(
+                .holdTrailEnd.GetSpriteAtFloatIndex(
                 Game.FloatBeat);
             ongoingTrailSprite = GlobalResource.noteSkin
-                .holdOngoingTrail.GetSpriteForFloatBeat(
+                .holdOngoingTrail.GetSpriteAtFloatIndex(
                 Game.FloatBeat);
         }
         else
         {
             durationTrailSprite = GlobalResource.noteSkin
-                .repeatHoldTrail.GetSpriteForFloatBeat(
+                .repeatHoldTrail.GetSpriteAtFloatIndex(
                 Game.FloatBeat);
             durationTrailEndSprite = 
                 GlobalResource.noteSkin.repeatHoldTrailEnd
-                .GetSpriteForFloatBeat(Game.FloatBeat);
+                .GetSpriteAtFloatIndex(Game.FloatBeat);
         }
 
         durationTrail.GetComponent<Image>().sprite =

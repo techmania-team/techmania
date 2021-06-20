@@ -71,12 +71,14 @@ public class SpriteSheet
         }
     }
 
-    // For animations that cycle once per beat.
-    public Sprite GetSpriteForFloatBeat(float beat)
+    // For animations that cycle once per beat/scan, pass in
+    // the float beat/scan number.
+    // Integer part of the input number is removed.
+    public Sprite GetSpriteAtFloatIndex(float floatIndex)
     {
         if (sprites == null) return null;
-        beat = beat - Mathf.Floor(beat);
-        int index = Mathf.FloorToInt(beat * sprites.Count);
+        floatIndex = floatIndex - Mathf.Floor(floatIndex);
+        int index = Mathf.FloorToInt(floatIndex * sprites.Count);
         index = Mathf.Clamp(index, 0, sprites.Count - 1);
         return sprites[index];
     }

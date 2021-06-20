@@ -93,7 +93,7 @@ public class RepeatHeadAppearanceBase : NoteAppearance
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.repeatHead
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
         GetComponent<RepeatPathManager>().UpdateSprites();
     }
 

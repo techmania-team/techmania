@@ -151,7 +151,7 @@ public class TimingCalibrationPanel : MonoBehaviour
         // Animate notes.
 
         Sprite noteSprite = GlobalResource.noteSkin.basic.
-            GetSpriteForFloatBeat(beat);
+            GetSpriteAtFloatIndex(beat);
         foreach (RectTransform r in notes)
         {
             r.GetComponent<NoteAppearance>().noteImage.sprite = 

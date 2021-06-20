@@ -114,10 +114,11 @@ public class SelectSkinPanel : MonoBehaviour
                 beat * 250f - 500f,
                 scanlineRect.anchoredPosition.y);
 
-            scanlinePreview.sprite = GlobalResource.gameUiSkin
-                .scanline.GetSpriteForFloatBeat(beat);
+            UIUtils.SetSpriteAndAspectRatio(scanlinePreview,
+                GlobalResource.gameUiSkin
+                .scanline.GetSpriteAtFloatIndex(beat * 0.25f));
             notePreview.sprite = GlobalResource.noteSkin.basic.
-                GetSpriteForFloatBeat(beat);
+                GetSpriteAtFloatIndex(beat);
             if (resolveNote)
             {
                 // VFX

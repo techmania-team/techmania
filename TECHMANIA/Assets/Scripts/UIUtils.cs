@@ -283,4 +283,12 @@ public class UIUtils
                 Locale.GetString(key)));
         }
     }
+
+    public static void SetSpriteAndAspectRatio(Image image,
+        Sprite sprite)
+    {
+        image.sprite = sprite;
+        image.GetComponent<AspectRatioFitter>().aspectRatio =
+            sprite.rect.width / sprite.rect.height;
+    }
 }

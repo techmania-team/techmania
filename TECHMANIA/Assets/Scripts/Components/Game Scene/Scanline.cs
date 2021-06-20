@@ -2,20 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Scanline : MonoBehaviour
 {
     [HideInInspector]
     public int scanNumber;
-    public GameObject autoPlayIndicator;
 
+    private Image image;
     private Scan scanRef;
-    private CanvasGroup canvasGroup;
 
     public void Initialize(Scan scanRef, float height)
     {
+        image = GetComponent<Image>();
         this.scanRef = scanRef;
-        canvasGroup = GetComponent<CanvasGroup>();
 
         RectTransform rect = GetComponent<RectTransform>();
         rect.pivot = new Vector2(0.5f, 0f);
@@ -31,10 +31,13 @@ public class Scanline : MonoBehaviour
         GetComponent<RectTransform>().anchoredPosition =
             new Vector2(x, 0f);
 
-        if (autoPlayIndicator.activeSelf != Game.autoPlay)
-        {
-            autoPlayIndicator.SetActive(Game.autoPlay);
-        }
+        SpriteSheet scanlineSpriteSheet =
+            Game.autoPlay ?
+            GlobalResource.gameUiSkin.autoPlayScanline :
+            GlobalResource.gameUiSkin.scanline;
+        UIUtils.SetSpriteAndAspectRatio(image,
+            scanlineSpriteSheet.GetSpriteAtFloatIndex(
+            Game.FloatScan));
 
         float alpha;
         switch (Modifiers.instance.scanlineOpacity)
@@ -87,6 +90,7 @@ public class Scanline : MonoBehaviour
                 }
                 break;
         }
-        canvasGroup.alpha = Mathf.SmoothStep(0f, 1f, alpha);
+        alpha = Mathf.SmoothStep(0f, 1f, alpha);
+        image.color = new Color(1f, 1f, 1f, alpha);
     }
 }

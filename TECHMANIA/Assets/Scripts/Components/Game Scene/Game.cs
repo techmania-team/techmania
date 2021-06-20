@@ -158,6 +158,7 @@ public class Game : MonoBehaviour
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
     public static float FloatBeat { get; private set; }
+    public static float FloatScan { get; private set; }
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private float endOfPatternBaseTime;
@@ -1099,8 +1100,9 @@ public class Game : MonoBehaviour
             + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
+        FloatScan = FloatPulse / PulsesPerScan;
         int newPulse = Mathf.FloorToInt(FloatPulse);
-        int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
+        int newScan = Mathf.FloorToInt(FloatScan);
 
         // Play backing track if base time hits 0.
         if (oldBaseTime < 0f && BaseTime >= 0f &&
@@ -1527,6 +1529,7 @@ public class Game : MonoBehaviour
         // Set timer.
         Scan = scan;
         FloatBeat = Scan * GameSetup.pattern.patternMetadata.bps;
+        FloatScan = Scan;
         Pulse = PulsesPerScan * Scan;
         FloatPulse = Pulse;
         BaseTime = GameSetup.pattern.PulseToTime(Pulse);

@@ -67,9 +67,9 @@ public class DragNoteAppearance : NoteAppearance,
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.dragHead
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
         curve.sprite = GlobalResource.noteSkin.dragCurve
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 
     #region Curve

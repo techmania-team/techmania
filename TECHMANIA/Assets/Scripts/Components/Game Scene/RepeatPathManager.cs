@@ -37,10 +37,10 @@ public class RepeatPathManager : MonoBehaviour
     {
         path.GetComponent<Image>().sprite =
             GlobalResource.noteSkin.repeatPath
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
         pathEnd.GetComponent<Image>().sprite =
             GlobalResource.noteSkin.repeatPathEnd
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 
     public void SetWidth(float width, bool rightToLeft)

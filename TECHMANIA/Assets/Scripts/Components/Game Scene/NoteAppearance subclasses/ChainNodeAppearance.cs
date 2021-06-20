@@ -42,10 +42,10 @@ public class ChainNodeAppearance : ChainAppearanceBase
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.chainNode
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
         pathToPreviousNote.GetComponent<Image>().sprite =
             GlobalResource.noteSkin.chainPath
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 
     protected override float GetHitboxWidth()
