@@ -75,7 +75,7 @@ public class OptionsPanel : MonoBehaviour
             }
         }
 
-        if (resolutionIndex == -1)
+        if (resolutionIndex == -1 && resolutions.Count > 0)
         {
             // Restore default resolution.
             resolutionIndex = resolutions.Count - 1;
