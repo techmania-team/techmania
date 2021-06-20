@@ -136,17 +136,12 @@ public class Options : OptionsBase
 
     public void ApplyGraphicSettings()
     {
-#if !UNITY_ANDROID && !UNITY_IOS
+#if !UNITY_ANDROID
         // Setting resolution on Android causes the graphics to
         // be stretched in the wrong direction.
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
 #endif
-
-#if !UNITY_IOS
         QualitySettings.vSyncCount = vSync ? 1 : 0;
-#else
-        Application.targetFrameRate = 120;
-#endif
     }
 
     // Used for loading stuff when limited to 1 frame per asset.

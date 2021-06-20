@@ -54,43 +54,37 @@ public class OptionsPanel : MonoBehaviour
         instance.ApplyVolume();
     }
 
-private void LoadOrCreateOptions()
-{
-    Options.RefreshInstance();
-
-#if UNITY_IOS
-    Options.instance.width = Screen.width;
-    Options.instance.height = Screen.height;
-    Options.instance.refreshRate = 120;
-#else
-    // Find all resolutions, as well as resolutionIndex.
-    resolutions = new List<Resolution>();
-    resolutionIndex = -1;
-    for (int i = 0; i < Screen.resolutions.Length; i++)
+    private void LoadOrCreateOptions()
     {
-        Resolution r = Screen.resolutions[i];
-        resolutions.Add(r);
-        if (r.width == Options.instance.width &&
-            r.height == Options.instance.height &&
-            r.refreshRate == Options.instance.refreshRate)
+        Options.RefreshInstance();
+
+        // Find all resolutions, as well as resolutionIndex.
+        resolutions = new List<Resolution>();
+        resolutionIndex = -1;
+        for (int i = 0; i < Screen.resolutions.Length; i++)
         {
-            resolutionIndex = i;
+            Resolution r = Screen.resolutions[i];
+            resolutions.Add(r);
+            if (r.width == Options.instance.width &&
+                r.height == Options.instance.height &&
+                r.refreshRate == Options.instance.refreshRate)
+            {
+                resolutionIndex = i;
+            }
+        }
+
+        if (resolutionIndex == -1)
+        {
+            // Restore default resolution.
+            resolutionIndex = resolutions.Count - 1;
+            Options.instance.width =
+                resolutions[resolutionIndex].width;
+            Options.instance.height =
+                resolutions[resolutionIndex].height;
+            Options.instance.refreshRate =
+                resolutions[resolutionIndex].refreshRate;
         }
     }
-
-    if (resolutionIndex == -1)
-    {
-        // Restore default resolution.
-        resolutionIndex = resolutions.Count - 1;
-        Options.instance.width =
-            resolutions[resolutionIndex].width;
-        Options.instance.height =
-            resolutions[resolutionIndex].height;
-        Options.instance.refreshRate =
-            resolutions[resolutionIndex].refreshRate;
-    }
-#endif
-}
 
     private void OnEnable()
     {
