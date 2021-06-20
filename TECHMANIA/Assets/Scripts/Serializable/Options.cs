@@ -136,12 +136,21 @@ public class Options : OptionsBase
 
     public void ApplyGraphicSettings()
     {
-#if !UNITY_ANDROID
+#if !UNITY_ANDROID && !UNITY_IOS
         // Setting resolution on Android causes the graphics to
         // be stretched in the wrong direction.
+        //
+        // Resolution is not supported at all on iOS.
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
 #endif
+
+#if UNITY_IOS
+        // iOS ignores VSync, and caps the FPS at 30 by default.
+        Application.targetFrameRate =   
+            Screen.currentResolution.refreshRate;
+#else
         QualitySettings.vSyncCount = vSync ? 1 : 0;
+#endif
     }
 
     // Used for loading stuff when limited to 1 frame per asset.
@@ -155,7 +164,7 @@ public class Options : OptionsBase
         QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
     }
 
-    #region Instance
+#region Instance
     public static Options instance { get; private set; }
     private static Options backupInstance;
     public static void RefreshInstance()
@@ -180,9 +189,9 @@ public class Options : OptionsBase
     {
         instance = backupInstance;
     }
-    #endregion
+#endregion
 
-    #region Per-track options
+#region Per-track options
     public PerTrackOptions GetPerTrackOptions(Track t)
     {
         string guid = t.trackMetadata.guid;
@@ -195,7 +204,7 @@ public class Options : OptionsBase
         perTrackOptions.Add(newOptions);  // Not written to disk yet.
         return newOptions;
     }
-    #endregion
+#endregion
 }
 
 [Serializable]
