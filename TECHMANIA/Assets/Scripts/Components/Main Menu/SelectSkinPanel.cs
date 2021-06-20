@@ -17,6 +17,7 @@ public class SelectSkinPanel : MonoBehaviour
     public TMP_Dropdown gameUiSkinDropdown;
     public Toggle reloadSkinsToggle;
 
+    public Image scanlinePreview;
     public Image notePreview;
     public GameObject vfxPrefab;
     public Transform vfxContainer;
@@ -104,8 +105,17 @@ public class SelectSkinPanel : MonoBehaviour
         if (showPreview &&
             GlobalResource.noteSkin != null &&
             GlobalResource.vfxSkin != null &&
-            GlobalResource.comboSkin != null)
+            GlobalResource.comboSkin != null &&
+            GlobalResource.gameUiSkin != null)
         {
+            RectTransform scanlineRect = scanlinePreview
+                .GetComponent<RectTransform>();
+            scanlineRect.anchoredPosition = new Vector2(
+                beat * 250f - 500f,
+                scanlineRect.anchoredPosition.y);
+
+            scanlinePreview.sprite = GlobalResource.gameUiSkin
+                .scanline.GetSpriteForFloatBeat(beat);
             notePreview.sprite = GlobalResource.noteSkin.basic.
                 GetSpriteForFloatBeat(beat);
             if (resolveNote)
@@ -138,6 +148,7 @@ public class SelectSkinPanel : MonoBehaviour
                 comboPreview.Show(null, Judgement.RainbowMax);
             }
 
+            scanlinePreview.color = Color.white;
             if (noteVisible)
             {
                 notePreview.color = Color.white;
@@ -149,6 +160,7 @@ public class SelectSkinPanel : MonoBehaviour
         }
         else
         {
+            scanlinePreview.color = Color.clear;
             notePreview.color = Color.clear;
         }
 
