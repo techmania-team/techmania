@@ -14,6 +14,7 @@ public class SelectSkinPanel : MonoBehaviour
     public TMP_Dropdown noteSkinDropdown;
     public TMP_Dropdown vfxSkinDropdown;
     public TMP_Dropdown comboSkinDropdown;
+    public TMP_Dropdown gameUiSkinDropdown;
     public Toggle reloadSkinsToggle;
 
     public Image notePreview;
@@ -71,7 +72,11 @@ public class SelectSkinPanel : MonoBehaviour
         InitializeDropdown(vfxSkinDropdown,
             Paths.GetVfxSkinRootFolder(), Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
-            Paths.GetComboSkinRootFolder(), Options.instance.comboSkin);
+            Paths.GetComboSkinRootFolder(), 
+            Options.instance.comboSkin);
+        InitializeDropdown(gameUiSkinDropdown,
+            Paths.GetGameUiSkinRootFolder(),
+            Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
 
@@ -177,6 +182,15 @@ public class SelectSkinPanel : MonoBehaviour
             completeCallback: OnSkinLoaded);
     }
 
+    public void OnGameUiSkinChanged()
+    {
+        UIToMemory();
+
+        PrepareToLoadSkin();
+        resourceLoader.LoadGameUiSkin(progressCallback: null,
+            completeCallback: OnSkinLoaded);
+    }
+
     public void OnSkinLoaded(string error)
     {
         if (error != null)
@@ -189,6 +203,7 @@ public class SelectSkinPanel : MonoBehaviour
         noteSkinDropdown.interactable = true;
         vfxSkinDropdown.interactable = true;
         comboSkinDropdown.interactable = true;
+        gameUiSkinDropdown.interactable = true;
     }
 
     private void PrepareToLoadSkin()
@@ -200,6 +215,7 @@ public class SelectSkinPanel : MonoBehaviour
         noteSkinDropdown.interactable = false;
         vfxSkinDropdown.interactable = false;
         comboSkinDropdown.interactable = false;
+        gameUiSkinDropdown.interactable = false;
 
         // VFX preview
         if (vfxInstances != null)
@@ -247,6 +263,8 @@ public class SelectSkinPanel : MonoBehaviour
             vfxSkinDropdown.value].text;
         Options.instance.comboSkin = comboSkinDropdown.options[
             comboSkinDropdown.value].text;
+        Options.instance.gameUiSkin = gameUiSkinDropdown.options[
+            gameUiSkinDropdown.value].text;
         Options.instance.reloadSkinsWhenLoadingPattern =
             reloadSkinsToggle.isOn;
     }

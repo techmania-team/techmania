@@ -313,14 +313,25 @@ public class GameUISkin : GameUISkinBase
     public SpriteSheet scanCountdownNumbers;
 
     // Uses scale, speed and additiveShader.
-    public SpriteSheet touchFeedback;
+    public SpriteSheet touchClickFeedback;
     // Scaled to fill the entire lane. Uses speed and additiveShader.
     public SpriteSheet keystrokeFeedback;
 
     // Uses scale.
     public SpriteSheet approachOverlay;
 
-    public string feverSound;
-    [NonSerialized]
-    public AudioClip feverSoundClip;
+    public List<SpriteSheet> GetReferenceToAllSpriteSheets()
+    {
+        List<SpriteSheet> list = new List<SpriteSheet>();
+
+        list.Add(scanline);
+        list.Add(autoPlayScanline);
+        list.Add(scanCountdownBackground);
+        list.Add(scanCountdownNumbers);
+        list.Add(touchClickFeedback);
+        list.Add(keystrokeFeedback);
+        list.Add(approachOverlay);
+
+        return list;
+    }
 }

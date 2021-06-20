@@ -61,6 +61,10 @@ public class GlobalResourceLoader : MonoBehaviour
         LoadComboSkin(progressCallback, completeCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
+        oneSkinLoaded = false;
+        LoadGameUiSkin(progressCallback, completeCallback);
+        yield return new WaitUntil(() => oneSkinLoaded);
+
         yield return null;
         if (lastError == null)
         {
@@ -160,6 +164,35 @@ public class GlobalResourceLoader : MonoBehaviour
         StartCoroutine(LoadSkin(comboSkinFolder,
             spriteSheets,
             Locale.GetString("resource_loader_loading_combo_skin"),
+            progressCallback,
+            completeCallback));
+    }
+
+    public void LoadGameUiSkin(UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
+    {
+        string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
+            Options.instance.gameUiSkin);
+        string gameUiSkinFilename = Path.Combine(
+            gameUiSkinFolder, Paths.kSkinFilename);
+        try
+        {
+            GlobalResource.gameUiSkin = GameUISkin.LoadFromFile(
+                gameUiSkinFilename) as GameUISkin;
+        }
+        catch (Exception ex)
+        {
+            completeCallback?.Invoke(Locale.GetStringAndFormat(
+                "resource_loader_game_ui_skin_error_format",
+                ex.Message));
+            return;
+        }
+
+        List<SpriteSheet> spriteSheets = GlobalResource.gameUiSkin
+            .GetReferenceToAllSpriteSheets();
+        StartCoroutine(LoadSkin(gameUiSkinFolder,
+            spriteSheets,
+            Locale.GetString("resource_loader_loading_game_ui_skin"),
             progressCallback,
             completeCallback));
     }

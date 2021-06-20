@@ -72,6 +72,16 @@ public static class Paths
     {
         return Path.Combine(GetComboSkinRootFolder(), name);
     }
+
+    public static string GetGameUiSkinRootFolder()
+    {
+        return Path.Combine(GetSkinFolder(), "Game UI");
+    }
+
+    public static string GetGameUiSkinFolder(string name)
+    {
+        return Path.Combine(GetGameUiSkinRootFolder(), name);
+    }
     #endregion
 
     #region Things in document folder

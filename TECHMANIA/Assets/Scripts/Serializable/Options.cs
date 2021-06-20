@@ -54,6 +54,7 @@ public class Options : OptionsBase
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
+    public string gameUiSkin;
     public bool reloadSkinsWhenLoadingPattern;
 
     // Timing
@@ -106,6 +107,7 @@ public class Options : OptionsBase
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
+        gameUiSkin = "Default";
         reloadSkinsWhenLoadingPattern = false;
 
         touchOffsetMs = 0;
