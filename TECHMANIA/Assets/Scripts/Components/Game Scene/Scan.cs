@@ -18,6 +18,7 @@ public class Scan : MonoBehaviour
 
     public Image countdownBackground;
     public Image countdownNumber;
+    public Material additiveMaterial;
 
     public const float kSpaceBeforeScan = 0.15f;
     public const float kSpaceAfterScan = 0.1f;
@@ -338,6 +339,18 @@ public class Scan : MonoBehaviour
                 numberRect.anchoredPosition = new Vector2(
                     numberWidth * 0.5f, 0f);
                 break;
+        }
+
+        // Additive shader.
+        if (GlobalResource.gameUiSkin.scanCountdownBackground
+            .additiveShader)
+        {
+            countdownBackground.material = additiveMaterial;
+        }
+        if (GlobalResource.gameUiSkin.scanCountdownNumbers
+            .additiveShader)
+        {
+            countdownNumber.material = additiveMaterial;
         }
 
         // When do we start the countdown?
