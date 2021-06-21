@@ -16,6 +16,9 @@ public class Scan : MonoBehaviour
     [HideInInspector]
     public int scanNumber;
 
+    public Image countdownBackground;
+    public Image countdownNumber;
+
     public const float kSpaceBeforeScan = 0.15f;
     public const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
@@ -58,6 +61,8 @@ public class Scan : MonoBehaviour
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
         scanline.Initialize(this, scanHeight);
+
+        InitializeCountdown();
     }
 
     public NoteObject SpawnNoteObject(GameObject prefab, Note n, 
@@ -275,6 +280,112 @@ public class Scan : MonoBehaviour
     {
         return scanHeight * (1f - Ruleset.instance.scanMargin)
             - (lane + 0.5f) * laneHeight;
+    }
+    #endregion
+
+    private void Start()
+    {
+        countdownBackground.color = Color.clear;
+        countdownNumber.color = Color.clear;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        UpdateCountdown();
+    }
+
+    #region Countdown
+    private float floatScanToStartCountdown;
+    private void InitializeCountdown()
+    {
+        RectTransform backgroundRect = countdownBackground
+            .GetComponent<RectTransform>();
+        RectTransform numberRect = countdownNumber
+            .GetComponent<RectTransform>();
+
+        Rect backgroundSize = GlobalResource.gameUiSkin
+            .scanCountdownBackground.sprites[0].rect;
+        Rect numberSize = GlobalResource.gameUiSkin
+            .scanCountdownNumbers.sprites[0].rect;
+        float scanHeight = GetComponent<RectTransform>().rect.height;
+        float backgroundWidth = scanHeight *
+            backgroundSize.width / backgroundSize.height;
+        float numberWidth = scanHeight *
+            numberSize.width / numberSize.height;
+
+        switch (direction)
+        {
+            case Direction.Left:
+                backgroundRect.anchorMin = new Vector2(1f, 0f);
+                backgroundRect.anchorMax = new Vector2(1f, 1f);
+                backgroundRect.anchoredPosition = new Vector2(
+                    -backgroundWidth * 0.5f, 0f);
+                backgroundRect.localScale = new Vector3(-1f, 1f, 1f);
+                numberRect.anchorMin = new Vector2(1f, 0f);
+                numberRect.anchorMax = new Vector2(1f, 1f);
+                numberRect.anchoredPosition = new Vector2(
+                    -numberWidth * 0.5f, 0f);
+                break;
+            case Direction.Right:
+                backgroundRect.anchorMin = new Vector2(0f, 0f);
+                backgroundRect.anchorMax = new Vector2(0f, 1f);
+                backgroundRect.anchoredPosition = new Vector2(
+                    backgroundWidth * 0.5f, 0f);
+                backgroundRect.localScale = new Vector3(1f, 1f, 1f);
+                numberRect.anchorMin = new Vector2(0f, 0f);
+                numberRect.anchorMax = new Vector2(0f, 1f);
+                numberRect.anchoredPosition = new Vector2(
+                    numberWidth * 0.5f, 0f);
+                break;
+        }
+
+        // When do we start the countdown?
+        int bps = GameSetup.pattern.patternMetadata.bps;
+        float durationBeats;
+        if (bps >= 3)
+        {
+            // Count down the last 3 beats.
+            durationBeats = 3f;
+        }
+        else if (bps >= 2)
+        {
+            // Count down the last 3 half-beats.
+            durationBeats = 1.5f;
+        }
+        else
+        {
+            // Count down the last 3 quarter-beats.
+            durationBeats = 0.75f;
+        }
+        float durationScans = durationBeats / bps;
+        floatScanToStartCountdown = scanNumber - durationScans;
+    }
+
+    private void UpdateCountdown()
+    {
+        if (Game.FloatScan < floatScanToStartCountdown ||
+            Game.FloatScan > scanNumber)
+        {
+            countdownBackground.color = Color.clear;
+            countdownNumber.color = Color.clear;
+            return;
+        }
+
+        countdownBackground.color = Color.white;
+        countdownNumber.color = Color.white;
+        float progress = Mathf.InverseLerp(
+            floatScanToStartCountdown,
+            scanNumber,
+            Game.FloatScan);
+        UIUtils.SetSpriteAndAspectRatio(
+            countdownBackground,
+            GlobalResource.gameUiSkin.scanCountdownBackground
+            .GetSpriteAtFloatIndex(progress));
+        UIUtils.SetSpriteAndAspectRatio(
+            countdownNumber,
+            GlobalResource.gameUiSkin.scanCountdownNumbers
+            .GetSpriteAtFloatIndex(progress));
     }
     #endregion
 }
