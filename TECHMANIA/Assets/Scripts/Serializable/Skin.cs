@@ -48,6 +48,7 @@ public class SpriteSheet
         }
         texture.filterMode = bilinearFilter ? FilterMode.Bilinear :
             FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
         sprites = new List<Sprite>();
         float spriteWidth = (float)texture.width / columns;
         float spriteHeight = (float)texture.height / rows;
