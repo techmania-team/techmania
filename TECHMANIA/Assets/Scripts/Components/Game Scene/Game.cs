@@ -349,6 +349,10 @@ public class Game : MonoBehaviour
             globalResourceLoader.LoadComboSkin(null,
                 loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            globalResourceLoader.LoadGameUiSkin(null, 
+                loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
         }
 
         // Step 3: load backing track, if any.
