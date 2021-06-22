@@ -11,6 +11,7 @@ public class SpriteSheet
     public int columns;
     public int firstIndex;
     public int lastIndex;
+    public int padding;
     public bool bilinearFilter;
 
     // Not used by all skins
@@ -30,6 +31,7 @@ public class SpriteSheet
         columns = 1;
         firstIndex = 0;
         lastIndex = 0;
+        padding = 0;
         bilinearFilter = true;
 
         scale = 1f;
@@ -57,10 +59,10 @@ public class SpriteSheet
             int inverseRow = rows - 1 - row;
             int column = i % columns;
             Sprite s = Sprite.Create(texture,
-                new Rect(column * spriteWidth,
-                    inverseRow * spriteHeight,
-                    spriteWidth,
-                    spriteHeight),
+                new Rect(column * spriteWidth + padding,
+                    inverseRow * spriteHeight + padding,
+                    spriteWidth - padding * 2,
+                    spriteHeight - padding * 2),
                 new Vector2(0.5f, 0.5f),
                 pixelsPerUnit: 100f,
                 extrude: 0,
