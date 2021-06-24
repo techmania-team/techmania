@@ -95,6 +95,7 @@ public class SpriteSheet
         int index = Mathf.FloorToInt(time * fps);
         if (loop)
         {
+            while (index < 0) index += sprites.Count;
             index = index % sprites.Count;
         }
         if (index < 0 || index >= sprites.Count) return null;
@@ -317,8 +318,9 @@ public class GameUISkin : GameUISkinBase
     public SpriteSheet scanCountdownBackground;
     public SpriteSheet scanCountdownNumbers;
 
-    // Uses scale, speed and additiveShader.
+    // Uses speed and additiveShader.
     public SpriteSheet touchClickFeedback;
+    public float touchClickFeedbackSize;  // In pixels
     // Scaled to fill the entire lane. Uses speed and additiveShader.
     public SpriteSheet keystrokeFeedback;
 
