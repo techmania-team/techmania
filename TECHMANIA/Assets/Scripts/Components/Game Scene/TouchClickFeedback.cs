@@ -5,116 +5,23 @@ using UnityEngine.UI;
 
 public class TouchClickFeedback : MonoBehaviour
 {
-    public GameObject template;
-    public Material additiveMaterial;
-
-    private Dictionary<int, GameObject> fingerToFeedback;
+    private float spawnTime;
+    private Image image;
 
     // Start is called before the first frame update
     void Start()
     {
-        fingerToFeedback = new Dictionary<int, GameObject>();
+        spawnTime = Time.time;
+        image = GetComponent<Image>();
+        image.sprite = GlobalResource.gameUiSkin.touchClickFeedback
+            .sprites[0];
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch (GameSetup.pattern.patternMetadata.controlScheme)
-        {
-            case ControlScheme.Touch:
-                for (int i = 0; i < Input.touchCount; i++)
-                {
-                    Touch t = Input.GetTouch(i);
-                    switch (t.phase)
-                    {
-                        case TouchPhase.Began:
-                            SpawnFeedback(t.fingerId, t.position);
-                            break;
-                        case TouchPhase.Moved:
-                        case TouchPhase.Stationary:
-                            MoveFeedback(t.fingerId, t.position);
-                            break;
-                        case TouchPhase.Canceled:
-                        case TouchPhase.Ended:
-                            DestroyFeedback(t.fingerId);
-                            break;
-                    }
-                }
-                break;
-            case ControlScheme.KM:
-                if (Input.GetMouseButtonDown(0))
-                {
-                    SpawnFeedback(0, Input.mousePosition);
-                }
-                else if (Input.GetMouseButtonUp(0))
-                {
-                    DestroyFeedback(0);
-                }
-                else if (Input.GetMouseButton(0))
-                {
-                    MoveFeedback(0, Input.mousePosition);
-                }
-                break;
-        }
-
-        foreach (GameObject o in fingerToFeedback.Values)
-        {
-            o.GetComponent<Image>().sprite =
-                GlobalResource.gameUiSkin.touchClickFeedback
-                .GetSpriteForTime(Time.time, loop: true);
-        }
-    }
-
-    private Vector2 TouchPositionToAnchoredPosition(
-        Vector2 touchPosition)
-    {
-        Vector2 anchoredPosition = Vector2.zero;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            GetComponent<RectTransform>(),
-            touchPosition,
-            null,
-            out anchoredPosition);
-        return anchoredPosition;
-    }
-
-    private void SpawnFeedback(int fingerId, Vector2 position)
-    {
-        if (Game.autoPlay) return;
-
-        float size = GlobalResource.gameUiSkin.touchClickFeedbackSize;
-        GameObject feedback = Instantiate(template, transform);
-        feedback.SetActive(true);
-        RectTransform rect = feedback.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(size, size);
-        rect.anchoredPosition = TouchPositionToAnchoredPosition(
-            position);
-        if (GlobalResource.gameUiSkin.touchClickFeedback
-            .additiveShader)
-        {
-            feedback.GetComponent<Image>().material = additiveMaterial;
-        }
-        fingerToFeedback.Add(fingerId, feedback);
-    }
-
-    private void MoveFeedback(int fingerId, Vector2 position)
-    {
-        fingerToFeedback[fingerId].GetComponent<RectTransform>()
-            .anchoredPosition =
-            TouchPositionToAnchoredPosition(position);
-    }
-
-    private void DestroyFeedback(int fingerId)
-    {
-        Destroy(fingerToFeedback[fingerId]);
-        fingerToFeedback.Remove(fingerId);
-    }
-
-    private void OnDisable()
-    {
-        foreach (GameObject o in fingerToFeedback.Values)
-        {
-            Destroy(o);
-        }
-        fingerToFeedback.Clear();
+        image.sprite = GlobalResource.gameUiSkin.touchClickFeedback
+            .GetSpriteForTime(Time.time - spawnTime,
+            loop: true);
     }
 }

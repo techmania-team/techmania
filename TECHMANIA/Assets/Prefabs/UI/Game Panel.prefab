@@ -917,6 +917,7 @@ GameObject:
   - component: {fileID: 7367461558545906606}
   - component: {fileID: 1040813527561927150}
   - component: {fileID: 3389513443749200206}
+  - component: {fileID: 3446676089325759133}
   m_Layer: 5
   m_Name: Touch Feedback Template
   m_TagString: Untagged
@@ -981,6 +982,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3446676089325759133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5531968999362911469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05863e726602732418a1d3cd1364ac54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7483350747889009906
 MonoBehaviour:
   m_ObjectHideFlags: 0
