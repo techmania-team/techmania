@@ -195,7 +195,7 @@ public class Game : MonoBehaviour
     public static event UnityAction<int> ScanAboutToChange;
     public static event UnityAction<int> JumpedToScan;
 
-    private static List<List<KeyCode>> keysForLane;
+    public static List<List<KeyCode>> keysForLane { get; private set; }
 
     // Each NoteList represents one lane; each lane is sorted by
     // pulse.
