@@ -113,8 +113,10 @@ public class DragNoteAppearance : NoteAppearance,
         curve.SetVerticesDirty();
 
         noteImage.rectTransform.anchoredPosition = Vector2.zero;
-        feverOverlay.GetComponent<RectTransform>().anchoredPosition =
-            Vector2.zero;
+        feverOverlay.GetComponent<RectTransform>().anchoredPosition
+            = Vector2.zero;
+        approachOverlay.GetComponent<RectTransform>().anchoredPosition
+            = Vector2.zero;
         hitbox.anchoredPosition = Vector2.zero;
         UIUtils.RotateToward(noteImage.rectTransform,
                 selfPos: pointsOnCurve[0],
@@ -159,7 +161,9 @@ public class DragNoteAppearance : NoteAppearance,
             .GetComponent<RectTransform>();
         imageRect.anchoredPosition = visiblePointsOnCurve[0];
         feverOverlay.GetComponent<RectTransform>()
-            .anchoredPosition = visiblePointsOnCurve[0];
+            .anchoredPosition = visiblePointsOnCurve[0]; 
+        approachOverlay.GetComponent<RectTransform>()
+             .anchoredPosition = visiblePointsOnCurve[0];
         if (visiblePointsOnCurve.Count > 1)
         {
             UIUtils.RotateToward(imageRect,

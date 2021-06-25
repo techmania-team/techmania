@@ -63,6 +63,7 @@ public class NoteAppearance : MonoBehaviour
 
     public Image noteImage;
     public GameObject feverOverlay;
+    public GameObject approachOverlay;
     public RectTransform hitbox;
 
     protected Scan scanRef;
@@ -182,17 +183,27 @@ public class NoteAppearance : MonoBehaviour
         return alpha;
     }
 
+    // This includes approach overlay and hit box.
     protected void SetNoteImageVisibility(Visibility v,
         bool bypassNoteOpacityModifier = false)
     {
         noteImage.gameObject.SetActive(v != Visibility.Hidden);
+        noteImage.color = new Color(1f, 1f, 1f,
+            VisibilityToAlpha(v, bypassNoteOpacityModifier));
+
+        if (approachOverlay != null)
+        {
+            approachOverlay.GetComponent<Image>().enabled =
+                v != Visibility.Hidden;
+            approachOverlay.GetComponent<ApproachOverlay>()
+                .SetNoteAlpha(VisibilityToAlpha(
+                    v, bypassNoteOpacityModifier));
+        }
+
         if (hitbox != null)
         {
             hitbox.gameObject.SetActive(v != Visibility.Hidden);
         }
-
-        noteImage.color = new Color(1f, 1f, 1f,
-            VisibilityToAlpha(v, bypassNoteOpacityModifier));
     }
 
     protected void SetFeverOverlayVisibility(Visibility v,

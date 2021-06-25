@@ -19,6 +19,7 @@ public class TouchClickFeedbackManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Game.autoPlay) return;
         switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
@@ -72,7 +73,6 @@ public class TouchClickFeedbackManager : MonoBehaviour
 
     private void SpawnFeedback(int fingerId, Vector2 position)
     {
-        if (Game.autoPlay) return;
         if (fingerToFeedback.ContainsKey(fingerId)) return;
 
         float size = GlobalResource.gameUiSkin.touchClickFeedbackSize;

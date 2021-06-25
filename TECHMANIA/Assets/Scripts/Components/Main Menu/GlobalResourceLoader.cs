@@ -209,6 +209,8 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             progressCallback?.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
 
+            // TODO: if any reference is null, load a 1-pixel
+            // transparent image instead.
             string filename = Path.Combine(skinFolder,
                 spriteSheetReferences[i].filename);
             bool loaded = false;
