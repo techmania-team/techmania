@@ -20,9 +20,6 @@ public class ApproachOverlay : MonoBehaviour
         image = GetComponent<Image>();
         image.color = Color.clear;
 
-        float scale = GlobalResource.gameUiSkin.approachOverlay.scale;
-        rect.localScale = new Vector3(scale, scale, 1f);
-
         correctScan = (float)GetComponentInParent<NoteObject>()
             .note.pulse / Game.PulsesPerScan;
     }

@@ -382,6 +382,24 @@ public class NoteAppearance : MonoBehaviour
         GetNoteImageScale(out x, out y);
         noteImage.transform.localScale = new Vector3(x, y, 1f);
 
+        if (feverOverlay != null)
+        {
+            float scale = GlobalResource.vfxSkin.feverOverlay.scale;
+            feverOverlay.GetComponent<RectTransform>().localScale =
+                new Vector3(scale, scale, 1f);
+        }
+        if (approachOverlay != null)
+        {
+            float scale = GlobalResource.gameUiSkin.approachOverlay
+                .scale;
+            approachOverlay.GetComponent<RectTransform>().localScale =
+                new Vector3(
+                    scanRef.direction == Scan.Direction.Right 
+                    ? scale : -scale,
+                    scale,
+                    1f);
+        }
+
         TypeSpecificInitializeScale();
     }
 

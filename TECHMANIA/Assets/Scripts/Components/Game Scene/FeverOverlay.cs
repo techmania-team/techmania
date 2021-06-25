@@ -15,9 +15,6 @@ public class FeverOverlay : MonoBehaviour
         rect = GetComponent<RectTransform>();
         image = GetComponent<Image>();
         image.color = Color.clear;
-
-        float scale = GlobalResource.vfxSkin.feverOverlay.scale;
-        rect.localScale = new Vector3(scale, scale, 1f);
     }
 
     public void SetNoteAlpha(float bound)
