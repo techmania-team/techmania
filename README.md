@@ -52,6 +52,7 @@ Note that the default skins are not part of the project, so you'll need to copy 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
 There are a few unofficial builds available:
+* fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
 * MoonLight's Android builds:
   * 0.7: https://drive.google.com/file/d/11jgs4E46cm6swlt6CN4j7kkwjljSiDdj/view?usp=sharing
