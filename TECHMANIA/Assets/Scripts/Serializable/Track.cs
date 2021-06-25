@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 // Track is the container of all patterns in a musical track.
 // In anticipation of format updates, each format version is
@@ -432,8 +433,10 @@ public class Note
                     typeof(NoteType), splits[1]),
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4]),
-                pan = float.Parse(splits[5]),
+                volume = float.Parse(splits[4],
+                NumberFormatInfo.InvariantInfo),
+                pan = float.Parse(splits[5],
+                NumberFormatInfo.InvariantInfo),
                 endOfScanString = splits[6],
                 sound = splits[7]
             };
@@ -548,8 +551,10 @@ public class HoldNote : Note
                 lane = int.Parse(splits[2]),
                 pulse = int.Parse(splits[3]),
                 duration = int.Parse(splits[4]),
-                volume = float.Parse(splits[5]),
-                pan = float.Parse(splits[6]),
+                volume = float.Parse(splits[5],
+                NumberFormatInfo.InvariantInfo),
+                pan = float.Parse(splits[6],
+                NumberFormatInfo.InvariantInfo),
                 endOfScanString = splits[7],
                 sound = splits[8]
             };
@@ -743,8 +748,10 @@ public class DragNote : Note
             {
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4]),
-                pan = float.Parse(splits[5]),
+                volume = float.Parse(splits[4],
+                NumberFormatInfo.InvariantInfo),
+                pan = float.Parse(splits[5],
+                NumberFormatInfo.InvariantInfo),
                 curveType = (CurveType)int.Parse(splits[6]),
                 sound = splits[7]
             };
@@ -897,14 +904,20 @@ public class DragNode
         return new DragNode()
         {
             anchor = new FloatPoint(
-                float.Parse(splits[0]),
-                float.Parse(splits[1])),
+                float.Parse(splits[0],
+                NumberFormatInfo.InvariantInfo),
+                float.Parse(splits[1], 
+                NumberFormatInfo.InvariantInfo)),
             controlLeft = new FloatPoint(
-                float.Parse(splits[2]),
-                float.Parse(splits[3])),
+                float.Parse(splits[2],
+                NumberFormatInfo.InvariantInfo),
+                float.Parse(splits[3], 
+                NumberFormatInfo.InvariantInfo)),
             controlRight = new FloatPoint(
-                float.Parse(splits[4]),
-                float.Parse(splits[5]))
+                float.Parse(splits[4],
+                NumberFormatInfo.InvariantInfo),
+                float.Parse(splits[5],
+                NumberFormatInfo.InvariantInfo))
         };
     }
 
