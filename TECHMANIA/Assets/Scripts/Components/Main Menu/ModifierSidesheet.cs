@@ -30,11 +30,6 @@ public class ModifierSidesheet : MonoBehaviour
 
     public static event UnityAction ModifierChanged;
 
-    private void OnEnable()
-    {
-        MemoryToUI();
-    }
-
     // To be called by SelectPatternPanel. Prepares the
     // dropdowns and per-track options.
     public void Prepare()
@@ -74,7 +69,7 @@ public class ModifierSidesheet : MonoBehaviour
             Modifiers.scrollSpeedDisplayKeys);
     }
 
-    private void MemoryToUI()
+    public void MemoryToUI()
     {
         // Modifiers
         

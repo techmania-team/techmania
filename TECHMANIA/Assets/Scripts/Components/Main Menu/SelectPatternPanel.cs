@@ -50,6 +50,7 @@ public class SelectPatternPanel : MonoBehaviour
 
         // Other UI elements.
         modifierSidesheet.Prepare();
+        modifierSidesheet.MemoryToUI();
         ModifierSidesheet.ModifierChanged += OnModifierChanged;
         OnModifierChanged();
         RefreshPatternDetails(p: null);
