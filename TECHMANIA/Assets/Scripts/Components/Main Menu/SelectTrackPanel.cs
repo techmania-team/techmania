@@ -13,6 +13,7 @@ public class SelectTrackPanel : MonoBehaviour
 {
     protected class TrackInFolder
     {
+        // Doesn't include the track itself.
         public string folder;
         public Track track;
     }
@@ -107,6 +108,7 @@ public class SelectTrackPanel : MonoBehaviour
             goUpButton.interactable = false;
             newTrackCard.gameObject.SetActive(false);
             trackListBuildingProgress.gameObject.SetActive(true);
+            trackStatusText.SetActive(false);
 
             // Launch background worker to rebuild track list.
             trackListBuilder = new BackgroundWorker();
@@ -164,10 +166,23 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
+        // Make a local copy of the track list so we can apply
+        // custom sorting.
+        List<TrackInFolder> sortedTracks = new List<TrackInFolder>();
+        foreach (TrackInFolder t in trackList[currentLocation])
+        {
+            sortedTracks.Add(t);
+        }
+        sortedTracks.Sort(
+            (TrackInFolder t1, TrackInFolder t2) =>
+            {
+                return string.Compare(t1.track.trackMetadata.title,
+                    t2.track.trackMetadata.title);
+            });
+
         // Instantiate track cards.
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
-        foreach (TrackInFolder trackInFolder in 
-            trackList[currentLocation])
+        foreach (TrackInFolder trackInFolder in sortedTracks)
         {
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
@@ -278,12 +293,21 @@ public class SelectTrackPanel : MonoBehaviour
         DoWorkEventArgs e)
     {
         RemoveCachedListsAtCurrentLocation();
-        subfolderList[currentLocation] = new List<string>();
-        trackList[currentLocation] = new List<TrackInFolder>();
-        errorTrackList[currentLocation] = new List<ErrorInTrack>();
+        subfolderList.Clear();
+        trackList.Clear();
+        errorTrackList.Clear();
+
+        BuildTrackListFor(Paths.GetTrackRootFolder());
+    }
+
+    private void BuildTrackListFor(string folder)
+    {
+        subfolderList.Add(folder, new List<string>());
+        trackList.Add(folder, new List<TrackInFolder>());
+        errorTrackList.Add(folder, new List<ErrorInTrack>());
 
         foreach (string file in Directory.EnumerateFiles(
-            currentLocation, "*.zip"))
+            folder, "*.zip"))
         {
             // Attempt to extract this archive.
             builderProgress = Locale.GetStringAndFormat(
@@ -300,7 +324,7 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         foreach (string dir in Directory.EnumerateDirectories(
-            currentLocation))
+            folder))
         {
             builderProgress = Locale.GetStringAndFormat(
                 "select_track_scanning_text", dir);
@@ -311,7 +335,9 @@ public class SelectTrackPanel : MonoBehaviour
             if (!File.Exists(possibleTrackFile))
             {
                 // Record as a subfolder.
-                subfolderList[currentLocation].Add(dir);
+                subfolderList[folder].Add(dir);
+                // Build recursively.
+                BuildTrackListFor(dir);
                 continue;
             }
 
@@ -323,7 +349,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception ex)
             {
-                errorTrackList[currentLocation].Add(new ErrorInTrack()
+                errorTrackList[folder].Add(new ErrorInTrack()
                 {
                     trackFile = possibleTrackFile,
                     message = ex.Message
@@ -331,19 +357,12 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            trackList[currentLocation].Add(new TrackInFolder()
+            trackList[folder].Add(new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
-
-        trackList[currentLocation].Sort(
-            (TrackInFolder t1, TrackInFolder t2) =>
-            {
-                return string.Compare(t1.track.trackMetadata.title,
-                    t2.track.trackMetadata.title);
-            });
     }
 
     private void TrackListBuilderCompleted(object sender, 
