@@ -45,15 +45,16 @@ public class SelectTrackPanel : MonoBehaviour
 
     public Button backButton;
     public Button refreshButton;
-    public GridLayoutGroup trackGrid;
+    public Button goUpButton;
     public TextMeshProUGUI locationDisplay;
-    public GameObject goUpCard;
+    public GridLayoutGroup subfolderGrid;
     public GameObject subfolderCardTemplate;
+    public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
-    public GameObject noTrackText;
+    public GameObject trackStatusText;
     public Panel selectPatternPanel;
     public MessageDialog messageDialog;
 
@@ -78,12 +79,21 @@ public class SelectTrackPanel : MonoBehaviour
         // Show location.
         locationDisplay.text = currentLocation;
 
+        // Activate all grids regardless of content.
+        subfolderGrid.gameObject.SetActive(true);
+        trackGrid.gameObject.SetActive(true);
+
         // Remove all objects from grid, except for templates.
+        for (int i = 0; i < subfolderGrid.transform.childCount; i++)
+        {
+            GameObject o = subfolderGrid.transform.GetChild(i)
+                .gameObject;
+            if (o == subfolderCardTemplate) continue;
+            Destroy(o);
+        }
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
-            if (o == goUpCard) continue;
-            if (o == subfolderCardTemplate) continue;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
             if (o == newTrackCard) continue;
@@ -94,7 +104,7 @@ public class SelectTrackPanel : MonoBehaviour
         {
             backButton.interactable = false;
             refreshButton.interactable = false;
-            goUpCard.gameObject.SetActive(false);
+            goUpButton.interactable = false;
             newTrackCard.gameObject.SetActive(false);
             trackListBuildingProgress.gameObject.SetActive(true);
 
@@ -120,21 +130,24 @@ public class SelectTrackPanel : MonoBehaviour
             backButton.interactable = true;
         }
 
-        // Show go up card if applicable.
-        goUpCard.SetActive(currentLocation !=
-            Paths.GetTrackRootFolder());
+        // Enable go up button if applicable.
+        goUpButton.interactable = currentLocation !=
+            Paths.GetTrackRootFolder();
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
+        bool subfolderGridEmpty = true;
+        bool trackGridEmpty = true;
         foreach (string subfolder in subfolderList[currentLocation])
         {
             GameObject card = Instantiate(subfolderCardTemplate,
-                trackGrid.transform);
+                subfolderGrid.transform);
             card.name = "Subfolder Card";
             card.GetComponent<SubfolderCard>().Initialize(
                 new DirectoryInfo(subfolder).Name);
             card.SetActive(true);
+            subfolderGridEmpty = false;
 
             // Record mapping.
             cardToSubfolder.Add(card, subfolder);
@@ -142,7 +155,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickSubfolderCard(card);
+                OnSubfolderCardClick(card);
             });
 
             if (firstCard == null)
@@ -163,6 +176,7 @@ public class SelectTrackPanel : MonoBehaviour
                 trackInFolder.folder,
                 trackInFolder.track.trackMetadata);
             card.SetActive(true);
+            trackGridEmpty = false;
 
             // Record mapping.
             cardToTrack.Add(card, trackInFolder);
@@ -170,7 +184,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickCard(card);
+                OnTrackCardClick(card);
             });
 
             if (firstCard == null)
@@ -195,6 +209,7 @@ public class SelectTrackPanel : MonoBehaviour
                 trackGrid.transform);
             card.name = "Error Card";
             card.SetActive(true);
+            trackGridEmpty = false;
 
             // Record mapping.
             cardToError.Add(card, message);
@@ -202,7 +217,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickErrorCard(card);
+                OnErrorCardClick(card);
             });
 
             if (firstCard == null)
@@ -215,12 +230,13 @@ public class SelectTrackPanel : MonoBehaviour
         {
             newTrackCard.transform.SetAsLastSibling();
             newTrackCard.SetActive(true);
+            trackGridEmpty = false;
             newTrackCard.GetComponent<Button>().onClick
                 .RemoveAllListeners();
             newTrackCard.GetComponent<Button>().onClick
                 .AddListener(() =>
             {
-                OnClickNewTrackCard();
+                OnNewTrackCardClick();
             });
 
             if (firstCard == null)
@@ -229,12 +245,23 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
-        if (firstCard == null && goUpCard.activeSelf)
+        // Deactivate empty grids.
+        subfolderGrid.gameObject.SetActive(!subfolderGridEmpty);
+        trackGrid.gameObject.SetActive(!trackGridEmpty);
+
+        if (firstCard == null)
         {
-            firstCard = goUpCard;
+            EventSystem.current.SetSelectedGameObject(
+                backButton.gameObject);
         }
-        EventSystem.current.SetSelectedGameObject(firstCard);
-        noTrackText.SetActive(firstCard == null);
+        else
+        {
+            EventSystem.current.SetSelectedGameObject(firstCard);
+        }
+        
+        // TODO: show "no track" message and "tracks hidden" message
+        // in this.
+        trackStatusText.SetActive(firstCard == null);
     }
 
     protected virtual bool ShowNewTrackCard()
@@ -381,19 +408,20 @@ public class SelectTrackPanel : MonoBehaviour
         StartCoroutine(Refresh());
     }
 
-    public void OnClickGoUpCard()
+    public void OnGoUpButtonClick()
     {
-        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
+        currentLocation = new DirectoryInfo(currentLocation)
+            .Parent.FullName;
         StartCoroutine(Refresh());
     }
 
-    private void OnClickSubfolderCard(GameObject o)
+    private void OnSubfolderCardClick(GameObject o)
     {
         currentLocation = cardToSubfolder[o];
         StartCoroutine(Refresh());
     }
 
-    protected virtual void OnClickCard(GameObject o)
+    protected virtual void OnTrackCardClick(GameObject o)
     {
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
@@ -404,13 +432,13 @@ public class SelectTrackPanel : MonoBehaviour
             TransitionToPanel.Direction.Right);
     }
 
-    private void OnClickErrorCard(GameObject o)
+    private void OnErrorCardClick(GameObject o)
     {
         string error = cardToError[o];
         messageDialog.Show(error);
     }
 
-    protected virtual void OnClickNewTrackCard()
+    protected virtual void OnNewTrackCardClick()
     {
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");
