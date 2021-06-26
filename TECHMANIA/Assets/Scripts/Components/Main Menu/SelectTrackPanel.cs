@@ -11,6 +11,11 @@ using UnityEngine.UI;
 
 public class SelectTrackPanel : MonoBehaviour
 {
+    protected class Subfolder
+    {
+        public string path;
+        public string eyecatchFullPath;
+    }
     protected class TrackInFolder
     {
         // Doesn't include the track itself.
@@ -25,14 +30,14 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected static string currentLocation;
     // Cached, keyed by track folder's parent folder.
-    protected static Dictionary<string, List<string>> subfolderList;
+    protected static Dictionary<string, List<Subfolder>> subfolderList;
     protected static Dictionary<string, List<TrackInFolder>> trackList;
     protected static Dictionary<string, List<ErrorInTrack>>
         errorTrackList;
     static SelectTrackPanel()
     {
         currentLocation = "";
-        subfolderList = new Dictionary<string, List<string>>();
+        subfolderList = new Dictionary<string, List<Subfolder>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
     }
@@ -141,18 +146,19 @@ public class SelectTrackPanel : MonoBehaviour
         GameObject firstCard = null;
         bool subfolderGridEmpty = true;
         bool trackGridEmpty = true;
-        foreach (string subfolder in subfolderList[currentLocation])
+        foreach (Subfolder subfolder in subfolderList[currentLocation])
         {
             GameObject card = Instantiate(subfolderCardTemplate,
                 subfolderGrid.transform);
             card.name = "Subfolder Card";
             card.GetComponent<SubfolderCard>().Initialize(
-                new DirectoryInfo(subfolder).Name);
+                new DirectoryInfo(subfolder.path).Name,
+                subfolder.eyecatchFullPath);
             card.SetActive(true);
             subfolderGridEmpty = false;
 
             // Record mapping.
-            cardToSubfolder.Add(card, subfolder);
+            cardToSubfolder.Add(card, subfolder.path);
 
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
@@ -302,7 +308,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     private void BuildTrackListFor(string folder)
     {
-        subfolderList.Add(folder, new List<string>());
+        subfolderList.Add(folder, new List<Subfolder>());
         trackList.Add(folder, new List<TrackInFolder>());
         errorTrackList.Add(folder, new List<ErrorInTrack>());
 
@@ -334,10 +340,31 @@ public class SelectTrackPanel : MonoBehaviour
                 dir, Paths.kTrackFilename);
             if (!File.Exists(possibleTrackFile))
             {
+                Subfolder subfolder = new Subfolder()
+                {
+                    path = dir
+                };
+
+                // Look for eyecatch, if any.
+                string pngEyecatch = Path.Combine(dir,
+                    Paths.kSubfolderEyecatchPngFilename);
+                if (File.Exists(pngEyecatch))
+                {
+                    subfolder.eyecatchFullPath = pngEyecatch;
+                }
+                string jpgEyecatch = Path.Combine(dir,
+                    Paths.kSubfolderEyecatchJpgFilename);
+                if (File.Exists(jpgEyecatch))
+                {
+                    subfolder.eyecatchFullPath = jpgEyecatch;
+                }
+
                 // Record as a subfolder.
-                subfolderList[folder].Add(dir);
+                subfolderList[folder].Add(subfolder);
+
                 // Build recursively.
                 BuildTrackListFor(dir);
+
                 continue;
             }
 

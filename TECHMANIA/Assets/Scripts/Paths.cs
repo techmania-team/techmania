@@ -10,6 +10,8 @@ public static class Paths
 {
     public const string kTrackFilename = "track.tech";
     public const string kSkinFilename = "skin.json";
+    public const string kSubfolderEyecatchPngFilename = "eyecatch.png";
+    public const string kSubfolderEyecatchJpgFilename = "eyecatch.jpg";
 
     #region Things in working directory
     private static string GetWorkingDirectory()

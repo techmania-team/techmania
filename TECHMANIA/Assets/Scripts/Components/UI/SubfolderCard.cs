@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class SubfolderCard : MonoBehaviour
 {
+    public EyecatchSelfLoader eyecatch;
     public TextMeshProUGUI folderName;
     
-    public void Initialize(string name)
+    // Eyecatch path may be null.
+    public void Initialize(string name, string eyecatchFullPath)
     {
+        eyecatch.LoadImage(eyecatchFullPath);
         folderName.text = name;
     }
 }
