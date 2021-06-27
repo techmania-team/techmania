@@ -61,6 +61,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
     public GameObject trackStatusText;
+    public TrackFilterSidesheet trackFilterSidesheet;
     public Panel selectPatternPanel;
     public MessageDialog messageDialog;
 
@@ -71,6 +72,9 @@ public class SelectTrackPanel : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(Refresh());
+
+        trackFilterSidesheet.Prepare();
+        trackFilterSidesheet.MemoryToUI();
     }
 
     protected IEnumerator Refresh()
