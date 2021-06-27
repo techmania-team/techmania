@@ -50,6 +50,7 @@ public class SelectTrackPanel : MonoBehaviour
     }
 
     public Button backButton;
+    public Button trackFilterButton;
     public Button refreshButton;
     public Button goUpButton;
     public TextMeshProUGUI locationDisplay;
@@ -69,12 +70,24 @@ public class SelectTrackPanel : MonoBehaviour
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
+    private void Start()
+    {
+        // Reset the keyword every time the main menu or editor scene
+        // loads.
+        trackFilterSidesheet.ResetSearchKeyword();
+    }
+
     private void OnEnable()
     {
         StartCoroutine(Refresh());
+        TrackFilterSidesheet.trackFilterChanged += 
+            OnTrackFilterChanged;
+    }
 
-        trackFilterSidesheet.Prepare();
-        trackFilterSidesheet.MemoryToUI();
+    private void OnDisable()
+    {
+        TrackFilterSidesheet.trackFilterChanged -=
+            OnTrackFilterChanged;
     }
 
     protected IEnumerator Refresh()
@@ -113,6 +126,7 @@ public class SelectTrackPanel : MonoBehaviour
         if (!trackList.ContainsKey(currentLocation))
         {
             backButton.interactable = false;
+            trackFilterButton.interactable = false;
             refreshButton.interactable = false;
             goUpButton.interactable = false;
             newTrackCard.gameObject.SetActive(false);
@@ -137,8 +151,9 @@ public class SelectTrackPanel : MonoBehaviour
             Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
-            refreshButton.interactable = true;
             backButton.interactable = true;
+            trackFilterButton.interactable = true;
+            refreshButton.interactable = true;
         }
 
         // Enable go up button if applicable.
@@ -274,14 +289,17 @@ public class SelectTrackPanel : MonoBehaviour
         subfolderGrid.gameObject.SetActive(!subfolderGridEmpty);
         trackGrid.gameObject.SetActive(!trackGridEmpty);
 
-        if (firstCard == null)
+        if (!trackFilterSidesheet.gameObject.activeSelf)
         {
-            EventSystem.current.SetSelectedGameObject(
-                backButton.gameObject);
-        }
-        else
-        {
-            EventSystem.current.SetSelectedGameObject(firstCard);
+            if (firstCard == null)
+            {
+                EventSystem.current.SetSelectedGameObject(
+                    backButton.gameObject);
+            }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(firstCard);
+            }
         }
         
         // TODO: show "no track" message and "tracks hidden" message
@@ -293,6 +311,30 @@ public class SelectTrackPanel : MonoBehaviour
     {
         return false;
     }
+
+    private void Update()
+    {
+        // Synchronize alpha with sidesheet because the
+        // CanvasGroup on the sidesheet ignores parent.
+        if (PanelTransitioner.transitioning &&
+            trackFilterSidesheet.gameObject.activeSelf)
+        {
+            trackFilterSidesheet.GetComponent<CanvasGroup>().alpha
+                = GetComponent<CanvasGroup>().alpha;
+        }
+    }
+
+    #region Track filter side sheet
+    public void OnTrackFilterButtonClick()
+    {
+        trackFilterSidesheet.GetComponent<Sidesheet>().FadeIn();
+    }
+
+    private void OnTrackFilterChanged()
+    {
+        StartCoroutine(Refresh());
+    }
+    #endregion
 
     #region Background worker
     private BackgroundWorker trackListBuilder;

@@ -72,15 +72,15 @@ public class Options : OptionsBase
 
     public Modifiers modifiers;
 
+    // Track list options.
+
+    public TrackFilter trackFilter;
+
     // Per-track options.
     // This should be a dictionary, but dictionaries are not
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
     public List<PerTrackOptions> perTrackOptions;
-
-    // Track list options.
-
-    public TrackListOptions trackListOptions;
 
     public Options()
     {
@@ -122,7 +122,7 @@ public class Options : OptionsBase
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
-        trackListOptions = new TrackListOptions();
+        trackFilter = new TrackFilter();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -547,7 +547,7 @@ public class PerTrackOptions
 }
 
 [Serializable]
-public class TrackListOptions
+public class TrackFilter
 {
     public bool showTracksInAllFolders;
 
@@ -569,10 +569,25 @@ public class TrackListOptions
     public SortBasis sortBasis;
     public SortOrder sortOrder;
 
-    public TrackListOptions()
+    public TrackFilter()
     {
         showTracksInAllFolders = false;
         sortBasis = SortBasis.Title;
         sortOrder = SortOrder.Ascending;
     }
+
+    public static TrackFilter instance
+    {
+        get { return Options.instance.trackFilter; }
+    }
+
+    public static readonly string[] sortBasisDisplayKeys =
+    {
+        "track_filter_sidesheet_sort_basis_title",
+        "track_filter_sidesheet_sort_basis_artist",
+        "track_filter_sidesheet_sort_basis_genre",
+        "track_filter_sidesheet_sort_basis_touch_level",
+        "track_filter_sidesheet_sort_basis_keys_level",
+        "track_filter_sidesheet_sort_basis_km_level"
+    };
 }
