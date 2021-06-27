@@ -30,9 +30,12 @@ public class ModifierSidesheet : MonoBehaviour
 
     public static event UnityAction ModifierChanged;
 
-    // To be called by SelectPatternPanel. Prepares the
-    // dropdowns and per-track options.
-    public void Prepare()
+    private void OnEnable()
+    {
+        MemoryToUI();
+    }
+
+    private void InitializeDropdowns()
     {
         UIUtils.InitializeDropdownWithLocalizedOptions(
             noteOpacity,
@@ -71,6 +74,8 @@ public class ModifierSidesheet : MonoBehaviour
 
     public void MemoryToUI()
     {
+        InitializeDropdowns();
+
         // Modifiers
         
         noteOpacity.SetValueWithoutNotify(
