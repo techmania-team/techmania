@@ -78,6 +78,10 @@ public class Options : OptionsBase
     // few hundred elements anyway.
     public List<PerTrackOptions> perTrackOptions;
 
+    // Track list options.
+
+    public TrackListOptions trackListOptions;
+
     public Options()
     {
         version = kVersion;
@@ -118,6 +122,7 @@ public class Options : OptionsBase
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
+        trackListOptions = new TrackListOptions();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -538,5 +543,36 @@ public class PerTrackOptions
         this.trackGuid = trackGuid;
         noVideo = false;
         backgroundBrightness = 10;
+    }
+}
+
+[Serializable]
+public class TrackListOptions
+{
+    public bool showTracksInAllFolders;
+
+    public enum SortBasis
+    {
+        Title,
+        Artist,
+        Genre,
+        TouchLevel,
+        KeysLevel,
+        KMLevel
+    };
+    public enum SortOrder
+    { 
+        Ascending,
+        Descending
+    };
+
+    public SortBasis sortBasis;
+    public SortOrder sortOrder;
+
+    public TrackListOptions()
+    {
+        showTracksInAllFolders = false;
+        sortBasis = SortBasis.Title;
+        sortOrder = SortOrder.Ascending;
     }
 }
