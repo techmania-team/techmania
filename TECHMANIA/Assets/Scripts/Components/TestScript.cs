@@ -22,15 +22,17 @@ public class TestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(float.Parse("1.23", CultureInfo.GetCultureInfo("it")));
-        Debug.Log(float.Parse("1,23", CultureInfo.GetCultureInfo("it")));
-        Debug.Log(float.Parse("1.23", NumberFormatInfo.InvariantInfo));
-        Debug.Log(float.Parse("1,23", NumberFormatInfo.InvariantInfo));
-
-        string json = "{\"f\":1.23}";
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
+        CultureInfo infoBackup = CultureInfo.CurrentCulture;
         CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("it");
-        Debug.Log(JsonUtility.FromJson<TestClass>(json).f);
-        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-        Debug.Log(JsonUtility.FromJson<TestClass>(json).f);
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
+        CultureInfo.CurrentCulture = infoBackup;
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
     }
 }

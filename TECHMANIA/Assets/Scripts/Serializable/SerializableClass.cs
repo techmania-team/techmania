@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 #if UNITY_2020
 using UnityEngine;
 #endif
@@ -134,6 +135,20 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
     }
     protected virtual void PrepareToSerialize() { }
     protected virtual void InitAfterDeserialize() { }
+
+    #region Culture
+    protected static CultureInfo cultureInfoBackup;
+    protected void SwitchToInvariantCulture()
+    {
+        cultureInfoBackup = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+    }
+
+    protected void RestoreToSystemCulture()
+    {
+        CultureInfo.CurrentCulture = cultureInfoBackup;
+    }
+    #endregion
 }
 
 [Serializable]

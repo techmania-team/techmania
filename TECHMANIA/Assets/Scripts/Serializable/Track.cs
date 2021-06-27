@@ -169,12 +169,16 @@ public class Track : TrackBase
 
     protected override void PrepareToSerialize()
     {
+        SwitchToInvariantCulture();
         patterns.ForEach(p => p.PackAllNotes());
+        RestoreToSystemCulture();
     }
 
     protected override void InitAfterDeserialize()
     {
+        SwitchToInvariantCulture();
         patterns.ForEach(p => p.UnpackAllNotes());
+        SwitchToInvariantCulture();
     }
 }
 
@@ -433,10 +437,8 @@ public class Note
                     typeof(NoteType), splits[1]),
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4],
-                NumberFormatInfo.InvariantInfo),
-                pan = float.Parse(splits[5],
-                NumberFormatInfo.InvariantInfo),
+                volume = float.Parse(splits[4]),
+                pan = float.Parse(splits[5]),
                 endOfScanString = splits[6],
                 sound = splits[7]
             };
@@ -551,10 +553,8 @@ public class HoldNote : Note
                 lane = int.Parse(splits[2]),
                 pulse = int.Parse(splits[3]),
                 duration = int.Parse(splits[4]),
-                volume = float.Parse(splits[5],
-                NumberFormatInfo.InvariantInfo),
-                pan = float.Parse(splits[6],
-                NumberFormatInfo.InvariantInfo),
+                volume = float.Parse(splits[5]),
+                pan = float.Parse(splits[6]),
                 endOfScanString = splits[7],
                 sound = splits[8]
             };
@@ -748,10 +748,8 @@ public class DragNote : Note
             {
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4],
-                NumberFormatInfo.InvariantInfo),
-                pan = float.Parse(splits[5],
-                NumberFormatInfo.InvariantInfo),
+                volume = float.Parse(splits[4]),
+                pan = float.Parse(splits[5]),
                 curveType = (CurveType)int.Parse(splits[6]),
                 sound = splits[7]
             };
@@ -904,20 +902,14 @@ public class DragNode
         return new DragNode()
         {
             anchor = new FloatPoint(
-                float.Parse(splits[0],
-                NumberFormatInfo.InvariantInfo),
-                float.Parse(splits[1], 
-                NumberFormatInfo.InvariantInfo)),
+                float.Parse(splits[0]),
+                float.Parse(splits[1])),
             controlLeft = new FloatPoint(
-                float.Parse(splits[2],
-                NumberFormatInfo.InvariantInfo),
-                float.Parse(splits[3], 
-                NumberFormatInfo.InvariantInfo)),
+                float.Parse(splits[2]),
+                float.Parse(splits[3])),
             controlRight = new FloatPoint(
-                float.Parse(splits[4],
-                NumberFormatInfo.InvariantInfo),
-                float.Parse(splits[5],
-                NumberFormatInfo.InvariantInfo))
+                float.Parse(splits[4]),
+                float.Parse(splits[5]))
         };
     }
 
