@@ -100,6 +100,10 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Show location.
+        if (TrackFilter.instance.showTracksInAllFolders)
+        {
+            currentLocation = Paths.GetTrackRootFolder();
+        }
         locationDisplay.text = currentLocation;
 
         // Activate all grids regardless of content.
@@ -160,12 +164,27 @@ public class SelectTrackPanel : MonoBehaviour
         goUpButton.interactable = currentLocation !=
             Paths.GetTrackRootFolder();
 
+        // Prepare subfolder list. Make a local copy so we can
+        // sort it. This also applies to the track list below.
+        List<Subfolder> subfolders = new List<Subfolder>();
+        if (!TrackFilter.instance.showTracksInAllFolders)
+        {
+            foreach (Subfolder s in subfolderList[currentLocation])
+            {
+                subfolders.Add(s);
+            }
+            subfolders.Sort((Subfolder s1, Subfolder s2) =>
+            {
+                return string.Compare(s1.path, s2.path);
+            });
+        }
+
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
         bool subfolderGridEmpty = true;
         bool trackGridEmpty = true;
-        foreach (Subfolder subfolder in subfolderList[currentLocation])
+        foreach (Subfolder subfolder in subfolders)
         {
             GameObject card = Instantiate(subfolderCardTemplate,
                 subfolderGrid.transform);
@@ -191,14 +210,26 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
-        // Make a local copy of the track list so we can apply
-        // custom sorting.
-        List<TrackInFolder> sortedTracks = new List<TrackInFolder>();
-        foreach (TrackInFolder t in trackList[currentLocation])
+        // Prepare track list.
+        List<TrackInFolder> tracks = new List<TrackInFolder>();
+        if (TrackFilter.instance.showTracksInAllFolders)
         {
-            sortedTracks.Add(t);
+            foreach (List<TrackInFolder> oneFolder in trackList.Values)
+            {
+                foreach (TrackInFolder t in oneFolder)
+                {
+                    tracks.Add(t);
+                }
+            }
         }
-        sortedTracks.Sort(
+        else
+        {
+            foreach (TrackInFolder t in trackList[currentLocation])
+            {
+                tracks.Add(t);
+            }
+        }
+        tracks.Sort(
             (TrackInFolder t1, TrackInFolder t2) =>
             {
                 return Track.Compare(t1.track, t2.track,
@@ -208,7 +239,7 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Instantiate track cards. Also apply filter.
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
-        foreach (TrackInFolder trackInFolder in sortedTracks)
+        foreach (TrackInFolder trackInFolder in tracks)
         {
             if (trackFilterSidesheet.searchKeyword != "" &&
                 !trackInFolder.track.ContainsKeywords(
@@ -313,12 +344,12 @@ public class SelectTrackPanel : MonoBehaviour
         
         // Show "no track" message or "tracks hidden" message
         // as necessary.
-        if (cardToTrack.Count < sortedTracks.Count)
+        if (cardToTrack.Count < tracks.Count)
         {
             trackStatusText.gameObject.SetActive(true);
             trackStatusText.text = Locale.GetStringAndFormat(
                 "select_track_some_tracks_hidden_text",
-                sortedTracks.Count - cardToTrack.Count,
+                tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
         }
         else if (cardToTrack.Count + cardToError.Count == 0)
