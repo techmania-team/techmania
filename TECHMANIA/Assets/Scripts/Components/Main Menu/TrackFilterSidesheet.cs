@@ -93,10 +93,11 @@ public class TrackFilterSidesheet : MonoBehaviour
         // refresh, so we only fire it when absolutely necessary.
         bool anyChange = false;
 
-        if (searchKeyword != keywordField.text)
+        string keywordFieldTrimmed = keywordField.text.Trim();
+        if (searchKeyword != keywordFieldTrimmed)
         {
             anyChange = true;
-            searchKeyword = keywordField.text;
+            searchKeyword = keywordFieldTrimmed;
         }
 
         if (TrackFilter.instance.showTracksInAllFolders !=

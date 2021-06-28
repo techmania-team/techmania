@@ -116,4 +116,24 @@ public partial class Track
                 return compare;
         }
     }
+
+    public bool ContainsKeywords(string spaceSeparatedKeywords)
+    {
+        string[] keywords = spaceSeparatedKeywords.Split(' ');
+        string title = trackMetadata.title.ToLower();
+        string artist = trackMetadata.artist.ToLower();
+        string genre = trackMetadata.genre.ToLower();
+        foreach (string k in keywords)
+        {
+            string keyword = k.ToLower();
+            if (!title.Contains(keyword) &&
+                !artist.Contains(keyword) &&
+                !genre.Contains(keyword))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -61,7 +61,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GameObject errorCardTemplate;
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
-    public GameObject trackStatusText;
+    public TextMeshProUGUI trackStatusText;
     public TrackFilterSidesheet trackFilterSidesheet;
     public Panel selectPatternPanel;
     public MessageDialog messageDialog;
@@ -131,7 +131,7 @@ public class SelectTrackPanel : MonoBehaviour
             goUpButton.interactable = false;
             newTrackCard.gameObject.SetActive(false);
             trackListBuildingProgress.gameObject.SetActive(true);
-            trackStatusText.SetActive(false);
+            trackStatusText.gameObject.SetActive(false);
 
             // Launch background worker to rebuild track list.
             trackListBuilder = new BackgroundWorker();
@@ -206,10 +206,18 @@ public class SelectTrackPanel : MonoBehaviour
                     TrackFilter.instance.sortOrder);
             });
 
-        // Instantiate track cards.
+        // Instantiate track cards. Also apply filter.
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
         foreach (TrackInFolder trackInFolder in sortedTracks)
         {
+            if (trackFilterSidesheet.searchKeyword != "" &&
+                !trackInFolder.track.ContainsKeywords(
+                    trackFilterSidesheet.searchKeyword))
+            {
+                // Filtered out.
+                continue;
+            }
+
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
             card.name = "Track Card";
@@ -303,9 +311,26 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
         
-        // TODO: show "no track" message and "tracks hidden" message
-        // in this.
-        trackStatusText.SetActive(firstCard == null);
+        // Show "no track" message or "tracks hidden" message
+        // as necessary.
+        if (cardToTrack.Count < sortedTracks.Count)
+        {
+            trackStatusText.gameObject.SetActive(true);
+            trackStatusText.text = Locale.GetStringAndFormat(
+                "select_track_some_tracks_hidden_text",
+                sortedTracks.Count - cardToTrack.Count,
+                trackFilterSidesheet.searchKeyword);
+        }
+        else if (cardToTrack.Count + cardToError.Count == 0)
+        {
+            trackStatusText.gameObject.SetActive(true);
+            trackStatusText.text = Locale.GetString(
+                "select_track_no_track_text");
+        }
+        else
+        {
+            trackStatusText.gameObject.SetActive(false);
+        }
     }
 
     protected virtual bool ShowNewTrackCard()
