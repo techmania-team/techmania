@@ -115,7 +115,7 @@ public class TimeStop : TimeEvent
 }
 
 [Serializable]
-public class Track : TrackBase
+public partial class Track : TrackBase
 {
     public const string kVersion = "2";
 

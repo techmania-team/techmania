@@ -201,8 +201,9 @@ public class SelectTrackPanel : MonoBehaviour
         sortedTracks.Sort(
             (TrackInFolder t1, TrackInFolder t2) =>
             {
-                return string.Compare(t1.track.trackMetadata.title,
-                    t2.track.trackMetadata.title);
+                return Track.Compare(t1.track, t2.track,
+                    TrackFilter.instance.sortBasis,
+                    TrackFilter.instance.sortOrder);
             });
 
         // Instantiate track cards.
