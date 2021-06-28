@@ -241,7 +241,8 @@ public class SelectTrackPanel : MonoBehaviour
         cardToTrack = new Dictionary<GameObject, TrackInFolder>();
         foreach (TrackInFolder trackInFolder in tracks)
         {
-            if (trackFilterSidesheet.searchKeyword != "" &&
+            if (trackFilterSidesheet.searchKeyword != null &&
+                trackFilterSidesheet.searchKeyword != "" &&
                 !trackInFolder.track.ContainsKeywords(
                     trackFilterSidesheet.searchKeyword))
             {
