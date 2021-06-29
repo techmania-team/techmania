@@ -125,6 +125,11 @@ public class Options : OptionsBase
         trackFilter = new TrackFilter();
     }
 
+    protected override void PrepareToSerialize()
+    {
+        RemoveDefaultPerTrackOptions();
+    }
+
     public static int GetDefaultAudioBufferSize()
     {
         return AudioSettings.GetConfiguration().dspBufferSize;
@@ -221,6 +226,22 @@ public class Options : OptionsBase
         PerTrackOptions newOptions = new PerTrackOptions(guid);
         perTrackOptions.Add(newOptions);  // Not written to disk yet.
         return newOptions;
+    }
+
+    private void RemoveDefaultPerTrackOptions()
+    {
+        List<PerTrackOptions> remainingOptions =
+            new List<PerTrackOptions>();
+        foreach (PerTrackOptions p in perTrackOptions)
+        {
+            if (!p.noVideo && p.backgroundBrightness == 
+                PerTrackOptions.kMaxBrightness)
+            {
+                continue;
+            }
+            remainingOptions.Add(p);
+        }
+        perTrackOptions = remainingOptions;
     }
 #endregion
 }
@@ -537,12 +558,13 @@ public class PerTrackOptions
     public string trackGuid;
     public bool noVideo;
     public int backgroundBrightness;  // 0-10
+    public const int kMaxBrightness = 10;
 
     public PerTrackOptions(string trackGuid)
     {
         this.trackGuid = trackGuid;
         noVideo = false;
-        backgroundBrightness = 10;
+        backgroundBrightness = kMaxBrightness;
     }
 }
 
