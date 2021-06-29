@@ -94,7 +94,8 @@ public class Game : MonoBehaviour
     [Header("UI - Other")]
     public GameObject topBar;
     public GameObject regularTopBar;
-    public GameObject editorPreviewTopBar;
+    public GameObject pauseButton;
+    public GameObject backButton;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
@@ -222,19 +223,12 @@ public class Game : MonoBehaviour
         score = new Score();
         loading = true;
         topBar.SetActive(false);
-        if (inEditor)
-        {
-            regularTopBar.SetActive(false);
-            practiceTopBar.SetActive(false);
-            editorPreviewTopBar.SetActive(true);
-        }
-        else
-        {
-            practiceTopBar.SetActive(Modifiers.instance.mode
-                == Modifiers.Mode.Practice);
-            regularTopBar.SetActive(Modifiers.instance.mode
-                != Modifiers.Mode.Practice);
-        }
+        pauseButton.SetActive(!inEditor);
+        backButton.SetActive(inEditor);
+        practiceTopBar.SetActive(Modifiers.instance.mode
+            == Modifiers.Mode.Practice);
+        regularTopBar.SetActive(Modifiers.instance.mode
+            != Modifiers.Mode.Practice);
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
@@ -254,7 +248,10 @@ public class Game : MonoBehaviour
         {
             Options.MakeBackup();
             Options.instance.modifiers = new Modifiers();
-            Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+            Modifiers.instance.mode = Modifiers.Mode.Practice;
+
+            practiceTopBar.SetActive(true);
+            regularTopBar.SetActive(false);
         }
 
         // Start the load sequence.
@@ -414,8 +411,7 @@ public class Game : MonoBehaviour
             fpsCounter.SetActive(true);
         }
         if (Options.instance.showJudgementTally &&
-            Modifiers.instance.mode != Modifiers.Mode.Practice &&
-            !inEditor)
+            Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
             judgementTally.gameObject.SetActive(true);
             judgementTally.Refresh(score);
