@@ -318,6 +318,7 @@ public class ResourceLoader : MonoBehaviour
         }
 
         Debug.Log("Loaded: " + fullPath);
+        t2d.wrapMode = TextureWrapMode.Clamp;
         loadImageCompleteCallback.Invoke(t2d, null);
     }
     #endregion
