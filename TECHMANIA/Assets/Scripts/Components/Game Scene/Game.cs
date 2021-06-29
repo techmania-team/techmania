@@ -292,8 +292,15 @@ public class Game : MonoBehaviour
     {
         messageDialog.Show(message, closeCallback: () =>
         {
-            MainMenuPanel.skipToTrackSelect = true;
-            Curtain.DrawCurtainThenGoToScene("Main Menu");
+            if (inEditor)
+            {
+                GetComponentInChildren<TransitionToPanel>().Invoke();
+            }
+            else
+            {
+                MainMenuPanel.skipToTrackSelect = true;
+                Curtain.DrawCurtainThenGoToScene("Main Menu");
+            }
         });
     }
 
@@ -1212,15 +1219,7 @@ public class Game : MonoBehaviour
             feverState = FeverState.Idle;
             score.FeverOff();
         }
-
-        if (inEditor)
-        {
-            GetComponentInChildren<TransitionToPanel>().Invoke();
-        }
-        else
-        {
-            Curtain.DrawCurtainThenGoToScene("Result");
-        }
+        Curtain.DrawCurtainThenGoToScene("Result");
     }
 
     private void HandleInput()
