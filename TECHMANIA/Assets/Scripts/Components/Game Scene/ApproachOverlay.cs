@@ -10,7 +10,7 @@ public class ApproachOverlay : MonoBehaviour
     private float noteAlpha;
     private float correctScan;
 
-    private const float kOverlayStart = -0.375f;
+    private const float kOverlayStart = -0.5f;
     private const float kOverlayEnd = 0f;
 
     // Start is called before the first frame update
