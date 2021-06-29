@@ -19,8 +19,6 @@ public class ModifierSidesheet : MonoBehaviour
 
     [Header("Appearance")]
     public Toggle showJudgementTally;
-    public Slider backgroundBrightnessSlider;
-    public TextMeshProUGUI backgroundBrightnessDisplay;
     public Toggle noVideo;
 
     [Header("Special modifiers")]
@@ -114,9 +112,6 @@ public class ModifierSidesheet : MonoBehaviour
 
         showJudgementTally.SetIsOnWithoutNotify(
             Options.instance.showJudgementTally);
-        backgroundBrightnessSlider.SetValueWithoutNotify(
-            GameSetup.trackOptions.backgroundBrightness);
-        RefreshBrightnessDisplay();
         noVideo.SetIsOnWithoutNotify(
             GameSetup.trackOptions.noVideo);
 
@@ -133,12 +128,6 @@ public class ModifierSidesheet : MonoBehaviour
         scrollSpeed.SetValueWithoutNotify(
             (int)Modifiers.instance.scrollSpeed);
         scrollSpeed.RefreshShownValue();
-    }
-    
-    public void RefreshBrightnessDisplay()
-    {
-        backgroundBrightnessDisplay.text =
-            GameSetup.trackOptions.backgroundBrightness.ToString();
     }
 
     public void UIToMemory()
@@ -166,8 +155,6 @@ public class ModifierSidesheet : MonoBehaviour
 
         Options.instance.showJudgementTally =
             showJudgementTally.isOn;
-        GameSetup.trackOptions.backgroundBrightness =
-            Mathf.FloorToInt(backgroundBrightnessSlider.value);
         GameSetup.trackOptions.noVideo =
             noVideo.isOn;
 

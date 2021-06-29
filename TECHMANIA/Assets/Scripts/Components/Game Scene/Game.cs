@@ -1465,7 +1465,7 @@ public class Game : MonoBehaviour
         SetBrightness();
     }
 
-    private void SetBrightness()
+    public void SetBrightness()
     {
         float coverAlpha = 1f - 
             0.1f * GameSetup.trackOptions.backgroundBrightness;
