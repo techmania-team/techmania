@@ -101,6 +101,24 @@ public class SpriteSheet
         if (index < 0 || index >= sprites.Count) return null;
         return sprites[index];
     }
+
+    #region Empty sprite sheet
+    // Used in place of null sprite sheets when a skin is missing
+    // items.
+    public static Texture2D emptyTexture;
+    public static void PrepareEmptySpriteSheet()
+    {
+        emptyTexture = new Texture2D(1, 1);
+        emptyTexture.SetPixel(0, 0, Color.clear);
+        emptyTexture.Apply();
+    }
+
+    public void MakeEmpty()
+    {
+        texture = emptyTexture;
+        GenerateSprites();
+    }
+    #endregion
 }
 
 [Serializable]
