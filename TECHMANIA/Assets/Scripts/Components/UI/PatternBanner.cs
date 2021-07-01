@@ -12,6 +12,7 @@ public class PatternBanner : MonoBehaviour
     public ScrollingText nameText;
     public Color defaultColor;
     public Color overrideColor;
+    public bool inEditor;
 
     private ControlScheme intendedScheme;
     
@@ -39,17 +40,20 @@ public class PatternBanner : MonoBehaviour
         Color color = defaultColor;
 
         ControlScheme actualScheme = intendedScheme;
-        switch (Modifiers.instance.controlOverride)
+        if (!inEditor)
         {
-            case Modifiers.ControlOverride.OverrideToTouch:
-                actualScheme = ControlScheme.Touch;
-                break;
-            case Modifiers.ControlOverride.OverrideToKeys:
-                actualScheme = ControlScheme.Keys;
-                break;
-            case Modifiers.ControlOverride.OverrideToKM:
-                actualScheme = ControlScheme.KM;
-                break;
+            switch (Modifiers.instance.controlOverride)
+            {
+                case Modifiers.ControlOverride.OverrideToTouch:
+                    actualScheme = ControlScheme.Touch;
+                    break;
+                case Modifiers.ControlOverride.OverrideToKeys:
+                    actualScheme = ControlScheme.Keys;
+                    break;
+                case Modifiers.ControlOverride.OverrideToKM:
+                    actualScheme = ControlScheme.KM;
+                    break;
+            }
         }
         if (actualScheme != intendedScheme)
         {
