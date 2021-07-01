@@ -1223,6 +1223,7 @@ public class Game : MonoBehaviour
         if (IsPaused()) return;
         if (BaseTime <= endOfPatternBaseTime) return;
         if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
+        if (!score.AllNotesResolved()) return;
 
         if (feverState == FeverState.Active)
         {
