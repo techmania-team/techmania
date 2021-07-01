@@ -212,6 +212,7 @@ public class Game : MonoBehaviour
     private Dictionary<NoteObject, Judgement> ongoingNotes;
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
+    #region Monobehavior messages
     // Start is called before the first frame update
     private void OnEnable()
     {
@@ -286,6 +287,15 @@ public class Game : MonoBehaviour
         Options.instance.SaveToFile(Paths.GetOptionsFilePath());
         Input.simulateMouseWithTouches = true;
     }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus && !IsPaused() && !loading && !inEditor)
+        {
+            OnPauseButtonClickOrTouch(playSound: false);
+        }
+    }
+    #endregion
 
     #region Initialization
     private void ReportFatalError(string message)
@@ -2339,7 +2349,7 @@ public class Game : MonoBehaviour
         return pauseDialog.gameObject.activeSelf;
     }
 
-    public void OnPauseButtonClickOrTouch()
+    public void OnPauseButtonClickOrTouch(bool playSound = true)
     {
         stopwatch.Stop();
         feverTimer?.Stop();
@@ -2352,7 +2362,10 @@ public class Game : MonoBehaviour
             audioSourceManager.UnpauseAll();
             if (videoPlayer.isPaused) videoPlayer.Play();
         });
-        MenuSfx.instance.PlayPauseSound();
+        if (playSound)
+        {
+            MenuSfx.instance.PlayPauseSound();
+        }
     }
     #endregion
 }

@@ -7671,7 +7671,7 @@ PrefabInstance:
     - target: {fileID: 2836123184731631532, guid: d10af969397f67e4aae5cf249db45224,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2836123184731631532, guid: d10af969397f67e4aae5cf249db45224,
         type: 3}
@@ -7687,6 +7687,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnPauseButtonClickOrTouch
+      objectReference: {fileID: 0}
+    - target: {fileID: 2836123184731631532, guid: d10af969397f67e4aae5cf249db45224,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Game, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2836123184731631532, guid: d10af969397f67e4aae5cf249db45224,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2836123184731631532, guid: d10af969397f67e4aae5cf249db45224,
         type: 3}
