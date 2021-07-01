@@ -49,7 +49,8 @@ public class ResultsPanel : MonoBehaviour
         trackTitle.text = track.title;
         trackArtist.text = track.artist;
 
-        PatternMetadata pattern = GameSetup.pattern.patternMetadata;
+        PatternMetadata pattern = GameSetup
+            .patternBeforeApplyingModifier.patternMetadata;
         patternBanner.Initialize(pattern);
 
         // Tallies
