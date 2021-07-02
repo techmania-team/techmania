@@ -1773,6 +1773,11 @@ public class Game : MonoBehaviour
 
     private void OnFingerMove(int finger, Vector2 screenPosition)
     {
+        if (!fingerInLane.ContainsKey(finger))
+        {
+            OnFingerDown(finger, screenPosition);
+            return;
+        }
         List<RaycastResult> results = Raycast(screenPosition);
         int lane = RaycastResultToLane(results);
         if (fingerInLane[finger] != lane)

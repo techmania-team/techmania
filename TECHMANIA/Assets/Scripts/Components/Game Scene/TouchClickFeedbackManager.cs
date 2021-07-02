@@ -19,7 +19,14 @@ public class TouchClickFeedbackManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Game.autoPlay) return;
+        if (Game.autoPlay)
+        {
+            if (fingerToFeedback.Count > 0)
+            {
+                DestroyAllFeedback();
+            }
+            return;
+        }
         switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
@@ -92,6 +99,11 @@ public class TouchClickFeedbackManager : MonoBehaviour
 
     private void MoveFeedback(int fingerId, Vector2 position)
     {
+        if (!fingerToFeedback.ContainsKey(fingerId))
+        {
+            SpawnFeedback(fingerId, position);
+            return;
+        }
         fingerToFeedback[fingerId].GetComponent<RectTransform>()
             .anchoredPosition =
             TouchPositionToAnchoredPosition(position);
@@ -99,8 +111,19 @@ public class TouchClickFeedbackManager : MonoBehaviour
 
     private void DestroyFeedback(int fingerId)
     {
+        if (!fingerToFeedback.ContainsKey(fingerId)) return;
         Destroy(fingerToFeedback[fingerId]);
         fingerToFeedback.Remove(fingerId);
+    }
+
+    private void DestroyAllFeedback()
+    {
+        if (fingerToFeedback == null) return;
+        foreach (GameObject o in fingerToFeedback.Values)
+        {
+            Destroy(o);
+        }
+        fingerToFeedback.Clear();
     }
 
     private void OnDisable()
