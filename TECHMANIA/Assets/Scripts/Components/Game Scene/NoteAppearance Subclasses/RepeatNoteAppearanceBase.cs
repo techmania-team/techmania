@@ -49,6 +49,6 @@ public class RepeatNoteAppearanceBase : NoteAppearance
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.repeat
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 }

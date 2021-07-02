@@ -17,13 +17,15 @@ public class TouchscreenTestPanel : MonoBehaviour
 
     private void OnDisable()
     {
-        foreach (KeyValuePair<int, GameObject> pair in fingerIdToIndicator)
+        foreach (KeyValuePair<int, GameObject> pair in 
+            fingerIdToIndicator)
         {
             Destroy(pair.Value);
         }
     }
 
-    private Vector2 TouchPositionToAnchoredPosition(Vector2 touchPosition)
+    private Vector2 TouchPositionToAnchoredPosition(
+        Vector2 touchPosition)
     {
         Vector2 anchoredPosition = Vector2.zero;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -47,7 +49,9 @@ public class TouchscreenTestPanel : MonoBehaviour
                         GameObject indicator = Instantiate(
                             fingerIndicator, transform);
                         indicator.GetComponent<RectTransform>()
-                            .anchoredPosition = TouchPositionToAnchoredPosition(t.position);
+                            .anchoredPosition = 
+                            TouchPositionToAnchoredPosition(
+                                t.position);
                         indicator.GetComponentInChildren
                             <TextMeshProUGUI>()
                             .text = Locale.GetStringAndFormat(
@@ -66,8 +70,11 @@ public class TouchscreenTestPanel : MonoBehaviour
                 case TouchPhase.Moved:
                 case TouchPhase.Stationary:
                     {
-                        fingerIdToIndicator[t.fingerId].GetComponent<RectTransform>()
-                            .anchoredPosition = TouchPositionToAnchoredPosition(t.position);
+                        fingerIdToIndicator[t.fingerId]
+                            .GetComponent<RectTransform>()
+                            .anchoredPosition = 
+                            TouchPositionToAnchoredPosition(
+                                t.position);
                     }
                     break;
             }

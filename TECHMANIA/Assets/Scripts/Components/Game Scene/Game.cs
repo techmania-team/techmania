@@ -42,14 +42,12 @@ public class Game : MonoBehaviour
 
     [Header("Scans")]
     public GraphicRaycaster raycaster;
+    public ScanBackground topScanBackground;
     public Transform topScanContainer;
     public GameObject topScanTemplate;
-    public GameObject topScanEmptyTouchReceiverParent;
-    public List<RectTransform> topScanEmptyTouchReceivers;
+    public ScanBackground bottomScanBackground;
     public Transform bottomScanContainer;
     public GameObject bottomScanTemplate;
-    public GameObject bottomScanEmptyTouchReceiverParent;
-    public List<RectTransform> bottomScanEmptyTouchReceivers;
 
     [Header("Audio")]
     public AudioSourceManager audioSourceManager;
@@ -96,7 +94,8 @@ public class Game : MonoBehaviour
     [Header("UI - Other")]
     public GameObject topBar;
     public GameObject regularTopBar;
-    public GameObject editorPreviewTopBar;
+    public GameObject pauseButton;
+    public GameObject backButton;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI maxComboText;
     public RectTransform hpBar;
@@ -160,6 +159,7 @@ public class Game : MonoBehaviour
     public static int PulsesPerScan { get; private set; }
     public static float FloatPulse { get; private set; }
     public static float FloatBeat { get; private set; }
+    public static float FloatScan { get; private set; }
     private static int Pulse { get; set; }
     public static int Scan { get; private set; }
     private float endOfPatternBaseTime;
@@ -196,7 +196,7 @@ public class Game : MonoBehaviour
     public static event UnityAction<int> ScanAboutToChange;
     public static event UnityAction<int> JumpedToScan;
 
-    private static List<List<KeyCode>> keysForLane;
+    public static List<List<KeyCode>> keysForLane { get; private set; }
 
     // Each NoteList represents one lane; each lane is sorted by
     // pulse.
@@ -212,6 +212,7 @@ public class Game : MonoBehaviour
     private Dictionary<NoteObject, Judgement> ongoingNotes;
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
 
+    #region Monobehavior messages
     // Start is called before the first frame update
     private void OnEnable()
     {
@@ -223,19 +224,12 @@ public class Game : MonoBehaviour
         score = new Score();
         loading = true;
         topBar.SetActive(false);
-        if (inEditor)
-        {
-            regularTopBar.SetActive(false);
-            practiceTopBar.SetActive(false);
-            editorPreviewTopBar.SetActive(true);
-        }
-        else
-        {
-            practiceTopBar.SetActive(Modifiers.instance.mode
-                == Modifiers.Mode.Practice);
-            regularTopBar.SetActive(Modifiers.instance.mode
-                != Modifiers.Mode.Practice);
-        }
+        pauseButton.SetActive(!inEditor);
+        backButton.SetActive(inEditor);
+        practiceTopBar.SetActive(Modifiers.instance.mode
+            == Modifiers.Mode.Practice);
+        regularTopBar.SetActive(Modifiers.instance.mode
+            != Modifiers.Mode.Practice);
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
@@ -255,7 +249,10 @@ public class Game : MonoBehaviour
         {
             Options.MakeBackup();
             Options.instance.modifiers = new Modifiers();
-            Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+            Modifiers.instance.mode = Modifiers.Mode.Practice;
+
+            practiceTopBar.SetActive(true);
+            regularTopBar.SetActive(false);
         }
 
         // Start the load sequence.
@@ -274,18 +271,12 @@ public class Game : MonoBehaviour
             {
                 Transform child = topScanContainer.GetChild(i);
                 if (child == topScanTemplate.transform) continue;
-                if (child ==
-                    topScanEmptyTouchReceiverParent.transform) 
-                    continue;
                 Destroy(child.gameObject);
             }
             for (int i = 0; i < bottomScanContainer.childCount; i++)
             {
                 Transform child = bottomScanContainer.GetChild(i);
                 if (child == bottomScanTemplate.transform) continue;
-                if (child ==
-                    bottomScanEmptyTouchReceiverParent.transform)
-                    continue;
                 Destroy(child.gameObject);
             }
         }
@@ -297,13 +288,29 @@ public class Game : MonoBehaviour
         Input.simulateMouseWithTouches = true;
     }
 
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus && !IsPaused() && !loading && !inEditor)
+        {
+            OnPauseButtonClickOrTouch(playSound: false);
+        }
+    }
+    #endregion
+
     #region Initialization
     private void ReportFatalError(string message)
     {
         messageDialog.Show(message, closeCallback: () =>
         {
-            MainMenuPanel.skipToTrackSelect = true;
-            Curtain.DrawCurtainThenGoToScene("Main Menu");
+            if (inEditor)
+            {
+                GetComponentInChildren<TransitionToPanel>().Invoke();
+            }
+            else
+            {
+                MainMenuPanel.skipToTrackSelect = true;
+                Curtain.DrawCurtainThenGoToScene("Main Menu");
+            }
         });
     }
 
@@ -354,6 +361,10 @@ public class Game : MonoBehaviour
             yield return new WaitUntil(() => skinLoaded);
             skinLoaded = false;
             globalResourceLoader.LoadComboSkin(null,
+                loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            globalResourceLoader.LoadGameUiSkin(null, 
                 loadSkinCallback);
             yield return new WaitUntil(() => skinLoaded);
         }
@@ -417,8 +428,7 @@ public class Game : MonoBehaviour
             fpsCounter.SetActive(true);
         }
         if (Options.instance.showJudgementTally &&
-            Modifiers.instance.mode != Modifiers.Mode.Practice &&
-            !inEditor)
+            Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
             judgementTally.gameObject.SetActive(true);
             judgementTally.Refresh(score);
@@ -427,6 +437,10 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
+        topScanBackground.Initialize(
+            Modifiers.instance.GetTopScanDirection());
+        bottomScanBackground.Initialize(
+            Modifiers.instance.GetBottomScanDirection());
 
         int offsetMs =
             GameSetup.pattern.patternMetadata.controlScheme
@@ -519,61 +533,16 @@ public class Game : MonoBehaviour
                 firstScan * PulsesPerScan);
         }
 
-        // Resize empty touch receivers to fit scan margins.
-        float laneHeightRelative =
-            (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
-        topScanEmptyTouchReceivers[0].anchorMin = new Vector2(
-            0f, 0.5f + laneHeightRelative);
-        topScanEmptyTouchReceivers[0].anchorMax = new Vector2(
-            1f, 1f);
-        topScanEmptyTouchReceivers[1].anchorMin = new Vector2(
-            0f, 0.5f);
-        topScanEmptyTouchReceivers[1].anchorMax = new Vector2(
-            1f, 0.5f + laneHeightRelative);
-        topScanEmptyTouchReceivers[2].anchorMin = new Vector2(
-            0f, 0.5f - laneHeightRelative);
-        topScanEmptyTouchReceivers[2].anchorMax = new Vector2(
-            1f, 0.5f);
-        topScanEmptyTouchReceivers[3].anchorMin = new Vector2(
-            0f, 0f);
-        topScanEmptyTouchReceivers[3].anchorMax = new Vector2(
-            1f, 0.5f - laneHeightRelative);
-        for (int i = 0; i < 4; i++)
-        {
-            bottomScanEmptyTouchReceivers[i].anchorMin =
-                topScanEmptyTouchReceivers[i].anchorMin;
-            bottomScanEmptyTouchReceivers[i].anchorMax =
-                topScanEmptyTouchReceivers[i].anchorMax;
-        }
-
         // Find last scan. Make sure it ends later than the backing
         // track and BGA, so we don't cut either short.
         CalculateEndOfPattern();
 
         // Create scan objects.
         scanObjects = new Dictionary<int, Scan>();
-        global::Scan.Direction
-            topScanDirection = global::Scan.Direction.Right,
-            bottomScanDirection = global::Scan.Direction.Left;
-        switch (Modifiers.instance.scanDirection)
-        {
-            case Modifiers.ScanDirection.Normal:
-                topScanDirection = global::Scan.Direction.Right;
-                bottomScanDirection = global::Scan.Direction.Left;
-                break;
-            case Modifiers.ScanDirection.RR:
-                topScanDirection = global::Scan.Direction.Right;
-                bottomScanDirection = global::Scan.Direction.Right;
-                break;
-            case Modifiers.ScanDirection.LR:
-                topScanDirection = global::Scan.Direction.Left;
-                bottomScanDirection = global::Scan.Direction.Right;
-                break;
-            case Modifiers.ScanDirection.LL:
-                topScanDirection = global::Scan.Direction.Left;
-                bottomScanDirection = global::Scan.Direction.Left;
-                break;
-        }
+        Scan.Direction topScanDirection = 
+            Modifiers.instance.GetTopScanDirection();
+        Scan.Direction bottomScanDirection =
+            Modifiers.instance.GetBottomScanDirection();
         for (int i = firstScan; i <= lastScan; i++)
         {
             bool isBottomScan = i % 2 == 0;
@@ -1148,8 +1117,9 @@ public class Game : MonoBehaviour
             + initialTime;
         FloatPulse = GameSetup.pattern.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
+        FloatScan = FloatPulse / PulsesPerScan;
         int newPulse = Mathf.FloorToInt(FloatPulse);
-        int newScan = Mathf.FloorToInt(FloatPulse / PulsesPerScan);
+        int newScan = Mathf.FloorToInt(FloatScan);
 
         // Play backing track if base time hits 0.
         if (oldBaseTime < 0f && BaseTime >= 0f &&
@@ -1253,21 +1223,14 @@ public class Game : MonoBehaviour
         if (IsPaused()) return;
         if (BaseTime <= endOfPatternBaseTime) return;
         if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
+        if (!score.AllNotesResolved()) return;
 
         if (feverState == FeverState.Active)
         {
             feverState = FeverState.Idle;
             score.FeverOff();
         }
-
-        if (inEditor)
-        {
-            GetComponentInChildren<TransitionToPanel>().Invoke();
-        }
-        else
-        {
-            Curtain.DrawCurtainThenGoToScene("Result");
-        }
+        Curtain.DrawCurtainThenGoToScene("Result");
     }
 
     private void HandleInput()
@@ -1508,7 +1471,7 @@ public class Game : MonoBehaviour
         SetBrightness();
     }
 
-    private void SetBrightness()
+    public void SetBrightness()
     {
         float coverAlpha = 1f - 
             0.1f * GameSetup.trackOptions.backgroundBrightness;
@@ -1576,6 +1539,7 @@ public class Game : MonoBehaviour
         // Set timer.
         Scan = scan;
         FloatBeat = Scan * GameSetup.pattern.patternMetadata.bps;
+        FloatScan = Scan;
         Pulse = PulsesPerScan * Scan;
         FloatPulse = Pulse;
         BaseTime = GameSetup.pattern.PulseToTime(Pulse);
@@ -1795,18 +1759,9 @@ public class Game : MonoBehaviour
     {
         List<RaycastResult> results = Raycast(screenPosition);
         int lane = RaycastResultToLane(results);
-        if (fingerInLane.ContainsKey(finger) &&
-            fingerInLane[finger] == kOutsideAllLanes)
+        if (fingerInLane.ContainsKey(finger))
         {
-            // Special case: when player clicks the pause button,
-            // we receive a FingerDown but no FingerUp, because
-            // events are not processed during pause. When user
-            // resumes game later, the first FingerDown will
-            // result in an error because the finger is already
-            // down.
-            //
-            // To work around that, we suppress this error if
-            // the finger is previously in lane -1.
+            // "Key already exists" error may occur around pausing.
             fingerInLane[finger] = lane;
         }
         else
@@ -1818,6 +1773,11 @@ public class Game : MonoBehaviour
 
     private void OnFingerMove(int finger, Vector2 screenPosition)
     {
+        if (!fingerInLane.ContainsKey(finger))
+        {
+            OnFingerDown(finger, screenPosition);
+            return;
+        }
         List<RaycastResult> results = Raycast(screenPosition);
         int lane = RaycastResultToLane(results);
         if (fingerInLane[finger] != lane)
@@ -2395,7 +2355,7 @@ public class Game : MonoBehaviour
         return pauseDialog.gameObject.activeSelf;
     }
 
-    public void OnPauseButtonClickOrTouch()
+    public void OnPauseButtonClickOrTouch(bool playSound = true)
     {
         stopwatch.Stop();
         feverTimer?.Stop();
@@ -2408,7 +2368,10 @@ public class Game : MonoBehaviour
             audioSourceManager.UnpauseAll();
             if (videoPlayer.isPaused) videoPlayer.Play();
         });
-        MenuSfx.instance.PlayPauseSound();
+        if (playSound)
+        {
+            MenuSfx.instance.PlayPauseSound();
+        }
     }
     #endregion
 }

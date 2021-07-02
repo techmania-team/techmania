@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.010002136, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8889981116408035395
@@ -233,6 +233,7 @@ MonoBehaviour:
   durationTrailEnd: {fileID: 367373193066360127}
   ongoingTrail: {fileID: 0}
   ongoingTrailEnd: {fileID: 4998339337288888286}
+  noteRef: {fileID: 0}
 --- !u!114 &7191325310277094451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,7 +248,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noteImage: {fileID: 1889145054254741463}
   feverOverlay: {fileID: 0}
+  approachOverlay: {fileID: 0}
   hitbox: {fileID: 0}
+  controlledExternally: 0
   repeatHead: {fileID: 0}
 --- !u!1 &6418336322937474376
 GameObject:

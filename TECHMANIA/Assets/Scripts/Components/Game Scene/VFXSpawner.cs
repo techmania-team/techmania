@@ -27,10 +27,10 @@ public class VFXSpawner : MonoBehaviour
     }
 
     private List<GameObject> SpawnVfxAt(Vector3 position,
-        List<SpriteSheetForVfx> spriteSheetLayers, bool loop = false)
+        List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
         List<GameObject> layers = new List<GameObject>();
-        foreach (SpriteSheetForVfx layer in spriteSheetLayers)
+        foreach (SpriteSheet layer in spriteSheetLayers)
         {
             GameObject vfx = Instantiate(vfxPrefab, transform);
             vfx.GetComponent<VFXDrawer>().Initialize(
@@ -41,7 +41,7 @@ public class VFXSpawner : MonoBehaviour
     }
 
     private List<GameObject> SpawnVfxAt(NoteObject note,
-        List<SpriteSheetForVfx> spriteSheetLayers, bool loop = false)
+        List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
         return SpawnVfxAt(note.transform.position,
             spriteSheetLayers, loop);

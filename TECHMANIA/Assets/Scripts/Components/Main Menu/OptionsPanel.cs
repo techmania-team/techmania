@@ -14,16 +14,8 @@ public class OptionsPanel : MonoBehaviour
     public Toggle vSyncToggle;
 
     [Header("Audio")]
-    public Slider masterVolumeSlider;
-    public TMP_Text masterVolumeDisplay;
-    public Slider musicVolumeSlider;
-    public TMP_Text musicVolumeDisplay;
-    public Slider keysoundVolumeSlider;
-    public TMP_Text keysoundVolumeDisplay;
-    public Slider sfxVolumeSlider;
-    public TMP_Text sfxVolumeDisplay;
+    public AudioSliders audioSliders;
     public TMP_Dropdown audioBufferDropdown;
-    public AudioMixer audioMixer;
 
     [Header("Appearance")]
     public TMP_Dropdown languageDropdown;
@@ -31,9 +23,11 @@ public class OptionsPanel : MonoBehaviour
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
     public Toggle showJudgementTallyToggle;
+    public Toggle showLaneDividersToggle;
+    public TMP_Dropdown beatMarkersDropdown;
 
     [Header("Miscellaneous")]
-    public TMP_Text latencyDisplay;
+    public TextMeshProUGUI latencyDisplay;
 
     // Make a backup of all available resolutions at startup, because
     // Screen.resolutions may change at runtime. I have no idea why.
@@ -51,7 +45,7 @@ public class OptionsPanel : MonoBehaviour
         Locale.SetLocale(Options.instance.locale);
         Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioBufferSize();
-        instance.ApplyVolume();
+        instance.audioSliders.ApplyVolume();
     }
 
     private void LoadOrCreateOptions()
@@ -125,16 +119,6 @@ public class OptionsPanel : MonoBehaviour
 
         // Audio
 
-        masterVolumeSlider.SetValueWithoutNotify(
-            Options.instance.masterVolume);
-        musicVolumeSlider.SetValueWithoutNotify(
-            Options.instance.musicVolume);
-        keysoundVolumeSlider.SetValueWithoutNotify(
-            Options.instance.keysoundVolume);
-        sfxVolumeSlider.SetValueWithoutNotify(
-            Options.instance.sfxVolume);
-        UpdateVolumeDisplay();
-
         UIUtils.MemoryToDropdown(audioBufferDropdown,
             Options.instance.audioBufferSize.ToString(),
             defaultValue: 0);
@@ -160,6 +144,8 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.showFps);
         showJudgementTallyToggle.SetIsOnWithoutNotify(
             Options.instance.showJudgementTally);
+        showLaneDividersToggle.SetIsOnWithoutNotify(
+            Options.instance.showLaneDividers);
 
         // Miscellaneous
 
@@ -179,6 +165,15 @@ public class OptionsPanel : MonoBehaviour
         fullscreenDropdown.SetValueWithoutNotify(
             (int)Options.instance.fullScreenMode);
         fullscreenDropdown.RefreshShownValue();
+
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            beatMarkersDropdown,
+            "options_beat_markers_hidden",
+            "options_beat_markers_show_beat_markers",
+            "options_beat_markers_show_half_beat_markers");
+        beatMarkersDropdown.SetValueWithoutNotify(
+           (int)Options.instance.beatMarkers);
+        beatMarkersDropdown.RefreshShownValue();
     }
 
     #region Graphics
@@ -209,17 +204,6 @@ public class OptionsPanel : MonoBehaviour
     #endregion
 
     #region Audio
-    public void OnVolumeChanged()
-    {
-        Options.instance.masterVolume = masterVolumeSlider.value;
-        Options.instance.musicVolume = musicVolumeSlider.value;
-        Options.instance.keysoundVolume = keysoundVolumeSlider.value;
-        Options.instance.sfxVolume = sfxVolumeSlider.value;
-        
-        UpdateVolumeDisplay();
-        ApplyVolume();
-    }
-
     public void OnAudioBufferSizeChanged()
     {
         Options.instance.audioBufferSize = int.Parse(
@@ -227,41 +211,7 @@ public class OptionsPanel : MonoBehaviour
             audioBufferDropdown.value].text);
 
         ApplyAudioBufferSize();
-        ApplyVolume();
-    }
-
-    private float VolumeValueToDb(float volume)
-    {
-        return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
-    }
-
-    private string VolumeValueToDisplay(float volume)
-    {
-        return Mathf.RoundToInt(volume * 100f).ToString();
-    }
-
-    private void UpdateVolumeDisplay()
-    {
-        masterVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.masterVolume);
-        musicVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.musicVolume);
-        keysoundVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.keysoundVolume);
-        sfxVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.sfxVolume);
-    }
-
-    private void ApplyVolume()
-    {
-        audioMixer.SetFloat("MasterVolume", VolumeValueToDb(
-            Options.instance.masterVolume));
-        audioMixer.SetFloat("MusicVolume", VolumeValueToDb(
-            Options.instance.musicVolume));
-        audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(
-            Options.instance.keysoundVolume));
-        audioMixer.SetFloat("SfxVolume", VolumeValueToDb(
-            Options.instance.sfxVolume));
+        audioSliders.ApplyVolume();
     }
 
     // This resets the audio mixer, AND it only happens in
@@ -302,6 +252,10 @@ public class OptionsPanel : MonoBehaviour
         Options.instance.showFps = showFpsToggle.isOn;
         Options.instance.showJudgementTally =
             showJudgementTallyToggle.isOn;
+        Options.instance.showLaneDividers =
+            showLaneDividersToggle.isOn;
+        Options.instance.beatMarkers = (Options.BeatMarkerVisibility)
+            beatMarkersDropdown.value;
     }
     #endregion
 }

@@ -7,8 +7,6 @@ using UnityEngine.UI;
 // RepeatHeadHoldAppearance.
 public class RepeatHeadAppearanceBase : NoteAppearance
 {
-    public RectTransform pathToLastRepeatNote;
-
     protected override void TypeSpecificResolve()
     {
         state = State.PendingResolve;
@@ -19,9 +17,7 @@ public class RepeatHeadAppearanceBase : NoteAppearance
 
     protected void SetRepeatPathVisibility(Visibility v)
     {
-        if (pathToLastRepeatNote == null) return;
-        pathToLastRepeatNote.gameObject.SetActive(
-            v != Visibility.Hidden);
+        GetComponent<RepeatPathManager>().SetVisibility(v);
     }
 
     protected void SetRepeatPathExtensionVisibility(Visibility v)
@@ -91,19 +87,14 @@ public class RepeatHeadAppearanceBase : NoteAppearance
 
     protected override void TypeSpecificInitializeScale()
     {
-        pathToLastRepeatNote.localScale = new Vector3(
-            pathToLastRepeatNote.localScale.x,
-            GlobalResource.noteSkin.repeatPath.scale,
-            1f);
+        GetComponent<RepeatPathManager>().InitializeScale();
     }
 
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.repeatHead
-            .GetSpriteForFloatBeat(Game.FloatBeat);
-        pathToLastRepeatNote.GetComponent<Image>().sprite =
-            GlobalResource.noteSkin.repeatPath
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
+        GetComponent<RepeatPathManager>().UpdateSprites();
     }
 
     #region Repeat
@@ -184,17 +175,8 @@ public class RepeatHeadAppearanceBase : NoteAppearance
             positionAfterScanOutOfBounds: true);
         float width = Mathf.Abs(startX - endX);
 
-        pathToLastRepeatNote.sizeDelta = new Vector2(width,
-            pathToLastRepeatNote.sizeDelta.y);
-        if (endX < startX)
-        {
-            pathToLastRepeatNote.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
-            pathToLastRepeatNote.localScale = new Vector3(
-                pathToLastRepeatNote.localScale.x,
-                -pathToLastRepeatNote.localScale.y,
-                pathToLastRepeatNote.localScale.z);
-        }
+        GetComponent<RepeatPathManager>().SetWidth(
+            width, rightToLeft: endX < startX);
 
         repeatPathExtensions = new List<RepeatPathExtension>();
     }

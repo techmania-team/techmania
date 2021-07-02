@@ -31,6 +31,9 @@ The current target is Windows PCs, with the Touch control scheme requiring a tou
 Per the MIT license, you are free to produce any Content with TECHMANIA, including but not limited to screenshots, videos and livestreams. Attributions are appreciated, but not required. However, please keep the following in mind:
 * If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
 * If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
+* If your Content is commercial, additional limitations apply:
+  * Your Content cannot feature the official tracks f for fun and Yin-Yang Specialist (MUG ver).
+  * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/Sfx/Fever.wav). You can swap the sound with one that allows commercial use, make a custom build, and produce Content from that build.
 
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
@@ -48,8 +51,10 @@ Note that the default skins are not part of the project, so you'll need to copy 
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
-There are a few unofficial Android builds available:
-* MoonLight's builds:
+There are a few unofficial builds available:
+* fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
+* rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
+* MoonLight's Android builds:
   * 0.7: https://drive.google.com/file/d/11jgs4E46cm6swlt6CN4j7kkwjljSiDdj/view?usp=sharing
   * 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
-* samnyan's build on 0.2: https://github.com/samnyan/techmania/releases
+* samnyan's Android build on 0.2: https://github.com/samnyan/techmania/releases

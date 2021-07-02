@@ -11,7 +11,7 @@ public class VFXDrawer : MonoBehaviour
 {
     public Material additiveMaterial;
 
-    private SpriteSheetForVfx spriteSheet;
+    private SpriteSheet spriteSheet;
     private bool loop;
 
     private RectTransform rect;
@@ -19,7 +19,7 @@ public class VFXDrawer : MonoBehaviour
     private float startTime;
 
     public void Initialize(Vector3 position,
-        SpriteSheetForVfx spriteSheet, bool loop)
+        SpriteSheet spriteSheet, bool loop)
     {
         transform.position = position;
         this.spriteSheet = spriteSheet;

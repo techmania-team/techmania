@@ -61,6 +61,10 @@ public class GlobalResourceLoader : MonoBehaviour
         LoadComboSkin(progressCallback, completeCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
+        oneSkinLoaded = false;
+        LoadGameUiSkin(progressCallback, completeCallback);
+        yield return new WaitUntil(() => oneSkinLoaded);
+
         yield return null;
         if (lastError == null)
         {
@@ -155,11 +159,58 @@ public class GlobalResourceLoader : MonoBehaviour
             return;
         }
 
+        UnityAction<string> localCallback = (string error) =>
+        {
+            if (error != null)
+            {
+                completeCallback(error);
+                return;
+            }
+            // The game expects 10 digits in each set.
+            foreach (List<SpriteSheet> list in
+                GlobalResource.comboSkin.GetReferenceToDigitLists())
+            {
+                while (list.Count < 10)
+                {
+                    list.Add(SpriteSheet.MakeNewEmptySpriteSheet());
+                }
+            }
+            completeCallback(null);
+        };
         List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(comboSkinFolder,
             spriteSheets,
             Locale.GetString("resource_loader_loading_combo_skin"),
+            progressCallback,
+            localCallback));
+    }
+
+    public void LoadGameUiSkin(UnityAction<string> progressCallback,
+        UnityAction<string> completeCallback)
+    {
+        string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
+            Options.instance.gameUiSkin);
+        string gameUiSkinFilename = Path.Combine(
+            gameUiSkinFolder, Paths.kSkinFilename);
+        try
+        {
+            GlobalResource.gameUiSkin = GameUISkin.LoadFromFile(
+                gameUiSkinFilename) as GameUISkin;
+        }
+        catch (Exception ex)
+        {
+            completeCallback?.Invoke(Locale.GetStringAndFormat(
+                "resource_loader_game_ui_skin_error_format",
+                ex.Message));
+            return;
+        }
+
+        List<SpriteSheet> spriteSheets = GlobalResource.gameUiSkin
+            .GetReferenceToAllSpriteSheets();
+        StartCoroutine(LoadSkin(gameUiSkinFolder,
+            spriteSheets,
+            Locale.GetString("resource_loader_loading_game_ui_skin"),
             progressCallback,
             completeCallback));
     }
@@ -175,6 +226,13 @@ public class GlobalResourceLoader : MonoBehaviour
         for (int i = 0; i < spriteSheetReferences.Count; i++)
         {
             progressCallback?.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
+
+            if (spriteSheetReferences[i] == null ||
+                spriteSheetReferences[i].filename == null)
+            {
+                spriteSheetReferences[i].MakeEmpty();
+                continue;
+            }
 
             string filename = Path.Combine(skinFolder,
                 spriteSheetReferences[i].filename);

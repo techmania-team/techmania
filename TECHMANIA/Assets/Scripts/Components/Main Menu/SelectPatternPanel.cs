@@ -49,7 +49,6 @@ public class SelectPatternPanel : MonoBehaviour
             OnSelectedPatternObjectChanged;
 
         // Other UI elements.
-        modifierSidesheet.Prepare();
         ModifierSidesheet.ModifierChanged += OnModifierChanged;
         OnModifierChanged();
         RefreshPatternDetails(p: null);

@@ -34,6 +34,6 @@ public class BasicNoteAppearance : NoteAppearance
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.basic
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 }

@@ -33,6 +33,6 @@ public class HoldNoteAppearance : NoteAppearance
     protected override void UpdateSprites()
     {
         noteImage.sprite = GlobalResource.noteSkin.holdHead
-            .GetSpriteForFloatBeat(Game.FloatBeat);
+            .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 }

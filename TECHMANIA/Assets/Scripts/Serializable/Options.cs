@@ -38,13 +38,23 @@ public class Options : OptionsBase
 
     // Appearance
 
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public bool showJudgementTally;
+    public bool showLaneDividers;
+    public BeatMarkerVisibility beatMarkers;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
+    public string gameUiSkin;
     public bool reloadSkinsWhenLoadingPattern;
 
     // Timing
@@ -61,6 +71,10 @@ public class Options : OptionsBase
     // Modifiers
 
     public Modifiers modifiers;
+
+    // Track list options.
+
+    public TrackFilter trackFilter;
 
     // Per-track options.
     // This should be a dictionary, but dictionaries are not
@@ -92,9 +106,12 @@ public class Options : OptionsBase
         showLoadingBar = true;
         showFps = false;
         showJudgementTally = false;
+        showLaneDividers = false;
+        beatMarkers = BeatMarkerVisibility.Hidden;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
+        gameUiSkin = "Default";
         reloadSkinsWhenLoadingPattern = false;
 
         touchOffsetMs = 0;
@@ -105,6 +122,12 @@ public class Options : OptionsBase
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
+        trackFilter = new TrackFilter();
+    }
+
+    protected override void PrepareToSerialize()
+    {
+        RemoveDefaultPerTrackOptions();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -203,6 +226,22 @@ public class Options : OptionsBase
         PerTrackOptions newOptions = new PerTrackOptions(guid);
         perTrackOptions.Add(newOptions);  // Not written to disk yet.
         return newOptions;
+    }
+
+    private void RemoveDefaultPerTrackOptions()
+    {
+        List<PerTrackOptions> remainingOptions =
+            new List<PerTrackOptions>();
+        foreach (PerTrackOptions p in perTrackOptions)
+        {
+            if (!p.noVideo && p.backgroundBrightness == 
+                PerTrackOptions.kMaxBrightness)
+            {
+                continue;
+            }
+            remainingOptions.Add(p);
+        }
+        perTrackOptions = remainingOptions;
     }
 #endregion
 }
@@ -417,7 +456,7 @@ public class Modifiers
         "modifier_half_speed"
     };
 
-    // Display
+    // Utilities
 
     // Does not add "none" segments when all options are 0; does not
     // add per-track options.
@@ -481,6 +520,36 @@ public class Modifiers
                 scrollSpeedDisplayKeys[(int)scrollSpeed]));
         }
     }
+
+    public Scan.Direction GetTopScanDirection()
+    {
+        switch (scanDirection)
+        {
+            case ScanDirection.Normal:
+            case ScanDirection.RR:
+                return Scan.Direction.Right;
+            case ScanDirection.LR:
+            case ScanDirection.LL:
+                return Scan.Direction.Left;
+            default:
+                throw new Exception();
+        }
+    }
+
+    public Scan.Direction GetBottomScanDirection()
+    {
+        switch (scanDirection)
+        {
+            case ScanDirection.Normal:
+            case ScanDirection.LL:
+                return Scan.Direction.Left;
+            case ScanDirection.LR:
+            case ScanDirection.RR:
+                return Scan.Direction.Right;
+            default:
+                throw new Exception();
+        }
+    }
 }
 
 [Serializable]
@@ -489,11 +558,58 @@ public class PerTrackOptions
     public string trackGuid;
     public bool noVideo;
     public int backgroundBrightness;  // 0-10
+    public const int kMaxBrightness = 10;
 
     public PerTrackOptions(string trackGuid)
     {
         this.trackGuid = trackGuid;
         noVideo = false;
-        backgroundBrightness = 10;
+        backgroundBrightness = kMaxBrightness;
     }
+}
+
+[Serializable]
+public class TrackFilter
+{
+    public bool showTracksInAllFolders;
+
+    public enum SortBasis
+    {
+        Title,
+        Artist,
+        Genre,
+        TouchLevel,
+        KeysLevel,
+        KMLevel
+    };
+    public enum SortOrder
+    { 
+        Ascending,
+        Descending
+    };
+
+    public SortBasis sortBasis;
+    public SortOrder sortOrder;
+
+    public TrackFilter()
+    {
+        showTracksInAllFolders = false;
+        sortBasis = SortBasis.Title;
+        sortOrder = SortOrder.Ascending;
+    }
+
+    public static TrackFilter instance
+    {
+        get { return Options.instance.trackFilter; }
+    }
+
+    public static readonly string[] sortBasisDisplayKeys =
+    {
+        "track_filter_sidesheet_sort_basis_title",
+        "track_filter_sidesheet_sort_basis_artist",
+        "track_filter_sidesheet_sort_basis_genre",
+        "track_filter_sidesheet_sort_basis_touch_level",
+        "track_filter_sidesheet_sort_basis_keys_level",
+        "track_filter_sidesheet_sort_basis_km_level"
+    };
 }

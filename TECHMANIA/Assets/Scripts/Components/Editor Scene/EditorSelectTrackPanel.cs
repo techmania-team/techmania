@@ -21,7 +21,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         return true;
     }
 
-    protected override void OnClickCard(GameObject o)
+    protected override void OnTrackCardClick(GameObject o)
     {
         EditorContext.Reset();
         EditorContext.trackPath = Path.Combine(cardToTrack[o].folder, 
@@ -31,7 +31,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             TransitionToPanel.Direction.Right);
     }
 
-    protected override void OnClickNewTrackCard()
+    protected override void OnNewTrackCardClick()
     {
         newTrackDialog.Show(createCallback:
             (string title, string artist) =>

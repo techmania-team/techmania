@@ -11,8 +11,14 @@ using UnityEngine.UI;
 
 public class SelectTrackPanel : MonoBehaviour
 {
+    protected class Subfolder
+    {
+        public string path;
+        public string eyecatchFullPath;
+    }
     protected class TrackInFolder
     {
+        // Doesn't include the track itself.
         public string folder;
         public Track track;
     }
@@ -24,14 +30,14 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected static string currentLocation;
     // Cached, keyed by track folder's parent folder.
-    protected static Dictionary<string, List<string>> subfolderList;
+    protected static Dictionary<string, List<Subfolder>> subfolderList;
     protected static Dictionary<string, List<TrackInFolder>> trackList;
     protected static Dictionary<string, List<ErrorInTrack>>
         errorTrackList;
     static SelectTrackPanel()
     {
         currentLocation = "";
-        subfolderList = new Dictionary<string, List<string>>();
+        subfolderList = new Dictionary<string, List<Subfolder>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
     }
@@ -44,16 +50,19 @@ public class SelectTrackPanel : MonoBehaviour
     }
 
     public Button backButton;
+    public Button trackFilterButton;
     public Button refreshButton;
-    public GridLayoutGroup trackGrid;
+    public Button goUpButton;
     public TextMeshProUGUI locationDisplay;
-    public GameObject goUpCard;
+    public GridLayoutGroup subfolderGrid;
     public GameObject subfolderCardTemplate;
+    public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
-    public GameObject noTrackText;
+    public TextMeshProUGUI trackStatusText;
+    public TrackFilterSidesheet trackFilterSidesheet;
     public Panel selectPatternPanel;
     public MessageDialog messageDialog;
 
@@ -61,9 +70,24 @@ public class SelectTrackPanel : MonoBehaviour
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
+    private void Start()
+    {
+        // Reset the keyword every time the main menu or editor scene
+        // loads.
+        trackFilterSidesheet.ResetSearchKeyword();
+    }
+
     private void OnEnable()
     {
         StartCoroutine(Refresh());
+        TrackFilterSidesheet.trackFilterChanged += 
+            OnTrackFilterChanged;
+    }
+
+    private void OnDisable()
+    {
+        TrackFilterSidesheet.trackFilterChanged -=
+            OnTrackFilterChanged;
     }
 
     protected IEnumerator Refresh()
@@ -76,14 +100,27 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Show location.
+        if (TrackFilter.instance.showTracksInAllFolders)
+        {
+            currentLocation = Paths.GetTrackRootFolder();
+        }
         locationDisplay.text = currentLocation;
 
+        // Activate all grids regardless of content.
+        subfolderGrid.gameObject.SetActive(true);
+        trackGrid.gameObject.SetActive(true);
+
         // Remove all objects from grid, except for templates.
+        for (int i = 0; i < subfolderGrid.transform.childCount; i++)
+        {
+            GameObject o = subfolderGrid.transform.GetChild(i)
+                .gameObject;
+            if (o == subfolderCardTemplate) continue;
+            Destroy(o);
+        }
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
-            if (o == goUpCard) continue;
-            if (o == subfolderCardTemplate) continue;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
             if (o == newTrackCard) continue;
@@ -93,10 +130,12 @@ public class SelectTrackPanel : MonoBehaviour
         if (!trackList.ContainsKey(currentLocation))
         {
             backButton.interactable = false;
+            trackFilterButton.interactable = false;
             refreshButton.interactable = false;
-            goUpCard.gameObject.SetActive(false);
+            goUpButton.interactable = false;
             newTrackCard.gameObject.SetActive(false);
             trackListBuildingProgress.gameObject.SetActive(true);
+            trackStatusText.gameObject.SetActive(false);
 
             // Launch background worker to rebuild track list.
             trackListBuilder = new BackgroundWorker();
@@ -116,33 +155,53 @@ public class SelectTrackPanel : MonoBehaviour
             Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
-            refreshButton.interactable = true;
             backButton.interactable = true;
+            trackFilterButton.interactable = true;
+            refreshButton.interactable = true;
         }
 
-        // Show go up card if applicable.
-        goUpCard.SetActive(currentLocation !=
-            Paths.GetTrackRootFolder());
+        // Enable go up button if applicable.
+        goUpButton.interactable = currentLocation !=
+            Paths.GetTrackRootFolder();
+
+        // Prepare subfolder list. Make a local copy so we can
+        // sort it. This also applies to the track list below.
+        List<Subfolder> subfolders = new List<Subfolder>();
+        if (!TrackFilter.instance.showTracksInAllFolders)
+        {
+            foreach (Subfolder s in subfolderList[currentLocation])
+            {
+                subfolders.Add(s);
+            }
+            subfolders.Sort((Subfolder s1, Subfolder s2) =>
+            {
+                return string.Compare(s1.path, s2.path);
+            });
+        }
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
         GameObject firstCard = null;
-        foreach (string subfolder in subfolderList[currentLocation])
+        bool subfolderGridEmpty = true;
+        bool trackGridEmpty = true;
+        foreach (Subfolder subfolder in subfolders)
         {
             GameObject card = Instantiate(subfolderCardTemplate,
-                trackGrid.transform);
+                subfolderGrid.transform);
             card.name = "Subfolder Card";
             card.GetComponent<SubfolderCard>().Initialize(
-                new DirectoryInfo(subfolder).Name);
+                new DirectoryInfo(subfolder.path).Name,
+                subfolder.eyecatchFullPath);
             card.SetActive(true);
+            subfolderGridEmpty = false;
 
             // Record mapping.
-            cardToSubfolder.Add(card, subfolder);
+            cardToSubfolder.Add(card, subfolder.path);
 
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickSubfolderCard(card);
+                OnSubfolderCardClick(card);
             });
 
             if (firstCard == null)
@@ -151,11 +210,46 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
-        // Instantiate track cards.
-        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
-        foreach (TrackInFolder trackInFolder in 
-            trackList[currentLocation])
+        // Prepare track list.
+        List<TrackInFolder> tracks = new List<TrackInFolder>();
+        if (TrackFilter.instance.showTracksInAllFolders)
         {
+            foreach (List<TrackInFolder> oneFolder in trackList.Values)
+            {
+                foreach (TrackInFolder t in oneFolder)
+                {
+                    tracks.Add(t);
+                }
+            }
+        }
+        else
+        {
+            foreach (TrackInFolder t in trackList[currentLocation])
+            {
+                tracks.Add(t);
+            }
+        }
+        tracks.Sort(
+            (TrackInFolder t1, TrackInFolder t2) =>
+            {
+                return Track.Compare(t1.track, t2.track,
+                    TrackFilter.instance.sortBasis,
+                    TrackFilter.instance.sortOrder);
+            });
+
+        // Instantiate track cards. Also apply filter.
+        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
+        foreach (TrackInFolder trackInFolder in tracks)
+        {
+            if (trackFilterSidesheet.searchKeyword != null &&
+                trackFilterSidesheet.searchKeyword != "" &&
+                !trackInFolder.track.ContainsKeywords(
+                    trackFilterSidesheet.searchKeyword))
+            {
+                // Filtered out.
+                continue;
+            }
+
             GameObject card = Instantiate(trackCardTemplate,
                 trackGrid.transform);
             card.name = "Track Card";
@@ -163,6 +257,7 @@ public class SelectTrackPanel : MonoBehaviour
                 trackInFolder.folder,
                 trackInFolder.track.trackMetadata);
             card.SetActive(true);
+            trackGridEmpty = false;
 
             // Record mapping.
             cardToTrack.Add(card, trackInFolder);
@@ -170,7 +265,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickCard(card);
+                OnTrackCardClick(card);
             });
 
             if (firstCard == null)
@@ -195,6 +290,7 @@ public class SelectTrackPanel : MonoBehaviour
                 trackGrid.transform);
             card.name = "Error Card";
             card.SetActive(true);
+            trackGridEmpty = false;
 
             // Record mapping.
             cardToError.Add(card, message);
@@ -202,7 +298,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
-                OnClickErrorCard(card);
+                OnErrorCardClick(card);
             });
 
             if (firstCard == null)
@@ -215,12 +311,13 @@ public class SelectTrackPanel : MonoBehaviour
         {
             newTrackCard.transform.SetAsLastSibling();
             newTrackCard.SetActive(true);
+            trackGridEmpty = false;
             newTrackCard.GetComponent<Button>().onClick
                 .RemoveAllListeners();
             newTrackCard.GetComponent<Button>().onClick
                 .AddListener(() =>
             {
-                OnClickNewTrackCard();
+                OnNewTrackCardClick();
             });
 
             if (firstCard == null)
@@ -229,18 +326,73 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
-        if (firstCard == null && goUpCard.activeSelf)
+        // Deactivate empty grids.
+        subfolderGrid.gameObject.SetActive(!subfolderGridEmpty);
+        trackGrid.gameObject.SetActive(!trackGridEmpty);
+
+        if (!trackFilterSidesheet.gameObject.activeSelf)
         {
-            firstCard = goUpCard;
+            if (firstCard == null)
+            {
+                EventSystem.current.SetSelectedGameObject(
+                    backButton.gameObject);
+            }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(firstCard);
+            }
         }
-        EventSystem.current.SetSelectedGameObject(firstCard);
-        noTrackText.SetActive(firstCard == null);
+        
+        // Show "no track" message or "tracks hidden" message
+        // as necessary.
+        if (cardToTrack.Count < tracks.Count)
+        {
+            trackStatusText.gameObject.SetActive(true);
+            trackStatusText.text = Locale.GetStringAndFormat(
+                "select_track_some_tracks_hidden_text",
+                tracks.Count - cardToTrack.Count,
+                trackFilterSidesheet.searchKeyword);
+        }
+        else if (cardToTrack.Count + cardToError.Count == 0)
+        {
+            trackStatusText.gameObject.SetActive(true);
+            trackStatusText.text = Locale.GetString(
+                "select_track_no_track_text");
+        }
+        else
+        {
+            trackStatusText.gameObject.SetActive(false);
+        }
     }
 
     protected virtual bool ShowNewTrackCard()
     {
         return false;
     }
+
+    private void Update()
+    {
+        // Synchronize alpha with sidesheet because the
+        // CanvasGroup on the sidesheet ignores parent.
+        if (PanelTransitioner.transitioning &&
+            trackFilterSidesheet.gameObject.activeSelf)
+        {
+            trackFilterSidesheet.GetComponent<CanvasGroup>().alpha
+                = GetComponent<CanvasGroup>().alpha;
+        }
+    }
+
+    #region Track filter side sheet
+    public void OnTrackFilterButtonClick()
+    {
+        trackFilterSidesheet.GetComponent<Sidesheet>().FadeIn();
+    }
+
+    private void OnTrackFilterChanged()
+    {
+        StartCoroutine(Refresh());
+    }
+    #endregion
 
     #region Background worker
     private BackgroundWorker trackListBuilder;
@@ -251,12 +403,21 @@ public class SelectTrackPanel : MonoBehaviour
         DoWorkEventArgs e)
     {
         RemoveCachedListsAtCurrentLocation();
-        subfolderList[currentLocation] = new List<string>();
-        trackList[currentLocation] = new List<TrackInFolder>();
-        errorTrackList[currentLocation] = new List<ErrorInTrack>();
+        subfolderList.Clear();
+        trackList.Clear();
+        errorTrackList.Clear();
+
+        BuildTrackListFor(Paths.GetTrackRootFolder());
+    }
+
+    private void BuildTrackListFor(string folder)
+    {
+        subfolderList.Add(folder, new List<Subfolder>());
+        trackList.Add(folder, new List<TrackInFolder>());
+        errorTrackList.Add(folder, new List<ErrorInTrack>());
 
         foreach (string file in Directory.EnumerateFiles(
-            currentLocation, "*.zip"))
+            folder, "*.zip"))
         {
             // Attempt to extract this archive.
             builderProgress = Locale.GetStringAndFormat(
@@ -273,7 +434,7 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         foreach (string dir in Directory.EnumerateDirectories(
-            currentLocation))
+            folder))
         {
             builderProgress = Locale.GetStringAndFormat(
                 "select_track_scanning_text", dir);
@@ -283,8 +444,31 @@ public class SelectTrackPanel : MonoBehaviour
                 dir, Paths.kTrackFilename);
             if (!File.Exists(possibleTrackFile))
             {
+                Subfolder subfolder = new Subfolder()
+                {
+                    path = dir
+                };
+
+                // Look for eyecatch, if any.
+                string pngEyecatch = Path.Combine(dir,
+                    Paths.kSubfolderEyecatchPngFilename);
+                if (File.Exists(pngEyecatch))
+                {
+                    subfolder.eyecatchFullPath = pngEyecatch;
+                }
+                string jpgEyecatch = Path.Combine(dir,
+                    Paths.kSubfolderEyecatchJpgFilename);
+                if (File.Exists(jpgEyecatch))
+                {
+                    subfolder.eyecatchFullPath = jpgEyecatch;
+                }
+
                 // Record as a subfolder.
-                subfolderList[currentLocation].Add(dir);
+                subfolderList[folder].Add(subfolder);
+
+                // Build recursively.
+                BuildTrackListFor(dir);
+
                 continue;
             }
 
@@ -296,7 +480,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception ex)
             {
-                errorTrackList[currentLocation].Add(new ErrorInTrack()
+                errorTrackList[folder].Add(new ErrorInTrack()
                 {
                     trackFile = possibleTrackFile,
                     message = ex.Message
@@ -304,19 +488,12 @@ public class SelectTrackPanel : MonoBehaviour
                 continue;
             }
 
-            trackList[currentLocation].Add(new TrackInFolder()
+            trackList[folder].Add(new TrackInFolder()
             {
                 folder = dir,
                 track = track
             });
         }
-
-        trackList[currentLocation].Sort(
-            (TrackInFolder t1, TrackInFolder t2) =>
-            {
-                return string.Compare(t1.track.trackMetadata.title,
-                    t2.track.trackMetadata.title);
-            });
     }
 
     private void TrackListBuilderCompleted(object sender, 
@@ -381,19 +558,20 @@ public class SelectTrackPanel : MonoBehaviour
         StartCoroutine(Refresh());
     }
 
-    public void OnClickGoUpCard()
+    public void OnGoUpButtonClick()
     {
-        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
+        currentLocation = new DirectoryInfo(currentLocation)
+            .Parent.FullName;
         StartCoroutine(Refresh());
     }
 
-    private void OnClickSubfolderCard(GameObject o)
+    private void OnSubfolderCardClick(GameObject o)
     {
         currentLocation = cardToSubfolder[o];
         StartCoroutine(Refresh());
     }
 
-    protected virtual void OnClickCard(GameObject o)
+    protected virtual void OnTrackCardClick(GameObject o)
     {
         GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
@@ -404,13 +582,13 @@ public class SelectTrackPanel : MonoBehaviour
             TransitionToPanel.Direction.Right);
     }
 
-    private void OnClickErrorCard(GameObject o)
+    private void OnErrorCardClick(GameObject o)
     {
         string error = cardToError[o];
         messageDialog.Show(error);
     }
 
-    protected virtual void OnClickNewTrackCard()
+    protected virtual void OnNewTrackCardClick()
     {
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");

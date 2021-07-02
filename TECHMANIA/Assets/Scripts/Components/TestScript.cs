@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using TMPro;
@@ -11,15 +12,9 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 
 [Serializable]
-public class TestElement
+public class TestClass
 {
-    public int n;
-}
-
-[Serializable]
-public class TestClassWithDict
-{
-    public Dictionary<string, TestElement> dict;
+    public float f;
 }
 
 public class TestScript : MonoBehaviour
@@ -27,7 +22,17 @@ public class TestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Mathf.InverseLerp(5f, 15f, 7f));
-        Debug.Log(Mathf.InverseLerp(15f, 5f, 7f));
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
+        CultureInfo infoBackup = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("it");
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
+        CultureInfo.CurrentCulture = infoBackup;
+        Debug.Log("current culture:" + CultureInfo.CurrentCulture.Name);
+        Debug.Log(float.Parse("1,23"));
+        Debug.Log(float.Parse("1.23"));
     }
 }

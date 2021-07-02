@@ -63,6 +63,7 @@ public class NoteAppearance : MonoBehaviour
 
     public Image noteImage;
     public GameObject feverOverlay;
+    public GameObject approachOverlay;
     public RectTransform hitbox;
 
     protected Scan scanRef;
@@ -182,17 +183,27 @@ public class NoteAppearance : MonoBehaviour
         return alpha;
     }
 
+    // This includes approach overlay and hit box.
     protected void SetNoteImageVisibility(Visibility v,
         bool bypassNoteOpacityModifier = false)
     {
         noteImage.gameObject.SetActive(v != Visibility.Hidden);
+        noteImage.color = new Color(1f, 1f, 1f,
+            VisibilityToAlpha(v, bypassNoteOpacityModifier));
+
+        if (approachOverlay != null)
+        {
+            approachOverlay.GetComponent<Image>().enabled =
+                v != Visibility.Hidden;
+            approachOverlay.GetComponent<ApproachOverlay>()
+                .SetNoteAlpha(VisibilityToAlpha(
+                    v, bypassNoteOpacityModifier));
+        }
+
         if (hitbox != null)
         {
             hitbox.gameObject.SetActive(v != Visibility.Hidden);
         }
-
-        noteImage.color = new Color(1f, 1f, 1f,
-            VisibilityToAlpha(v, bypassNoteOpacityModifier));
     }
 
     protected void SetFeverOverlayVisibility(Visibility v,
@@ -276,6 +287,7 @@ public class NoteAppearance : MonoBehaviour
         {
             state = State.Inactive;
             UpdateState();
+            UpdateSprites();
             UpdateHitboxImage();
         }
     }
@@ -370,6 +382,24 @@ public class NoteAppearance : MonoBehaviour
         float x, y;
         GetNoteImageScale(out x, out y);
         noteImage.transform.localScale = new Vector3(x, y, 1f);
+
+        if (feverOverlay != null)
+        {
+            float scale = GlobalResource.vfxSkin.feverOverlay.scale;
+            feverOverlay.GetComponent<RectTransform>().localScale =
+                new Vector3(scale, scale, 1f);
+        }
+        if (approachOverlay != null)
+        {
+            float scale = GlobalResource.gameUiSkin.approachOverlay
+                .scale;
+            approachOverlay.GetComponent<RectTransform>().localScale =
+                new Vector3(
+                    scanRef.direction == Scan.Direction.Right 
+                    ? scale : -scale,
+                    scale,
+                    1f);
+        }
 
         TypeSpecificInitializeScale();
     }

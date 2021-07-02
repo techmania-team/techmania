@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class RepeatPathExtension : MonoBehaviour
 {
-    public RectTransform extension;
     private NoteAppearance noteRef;
 
     public void Initialize(Scan scanRef, NoteObject noteRef,
@@ -21,28 +20,10 @@ public class RepeatPathExtension : MonoBehaviour
             positionAfterScanOutOfBounds: true);
         float width = Mathf.Abs(startX - endX);
 
-        extension.sizeDelta = new Vector2(width,
-            extension.sizeDelta.y);
-        if (endX < startX)
-        {
-            extension.localRotation =
-                Quaternion.Euler(0f, 0f, 180f);
-            extension.localScale = new Vector3(
-                extension.localScale.x,
-                -extension.localScale.y,
-                extension.localScale.z);
-        }
-
-        InitializeScale();
-    }
-
-    private void InitializeScale()
-    {
-        extension.localScale = new Vector3(
-            extension.localScale.x,
-            extension.localScale.y * 
-                GlobalResource.noteSkin.repeatPath.scale,
-            extension.localScale.z);
+        RepeatPathManager pathManager =
+            GetComponent<RepeatPathManager>();
+        pathManager.SetWidth(width, rightToLeft: endX < startX);
+        pathManager.InitializeScale();
     }
 
     public void DrawBeforeRepeatNotes()
@@ -54,8 +35,7 @@ public class RepeatPathExtension : MonoBehaviour
     public void SetExtensionVisibility(
         NoteAppearance.Visibility v)
     {
-        extension.gameObject.SetActive(
-            v != NoteAppearance.Visibility.Hidden);
+        GetComponent<RepeatPathManager>().SetVisibility(v);
     }
 
     public void Activate()
@@ -74,8 +54,6 @@ public class RepeatPathExtension : MonoBehaviour
 
     public void UpdateSprites()
     {
-        extension.GetComponent<Image>().sprite =
-            GlobalResource.noteSkin.repeatPath.GetSpriteForFloatBeat(
-                Game.FloatBeat);
+        GetComponent<RepeatPathManager>().UpdateSprites();
     }
 }

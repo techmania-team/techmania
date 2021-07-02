@@ -14,8 +14,10 @@ public class SelectSkinPanel : MonoBehaviour
     public TMP_Dropdown noteSkinDropdown;
     public TMP_Dropdown vfxSkinDropdown;
     public TMP_Dropdown comboSkinDropdown;
+    public TMP_Dropdown gameUiSkinDropdown;
     public Toggle reloadSkinsToggle;
 
+    public Image scanlinePreview;
     public Image notePreview;
     public GameObject vfxPrefab;
     public Transform vfxContainer;
@@ -71,7 +73,11 @@ public class SelectSkinPanel : MonoBehaviour
         InitializeDropdown(vfxSkinDropdown,
             Paths.GetVfxSkinRootFolder(), Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
-            Paths.GetComboSkinRootFolder(), Options.instance.comboSkin);
+            Paths.GetComboSkinRootFolder(), 
+            Options.instance.comboSkin);
+        InitializeDropdown(gameUiSkinDropdown,
+            Paths.GetGameUiSkinRootFolder(),
+            Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
 
@@ -99,10 +105,20 @@ public class SelectSkinPanel : MonoBehaviour
         if (showPreview &&
             GlobalResource.noteSkin != null &&
             GlobalResource.vfxSkin != null &&
-            GlobalResource.comboSkin != null)
+            GlobalResource.comboSkin != null &&
+            GlobalResource.gameUiSkin != null)
         {
+            RectTransform scanlineRect = scanlinePreview
+                .GetComponent<RectTransform>();
+            scanlineRect.anchoredPosition = new Vector2(
+                beat * 250f - 500f,
+                scanlineRect.anchoredPosition.y);
+
+            UIUtils.SetSpriteAndAspectRatio(scanlinePreview,
+                GlobalResource.gameUiSkin
+                .scanline.GetSpriteAtFloatIndex(beat * 0.25f));
             notePreview.sprite = GlobalResource.noteSkin.basic.
-                GetSpriteForFloatBeat(beat);
+                GetSpriteAtFloatIndex(beat);
             if (resolveNote)
             {
                 // VFX
@@ -115,7 +131,7 @@ public class SelectSkinPanel : MonoBehaviour
                         remainingVfxInstances.Add(instance);
                     }
                 }
-                foreach (SpriteSheetForVfx layer in
+                foreach (SpriteSheet layer in
                     GlobalResource.vfxSkin.basicMax)
                 {
                     GameObject vfx = Instantiate(
@@ -133,6 +149,7 @@ public class SelectSkinPanel : MonoBehaviour
                 comboPreview.Show(null, Judgement.RainbowMax);
             }
 
+            scanlinePreview.color = Color.white;
             if (noteVisible)
             {
                 notePreview.color = Color.white;
@@ -144,6 +161,7 @@ public class SelectSkinPanel : MonoBehaviour
         }
         else
         {
+            scanlinePreview.color = Color.clear;
             notePreview.color = Color.clear;
         }
 
@@ -177,6 +195,15 @@ public class SelectSkinPanel : MonoBehaviour
             completeCallback: OnSkinLoaded);
     }
 
+    public void OnGameUiSkinChanged()
+    {
+        UIToMemory();
+
+        PrepareToLoadSkin();
+        resourceLoader.LoadGameUiSkin(progressCallback: null,
+            completeCallback: OnSkinLoaded);
+    }
+
     public void OnSkinLoaded(string error)
     {
         if (error != null)
@@ -189,6 +216,7 @@ public class SelectSkinPanel : MonoBehaviour
         noteSkinDropdown.interactable = true;
         vfxSkinDropdown.interactable = true;
         comboSkinDropdown.interactable = true;
+        gameUiSkinDropdown.interactable = true;
     }
 
     private void PrepareToLoadSkin()
@@ -200,6 +228,7 @@ public class SelectSkinPanel : MonoBehaviour
         noteSkinDropdown.interactable = false;
         vfxSkinDropdown.interactable = false;
         comboSkinDropdown.interactable = false;
+        gameUiSkinDropdown.interactable = false;
 
         // VFX preview
         if (vfxInstances != null)
@@ -247,6 +276,8 @@ public class SelectSkinPanel : MonoBehaviour
             vfxSkinDropdown.value].text;
         Options.instance.comboSkin = comboSkinDropdown.options[
             comboSkinDropdown.value].text;
+        Options.instance.gameUiSkin = gameUiSkinDropdown.options[
+            gameUiSkinDropdown.value].text;
         Options.instance.reloadSkinsWhenLoadingPattern =
             reloadSkinsToggle.isOn;
     }

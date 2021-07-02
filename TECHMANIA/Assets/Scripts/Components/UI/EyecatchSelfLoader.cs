@@ -31,6 +31,18 @@ public class EyecatchSelfLoader : MonoBehaviour
         }
     }
 
+    public void LoadImage(string fullPath)
+    {
+        if (fullPath != null && fullPath != "")
+        {
+            ResourceLoader.LoadImage(fullPath, OnLoadImageComplete);
+        }
+        else
+        {
+            NoImage();
+        }
+    }
+
     private void OnLoadImageComplete(Texture2D texture, string error)
     {
         if (!gameObject.activeInHierarchy) return;

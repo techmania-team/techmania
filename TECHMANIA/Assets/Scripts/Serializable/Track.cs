@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 // Track is the container of all patterns in a musical track.
 // In anticipation of format updates, each format version is
@@ -114,7 +115,7 @@ public class TimeStop : TimeEvent
 }
 
 [Serializable]
-public class Track : TrackBase
+public partial class Track : TrackBase
 {
     public const string kVersion = "2";
 
@@ -168,12 +169,16 @@ public class Track : TrackBase
 
     protected override void PrepareToSerialize()
     {
+        SwitchToInvariantCulture();
         patterns.ForEach(p => p.PackAllNotes());
+        RestoreToSystemCulture();
     }
 
     protected override void InitAfterDeserialize()
     {
+        SwitchToInvariantCulture();
         patterns.ForEach(p => p.UnpackAllNotes());
+        SwitchToInvariantCulture();
     }
 }
 

@@ -73,6 +73,28 @@ Please select a valid skin from the options menu.","读取连击皮肤时发生�
 {0}
 
 옵션에서 콤보 스킨을 다시 선택하십시오."
+,resource_loader_loading_game_ui_skin,Loading game UI skin…,正在读取游戏内界面皮肤……,正在讀取遊戲介面造型,UIスキンを読み込み中...,UI 스킨을 불러오는 중입니다...
+,resource_loader_game_ui_skin_error_format,"An error occurred when loading game UI skin:
+
+{0}
+
+Please select a valid skin from the options menu.","读取游戏内界面皮肤时发生错误：
+
+{0}
+
+请在设置菜单选择一个可用的皮肤。","載入遊戲介面造型時發生錯誤：
+
+{0}
+
+請在設定中選擇一個可用的造型。","次のスキンの読み込み中にエラーが発生しました：
+
+{0}
+
+オプションでUIスキンを再度選択してください。","다음 스킨을 불러오는 중 오류가 발생했습니다.
+
+{0}
+
+옵션에서 UI 스킨을 다시 선택하십시오."
 ,,,,,,
 ,main_menu_start_button,START,开始,開始,スタート,게임 시작
 ,main_menu_editor_button,EDITOR,编辑,編輯,エディタ,편집기
@@ -103,14 +125,14 @@ For this session TECHMANIA will use the default ruleset.","读取自定义规则
 
 판정/점수 기본 설정을 사용합니다. "
 ,,,,,,
-,select_track_panel_title,Select Track,选择曲目,選擇曲目,トラック選択,Select Track
+,select_track_panel_title,Select Track,选择曲目,選擇歌曲,トラック選択,Select Track
 ,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
 ,select_track_scanning_text,Scanning: {0},正在扫描：{0},正在掃描：{0},スキャン中: {0},검색 중 : {0}
 ,select_track_extracting_text,Extracting: {0},正在解压：{0},正在解壓縮：{0},解答中: {0},압축 해제 중 : {0}
 ,select_track_go_up_card_title,Go Up,向上,向上一層,上位に戻る,상위 폴더로
 "When there's an error with a track,
 the select track panel will create an ""error card"" for it,
-with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入曲目,トラックを読み込めません。,음악을 불러올 수 없습니다.
+with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入歌曲,トラックを読み込めません。,음악을 불러올 수 없습니다.
 ,select_track_error_card_artist,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
 "{0} is track.tech's full path;
 {1} is the error message.",select_track_error_format,"An error occurred when loading {0}:
@@ -125,7 +147,23 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 
 {1}"
 ,select_track_new_track_card_title,New,新建,新增,新しいトラック,새 음악
-,select_track_no_track_text,TECHMANIA cannot find any track.,TECHMANIA没有找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
+"{0} is the number of tracks hidden;
+{1} is the search term.",select_track_some_tracks_hidden_text,"{0} track(s) are hidden as they don't match the search term ""{1}"".",{0}首曲目不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的曲目。,"キーワード""{1}""を含まない{0}曲が表示されていません。","검색어 ""{1}""을 포함하지 않는 {0}곡이 표시되지 않았습니다."
+,select_track_no_track_text,TECHMANIA cannot find any track in this folder.,TECHMANIA没有在此文件夹内找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
+,,,,,,
+,track_filter_sidesheet_search_title,Search,搜索,搜尋,検索,검색
+,track_filter_sidesheet_keyword_label,Keyword,关键字,關鍵字,キーワード,키워드
+,track_filter_sidesheet_options_title,Options,设置,設定,設定,정렬 옵션
+,track_filter_sidesheet_show_tracks_in_all_folders_label,Show tracks in all folders,显示所有文件夹内的曲目,顯示所有資料夾內的曲目,すべてのトラックを見る,모든 음악 보기
+,track_filter_sidesheet_sort_by_label,Sort by,排序,排序,並べ替え,정렬 기준
+,track_filter_sidesheet_sort_ascending_label,Ascending,升序,升冪,昇順,오름차순
+,track_filter_sidesheet_sort_descending_label,Descending,降序,降冪,降順,내림차순
+,track_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
+,track_filter_sidesheet_sort_basis_artist,Artist,艺术家,演出者,アーティスト,아티스트
+,track_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
+,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
+,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
+,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드 + 마우스)
 ,,,,,,
 ,select_pattern_panel_title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
 ,select_pattern_length_label,Length,长度,長度,長さ,재생 시간
@@ -146,7 +184,7 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 ,modifier_sidesheet_keysound_label,Keysound,按键音,按鍵音,ノート音,연주음
 ,modifier_sidesheet_assist_tick_label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
 ,modifier_sidesheet_appearance_title,Appearance,界面,介面,表示,화면 표시
-,modifier_sidesheet_background_brightness_label,Background brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
+,modifier_sidesheet_background_brightness_label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
 ,modifier_sidesheet_no_video_label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
 ,modifier_sidesheet_special_modifiers_title,Special Modifiers,特殊选项,特殊選項,特殊モディファイア,기타 옵션
 ,modifier_sidesheet_special_modifiers_warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,警告：這些選項會使成績無效,注意：このオプションを有効にするとスコアが無効になります。,주의: 아래 옵션을 사용하면 스코어를 등록할 수 없습니다.
@@ -209,6 +247,11 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
 ,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
 ,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
+,options_show_lane_dividers_label,Show lane dividers,显示轨道分界线,顯示軌道分界線,レーン区切り線を表示,트랙 구분선 표시
+,options_beat_markers_label,Beat markers,节拍辅助线,節拍輔助線,ビート区切り線,박자 구분선
+,options_beat_markers_hidden,Hidden,隐藏,隱藏,隠す,숨김
+,options_beat_markers_show_beat_markers,Show beat markers,显示节拍辅助线,顯示節拍輔助線,1泊毎に表示,1박마다 표시
+,options_beat_markers_show_half_beat_markers,Show half beat markers,显示半节拍辅助线,顯示半拍輔助線,半拍毎に表示,반 박마다 표시
 ,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
@@ -244,6 +287,7 @@ to make acronyms.,timing_calibration_late_indicator,late,过晚,太晚,LATE,LATE
 ,select_skin_note_skin_label,Note,音符,音符,ノート,노트
 ,select_skin_vfx_skin_label,VFX,特效,特效,VFX,쿨밤
 ,select_skin_combo_skin_label,Combo,连击,連擊,コンボ,판정/콤보
+,select_skin_game_ui_skin_label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,select_skin_reload_skin_when_loading_label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
 ,,,,,,
 ,information_panel_title,Information,须知,須知,情報,안내
@@ -266,7 +310,7 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 ,information_panel_credits_program,Program,程序,程式,プログラミング,프로그래밍
 ,information_panel_credits_localizer,Localization (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
 ,,,,,,
-,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本曲目不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
+,select_pattern_no_pattern_text,This track does not contain any pattern.,本曲目不包含任何谱面。,本歌曲不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
 ,select_pattern_play_button,PLAY,开始,開始,プレイ,시작
 ,,,,,,
 ,message_dialog_ok_button,OK,确定,確定,OK,확인
@@ -328,7 +372,7 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
 ,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
-,result_panel_select_track_button,SELECT TRACK,选曲,選擇曲目,SELECT MUSIC,SELECT MUSIC
+,result_panel_select_track_button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
 ,result_panel_retry_button,RETRY,重试,重新開始,RETRY,RETRY
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
@@ -349,7 +393,7 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 "Most dropdowns (eg. Backing track, BGA) in the
 editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,(無),(なし),(None)
 ,,,,,,
-,track_setup_panel_title,Track Setup,曲目设置,曲目設定,トラック設定,음악 설정
+,track_setup_panel_title,Track Setup,曲目设置,歌曲設定,トラック設定,음악 설정
 ,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,未儲存的變更將遺失，是否繼續？,変更が保存されません。続けますか？,변경사항이 저장되지 않습니다. 계속하시겠습니까?
 ,track_setup_discard_changes_confirm,Discard,继续,繼續,終了,나가기
 ,track_setup_discard_changes_cancel,Cancel,取消,取消,キャンセル,취소
@@ -367,8 +411,8 @@ backgrounds, and more.","导入音频、图像、视频文件后，
 背景などに使うことができます。",연주음 및 배경 등으로 사용할 파일을 가져옵니다.
 "Strings in the open file dialog shown when
 the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
-,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,対応するファイル,지원하는 파일
-,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
+,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
+,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,すべてのファイル,모든 파일
 "A warning shown when the newly imported
 files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
 
@@ -382,11 +426,11 @@ If you choose to cancel, no file will be copied.","以下文件将被覆盖。�
 
 {0}
 
-如果選擇取消，將不會複製任何檔案。","次のファイルが上書きされます。操作を続けますか？
+如果選擇取消，將不會複製任何檔案。","次のファイルが上書きされます。続けますか？
 
 {0}
 
-[キャンセル]を選択するとファイルをインポートしません。","다음 파일을 덮어씁니다. 계속하시겠습니까?
+キャンセルを選択するとファイルをインポートしません。","다음 파일을 덮어씁니다. 계속하시겠습니까?
 
 {0}
 
@@ -411,8 +455,8 @@ files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} 
 ,track_setup_metadata_tab_eyecatch_preview,Eyecatch preview,封面预览,封面預覽,アイキャッチプレビュー,커버 이미지 미리보기
 ,track_setup_metadata_tab_basics_header,Basics,基本信息,基本資料,基本情報,기본 정보
 ,track_setup_metadata_tab_title_label,Title,标题,標題,タイトル,제목
-,track_setup_metadata_tab_artist_label,Artist,艺术家,演出者,作曲家,작곡가
-,track_setup_metadata_tab_genre_label,Genre,流派,內容類型,ジャンル,장르
+,track_setup_metadata_tab_artist_label,Artist,艺术家,演出者,アーティスト,작곡가
+,track_setup_metadata_tab_genre_label,Genre,流派,曲風,ジャンル,장르
 ,track_setup_metadata_tab_additional_credit_label,Additional credits,其他制作人,其他演出者,その他,비고
 ,track_setup_metadata_tab_preview_header,Preview,预览,預覽,プレビュー,프리뷰
 ,track_setup_metadata_tab_eyecatch_image_label,Eyecatch image,封面,封面圖,アイキャッチイメージ,커버 이미지
@@ -439,7 +483,7 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 미리듣기 음악 전체를 재생하려면 두 값을 모두 
 0으로 설정하십시오."
 ,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,刪除歌曲,トラック削除,곡 삭제
-,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구적으로 삭제합니다. 계속하시겠습니까?
+,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} のすべてのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구적으로 삭제합니다. 계속하시겠습니까?
 ,track_setup_metadata_tab_delete_track_confirm,Delete,删除,刪除,削除,삭제
 ,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
@@ -682,10 +726,10 @@ Hold Ctrl to move all selected notes. You can do this from anywhere in the works
 按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。","用滑鼠左鍵畫出矩形選擇內部所有音符。
 按住 Shift 可以額外選取音符。
 按住 Alt 可以取消選取選中的音符。
-按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不再某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択できます。
+按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不在某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択することができます。
 Shiftを長押ししながら選択すると選択済みのノートと一緒に選択されます。
 Altを長押ししながら選択すると選択済みのノートを選択解除します。
-Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用できます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
+Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用することができます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
 노트를 선택한 후 다른 노트를 추가로 선택하려면 Shift를 누른 채로 선택하십시오.
 선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
 Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
@@ -709,9 +753,9 @@ When using B-spline, control points are hidden.","拖拽音符是由锚点和控
 用滑鼠右鍵點擊可以刪除錨點和控制點。
 按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線またはB-スプライン曲線に沿って進行します。
 ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
-アンカーレシーバーをクリックしてアンカーを追加できます。
+アンカーレシーバーをクリックしてアンカーを追加することができます。
 アンカーとコントロールポイントをドラックして移します。
-Ctrlを長押ししながらアンカーをクリックし、ドラッグすることでコントロールポイントを配置できます。","드래그 노트의 진행 경로는 고정점 및 컨트롤 포인트로 정해지는 베지어/B 스플라인 곡선을 따라갑니다.
+Ctrlを長押ししながらアンカーをクリックし、ドラッグすることでコントロールポイントを配置することができます。","드래그 노트의 진행 경로는 고정점 및 컨트롤 포인트로 정해지는 베지어/B 스플라인 곡선을 따라갑니다.
 드래그 노트를 선택하면 고정점, 컨트롤 포인트, 고정선(노트 가운데에 있는 갈색 선)이 표시됩니다.
 고정선을 클릭하여 고정점을 추가할 수 있습니다.
 고정점과 컨트롤 포인트를 클릭하여 선택하고 드래그하여 위치를 옮길 수 있습니다.
@@ -720,12 +764,12 @@ Ctrl를 누른 채로 고정점을 클릭하고 드래그하여 컨트롤 포인
 """Snackbar"" is the tiny message box shown at the
 bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold Notes cannot have zero length.,长按音符的长度不能为0。,長按音符的長度不能為 0。,ホールドノートの長さは0になれません。,홀딩 노트의 길이는 0이 될 수 없습니다.
 ,pattern_panel_snackbar_hold_note_covers_other_notes,Hold Notes cannot cover other notes.,长按音符不能遮盖其他音符。,長按音符不能蓋過其他音符,ホールドノートは他のノートの上に配置できません。,홀딩 노트는 다른 노트를 가릴 수 없습니다.
-,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの追加位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
+,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
 ,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first Anchor in each Drag Note.,不能删除拖拽音符的第一个锚点。,不能刪除拖動音符的第一個錨點。,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
 ,pattern_panel_snackbar_at_least_two_anchors,Drag Notes must contain at least 2 Anchors.,拖拽音符必须包含至少2个锚点。,拖動音符必須包含至少兩個錨點,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
 ,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,錨點必須從左向右排列。,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
 ,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
-,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目の小説の前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目のスキャンの前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番レーンの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは63番レーンの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,音符不能和其他音符位於同一位置。,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
@@ -747,7 +791,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 
 {0}
 
-このパターンを編集は続けられますが、プレイバックとブレビューは無効化されます。","다음 파일을 불러오는 중 오류가 발생했습니다.
+このパターンの編集は続けられますが、プレイバックとブレビューは無効化されます。","다음 파일을 불러오는 중 오류가 발생했습니다.
 
 {0}
 
@@ -756,14 +800,12 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
 ,time_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
 ,time_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
-,time_event_dialog_stop_time_button,stop time for,停止时间,停止時間,の停止時間,중지 시간
+,time_event_dialog_stop_time_button,stop time for,停止时间,停止時間,停止時間,중지 시간
 ,time_event_dialog_stop_time_button_after_text_field,beats,（拍）,（拍）,拍,박자
 ,time_event_dialog_dont_stop_time_button,don't stop time,不停止时间,不停止時間,時間を止めない,시간을 멈추지 않습니다.
 ,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선 적용됩니다."
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
-,,,,,,
-,,,,,,
 ,,,,,,
 ,,,,,,
 ,,,,,,

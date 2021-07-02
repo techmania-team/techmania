@@ -10,6 +10,8 @@ public static class Paths
 {
     public const string kTrackFilename = "track.tech";
     public const string kSkinFilename = "skin.json";
+    public const string kSubfolderEyecatchPngFilename = "eyecatch.png";
+    public const string kSubfolderEyecatchJpgFilename = "eyecatch.jpg";
 
     #region Things in working directory
     private static string GetWorkingDirectory()
@@ -71,6 +73,16 @@ public static class Paths
     public static string GetComboSkinFolder(string name)
     {
         return Path.Combine(GetComboSkinRootFolder(), name);
+    }
+
+    public static string GetGameUiSkinRootFolder()
+    {
+        return Path.Combine(GetSkinFolder(), "Game UI");
+    }
+
+    public static string GetGameUiSkinFolder(string name)
+    {
+        return Path.Combine(GetGameUiSkinRootFolder(), name);
     }
     #endregion
 

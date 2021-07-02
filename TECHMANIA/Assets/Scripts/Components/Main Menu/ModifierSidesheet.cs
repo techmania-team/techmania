@@ -19,8 +19,6 @@ public class ModifierSidesheet : MonoBehaviour
 
     [Header("Appearance")]
     public Toggle showJudgementTally;
-    public Slider backgroundBrightnessSlider;
-    public TextMeshProUGUI backgroundBrightnessDisplay;
     public Toggle noVideo;
 
     [Header("Special modifiers")]
@@ -35,9 +33,7 @@ public class ModifierSidesheet : MonoBehaviour
         MemoryToUI();
     }
 
-    // To be called by SelectPatternPanel. Prepares the
-    // dropdowns and per-track options.
-    public void Prepare()
+    private void InitializeDropdowns()
     {
         UIUtils.InitializeDropdownWithLocalizedOptions(
             noteOpacity,
@@ -74,8 +70,10 @@ public class ModifierSidesheet : MonoBehaviour
             Modifiers.scrollSpeedDisplayKeys);
     }
 
-    private void MemoryToUI()
+    public void MemoryToUI()
     {
+        InitializeDropdowns();
+
         // Modifiers
         
         noteOpacity.SetValueWithoutNotify(
@@ -114,9 +112,6 @@ public class ModifierSidesheet : MonoBehaviour
 
         showJudgementTally.SetIsOnWithoutNotify(
             Options.instance.showJudgementTally);
-        backgroundBrightnessSlider.SetValueWithoutNotify(
-            GameSetup.trackOptions.backgroundBrightness);
-        RefreshBrightnessDisplay();
         noVideo.SetIsOnWithoutNotify(
             GameSetup.trackOptions.noVideo);
 
@@ -133,12 +128,6 @@ public class ModifierSidesheet : MonoBehaviour
         scrollSpeed.SetValueWithoutNotify(
             (int)Modifiers.instance.scrollSpeed);
         scrollSpeed.RefreshShownValue();
-    }
-    
-    public void RefreshBrightnessDisplay()
-    {
-        backgroundBrightnessDisplay.text =
-            GameSetup.trackOptions.backgroundBrightness.ToString();
     }
 
     public void UIToMemory()
@@ -166,8 +155,6 @@ public class ModifierSidesheet : MonoBehaviour
 
         Options.instance.showJudgementTally =
             showJudgementTally.isOn;
-        GameSetup.trackOptions.backgroundBrightness =
-            Mathf.FloorToInt(backgroundBrightnessSlider.value);
         GameSetup.trackOptions.noVideo =
             noVideo.isOn;
 
