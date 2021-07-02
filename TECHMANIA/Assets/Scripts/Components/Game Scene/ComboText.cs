@@ -94,25 +94,29 @@ public class ComboText : MonoBehaviour
                 case Judgement.RainbowMax:
                     judgementSpriteSheet = GlobalResource.comboSkin
                         .rainbowMaxJudgement;
-                    comboDigitSpriteSheetList = GlobalResource.comboSkin
+                    comboDigitSpriteSheetList = 
+                        GlobalResource.comboSkin
                         .rainbowMaxDigits;
                     break;
                 case Judgement.Max:
                     judgementSpriteSheet = GlobalResource.comboSkin
                         .maxJudgement;
-                    comboDigitSpriteSheetList = GlobalResource.comboSkin
+                    comboDigitSpriteSheetList = 
+                        GlobalResource.comboSkin
                         .maxDigits;
                     break;
                 case Judgement.Cool:
                     judgementSpriteSheet = GlobalResource.comboSkin
                         .coolJudgement;
-                    comboDigitSpriteSheetList = GlobalResource.comboSkin
+                    comboDigitSpriteSheetList = 
+                        GlobalResource.comboSkin
                         .coolDigits;
                     break;
                 case Judgement.Good:
                     judgementSpriteSheet = GlobalResource.comboSkin
                         .goodJudgement;
-                    comboDigitSpriteSheetList = GlobalResource.comboSkin
+                    comboDigitSpriteSheetList = 
+                        GlobalResource.comboSkin
                         .goodDigits;
                     break;
                 case Judgement.Miss:
@@ -168,8 +172,9 @@ public class ComboText : MonoBehaviour
             for (int i = 0; i < comboDigits.Count; i++)
             {
                 if (!comboDigits[i].gameObject.activeSelf) continue;
-                comboDigits[i].GetComponent<RectTransform>().sizeDelta =
-                    new Vector2(GetWidth(comboDigitSpriteSheet[i]),
+                comboDigits[i].GetComponent<RectTransform>()
+                    .sizeDelta = new Vector2(
+                        GetWidth(comboDigitSpriteSheet[i]),
                         0f);
             }
         }

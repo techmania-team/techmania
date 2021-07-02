@@ -159,13 +159,31 @@ public class GlobalResourceLoader : MonoBehaviour
             return;
         }
 
+        UnityAction<string> localCallback = (string error) =>
+        {
+            if (error != null)
+            {
+                completeCallback(error);
+                return;
+            }
+            // The game expects 10 digits in each set.
+            foreach (List<SpriteSheet> list in
+                GlobalResource.comboSkin.GetReferenceToDigitLists())
+            {
+                while (list.Count < 10)
+                {
+                    list.Add(SpriteSheet.MakeNewEmptySpriteSheet());
+                }
+            }
+            completeCallback(null);
+        };
         List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(comboSkinFolder,
             spriteSheets,
             Locale.GetString("resource_loader_loading_combo_skin"),
             progressCallback,
-            completeCallback));
+            localCallback));
     }
 
     public void LoadGameUiSkin(UnityAction<string> progressCallback,

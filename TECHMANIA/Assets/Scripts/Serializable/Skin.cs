@@ -118,6 +118,13 @@ public class SpriteSheet
         texture = emptyTexture;
         GenerateSprites();
     }
+
+    public static SpriteSheet MakeNewEmptySpriteSheet()
+    {
+        SpriteSheet s = new SpriteSheet();
+        s.MakeEmpty();
+        return s;
+    }
     #endregion
 }
 
@@ -310,6 +317,17 @@ public class ComboSkin : ComboSkinBase
         coolDigits.ForEach(s => list.Add(s));
         goodDigits.ForEach(s => list.Add(s));
 
+        return list;
+    }
+
+    public List<List<SpriteSheet>> GetReferenceToDigitLists()
+    {
+        List<List<SpriteSheet>> list = new List<List<SpriteSheet>>();
+        list.Add(feverMaxDigits);
+        list.Add(rainbowMaxDigits);
+        list.Add(maxDigits);
+        list.Add(coolDigits);
+        list.Add(goodDigits);
         return list;
     }
 }
