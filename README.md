@@ -54,7 +54,5 @@ If the build fails or produces a platform-specific bug, you can submit an issue,
 There are a few unofficial builds available:
 * fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
-* MoonLight's Android builds:
-  * 0.7: https://drive.google.com/file/d/11jgs4E46cm6swlt6CN4j7kkwjljSiDdj/view?usp=sharing
-  * 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
+* MoonLight's Android builds: https://github.com/yyj01004/techmania/releases
 * samnyan's Android build on 0.2: https://github.com/samnyan/techmania/releases
