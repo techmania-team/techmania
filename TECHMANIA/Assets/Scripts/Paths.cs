@@ -13,36 +13,63 @@ public static class Paths
     public const string kSubfolderEyecatchPngFilename = "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = "eyecatch.jpg";
 
-    #region Things in working directory
-    private static string GetWorkingDirectory()
+    #region Important folders
+    public static string workingDirectory { get; private set; }
+    public static string trackRootFolder { get; private set; }
+    public static string skinFolder { get; private set; }
+    public static string dataFolder { get; private set; }
+
+    public static void PrepareFolders()
     {
+        // Working directory
 #if UNITY_ANDROID || UNITY_IOS
-        // Android
         string current = Application.persistentDataPath;
 #else
         // Does not end with separator
         string current = Directory.GetCurrentDirectory();
 #endif
-
         string buildsFolder = Path.Combine(current, "Builds");
         if (Directory.Exists(buildsFolder))
         {
-            return buildsFolder;
+            workingDirectory = buildsFolder;
+        }
+        else
+        {
+            workingDirectory = current;
         }
 
-        return current;
-    }
+        // Track root folder
+        trackRootFolder = Path.Combine(workingDirectory, "Tracks");
+        Directory.CreateDirectory(trackRootFolder);
 
+        // Skin folder
+        skinFolder = Path.Combine(workingDirectory, "Skins");
+        Directory.CreateDirectory(skinFolder);
+
+        // Data folder
+#if UNITY_ANDROID || UNITY_IOS
+        dataFolder = Path.Combine(
+            Application.persistentDataPath,
+            "TECHMANIA");
+#else
+        dataFolder = Path.Combine(
+            System.Environment.GetFolderPath(
+            System.Environment.SpecialFolder.MyDocuments),
+            "TECHMANIA");
+#endif
+        Directory.CreateDirectory(dataFolder);
+    }
+    #endregion
+
+    #region Things in working directory
     public static string GetTrackRootFolder()
     {
-        string tracks = Path.Combine(GetWorkingDirectory(), "Tracks");
-        Directory.CreateDirectory(tracks);  // No error if already exists
-        return tracks;
+        return trackRootFolder;
     }
 
     public static string GetSkinFolder()
     {
-        return Path.Combine(GetWorkingDirectory(), "Skins");
+        return skinFolder;
     }
 
     public static string GetNoteSkinRootFolder()
@@ -87,32 +114,14 @@ public static class Paths
     #endregion
 
     #region Things in document folder
-    private static string GetDataFolder()
-    {
-
-#if UNITY_ANDROID || UNITY_IOS
-        // Android
-        string folder = Path.Combine(
-            Application.persistentDataPath,
-            "TECHMANIA");
-#else
-        string folder = Path.Combine(
-            System.Environment.GetFolderPath(
-            System.Environment.SpecialFolder.MyDocuments),
-            "TECHMANIA");
-#endif
-        Directory.CreateDirectory(folder);
-        return folder;
-    }
-
     public static string GetOptionsFilePath()
     {
-        return Path.Combine(GetDataFolder(), "options.json");
+        return Path.Combine(dataFolder, "options.json");
     }
 
     public static string GetRulesetFilePath()
     {
-        return Path.Combine(GetDataFolder(), "ruleset.json");
+        return Path.Combine(dataFolder, "ruleset.json");
     }
     #endregion
 
