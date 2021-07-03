@@ -8,6 +8,7 @@ public class Startup : MonoBehaviour
     void Start()
     {
         Input.simulateMouseWithTouches = false;
+        Paths.PrepareFolders();
         OptionsPanel.ApplyOptionsOnStartUp();
         SpriteSheet.PrepareEmptySpriteSheet();
         GetComponent<GlobalResourceLoader>().StartLoading();
