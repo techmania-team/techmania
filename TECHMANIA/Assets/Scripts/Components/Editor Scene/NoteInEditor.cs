@@ -8,7 +8,9 @@ using UnityEngine.UI;
 
 public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 {
+    public Sprite regularSprite;
     public Sprite hiddenSprite;
+    public Sprite regularTrailSprite;
     public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
     public RectTransform endOfScanIndicator;
@@ -21,6 +23,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public bool transparentNoteImageWhenTrailTooShort;
 
     [Header("Drag Note")]
+    public Sprite regularCurveSprite;
     public Sprite hiddenCurveSprite;
     public CurvedImage curvedImage;
     public RectTransform anchorReceiverContainer;
@@ -29,6 +32,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public GameObject anchorTemplate;
     public Texture2D addAnchorCursor;
 
+    #region Outward events
     // GameObject in the following events all refer to
     // this.gameObject.
 
@@ -64,6 +68,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public static event UnityAction<PointerEventData> ControlPointDrag;
     public static event UnityAction<PointerEventData> 
         ControlPointEndDrag;
+    #endregion
 
     private void OnEnable()
     {
@@ -85,21 +90,23 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         return GetComponent<NoteObject>().note;
     }
 
-    public void UseHiddenSprite()
+    public void SetSprite(bool hidden)
     {
-        noteImage.GetComponent<Image>().sprite = hiddenSprite;
+        noteImage.GetComponent<Image>().sprite =
+            hidden ? hiddenSprite : regularSprite;
         if (durationTrail != null)
         {
-            durationTrail.GetComponent<Image>().sprite = 
-                hiddenTrailSprite;
+            durationTrail.GetComponent<Image>().sprite =
+                hidden ? hiddenTrailSprite : regularTrailSprite;
         }
         if (curvedImage != null)
         {
-            curvedImage.sprite = hiddenCurveSprite;
+            curvedImage.sprite = hidden ?
+                hiddenCurveSprite : regularCurveSprite;
         }
     }
 
-    private void UpdateSelection(HashSet<GameObject> selection)
+    public void UpdateSelection(HashSet<GameObject> selection)
     {
         bool selected = selection.Contains(gameObject);
         if (selectionOverlay != null)
@@ -166,11 +173,6 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         GetComponentInChildren<TextMeshProUGUI>(includeInactive: true)
             .text = UIUtils.StripAudioExtension(
                 GetNote().sound);
-    }
-
-    private void Update()
-    {
-
     }
 
     #region Event Relay From Note Image

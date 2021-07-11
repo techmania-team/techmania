@@ -1104,7 +1104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0faf644bfe2ec459a8c8f9751d0058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  regularSprite: {fileID: 21300000, guid: 902a0c9299414614786c4d75d0e2f302, type: 3}
   hiddenSprite: {fileID: 21300000, guid: c64a320823d205344a2825dc044ce2a3, type: 3}
+  regularTrailSprite: {fileID: 0}
   hiddenTrailSprite: {fileID: 0}
   selectionOverlay: {fileID: 1978132811206931860}
   endOfScanIndicator: {fileID: 4821684863819500735}
@@ -1114,6 +1116,7 @@ MonoBehaviour:
   invisibleTrail: {fileID: 0}
   horizontalResizeCursor: {fileID: 0}
   transparentNoteImageWhenTrailTooShort: 1
+  regularCurveSprite: {fileID: 21300000, guid: 44053b8b302598d468e65e26411cda8a, type: 3}
   hiddenCurveSprite: {fileID: 21300000, guid: ff01f03feea82214b81fbd071f8cfa67, type: 3}
   curvedImage: {fileID: 1961221960409530346}
   anchorReceiverContainer: {fileID: 3685183525656269851}

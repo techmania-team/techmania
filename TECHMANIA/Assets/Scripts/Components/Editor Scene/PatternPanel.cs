@@ -37,7 +37,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Notes")]
     public Transform noteContainer;
-    public Transform noteCemetary;
+    public ObjectPoolManager objectPoolManager;
     public NoteObject noteCursor;
     public RectTransform selectionRectangle;
     public GameObject basicNotePrefab;
@@ -2407,15 +2407,18 @@ public class PatternPanel : MonoBehaviour
                 break;
         }
 
-        NoteObject noteObject = Instantiate(prefab,
-            noteContainer).GetComponent<NoteObject>();
+        NoteObject noteObject = 
+            // Instantiate(prefab, noteContainer)
+            objectPoolManager.Borrow(prefab, noteContainer)
+            .GetComponent<NoteObject>();
         noteObject.note = n;
         NoteInEditor noteInEditor = noteObject
             .GetComponent<NoteInEditor>();
         noteInEditor.SetKeysoundText();
         noteInEditor.UpdateKeysoundVisibility();
         noteInEditor.UpdateEndOfScanIndicator();
-        if (n.lane >= PlayableLanes) noteInEditor.UseHiddenSprite();
+        noteInEditor.SetSprite(hidden: n.lane >= PlayableLanes);
+        noteInEditor.UpdateSelection(selectedNoteObjects);
         noteObject.GetComponent<SelfPositionerInEditor>()
             .Reposition();
 
@@ -3026,11 +3029,12 @@ public class PatternPanel : MonoBehaviour
         {
             lastSelectedNoteWithoutShift = null;
         }
-        // Destroy doesn't immedialy destroy, so we move the note
+        // Destroy doesn't immediately destroy, so we move the note
         // to the cemetary so as to not interfere with the
         // binary searches when spawning new notes on the same frame.
-        o.transform.SetParent(noteCemetary);
-        Destroy(o);
+        // o.transform.SetParent(noteCemetary);
+        // Destroy(o);
+        objectPoolManager.Return(o);
         UpdateNumScansAndRelatedUI();
     }
 
