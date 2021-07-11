@@ -70,21 +70,21 @@ public class SelectTrackPanel : MonoBehaviour
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
 
-    private void Start()
+    protected void Start()
     {
         // Reset the keyword every time the main menu or editor scene
         // loads.
         trackFilterSidesheet.ResetSearchKeyword();
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         StartCoroutine(Refresh());
         TrackFilterSidesheet.trackFilterChanged += 
             OnTrackFilterChanged;
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         TrackFilterSidesheet.trackFilterChanged -=
             OnTrackFilterChanged;
@@ -370,7 +370,7 @@ public class SelectTrackPanel : MonoBehaviour
         return false;
     }
 
-    private void Update()
+    protected void Update()
     {
         // Synchronize alpha with sidesheet because the
         // CanvasGroup on the sidesheet ignores parent.

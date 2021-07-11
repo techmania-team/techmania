@@ -11,11 +11,6 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     public NewTrackDialog newTrackDialog;
     public Panel trackSetupPanel;
 
-    private void OnEnable()
-    {
-        StartCoroutine(Refresh());
-    }
-
     protected override bool ShowNewTrackCard()
     {
         return true;
