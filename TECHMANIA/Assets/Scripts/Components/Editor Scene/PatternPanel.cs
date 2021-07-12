@@ -2555,15 +2555,6 @@ public class PatternPanel : MonoBehaviour
         if (n.note.type == NoteType.ChainHead ||
             n.note.type == NoteType.ChainNode)
         {
-            if (n.note.type == NoteType.ChainHead)
-            {
-                o.GetComponent<NoteInEditor>()
-                    .ResetNoteImageRotation();
-            }
-            if (n.note.type == NoteType.ChainNode)
-            {
-                o.GetComponent<NoteInEditor>().PointPathToward(null);
-            }
             if (n.note.lane >= 0 && n.note.lane < PlayableLanes)
             {
                 GameObject prev, next;
