@@ -37,7 +37,7 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Notes")]
     public Transform noteContainer;
-    public ObjectPoolManager objectPoolManager;
+    public Transform noteCemetary;
     public NoteObject noteCursor;
     public RectTransform selectionRectangle;
     public GameObject basicNotePrefab;
@@ -2408,8 +2408,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         NoteObject noteObject = 
-            // Instantiate(prefab, noteContainer)
-            objectPoolManager.Borrow(prefab, noteContainer)
+            Instantiate(prefab, noteContainer)
             .GetComponent<NoteObject>();
         noteObject.note = n;
         NoteInEditor noteInEditor = noteObject
@@ -3032,9 +3031,8 @@ public class PatternPanel : MonoBehaviour
         // Destroy doesn't immediately destroy, so we move the note
         // to the cemetary so as to not interfere with the
         // binary searches when spawning new notes on the same frame.
-        // o.transform.SetParent(noteCemetary);
-        // Destroy(o);
-        objectPoolManager.Return(o);
+        o.transform.SetParent(noteCemetary);
+        Destroy(o);
         UpdateNumScansAndRelatedUI();
     }
 
