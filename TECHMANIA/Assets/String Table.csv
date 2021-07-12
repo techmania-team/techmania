@@ -529,7 +529,7 @@ BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다.
 has completed playing.",等到BGA结束播放后才结束游戏。,等待 BGA 結束播放後才結束遊戲。,"BGAが終わるまでパターンのプレイが
 終わりません。",BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
 ,track_setup_patterns_tab_play_bga_on_loop_label,Play BGA on loop,循环播放BGA,循環播放 BGA,BGAリピート再生,BGA 반복 재생
-,track_setup_patterns_tab_timing_header,Timing,时间,時間,タイミング,타이밍
+Deleted in 0.9.,track_setup_patterns_tab_timing_header,Timing,时间,時間,タイミング,타이밍
 ,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,第一拍時間,最初ノートオフセット,시작 오프셋
 ,track_setup_patterns_tab_first_beat_offset_help,"The first beat of the pattern happens this many
 seconds after the backing track starts.","将背景音乐的这一时间点（单位为秒）
@@ -554,7 +554,7 @@ BPS는 패턴 중간에 변경할 수 없습니다."
 ,,,,,,
 `===== Editor - Pattern =====,,,,,,
 ,pattern_panel_title,Editing Pattern,编辑谱面,編輯譜面,パターン編集,패턴 편집
-,pattern_panel_edit_tab_title,Edit,编辑,編輯,編集,편집
+Deleted in 0.9.,pattern_panel_edit_tab_title,Edit,编辑,編輯,編集,편집
 ,pattern_panel_edit_tab_beat_snap_divisor_label,Beat snap divisor:,节拍划分数：,節拍劃分數,ノートスナップ値,박자 스냅 고정:
 ,pattern_panel_edit_tab_beat_snap_divisor_help,"Divide each beat into this many portions
 when snapping notes.","对齐音符时把每一拍
@@ -611,7 +611,7 @@ CtrlまたはShiftを長押ししながら
 順番に指定されます。","이 사운드를 다음에 생성하는 노트에 연주음으로 지정합니다.
 Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로 사용할 수 있습니다."
 ,,,,,,
-,pattern_panel_options_tab_title,Options,设置,設定,オプション,옵션
+Deleted in 0.9.,pattern_panel_options_tab_title,Options,设置,設定,オプション,옵션
 ,pattern_panel_options_appearance_header,Appearance,界面,介面,表示,표시
 ,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,在音符上顯示按鍵音。,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
 ,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,保持掃描線在螢幕內。,スキャンラインにビュー固定,판정선에 시점 고정
@@ -807,6 +807,5 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
+0.9 strings start here.,pattern_panel_tools_tab_inspect_button,Inspect,检查,,,
+,pattern_panel_tools_tab_radar_button,Radar,雷达,,,
