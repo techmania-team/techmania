@@ -222,6 +222,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated += 
             OnSelectedKeysoundsUpdated;
+        PatternTimingTab.TimingUpdated += OnPatternTimingUpdated;
         EditorOptionsTab.Opened += OnOptionsTabOpened;
         EditorOptionsTab.Closed += OnOptionsTabClosed;
 
@@ -263,6 +264,7 @@ public class PatternPanel : MonoBehaviour
         NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
         KeysoundSideSheet.selectedKeysoundsUpdated -= 
             OnSelectedKeysoundsUpdated;
+        PatternTimingTab.TimingUpdated -= OnPatternTimingUpdated;
         EditorOptionsTab.Opened -= OnOptionsTabOpened;
         EditorOptionsTab.Closed -= OnOptionsTabClosed;
     }
@@ -328,7 +330,7 @@ public class PatternPanel : MonoBehaviour
             switch (op.type)
             {
                 case EditOperation.Type.Metadata:
-                    // Do nothing.
+                    OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
                     DestroyAndRespawnAllMarkers();
@@ -381,7 +383,7 @@ public class PatternPanel : MonoBehaviour
             switch (op.type)
             {
                 case EditOperation.Type.Metadata:
-                    // Do nothing.
+                    OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
                     DestroyAndRespawnAllMarkers();
@@ -978,6 +980,13 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region UI Events And Updates
+    private void OnPatternTimingUpdated()
+    {
+        DestroyAndRespawnAllMarkers();
+        RepositionNeeded?.Invoke();
+        UpdateNumScansAndRelatedUI();
+    }
+
     public void OnBeatSnapDivisorChanged(int direction)
     {
         do

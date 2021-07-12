@@ -75,6 +75,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.SelectionChanged += UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged += 
             UpdateKeysoundVisibility;
+        PatternTimingTab.TimingUpdated += UpdateEndOfScanIndicator;
         resizeCursorState = 0;
     }
 
@@ -83,6 +84,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.SelectionChanged -= UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged -=
             UpdateKeysoundVisibility;
+        PatternTimingTab.TimingUpdated -= UpdateEndOfScanIndicator;
     }
 
     private Note GetNote()
