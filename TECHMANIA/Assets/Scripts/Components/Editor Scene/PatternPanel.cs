@@ -95,6 +95,18 @@ public class PatternPanel : MonoBehaviour
     {
         return o.GetComponent<NoteObject>().note;
     }
+
+    private HashSet<Note> GetNotesFromGameObjects(
+        HashSet<GameObject> gameObjects)
+    {
+        if (gameObjects == null) return null;
+        HashSet<Note> set = new HashSet<Note>();
+        foreach (GameObject o in gameObjects)
+        {
+            set.Add(GetNoteFromGameObject(o));
+        }
+        return set;
+    }
     
     private GameObject GetGameObjectFromNote(Note n)
     {
@@ -2784,115 +2796,20 @@ public class PatternPanel : MonoBehaviour
         HashSet<GameObject> ignoredExistingNotes,
         out string reason)
     {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-
-        // Boundary check.
-        if (pulse < 0)
-        {
-            reason = Locale.GetString(
-                "pattern_panel_snackbar_before_scan_0");
-            return false;
-        }
-        if (lane < 0)
-        {
-            reason = Locale.GetString(
-                "pattern_panel_snackbar_above_topmost_lane");
-            return false;
-        }
-        if (lane >= TotalLanes)
-        {
-            reason = Locale.GetString(
-                "pattern_panel_snackbar_below_bottommost_lane");
-            return false;
-        }
-
-        // Overlap check.
-        Note noteAtSamePulseAndLane = EditorContext.Pattern
-            .GetNoteAt(pulse, lane);
-        if (noteAtSamePulseAndLane != null &&
-            !ignoredExistingNotes.Contains(
-                GetGameObjectFromNote(noteAtSamePulseAndLane)))
-        {
-            reason = Locale.GetString(
-                "pattern_panel_snackbar_on_top_of_existing_note");
-            return false;
-        }
-
-        // Chain check.
-        if (type == NoteType.ChainHead || type == NoteType.ChainNode)
-        {
-            foreach (Note noteAtPulse in EditorContext.Pattern
-                .GetViewBetween(pulse, pulse))
-            {
-                if (ignoredExistingNotes.Contains(
-                    GetGameObjectFromNote(noteAtPulse)))
-                {
-                    continue;
-                }
-                
-                if (noteAtPulse.type == NoteType.ChainHead ||
-                    noteAtPulse.type == NoteType.ChainNode)
-                {
-                    reason = Locale.GetString(
-                        "pattern_panel_snackbar_chain_note_at_same_pulse");
-                    return false;
-                }
-            }
-        }
-
-        // Hold check.
-        Note holdNoteBeforePivot =
-            EditorContext.Pattern.GetClosestNoteBefore(pulse,
-            new HashSet<NoteType>()
-            {
-                NoteType.Hold,
-                NoteType.RepeatHeadHold,
-                NoteType.RepeatHold
-            }, minLaneInclusive: lane, maxLaneInclusive: lane);
-        if (holdNoteBeforePivot != null &&
-            !ignoredExistingNotes.Contains(
-                GetGameObjectFromNote(holdNoteBeforePivot)))
-        {
-            HoldNote holdNote = holdNoteBeforePivot as HoldNote;
-            if (holdNote.pulse + holdNote.duration >= pulse)
-            {
-                reason = Locale.GetString(
-                    "pattern_panel_snackbar_covered_by_hold_note");
-                return false;
-            }
-        }
-            
-        reason = null;
-        return true;
+        return EditorContext.Pattern.CanAddNote(
+            type, pulse, lane, TotalLanes,
+            GetNotesFromGameObjects(ignoredExistingNotes),
+            out reason);
     }
 
     private bool CanAddHoldNote(NoteType type, int pulse, int lane,
         int duration, HashSet<GameObject> ignoredExistingNotes,
         out string reason)
     {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-        if (!CanAddNote(type, pulse, lane, ignoredExistingNotes,
-            out reason))
-        {
-            return false;
-        }
-
-        // Additional check for hold notes.
-        if (HoldNoteCoversAnotherNote(pulse, lane, duration,
-            ignoredExistingNotes))
-        {
-            reason = Locale.GetString(
-                "pattern_panel_snackbar_hold_note_covers_other_notes");
-            return false;
-        }
-
-        return true;
+        return EditorContext.Pattern.CanAddHoldNote(
+            type, pulse, lane, TotalLanes, duration,
+            GetNotesFromGameObjects(ignoredExistingNotes),
+            out reason);
     }
 
     private bool CanAddDragNote(int pulse, int lane,
@@ -2910,27 +2827,9 @@ public class PatternPanel : MonoBehaviour
         int duration,
         HashSet<GameObject> ignoredExistingNotes)
     {
-        if (ignoredExistingNotes == null)
-        {
-            ignoredExistingNotes = new HashSet<GameObject>();
-        }
-
-        Note noteAfterPivot = EditorContext.Pattern
-            .GetClosestNoteAfter(
-            pulse, types: null,
-            minLaneInclusive: lane,
-            maxLaneInclusive: lane);
-        if (noteAfterPivot != null &&
-            !ignoredExistingNotes.Contains(
-                GetGameObjectFromNote(noteAfterPivot)))
-        {
-            if (pulse + duration >= noteAfterPivot.pulse)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return EditorContext.Pattern.HoldNoteCoversAnotherNote(
+            pulse, lane, duration,
+            GetNotesFromGameObjects(ignoredExistingNotes));
     }
 
     private int HoldNoteDefaultDuration(int pulse, int lane)
