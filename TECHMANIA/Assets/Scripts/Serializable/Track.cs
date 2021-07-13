@@ -313,7 +313,7 @@ public class PatternMetadata
     public string patternName;
     public int level;
     public ControlScheme controlScheme;
-    public int lanes;  // Currently unused
+    public int lanes => 4;  // Currently unused
     public string author;
 
     // Background AV.

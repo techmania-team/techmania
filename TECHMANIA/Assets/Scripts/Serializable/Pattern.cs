@@ -304,12 +304,12 @@ public partial class Pattern
     #endregion
 
     #region Statistics and Radar
-    public int NumPlayableNotes(int playableLanes = 4)
+    public int NumPlayableNotes()
     {
         int count = 0;
         foreach (Note n in notes)
         {
-            if (n.lane < playableLanes) count++;
+            if (n.lane < patternMetadata.lanes) count++;
         }
         return count;
     }
@@ -327,7 +327,7 @@ public partial class Pattern
     public Pattern ApplyModifiers(Modifiers modifiers)
     {
         Pattern p = CloneWithDifferentGuid();
-        const int kPlayableLanes = 4;
+        int playableLanes = patternMetadata.lanes;
         const int kAutoKeysoundFirstLane = 64;
         const int kAutoAssistTickFirstLane = 68;
 
@@ -335,8 +335,8 @@ public partial class Pattern
         {
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
-                n.lane = kPlayableLanes - 1 - n.lane;
+                if (n.lane >= playableLanes) continue;
+                n.lane = playableLanes - 1 - n.lane;
                 if (n is DragNote)
                 {
                     foreach (DragNode node in (n as DragNote).nodes)
@@ -356,7 +356,7 @@ public partial class Pattern
             List<Note> addedNotes = new List<Note>();
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
+                if (n.lane >= playableLanes) continue;
                 if (n.sound == null || n.sound == "") continue;
                 Note hiddenNote = n.Clone();
                 hiddenNote.lane += kAutoKeysoundFirstLane;
@@ -376,7 +376,7 @@ public partial class Pattern
                 new List<AssistTickNote>();
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
+                if (n.lane >= playableLanes) continue;
                 AssistTickNote assistTickNote = new AssistTickNote()
                 {
                     pulse = n.pulse,

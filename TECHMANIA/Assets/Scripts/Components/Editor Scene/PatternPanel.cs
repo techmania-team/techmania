@@ -125,7 +125,8 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Vertical Spacing
-    private static int PlayableLanes => 4;
+    private static int PlayableLanes => 
+        EditorContext.Pattern.patternMetadata.lanes;
     private static int TotalLanes => 64;
 
     private static float WorkspaceViewportHeight;
@@ -1315,6 +1316,32 @@ public class PatternPanel : MonoBehaviour
                 GameSetup.pattern.patternMetadata.bps);
         scanlinePulseBeforePreview = scanline.floatPulse;
         previewButton.GetComponent<TransitionToPanel>().Invoke();
+    }
+
+    public void OnInspectButtonClick()
+    {
+        List<Note> notesWithIssue = new List<Note>();
+        string issue = EditorContext.Pattern.Inspect(notesWithIssue);
+        if (issue == null)
+        {
+
+        }
+        else
+        {
+            snackbar.Show(issue);
+            selectedNoteObjects.Clear();
+            foreach (Note n in notesWithIssue)
+            {
+                selectedNoteObjects.Add(
+                    GetGameObjectFromNote(n));
+            }
+            SelectionChanged?.Invoke(selectedNoteObjects);
+        }
+    }
+
+    public void OnRadarButtonClick()
+    {
+
     }
     #endregion
 

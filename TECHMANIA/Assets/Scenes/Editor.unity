@@ -27108,7 +27108,7 @@ PrefabInstance:
     - target: {fileID: 6181626877150152191, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnTimeEventButtonClick
+      value: OnRadarButtonClick
       objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152191, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
@@ -30376,7 +30376,6 @@ MonoBehaviour:
   beatSnapDividerDisplay: {fileID: 689014187}
   visibleLanesDropdown: {fileID: 340067587}
   optionsTab: {fileID: 1126173285}
-  timingTab: {fileID: 496835709}
   rectangleToolButton: {fileID: 1723818278}
   noteTypeButtons:
   - {fileID: 230162766}
@@ -36550,7 +36549,7 @@ PrefabInstance:
     - target: {fileID: 6181626877150152191, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnTimeEventButtonClick
+      value: OnInspectButtonClick
       objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152191, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}

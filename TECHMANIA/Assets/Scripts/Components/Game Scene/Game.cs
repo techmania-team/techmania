@@ -123,7 +123,8 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
-    private const int kPlayableLanes = 4;
+    private int playableLanes => 
+        GameSetup.pattern.patternMetadata.lanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
@@ -578,7 +579,7 @@ public class Game : MonoBehaviour
             new List<List<NoteObject>>();
         // Create at least as many lists as playable lanes, or
         // empty hits on the noteless lanes will generate errors.
-        for (int i = 0; i < kPlayableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         {
             noteObjectsInLane.Add(new NoteList());
             notesForMouseInLane.Add(new NoteList());
@@ -589,7 +590,7 @@ public class Game : MonoBehaviour
         {
             int scanOfN = n.GetScanNumber(
                 GameSetup.pattern.patternMetadata.bps);
-            bool hidden = n.lane >= kPlayableLanes;
+            bool hidden = n.lane >= playableLanes;
             if (!hidden) numPlayableNotes++;
 
             NoteObject noteObject = SpawnNoteObject(
@@ -1180,7 +1181,7 @@ public class Game : MonoBehaviour
             if (lane.Count == 0) continue;
             NoteObject upcomingNote = lane.First();
 
-            if (laneIndex < kPlayableLanes)
+            if (laneIndex < playableLanes)
             {
                 if (autoPlay)
                 {
@@ -1315,7 +1316,7 @@ public class Game : MonoBehaviour
                 }
                 break;
             case ControlScheme.Keys:
-                for (int lane = 0; lane < kPlayableLanes; lane++)
+                for (int lane = 0; lane < playableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -1344,7 +1345,7 @@ public class Game : MonoBehaviour
                 {
                     OnFingerUp(0);
                 }
-                for (int lane = 0; lane < kPlayableLanes; lane++)
+                for (int lane = 0; lane < playableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -1600,7 +1601,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane > kPlayableLanes,
+                        n.lane > playableLanes,
                         startTime: BaseTime - n.time,
                         n.volume, n.pan);
                 }
@@ -1978,7 +1979,7 @@ public class Game : MonoBehaviour
 
         List<NoteObject> earliestNotes = new List<NoteObject>();
         int earliestPulse = int.MaxValue;
-        for (int i = 0; i < kPlayableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         {
             if (notesForKeyboardInLane[i].Count == 0)
             {
@@ -2311,7 +2312,7 @@ public class Game : MonoBehaviour
     private Dictionary<Note, AudioSource> noteToAudioSource;
     private void PlayKeysound(NoteObject n, bool emptyHit)
     {
-        bool hidden = n.note.lane >= kPlayableLanes;
+        bool hidden = n.note.lane >= playableLanes;
         if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden
