@@ -767,8 +767,8 @@ bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_
 ,pattern_panel_snackbar_anchor_too_close_to_existing,The Anchor you are trying to add is too close to an existing Anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
 ,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first Anchor in each Drag Note.,不能删除拖拽音符的第一个锚点。,不能刪除拖動音符的第一個錨點。,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
 ,pattern_panel_snackbar_at_least_two_anchors,Drag Notes must contain at least 2 Anchors.,拖拽音符必须包含至少2个锚点。,拖動音符必須包含至少兩個錨點,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
-,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,錨點必須從左向右排列。,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
-,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
+Deleted in 0.9.,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,錨點必須從左向右排列。,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
+Deleted in 0.9.,pattern_panel_snackbar_control_point_on_correct_sides,Left and Right Control Points must stay on the respective sides of the Anchor Point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
 ,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目のスキャンの前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番レーンの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
 ,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは63番レーンの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
@@ -809,3 +809,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,,,,,,
 0.9 strings start here.,pattern_panel_tools_tab_inspect_button,Inspect,检查,,,
 ,pattern_panel_tools_tab_radar_button,Radar,雷达,,,
+,,,,,,
+,pattern_panel_snackbar_drag_flows_left,Drag notes cannot flow to the left at any point.,拖拽音符在任意位置都不能向左行进。,,,
+,,,,,,
+,pattern_inspection_no_issue,TECHMANIA inspected the pattern and found no issues. Well done!,TECHMANIA检查了此谱面并且没发现任何问题。恭喜！,,,

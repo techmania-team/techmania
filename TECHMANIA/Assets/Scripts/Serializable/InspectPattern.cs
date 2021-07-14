@@ -131,6 +131,81 @@ public partial class Pattern
             return false;
         }
 
+        reason = null;
+        return true;
+    }
+
+    public bool CanAdjustHoldNoteDuration(HoldNote holdNote,
+        int newDuration, out string reason)
+    {
+        if (newDuration <= 0)
+        {
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_hold_note_zero_length");
+            return false;
+        }
+        if (HoldNoteCoversAnotherNote(
+            holdNote.pulse, holdNote.lane,
+            newDuration, ignoredExistingNotes: null))
+        {
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_hold_note_covers_other_notes");
+            return false;
+        }
+        reason = null;
+        return true;
+    }
+
+    public bool CanAddDragAnchor(DragNote dragNote,
+        float relativePulse, out string reason)
+    {
+        if (dragNote.nodes.Find((DragNode node) =>
+        {
+            return Mathf.Abs(node.anchor.pulse - relativePulse) <
+                Mathf.Epsilon;
+        }) != null)
+        {
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_anchor_too_close_to_existing");
+            return false;
+        }
+        reason = null;
+        return true;
+    }
+
+    public bool CanDeleteDragAnchor(DragNote dragNote,
+        int anchorIndex, out string reason)
+    {
+        if (anchorIndex == 0)
+        {
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_cannot_delete_first_anchor");
+            return false;
+        }
+        if (dragNote.nodes.Count == 2)
+        {
+            reason = Locale.GetString(
+                "pattern_panel_snackbar_at_least_two_anchors");
+            return false;
+        }
+        reason = null;
+        return true;
+    }
+
+    public bool CanEditDragNote(DragNote dragNoteAfterEdit,
+        out string reason)
+    {
+        List<FloatPoint> points = dragNoteAfterEdit.Interpolate();
+        for (int i = 0; i < points.Count - 1; i++)
+        {
+            if (points[i + 1].pulse < points[i].pulse)
+            {
+                reason = Locale.GetString(
+                    "pattern_panel_snackbar_drag_flows_left");
+                return false;
+            }
+        }
+        reason = null;
         return true;
     }
 

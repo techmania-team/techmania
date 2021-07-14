@@ -1679,21 +1679,15 @@ public class PatternPanel : MonoBehaviour
         bool adjustable = true;
         foreach (GameObject o in holdNotesBeingAdjusted)
         {
-            HoldNote holdNote = o.GetComponent<NoteObject>().note as HoldNote;
+            HoldNote holdNote = o.GetComponent<NoteObject>().note
+                as HoldNote;
             oldDuration = holdNote.duration;
             newDuration = oldDuration + deltaDuration;
-            if (newDuration <= 0)
+            string reason;
+            if (!EditorContext.Pattern.CanAdjustHoldNoteDuration(
+                holdNote, newDuration, out reason))
             {
-                snackbar.Show(Locale.GetString(
-                    "pattern_panel_snackbar_hold_note_zero_length"));
-                adjustable = false;
-                break;
-            }
-            if (HoldNoteCoversAnotherNote(holdNote.pulse, holdNote.lane,
-                newDuration, ignoredExistingNotes: null))
-            {
-                snackbar.Show(Locale.GetString(
-                    "pattern_panel_snackbar_hold_note_covers_other_notes"));
+                snackbar.Show(reason);
                 adjustable = false;
                 break;
             }
@@ -1767,13 +1761,11 @@ public class PatternPanel : MonoBehaviour
             cursorLane - dragNote.lane);
 
         // Is there an existing anchor at the same pulse?
-        if (dragNote.nodes.Find((DragNode node) =>
+        string reason;
+        if (!EditorContext.Pattern.CanAddDragAnchor(
+            dragNote, newAnchor.pulse, out reason))
         {
-            return node.anchor.pulse == newAnchor.pulse;
-        }) != null)
-        {
-            snackbar.Show(Locale.GetString(
-                "pattern_panel_snackbar_anchor_too_close_to_existing"));
+            snackbar.Show(reason);
             return;
         }
 
@@ -1804,7 +1796,7 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject draggedAnchor;
     private DragNode draggedDragNode;
-    private DragNode draggedDragNodeClone;
+    private DragNode draggedDragNodeBeforeDrag;
     private bool ctrlHeldOnAnchorBeginDrag;
     private bool dragCurveIsBSpline;
     private Vector2 mousePositionRelativeToDraggedAnchor;
@@ -1822,20 +1814,14 @@ public class PatternPanel : MonoBehaviour
         GameObject anchor = eventData.pointerDrag;
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
-
-        if (anchorIndex == 0)
-        {
-            snackbar.Show(Locale.GetString(
-                "pattern_panel_snackbar_cannot_delete_first_anchor"));
-            return;
-        }
-
         DragNote dragNote = anchor
             .GetComponentInParent<NoteObject>().note as DragNote;
-        if (dragNote.nodes.Count == 2)
+
+        string reason;
+        if (!EditorContext.Pattern.CanDeleteDragAnchor(
+            dragNote, anchorIndex, out reason))
         {
-            snackbar.Show(Locale.GetString(
-                "pattern_panel_snackbar_at_least_two_anchors"));
+            snackbar.Show(reason);
             return;
         }
 
@@ -1873,7 +1859,7 @@ public class PatternPanel : MonoBehaviour
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
         draggedDragNode = dragNote.nodes[anchorIndex];
-        draggedDragNodeClone = draggedDragNode.Clone();
+        draggedDragNodeBeforeDrag = draggedDragNode.Clone();
 
         ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
             || Input.GetKey(KeyCode.RightControl);
@@ -1986,34 +1972,6 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private bool ValidateMovedAnchor(DragNode movedNode,
-        out string invalidReason)
-    {
-        DragNote dragNote = draggedAnchor
-            .GetComponentInParent<NoteObject>().note as DragNote;
-        int anchorIndex = draggedAnchor
-            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
-
-        // Check 1: anchors are still in order.
-        bool anchorsInOrder = movedNode.anchor.pulse >
-            dragNote.nodes[anchorIndex - 1].anchor.pulse;
-        if (anchorIndex < dragNote.nodes.Count - 1)
-        {
-            anchorsInOrder = anchorsInOrder &&
-                movedNode.anchor.pulse <
-                dragNote.nodes[anchorIndex + 1].anchor.pulse;
-        }
-        if (!anchorsInOrder)
-        {
-            invalidReason = Locale.GetString(
-                "pattern_panel_snackbar_anchors_flow_left_ro_right");
-            return false;
-        }
-
-        invalidReason = null;
-        return true;
-    }
-
     private void OnAnchorEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
@@ -2035,24 +1993,15 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        DragNode cloneAtEndDrag = draggedDragNode.Clone();
-        // Temporarily restore pre-drag data for snapshotting.
-        draggedDragNode.CopyFrom(draggedDragNodeClone);
-        
-        bool valid;
-        string invalidReason = "";
-        if (ctrlHeldOnAnchorBeginDrag)
+        DragNote dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        string reason;
+        if (!EditorContext.Pattern.CanEditDragNote(dragNote,
+            out reason))
         {
-            valid = true;
-        }
-        else
-        {
-            valid = ValidateMovedAnchor(cloneAtEndDrag,
-                out invalidReason);
-        }
-        if (!valid)
-        {
-            snackbar.Show(invalidReason);
+            snackbar.Show(reason);
+            // Restore note to pre-drag state.
+            draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
             NoteInEditor noteInEditor = draggedAnchor
                 .GetComponentInParent<NoteInEditor>();
             noteInEditor.ResetCurve();
@@ -2060,15 +2009,15 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        DragNote dragNote = draggedAnchor
-            .GetComponentInParent<NoteObject>().note as DragNote;
         EditorContext.BeginTransaction();
         EditOperation op = EditorContext.BeginModifyNoteOperation();
-        op.noteBeforeOp = dragNote.Clone();
-        draggedDragNode.CopyFrom(cloneAtEndDrag);
         op.noteAfterOp = dragNote.Clone();
+        DragNode draggedDragNodeAfterDrag = draggedDragNode.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+        op.noteBeforeOp = dragNote.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeAfterDrag);
         EditorContext.EndTransaction();
-
+        
         UpdateNumScansAndRelatedUI();
     }
 
@@ -2126,7 +2075,7 @@ public class PatternPanel : MonoBehaviour
         draggedDragNode = (draggedControlPoint
             .GetComponentInParent<NoteObject>().note as DragNote)
             .nodes[anchorIndex];
-        draggedDragNodeClone = draggedDragNode.Clone();
+        draggedDragNodeBeforeDrag = draggedDragNode.Clone();
     }
 
     private void OnControlPointDrag(PointerEventData eventData)
@@ -2200,17 +2149,15 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        DragNode cloneAtEndDrag = draggedDragNode.Clone();
-        // Temporarily restore pre-drag data for snapshotting.
-        draggedDragNode.CopyFrom(draggedDragNodeClone);
-
-        // Are the control points' current position valid?
-        bool valid = cloneAtEndDrag.GetControlPoint(0).pulse <= 0f
-            && cloneAtEndDrag.GetControlPoint(1).pulse >= 0f;
-        if (!valid)
+        DragNote dragNote = draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        string reason;
+        if (!EditorContext.Pattern.CanEditDragNote(
+            dragNote, out reason))
         {
-            snackbar.Show(Locale.GetString(
-                "pattern_panel_snackbar_control_point_on_correct_sides"));
+            snackbar.Show(reason);
+            // Restore note to pre-drag state.
+            draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
             NoteInEditor noteInEditor = draggedControlPoint
                 .GetComponentInParent<NoteInEditor>();
             noteInEditor.ResetCurve();
@@ -2218,13 +2165,13 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        DragNote dragNote = draggedControlPoint
-            .GetComponentInParent<NoteObject>().note as DragNote;
         EditorContext.BeginTransaction();
         EditOperation op = EditorContext.BeginModifyNoteOperation();
-        op.noteBeforeOp = dragNote.Clone();
-        draggedDragNode.CopyFrom(cloneAtEndDrag);
         op.noteAfterOp = dragNote.Clone();
+        DragNode draggedDragNodeAfterDrag = draggedDragNode.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+        op.noteBeforeOp = dragNote.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeAfterDrag);
         EditorContext.EndTransaction();
     }
     #endregion
