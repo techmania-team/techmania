@@ -1336,7 +1336,8 @@ public class PatternPanel : MonoBehaviour
         string issue = EditorContext.Pattern.Inspect(notesWithIssue);
         if (issue == null)
         {
-
+            snackbar.Show(Locale.GetString(
+                "pattern_inspection_no_issue"));
         }
         else
         {
@@ -1348,6 +1349,7 @@ public class PatternPanel : MonoBehaviour
                     GetGameObjectFromNote(n));
             }
             SelectionChanged?.Invoke(selectedNoteObjects);
+            // TODO: scroll the 1st selected note into view.
         }
     }
 
@@ -2767,16 +2769,6 @@ public class PatternPanel : MonoBehaviour
         return CanAddNote(NoteType.Drag, pulse, lane,
             ignoredExistingNotes,
             out reason);
-    }
-
-    // Ignores notes at (pulse, lane), if any.
-    private bool HoldNoteCoversAnotherNote(int pulse, int lane,
-        int duration,
-        HashSet<GameObject> ignoredExistingNotes)
-    {
-        return EditorContext.Pattern.HoldNoteCoversAnotherNote(
-            pulse, lane, duration,
-            GetNotesFromGameObjects(ignoredExistingNotes));
     }
 
     private int HoldNoteDefaultDuration(int pulse, int lane)

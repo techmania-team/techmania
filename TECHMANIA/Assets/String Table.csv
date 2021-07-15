@@ -813,3 +813,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,pattern_panel_snackbar_drag_flows_left,Drag notes cannot flow to the left at any point.,拖拽音符在任意位置都不能向左行进。,,,
 ,,,,,,
 ,pattern_inspection_no_issue,TECHMANIA inspected the pattern and found no issues. Well done!,TECHMANIA检查了此谱面并且没发现任何问题。恭喜！,,,
+,pattern_inspection_chain_head_with_no_node,This chain head is not followed by any chain node.,这个锁链头的后面没有连接任何锁链节点。,,,
+,pattern_inspection_chain_node_with_no_head,This chain node is not connected to a chain head.,这个锁链节点没有连接在一个锁链头上。,,,
+,pattern_inspection_chain_node_in_same_lane_as_previous,This chain node must be in a different lane than the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点不位于同一轨道。,,,
+,pattern_inspection_chain_node_in_different_scan_as_previous,This chain node must be in a different scan than the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点位于同一扫描。,,,

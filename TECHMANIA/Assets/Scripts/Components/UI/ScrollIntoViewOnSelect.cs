@@ -27,17 +27,20 @@ public class ScrollIntoViewOnSelect : MonoBehaviour, ISelectHandler
         {
             // Scroll upwards.
             scrollRect.verticalNormalizedPosition =
-                (maxY - contentMinY - viewPortHeight) / (contentHeight - viewPortHeight);
+                (maxY - contentMinY - viewPortHeight) /
+                (contentHeight - viewPortHeight);
         }
         if (minY < viewMinY)
         {
             // Scroll downwards.
             scrollRect.verticalNormalizedPosition =
-                (minY - contentMinY) / (contentHeight - viewPortHeight);
+                (minY - contentMinY) /
+                (contentHeight - viewPortHeight);
         }
     }
 
-    private void GetMinMaxY(RectTransform r, out float minY, out float maxY)
+    private void GetMinMaxY(RectTransform r,
+        out float minY, out float maxY)
     {
         Vector3[] corners = new Vector3[4];
         r.GetWorldCorners(corners);

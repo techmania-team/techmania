@@ -11,6 +11,57 @@ public partial class Pattern
     // If not found, returns null.
     public string Inspect(List<Note> notesWithIssue)
     {
+        int bps = patternMetadata.bps;
+
+        // Chain heads and nodes
+        List<Note> chainHeadsAndNodes = new List<Note>();
+        foreach (Note n in notes)
+        {
+            if (n.lane < 0 || n.lane >= patternMetadata.lanes)
+            {
+                continue;
+            }
+            if (n.type == NoteType.ChainHead ||
+                n.type == NoteType.ChainNode)
+            {
+                chainHeadsAndNodes.Add(n);
+            }
+        }
+        if (chainHeadsAndNodes.Count > 0 &&
+            chainHeadsAndNodes[0].type == NoteType.ChainNode)
+        {
+            notesWithIssue.Add(chainHeadsAndNodes[0]);
+            return Locale.GetString(
+                "pattern_inspection_chain_node_with_no_head");
+        }
+        for (int i = 0; i < chainHeadsAndNodes.Count; i++)
+        {
+            if (chainHeadsAndNodes[i].type == NoteType.ChainHead &&
+                (i == chainHeadsAndNodes.Count - 1 ||
+                chainHeadsAndNodes[i + 1].type == NoteType.ChainHead))
+            {
+                notesWithIssue.Add(chainHeadsAndNodes[i]);
+                return Locale.GetString(
+                    "pattern_inspection_chain_head_with_no_node");
+            }
+            if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
+                chainHeadsAndNodes[i - 1].lane ==
+                chainHeadsAndNodes[i].lane)
+            {
+                notesWithIssue.Add(chainHeadsAndNodes[i]);
+                return Locale.GetString(
+                    "pattern_inspection_chain_node_in_same_lane_as_previous");
+            }
+            if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
+                chainHeadsAndNodes[i - 1].GetScanNumber(bps) !=
+                chainHeadsAndNodes[i].GetScanNumber(bps))
+            {
+                notesWithIssue.Add(chainHeadsAndNodes[i]);
+                return Locale.GetString(
+                    "pattern_inspection_chain_node_in_different_scan_as_previous");
+            }
+        }
+
         return null;
     }
 
