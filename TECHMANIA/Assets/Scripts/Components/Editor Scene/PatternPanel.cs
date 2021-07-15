@@ -1348,8 +1348,19 @@ public class PatternPanel : MonoBehaviour
                 selectedNoteObjects.Add(
                     GetGameObjectFromNote(n));
             }
+            // Scroll the first selected note into view.
+            if (selectedNoteObjects.Count > 0)
+            {
+                UIUtils.ScrollIntoView(
+                    GetGameObjectFromNote(notesWithIssue[0])
+                    .GetComponent<RectTransform>(),
+                    workspaceScrollRect,
+                    normalizedMargin: 0.1f,
+                    viewRectAsPoint: true,
+                    horizontal: true,
+                    vertical: true);
+            }
             SelectionChanged?.Invoke(selectedNoteObjects);
-            // TODO: scroll the 1st selected note into view.
         }
     }
 
