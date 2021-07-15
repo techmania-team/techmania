@@ -3479,39 +3479,13 @@ public class PatternPanel : MonoBehaviour
     {
         if (!Options.instance.editorOptions.keepScanlineInView) return;
 
-        float viewPortWidth = workspaceScrollRect
-            .GetComponent<RectTransform>().rect.width;
-        if (WorkspaceContentWidth <= viewPortWidth) return;
-
-        float scanlinePosition = scanline
-            .GetComponent<RectTransform>().anchoredPosition.x;
-
-        float xAtViewPortLeft = (WorkspaceContentWidth - viewPortWidth)
-            * workspaceScrollRect.horizontalNormalizedPosition;
-        float xAtViewPortRight = xAtViewPortLeft + viewPortWidth;
-
-        if (scanlinePosition >= xAtViewPortLeft &&
-            scanlinePosition < xAtViewPortRight)
-        {
-            // No need to scroll.
-            return;
-        }
-
-        float desiredXAtLeft;
-        if (scanlinePosition < xAtViewPortLeft)
-        {
-            // Scrolling left: put scanline at right side.
-            desiredXAtLeft = scanlinePosition - viewPortWidth * 0.8f;
-        }
-        else
-        {
-            // Scrolling right: put scanline at left side.
-            desiredXAtLeft = scanlinePosition - viewPortWidth * 0.2f;
-        }
-        float normalizedPosition =
-            desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(normalizedPosition);
+        UIUtils.ScrollIntoView(
+            scanline.GetComponent<RectTransform>(),
+            workspaceScrollRect,
+            normalizedMargin: 0.8f,
+            viewRectAsPoint: true,
+            horizontal: true,
+            vertical: false);
         SynchronizeScrollRects();
     }
 
