@@ -12,9 +12,11 @@ public partial class Pattern
     public string Inspect(List<Note> notesWithIssue)
     {
         int bps = patternMetadata.bps;
+        int pulsesPerScan = bps * Pattern.pulsesPerBeat;
 
         List<Note> chainHeadsAndNodes = new List<Note>();
         List<DragNote> dragNotes = new List<DragNote>();
+        List<HoldNote> holdNotes = new List<HoldNote>();
         foreach (Note n in notes)
         {
             if (n.lane < 0 || n.lane >= patternMetadata.lanes)
@@ -29,6 +31,12 @@ public partial class Pattern
             else if (n.type == NoteType.Drag)
             {
                 dragNotes.Add(n as DragNote);
+            }
+            else if (n.type == NoteType.Hold ||
+                n.type == NoteType.RepeatHeadHold ||
+                n.type == NoteType.RepeatHold)
+            {
+                holdNotes.Add(n as HoldNote);
             }
         }
 
@@ -95,14 +103,26 @@ public partial class Pattern
 
             int lastPointPulse = Mathf.FloorToInt(
                 points[points.Count - 1].pulse) + n.pulse;
-            int startScan = n.pulse / pulsesPerBeat / bps;
+            int startScan = n.pulse / pulsesPerScan;
             // Ending on a scan divider is allowed.
-            int endScan = (lastPointPulse - 1) / pulsesPerBeat / bps;
+            int endScan = (lastPointPulse - 1) / pulsesPerScan;
             if (startScan != endScan)
             {
                 notesWithIssue.Add(n);
                 return Locale.GetString(
                     "pattern_inspection_drag_crosses_scans");
+            }
+        }
+
+        // Holds, repeat head holds and repeat holds
+
+        foreach (HoldNote n in holdNotes)
+        {
+            if (n.duration >= pulsesPerScan * 2)
+            {
+                notesWithIssue.Add(n);
+                return Locale.GetString(
+                    "pattern_inspection_hold_longer_than_two_scans");
             }
         }
 
