@@ -19,6 +19,7 @@ public partial class Pattern
         List<Note> chainHeadsAndNodes = new List<Note>();
         List<DragNote> dragNotes = new List<DragNote>();
         List<HoldNote> holdNotes = new List<HoldNote>();
+        List<Note> mouseNotes = new List<Note>();
         // Element 0 in each element list should be a head.
         List<List<Note>> repeatSeries = new List<List<Note>>();
         // Indexed by lane.
@@ -65,6 +66,16 @@ public partial class Pattern
                 case NoteType.Repeat:
                 case NoteType.RepeatHold:
                     series.Add(n);
+                    break;
+            }
+
+            switch (n.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.Drag:
+                    mouseNotes.Add(n);
                     break;
             }
         }
@@ -199,6 +210,42 @@ public partial class Pattern
                     notesWithIssue.Add(current);
                     return Locale.GetString(
                         "pattern_inspection_repeat_path_covers_notes");
+                }
+            }
+        }
+
+        // Special KM rules.
+
+        if (patternMetadata.controlScheme != ControlScheme.KM)
+            return null;
+
+        dragNotes.Sort((DragNote n1, DragNote n2) =>
+        {
+            return (n1.pulse + n1.Duration()) -
+                (n2.pulse + n2.Duration());
+        });
+        for (int i = 0; i < mouseNotes.Count; i++)
+        {
+            if (i > 0 &&
+                mouseNotes[i].pulse == mouseNotes[i - 1].pulse)
+            {
+                notesWithIssue.Add(mouseNotes[i - 1]);
+                notesWithIssue.Add(mouseNotes[i]);
+                return Locale.GetString(
+                    "pattern_inspection_mouse_notes_at_same_pulse_in_km");
+            }
+
+            // This bit is technically O(n^2) but we should be fine?
+            foreach (DragNote d in dragNotes)
+            {
+                if (d == mouseNotes[i]) continue;
+                if (mouseNotes[i].pulse > d.pulse &&
+                    mouseNotes[i].pulse <=
+                        (d.pulse + d.Duration()))
+                {
+                    notesWithIssue.Add(mouseNotes[i]);
+                    return Locale.GetString(
+                        "pattern_inspection_mouse_notes_during_drag_in_km");
                 }
             }
         }

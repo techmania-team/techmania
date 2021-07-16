@@ -825,3 +825,5 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,pattern_inspection_repeat_note_with_no_head,This repeat note is not connected to a repeat head.,这个连打音符没有连接在一个连打头音符上。,,,
 ,pattern_inspection_repeat_path_longer_than_two_scans,"This repeat note (or its end point) is more than two scans away from the repeat head, making it difficult to tell when this repeat series ends.",这个连打音符（或者长音符的结束位置）距离对应的连打头音符超过了2扫描，这会导致难以判断连打何时结束。,,,
 ,pattern_inspection_repeat_path_covers_notes,The repeat path between these notes cover other notes.,这些连打音符之间的连线覆盖了其他音符。,,,
+,pattern_inspection_mouse_notes_at_same_pulse_in_km,"These notes occupy the same timepoint, making them unplayable in KM patterns.",这些音符位于同一时间点，在键鼠谱面中无法同时演奏。,,,
+,pattern_inspection_mouse_notes_during_drag_in_km,This note is unplayable in KM patterns because a drag note is in progress.,在键鼠谱面中无法演奏这个音符，因为有另一个拖拽音符正在进行。,,,
