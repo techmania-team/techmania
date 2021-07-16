@@ -13,8 +13,8 @@ public partial class Pattern
     {
         int bps = patternMetadata.bps;
 
-        // Chain heads and nodes
         List<Note> chainHeadsAndNodes = new List<Note>();
+        List<DragNote> dragNotes = new List<DragNote>();
         foreach (Note n in notes)
         {
             if (n.lane < 0 || n.lane >= patternMetadata.lanes)
@@ -26,7 +26,14 @@ public partial class Pattern
             {
                 chainHeadsAndNodes.Add(n);
             }
+            else if (n.type == NoteType.Drag)
+            {
+                dragNotes.Add(n as DragNote);
+            }
         }
+
+        // Chain heads and nodes
+
         if (chainHeadsAndNodes.Count > 0 &&
             chainHeadsAndNodes[0].type == NoteType.ChainNode)
         {
@@ -58,7 +65,44 @@ public partial class Pattern
             {
                 notesWithIssue.Add(chainHeadsAndNodes[i]);
                 return Locale.GetString(
-                    "pattern_inspection_chain_node_in_different_scan_as_previous");
+                    "pattern_inspection_chain_node_crosses_scans");
+            }
+        }
+
+        // Drag notes
+
+        foreach (DragNote n in dragNotes)
+        {
+            List<FloatPoint> points = n.Interpolate();
+            foreach (FloatPoint p in points)
+            {
+                if (patternMetadata.controlScheme ==
+                    ControlScheme.Keys &&
+                    Mathf.Abs(p.lane) > Mathf.Epsilon)
+                {
+                    notesWithIssue.Add(n);
+                    return Locale.GetString(
+                        "pattern_inspection_drag_leaves_lane_in_keys");
+                }
+                float lane = p.lane + n.lane;
+                if (lane < 0f || lane >= patternMetadata.lanes)
+                {
+                    notesWithIssue.Add(n);
+                    return Locale.GetString(
+                        "pattern_inspection_drag_leaves_playable_lanes");
+                }
+            }
+
+            int lastPointPulse = Mathf.FloorToInt(
+                points[points.Count - 1].pulse) + n.pulse;
+            int startScan = n.pulse / pulsesPerBeat / bps;
+            // Ending on a scan divider is allowed.
+            int endScan = (lastPointPulse - 1) / pulsesPerBeat / bps;
+            if (startScan != endScan)
+            {
+                notesWithIssue.Add(n);
+                return Locale.GetString(
+                    "pattern_inspection_drag_crosses_scans");
             }
         }
 
