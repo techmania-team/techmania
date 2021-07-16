@@ -12,35 +12,68 @@ public partial class Pattern
     public string Inspect(List<Note> notesWithIssue)
     {
         int bps = patternMetadata.bps;
-        int pulsesPerScan = bps * Pattern.pulsesPerBeat;
+        int pulsesPerScan = bps * pulsesPerBeat;
+
+        // Collect notes of various types for easier enumeration.
 
         List<Note> chainHeadsAndNodes = new List<Note>();
         List<DragNote> dragNotes = new List<DragNote>();
         List<HoldNote> holdNotes = new List<HoldNote>();
+        // Element 0 in each element list should be a head.
+        List<List<Note>> repeatSeries = new List<List<Note>>();
+        // Indexed by lane.
+        List<List<Note>> currentRepeatSeries = new List<List<Note>>();
+        for (int i = 0; i < patternMetadata.lanes; i++)
+        {
+            currentRepeatSeries.Add(new List<Note>());
+        }
         foreach (Note n in notes)
         {
             if (n.lane < 0 || n.lane >= patternMetadata.lanes)
             {
                 continue;
             }
-            if (n.type == NoteType.ChainHead ||
-                n.type == NoteType.ChainNode)
+
+            switch (n.type)
             {
-                chainHeadsAndNodes.Add(n);
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                    chainHeadsAndNodes.Add(n);
+                    break;
+                case NoteType.Drag:
+                    dragNotes.Add(n as DragNote);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    holdNotes.Add(n as HoldNote);
+                    break;
             }
-            else if (n.type == NoteType.Drag)
+
+            List<Note> series = currentRepeatSeries[n.lane];
+            switch (n.type)
             {
-                dragNotes.Add(n as DragNote);
-            }
-            else if (n.type == NoteType.Hold ||
-                n.type == NoteType.RepeatHeadHold ||
-                n.type == NoteType.RepeatHold)
-            {
-                holdNotes.Add(n as HoldNote);
+                case NoteType.RepeatHead:
+                case NoteType.RepeatHeadHold:
+                    if (series.Count > 0)
+                    {
+                        repeatSeries.Add(series);
+                    }
+                    currentRepeatSeries[n.lane] =
+                        new List<Note>() { n };
+                    break;
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    series.Add(n);
+                    break;
             }
         }
+        foreach (List<Note> s in currentRepeatSeries)
+        {
+            if (s.Count > 0) repeatSeries.Add(s);
+        }
 
-        // Chain heads and nodes
+        // Chain heads and nodes.
 
         if (chainHeadsAndNodes.Count > 0 &&
             chainHeadsAndNodes[0].type == NoteType.ChainNode)
@@ -77,7 +110,7 @@ public partial class Pattern
             }
         }
 
-        // Drag notes
+        // Drag notes.
 
         foreach (DragNote n in dragNotes)
         {
@@ -114,7 +147,7 @@ public partial class Pattern
             }
         }
 
-        // Holds, repeat head holds and repeat holds
+        // Holds.
 
         foreach (HoldNote n in holdNotes)
         {
@@ -123,6 +156,50 @@ public partial class Pattern
                 notesWithIssue.Add(n);
                 return Locale.GetString(
                     "pattern_inspection_hold_longer_than_two_scans");
+            }
+        }
+
+        // Repeat series.
+
+        foreach (List<Note> s in repeatSeries)
+        {
+            if (s[0].type == NoteType.Repeat ||
+                s[0].type == NoteType.RepeatHold)
+            {
+                notesWithIssue.Add(s[0]);
+                return Locale.GetString(
+                    "pattern_inspection_repeat_note_with_no_head");
+            }
+            Note head = s[0];
+            if (s.Count == 1)
+            {
+                notesWithIssue.Add(head);
+                return Locale.GetString(
+                    "pattern_inspection_repeat_head_with_no_repeat");
+            }
+            for (int i = 1; i < s.Count; i++)
+            {
+                Note current = s[i];
+                int endPulse = current.pulse;
+                if (current.type == NoteType.RepeatHold)
+                {
+                    endPulse += (current as HoldNote).duration;
+                }
+                if (endPulse - head.pulse >= pulsesPerScan * 2)
+                {
+                    notesWithIssue.Add(current);
+                    return Locale.GetString(
+                        "pattern_inspection_repeat_path_longer_than_two_scans");
+                }
+
+                Note prev = s[i - 1];
+                if (GetRangeBetween(prev, current).Count > 2)
+                {
+                    notesWithIssue.Add(prev);
+                    notesWithIssue.Add(current);
+                    return Locale.GetString(
+                        "pattern_inspection_repeat_path_covers_notes");
+                }
             }
         }
 
