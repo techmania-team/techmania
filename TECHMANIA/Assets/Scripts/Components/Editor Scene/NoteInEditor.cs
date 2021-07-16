@@ -467,6 +467,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     // This does not render anchors and control points; call
     // ResetAnchorsAndControlPoints for that.
+    // This does reset the anchor receiver, though.
     public void ResetCurve()
     {
         DragNote dragNote = GetComponent<NoteObject>().note
@@ -491,35 +492,41 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         curvedImage.scale = 1f;
         curvedImage.SetVerticesDirty();
 
-        // Draw new anchor receivers. Reuse them if applicable.
-        for (int i = 0;
-            i < anchorReceiverContainer.childCount;
-            i++)
-        {
-            anchorReceiverContainer.GetChild(i).gameObject
-                .SetActive(false);
-        }
+        // Create or destroy anchor receivers to make sure we have
+        // the right amount (pointsOnCurve.Count - 1). Counting
+        // the template, anchorReceiverContainer should have the
+        // same number of children as pointsOnCurve.
         if (anchorReceiverTemplate.transform.GetSiblingIndex()
             != 0)
         {
             anchorReceiverTemplate.transform.SetAsFirstSibling();
         }
+        for (int i = anchorReceiverContainer.childCount - 1;
+            i >= pointsOnCurve.Count;
+            i--)
+        {
+            Destroy(anchorReceiverContainer.GetChild(i).gameObject);
+        }
+        int receiversToInstantiate = pointsOnCurve.Count -
+            anchorReceiverContainer.childCount;
+        for (int i = 0;
+            i < receiversToInstantiate;
+            i++)
+        {
+            Instantiate(
+                anchorReceiverTemplate,
+                parent: anchorReceiverContainer)
+                .SetActive(true);
+        }
+        
+        // Reset anchor receivers.
         for (int i = 0; i < pointsOnCurve.Count - 1; i++)
         {
             int childIndex = i + 1;
-            while (anchorReceiverContainer.childCount - 1
-                < childIndex)
-            {
-                Instantiate(
-                    anchorReceiverTemplate,
-                    parent: anchorReceiverContainer);
-            }
             RectTransform receiver =
                 anchorReceiverContainer.GetChild(childIndex)
                 .GetComponent<RectTransform>();
-            receiver.gameObject.SetActive(true);
             receiver.anchoredPosition = pointsOnCurve[i];
-
             UIUtils.PointToward(receiver,
                 selfPos: pointsOnCurve[i],
                 targetPos: pointsOnCurve[i + 1]);
