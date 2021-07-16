@@ -137,7 +137,8 @@ public partial class Pattern
                         "pattern_inspection_drag_leaves_lane_in_keys");
                 }
                 float lane = p.lane + n.lane;
-                if (lane < 0f || lane >= patternMetadata.lanes)
+                if (lane < -0.5f ||
+                    lane >= patternMetadata.lanes + 0.5f)
                 {
                     notesWithIssue.Add(n);
                     return Locale.GetString(
