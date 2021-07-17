@@ -350,6 +350,42 @@ public partial class Pattern
 
         int pulsesPerScan = patternMetadata.bps * pulsesPerBeat;
 
+        // Some pre-processing.
+        List<Note> playableNotes = new List<Note>();
+        Dictionary<int, int> scanToNumNotes =
+            new Dictionary<int, int>();
+        int numChaosNotes = 0;
+        float numAsyncNotes = 0;
+        foreach (Note n in notes)
+        {
+            if (n.lane >= patternMetadata.lanes) continue;
+            playableNotes.Add(n);
+
+            int scan = n.pulse / pulsesPerScan;
+            if (!scanToNumNotes.ContainsKey(scan))
+            {
+                scanToNumNotes.Add(scan, 0);
+            }
+            scanToNumNotes[scan]++;
+
+            if (n.pulse % (pulsesPerBeat / 2) != 0)
+            {
+                numChaosNotes++;
+            }
+
+            switch (n.type)
+            {
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                    numAsyncNotes += 0.5f;
+                    break;
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    numAsyncNotes += 1f;
+                    break;
+            }
+        }
+
         // Density: average number of notes per second.
         if (seconds == 0f)
         {
@@ -357,22 +393,11 @@ public partial class Pattern
         }
         else
         {
-            r.density.raw = notes.Count / seconds;
+            r.density.raw = playableNotes.Count / seconds;
         }
-        UnityEngine.Debug.Log($"seconds={seconds} scans={scans} notes.Count={notes.Count}");
+        UnityEngine.Debug.Log($"seconds={seconds} scans={scans} playableNotes.Count={playableNotes.Count}");
 
         // Voltage: peak number of notes per second.
-        Dictionary<int, int> scanToNumNotes =
-            new Dictionary<int, int>();
-        foreach (Note n in notes)
-        {
-            int scan = n.pulse / pulsesPerScan;
-            if (!scanToNumNotes.ContainsKey(scan))
-            {
-                scanToNumNotes.Add(scan, 0);
-            }
-            scanToNumNotes[scan]++;
-        }
         foreach (KeyValuePair<int, int> pair in scanToNumNotes)
         {
             int scan = pair.Key;
@@ -399,50 +424,27 @@ public partial class Pattern
         }
 
         // Chaos: percentage of notes that are not 4th or 8th notes.
-        int numChaosNotes = 0;
-        foreach (Note n in notes)
-        {
-            if (n.pulse % (pulsesPerBeat / 2) != 0)
-            {
-                numChaosNotes++;
-            }
-        }
         UnityEngine.Debug.Log($"numChaosNotes={numChaosNotes}");
-        if (notes.Count == 0)
+        if (playableNotes.Count == 0)
         {
             r.chaos.raw = 0f;
         }
         else
         {
-            r.chaos.raw = numChaosNotes * 100f / notes.Count;
+            r.chaos.raw = numChaosNotes * 100f / playableNotes.Count;
         }
 
         // Async: percentage of notes that are hold or repeat notes.
         // A hold note counts as 0.5 async notes as they are not
         // that hard.
-        float numAsyncNotes = 0;
-        foreach (Note n in notes)
-        {
-            switch (n.type)
-            {
-                case NoteType.Hold:
-                case NoteType.RepeatHeadHold:
-                    numAsyncNotes += 0.5f;
-                    break;
-                case NoteType.Repeat:
-                case NoteType.RepeatHold:
-                    numAsyncNotes += 1f;
-                    break;
-            }
-        }
         UnityEngine.Debug.Log($"numAsyncNotes={numAsyncNotes}");
-        if (notes.Count == 0)
+        if (playableNotes.Count == 0)
         {
             r.async.raw = 0f;
         }
         else
         {
-            r.async.raw = numAsyncNotes * 100f / notes.Count;
+            r.async.raw = numAsyncNotes * 100f / playableNotes.Count;
         }
 
         // Shift: number of unique time events.
