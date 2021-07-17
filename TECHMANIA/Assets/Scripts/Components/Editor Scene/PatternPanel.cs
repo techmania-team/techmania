@@ -72,6 +72,7 @@ public class PatternPanel : MonoBehaviour
     public Snackbar snackbar;
     public MessageDialog messageDialog;
     public TimeEventDialog timeEventDialog;
+    public RadarDialog radarDialog;
 
     [Header("Preview")]
     public Button previewButton;
@@ -1366,7 +1367,7 @@ public class PatternPanel : MonoBehaviour
 
     public void OnRadarButtonClick()
     {
-
+        radarDialog.Show();
     }
     #endregion
 

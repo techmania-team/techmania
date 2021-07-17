@@ -97,7 +97,8 @@ public class SelectPatternPanel : MonoBehaviour
         else
         {
             p.PrepareForTimeCalculation();
-            float length = p.GetLengthInSeconds();
+            float length;
+            p.GetLengthInSecondsAndScans(out length, out _);
 
             authorText.SetUp(p.patternMetadata.author);
             lengthText.text = UIUtils.FormatTime(length,

@@ -120,8 +120,8 @@ public partial class Pattern
 
     #region Timing
     // Sort BPM events by pulse, then fill their time fields.
-    // Enables CalculateTimeOfAllNotes, GetLengthInSeconds,
-    // TimeToPulse and PulseToTime.
+    // Enables CalculateTimeOfAllNotes, GetLengthInSecondsAndScans,
+    // TimeToPulse, PulseToTime and CalculateRadar.
     public void PrepareForTimeCalculation()
     {
         timeEvents = new List<TimeEvent>();
@@ -175,12 +175,18 @@ public partial class Pattern
         }
     }
 
-    // Returns the time between the start of the first non-empty
-    // scan, and the end of t he last non-empty scan. Ignores
-    // end-of-scan.
-    public float GetLengthInSeconds()
+    // Returns the pattern length between the start of the first
+    // non-empty scan, and the end of t he last non-empty scan.
+    // Ignores end-of-scan.
+    public void GetLengthInSecondsAndScans(out float seconds,
+        out int scans)
     {
-        if (notes.Count == 0) return 0f;
+        if (notes.Count == 0)
+        {
+            seconds = 0f;
+            scans = 0;
+            return;
+        }
 
         int pulsesPerScan = pulsesPerBeat * patternMetadata.bps;
         int minPulse = int.MaxValue;
@@ -209,7 +215,9 @@ public partial class Pattern
         int lastScan = maxPulse / pulsesPerScan;
         float endOfLastScan = PulseToTime(
             (lastScan + 1) * pulsesPerScan);
-        return endOfLastScan - startOfFirstScan;
+
+        seconds = endOfLastScan - startOfFirstScan;
+        scans = lastScan - firstScan + 1;
     }
 
     public void CalculateTimeOfAllNotes()
@@ -312,6 +320,150 @@ public partial class Pattern
             if (n.lane < patternMetadata.lanes) count++;
         }
         return count;
+    }
+
+    public struct RadarDimension
+    {
+        public float raw;
+        public int normalized;  // 0-100
+    }
+    public struct Radar
+    {
+        public RadarDimension density;
+        public RadarDimension voltage;
+        public RadarDimension speed;
+        public RadarDimension chaos;
+        public RadarDimension async;
+        public RadarDimension shift;
+        public float suggestedLevel;
+        public int suggestedLevelRounded;
+    }
+
+    public Radar CalculateRadar()
+    {
+        Radar r = new Radar();
+
+        PrepareForTimeCalculation();
+        float seconds;
+        int scans;
+        GetLengthInSecondsAndScans(out seconds, out scans);
+
+        int pulsesPerScan = patternMetadata.bps * pulsesPerBeat;
+
+        // Density: average number of notes per second.
+        if (seconds == 0f)
+        {
+            r.density.raw = 0f;
+        }
+        else
+        {
+            r.density.raw = notes.Count / seconds;
+        }
+        UnityEngine.Debug.Log($"seconds={seconds} scans={scans} notes.Count={notes.Count}");
+
+        // Voltage: peak number of notes per second.
+        Dictionary<int, int> scanToNumNotes =
+            new Dictionary<int, int>();
+        foreach (Note n in notes)
+        {
+            int scan = n.pulse / pulsesPerScan;
+            if (!scanToNumNotes.ContainsKey(scan))
+            {
+                scanToNumNotes.Add(scan, 0);
+            }
+            scanToNumNotes[scan]++;
+        }
+        foreach (KeyValuePair<int, int> pair in scanToNumNotes)
+        {
+            int scan = pair.Key;
+            int numNotes = pair.Value;
+            float startTime = PulseToTime(scan * pulsesPerScan);
+            float endTime = PulseToTime((scan + 1) * pulsesPerScan);
+            float voltage = numNotes / (endTime - startTime);
+            UnityEngine.Debug.Log($"For scan {scan}, numNotes={numNotes}, startTime={startTime}, endTime={endTime}, voltage={voltage}");
+            if (voltage > r.voltage.raw)
+            {
+                UnityEngine.Debug.Log($"Voltage updated.");
+                r.voltage.raw = voltage;
+            }
+        }
+
+        // Speed: average scans per minute.
+        if (seconds == 0f)
+        {
+            r.speed.raw = 0f;
+        }
+        else
+        {
+            r.speed.raw = scans * 60 / seconds;
+        }
+
+        // Chaos: percentage of notes that are not 4th or 8th notes.
+        int numChaosNotes = 0;
+        foreach (Note n in notes)
+        {
+            if (n.pulse % (pulsesPerBeat / 2) != 0)
+            {
+                numChaosNotes++;
+            }
+        }
+        UnityEngine.Debug.Log($"numChaosNotes={numChaosNotes}");
+        if (notes.Count == 0)
+        {
+            r.chaos.raw = 0f;
+        }
+        else
+        {
+            r.chaos.raw = numChaosNotes * 100f / notes.Count;
+        }
+
+        // Async: percentage of notes that are hold or repeat notes.
+        // A hold note counts as 0.5 async notes as they are not
+        // that hard.
+        float numAsyncNotes = 0;
+        foreach (Note n in notes)
+        {
+            switch (n.type)
+            {
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                    numAsyncNotes += 0.5f;
+                    break;
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    numAsyncNotes += 1f;
+                    break;
+            }
+        }
+        UnityEngine.Debug.Log($"numAsyncNotes={numAsyncNotes}");
+        if (notes.Count == 0)
+        {
+            r.async.raw = 0f;
+        }
+        else
+        {
+            r.async.raw = numAsyncNotes * 100f / notes.Count;
+        }
+
+        // Shift: number of unique time events.
+        int numTimeEvents = 0;
+        for (int i = 0; i < timeEvents.Count; i++)
+        {
+            if (i > 0 &&
+                timeEvents[i].pulse ==
+                    timeEvents[i - 1].pulse &&
+                timeEvents[i].GetType()
+                    == timeEvents[i - 1].GetType())
+            {
+                UnityEngine.Debug.Log($"time event #{i} is identical to the previous one.");
+                continue;
+            }
+            numTimeEvents++;
+        }
+        UnityEngine.Debug.Log($"numTimeEvents={numTimeEvents}");
+        r.shift.raw = numTimeEvents;
+
+        return r;
     }
     #endregion
 
