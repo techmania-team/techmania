@@ -2573,6 +2573,13 @@ public class PatternPanel : MonoBehaviour
                 {
                     o.GetComponent<NoteInEditor>()
                         .PointPathToward(prev);
+                    if (prev != null &&
+                        GetNoteFromGameObject(prev).type ==
+                        NoteType.ChainHead)
+                    {
+                        prev.GetComponent<NoteInEditor>()
+                            .RotateNoteHeadToward(o);
+                    }
                 }
                 if (next != null &&
                     next.GetComponent<NoteObject>().note.type
@@ -2580,6 +2587,11 @@ public class PatternPanel : MonoBehaviour
                 {
                     next.GetComponent<NoteInEditor>()
                         .PointPathToward(o);
+                    if (n.note.type == NoteType.ChainHead)
+                    {
+                        o.GetComponent<NoteInEditor>()
+                            .RotateNoteHeadToward(next);
+                    }
                 }
             }
         }
@@ -2652,6 +2664,13 @@ public class PatternPanel : MonoBehaviour
                     {
                         next.GetComponent<NoteInEditor>()
                             .PointPathToward(prev);
+                        if (prev != null &&
+                            GetNoteFromGameObject(prev).type
+                            == NoteType.ChainHead)
+                        {
+                            prev.GetComponent<NoteInEditor>()
+                                .RotateNoteHeadToward(next);
+                        }
                     }
                     else if (prev != null &&
                         prev.GetComponent<NoteObject>().note.type
@@ -2710,6 +2729,13 @@ public class PatternPanel : MonoBehaviour
                 {
                     o.GetComponent<NoteInEditor>()
                         .PointPathToward(previousChain);
+                    if (previousChain != null &&
+                        GetNoteFromGameObject(previousChain)
+                        .type == NoteType.ChainHead)
+                    {
+                        previousChain.GetComponent<NoteInEditor>()
+                            .RotateNoteHeadToward(o);
+                    }
                 }
                 previousChain = o;
             }

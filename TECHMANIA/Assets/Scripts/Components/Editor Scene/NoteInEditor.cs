@@ -391,18 +391,15 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             pathToPreviousNote.sizeDelta = Vector2.zero;
             pathToPreviousNote.localRotation = Quaternion.identity;
         }
+    }
 
-        if (target != null &&
-            target.GetComponent<NoteObject>().note.type
-                == NoteType.ChainHead)
-        {
-            UIUtils.RotateToward(
-                self: target.GetComponent<NoteInEditor>().noteImage,
-                selfPos: target.GetComponent<RectTransform>()
-                    .anchoredPosition,
-                targetPos: GetComponent<RectTransform>()
-                    .anchoredPosition);
-        }
+    public void RotateNoteHeadToward(GameObject target)
+    {
+        UIUtils.RotateToward(
+            self: noteImage,
+            selfPos: GetComponent<RectTransform>().anchoredPosition,
+            targetPos: target.GetComponent<RectTransform>()
+                .anchoredPosition);
     }
     #endregion
 
