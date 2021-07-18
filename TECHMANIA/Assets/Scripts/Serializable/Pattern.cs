@@ -395,7 +395,6 @@ public partial class Pattern
         {
             r.density.raw = playableNotes.Count / seconds;
         }
-        UnityEngine.Debug.Log($"seconds={seconds} scans={scans} playableNotes.Count={playableNotes.Count}");
 
         // Voltage: peak number of notes per second.
         foreach (KeyValuePair<int, int> pair in scanToNumNotes)
@@ -405,10 +404,8 @@ public partial class Pattern
             float startTime = PulseToTime(scan * pulsesPerScan);
             float endTime = PulseToTime((scan + 1) * pulsesPerScan);
             float voltage = numNotes / (endTime - startTime);
-            UnityEngine.Debug.Log($"For scan {scan}, numNotes={numNotes}, startTime={startTime}, endTime={endTime}, voltage={voltage}");
             if (voltage > r.voltage.raw)
             {
-                UnityEngine.Debug.Log($"Voltage updated.");
                 r.voltage.raw = voltage;
             }
         }
@@ -424,7 +421,6 @@ public partial class Pattern
         }
 
         // Chaos: percentage of notes that are not 4th or 8th notes.
-        UnityEngine.Debug.Log($"numChaosNotes={numChaosNotes}");
         if (playableNotes.Count == 0)
         {
             r.chaos.raw = 0f;
@@ -437,7 +433,6 @@ public partial class Pattern
         // Async: percentage of notes that are hold or repeat notes.
         // A hold note counts as 0.5 async notes as they are not
         // that hard.
-        UnityEngine.Debug.Log($"numAsyncNotes={numAsyncNotes}");
         if (playableNotes.Count == 0)
         {
             r.async.raw = 0f;
@@ -457,12 +452,10 @@ public partial class Pattern
                 timeEvents[i].GetType()
                     == timeEvents[i - 1].GetType())
             {
-                UnityEngine.Debug.Log($"time event #{i} is identical to the previous one.");
                 continue;
             }
             numTimeEvents++;
         }
-        UnityEngine.Debug.Log($"numTimeEvents={numTimeEvents}");
         r.shift.raw = numTimeEvents;
 
         return r;

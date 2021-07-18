@@ -637,7 +637,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         return false;
     }
 
-    private float SquaredDistanceFromPointToLineSegment(
+    private static float SquaredDistanceFromPointToLineSegment(
         Vector2 v, Vector2 w, Vector2 p)
     {
         // https://stackoverflow.com/a/1501725

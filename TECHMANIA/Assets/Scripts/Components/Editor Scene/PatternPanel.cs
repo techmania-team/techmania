@@ -84,8 +84,8 @@ public class PatternPanel : MonoBehaviour
     // EditorContext.Pattern at all times.
     private Dictionary<Note, NoteObject> noteToNoteObject;
     // Maintain a list of all drag notes, so when the workspace
-    // receives a click, it can check if it should have landed on
-    // any drag note.
+    // receives a click, it can check if it should land on any
+    // drag note.
     private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
