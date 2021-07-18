@@ -665,6 +665,34 @@ public class PatternPanel : MonoBehaviour
     public void OnWorkspaceScrollRectValueChanged(
         Vector2 value)
     {
+        // Calculate the pulse and lane range visible through the
+        // viewport.
+        Vector2 topLeftOfViewport = new Vector2(
+            workspaceScrollRect.horizontalNormalizedPosition *
+            (WorkspaceContentWidth - workspaceViewport.rect.width),
+            (1f - workspaceScrollRect.verticalNormalizedPosition) *
+            (workspaceViewport.rect.height - WorkspaceContentHeight));
+        if (workspaceViewport.rect.width > WorkspaceContentWidth)
+        {
+            topLeftOfViewport.x = 0f;
+        }
+        Vector2 bottomRightOfViewport = new Vector2(
+            topLeftOfViewport.x + workspaceViewport.rect.width,
+            topLeftOfViewport.y - workspaceViewport.rect.height);
+        float minPulse, maxPulse, minLane, maxLane;
+        SelfPositionerInEditor.PulseAndLaneFromPosition(
+            topLeftOfViewport, out minPulse, out minLane);
+        SelfPositionerInEditor.PulseAndLaneFromPosition(
+            bottomRightOfViewport, out maxPulse, out maxLane);
+
+        // Expand the range to compensate for paths, trails and curves.
+        minPulse -= Pattern.pulsesPerBeat * 
+            EditorContext.Pattern.patternMetadata.bps * 2;
+        maxPulse += Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps * 2;
+        minLane -= EditorContext.Pattern.patternMetadata.lanes;
+        maxLane += EditorContext.Pattern.patternMetadata.lanes;
+
         SynchronizeScrollRects();
     }
 
