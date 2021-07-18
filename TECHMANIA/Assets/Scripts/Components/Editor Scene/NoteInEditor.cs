@@ -108,9 +108,10 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         }
     }
 
-    public void UpdateSelection(HashSet<GameObject> selection)
+    public void UpdateSelection(HashSet<Note> selection)
     {
-        bool selected = selection.Contains(gameObject);
+        bool selected = selection.Contains(
+            GetComponent<NoteObject>().note);
         if (selectionOverlay != null)
         {
             selectionOverlay.enabled = selected;

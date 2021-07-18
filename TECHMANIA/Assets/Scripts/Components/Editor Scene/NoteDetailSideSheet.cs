@@ -19,13 +19,13 @@ public class NoteDetailSideSheet : MonoBehaviour
     public Toggle bSplineToggle;
     public PatternPanel patternPanel;
 
-    private HashSet<GameObject> selection;
+    private HashSet<Note> selection;
     private List<Note> notes;
 
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += OnSelectionChanged;
-        OnSelectionChanged(patternPanel.selectedNoteObjects);
+        OnSelectionChanged(patternPanel.selectedNotes);
     }
 
     private void OnDisable()
@@ -33,7 +33,7 @@ public class NoteDetailSideSheet : MonoBehaviour
         PatternPanel.SelectionChanged -= OnSelectionChanged;
     }
 
-    private void OnSelectionChanged(HashSet<GameObject> newSelection)
+    private void OnSelectionChanged(HashSet<Note> newSelection)
     {
         if (newSelection == null) return;
         if (newSelection.Count == 0)
@@ -48,9 +48,9 @@ public class NoteDetailSideSheet : MonoBehaviour
 
         bool multiple = newSelection.Count > 1;
         notes = new List<Note>();
-        foreach (GameObject o in newSelection)
+        foreach (Note n in newSelection)
         {
-            notes.Add(o.GetComponent<NoteObject>().note);
+            notes.Add(n);
         }
 
         if (!multiple)
@@ -199,8 +199,11 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
         EditorContext.EndTransaction();
 
-        foreach (GameObject o in selection)
+        foreach (Note n in selection)
         {
+            GameObject o = patternPanel.GetGameObjectFromNote(n);
+            if (o == null) continue;
+
             o.GetComponent<NoteInEditor>().ResetCurve();
             o.GetComponent<NoteInEditor>().
                 ResetAllAnchorsAndControlPoints();
