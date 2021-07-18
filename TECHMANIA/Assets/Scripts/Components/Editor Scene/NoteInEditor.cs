@@ -376,15 +376,14 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         pathToPreviousNote.anchoredPosition = Vector2.zero;
     }
 
-    public void PointPathToward(GameObject target)
+    public void PointPathToward(Note n)
     {
-        if (target != null)
+        if (n != null)
         {
             UIUtils.PointToward(self: pathToPreviousNote,
                 selfPos: GetComponent<RectTransform>()
                     .anchoredPosition,
-                targetPos: target.GetComponent<RectTransform>()
-                    .anchoredPosition);
+                targetPos: SelfPositionerInEditor.PositionOf(n));
         }
         else
         {
@@ -393,13 +392,12 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         }
     }
 
-    public void RotateNoteHeadToward(GameObject target)
+    public void RotateNoteHeadToward(Note n)
     {
         UIUtils.RotateToward(
             self: noteImage,
             selfPos: GetComponent<RectTransform>().anchoredPosition,
-            targetPos: target.GetComponent<RectTransform>()
-                .anchoredPosition);
+            targetPos: SelfPositionerInEditor.PositionOf(n));
     }
     #endregion
 
