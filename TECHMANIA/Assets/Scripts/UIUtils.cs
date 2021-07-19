@@ -305,14 +305,42 @@ public class UIUtils
         float normalizedMargin, bool viewRectAsPoint,
         bool horizontal, bool vertical)
     {
+        float minX, maxX, minY, maxY;
+        GetMinMaxXY(rect, out minX, out maxX,
+            out minY, out maxY);
+        InnerScrollIntoView(
+            minX, maxX, minY, maxY, scrollRect,
+            normalizedMargin, viewRectAsPoint,
+            horizontal, vertical);
+    }
+
+    public static void ScrollIntoView(
+        Vector2 positionInWorld, ScrollRect scrollRect,
+        float normalizedMargin, bool viewRectAsPoint,
+        bool horizontal, bool vertical)
+    {
+        float minX = positionInWorld.x,
+            maxX = positionInWorld.x,
+            minY = positionInWorld.y,
+            maxY = positionInWorld.y;
+        InnerScrollIntoView(
+            minX, maxX, minY, maxY, scrollRect,
+            normalizedMargin, viewRectAsPoint,
+            horizontal, vertical);
+    }
+
+    private static void InnerScrollIntoView(
+        float minX, float maxX, float minY, float maxY,
+        ScrollRect scrollRect,
+        float normalizedMargin, bool viewRectAsPoint,
+        bool horizontal, bool vertical)
+    {
         RectTransform viewPort = scrollRect.viewport;
         RectTransform content = scrollRect.content;
-        float minX, maxX, minY, maxY;
+        
         float viewMinX, viewMaxX, viewMinY, viewMaxY;
         float contentMinX, contentMaxX, contentMinY, contentMaxY;
 
-        GetMinMaxXY(rect, out minX, out maxX,
-            out minY, out maxY);
         GetMinMaxXY(viewPort, out viewMinX, out viewMaxX,
             out viewMinY, out viewMaxY);
         GetMinMaxXY(content, out contentMinX, out contentMaxX,
@@ -333,7 +361,7 @@ public class UIUtils
 
         if (horizontal)
         {
-            float horizontalPosition = 
+            float horizontalPosition =
                 scrollRect.horizontalNormalizedPosition;
             if (maxX > viewMaxX)
             {
@@ -345,7 +373,7 @@ public class UIUtils
             else if (minX < viewMinX)
             {
                 horizontalPosition =
-                    (minX - contentMinX - 
+                    (minX - contentMinX -
                         normalizedMargin * viewWidth) /
                     (contentWidth - viewWidth);
             }

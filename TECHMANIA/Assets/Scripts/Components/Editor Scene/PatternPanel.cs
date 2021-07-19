@@ -80,8 +80,8 @@ public class PatternPanel : MonoBehaviour
 
     #region Internal Data Structures
     // Each NoteObject contains a reference to a Note, and this
-    // dictionary is the reverse of that. Must be updated alongside
-    // EditorContext.Pattern at all times.
+    // dictionary is the reverse of that. Only contains the notes
+    // close to the viewport.
     private Dictionary<Note, NoteObject> noteToNoteObject;
     // Maintain a list of all drag notes, so when the workspace
     // receives a click, it can check if it should land on any
@@ -347,7 +347,6 @@ public class PatternPanel : MonoBehaviour
                             Debug.LogError("Note not found when trying to undo AddNote.");
                             break;
                         }
-                        GameObject o = GetGameObjectFromNote(n);
                         selectedNotes.Remove(n);
                         DeleteNote(n);
                     }
@@ -406,7 +405,6 @@ public class PatternPanel : MonoBehaviour
                             Debug.LogError("Note not found when trying to redo DeleteNote.");
                             break;
                         }
-                        GameObject o = GetGameObjectFromNote(n);
                         selectedNotes.Remove(n);
                         DeleteNote(n);
                     }
@@ -461,8 +459,10 @@ public class PatternPanel : MonoBehaviour
 
     private void RefreshNoteInEditor(Note n)
     {
-        NoteInEditor e = GetGameObjectFromNote(n)
-            .GetComponent<NoteInEditor>();
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+
+        NoteInEditor e = o.GetComponent<NoteInEditor>();
         e.SetKeysoundText();
         e.UpdateEndOfScanIndicator();
         switch (n.type)
@@ -680,9 +680,9 @@ public class PatternPanel : MonoBehaviour
             topLeftOfViewport.x + workspaceViewport.rect.width,
             topLeftOfViewport.y - workspaceViewport.rect.height);
         float minPulse, maxPulse, minLane, maxLane;
-        SelfPositionerInEditor.PulseAndLaneFromPosition(
+        PointInNoteContainerToPulseAndLane(
             topLeftOfViewport, out minPulse, out minLane);
-        SelfPositionerInEditor.PulseAndLaneFromPosition(
+        PointInNoteContainerToPulseAndLane(
             bottomRightOfViewport, out maxPulse, out maxLane);
 
         // Expand the range to compensate for paths, trails and curves.
@@ -1367,16 +1367,10 @@ public class PatternPanel : MonoBehaviour
                 selectedNotes.Add(n);
             }
             // Scroll the first selected note into view.
+            // TODO: the notes may not be visible yet.
             if (selectedNotes.Count > 0)
             {
-                UIUtils.ScrollIntoView(
-                    GetGameObjectFromNote(notesWithIssue[0])
-                    .GetComponent<RectTransform>(),
-                    workspaceScrollRect,
-                    normalizedMargin: 0.1f,
-                    viewRectAsPoint: true,
-                    horizontal: true,
-                    vertical: true);
+                ScrollNoteIntoView(notesWithIssue[0]);
             }
             SelectionChanged?.Invoke(selectedNotes);
         }
@@ -2928,20 +2922,24 @@ public class PatternPanel : MonoBehaviour
         // Delete from pattern.
         EditorContext.Pattern.notes.Remove(n);
 
-        // Delete from UI, if it's there.
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-
-        AdjustPathBeforeDeleting(o);
-        noteToNoteObject.Remove(n);
-        if (n.type == NoteType.Drag)
-        {
-            dragNotes.Remove(o.GetComponent<NoteInEditor>());
-        }
         if (lastSelectedNoteWithoutShift == n)
         {
             lastSelectedNoteWithoutShift = null;
         }
+
+        // Delete from UI, if it's there.
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        DeleteNoteFromUI(n, o);
+    }
+
+    private void DeleteNoteFromUI(Note n, GameObject o)
+    {
+        AdjustPathBeforeDeleting(o);
+        noteToNoteObject.Remove(n);
+        // No exception if the elements don't exist.
+        dragNotes.Remove(o.GetComponent<NoteInEditor>());
+        
         // Destroy doesn't immediately destroy, so we move the note
         // to the cemetary so as to not interfere with the
         // binary searches when spawning new notes on the same frame.
@@ -3507,16 +3505,6 @@ public class PatternPanel : MonoBehaviour
         lane = -pointInContainer.y / LaneHeight - 0.5f;
     }
 
-    private Vector2 PulseAndLaneToPointInNoteContainer(
-        float pulse, float lane)
-    {
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float scan = pulse / Pattern.pulsesPerBeat / bps;
-        return new Vector2(
-            scan * ScanWidth,
-            -(lane + 0.5f) * LaneHeight);
-    }
-
     private void ScrollScanlineIntoView()
     {
         if (!Options.instance.editorOptions.keepScanlineInView) return;
@@ -3529,6 +3517,20 @@ public class PatternPanel : MonoBehaviour
             horizontal: true,
             vertical: false);
         SynchronizeScrollRects();
+    }
+
+    private void ScrollNoteIntoView(Note n)
+    {
+        Vector2 position = SelfPositionerInEditor.PositionOf(n);
+        Vector3 worldPosition = workspaceContent.TransformPoint(
+            position);
+        UIUtils.ScrollIntoView(
+            worldPosition, 
+            workspaceScrollRect,
+            normalizedMargin: 0.1f,
+            viewRectAsPoint: true,
+            horizontal: true,
+            vertical: true);
     }
 
     // This was used to implement continuous scrolling during playback,

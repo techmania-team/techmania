@@ -70,15 +70,6 @@ public class SelfPositionerInEditor : MonoBehaviour
         return new Vector2(PulseToX(n.pulse), LaneToY(n.lane));
     }
 
-    public static void PulseAndLaneFromPosition(Vector2 position,
-        out float pulse, out float lane)
-    {
-        float scan = position.x / PatternPanel.ScanWidth;
-        pulse = scan * pulsesPerScan;
-
-        lane = -(position.y / PatternPanel.LaneHeight) - 0.5f;
-    }
-
     private static float PulseToX(float pulse)
     {
         float scan = pulse / pulsesPerScan;
