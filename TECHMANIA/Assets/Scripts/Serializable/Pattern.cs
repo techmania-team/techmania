@@ -436,7 +436,7 @@ public partial class Pattern
             r.chaos.raw = numChaosNotes * 100f / playableNotes.Count;
         }
         r.chaos.normalized = NormalizeRadarValue(r.chaos.raw,
-            0f, 45f);
+            0f, 50f);
 
         // Async: percentage of notes that are hold or repeat notes.
         // A hold note counts as 0.5 async notes as they are not
@@ -450,7 +450,7 @@ public partial class Pattern
             r.async.raw = numAsyncNotes * 100f / playableNotes.Count;
         }
         r.async.normalized = NormalizeRadarValue(r.async.raw,
-            0f, 35f);
+            0f, 40f);
 
         // Shift: number of unique time events.
         int numTimeEvents = 0;
@@ -471,13 +471,13 @@ public partial class Pattern
         // Suggested difficulty. Formulta calculated by
         // linear regression.
         r.suggestedLevel =
-            r.density.raw * 1f +
-            r.voltage.raw * 0.02f +
+            r.density.raw * 0.87f +
+            r.voltage.raw * 0.1f +
             r.speed.raw * 0.04f +
-            r.chaos.raw * 0.01f +
-            r.async.raw * 0.05f +
-            r.shift.raw * 0.05f -
-            0.05f;
+            r.chaos.raw * 0f +
+            r.async.raw * 0.06f +
+            r.shift.raw * 0.06f +
+            0.23f;
         r.suggestedLevelRounded = UnityEngine.Mathf.RoundToInt(
             r.suggestedLevel);
 
