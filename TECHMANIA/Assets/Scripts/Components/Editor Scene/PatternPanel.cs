@@ -662,8 +662,13 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Events From Workspace and NoteObjects
-    public void OnWorkspaceScrollRectValueChanged(
-        Vector2 value)
+    public void OnWorkspaceScrollRectValueChanged()
+    {
+        RefreshNotesInViewport();
+        SynchronizeScrollRects();
+    }
+
+    private void RefreshNotesInViewport()
     {
         // Calculate the pulse and lane range visible through the
         // viewport.
@@ -686,14 +691,53 @@ public class PatternPanel : MonoBehaviour
             bottomRightOfViewport, out maxPulse, out maxLane);
 
         // Expand the range to compensate for paths, trails and curves.
-        minPulse -= Pattern.pulsesPerBeat * 
+        minPulse -= Pattern.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps * 2;
         maxPulse += Pattern.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps * 2;
         minLane -= EditorContext.Pattern.patternMetadata.lanes;
         maxLane += EditorContext.Pattern.patternMetadata.lanes;
 
-        SynchronizeScrollRects();
+        // Find all notes that should spawn.
+        Note topLeftNote = new Note()
+        {
+            pulse = Mathf.FloorToInt(minPulse),
+            lane = Mathf.FloorToInt(minLane)
+        };
+        Note bottomRightNote = new Note()
+        {
+            pulse = Mathf.CeilToInt(maxPulse),
+            lane = Mathf.CeilToInt(maxLane)
+        };
+        List<Note> visibleNotes = EditorContext.Pattern
+            .GetRangeBetween(topLeftNote, bottomRightNote);
+        HashSet<Note> visibleNotesAsSet = new HashSet<Note>(
+            visibleNotes);
+
+        // Make a copy of noteToNoteObject because the code below
+        // will modify it.
+        Dictionary<Note, NoteObject> noteToNoteObjectClone
+            = new Dictionary<Note, NoteObject>(noteToNoteObject);
+
+        // Destroy notes that go out of view.
+        foreach (KeyValuePair<Note, NoteObject> pair in
+            noteToNoteObjectClone)
+        {
+            if (!visibleNotesAsSet.Contains(pair.Key))
+            {
+                DeleteNoteObject(pair.Key, pair.Value.gameObject);
+            }
+        }
+
+        // Spawn notes that come into view.
+        foreach (Note n in visibleNotes)
+        {
+            if (!noteToNoteObjectClone.ContainsKey(n))
+            {
+                GameObject o = SpawnNoteObject(n);
+                AdjustPathOrTrailAround(o);
+            }
+        }
     }
 
     // If no drag note should receive this event, returns null.
@@ -2212,7 +2256,7 @@ public class PatternPanel : MonoBehaviour
     // slow.
     private void Refresh()
     {
-        DestroyAndRespawnExistingNotes();
+        DestroyAndSpawnExistingNotes();
         UpdateNumScans();
         DestroyAndRespawnAllMarkers();
         ResizeWorkspace();
@@ -2501,7 +2545,7 @@ public class PatternPanel : MonoBehaviour
         return noteObject.gameObject;
     }
 
-    private void DestroyAndRespawnExistingNotes()
+    private void DestroyAndSpawnExistingNotes()
     {
         for (int i = 0; i < noteContainer.childCount; i++)
         {
@@ -2513,11 +2557,7 @@ public class PatternPanel : MonoBehaviour
         selectedNotes = new HashSet<Note>();
         SelectionChanged?.Invoke(selectedNotes);
 
-        foreach (Note n in EditorContext.Pattern.notes)
-        {
-            SpawnNoteObject(n);
-        }
-
+        RefreshNotesInViewport();
         AdjustAllPathsAndTrails();
     }
 
@@ -2930,10 +2970,10 @@ public class PatternPanel : MonoBehaviour
         // Delete from UI, if it's there.
         GameObject o = GetGameObjectFromNote(n);
         if (o == null) return;
-        DeleteNoteFromUI(n, o);
+        DeleteNoteObject(n, o);
     }
 
-    private void DeleteNoteFromUI(Note n, GameObject o)
+    private void DeleteNoteObject(Note n, GameObject o)
     {
         AdjustPathBeforeDeleting(o);
         noteToNoteObject.Remove(n);
