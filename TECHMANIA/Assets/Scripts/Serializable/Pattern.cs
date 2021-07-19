@@ -395,6 +395,8 @@ public partial class Pattern
         {
             r.density.raw = playableNotes.Count / seconds;
         }
+        r.density.normalized = NormalizeRadarValue(r.density.raw,
+            0.5f, 8f);
 
         // Voltage: peak number of notes per second.
         foreach (KeyValuePair<int, int> pair in scanToNumNotes)
@@ -409,6 +411,8 @@ public partial class Pattern
                 r.voltage.raw = voltage;
             }
         }
+        r.voltage.normalized = NormalizeRadarValue(r.voltage.raw,
+            1f, 25f);
 
         // Speed: average scans per minute.
         if (seconds == 0f)
@@ -419,6 +423,8 @@ public partial class Pattern
         {
             r.speed.raw = scans * 60 / seconds;
         }
+        r.speed.normalized = NormalizeRadarValue(r.speed.raw,
+            12f, 80f);
 
         // Chaos: percentage of notes that are not 4th or 8th notes.
         if (playableNotes.Count == 0)
@@ -429,6 +435,8 @@ public partial class Pattern
         {
             r.chaos.raw = numChaosNotes * 100f / playableNotes.Count;
         }
+        r.chaos.normalized = NormalizeRadarValue(r.chaos.raw,
+            0f, 45f);
 
         // Async: percentage of notes that are hold or repeat notes.
         // A hold note counts as 0.5 async notes as they are not
@@ -441,6 +449,8 @@ public partial class Pattern
         {
             r.async.raw = numAsyncNotes * 100f / playableNotes.Count;
         }
+        r.async.normalized = NormalizeRadarValue(r.async.raw,
+            0f, 35f);
 
         // Shift: number of unique time events.
         int numTimeEvents = 0;
@@ -458,7 +468,27 @@ public partial class Pattern
         }
         r.shift.raw = numTimeEvents;
 
+        // Suggested difficulty. Formulta calculated by
+        // linear regression.
+        r.suggestedLevel =
+            r.density.raw * 1f +
+            r.voltage.raw * 0.02f +
+            r.speed.raw * 0.04f +
+            r.chaos.raw * 0.01f +
+            r.async.raw * 0.05f +
+            r.shift.raw * 0.05f -
+            0.05f;
+        r.suggestedLevelRounded = UnityEngine.Mathf.RoundToInt(
+            r.suggestedLevel);
+
         return r;
+    }
+
+    private int NormalizeRadarValue(float raw,
+        float min, float max)
+    {
+        float t = UnityEngine.Mathf.InverseLerp(min, max, raw);
+        return UnityEngine.Mathf.RoundToInt(t * 100f);
     }
     #endregion
 
