@@ -201,6 +201,7 @@ public class PatternPanel : MonoBehaviour
             cacheAudioCompleteCallback: OnResourceLoadComplete);
 
         Refresh();
+        SelectionChanged += RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked += OnUndo;
         EditorContext.RedoInvoked += OnRedo;
         NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
@@ -243,6 +244,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDisable()
     {
         StopPlayback();
+        SelectionChanged -= RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked -= OnUndo;
         EditorContext.RedoInvoked -= OnRedo;
         NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
@@ -713,6 +715,8 @@ public class PatternPanel : MonoBehaviour
             .GetRangeBetween(topLeftNote, bottomRightNote);
         HashSet<Note> visibleNotesAsSet = new HashSet<Note>(
             visibleNotes);
+        // All selected notes should remain visible.
+        visibleNotesAsSet.UnionWith(selectedNotes);
 
         // Make a copy of noteToNoteObject because the code below
         // will modify it.
@@ -730,7 +734,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Spawn notes that come into view.
-        foreach (Note n in visibleNotes)
+        foreach (Note n in visibleNotesAsSet)
         {
             if (!noteToNoteObjectClone.ContainsKey(n))
             {
@@ -738,6 +742,12 @@ public class PatternPanel : MonoBehaviour
                 AdjustPathOrTrailAround(o);
             }
         }
+    }
+
+    private void RefreshNotesInViewportWhenSelectionChanged(
+        HashSet<Note> _)
+    {
+        RefreshNotesInViewport();
     }
 
     // If no drag note should receive this event, returns null.
@@ -3171,6 +3181,10 @@ public class PatternPanel : MonoBehaviour
             selectedNotes.Add(n);
         }
         SelectionChanged?.Invoke(selectedNotes);
+
+        // SelectAll is the only way of selection that can affect
+        // notes outside the view port. So:
+        RefreshNotesInViewport();
     }
 
     public void SelectNone()
