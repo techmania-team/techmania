@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class RadarDialog : MonoBehaviour
 {
+    public Radar radarDisplay;
+
     public TextMeshProUGUI densityRaw;
     public TextMeshProUGUI densityNormalized;
     public TextMeshProUGUI voltageRaw;
@@ -23,6 +25,7 @@ public class RadarDialog : MonoBehaviour
     public void Show()
     {
         Pattern.Radar radar = EditorContext.Pattern.CalculateRadar();
+        radarDisplay.SetRadar(radar);
 
         densityRaw.text = radar.density.raw.ToString("F2");
         densityNormalized.text = radar.density.normalized.ToString();
