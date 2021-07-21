@@ -177,21 +177,21 @@ public class ModifierSidesheet : MonoBehaviour
         List<string> specialSegments = new List<string>();
         Modifiers.instance.ToDisplaySegments(
             regularSegments, specialSegments);
-
-        List<string> allSegments = new List<string>();
-        for (int i = 0; i < regularSegments.Count; i++)
-        {
-            allSegments.Add(regularSegments[i]);
-        }
         if (noVideo)
         {
-            allSegments.Add(Locale.GetString(
+            regularSegments.Add(Locale.GetString(
                 "modifier_sidesheet_no_video_label"));
         }
+
+        List<string> allSegments = new List<string>();
         if (regularSegments.Count + specialSegments.Count == 0)
         {
             allSegments.Add(Locale.GetString(
                 "select_pattern_modifier_none"));
+        }
+        for (int i = 0; i < regularSegments.Count; i++)
+        {
+            allSegments.Add(regularSegments[i]);
         }
         for (int i = 0; i < specialSegments.Count; i++)
         {

@@ -104,12 +104,45 @@ public class SelectPatternPanel : MonoBehaviour
             float length;
             p.GetLengthInSecondsAndScans(out length, out _);
 
+            // Get BPM.
+            double minBPM = p.patternMetadata.initBpm;
+            double maxBPM = minBPM;
+            foreach (BpmEvent e in p.bpmEvents)
+            {
+                if (e.bpm < minBPM) minBPM = e.bpm;
+                if (e.bpm > maxBPM) maxBPM = e.bpm;
+            }
+            string bpmString;
+            if (minBPM < maxBPM)
+            {
+                bpmString = 
+                    $"{FormatBPM(minBPM)} - {FormatBPM(maxBPM)}";
+            }
+            else
+            {
+                bpmString = FormatBPM(minBPM);
+            }
+
+            bpmText.SetUp(bpmString);
             lengthText.text = UIUtils.FormatTime(length,
                 includeMillisecond: false);
             notesText.text = p.NumPlayableNotes().ToString();
             radar.SetRadar(p.CalculateRadar());
             authorText.SetUp(p.patternMetadata.author);
             playButton.interactable = true;
+        }
+    }
+
+    private string FormatBPM(double bpm)
+    {
+        int floored = Mathf.FloorToInt((float)bpm);
+        if (Mathf.Abs(floored - (float)bpm) < Mathf.Epsilon)
+        {
+            return floored.ToString();
+        }
+        else
+        {
+            return bpm.ToString("F2");
         }
     }
 
