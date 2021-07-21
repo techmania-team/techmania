@@ -11,6 +11,7 @@ public class Radar : MonoBehaviour
     public Color skeletonColor;
     public Color frameColor;
     public RadarGraph graph;
+    public float size;
 
     [Header("Value display")]
     public TextMeshProUGUI density;
@@ -18,8 +19,6 @@ public class Radar : MonoBehaviour
     public TextMeshProUGUI speed;
     public TextMeshProUGUI chaos;
     public TextMeshProUGUI async;
-
-    private float kSize = 20f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +31,7 @@ public class Radar : MonoBehaviour
                 .GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(
-                kSize * 5f,
+                size * 5f,
                 rect.sizeDelta.y);
             rect.localRotation = Quaternion.Euler(0f, 0f,
                 90f + 72f * i);
@@ -42,7 +41,7 @@ public class Radar : MonoBehaviour
         }
 
         // Pentagons
-        float unitSideLength = kSize * 5f * Mathf.Sin(
+        float unitSideLength = size * 5f * Mathf.Sin(
             36f * Mathf.Deg2Rad) * 2f * 0.2f;
         for (int i = 0; i < 5; i++)
         {
@@ -56,7 +55,7 @@ public class Radar : MonoBehaviour
                 rect.anchoredPosition = new Vector2(
                     Mathf.Cos(angleInRadian),
                     Mathf.Sin(angleInRadian)
-                    ) * kSize * (i + 1);
+                    ) * size * (i + 1);
                 rect.sizeDelta = new Vector2(
                     sideLength,
                     rect.sizeDelta.y);
@@ -70,7 +69,7 @@ public class Radar : MonoBehaviour
         }
 
         // Value display
-        float displayDistance = kSize * 5f + 40f;
+        float displayDistance = size * 5f + 40f;
         Action<TextMeshProUGUI, float> placeDisplay =
             (TextMeshProUGUI display, float angleInDegree) =>
             {
@@ -90,7 +89,7 @@ public class Radar : MonoBehaviour
     public void SetRadar(Pattern.Radar radar)
     {
         graph.radar = radar;
-        graph.size = kSize * 5f;
+        graph.size = size * 5f;
         graph.SetVerticesDirty();
 
         density.text = radar.density.normalized.ToString();
@@ -98,5 +97,11 @@ public class Radar : MonoBehaviour
         speed.text = radar.speed.normalized.ToString();
         chaos.text = radar.chaos.normalized.ToString();
         async.text = radar.async.normalized.ToString();
+    }
+
+    public void SetEmpty()
+    {
+        Pattern.Radar defaultRadar = new Pattern.Radar();
+        SetRadar(defaultRadar);
     }
 }

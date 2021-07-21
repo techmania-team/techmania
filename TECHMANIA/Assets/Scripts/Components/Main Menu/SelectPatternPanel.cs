@@ -21,11 +21,13 @@ public class SelectPatternPanel : MonoBehaviour
     public PatternRadioList patternList;
 
     [Header("Pattern details")]
-    public ScrollingText authorText;
+    public ScrollingText bpmText;
     public TextMeshProUGUI lengthText;
     public TextMeshProUGUI notesText;
+    public Radar radar;
+    public ScrollingText authorText;
     public ScrollingText modifiersText;
-    public ScrollingText specialModifiersText;
+    public Color specialModifierColor;
 
     [Header("Buttons")]
     public ModifierSidesheet modifierSidesheet;
@@ -89,9 +91,11 @@ public class SelectPatternPanel : MonoBehaviour
     {
         if (p == null)
         {
-            authorText.SetUp("-");
+            bpmText.SetUp("-");
             lengthText.text = "-";
             notesText.text = "-";
+            radar.SetEmpty();
+            authorText.SetUp("-");
             playButton.interactable = false;
         }
         else
@@ -100,10 +104,11 @@ public class SelectPatternPanel : MonoBehaviour
             float length;
             p.GetLengthInSecondsAndScans(out length, out _);
 
-            authorText.SetUp(p.patternMetadata.author);
             lengthText.text = UIUtils.FormatTime(length,
                 includeMillisecond: false);
             notesText.text = p.NumPlayableNotes().ToString();
+            radar.SetRadar(p.CalculateRadar());
+            authorText.SetUp(p.patternMetadata.author);
             playButton.interactable = true;
         }
     }
@@ -115,12 +120,9 @@ public class SelectPatternPanel : MonoBehaviour
 
     private void OnModifierChanged()
     {
-        string modifierLine1, modifierLine2;
-        modifierSidesheet.GetModifierDisplay(
-            out modifierLine1, out modifierLine2);
-
-        modifiersText.SetUp(modifierLine1);
-        specialModifiersText.SetUp(modifierLine2);
+        bool noVideo = GameSetup.trackOptions.noVideo;
+        modifiersText.SetUp(ModifierSidesheet.GetDisplayString(
+            noVideo, specialModifierColor));
     }
 
     public void OnModifierButtonClick()
