@@ -34,7 +34,7 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI rankText;
     public TextMeshProUGUI ruleset;
     public ScrollingText modifierDisplay;
-    public ScrollingText specialModifierDisplay;
+    public Color specialModifierColor;
 
     // Start is called before the first frame update
     void Start()
@@ -128,19 +128,8 @@ public class ResultsPanel : MonoBehaviour
             "result_panel_ruleset_default");
 
         // Modifier display
-        List<string> regularSegments = new List<string>();
-        List<string> specialSegments = new List<string>();
-        Modifiers.instance.ToDisplaySegments(
-            regularSegments, specialSegments);
-        // This panel does not display "No video".
-        if (regularSegments.Count == 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                "select_pattern_modifier_none"));
-        }
-        modifierDisplay.SetUp(string.Join(" / ", regularSegments));
-        specialModifierDisplay.SetUp(string.Join(" / ",
-            specialSegments));
+        modifierDisplay.SetUp(ModifierSidesheet.GetDisplayString(
+            noVideo: false, specialModifierColor));
     }
 
     public void OnSelectTrackButtonClick()
