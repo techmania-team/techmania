@@ -44,6 +44,12 @@ public class Options : OptionsBase
         ShowBeatMarkers,
         ShowHalfBeatMarkers
     }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
 
     public string locale;
     public bool showLoadingBar;
@@ -51,6 +57,7 @@ public class Options : OptionsBase
     public bool showJudgementTally;
     public bool showLaneDividers;
     public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -108,6 +115,8 @@ public class Options : OptionsBase
         showJudgementTally = false;
         showLaneDividers = false;
         beatMarkers = BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = BackgroundScalingMode
+            .FillEntireScreen;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";

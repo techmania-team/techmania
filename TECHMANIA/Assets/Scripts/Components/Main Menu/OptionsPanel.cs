@@ -25,6 +25,7 @@ public class OptionsPanel : MonoBehaviour
     public Toggle showJudgementTallyToggle;
     public Toggle showLaneDividersToggle;
     public TMP_Dropdown beatMarkersDropdown;
+    public TMP_Dropdown backgroundScalingDropdown;
 
     [Header("Miscellaneous")]
     public TextMeshProUGUI latencyDisplay;
@@ -174,6 +175,14 @@ public class OptionsPanel : MonoBehaviour
         beatMarkersDropdown.SetValueWithoutNotify(
            (int)Options.instance.beatMarkers);
         beatMarkersDropdown.RefreshShownValue();
+
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            backgroundScalingDropdown,
+            "options_bg_scaling_fill_entire_screen",
+            "options_bg_scaling_fill_game_area");
+        backgroundScalingDropdown.SetValueWithoutNotify(
+            (int)Options.instance.backgroundScalingMode);
+        backgroundScalingDropdown.RefreshShownValue();
     }
 
     #region Graphics
@@ -256,6 +265,9 @@ public class OptionsPanel : MonoBehaviour
             showLaneDividersToggle.isOn;
         Options.instance.beatMarkers = (Options.BeatMarkerVisibility)
             beatMarkersDropdown.value;
+        Options.instance.backgroundScalingMode =
+            (Options.BackgroundScalingMode)
+            backgroundScalingDropdown.value;
     }
     #endregion
 }

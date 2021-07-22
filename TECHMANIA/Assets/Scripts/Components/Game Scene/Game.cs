@@ -35,6 +35,7 @@ public class Game : MonoBehaviour
     public bool inEditor;
 
     [Header("Background")]
+    public RectTransform backgroundContainer;
     public Image backgroundImage;
     public VideoPlayer videoPlayer;
     public RawImage bga;
@@ -420,6 +421,16 @@ public class Game : MonoBehaviour
         // Loading complete.
         loading = false;
         topBar.SetActive(true);
+        if (Options.instance.backgroundScalingMode == 
+            Options.BackgroundScalingMode.FillGameArea)
+        {
+            float topBarHeight = topBar.GetComponent<RectTransform>()
+                .rect.height;
+            backgroundContainer.anchoredPosition = new Vector2(
+                0f, -0.5f * topBarHeight);
+            backgroundContainer.sizeDelta = new Vector2(
+                0f, -topBarHeight);
+        }
         noFailIndicator.SetActive(
             Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
