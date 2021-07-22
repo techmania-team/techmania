@@ -16,7 +16,7 @@ public class BuildPostProcessor
             PlistElementDict rootDict = plist.root;
             rootDict.SetBoolean("UIFileSharingEnabled", true);
             rootDict.SetBoolean("UISupportsDocumentBrowser", true);
-            File.WriteAllText(plistPath, plist.WriteToString());
+            plist.WriteToFile(plistPath);
         }
     }
 }
