@@ -306,7 +306,8 @@ public class Game : MonoBehaviour
         {
             if (inEditor)
             {
-                GetComponentInChildren<TransitionToPanel>().Invoke();
+                GetComponentInChildren<TransitionToPanel>(
+                    includeInactive: true).Invoke();
             }
             else
             {
