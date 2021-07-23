@@ -3511,11 +3511,14 @@ public class PatternPanel : MonoBehaviour
 
     public void StopPlayback()
     {
+        // This method is called from OnDisable, so we need to
+        // stop all sound even not during playback.
+        audioSourceManager.StopAll();
+
         if (!isPlaying) return;
         isPlaying = false;
         UpdatePlaybackUI();
 
-        audioSourceManager.StopAll();
         if (Options.instance.editorOptions.returnScanlineAfterPlayback)
         {
             scanline.floatPulse = playbackStartingPulse;
