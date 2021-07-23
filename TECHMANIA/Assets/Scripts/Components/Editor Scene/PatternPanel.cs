@@ -1516,6 +1516,8 @@ public class PatternPanel : MonoBehaviour
             o.GetComponent<NoteInEditor>()
                 .KeepPathInPlaceWhileNoteBeingDragged(delta);
         }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
     }
 
     private void OnEndDraggingNotes()
@@ -1670,6 +1672,80 @@ public class PatternPanel : MonoBehaviour
             o.GetComponent<NoteInEditor>().ResetPathPosition();
         }
     }
+
+    private void ScrollWorkspaceWhenMouseIsCloseToEdge()
+    {
+        // There was an attempt to scroll the workspace when
+        // dragging anything. However there are 2 problems:
+        //
+        // - Unity doesn't fire drag events when the mouse is
+        //   not moving, so the user has to wiggle the mouse
+        //   to keep the scrolling going. We can work around that
+        //   by calling this from Update but it will take too much
+        //   work to figure out when to call this and when not to.
+        //
+        // - When the workspace scrolls, the thing being dragged
+        //   moves a lot in screen space, but the mouse moves little,
+        //   so the delta passed to drag events is also little.
+        //   This results in the dragged thing moving away from
+        //   the mouse.
+        //
+        // Until we have a solution, it's better to not support
+        // drag-induced scrolling for now.
+
+        /*
+        const float kEdgeWidthInside = 10f;
+        const float kEdgeWidthOutside = 50f;
+        const float kHorizontalScrollSpeed = 0.01f;
+        const float kVerticalScrollSpeed = 0.01f;
+
+        Vector2 mousePosInViewport;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            workspaceViewport,
+            screenPoint: Input.mousePosition,
+            cam: null,
+            out mousePosInViewport);
+        float xScroll, yScroll;
+        if (mousePosInViewport.x < workspaceViewport.rect.center.x)
+        {
+            xScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.xMin - kEdgeWidthOutside,
+                workspaceViewport.rect.xMin + kEdgeWidthInside,
+                mousePosInViewport.x) - 1f;
+        }
+        else
+        {
+            xScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.xMax - kEdgeWidthInside,
+                workspaceViewport.rect.xMax + kEdgeWidthOutside,
+                mousePosInViewport.x);
+        }
+        if (mousePosInViewport.y < workspaceViewport.rect.center.y)
+        {
+            yScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.yMin - kEdgeWidthOutside,
+                workspaceViewport.rect.yMin + kEdgeWidthInside,
+                mousePosInViewport.y) - 1f;
+        }
+        else
+        {
+            yScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.yMax - kEdgeWidthInside,
+                workspaceViewport.rect.yMax + kEdgeWidthOutside,
+                mousePosInViewport.y);
+        }
+
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.horizontalNormalizedPosition +
+                xScroll * kHorizontalScrollSpeed);
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.verticalNormalizedPosition +
+                yScroll * kVerticalScrollSpeed);
+        SynchronizeScrollRects();
+        */
+    }
     #endregion
 
     #region Hold Note Duration Adjustment
@@ -1740,6 +1816,8 @@ public class PatternPanel : MonoBehaviour
             o.GetComponent<NoteInEditor>().AdjustTrailLength(
                 delta.x);
         }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
     }
 
     private void OnDurationHandleEndDrag(PointerEventData eventData)
@@ -2055,6 +2133,8 @@ public class PatternPanel : MonoBehaviour
             }
             MoveDraggedAnchor();
         }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
     }
 
     private void OnAnchorEndDrag(PointerEventData eventData)
@@ -2221,6 +2301,8 @@ public class PatternPanel : MonoBehaviour
             draggedControlPoint
             .GetComponentInParent<DragNoteAnchor>());
         noteInEditor.ResetCurve();
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
     }
 
     private void OnControlPointEndDrag(PointerEventData eventData)
@@ -3073,6 +3155,7 @@ public class PatternPanel : MonoBehaviour
         else
         {
             UpdateRectangle();
+            ScrollWorkspaceWhenMouseIsCloseToEdge();
         }
     }
 
