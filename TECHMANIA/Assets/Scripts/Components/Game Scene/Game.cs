@@ -1588,14 +1588,19 @@ public class Game : MonoBehaviour
             audioSourceManager.PlayBackingTrack(backingTrackClip,
                 BaseTime);
         }
-        videoPlayer.Stop();
         if (BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset
             && GameSetup.pattern.patternMetadata.bga != null
             && GameSetup.pattern.patternMetadata.bga != "")
         {
-            videoPlayer.Play();
-            videoPlayer.time = BaseTime -
+            double videoTime = BaseTime -
                 GameSetup.pattern.patternMetadata.bgaOffset;
+            videoPlayer.time = videoTime;
+            videoPlayer.Play();
+        }
+        else
+        {
+            videoPlayer.time = 0;
+            videoPlayer.Pause();
         }
 
         // Play keysounds before this moment if they last enough.
