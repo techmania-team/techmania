@@ -327,29 +327,20 @@ public class SelectTrackPanel : MonoBehaviour
         // Restore or initialize selection.
         if (!trackFilterSidesheet.gameObject.activeSelf)
         {
-            Debug.Log("Attempting to select card #" +
-                selectedCardIndex);
             if (selectedCardIndex >= 0 &&
                 selectedCardIndex < cardList.Count)
             {
-                EventSystem.current.SetSelectedGameObject(
-                    cardList[selectedCardIndex]);
+                SelectCard(selectedCardIndex);
             }
             else if (cardList.Count > 0)
             {
-                EventSystem.current.SetSelectedGameObject(
-                    cardList[0]);
-                scrollRect.verticalNormalizedPosition = 1f;
+                SelectCard(0);
             }
             else
             {
                 EventSystem.current.SetSelectedGameObject(
                     backButton.gameObject);
-                scrollRect.verticalNormalizedPosition = 1f;
             }
-            EventSystem.current.currentSelectedGameObject
-                .GetComponent<ScrollIntoViewOnSelect>()
-                ?.ScrollIntoView();
         }
 
         // Show "no track" message or "tracks hidden" message
@@ -372,6 +363,14 @@ public class SelectTrackPanel : MonoBehaviour
         {
             trackStatusText.gameObject.SetActive(false);
         }
+    }
+
+    private void SelectCard(int index)
+    {
+        if (index < 0 || index >= cardList.Count) return;
+        GameObject card = cardList[index];
+        EventSystem.current.SetSelectedGameObject(card);
+        card.GetComponent<ScrollIntoViewOnSelect>().ScrollIntoView();
     }
 
     private void AddToCardList(GameObject card)
@@ -397,6 +396,53 @@ public class SelectTrackPanel : MonoBehaviour
             trackFilterSidesheet.GetComponent<CanvasGroup>().alpha
                 = GetComponent<CanvasGroup>().alpha;
         }
+
+        // Shortcuts.
+        if (Input.GetKeyDown(KeyCode.Home))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            SelectCard(0);
+        }
+        if (Input.GetKeyDown(KeyCode.End))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            SelectCard(cardList.Count - 1);
+        }
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            for (int i = 0; i < 3; i++) MoveSelectionUp();
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            for (int i = 0; i < 3; i++) MoveSelectionDown();
+        }
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (alt && Input.GetKeyDown(KeyCode.UpArrow) &&
+            goUpButton.interactable)
+        {
+            OnGoUpButtonClick();
+        }
+    }
+
+    private void MoveSelectionUp()
+    {
+        Selectable up = EventSystem.current.currentSelectedGameObject
+            .GetComponent<Selectable>().FindSelectableOnUp();
+        int index = cardList.IndexOf(up?.gameObject);
+        if (index < 0) return;
+        SelectCard(index);
+    }
+
+    private void MoveSelectionDown()
+    {
+        Selectable down = EventSystem.current.currentSelectedGameObject
+            .GetComponent<Selectable>().FindSelectableOnDown();
+        int index = cardList.IndexOf(down?.gameObject);
+        if (index < 0) return;
+        SelectCard(index);
     }
 
     #region Track filter side sheet
@@ -618,8 +664,6 @@ public class SelectTrackPanel : MonoBehaviour
         // Record the index of selected card so we can restore it
         // later. IndexOf return -1 if not found.
         selectedCardIndex = cardIndex;
-        Debug.Log("Selected card index: " +
-            selectedCardIndex);
     }
     #endregion
 }
