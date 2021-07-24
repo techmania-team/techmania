@@ -76,6 +76,8 @@ public class SelectTrackPanel : MonoBehaviour
     protected Dictionary<GameObject, string> cardToError;
     protected List<GameObject> cardList;
 
+    protected bool refreshing;
+
     protected void Start()
     {
         // Reset the keyword every time the main menu or editor scene
@@ -98,6 +100,8 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected IEnumerator Refresh()
     {
+        refreshing = true;
+
         // Initialization and/or disaster recovery.
         if (currentLocation == "" ||
             !Directory.Exists(currentLocation))
@@ -363,6 +367,8 @@ public class SelectTrackPanel : MonoBehaviour
         {
             trackStatusText.gameObject.SetActive(false);
         }
+
+        refreshing = false;
     }
 
     private void SelectCard(int index)
@@ -398,6 +404,7 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Shortcuts.
+        if (refreshing) return;
         if (Input.GetKeyDown(KeyCode.Home))
         {
             MenuSfx.instance.PlaySelectSound();
@@ -424,6 +431,11 @@ public class SelectTrackPanel : MonoBehaviour
             goUpButton.interactable)
         {
             OnGoUpButtonClick();
+        }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            MenuSfx.instance.PlayClickSound();
+            OnRefreshButtonClick();
         }
     }
 
