@@ -266,6 +266,7 @@ public class Game : MonoBehaviour
         if (inEditor)
         {
             Options.RestoreBackup();
+            SetSpeed(100);
             audioSourceManager.StopAll();
 
             // Clear out scans.
@@ -1689,12 +1690,12 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private void SetSpeed(int newSpeed)
+    private void SetSpeed(int newSpeedPercent)
     {
-        newSpeed = Mathf.Clamp(newSpeed, 50, 200);
-        if (speedPercentage == newSpeed) return;
+        newSpeedPercent = Mathf.Clamp(newSpeedPercent, 50, 200);
+        if (speedPercentage == newSpeedPercent) return;
 
-        speedPercentage = newSpeed;
+        speedPercentage = newSpeedPercent;
         ResetInitialTime();
         audioSourceManager.SetSpeed(speed);
         videoPlayer.playbackSpeed = speed;
