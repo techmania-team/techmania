@@ -75,7 +75,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        RemoveCachedListsAtCurrentLocation();
+        RemoveCachedLists();
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

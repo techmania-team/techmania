@@ -319,7 +319,7 @@ public class TrackSetupPanel : MonoBehaviour
             {
                 Directory.Delete(EditorContext.trackFolder,
                     recursive: true);
-                SelectTrackPanel.RemoveCachedListsAtCurrentLocation();
+                SelectTrackPanel.RemoveCachedLists();
                 GetComponentInChildren<
                     CustomTransitionFromTrackSetupPanel>().
                 ForceTransition();

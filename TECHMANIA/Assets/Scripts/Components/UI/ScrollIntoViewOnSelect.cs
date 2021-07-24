@@ -9,7 +9,11 @@ public class ScrollIntoViewOnSelect : MonoBehaviour, ISelectHandler
     public void OnSelect(BaseEventData eventData)
     {
         if (!(eventData is AxisEventData)) return;
+        ScrollIntoView();
+    }
 
+    public void ScrollIntoView()
+    {
         UIUtils.ScrollIntoView(
             GetComponent<RectTransform>(),
             GetComponentInParent<ScrollRect>(),
