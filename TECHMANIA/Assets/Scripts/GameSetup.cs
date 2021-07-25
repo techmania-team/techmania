@@ -7,6 +7,7 @@ using UnityEngine;
 public class GameSetup
 {
     public static Track track;
+    // Full path to the track.tech file.
     public static string trackPath;
     public static string trackFolder
     {

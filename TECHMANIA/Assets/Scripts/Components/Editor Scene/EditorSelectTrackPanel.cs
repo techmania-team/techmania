@@ -75,7 +75,12 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        RemoveCachedLists();
+        // Update in-memory track list.
+        trackList[currentLocation].Add(new TrackInFolder()
+        {
+            folder = newDir,
+            track = track
+        });
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

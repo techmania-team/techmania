@@ -18,7 +18,7 @@ public class SelectTrackPanel : MonoBehaviour
     }
     protected class TrackInFolder
     {
-        // Doesn't include the track itself.
+        // The folder that track.tech is in.
         public string folder;
         public Track track;
     }
@@ -51,6 +51,15 @@ public class SelectTrackPanel : MonoBehaviour
         subfolderList.Clear();
         trackList.Clear();
         errorTrackList.Clear();
+    }
+
+    public static void RemoveOneTrack(string folder)
+    {
+        string parent = new FileInfo(folder).DirectoryName;
+        trackList[parent].RemoveAll((TrackInFolder t) =>
+        {
+            return t.folder == folder;
+        });
     }
 
     public Button backButton;

@@ -74,6 +74,7 @@ public class EditTransaction
 public class EditorContext : MonoBehaviour
 {
     public static Track track;
+    // Full path of the track.tech file.
     public static string trackPath;
     public static string trackFolder
     {
