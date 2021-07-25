@@ -650,7 +650,7 @@ public class SelectTrackPanel : MonoBehaviour
     }
     #endregion
 
-    #region Events from cards
+    #region Events from cards and buttons
     public void OnRefreshButtonClick()
     {
         RemoveCachedLists();
@@ -663,6 +663,11 @@ public class SelectTrackPanel : MonoBehaviour
             .Parent.FullName;
         selectedCardIndex = -1;
         StartCoroutine(Refresh());
+    }
+
+    public void OnOpenInExplorerButtonClick()
+    {
+        Application.OpenURL(currentLocation);
     }
 
     private void OnSubfolderCardClick(GameObject o)
