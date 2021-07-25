@@ -30,39 +30,14 @@ public class ScrollingText : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         innerRect = rect.GetChild(0).GetComponent<RectTransform>();
-        TextMeshProUGUI[] allTexts =
-            GetComponentsInChildren<TextMeshProUGUI>();
 
-        contentSize = 0f;
-        switch (direction)
+        ScrollTo(restingPosition);
+        if (gameObject.activeInHierarchy)
         {
-            case Direction.Horizontal:
-                maskSize = rect.rect.width;
-                foreach (TextMeshProUGUI t in allTexts)
-                {
-                    contentSize += t.preferredWidth;
-                }
-                break;
-            case Direction.Vertical:
-                maskSize = rect.rect.height;
-                foreach (TextMeshProUGUI t in allTexts)
-                {
-                    contentSize += t.preferredHeight;
-                }
-                break;
-        }
-
-        StopAllCoroutines();
-        if (contentSize > maskSize)
-        {
-            if (gameObject.activeInHierarchy)
-            {
-                StartCoroutine(Scroll());
-            }
-        }
-        else
-        {
-            ScrollTo(restingPosition);
+            // Wait for 1 frame and then decide whether to scroll.
+            // This gives time for layout groups to update.
+            StopAllCoroutines();
+            StartCoroutine(Scroll());
         }
     }
 
@@ -96,6 +71,34 @@ public class ScrollingText : MonoBehaviour
         const float kScrollTime = 2f;
         const float kWaitTime = 2f;
 
+        yield return null;
+        // Do we need to scroll at all?
+        TextMeshProUGUI[] allTexts =
+            GetComponentsInChildren<TextMeshProUGUI>();
+        contentSize = 0f;
+        switch (direction)
+        {
+            case Direction.Horizontal:
+                maskSize = rect.rect.width;
+                foreach (TextMeshProUGUI t in allTexts)
+                {
+                    contentSize += t.preferredWidth;
+                }
+                break;
+            case Direction.Vertical:
+                maskSize = rect.rect.height;
+                foreach (TextMeshProUGUI t in allTexts)
+                {
+                    contentSize += t.preferredHeight;
+                }
+                break;
+        }
+        if (contentSize <= maskSize)
+        {
+            yield break;
+        }
+
+        // Start scrolling.
         while (true)
         {
             ScrollTo(0f);
