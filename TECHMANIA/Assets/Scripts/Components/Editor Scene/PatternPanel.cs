@@ -89,6 +89,7 @@ public class PatternPanel : MonoBehaviour
     private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
+    private Note lastClickedNote;
     public HashSet<Note> selectedNotes { get; private set; }
 
     private Note GetNoteFromGameObject(GameObject o)
@@ -965,6 +966,7 @@ public class PatternPanel : MonoBehaviour
         bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl);
         Note clickedNote = GetNoteFromGameObject(o);
+        lastClickedNote = clickedNote;
         if (shift)
         {
             if (lastSelectedNoteWithoutShift == null)
@@ -1218,6 +1220,7 @@ public class PatternPanel : MonoBehaviour
             float pan = n.pan;
             bool endOfScan = n.endOfScan;
 
+            // Inherit the previous duration if applicable.
             int currentDuration = 0;
             if (n is HoldNote)
             {
@@ -1670,6 +1673,14 @@ public class PatternPanel : MonoBehaviour
 
             o.GetComponent<SelfPositionerInEditor>().Reposition();
             o.GetComponent<NoteInEditor>().ResetPathPosition();
+        }
+
+        if (selectedNotes.Count == 1)
+        {
+            foreach (Note n in selectedNotes)
+            {
+                lastClickedNote = n;
+            }
         }
     }
 
@@ -2646,6 +2657,7 @@ public class PatternPanel : MonoBehaviour
         noteToNoteObject = new Dictionary<Note, NoteObject>();
         dragNotes = new HashSet<NoteInEditor>();
         lastSelectedNoteWithoutShift = null;
+        lastClickedNote = null;
         selectedNotes = new HashSet<Note>();
         SelectionChanged?.Invoke(selectedNotes);
 
@@ -2993,7 +3005,23 @@ public class PatternPanel : MonoBehaviour
     {
         if (!duration.HasValue)
         {
-            duration = HoldNoteDefaultDuration(pulse, lane);
+            if (lastClickedNote != null &&
+                lastClickedNote.type == type)
+            {
+                // Attempt to inherit duration of last clicked note.
+                if (CanAddHoldNote(type, pulse, lane,
+                    (lastClickedNote as HoldNote).duration,
+                    null, out _))
+                {
+                    duration = (lastClickedNote as HoldNote).duration;
+                }
+            }
+
+            if (!duration.HasValue)
+            {
+                // If the above failed, then use default duration.
+                duration = HoldNoteDefaultDuration(pulse, lane);
+            }
         }
         HoldNote n = new HoldNote()
         {
@@ -3018,20 +3046,35 @@ public class PatternPanel : MonoBehaviour
         if (nodes == null)
         {
             nodes = new List<DragNode>();
-            int relativePulseOfLastNode = 
-                HoldNoteDefaultDuration(pulse, lane);
-            nodes.Add(new DragNode()
+            if (lastClickedNote != null &&
+                lastClickedNote.type == NoteType.Drag)
             {
-                anchor = new FloatPoint(0f, 0f),
-                controlLeft = new FloatPoint(0f, 0f),
-                controlRight = new FloatPoint(0f, 0f)
-            });
-            nodes.Add(new DragNode()
+                // Inherit nodes from the last clicked note.
+                foreach (DragNode node in
+                    (lastClickedNote as DragNote).nodes)
+                {
+                    nodes.Add(node.Clone());
+                }
+            }
+            else
             {
-                anchor = new FloatPoint(relativePulseOfLastNode, 0f),
-                controlLeft = new FloatPoint(0f, 0f),
-                controlRight = new FloatPoint(0f, 0f)
-            });
+                // Calculate default duration as hold note and
+                // use that to create node #1.
+                int relativePulseOfLastNode =
+                    HoldNoteDefaultDuration(pulse, lane);
+                nodes.Add(new DragNode()
+                {
+                    anchor = new FloatPoint(0f, 0f),
+                    controlLeft = new FloatPoint(0f, 0f),
+                    controlRight = new FloatPoint(0f, 0f)
+                });
+                nodes.Add(new DragNode()
+                {
+                    anchor = new FloatPoint(relativePulseOfLastNode, 0f),
+                    controlLeft = new FloatPoint(0f, 0f),
+                    controlRight = new FloatPoint(0f, 0f)
+                });
+            }
         }
         DragNote n = new DragNote()
         {
@@ -3047,7 +3090,7 @@ public class PatternPanel : MonoBehaviour
         return FinishAddNote(n);
     }
 
-    // Cannot remove o from selectedNotes because the
+    // Cannot remove n from selectedNotes because the
     // caller may be enumerating that list.
     private void DeleteNote(Note n)
     {
@@ -3057,6 +3100,10 @@ public class PatternPanel : MonoBehaviour
         if (lastSelectedNoteWithoutShift == n)
         {
             lastSelectedNoteWithoutShift = null;
+        }
+        if (lastClickedNote == n)
+        {
+            lastClickedNote = null;
         }
 
         // Delete from UI, if it's there.
