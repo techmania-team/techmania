@@ -53,13 +53,28 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
     }
 
-    public static void RemoveOneTrack(string folder)
+    public static void RemoveOneTrack(string trackFolder)
     {
-        string parent = new FileInfo(folder).DirectoryName;
+        string parent = new FileInfo(trackFolder).DirectoryName;
         trackList[parent].RemoveAll((TrackInFolder t) =>
         {
-            return t.folder == folder;
+            return t.folder == trackFolder;
         });
+    }
+
+    public static void ReloadOneTrack(string trackFolder)
+    {
+        string parent = new FileInfo(trackFolder).DirectoryName;
+        foreach (TrackInFolder t in trackList[parent])
+        {
+            if (t.folder == trackFolder)
+            {
+                string trackPath = Path.Combine(
+                    trackFolder, Paths.kTrackFilename);
+                t.track = Track.LoadFromFile(trackPath) as Track;
+                break;
+            }
+        }
     }
 
     public Button backButton;
