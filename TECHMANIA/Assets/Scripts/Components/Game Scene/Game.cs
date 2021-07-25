@@ -39,6 +39,25 @@ public class Game : MonoBehaviour
     public Image backgroundImage;
     public VideoPlayer videoPlayer;
     public RawImage bga;
+    // In practice mode the player may jump back and forth between
+    // points where BGA is playing and where BGA is not playing.
+    //
+    // If we stop and play BGA accordingly, the problem arises that
+    // stopping a video also unloads it, so when we try to play it
+    // again it can only play from the beginning, making it difficult
+    // to seek to any non-0 time.
+    //
+    // Therefore, after loading the BGA we immedialy play and then
+    // pause it. We never stop the BGA. When the player jumps to
+    // a point before BGA starts, we seek to the video's beginning
+    // and pause. Now we can jump to any time.
+    //
+    // But then another problem arises that, before the BGA starts
+    // playing, the 1st frame of the video remains visible, when
+    // the player expects a black screen. Therefore we add this BGA
+    // cover to simulate the black screen and hide the fact that the
+    // BGA is started and paused.
+    public Image bgaCover;
     public Image brightnessCover;
 
     [Header("Scans")]
@@ -414,6 +433,7 @@ public class Game : MonoBehaviour
         {
             hasBga = false;
             bga.color = Color.clear;
+            HideBGACover();
         }
 
         // Step 6: initialize pattern. This sadly cannot be done
@@ -1037,6 +1057,7 @@ public class Game : MonoBehaviour
         bga.color = Color.white;
         bga.GetComponent<AspectRatioFitter>().aspectRatio =
             (float)videoPlayer.width / videoPlayer.height;
+        ShowBGACover();
     }
     #endregion
 
@@ -1079,6 +1100,24 @@ public class Game : MonoBehaviour
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
         return autoPlay ? 0f : latencyMs * 0.001f;
+    }
+
+    private void ShowBGACover()
+    {
+        bgaCover.color = new Color(
+            bgaCover.color.r,
+            bgaCover.color.g,
+            bgaCover.color.b,
+            1f);
+    }
+
+    private void HideBGACover()
+    {
+        bgaCover.color = new Color(
+            bgaCover.color.r,
+            bgaCover.color.g,
+            bgaCover.color.b,
+            0f);
     }
     #endregion
 
@@ -1151,9 +1190,8 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
+            HideBGACover();
             videoPlayer.Play();
-            videoPlayer.time = BaseTime - 
-                GameSetup.pattern.patternMetadata.bgaOffset;
         }
 
         // Fire scan events if applicable.
@@ -1589,19 +1627,24 @@ public class Game : MonoBehaviour
             audioSourceManager.PlayBackingTrack(backingTrackClip,
                 BaseTime);
         }
-        if (BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset
-            && GameSetup.pattern.patternMetadata.bga != null
+        if (GameSetup.pattern.patternMetadata.bga != null
             && GameSetup.pattern.patternMetadata.bga != "")
         {
-            double videoTime = BaseTime -
-                GameSetup.pattern.patternMetadata.bgaOffset;
-            videoPlayer.time = videoTime;
-            videoPlayer.Play();
-        }
-        else
-        {
-            videoPlayer.time = 0;
-            videoPlayer.Pause();
+            if (BaseTime >= GameSetup.pattern.patternMetadata
+                .bgaOffset)
+            {
+                double videoTime = BaseTime -
+                    GameSetup.pattern.patternMetadata.bgaOffset;
+                videoPlayer.time = videoTime;
+                videoPlayer.Play();
+                HideBGACover();
+            }
+            else
+            {
+                videoPlayer.time = 0;
+                videoPlayer.Pause();
+                ShowBGACover();
+            }
         }
 
         // Play keysounds before this moment if they last enough.
