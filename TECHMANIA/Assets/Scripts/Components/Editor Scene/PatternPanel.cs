@@ -661,6 +661,47 @@ public class PatternPanel : MonoBehaviour
                 }
             }
         }
+        if (Input.GetKeyDown(KeyCode.F) && selectedNotes.Count > 0)
+        {
+            foreach (Note n in selectedNotes)
+            {
+                ScrollNoteIntoView(n);
+                break;
+            }
+        }
+
+        UnityAction<float> moveScanlineTo = (float pulse) =>
+        {
+            scanline.floatPulse = pulse;
+            scanline.GetComponent<SelfPositionerInEditor>()
+                .Reposition();
+            RefreshScanlinePositionSlider();
+            ScrollScanlineIntoView();
+        };
+        float pulsesPerScan =
+            EditorContext.Pattern.patternMetadata.bps *
+            Pattern.pulsesPerBeat;
+        if (Input.GetKeyDown(KeyCode.Home))
+        {
+            moveScanlineTo(0f);
+        }
+        if (Input.GetKeyDown(KeyCode.End))
+        {
+            moveScanlineTo(numScans * pulsesPerScan);
+        }
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            moveScanlineTo(Mathf.Max(
+                scanline.floatPulse - pulsesPerScan,
+                0f));
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            float maxPulse = numScans * pulsesPerScan;
+            moveScanlineTo(Mathf.Min(
+                scanline.floatPulse + pulsesPerScan,
+                maxPulse));
+        }
     }
     #endregion
 

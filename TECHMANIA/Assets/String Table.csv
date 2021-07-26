@@ -635,87 +635,6 @@ Deleted in 0.9.,pattern_panel_options_tab_title,Options,设置,設定,オプシ�
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
 ,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
-,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
-Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
-` <indent=25%>Rectangle tool</indent>
-1-9 <indent=25%>Select note type</indent>
-P <indent=25%>Preview keysound of selected note</indent>
-Ctrl+A/D <indent=25%>Select / Deselect all notes</indent>
-Ctrl+X/C/V <indent=25%>Cut / Copy / Paste</indent>
-Ctrl+E <indent=25%>Toggle end-of-scan</indent>
-
-Space <indent=25%>Start/stop playback</indent>
-
-Scroll wheel <indent=35%>Scroll pattern horizontally</indent>
-Shift+Scroll wheel <indent=35%>Scroll pattern vertically</indent>
-Ctrl+Scroll wheel <indent=35%>Zoom in/out</indent>
-Alt+Scroll wheel <indent=35%>Change beat snap divisor</indent>
-
-Hold Ctrl or Shift when selecting notes or keysounds to select multiple.","Ctrl+S <indent=25%>保存</indent>
-Ctrl+Z/Y <indent=25%>撤销/重做</indent>
-` <indent=25%>选框工具</indent>
-1-9 <indent=25%>选择音符类型</indent>
-P <indent=25%>预览选中音符的按键音</indent>
-Ctrl+A/D <indent=25%>全选/取消全选所有音符</indent>
-Ctrl+X/C/V <indent=25%>剪切/复制/粘贴</indent>
-Ctrl+E <indent=25%>切换扫描末</indent>
-
-空格 <indent=25%>开始/结束播放</indent>
-
-滚轮 <indent=35%>横向滚动</indent>
-Shift+滚轮 <indent=35%>纵向滚动</indent>
-Ctrl+滚轮 <indent=35%>缩放</indent>
-Alt+滚轮 <indent=35%>调整节拍划分数</indent>
-
-按住Ctrl或Shift可以多选音符与按键音。","Ctrl+S <indent=25%>儲存</indent>
-Ctrl+Z/Y <indent=25%>復原/重做</indent>
-` <indent=25%>框選工具</indent>
-1-9 <indent=25%>選擇音符類型</indent>
-P <indent=25%>預覽選中音符的按鍵音</indent>
-Ctrl+A/D <indent=25%>全選/取消全選所有音符</indent>
-Ctrl+X/C/V <indent=25%>剪下/複製/貼上</indent>
-Ctrl+E <indent=25%>切換掃描末</indent>
-
-空格 <indent=25%>開始/結束播放</indent>
-
-滾輪 <indent=35%>橫向滾動</indent>
-Shift+滾輪 <indent=35%>縱向滾動</indent>
-Ctrl+滾輪 <indent=35%>縮放</indent>
-Alt+滾輪 <indent=35%>調整節拍劃分數</indent>
-
-按住 Ctrl 或 Shift 可以多選音符與按鍵音。","Ctrl+S <indent=25%>保存</indent>
-Ctrl+Z/Y <indent=25%>元に戻す/やり直し</indent>
-` <indent=25%>選択ツール</indent>
-1-9 <indent=25%>ノートタイプ選択</indent>
-P <indent=25%>選択したノートのノート音プレビュー</indent>
-Ctrl+A/D <indent=25%>全て選択/選択解除</indent>
-Ctrl+X/C/V <indent=25%>切り取り/コピー/貼り付け</indent>
-Ctrl+E <indent=25%>末尾ノートオン/オフ</indent>
-
-Space <indent=25%>プレイバック/停止</indent>
-
-Scroll wheel <indent=35%>横方向にスクロール</indent>
-Shift+Scroll wheel <indent=35%>縦方向にスクロール</indent>
-Ctrl+Scroll wheel <indent=35%>ズームイン/アウト</indent>
-Alt+Scroll wheel <indent=35%>ノートスナップ値変更</indent>
-
-ノートまたはノート音を複数選択するにはCtrlまたはShiftを長押ししながら選択します。","Ctrl+S <indent=25%>저장</indent>
-Ctrl+Z/Y <indent=25%>실행 취소 / 다시 실행</indent>
-` <indent=25%>선택 도구</indent>
-1-9 <indent=25%>노트 종류 선택</indent>
-P <indent=25%>선택한 노트의 사운드 프리뷰</indent>
-Ctrl+A/D <indent=25%>모든 노트 선택 / 선택 해제</indent>
-Ctrl+X/C/V <indent=25%>잘라내기 / 복사 / 붙여넣기</indent>
-Ctrl+E <indent=25%>마디 끝 노트 설정</indent>
-
-Space <indent=25%>재생 / 정지</indent>
-
-마우스 휠 <indent=35%>가로 방향으로 스크롤</indent>
-Shift+마우스 휠 <indent=35%>세로 방향으로 스크롤</indent>
-Ctrl+마우스 휠 <indent=35%>확대 / 축소</indent>
-Alt+마우스 휠 <indent=35%>박자 스냅 고정값 변경</indent>
-
-여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
 ,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
 ,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
 Hold Shift to append to the current selection.
@@ -847,3 +766,93 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,options_bg_scaling_label,Background scaling,背景缩放方式,,,
 ,options_bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,,,
 ,options_bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,,,
+,,,,,,
+,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
+Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
+` <indent=25%>Rectangle tool</indent>
+1-9 <indent=25%>Select note type</indent>
+P <indent=25%>Preview keysound of selected note</indent>
+Ctrl+A/D <indent=25%>Select / Deselect all notes</indent>
+Ctrl+X/C/V <indent=25%>Cut / Copy / Paste</indent>
+Ctrl+E <indent=25%>Toggle end-of-scan</indent>
+F <indent=25%>Scroll to a selected note</indent>
+
+Space <indent=25%>Start/stop playback</indent>
+
+Scroll wheel <indent=35%>Scroll pattern horizontally</indent>
+Shift+Scroll wheel <indent=35%>Scroll pattern vertically</indent>
+Ctrl+Scroll wheel <indent=35%>Zoom in/out</indent>
+Alt+Scroll wheel <indent=35%>Change beat snap divisor</indent>
+
+Home / End <indent=35%>Move scanline to beginning / end of pattern</indent>
+Page Up / Down <indent=35%>Move scanline left / right by one scan</indent>
+
+Hold Ctrl or Shift when selecting notes or keysounds to select multiple.","Ctrl+S <indent=25%>保存</indent>
+Ctrl+Z/Y <indent=25%>撤销/重做</indent>
+` <indent=25%>选框工具</indent>
+1-9 <indent=25%>选择音符类型</indent>
+P <indent=25%>预览选中音符的按键音</indent>
+Ctrl+A/D <indent=25%>全选/取消全选所有音符</indent>
+Ctrl+X/C/V <indent=25%>剪切/复制/粘贴</indent>
+Ctrl+E <indent=25%>切换扫描末</indent>
+F <indent=25%>滚动至选中的音符</indent>
+
+空格 <indent=25%>开始/结束播放</indent>
+
+滚轮 <indent=25%>横向滚动</indent>
+Shift+滚轮 <indent=25%>纵向滚动</indent>
+Ctrl+滚轮 <indent=25%>缩放</indent>
+Alt+滚轮 <indent=25%>调整节拍划分数</indent>
+
+Home / End <indent=35%>将扫描线移动至谱面头部/尾部</indent>
+Page Up / Down <indent=35%>将扫描线向左/右移动一个扫描</indent>
+
+按住Ctrl或Shift可以多选音符与按键音。","Ctrl+S <indent=25%>儲存</indent>
+Ctrl+Z/Y <indent=25%>復原/重做</indent>
+` <indent=25%>框選工具</indent>
+1-9 <indent=25%>選擇音符類型</indent>
+P <indent=25%>預覽選中音符的按鍵音</indent>
+Ctrl+A/D <indent=25%>全選/取消全選所有音符</indent>
+Ctrl+X/C/V <indent=25%>剪下/複製/貼上</indent>
+Ctrl+E <indent=25%>切換掃描末</indent>
+
+空格 <indent=25%>開始/結束播放</indent>
+
+滾輪 <indent=35%>橫向滾動</indent>
+Shift+滾輪 <indent=35%>縱向滾動</indent>
+Ctrl+滾輪 <indent=35%>縮放</indent>
+Alt+滾輪 <indent=35%>調整節拍劃分數</indent>
+
+按住 Ctrl 或 Shift 可以多選音符與按鍵音。","Ctrl+S <indent=25%>保存</indent>
+Ctrl+Z/Y <indent=25%>元に戻す/やり直し</indent>
+` <indent=25%>選択ツール</indent>
+1-9 <indent=25%>ノートタイプ選択</indent>
+P <indent=25%>選択したノートのノート音プレビュー</indent>
+Ctrl+A/D <indent=25%>全て選択/選択解除</indent>
+Ctrl+X/C/V <indent=25%>切り取り/コピー/貼り付け</indent>
+Ctrl+E <indent=25%>末尾ノートオン/オフ</indent>
+
+Space <indent=25%>プレイバック/停止</indent>
+
+Scroll wheel <indent=35%>横方向にスクロール</indent>
+Shift+Scroll wheel <indent=35%>縦方向にスクロール</indent>
+Ctrl+Scroll wheel <indent=35%>ズームイン/アウト</indent>
+Alt+Scroll wheel <indent=35%>ノートスナップ値変更</indent>
+
+ノートまたはノート音を複数選択するにはCtrlまたはShiftを長押ししながら選択します。","Ctrl+S <indent=25%>저장</indent>
+Ctrl+Z/Y <indent=25%>실행 취소 / 다시 실행</indent>
+` <indent=25%>선택 도구</indent>
+1-9 <indent=25%>노트 종류 선택</indent>
+P <indent=25%>선택한 노트의 사운드 프리뷰</indent>
+Ctrl+A/D <indent=25%>모든 노트 선택 / 선택 해제</indent>
+Ctrl+X/C/V <indent=25%>잘라내기 / 복사 / 붙여넣기</indent>
+Ctrl+E <indent=25%>마디 끝 노트 설정</indent>
+
+Space <indent=25%>재생 / 정지</indent>
+
+마우스 휠 <indent=35%>가로 방향으로 스크롤</indent>
+Shift+마우스 휠 <indent=35%>세로 방향으로 스크롤</indent>
+Ctrl+마우스 휠 <indent=35%>확대 / 축소</indent>
+Alt+마우스 휠 <indent=35%>박자 스냅 고정값 변경</indent>
+
+여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
