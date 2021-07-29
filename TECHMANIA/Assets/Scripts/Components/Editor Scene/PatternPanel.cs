@@ -771,7 +771,8 @@ public class PatternPanel : MonoBehaviour
         {
             if (!visibleNotesAsSet.Contains(pair.Key))
             {
-                DeleteNoteObject(pair.Key, pair.Value.gameObject);
+                DeleteNoteObject(pair.Key, pair.Value.gameObject,
+                    intendToDeleteNote: false);
             }
         }
 
@@ -3135,6 +3136,12 @@ public class PatternPanel : MonoBehaviour
     // caller may be enumerating that list.
     private void DeleteNote(Note n)
     {
+        // Delete from UI, if it's there.
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        DeleteNoteObject(n, o,
+            intendToDeleteNote: true);
+
         // Delete from pattern.
         EditorContext.Pattern.notes.Remove(n);
 
@@ -3146,16 +3153,19 @@ public class PatternPanel : MonoBehaviour
         {
             lastClickedNote = null;
         }
-
-        // Delete from UI, if it's there.
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-        DeleteNoteObject(n, o);
     }
 
-    private void DeleteNoteObject(Note n, GameObject o)
+    private void DeleteNoteObject(Note n, GameObject o,
+        bool intendToDeleteNote)
     {
-        AdjustPathBeforeDeleting(o);
+        if (intendToDeleteNote)
+        {
+            AdjustPathBeforeDeleting(o);
+        }
+        else
+        {
+            AdjustPathOrTrailAround(o);
+        }
         noteToNoteObject.Remove(n);
         // No exception if the elements don't exist.
         dragNotes.Remove(o.GetComponent<NoteInEditor>());
