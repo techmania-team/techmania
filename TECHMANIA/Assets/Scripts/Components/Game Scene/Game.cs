@@ -265,7 +265,6 @@ public class Game : MonoBehaviour
         Ruleset.RefreshInstance();
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
             GameSetup.track);
-        SetBrightness();
         if (inEditor)
         {
             Options.MakeBackup();
@@ -471,6 +470,7 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
+        SetBrightness();
         topScanBackground.Initialize(
             Modifiers.instance.GetTopScanDirection());
         bottomScanBackground.Initialize(
