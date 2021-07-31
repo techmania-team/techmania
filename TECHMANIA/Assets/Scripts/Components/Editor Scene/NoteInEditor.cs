@@ -76,6 +76,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.KeysoundVisibilityChanged += 
             UpdateKeysoundVisibility;
         PatternTimingTab.TimingUpdated += UpdateEndOfScanIndicator;
+
         resizeCursorState = 0;
     }
 
@@ -85,6 +86,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.KeysoundVisibilityChanged -=
             UpdateKeysoundVisibility;
         PatternTimingTab.TimingUpdated -= UpdateEndOfScanIndicator;
+
+        UIUtils.UseDefaultCursor();
     }
 
     private Note GetNote()
@@ -216,7 +219,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #endregion
 
     #region Event Relay From Duration Handle
-    private static int resizeCursorState;
+    private int resizeCursorState;
     private void UseResizeCursor()
     {
         resizeCursorState++;
