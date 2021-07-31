@@ -17,7 +17,7 @@ public class RadarDialog : MonoBehaviour
     public TextMeshProUGUI chaosNormalized;
     public TextMeshProUGUI asyncRaw;
     public TextMeshProUGUI asyncNormalized;
-    public TextMeshProUGUI shiftRaw;
+    // public TextMeshProUGUI shiftRaw;
 
     public TextMeshProUGUI suggestedLevelRounded;
     public TextMeshProUGUI suggestedLevel;
@@ -37,7 +37,7 @@ public class RadarDialog : MonoBehaviour
         chaosNormalized.text = radar.chaos.normalized.ToString();
         asyncRaw.text = radar.async.raw.ToString("F2");
         asyncNormalized.text = radar.async.normalized.ToString();
-        shiftRaw.text = radar.shift.raw.ToString("F0");
+        // shiftRaw.text = radar.shift.raw.ToString("F0");
 
         suggestedLevel.text = "(" +
             radar.suggestedLevel.ToString("F2") + ")";

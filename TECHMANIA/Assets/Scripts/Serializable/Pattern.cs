@@ -412,7 +412,7 @@ public partial class Pattern
             }
         }
         r.voltage.normalized = NormalizeRadarValue(r.voltage.raw,
-            1f, 25f);
+            1f, 18f);
 
         // Speed: average scans per minute.
         if (seconds == 0f)
@@ -424,7 +424,7 @@ public partial class Pattern
             r.speed.raw = scans * 60 / seconds;
         }
         r.speed.normalized = NormalizeRadarValue(r.speed.raw,
-            12f, 80f);
+            12f, 55f);
 
         // Chaos: percentage of notes that are not 4th or 8th notes.
         if (playableNotes.Count == 0)
@@ -471,13 +471,12 @@ public partial class Pattern
         // Suggested difficulty. Formulta calculated by
         // linear regression.
         r.suggestedLevel =
-            r.density.raw * 0.87f +
-            r.voltage.raw * 0.1f +
-            r.speed.raw * 0.04f +
+            r.density.raw * 0.85f +
+            r.voltage.raw * 0.12f +
+            r.speed.raw * 0.02f +
             r.chaos.raw * 0f +
-            r.async.raw * 0.06f +
-            r.shift.raw * 0.06f +
-            0.23f;
+            r.async.raw * 0.03f +
+            1.12f;
         r.suggestedLevelRounded = UnityEngine.Mathf.RoundToInt(
             r.suggestedLevel);
 
