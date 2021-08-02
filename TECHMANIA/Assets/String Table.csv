@@ -166,6 +166,7 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 ,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드 + 마우스)
 ,,,,,,
 ,select_pattern_panel_title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
+,select_pattern_bpm_label,BPM,BPM,BPM,BPM,템포
 ,select_pattern_length_label,Length,长度,長度,長さ,재생 시간
 ,select_pattern_notes_label,Notes,音符数,音符數,ノート数,노트 수
 ,select_pattern_radar_title,Radar,雷达,詳細,詳細,세부 지표
@@ -173,6 +174,13 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 ,select_pattern_modifier_title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 "Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
 ,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,,,,,,
+,radar_dimension_density,Density,密度,平均密度,密度,평균 밀도
+,radar_dimension_voltage,Voltage,电压,最大密度,最大密度,최대 밀도
+,radar_dimension_speed,Speed,速度,速度,速さ,빠르기
+,radar_dimension_chaos,Chaos,混乱,混亂度,混乱度,복잡도
+,radar_dimension_async,Async,异地,異步,非同期,비동기 터치
+,radar_dimension_shift,Shift,变速,變速,変速,변속
 ,,,,,,
 ,modifier_sidesheet_modifiers_title,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,modifier_sidesheet_note_opacity_label,Note opacity,音符透明度,音符透明度,ノート透明度,노트 이펙터
@@ -252,6 +260,9 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_beat_markers_hidden,Hidden,隐藏,隱藏,隠す,숨김
 ,options_beat_markers_show_beat_markers,Show beat markers,显示节拍辅助线,顯示節拍輔助線,1泊毎に表示,1박마다 표시
 ,options_beat_markers_show_half_beat_markers,Show half beat markers,显示半节拍辅助线,顯示半拍輔助線,半拍毎に表示,반 박마다 표시
+,options_bg_scaling_label,Background scaling,背景缩放方式,背景縮放方式,BGAのスケーリング,BGA 맞춤
+,options_bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,覆蓋整個螢幕,画面に合わせる,전체 화면
+,options_bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
 ,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
@@ -529,7 +540,6 @@ BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다.
 has completed playing.",等到BGA结束播放后才结束游戏。,等待 BGA 結束播放後才結束遊戲。,"BGAが終わるまでパターンのプレイが
 終わりません。",BGA가 끝날 때까지 패턴의 재생을 멈추지 않습니다.
 ,track_setup_patterns_tab_play_bga_on_loop_label,Play BGA on loop,循环播放BGA,循環播放 BGA,BGAリピート再生,BGA 반복 재생
-Deleted in 0.9.,track_setup_patterns_tab_timing_header,Timing,时间,時間,タイミング,타이밍
 ,track_setup_patterns_tab_first_beat_offset_label,First beat offset,第一拍时间,第一拍時間,最初ノートオフセット,시작 오프셋
 ,track_setup_patterns_tab_first_beat_offset_help,"The first beat of the pattern happens this many
 seconds after the backing track starts.","将背景音乐的这一时间点（单位为秒）
@@ -554,7 +564,6 @@ BPS는 패턴 중간에 변경할 수 없습니다."
 ,,,,,,
 `===== Editor - Pattern =====,,,,,,
 ,pattern_panel_title,Editing Pattern,编辑谱面,編輯譜面,パターン編集,패턴 편집
-Deleted in 0.9.,pattern_panel_edit_tab_title,Edit,编辑,編輯,編集,편집
 ,pattern_panel_edit_tab_beat_snap_divisor_label,Beat snap divisor:,节拍划分数：,節拍劃分數,ノートスナップ値,박자 스냅 고정:
 ,pattern_panel_edit_tab_beat_snap_divisor_help,"Divide each beat into this many portions
 when snapping notes.","对齐音符时把每一拍
@@ -571,6 +580,25 @@ when snapping notes.","对齐音符时把每一拍
 ,pattern_panel_edit_tab_legend_bpm,BPM,BPM,BPM,BPM,BPM
 ,pattern_panel_edit_tab_legend_time_stop,Time stop,时停,停止時間,タイムストップ,시간 정지
 ,pattern_panel_edit_tab_preview_button,Preview,预览,預覽,プレビュー,프리뷰
+,,,,,,
+,pattern_panel_tools_tab_inspect_button,Inspect,检查,檢查,検証,오류 검사
+,pattern_panel_tools_tab_radar_button,Radar,雷达,雷達,分析,패턴 분석
+,pattern_inspection_no_issue,TECHMANIA inspected the pattern and found no issues. Well done!,TECHMANIA检查了此谱面并且没有发现任何问题。恭喜！,恭喜，這個譜面沒有任何問題！,問題が見つかりませんでした。よくやりましたね！,오류가 없습니다.
+,pattern_inspection_chain_head_with_no_node,This chain head is not followed by any chain node.,这个锁链头音符的后面没有连接任何锁链节点。,這個鎖鏈音符後面沒有連接任何節點。,チェーンノートの頭がチェーンノードと繋がっていません。,연결형 노트의 중간점(끝점)이 정의되어 있지 않습니다.
+,pattern_inspection_chain_node_with_no_head,This chain node is not connected to a chain head.,这个锁链节点没有连接在一个锁链头音符上。,這個鎖鏈節點沒有連接鎖鏈頭音符。,チェーンノードがチェーンノートの頭と繋がっていません。,연결형 노트의 시작점이 정의되어 있지 않습니다.
+,pattern_inspection_chain_node_in_same_lane_as_previous,This chain node must be in a different lane than the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点不位于同一轨道。,這個鎖鏈節點必須和前面的鎖鏈頭/節點位於不同軌道。,チェーンノートの頭のすぐ横のチェーンノードは同じトラックに配置することができません。,인접한 연결형 노트는 같은 트랙에 위치할 수 없습니다.
+,pattern_inspection_chain_node_crosses_scans,This chain node must be in a same scan as the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点位于同一扫描。,這個鎖鏈結點必須和前面的鎖鏈頭/節點位於同一個掃描。,チェーンノードはチェーンノートの頭と同じトラックに配置しなければなりません。,연결형 노트는 그 시작점과 같은 스크롤 영역에 있어야 합니다.
+,pattern_inspection_drag_crosses_scans,This drag note spans multiple scans.,这个拖拽音符跨越了多于一个扫描。,這個拖動音符跨越了多個掃描。,ドラッグノートは二つ以上のスキャンを通れません。,드래그 노트는 여러 스크롤 영역에 걸칠 수 없습니다.
+,pattern_inspection_drag_leaves_playable_lanes,This drag note leaves the playable lanes at some point.,这个拖拽音符在某处偏离了可操作轨道。,這個拖動音符偏離了遊玩軌道。,ドラッグノートがプレイエリアを離脱しました。,드래그 노트의 경로가 플레이 영역을 벗어났습니다.
+,pattern_inspection_drag_leaves_lane_in_keys,"This drag note leaves the lane it started in at some point, which is not allowed in Keys patterns.",这个拖拽音符偏离了起始轨道，这在键盘谱面中是不允许的。,這個拖動音符偏離了起始軌道，這在鍵盤譜面中是不允許的。,ドラッグノートが始まったトラックを離脱しました。このパターンはキーボードでプレイできません。,드래그 노트의 경로가 시작한 트랙을 벗어났습니다. 이 패턴은 키보드로 플레이할 수 없습니다.
+,pattern_inspection_hold_longer_than_two_scans,"This hold note is longer than two scans, making it difficult to tell when it ends.",这个长按音符的长度超过了2扫描，这会导致难以判断此音符何时结束。,這個長按音符的長度超過了 2 個掃描，這會導致難以判斷連打音符的結束位置。,このホールドノートは二つのスキャンよりも長く、いつ終了するかを判別することが難しいです。,홀딩 노트는 스크롤 영역 길이의 두 배를 초과할 수 없습니다.
+,pattern_inspection_repeat_head_with_no_repeat,This repeat head is not followed by any repeat note.,这个连打头音符的后面没有连接任何连打音符。,這個連打頭音符的後面沒有連接任何連打音符。,連打ノートの頭が連打ノード繋がっていません。,연타 노트의 중간점(끝점)이 정의되어 있지 않습니다.
+,pattern_inspection_repeat_note_with_no_head,This repeat note is not connected to a repeat head.,这个连打音符没有连接在一个连打头音符上。,這個連打音符沒有連接在一個連打頭音符上。,連打ノードが連打ノートの頭と繋がっていません。,연타 노트의 시작점이 정의되어 있지 않습니다.
+,pattern_inspection_repeat_path_longer_than_two_scans,"This repeat note (or its end point) is more than two scans away from the repeat head, making it difficult to tell when this repeat series ends.",这个连打音符（或者长音符的结束位置）距离对应的连打头音符超过了2扫描，这会导致难以判断连打何时结束。,這個連打音符 （或長音符的結束位置）距離對應的連打頭音符超過了 2 個掃描，這會導致難以判斷連打音符的結束位置。,連打ノートは二つ以上のスキャンを通れません。,한 연타 노트 세트의 전체 길이는 두 마디를 초과할 수 없습니다.
+,pattern_inspection_repeat_path_covers_notes,The repeat path between these notes cover other notes.,这些连打音符之间的连线覆盖了其他音符。,這些連打音符之間的連線覆蓋了其他音符。,連打ノートに他のノートが重なっています。,연타 노트가 등장하는 영역에 다른 노트가 겹쳐 있습니다.
+,pattern_inspection_mouse_notes_at_same_pulse_in_km,"These notes occupy the same timepoint, making them unplayable in KM patterns.",这些音符位于同一时间点，在键鼠谱面中无法同时演奏。,這些音符位於同一個時間點，在鍵鼠譜面中無法同時演奏。,これらのノートは同じタイムポイントに配置されているため、キーボード・マウスでプレイできません。,위치가 같은 둘 이상의 노트는 키보드+마우스 모드에서 플레이할 수 없습니다.
+,pattern_inspection_mouse_notes_during_drag_in_km,This note is unplayable in KM patterns because a drag note is in progress.,在键鼠谱面中无法演奏这个音符，因为有另一个拖拽音符正在进行。,在鍵鼠譜面中無法演奏這個音符，因為有另一個拖動音符進行中。,ドラッグノートを含むパターンはキーボード・マウスでプレイできません。,드래그 노트를 포함하는 패턴은 키보드와 마우스로 플레이할 수 없습니다.
+,,,,,,
 ,pattern_panel_note_details_title,Note details,音符详情,音符資訊,ノート詳細,노트 상세정보
 ,pattern_panel_note_details_no_selection_text,No note selected.,没有选中任何音符。,沒有選取任何音符,選択したノートがありません。,선택한 노트가 없습니다.
 ,pattern_panel_note_details_volume_label,Volume,音量,音量,ボリューム,음량
@@ -580,8 +608,8 @@ when snapping notes.","对齐音符时把每一拍
 ,pattern_panel_note_details_end_of_scan_help,"Draw this note at the previous scan's end,
 instead of the next scan's beginning.","把这个音符绘制到前一扫描的末尾，
 而不是下一个扫描的起点。","把這個音符渲染到前一掃描的結尾，
-而不是下一個掃描的起點。","小節の最初ではなく、
-以前の小節の最後にノートを配置します。","이 노트를 마디의 시작 지점이 아닌 
+而不是下一個掃描的起點。","スキャンの最初ではなく、
+以前のスキャンの最後にノートを配置します。","이 노트를 마디의 시작 지점이 아닌 
 이전 마디의 끝 지점에 배치합니다."
 ,pattern_panel_note_details_bspline_label,B-spline,B-样条,B-樣條,B-スプライン,B 스플라인
 ,pattern_panel_note_details_bspline_help,"Draw this drag note as a B-spline instead of a Bézier Curve.
@@ -611,7 +639,6 @@ CtrlまたはShiftを長押ししながら
 順番に指定されます。","이 사운드를 다음에 생성하는 노트에 연주음으로 지정합니다.
 Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로 사용할 수 있습니다."
 ,,,,,,
-Deleted in 0.9.,pattern_panel_options_tab_title,Options,设置,設定,オプション,옵션
 ,pattern_panel_options_appearance_header,Appearance,界面,介面,表示,표시
 ,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,在音符上顯示按鍵音。,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
 ,pattern_panel_options_keep_scanline_in_view_label,Keep scanline in view,保持扫描线可见,保持掃描線在螢幕內。,スキャンラインにビュー固定,판정선에 시점 고정
@@ -622,7 +649,7 @@ Deleted in 0.9.,pattern_panel_options_tab_title,Options,设置,設定,オプシ�
 ,pattern_panel_options_apply_note_type_label,Apply note type to selection,选择音符类型时作用于选区,選擇區域套用音符類型,ノートタイプオート適用,노트 타입 자동 적용
 ,pattern_panel_options_apply_note_type_description,"When you click a note type, apply it to any notes selected.",选择音符类型时，将所有选中音符的类型改为新选择的类型。,選擇音符類型時，將所有選中的音符類型改為新選擇的類型。,ノートタイプを選択すると、選択した全てのノートがそのノートタイプに置き換えられます。,현재 선택한 모든 노트를 클릭한 노트 종류로 변경합니다.
 ,pattern_panel_options_lock_notes_label,Lock notes in time,锁定音符时间,鎖定音符時間,ノート移動範囲固定,노트 시점 고정
-,pattern_panel_options_lock_notes_description,Prevent dragging notes to a different time. Does not affect cut/copy/paste.,确保无法横向移动任何音符。对剪切、复制、粘贴没有影响。,確保無法橫向移動任何音符。不受剪下、複製、貼上影響。,"ノートを移すとき、他の小節に移せなくなり、トラックのみ変更できるようになります。
+,pattern_panel_options_lock_notes_description,Prevent dragging notes to a different time. Does not affect cut/copy/paste.,确保无法横向移动任何音符。对剪切、复制、粘贴没有影响。,確保無法橫向移動任何音符。不受剪下、複製、貼上影響。,"ノートを移すとき、他のスキャンに移せなくなり、トラックのみ変更できるようになります。
 切り取り/コピー/貼り付けには影響しません。","노트를 옮길 때 시점을 고정합니다. 트랙 위치만 변경할 수 있으며, 잘라내기/복사/붙여넣기 기능에는 영향을 주지 않습니다."
 ,pattern_panel_options_lock_anchors_label,Lock drag anchors in time,锁定拖拽锚点时间,鎖定拖動錨點時間,ドラッグノートアンカー移動範囲固定,드래그 노트 고정점 시점 고정
 ,pattern_panel_options_lock_anchors_description,Prevent dragging drag anchors to a different time.,确保无法横向移动任何拖拽音符的锚点。,確保無法橫向移動任何拖動音符的錨點。,ドラッグノートのアンカーを移すとき、他の小節に移せなくなります。,드래그 노트의 고정점을 옮길 때 시점을 고정합니다.
@@ -635,141 +662,6 @@ Deleted in 0.9.,pattern_panel_options_tab_title,Options,设置,設定,オプシ�
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
 ,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
-,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
-,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
-Hold Shift to append to the current selection.
-Hold Alt to subtract from the current selection.
-Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
-按住Shift可以额外选中矩形内的音符。
-按住Alt可以取消选中矩形内的音符。
-按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。","用滑鼠左鍵畫出矩形選擇內部所有音符。
-按住 Shift 可以額外選取音符。
-按住 Alt 可以取消選取選中的音符。
-按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不在某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択することができます。
-Shiftを長押ししながら選択すると選択済みのノートと一緒に選択されます。
-Altを長押ししながら選択すると選択済みのノートを選択解除します。
-Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用することができます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
-노트를 선택한 후 다른 노트를 추가로 선택하려면 Shift를 누른 채로 선택하십시오.
-선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
-Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
-,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
-,pattern_panel_options_drag_control_help,"Drag notes are Bézier curves or B-splines controlled by anchors and control points.
-Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
-Click on the anchor receiver to add an anchor.
-Click and drag anchors and control points to move them.
-Right click to remove anchors and control points.
-Hold Ctrl, click and drag an anchor to reset its control points.
-When using B-spline, control points are hidden.","拖拽音符是由锚点和控制点所控制的贝塞尔曲线或者B-样条。
-选中一个拖拽音符可以显示其锚点和控制点，以及锚点接收线（音符中心的棕色曲线）。
-在锚点接收线上点击以增加锚点。
-用鼠标左键拖拽移动锚点和控制点。
-用鼠标右键点击可以删除锚点和控制点。
-按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。
-使用B-样条时，将不会显示控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
-選取一個拖動音符可以顯示它的錨點和控制點，以及錨點接收線（音符中心的棕色曲線）。
-點擊錨點接收線以增加錨點。
-用滑鼠左鍵拖曳移動錨點和控制點。
-用滑鼠右鍵點擊可以刪除錨點和控制點。
-按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線またはB-スプライン曲線に沿って進行します。
-ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
-アンカーレシーバーをクリックしてアンカーを追加することができます。
-アンカーとコントロールポイントをドラックして移します。
-Ctrlを長押ししながらアンカーをクリックし、ドラッグすることでコントロールポイントを配置することができます。","드래그 노트의 진행 경로는 고정점 및 컨트롤 포인트로 정해지는 베지어/B 스플라인 곡선을 따라갑니다.
-드래그 노트를 선택하면 고정점, 컨트롤 포인트, 고정선(노트 가운데에 있는 갈색 선)이 표시됩니다.
-고정선을 클릭하여 고정점을 추가할 수 있습니다.
-고정점과 컨트롤 포인트를 클릭하여 선택하고 드래그하여 위치를 옮길 수 있습니다.
-고정점과 컨트롤 포인트를 우클릭하여 삭제할 수 있습니다.
-Ctrl를 누른 채로 고정점을 클릭하고 드래그하여 컨트롤 포인트를 배치할 수 있습니다."
-"""Snackbar"" is the tiny message box shown at the
-bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold notes cannot have zero length.,长按音符的长度不能为0。,長按音符的長度不能為 0。,ホールドノートの長さは0になれません。,홀딩 노트의 길이는 0이 될 수 없습니다.
-,pattern_panel_snackbar_hold_note_covers_other_notes,Hold notes cannot cover other notes.,长按音符不能遮盖其他音符。,長按音符不能蓋過其他音符,ホールドノートは他のノートの上に配置できません。,홀딩 노트는 다른 노트를 가릴 수 없습니다.
-,pattern_panel_snackbar_anchor_too_close_to_existing,The anchor you are trying to add is too close to an existing anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
-,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first anchor in each drag note.,不能删除拖拽音符的第一个锚点。,不能刪除拖動音符的第一個錨點。,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
-,pattern_panel_snackbar_at_least_two_anchors,Drag notes must contain at least 2 anchors.,拖拽音符必须包含至少2个锚点。,拖動音符必須包含至少兩個錨點,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
-,pattern_panel_snackbar_anchors_flow_left_ro_right,Anchors must flow from left to right.,锚点必须从左向右排列。,錨點必須從左向右排列。,アンカーは必ず左から右へ向かわなければなりません。,고정점은 반드시 좌측에서 우측으로 향해야 합니다.
-,pattern_panel_snackbar_control_point_on_correct_sides,Left and right control points must stay on the respective sides of the anchor point.,左/右控制点必须分别位于锚点的左边/右边。,左/右控制點必須分別位於錨點的左邊/右邊。,左コントロールポイントはアンカーの左に、右コントロールポイントはアンカーの右に位置しなければなりません。,"좌측 컨트롤 포인트는 고정점 좌측에, 우측 컨트롤 포인트는 고정점 우측에 위치해야 합니다."
-,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目のスキャンの前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番レーンの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは63番レーンの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,音符不能和其他音符位於同一位置。,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
-,pattern_panel_snackbar_chain_note_at_same_pulse,No two chain notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,鎖鏈音符不能位於同一個時間點,二つのチェーンノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
-,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by hold notes.,音符不能被其他长按音符遮盖。,音符不能被其他長按音符蓋過,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
-,pattern_panel_resource_loading_error_format,"An error occurred when loading resources:
-
-{0}
-
-You can continue to edit this pattern, but playback and preview will be disabled.","读取资源时发生错误：
-
-{0}
-
-你可以继续编辑谱面，但是将无法使用播放功能。","載入資源時發生錯誤：
-
-{0}
-
-您可以繼續編輯譜面，但是無法使用播放功能。","ファイルの読み込み中にエラーが発生しました：
-
-{0}
-
-このパターンの編集は続けられますが、プレイバックとブレビューは無効化されます。","다음 파일을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-패턴 편집을 계속할 수 있으나, 재생 및 프리뷰 기능은 이용할 수 없습니다."
-,,,,,,
-,time_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
-,time_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
-,time_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
-,time_event_dialog_stop_time_button,stop time for,停止时间,停止時間,停止時間,중지 시간
-,time_event_dialog_stop_time_button_after_text_field,beats,（拍）,（拍）,拍,박자
-,time_event_dialog_dont_stop_time_button,don't stop time,不停止时间,不停止時間,時間を止めない,시간을 멈추지 않습니다.
-,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선 적용됩니다."
-,time_event_dialog_ok_button,OK,确定,確定,OK,확인
-,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
-,,,,,,
-0.9 strings start here.,pattern_panel_tools_tab_inspect_button,Inspect,检查,檢查,検証,오류 검사
-,pattern_panel_tools_tab_radar_button,Radar,雷达,雷達,分析,패턴 분석
-,,,,,,
-,pattern_panel_snackbar_drag_flows_left,Drag notes cannot flow to the left at any point.,拖拽音符在任意位置都不能向左行进。,拖動音符無法向左前進,ドラッグノートは左側に向かえません。,드래그 노트는 왼쪽을 향할 수 없습니다.
-,,,,,,
-,pattern_inspection_no_issue,TECHMANIA inspected the pattern and found no issues. Well done!,TECHMANIA检查了此谱面并且没有发现任何问题。恭喜！,恭喜，這個譜面沒有任何問題！,問題が見つかりませんでした。よくやりましたね！,오류가 없습니다.
-,pattern_inspection_chain_head_with_no_node,This chain head is not followed by any chain node.,这个锁链头音符的后面没有连接任何锁链节点。,這個鎖鏈音符後面沒有連接任何節點。,チェーンノートの頭がチェーンノードと繋がっていません。,연결형 노트의 중간점(끝점)이 정의되어 있지 않습니다.
-,pattern_inspection_chain_node_with_no_head,This chain node is not connected to a chain head.,这个锁链节点没有连接在一个锁链头音符上。,這個鎖鏈節點沒有連接鎖鏈頭音符。,チェーンノードがチェーンノートの頭と繋がっていません。,연결형 노트의 시작점이 정의되어 있지 않습니다.
-,pattern_inspection_chain_node_in_same_lane_as_previous,This chain node must be in a different lane than the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点不位于同一轨道。,這個鎖鏈節點必須和前面的鎖鏈頭/節點位於不同軌道。,チェーンノートの頭のすぐ横のチェーンノードは同じトラックに配置することができません。,인접한 연결형 노트는 같은 트랙에 위치할 수 없습니다.
-,pattern_inspection_chain_node_crosses_scans,This chain node must be in a same scan as the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点位于同一扫描。,這個鎖鏈結點必須和前面的鎖鏈頭/節點位於同一個掃描。,チェーンノードはチェーンノートの頭と同じトラックに配置しなければなりません。,연결형 노트는 그 시작점과 같은 스크롤 영역에 있어야 합니다.
-,pattern_inspection_drag_crosses_scans,This drag note spans multiple scans.,这个拖拽音符跨越了多于一个扫描。,這個拖動音符跨越了多個掃描。,ドラッグノートは二つ以上のスキャンを通れません。,드래그 노트는 여러 스크롤 영역에 걸칠 수 없습니다.
-,pattern_inspection_drag_leaves_playable_lanes,This drag note leaves the playable lanes at some point.,这个拖拽音符在某处偏离了可操作轨道。,這個拖動音符偏離了遊玩軌道。,ドラッグノートがプレイエリアを離脱しました。,드래그 노트의 경로가 플레이 영역을 벗어났습니다.
-,pattern_inspection_drag_leaves_lane_in_keys,"This drag note leaves the lane it started in at some point, which is not allowed in Keys patterns.",这个拖拽音符偏离了起始轨道，这在键盘谱面中是不允许的。,這個拖動音符偏離了起始軌道，這在鍵盤譜面中是不允許的。,ドラッグノートが始まったトラックを離脱しました。このパターンはキーボードでプレイできません。,드래그 노트의 경로가 시작한 트랙을 벗어났습니다. 이 패턴은 키보드로 플레이할 수 없습니다.
-,pattern_inspection_hold_longer_than_two_scans,"This hold note is longer than two scans, making it difficult to tell when it ends.",这个长按音符的长度超过了2扫描，这会导致难以判断此音符何时结束。,這個長按音符的長度超過了 2 個掃描，這會導致難以判斷連打音符的結束位置。,このホールドノートは二つのスキャンよりも長く、いつ終了するかを判別することが難しいです。,홀딩 노트는 스크롤 영역 길이의 두 배를 초과할 수 없습니다.
-,pattern_inspection_repeat_head_with_no_repeat,This repeat head is not followed by any repeat note.,这个连打头音符的后面没有连接任何连打音符。,這個連打頭音符的後面沒有連接任何連打音符。,連打ノートの頭が連打ノード繋がっていません。,연타 노트의 중간점(끝점)이 정의되어 있지 않습니다.
-,pattern_inspection_repeat_note_with_no_head,This repeat note is not connected to a repeat head.,这个连打音符没有连接在一个连打头音符上。,這個連打音符沒有連接在一個連打頭音符上。,連打ノードが連打ノートの頭と繋がっていません。,연타 노트의 시작점이 정의되어 있지 않습니다.
-,pattern_inspection_repeat_path_longer_than_two_scans,"This repeat note (or its end point) is more than two scans away from the repeat head, making it difficult to tell when this repeat series ends.",这个连打音符（或者长音符的结束位置）距离对应的连打头音符超过了2扫描，这会导致难以判断连打何时结束。,這個連打音符 （或長音符的結束位置）距離對應的連打頭音符超過了 2 個掃描，這會導致難以判斷連打音符的結束位置。,連打ノートは二つ以上のスキャンを通れません。,한 연타 노트 세트의 전체 길이는 두 마디를 초과할 수 없습니다.
-,pattern_inspection_repeat_path_covers_notes,The repeat path between these notes cover other notes.,这些连打音符之间的连线覆盖了其他音符。,這些連打音符之間的連線覆蓋了其他音符。,連打ノートに他のノートが重なっています。,연타 노트가 등장하는 영역에 다른 노트가 겹쳐 있습니다.
-,pattern_inspection_mouse_notes_at_same_pulse_in_km,"These notes occupy the same timepoint, making them unplayable in KM patterns.",这些音符位于同一时间点，在键鼠谱面中无法同时演奏。,這些音符位於同一個時間點，在鍵鼠譜面中無法同時演奏。,これらのノートは同じタイムポイントに配置されているため、キーボード・マウスでプレイできません。,위치가 같은 둘 이상의 노트는 키보드+마우스 모드에서 플레이할 수 없습니다.
-,pattern_inspection_mouse_notes_during_drag_in_km,This note is unplayable in KM patterns because a drag note is in progress.,在键鼠谱面中无法演奏这个音符，因为有另一个拖拽音符正在进行。,在鍵鼠譜面中無法演奏這個音符，因為有另一個拖動音符進行中。,ドラッグノートを含むパターンはキーボード・マウスでプレイできません。,드래그 노트를 포함하는 패턴은 키보드와 마우스로 플레이할 수 없습니다.
-,,,,,,
-,radar_dimension_density,Density,密度,平均密度,密度,평균 밀도
-,radar_dimension_voltage,Voltage,电压,最大密度,最大密度,최대 밀도
-,radar_dimension_speed,Speed,速度,速度,速さ,빠르기
-,radar_dimension_chaos,Chaos,混乱,混亂度,混乱度,복잡도
-,radar_dimension_async,Async,异地,異步,非同期,비동기 터치
-,radar_dimension_shift,Shift,变速,變速,変速,변속
-,,,,,,
-,pattern_radar_dialog_raw_header,Raw,计算结果,計算結果,生の数値,계산 결과
-,pattern_radar_dialog_normalized_header,Normalized,标准化结果,標準化結果,正規化,정규화
-,pattern_radar_dialog_suggested_level_label,Suggested level:,建议难度：,建議難度：,おすすめのレベル：,추천 레벨:
-,pattern_radar_dialog_disclaimer,"* Refer to the manual for the definition and formula of each item.
-* Suggested level is only a suggestion. Use your own judgement when deciding a pattern's level.","* 有关各数值的定义与计算方式请查阅文档。
-* 建议难度仅供参考，请以个人判断来确定谱面的最终难度。","* 有關個數值的定義與計算方式請查看說明文件。
-* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* 各項目の計算方式と定義は公式マニュアルをご参照ください。
-* このレベルはおすすめのレベルです。参考用として利用してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
-* 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
-,,,,,,
-,select_pattern_bpm_label,BPM,BPM,BPM,BPM,템포
-,,,,,,
-,options_bg_scaling_label,Background scaling,背景缩放方式,背景縮放方式,BGAのスケーリング,BGA 맞춤
-,options_bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,覆蓋整個螢幕,画面に合わせる,전체 화면
-,options_bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
-,,,,,,
 ,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
 Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
 ` <indent=25%>Rectangle tool</indent>
@@ -838,13 +730,17 @@ P <indent=25%>選択したノートのノート音プレビュー</indent>
 Ctrl+A/D <indent=25%>全て選択/選択解除</indent>
 Ctrl+X/C/V <indent=25%>切り取り/コピー/貼り付け</indent>
 Ctrl+E <indent=25%>末尾ノートオン/オフ</indent>
+F <indent=25%>選択したノートの位置へ移動</indent>
 
 Space <indent=25%>プレイバック/停止</indent>
 
-Scroll wheel <indent=35%>横方向にスクロール</indent>
-Shift+Scroll wheel <indent=35%>縦方向にスクロール</indent>
-Ctrl+Scroll wheel <indent=35%>ズームイン/アウト</indent>
-Alt+Scroll wheel <indent=35%>ノートスナップ値変更</indent>
+マウスホイール <indent=35%>横方向にスクロール</indent>
+Shift+マウスホイール <indent=35%>縦方向にスクロール</indent>
+Ctrl+マウスホイール <indent=35%>ズームイン/アウト</indent>
+Alt+マウスホイール <indent=35%>ノートスナップ値変更</indent>
+
+Home / End <indent=35%>スキャンラインをパターンの最初/最後に移動させる</indent>
+Page Up / Down <indent=35%>タイムラインを1スキャン前/後に移動させる</indent>
 
 ノートまたはノート音を複数選択するにはCtrlまたはShiftを長押ししながら選択します。","Ctrl+S <indent=25%>저장</indent>
 Ctrl+Z/Y <indent=25%>실행 취소 / 다시 실행</indent>
@@ -854,6 +750,7 @@ P <indent=25%>선택한 노트의 사운드 프리뷰</indent>
 Ctrl+A/D <indent=25%>모든 노트 선택 / 선택 해제</indent>
 Ctrl+X/C/V <indent=25%>잘라내기 / 복사 / 붙여넣기</indent>
 Ctrl+E <indent=25%>마디 끝 노트 설정</indent>
+F <indent=25%>선택한 노트가 보이도록 이동</indent>
 
 Space <indent=25%>재생 / 정지</indent>
 
@@ -862,4 +759,112 @@ Shift+마우스 휠 <indent=35%>세로 방향으로 스크롤</indent>
 Ctrl+마우스 휠 <indent=35%>확대 / 축소</indent>
 Alt+마우스 휠 <indent=35%>박자 스냅 고정값 변경</indent>
 
+Home / End <indent=35%>타임라인을 패턴의 처음/끝으로 이동</indent>
+Page Up / Down <indent=35%>타임라인을 한 마디 앞/뒤로 이동</indent>
+
 여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
+,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
+,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
+Hold Shift to append to the current selection.
+Hold Alt to subtract from the current selection.
+Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
+按住Shift可以额外选中矩形内的音符。
+按住Alt可以取消选中矩形内的音符。
+按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。","用滑鼠左鍵畫出矩形選擇內部所有音符。
+按住 Shift 可以額外選取音符。
+按住 Alt 可以取消選取選中的音符。
+按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不在某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択することができます。
+Shiftを長押ししながら選択すると選択済みのノートと一緒に選択されます。
+Altを長押ししながら選択すると選択済みのノートを選択解除します。
+Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用することができます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
+노트를 선택한 후 다른 노트를 추가로 선택하려면 Shift를 누른 채로 선택하십시오.
+선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
+Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
+,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
+,pattern_panel_options_drag_control_help,"Drag notes are Bézier curves or B-splines controlled by anchors and control points.
+Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
+Click on the anchor receiver to add an anchor.
+Click and drag anchors and control points to move them.
+Right click to remove anchors and control points.
+Hold Ctrl, click and drag an anchor to reset its control points.
+When using B-spline, control points are hidden.","拖拽音符是由锚点和控制点所控制的贝塞尔曲线或者B-样条。
+选中一个拖拽音符可以显示其锚点和控制点，以及锚点接收线（音符中心的棕色曲线）。
+在锚点接收线上点击以增加锚点。
+用鼠标左键拖拽移动锚点和控制点。
+用鼠标右键点击可以删除锚点和控制点。
+按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。
+使用B-样条时，将不会显示控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
+選取一個拖動音符可以顯示它的錨點和控制點，以及錨點接收線（音符中心的棕色曲線）。
+點擊錨點接收線以增加錨點。
+用滑鼠左鍵拖曳移動錨點和控制點。
+用滑鼠右鍵點擊可以刪除錨點和控制點。
+按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線またはB-スプライン曲線に沿って進行します。
+ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
+アンカーレシーバーをクリックしてアンカーを追加することができます。
+アンカーとコントロールポイントをドラックして移します。
+Ctrlを長押ししながらアンカーをクリックし、ドラッグすることでコントロールポイントを配置することができます。","드래그 노트의 진행 경로는 고정점 및 컨트롤 포인트로 정해지는 베지어/B 스플라인 곡선을 따라갑니다.
+드래그 노트를 선택하면 고정점, 컨트롤 포인트, 고정선(노트 가운데에 있는 갈색 선)이 표시됩니다.
+고정선을 클릭하여 고정점을 추가할 수 있습니다.
+고정점과 컨트롤 포인트를 클릭하여 선택하고 드래그하여 위치를 옮길 수 있습니다.
+고정점과 컨트롤 포인트를 우클릭하여 삭제할 수 있습니다.
+Ctrl를 누른 채로 고정점을 클릭하고 드래그하여 컨트롤 포인트를 배치할 수 있습니다."
+"""Snackbar"" is the tiny message box shown at the
+bottom of the pattern panel, used to show minor errors.",pattern_panel_snackbar_hold_note_zero_length,Hold notes cannot have zero length.,长按音符的长度不能为0。,長按音符的長度不能為 0。,ホールドノートの長さは0になれません。,홀딩 노트의 길이는 0이 될 수 없습니다.
+,pattern_panel_snackbar_hold_note_covers_other_notes,Hold notes cannot cover other notes.,长按音符不能遮盖其他音符。,長按音符不能蓋過其他音符,ホールドノートは他のノートの上に配置できません。,홀딩 노트는 다른 노트를 가릴 수 없습니다.
+,pattern_panel_snackbar_drag_flows_left,Drag notes cannot flow to the left at any point.,拖拽音符在任意位置都不能向左行进。,拖動音符無法向左前進,ドラッグノートは左側に向かえません。,드래그 노트는 왼쪽을 향할 수 없습니다.
+,pattern_panel_snackbar_anchor_too_close_to_existing,The anchor you are trying to add is too close to an existing anchor.,新添加的锚点过于靠近其他锚点。,新錨點太靠近其他錨點。,アンカーの位置が配置済みのアンカーと近過ぎます。,고정점을 추가하려는 위치가 이미 생성된 고정점과 너무 가깝습니다.
+,pattern_panel_snackbar_cannot_delete_first_anchor,Cannot delete the first anchor in each drag note.,不能删除拖拽音符的第一个锚点。,不能刪除拖動音符的第一個錨點。,ドラッグノートの一番目のアンカーは削除できません。,드래그 노트의 첫 고정점은 삭제할 수 없습니다.
+,pattern_panel_snackbar_at_least_two_anchors,Drag notes must contain at least 2 anchors.,拖拽音符必须包含至少2个锚点。,拖動音符必須包含至少兩個錨點,ドラッグノートはアンカーを少なくとも二つ以上持たなければなりません。,드래그 노트는 고정점을 최소 2개 이상 가져야 합니다.
+,pattern_panel_snackbar_before_scan_0,Cannot place notes before scan 0.,音符不能位于第0扫描之前。,音符不能放置於第 0 掃描之前。,ノートは0番目のスキャンの前に配置できません。,0번 마디 이전에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_above_topmost_lane,Cannot place notes above the topmost lane.,音符不能位于最上方的轨道之上。,音符不能放置於最上方軌道以上,ノートは0番レーンの上側に配置できません。,0번 트랙 위쪽에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_below_bottommost_lane,Cannot place notes below the bottommost lane.,音符不能位于最下方的轨道之下。,音符不能放置於最下方軌道以下,ノートは63番レーンの下側に配置できません。,63번 트랙 아래쪽에 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_on_top_of_existing_note,Cannot place notes on top of an existing note.,音符不能和其他音符位于同一位置。,音符不能和其他音符位於同一位置。,ノートは配置済みのノートの上に配置できません。,기존 노트와 겹치도록 노트를 배치할 수 없습니다.
+,pattern_panel_snackbar_chain_note_at_same_pulse,No two chain notes may occupy the same timepoint.,锁链音符不能位于同一时间点。,鎖鏈音符不能位於同一個時間點,二つのチェーンノートは同じ縦軸に配置できません。,연결형 노트끼리는 서로 같은 시작점을 공유할 수 없습니다.
+,pattern_panel_snackbar_covered_by_hold_note,Notes cannot be covered by hold notes.,音符不能被其他长按音符遮盖。,音符不能被其他長按音符蓋過,ノートはホールドノートの裏側に配置できません。,노트는 홀딩 노트에 가려지도록 배치할 수 없습니다.
+,pattern_panel_resource_loading_error_format,"An error occurred when loading resources:
+
+{0}
+
+You can continue to edit this pattern, but playback and preview will be disabled.","读取资源时发生错误：
+
+{0}
+
+你可以继续编辑谱面，但是将无法使用播放功能。","載入資源時發生錯誤：
+
+{0}
+
+您可以繼續編輯譜面，但是無法使用播放功能。","ファイルの読み込み中にエラーが発生しました：
+
+{0}
+
+このパターンの編集は続けられますが、プレイバックとブレビューは無効化されます。","다음 파일을 불러오는 중 오류가 발생했습니다.
+
+{0}
+
+패턴 편집을 계속할 수 있으나, 재생 및 프리뷰 기능은 이용할 수 없습니다."
+,,,,,,
+,time_event_dialog_header,At the scanline's current position:,在扫描线的当前位置：,在掃描線的目前位置：,現在のスキャンラインの位置の：,현재 타임라인이 위치한 곳의…
+,time_event_dialog_change_bpm_button,change BPM to,将BPM改为,將 BPM 改為,BPMを次のように変更,BPM을 다음으로 변경:
+,time_event_dialog_dont_change_bpm_button,don't change BPM,不修改BPM,不修改 BPM,BPMを変更しない,BPM을 변경하지 않음
+,time_event_dialog_stop_time_button,stop time for,停止时间,停止時間,停止時間,중지 시간
+,time_event_dialog_stop_time_button_after_text_field,beats,（拍）,（拍）,拍,박자
+,time_event_dialog_dont_stop_time_button,don't stop time,不停止时间,不停止時間,時間を止めない,시간을 멈추지 않습니다.
+,time_event_dialog_do_both_help,"If you both change BPM and stop time, BPM change applies first.",如果既修改BPM又停止时间，将以修改BPM为优先。,如果同時修改 BPM 又停止時間，將以修改 BPM 為優先。,両方を適用した場合、BPM変更を優先します。,"BPM과 시간 정지를 동시에 사용하면, BPM 변경이 우선 적용됩니다."
+,time_event_dialog_ok_button,OK,确定,確定,OK,확인
+,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
+,,,,,,
+,pattern_radar_dialog_raw_header,Raw,计算结果,計算結果,生の数値,계산 결과
+,pattern_radar_dialog_normalized_header,Normalized,标准化结果,標準化結果,正規化,정규화
+,pattern_radar_dialog_suggested_level_label,Suggested level:,建议难度：,建議難度：,おすすめのレベル：,추천 레벨:
+,pattern_radar_dialog_disclaimer,"* Refer to the manual for the definition and formula of each item.
+* Suggested level is only a suggestion. Use your own judgement when deciding a pattern's level.","* 有关各数值的定义与计算方式请查阅文档。
+* 建议难度仅供参考，请以个人判断来确定谱面的最终难度。","* 有關個數值的定義與計算方式請查看說明文件。
+* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* 各項目の計算方式と定義は公式マニュアルをご参照ください。
+* このレベルはおすすめのレベルです。参考用として利用してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
+* 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,

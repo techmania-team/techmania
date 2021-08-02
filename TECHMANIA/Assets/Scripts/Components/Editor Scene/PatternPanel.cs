@@ -1466,7 +1466,6 @@ public class PatternPanel : MonoBehaviour
                 selectedNotes.Add(n);
             }
             // Scroll the first selected note into view.
-            // TODO: the notes may not be visible yet.
             if (selectedNotes.Count > 0)
             {
                 ScrollNoteIntoView(notesWithIssue[0]);
