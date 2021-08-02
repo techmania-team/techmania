@@ -6,6 +6,9 @@ using UnityEngine;
 // the GameObject at the appropriate position in the workspace.
 public class SelfPositionerInEditor : MonoBehaviour
 {
+    private static int pulsesPerScan => Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps;
+
     private void OnEnable()
     {
         PatternPanel.RepositionNeeded += Reposition;
@@ -18,31 +21,26 @@ public class SelfPositionerInEditor : MonoBehaviour
 
     public void Reposition()
     {
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-
-        float scan = 0f;
         Marker marker = GetComponent<Marker>();
         ScanlineInEditor scanline = GetComponent<ScanlineInEditor>();
         NoteObject noteObject = GetComponent<NoteObject>();
+
+        float pulse;
         if (marker != null)
         {
-            float beat = (float)marker.pulse / Pattern.pulsesPerBeat;
-            scan = beat / bps;
+            pulse = marker.pulse;
         }
         else if (scanline != null)
         {
-            float beat = scanline.floatPulse / Pattern.pulsesPerBeat;
-            scan = beat / bps;
+            pulse = scanline.floatPulse;
         }
         else
         {
-            float beat = (float)noteObject.note.pulse / 
-                Pattern.pulsesPerBeat;
-            scan = beat / bps;
+            pulse = noteObject.note.pulse;
         }
-        float x = PatternPanel.ScanWidth * scan;
+        float x = PulseToX(pulse);
 
-        float y = 0;
+        float y;
         if (marker != null)
         {
             // Don't change y.
@@ -50,12 +48,11 @@ public class SelfPositionerInEditor : MonoBehaviour
         }
         else if (scanline != null)
         {
-            // y is 0.
+            y = 0f;
         }
-        else if (noteObject != null)
+        else
         {
-            y = -PatternPanel.LaneHeight *
-                (noteObject.note.lane + 0.5f);
+            y = LaneToY(noteObject.note.lane);
         }
 
         RectTransform rect = GetComponent<RectTransform>();
@@ -66,5 +63,21 @@ public class SelfPositionerInEditor : MonoBehaviour
             rect.sizeDelta = new Vector2(
                 PatternPanel.LaneHeight, PatternPanel.LaneHeight);
         }
+    }
+
+    public static Vector2 PositionOf(Note n)
+    {
+        return new Vector2(PulseToX(n.pulse), LaneToY(n.lane));
+    }
+
+    private static float PulseToX(float pulse)
+    {
+        float scan = pulse / pulsesPerScan;
+        return PatternPanel.ScanWidth * scan;
+    }
+
+    private static float LaneToY(int lane)
+    {
+        return -PatternPanel.LaneHeight * (lane + 0.5f);
     }
 }

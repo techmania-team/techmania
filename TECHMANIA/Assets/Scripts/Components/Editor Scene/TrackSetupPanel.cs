@@ -319,7 +319,8 @@ public class TrackSetupPanel : MonoBehaviour
             {
                 Directory.Delete(EditorContext.trackFolder,
                     recursive: true);
-                SelectTrackPanel.RemoveCachedListsAtCurrentLocation();
+                SelectTrackPanel.RemoveOneTrack(
+                    EditorContext.trackFolder);
                 GetComponentInChildren<
                     CustomTransitionFromTrackSetupPanel>().
                 ForceTransition();
@@ -344,9 +345,6 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField bgaOffset;
     public Toggle waitForEndOfBga;
     public Toggle playBgaOnLoop;
-    public TMP_InputField firstBeatOffset;
-    public TMP_InputField initialBpm;
-    public TMP_InputField bps;
     public TransitionToPanel transitionToPatternPanel;
 
     // Keep a reference to the selected pattern, so we can
@@ -408,19 +406,12 @@ public class TrackSetupPanel : MonoBehaviour
         waitForEndOfBga.interactable = !m.playBgaOnLoop;
         playBgaOnLoop.SetIsOnWithoutNotify(m.playBgaOnLoop);
 
-        firstBeatOffset.SetTextWithoutNotify(m.firstBeatOffset.ToString());
-        initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
-        bps.SetTextWithoutNotify(m.bps.ToString());
-
         foreach (TMP_InputField field in new List<TMP_InputField>()
         {
             patternName,
             patternAuthor,
             patternLevel,
-            bgaOffset,
-            firstBeatOffset,
-            initialBpm,
-            bps
+            bgaOffset
         })
         {
             field.GetComponent<MaterialTextField>().RefreshMiniLabel();
@@ -470,16 +461,6 @@ public class TrackSetupPanel : MonoBehaviour
             ref m.waitForEndOfBga, waitForEndOfBga.isOn, ref madeChange);
         UIUtils.UpdateMetadataInMemory(
             ref m.playBgaOnLoop, playBgaOnLoop.isOn, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
-            ref m.firstBeatOffset, firstBeatOffset.text,
-            ref madeChange);
-        UIUtils.ClampInputField(initialBpm,
-            Pattern.minBpm, float.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
-            ref m.initBpm, initialBpm.text, ref madeChange);
-        UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
-            ref m.bps, bps.text, ref madeChange);
 
         // Disable waitForEndOfBga if playBgaOnLoop is turned on.
         if (m.playBgaOnLoop)

@@ -102,4 +102,10 @@ public class CurvedImage : Image
             Mathf.InverseLerp(0f, sprite.texture.width, u),
             Mathf.InverseLerp(0f, sprite.texture.height, v));
     }
+
+    public override void Cull(Rect clipRect, bool validRect)
+    {
+        // For simplicity, never cull this image.
+        canvasRenderer.cull = false;
+    }
 }

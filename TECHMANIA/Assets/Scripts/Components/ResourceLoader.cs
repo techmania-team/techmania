@@ -277,7 +277,12 @@ public class ResourceLoader : MonoBehaviour
     {
         return Sprite.Create(texture,
             new Rect(0f, 0f, texture.width, texture.height),
-            new Vector2(0.5f, 0.5f));
+            new Vector2(0.5f, 0.5f),
+            pixelsPerUnit: 100f,
+            extrude: 0,
+            // The default is Tight, whose performance is
+            // atrocious.
+            meshType: SpriteMeshType.FullRect);
     }
 
     private IEnumerator InnerLoadImage(string fullPath,

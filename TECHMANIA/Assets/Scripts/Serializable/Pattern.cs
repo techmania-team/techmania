@@ -120,8 +120,8 @@ public partial class Pattern
 
     #region Timing
     // Sort BPM events by pulse, then fill their time fields.
-    // Enables CalculateTimeOfAllNotes, GetLengthInSeconds,
-    // TimeToPulse and PulseToTime.
+    // Enables CalculateTimeOfAllNotes, GetLengthInSecondsAndScans,
+    // TimeToPulse, PulseToTime and CalculateRadar.
     public void PrepareForTimeCalculation()
     {
         timeEvents = new List<TimeEvent>();
@@ -175,12 +175,18 @@ public partial class Pattern
         }
     }
 
-    // Returns the time between the start of the first non-empty
-    // scan, and the end of t he last non-empty scan. Ignores
-    // end-of-scan.
-    public float GetLengthInSeconds()
+    // Returns the pattern length between the start of the first
+    // non-empty scan, and the end of the last non-empty scan.
+    // Ignores end-of-scan.
+    public void GetLengthInSecondsAndScans(out float seconds,
+        out int scans)
     {
-        if (notes.Count == 0) return 0f;
+        if (notes.Count == 0)
+        {
+            seconds = 0f;
+            scans = 0;
+            return;
+        }
 
         int pulsesPerScan = pulsesPerBeat * patternMetadata.bps;
         int minPulse = int.MaxValue;
@@ -209,7 +215,9 @@ public partial class Pattern
         int lastScan = maxPulse / pulsesPerScan;
         float endOfLastScan = PulseToTime(
             (lastScan + 1) * pulsesPerScan);
-        return endOfLastScan - startOfFirstScan;
+
+        seconds = endOfLastScan - startOfFirstScan;
+        scans = lastScan - firstScan + 1;
     }
 
     public void CalculateTimeOfAllNotes()
@@ -304,14 +312,182 @@ public partial class Pattern
     #endregion
 
     #region Statistics and Radar
-    public int NumPlayableNotes(int playableLanes = 4)
+    public int NumPlayableNotes()
     {
         int count = 0;
         foreach (Note n in notes)
         {
-            if (n.lane < playableLanes) count++;
+            if (n.lane < patternMetadata.lanes) count++;
         }
         return count;
+    }
+
+    public struct RadarDimension
+    {
+        public float raw;
+        public int normalized;  // 0-100
+    }
+    public struct Radar
+    {
+        public RadarDimension density;
+        public RadarDimension voltage;
+        public RadarDimension speed;
+        public RadarDimension chaos;
+        public RadarDimension async;
+        public RadarDimension shift;
+        public float suggestedLevel;
+        public int suggestedLevelRounded;
+    }
+
+    public Radar CalculateRadar()
+    {
+        Radar r = new Radar();
+
+        PrepareForTimeCalculation();
+        float seconds;
+        int scans;
+        GetLengthInSecondsAndScans(out seconds, out scans);
+
+        int pulsesPerScan = patternMetadata.bps * pulsesPerBeat;
+
+        // Some pre-processing.
+        List<Note> playableNotes = new List<Note>();
+        Dictionary<int, int> scanToNumNotes =
+            new Dictionary<int, int>();
+        int numChaosNotes = 0;
+        float numAsyncNotes = 0;
+        foreach (Note n in notes)
+        {
+            if (n.lane >= patternMetadata.lanes) continue;
+            playableNotes.Add(n);
+
+            int scan = n.pulse / pulsesPerScan;
+            if (!scanToNumNotes.ContainsKey(scan))
+            {
+                scanToNumNotes.Add(scan, 0);
+            }
+            scanToNumNotes[scan]++;
+
+            if (n.pulse % (pulsesPerBeat / 2) != 0)
+            {
+                numChaosNotes++;
+            }
+
+            switch (n.type)
+            {
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                    numAsyncNotes += 0.5f;
+                    break;
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    numAsyncNotes += 1f;
+                    break;
+            }
+        }
+
+        // Density: average number of notes per second.
+        if (seconds == 0f)
+        {
+            r.density.raw = 0f;
+        }
+        else
+        {
+            r.density.raw = playableNotes.Count / seconds;
+        }
+        r.density.normalized = NormalizeRadarValue(r.density.raw,
+            0.5f, 8f);
+
+        // Voltage: peak number of notes per second.
+        foreach (KeyValuePair<int, int> pair in scanToNumNotes)
+        {
+            int scan = pair.Key;
+            int numNotes = pair.Value;
+            float startTime = PulseToTime(scan * pulsesPerScan);
+            float endTime = PulseToTime((scan + 1) * pulsesPerScan);
+            float voltage = numNotes / (endTime - startTime);
+            if (voltage > r.voltage.raw)
+            {
+                r.voltage.raw = voltage;
+            }
+        }
+        r.voltage.normalized = NormalizeRadarValue(r.voltage.raw,
+            1f, 18f);
+
+        // Speed: average scans per minute.
+        if (seconds == 0f)
+        {
+            r.speed.raw = 0f;
+        }
+        else
+        {
+            r.speed.raw = scans * 60 / seconds;
+        }
+        r.speed.normalized = NormalizeRadarValue(r.speed.raw,
+            12f, 55f);
+
+        // Chaos: percentage of notes that are not 4th or 8th notes.
+        if (playableNotes.Count == 0)
+        {
+            r.chaos.raw = 0f;
+        }
+        else
+        {
+            r.chaos.raw = numChaosNotes * 100f / playableNotes.Count;
+        }
+        r.chaos.normalized = NormalizeRadarValue(r.chaos.raw,
+            0f, 50f);
+
+        // Async: percentage of notes that are hold or repeat notes.
+        // A hold note counts as 0.5 async notes as they are not
+        // that hard.
+        if (playableNotes.Count == 0)
+        {
+            r.async.raw = 0f;
+        }
+        else
+        {
+            r.async.raw = numAsyncNotes * 100f / playableNotes.Count;
+        }
+        r.async.normalized = NormalizeRadarValue(r.async.raw,
+            0f, 40f);
+
+        // Shift: number of unique time events.
+        int numTimeEvents = 0;
+        for (int i = 0; i < timeEvents.Count; i++)
+        {
+            if (i > 0 &&
+                timeEvents[i].pulse ==
+                    timeEvents[i - 1].pulse &&
+                timeEvents[i].GetType()
+                    == timeEvents[i - 1].GetType())
+            {
+                continue;
+            }
+            numTimeEvents++;
+        }
+        r.shift.raw = numTimeEvents;
+
+        // Suggested difficulty. Formulta calculated by
+        // linear regression.
+        r.suggestedLevel =
+            r.density.raw * 0.85f +
+            r.voltage.raw * 0.12f +
+            r.speed.raw * 0.02f +
+            r.chaos.raw * 0f +
+            r.async.raw * 0.03f +
+            1.12f;
+        r.suggestedLevelRounded = UnityEngine.Mathf.RoundToInt(
+            r.suggestedLevel);
+
+        return r;
+    }
+
+    private int NormalizeRadarValue(float raw,
+        float min, float max)
+    {
+        float t = UnityEngine.Mathf.InverseLerp(min, max, raw);
+        return UnityEngine.Mathf.RoundToInt(t * 100f);
     }
     #endregion
 
@@ -327,7 +503,7 @@ public partial class Pattern
     public Pattern ApplyModifiers(Modifiers modifiers)
     {
         Pattern p = CloneWithDifferentGuid();
-        const int kPlayableLanes = 4;
+        int playableLanes = patternMetadata.lanes;
         const int kAutoKeysoundFirstLane = 64;
         const int kAutoAssistTickFirstLane = 68;
 
@@ -335,8 +511,8 @@ public partial class Pattern
         {
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
-                n.lane = kPlayableLanes - 1 - n.lane;
+                if (n.lane >= playableLanes) continue;
+                n.lane = playableLanes - 1 - n.lane;
                 if (n is DragNote)
                 {
                     foreach (DragNode node in (n as DragNote).nodes)
@@ -356,7 +532,7 @@ public partial class Pattern
             List<Note> addedNotes = new List<Note>();
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
+                if (n.lane >= playableLanes) continue;
                 if (n.sound == null || n.sound == "") continue;
                 Note hiddenNote = n.Clone();
                 hiddenNote.lane += kAutoKeysoundFirstLane;
@@ -376,7 +552,7 @@ public partial class Pattern
                 new List<AssistTickNote>();
             foreach (Note n in p.notes)
             {
-                if (n.lane >= kPlayableLanes) continue;
+                if (n.lane >= playableLanes) continue;
                 AssistTickNote assistTickNote = new AssistTickNote()
                 {
                     pulse = n.pulse,

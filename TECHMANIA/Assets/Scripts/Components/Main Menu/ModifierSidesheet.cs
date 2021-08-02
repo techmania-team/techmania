@@ -170,28 +170,35 @@ public class ModifierSidesheet : MonoBehaviour
         ModifierChanged?.Invoke();
     }
 
-    // Line 1 contains modifiers and appearance options;
-    // Line 2 contains special modifiers.
-    public void GetModifierDisplay(
-        out string line1, out string line2)
+    public static string GetDisplayString(bool noVideo,
+        Color specialModifierColor)
     {
         List<string> regularSegments = new List<string>();
         List<string> specialSegments = new List<string>();
         Modifiers.instance.ToDisplaySegments(
             regularSegments, specialSegments);
-
-        if (GameSetup.trackOptions.noVideo)
+        if (noVideo)
         {
             regularSegments.Add(Locale.GetString(
                 "modifier_sidesheet_no_video_label"));
         }
-        if (regularSegments.Count == 0)
+
+        List<string> allSegments = new List<string>();
+        if (regularSegments.Count + specialSegments.Count == 0)
         {
-            regularSegments.Add(Locale.GetString(
+            allSegments.Add(Locale.GetString(
                 "select_pattern_modifier_none"));
         }
+        for (int i = 0; i < regularSegments.Count; i++)
+        {
+            allSegments.Add(regularSegments[i]);
+        }
+        for (int i = 0; i < specialSegments.Count; i++)
+        {
+            allSegments.Add(
+                $"<color=#{ColorUtility.ToHtmlStringRGB(specialModifierColor)}>{specialSegments[i]}</color>");
+        }
 
-        line1 = string.Join(" / ", regularSegments);
-        line2 = string.Join(" / ", specialSegments);
+        return string.Join(" / ", allSegments);
     }
 }

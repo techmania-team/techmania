@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.64705884, g: 0.8392157, b: 0.654902, a: 0.38039216}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -136,6 +137,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -223,7 +225,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0faf644bfe2ec459a8c8f9751d0058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  regularSprite: {fileID: 21300000, guid: 9492e1ec03e44bb4486e62a7c62998e4, type: 3}
   hiddenSprite: {fileID: 21300000, guid: 747f06ea93cb480428d6e863c08b1c51, type: 3}
+  regularTrailSprite: {fileID: 0}
   hiddenTrailSprite: {fileID: 0}
   selectionOverlay: {fileID: 1978132811206931860}
   endOfScanIndicator: {fileID: 7661340498510256269}
@@ -233,6 +237,7 @@ MonoBehaviour:
   invisibleTrail: {fileID: 0}
   horizontalResizeCursor: {fileID: 0}
   transparentNoteImageWhenTrailTooShort: 0
+  regularCurveSprite: {fileID: 0}
   hiddenCurveSprite: {fileID: 0}
   curvedImage: {fileID: 0}
   anchorReceiverContainer: {fileID: 0}
@@ -313,6 +318,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -345,6 +351,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnPointerClick
           m_Mode: 0
           m_Arguments:
@@ -360,6 +367,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnBeginDrag
           m_Mode: 0
           m_Arguments:
@@ -375,6 +383,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDrag
           m_Mode: 0
           m_Arguments:
@@ -390,6 +399,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnEndDrag
           m_Mode: 0
           m_Arguments:

@@ -35,9 +35,29 @@ public class Game : MonoBehaviour
     public bool inEditor;
 
     [Header("Background")]
+    public RectTransform backgroundContainer;
     public Image backgroundImage;
     public VideoPlayer videoPlayer;
     public RawImage bga;
+    // In practice mode the player may jump back and forth between
+    // points where BGA is playing and where BGA is not playing.
+    //
+    // If we stop and play BGA accordingly, the problem arises that
+    // stopping a video also unloads it, so when we try to play it
+    // again it can only play from the beginning, making it difficult
+    // to seek to any non-0 time.
+    //
+    // Therefore, after loading the BGA we immedialy play and then
+    // pause it. We never stop the BGA. When the player jumps to
+    // a point before BGA starts, we seek to the video's beginning
+    // and pause. Now we can jump to any time.
+    //
+    // But then another problem arises that, before the BGA starts
+    // playing, the 1st frame of the video remains visible, when
+    // the player expects a black screen. Therefore we add this BGA
+    // cover to simulate the black screen and hide the fact that the
+    // BGA is started and paused.
+    public Image bgaCover;
     public Image brightnessCover;
 
     [Header("Scans")]
@@ -123,7 +143,8 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
-    private const int kPlayableLanes = 4;
+    private int playableLanes => 
+        GameSetup.pattern.patternMetadata.lanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
@@ -244,7 +265,6 @@ public class Game : MonoBehaviour
         Ruleset.RefreshInstance();
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
             GameSetup.track);
-        SetBrightness();
         if (inEditor)
         {
             Options.MakeBackup();
@@ -264,6 +284,7 @@ public class Game : MonoBehaviour
         if (inEditor)
         {
             Options.RestoreBackup();
+            SetSpeed(100);
             audioSourceManager.StopAll();
 
             // Clear out scans.
@@ -304,7 +325,8 @@ public class Game : MonoBehaviour
         {
             if (inEditor)
             {
-                GetComponentInChildren<TransitionToPanel>().Invoke();
+                GetComponentInChildren<TransitionToPanel>(
+                    includeInactive: true).Invoke();
             }
             else
             {
@@ -410,6 +432,7 @@ public class Game : MonoBehaviour
         {
             hasBga = false;
             bga.color = Color.clear;
+            HideBGACover();
         }
 
         // Step 6: initialize pattern. This sadly cannot be done
@@ -419,6 +442,16 @@ public class Game : MonoBehaviour
         // Loading complete.
         loading = false;
         topBar.SetActive(true);
+        if (Options.instance.backgroundScalingMode == 
+            Options.BackgroundScalingMode.FillGameArea)
+        {
+            float topBarHeight = topBar.GetComponent<RectTransform>()
+                .rect.height;
+            backgroundContainer.anchoredPosition = new Vector2(
+                0f, -0.5f * topBarHeight);
+            backgroundContainer.sizeDelta = new Vector2(
+                0f, -topBarHeight);
+        }
         noFailIndicator.SetActive(
             Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
@@ -437,6 +470,7 @@ public class Game : MonoBehaviour
         {
             backgroundImage.color = Color.clear;
         }
+        SetBrightness();
         topScanBackground.Initialize(
             Modifiers.instance.GetTopScanDirection());
         bottomScanBackground.Initialize(
@@ -578,7 +612,7 @@ public class Game : MonoBehaviour
             new List<List<NoteObject>>();
         // Create at least as many lists as playable lanes, or
         // empty hits on the noteless lanes will generate errors.
-        for (int i = 0; i < kPlayableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         {
             noteObjectsInLane.Add(new NoteList());
             notesForMouseInLane.Add(new NoteList());
@@ -589,7 +623,7 @@ public class Game : MonoBehaviour
         {
             int scanOfN = n.GetScanNumber(
                 GameSetup.pattern.patternMetadata.bps);
-            bool hidden = n.lane >= kPlayableLanes;
+            bool hidden = n.lane >= playableLanes;
             if (!hidden) numPlayableNotes++;
 
             NoteObject noteObject = SpawnNoteObject(
@@ -1023,6 +1057,7 @@ public class Game : MonoBehaviour
         bga.color = Color.white;
         bga.GetComponent<AspectRatioFitter>().aspectRatio =
             (float)videoPlayer.width / videoPlayer.height;
+        ShowBGACover();
     }
     #endregion
 
@@ -1065,6 +1100,24 @@ public class Game : MonoBehaviour
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
         return autoPlay ? 0f : latencyMs * 0.001f;
+    }
+
+    private void ShowBGACover()
+    {
+        bgaCover.color = new Color(
+            bgaCover.color.r,
+            bgaCover.color.g,
+            bgaCover.color.b,
+            1f);
+    }
+
+    private void HideBGACover()
+    {
+        bgaCover.color = new Color(
+            bgaCover.color.r,
+            bgaCover.color.g,
+            bgaCover.color.b,
+            0f);
     }
     #endregion
 
@@ -1137,9 +1190,8 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
+            HideBGACover();
             videoPlayer.Play();
-            videoPlayer.time = BaseTime - 
-                GameSetup.pattern.patternMetadata.bgaOffset;
         }
 
         // Fire scan events if applicable.
@@ -1180,7 +1232,7 @@ public class Game : MonoBehaviour
             if (lane.Count == 0) continue;
             NoteObject upcomingNote = lane.First();
 
-            if (laneIndex < kPlayableLanes)
+            if (laneIndex < playableLanes)
             {
                 if (autoPlay)
                 {
@@ -1315,7 +1367,7 @@ public class Game : MonoBehaviour
                 }
                 break;
             case ControlScheme.Keys:
-                for (int lane = 0; lane < kPlayableLanes; lane++)
+                for (int lane = 0; lane < playableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -1344,7 +1396,7 @@ public class Game : MonoBehaviour
                 {
                     OnFingerUp(0);
                 }
-                for (int lane = 0; lane < kPlayableLanes; lane++)
+                for (int lane = 0; lane < playableLanes; lane++)
                 {
                     foreach (KeyCode key in keysForLane[lane])
                     {
@@ -1575,14 +1627,24 @@ public class Game : MonoBehaviour
             audioSourceManager.PlayBackingTrack(backingTrackClip,
                 BaseTime);
         }
-        videoPlayer.Stop();
-        if (BaseTime >= GameSetup.pattern.patternMetadata.bgaOffset
-            && GameSetup.pattern.patternMetadata.bga != null
+        if (GameSetup.pattern.patternMetadata.bga != null
             && GameSetup.pattern.patternMetadata.bga != "")
         {
-            videoPlayer.Play();
-            videoPlayer.time = BaseTime -
-                GameSetup.pattern.patternMetadata.bgaOffset;
+            if (BaseTime >= GameSetup.pattern.patternMetadata
+                .bgaOffset)
+            {
+                double videoTime = BaseTime -
+                    GameSetup.pattern.patternMetadata.bgaOffset;
+                videoPlayer.time = videoTime;
+                videoPlayer.Play();
+                HideBGACover();
+            }
+            else
+            {
+                videoPlayer.time = 0;
+                videoPlayer.Pause();
+                ShowBGACover();
+            }
         }
 
         // Play keysounds before this moment if they last enough.
@@ -1600,7 +1662,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane > kPlayableLanes,
+                        n.lane > playableLanes,
                         startTime: BaseTime - n.time,
                         n.volume, n.pan);
                 }
@@ -1671,12 +1733,12 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private void SetSpeed(int newSpeed)
+    private void SetSpeed(int newSpeedPercent)
     {
-        newSpeed = Mathf.Clamp(newSpeed, 50, 200);
-        if (speedPercentage == newSpeed) return;
+        newSpeedPercent = Mathf.Clamp(newSpeedPercent, 50, 200);
+        if (speedPercentage == newSpeedPercent) return;
 
-        speedPercentage = newSpeed;
+        speedPercentage = newSpeedPercent;
         ResetInitialTime();
         audioSourceManager.SetSpeed(speed);
         videoPlayer.playbackSpeed = speed;
@@ -1978,7 +2040,7 @@ public class Game : MonoBehaviour
 
         List<NoteObject> earliestNotes = new List<NoteObject>();
         int earliestPulse = int.MaxValue;
-        for (int i = 0; i < kPlayableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         {
             if (notesForKeyboardInLane[i].Count == 0)
             {
@@ -2311,7 +2373,7 @@ public class Game : MonoBehaviour
     private Dictionary<Note, AudioSource> noteToAudioSource;
     private void PlayKeysound(NoteObject n, bool emptyHit)
     {
-        bool hidden = n.note.lane >= kPlayableLanes;
+        bool hidden = n.note.lane >= playableLanes;
         if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden

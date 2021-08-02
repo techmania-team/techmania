@@ -8,7 +8,9 @@ using UnityEngine.UI;
 
 public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 {
+    public Sprite regularSprite;
     public Sprite hiddenSprite;
+    public Sprite regularTrailSprite;
     public Sprite hiddenTrailSprite;
     public Image selectionOverlay;
     public RectTransform endOfScanIndicator;
@@ -21,6 +23,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public bool transparentNoteImageWhenTrailTooShort;
 
     [Header("Drag Note")]
+    public Sprite regularCurveSprite;
     public Sprite hiddenCurveSprite;
     public CurvedImage curvedImage;
     public RectTransform anchorReceiverContainer;
@@ -29,6 +32,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public GameObject anchorTemplate;
     public Texture2D addAnchorCursor;
 
+    #region Outward events
     // GameObject in the following events all refer to
     // this.gameObject.
 
@@ -64,12 +68,15 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     public static event UnityAction<PointerEventData> ControlPointDrag;
     public static event UnityAction<PointerEventData> 
         ControlPointEndDrag;
+    #endregion
 
     private void OnEnable()
     {
         PatternPanel.SelectionChanged += UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged += 
             UpdateKeysoundVisibility;
+        PatternTimingTab.TimingUpdated += UpdateEndOfScanIndicator;
+
         resizeCursorState = 0;
     }
 
@@ -78,6 +85,9 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.SelectionChanged -= UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged -=
             UpdateKeysoundVisibility;
+        PatternTimingTab.TimingUpdated -= UpdateEndOfScanIndicator;
+
+        UIUtils.UseDefaultCursor();
     }
 
     private Note GetNote()
@@ -85,23 +95,26 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         return GetComponent<NoteObject>().note;
     }
 
-    public void UseHiddenSprite()
+    public void SetSprite(bool hidden)
     {
-        noteImage.GetComponent<Image>().sprite = hiddenSprite;
+        noteImage.GetComponent<Image>().sprite =
+            hidden ? hiddenSprite : regularSprite;
         if (durationTrail != null)
         {
-            durationTrail.GetComponent<Image>().sprite = 
-                hiddenTrailSprite;
+            durationTrail.GetComponent<Image>().sprite =
+                hidden ? hiddenTrailSprite : regularTrailSprite;
         }
         if (curvedImage != null)
         {
-            curvedImage.sprite = hiddenCurveSprite;
+            curvedImage.sprite = hidden ?
+                hiddenCurveSprite : regularCurveSprite;
         }
     }
 
-    private void UpdateSelection(HashSet<GameObject> selection)
+    public void UpdateSelection(HashSet<Note> selection)
     {
-        bool selected = selection.Contains(gameObject);
+        bool selected = selection.Contains(
+            GetComponent<NoteObject>().note);
         if (selectionOverlay != null)
         {
             selectionOverlay.enabled = selected;
@@ -168,11 +181,6 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
                 GetNote().sound);
     }
 
-    private void Update()
-    {
-
-    }
-
     #region Event Relay From Note Image
     public void OnPointerClick(BaseEventData eventData)
     {
@@ -211,7 +219,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     #endregion
 
     #region Event Relay From Duration Handle
-    private static int resizeCursorState;
+    private int resizeCursorState;
     private void UseResizeCursor()
     {
         resizeCursorState++;
@@ -372,33 +380,28 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         pathToPreviousNote.anchoredPosition = Vector2.zero;
     }
 
-    public void PointPathToward(GameObject target)
+    public void PointPathToward(Note n)
     {
-        if (target != null)
+        if (n != null)
         {
             UIUtils.PointToward(self: pathToPreviousNote,
                 selfPos: GetComponent<RectTransform>()
                     .anchoredPosition,
-                targetPos: target.GetComponent<RectTransform>()
-                    .anchoredPosition);
+                targetPos: SelfPositionerInEditor.PositionOf(n));
         }
         else
         {
             pathToPreviousNote.sizeDelta = Vector2.zero;
             pathToPreviousNote.localRotation = Quaternion.identity;
         }
+    }
 
-        if (target != null &&
-            target.GetComponent<NoteObject>().note.type
-                == NoteType.ChainHead)
-        {
-            UIUtils.RotateToward(
-                self: target.GetComponent<NoteInEditor>().noteImage,
-                selfPos: target.GetComponent<RectTransform>()
-                    .anchoredPosition,
-                targetPos: GetComponent<RectTransform>()
-                    .anchoredPosition);
-        }
+    public void RotateNoteHeadToward(Note n)
+    {
+        UIUtils.RotateToward(
+            self: noteImage,
+            selfPos: GetComponent<RectTransform>().anchoredPosition,
+            targetPos: SelfPositionerInEditor.PositionOf(n));
     }
     #endregion
 
@@ -463,6 +466,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
 
     // This does not render anchors and control points; call
     // ResetAnchorsAndControlPoints for that.
+    // This does reset the anchor receiver, though.
     public void ResetCurve()
     {
         DragNote dragNote = GetComponent<NoteObject>().note
@@ -487,35 +491,41 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         curvedImage.scale = 1f;
         curvedImage.SetVerticesDirty();
 
-        // Draw new anchor receivers. Reuse them if applicable.
-        for (int i = 0;
-            i < anchorReceiverContainer.childCount;
-            i++)
-        {
-            anchorReceiverContainer.GetChild(i).gameObject
-                .SetActive(false);
-        }
+        // Create or destroy anchor receivers to make sure we have
+        // the right amount (pointsOnCurve.Count - 1). Counting
+        // the template, anchorReceiverContainer should have the
+        // same number of children as pointsOnCurve.
         if (anchorReceiverTemplate.transform.GetSiblingIndex()
             != 0)
         {
             anchorReceiverTemplate.transform.SetAsFirstSibling();
         }
+        for (int i = anchorReceiverContainer.childCount - 1;
+            i >= pointsOnCurve.Count;
+            i--)
+        {
+            Destroy(anchorReceiverContainer.GetChild(i).gameObject);
+        }
+        int receiversToInstantiate = pointsOnCurve.Count -
+            anchorReceiverContainer.childCount;
+        for (int i = 0;
+            i < receiversToInstantiate;
+            i++)
+        {
+            Instantiate(
+                anchorReceiverTemplate,
+                parent: anchorReceiverContainer)
+                .SetActive(true);
+        }
+        
+        // Reset anchor receivers.
         for (int i = 0; i < pointsOnCurve.Count - 1; i++)
         {
             int childIndex = i + 1;
-            while (anchorReceiverContainer.childCount - 1
-                < childIndex)
-            {
-                Instantiate(
-                    anchorReceiverTemplate,
-                    parent: anchorReceiverContainer);
-            }
             RectTransform receiver =
                 anchorReceiverContainer.GetChild(childIndex)
                 .GetComponent<RectTransform>();
-            receiver.gameObject.SetActive(true);
             receiver.anchoredPosition = pointsOnCurve[i];
-
             UIUtils.PointToward(receiver,
                 selfPos: pointsOnCurve[i],
                 targetPos: pointsOnCurve[i + 1]);
@@ -626,7 +636,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         return false;
     }
 
-    private float SquaredDistanceFromPointToLineSegment(
+    private static float SquaredDistanceFromPointToLineSegment(
         Vector2 v, Vector2 w, Vector2 p)
     {
         // https://stackoverflow.com/a/1501725

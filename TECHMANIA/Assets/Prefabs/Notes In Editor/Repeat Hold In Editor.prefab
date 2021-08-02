@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -136,6 +137,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.64705884, g: 0.8392157, b: 0.654902, a: 0.38039216}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -211,6 +213,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -299,6 +302,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -420,6 +424,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -452,6 +457,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnPointerClick
           m_Mode: 0
           m_Arguments:
@@ -467,6 +473,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnBeginDrag
           m_Mode: 0
           m_Arguments:
@@ -482,6 +489,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDrag
           m_Mode: 0
           m_Arguments:
@@ -497,6 +505,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnEndDrag
           m_Mode: 0
           m_Arguments:
@@ -569,6 +578,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -601,6 +611,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDurationHandleBeginDrag
           m_Mode: 0
           m_Arguments:
@@ -616,6 +627,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDurationHandleDrag
           m_Mode: 0
           m_Arguments:
@@ -631,6 +643,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDurationHandleEndDrag
           m_Mode: 0
           m_Arguments:
@@ -646,6 +659,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDurationHandlePointerEnter
           m_Mode: 0
           m_Arguments:
@@ -661,6 +675,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDurationHandlePointerExit
           m_Mode: 0
           m_Arguments:
@@ -761,7 +776,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0faf644bfe2ec459a8c8f9751d0058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  regularSprite: {fileID: 21300000, guid: d9ed99b1f197af7498e6395fb557e8a8, type: 3}
   hiddenSprite: {fileID: 21300000, guid: a58923d0607b0bd4698fb4417d73f2ed, type: 3}
+  regularTrailSprite: {fileID: 21300000, guid: 4f658887c4cffe348aa500652b706f92, type: 3}
   hiddenTrailSprite: {fileID: 21300000, guid: 52e86c52bd2339e49a139b50b5ff1b42, type: 3}
   selectionOverlay: {fileID: 1978132811206931860}
   endOfScanIndicator: {fileID: 9130450942293951815}
@@ -772,6 +789,7 @@ MonoBehaviour:
   horizontalResizeCursor: {fileID: 2800000, guid: 91837d070b287444ba2b4c6e70e04993,
     type: 3}
   transparentNoteImageWhenTrailTooShort: 0
+  regularCurveSprite: {fileID: 0}
   hiddenCurveSprite: {fileID: 0}
   curvedImage: {fileID: 0}
   anchorReceiverContainer: {fileID: 0}
@@ -852,6 +870,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -884,6 +903,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnPointerClick
           m_Mode: 0
           m_Arguments:
@@ -899,6 +919,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnBeginDrag
           m_Mode: 0
           m_Arguments:
@@ -914,6 +935,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnDrag
           m_Mode: 0
           m_Arguments:
@@ -929,6 +951,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3849278891309320951}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnEndDrag
           m_Mode: 0
           m_Arguments:

@@ -17,6 +17,7 @@ All code and assets are released under the [MIT License](LICENSE), with the foll
 * Some included tracks in the releases are under separate licenses:
   * f for fun is released under the [CC BY-NC-ND 4.0 License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
   * Yin-Yang Specialist (MUG ver) is released under the [CC BY-NC-NA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+  * v (Game Mix) is released under the [CC BY-NC-SA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 ## Roadmap and progress
 Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
@@ -32,7 +33,7 @@ Per the MIT license, you are free to produce any Content with TECHMANIA, includi
 * If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
 * If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
 * If your Content is commercial, additional limitations apply:
-  * Your Content cannot feature the official tracks f for fun and Yin-Yang Specialist (MUG ver).
+  * Your Content cannot feature the official tracks f for fun, Yin-Yang Specialist (MUG ver) and v (Game Mix).
   * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/Sfx/Fever.wav). You can swap the sound with one that allows commercial use, make a custom build, and produce Content from that build.
 
 ## Feedback
@@ -43,18 +44,19 @@ For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.co
 ## Making your own builds
 While other OSes are not supported, it may be possible to build the project on these platforms. Follow the standard building process:
 * Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
+  * Make sure you include iOS build support - see following notes.
 * Clone this repo, then open it from Unity.
 * File - Build Settings
 * Choose your target platform, then build.
 
-Note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
+Please note the following:
+* Due to special [post-build processing](TECHMANIA/Assets/Editor/BuildPostProcessor.cs) on iOS, you need to install iOS Build Support when installing Unity, whether you plan to build for iOS or not.
+* The default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
 There are a few unofficial builds available:
 * fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
-* MoonLight's Android builds:
-  * 0.7: https://drive.google.com/file/d/11jgs4E46cm6swlt6CN4j7kkwjljSiDdj/view?usp=sharing
-  * 0.6: https://drive.google.com/file/d/18S81J4U3DN5BNEHQe4b5vxKH6YoCmYe2/view?usp=sharing/
+* MoonLight's Android builds: https://github.com/yyj01004/techmania/releases
 * samnyan's Android build on 0.2: https://github.com/samnyan/techmania/releases

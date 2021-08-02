@@ -18,7 +18,7 @@ public class SelectTrackPanel : MonoBehaviour
     }
     protected class TrackInFolder
     {
-        // Doesn't include the track itself.
+        // The folder that track.tech is in.
         public string folder;
         public Track track;
     }
@@ -29,24 +29,52 @@ public class SelectTrackPanel : MonoBehaviour
     }
 
     protected static string currentLocation;
+    protected static int selectedCardIndex;
     // Cached, keyed by track folder's parent folder.
-    protected static Dictionary<string, List<Subfolder>> subfolderList;
-    protected static Dictionary<string, List<TrackInFolder>> trackList;
+    protected static Dictionary<string, List<Subfolder>> 
+        subfolderList;
+    protected static Dictionary<string, List<TrackInFolder>> 
+        trackList;
     protected static Dictionary<string, List<ErrorInTrack>>
         errorTrackList;
     static SelectTrackPanel()
     {
         currentLocation = "";
+        selectedCardIndex = -1;
         subfolderList = new Dictionary<string, List<Subfolder>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
     }
 
-    public static void RemoveCachedListsAtCurrentLocation()
+    public static void RemoveCachedLists()
     {
-        subfolderList.Remove(currentLocation);
-        trackList.Remove(currentLocation);
-        errorTrackList.Remove(currentLocation);
+        subfolderList.Clear();
+        trackList.Clear();
+        errorTrackList.Clear();
+    }
+
+    public static void RemoveOneTrack(string trackFolder)
+    {
+        string parent = new FileInfo(trackFolder).DirectoryName;
+        trackList[parent].RemoveAll((TrackInFolder t) =>
+        {
+            return t.folder == trackFolder;
+        });
+    }
+
+    public static void ReloadOneTrack(string trackFolder)
+    {
+        string parent = new FileInfo(trackFolder).DirectoryName;
+        foreach (TrackInFolder t in trackList[parent])
+        {
+            if (t.folder == trackFolder)
+            {
+                string trackPath = Path.Combine(
+                    trackFolder, Paths.kTrackFilename);
+                t.track = Track.LoadFromFile(trackPath) as Track;
+                break;
+            }
+        }
     }
 
     public Button backButton;
@@ -54,6 +82,7 @@ public class SelectTrackPanel : MonoBehaviour
     public Button refreshButton;
     public Button goUpButton;
     public TextMeshProUGUI locationDisplay;
+    public ScrollRect scrollRect;
     public GridLayoutGroup subfolderGrid;
     public GameObject subfolderCardTemplate;
     public GridLayoutGroup trackGrid;
@@ -69,22 +98,25 @@ public class SelectTrackPanel : MonoBehaviour
     protected Dictionary<GameObject, string> cardToSubfolder;
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
+    protected List<GameObject> cardList;
 
-    private void Start()
+    protected bool refreshing;
+
+    protected void Start()
     {
         // Reset the keyword every time the main menu or editor scene
         // loads.
         trackFilterSidesheet.ResetSearchKeyword();
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         StartCoroutine(Refresh());
         TrackFilterSidesheet.trackFilterChanged += 
             OnTrackFilterChanged;
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         TrackFilterSidesheet.trackFilterChanged -=
             OnTrackFilterChanged;
@@ -92,6 +124,8 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected IEnumerator Refresh()
     {
+        refreshing = true;
+
         // Initialization and/or disaster recovery.
         if (currentLocation == "" ||
             !Directory.Exists(currentLocation))
@@ -181,7 +215,7 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Instantiate subfolder cards.
         cardToSubfolder = new Dictionary<GameObject, string>();
-        GameObject firstCard = null;
+        cardList = new List<GameObject>();
         bool subfolderGridEmpty = true;
         bool trackGridEmpty = true;
         foreach (Subfolder subfolder in subfolders)
@@ -197,17 +231,13 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Record mapping.
             cardToSubfolder.Add(card, subfolder.path);
+            AddToCardList(card);
 
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
                 OnSubfolderCardClick(card);
             });
-
-            if (firstCard == null)
-            {
-                firstCard = card;
-            }
         }
 
         // Prepare track list.
@@ -261,17 +291,13 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Record mapping.
             cardToTrack.Add(card, trackInFolder);
+            AddToCardList(card);
 
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
                 OnTrackCardClick(card);
             });
-
-            if (firstCard == null)
-            {
-                firstCard = card;
-            }
         }
 
         // Instantiate error cards.
@@ -294,17 +320,13 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Record mapping.
             cardToError.Add(card, message);
+            AddToCardList(card);
 
             // Bind click event.
             card.GetComponent<Button>().onClick.AddListener(() =>
             {
                 OnErrorCardClick(card);
             });
-
-            if (firstCard == null)
-            {
-                firstCard = card;
-            }
         }
 
         if (ShowNewTrackCard())
@@ -319,30 +341,36 @@ public class SelectTrackPanel : MonoBehaviour
             {
                 OnNewTrackCardClick();
             });
-
-            if (firstCard == null)
-            {
-                firstCard = newTrackCard;
-            }
+            AddToCardList(newTrackCard);
         }
 
         // Deactivate empty grids.
         subfolderGrid.gameObject.SetActive(!subfolderGridEmpty);
         trackGrid.gameObject.SetActive(!trackGridEmpty);
 
+        // Wait 1 frame to let the grids and scroll rect update
+        // their layout.
+        yield return null;
+
+        // Restore or initialize selection.
         if (!trackFilterSidesheet.gameObject.activeSelf)
         {
-            if (firstCard == null)
+            if (selectedCardIndex >= 0 &&
+                selectedCardIndex < cardList.Count)
+            {
+                SelectCard(selectedCardIndex);
+            }
+            else if (cardList.Count > 0)
+            {
+                SelectCard(0);
+            }
+            else
             {
                 EventSystem.current.SetSelectedGameObject(
                     backButton.gameObject);
             }
-            else
-            {
-                EventSystem.current.SetSelectedGameObject(firstCard);
-            }
         }
-        
+
         // Show "no track" message or "tracks hidden" message
         // as necessary.
         if (cardToTrack.Count < tracks.Count)
@@ -363,6 +391,24 @@ public class SelectTrackPanel : MonoBehaviour
         {
             trackStatusText.gameObject.SetActive(false);
         }
+
+        refreshing = false;
+    }
+
+    private void SelectCard(int index)
+    {
+        if (index < 0 || index >= cardList.Count) return;
+        GameObject card = cardList[index];
+        EventSystem.current.SetSelectedGameObject(card);
+        card.GetComponent<ScrollIntoViewOnSelect>().ScrollIntoView();
+    }
+
+    private void AddToCardList(GameObject card)
+    {
+        ReportSelectionToSelectTrackPanel reporter =
+            card.GetComponent<ReportSelectionToSelectTrackPanel>();
+        reporter.Initialize(this, cardList.Count);
+        cardList.Add(card);
     }
 
     protected virtual bool ShowNewTrackCard()
@@ -370,7 +416,7 @@ public class SelectTrackPanel : MonoBehaviour
         return false;
     }
 
-    private void Update()
+    protected void Update()
     {
         // Synchronize alpha with sidesheet because the
         // CanvasGroup on the sidesheet ignores parent.
@@ -380,6 +426,59 @@ public class SelectTrackPanel : MonoBehaviour
             trackFilterSidesheet.GetComponent<CanvasGroup>().alpha
                 = GetComponent<CanvasGroup>().alpha;
         }
+
+        // Shortcuts.
+        if (refreshing) return;
+        if (Input.GetKeyDown(KeyCode.Home))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            SelectCard(0);
+        }
+        if (Input.GetKeyDown(KeyCode.End))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            SelectCard(cardList.Count - 1);
+        }
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            for (int i = 0; i < 3; i++) MoveSelectionUp();
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            MenuSfx.instance.PlaySelectSound();
+            for (int i = 0; i < 3; i++) MoveSelectionDown();
+        }
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (alt && Input.GetKeyDown(KeyCode.UpArrow) &&
+            goUpButton.interactable)
+        {
+            OnGoUpButtonClick();
+        }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            MenuSfx.instance.PlayClickSound();
+            OnRefreshButtonClick();
+        }
+    }
+
+    private void MoveSelectionUp()
+    {
+        Selectable up = EventSystem.current.currentSelectedGameObject
+            .GetComponent<Selectable>().FindSelectableOnUp();
+        int index = cardList.IndexOf(up?.gameObject);
+        if (index < 0) return;
+        SelectCard(index);
+    }
+
+    private void MoveSelectionDown()
+    {
+        Selectable down = EventSystem.current.currentSelectedGameObject
+            .GetComponent<Selectable>().FindSelectableOnDown();
+        int index = cardList.IndexOf(down?.gameObject);
+        if (index < 0) return;
+        SelectCard(index);
     }
 
     #region Track filter side sheet
@@ -402,7 +501,7 @@ public class SelectTrackPanel : MonoBehaviour
     private void TrackListBuilderDoWork(object sender,
         DoWorkEventArgs e)
     {
-        RemoveCachedListsAtCurrentLocation();
+        RemoveCachedLists();
         subfolderList.Clear();
         trackList.Clear();
         errorTrackList.Clear();
@@ -551,10 +650,10 @@ public class SelectTrackPanel : MonoBehaviour
     }
     #endregion
 
-    #region Clicks on cards
+    #region Events from cards and buttons
     public void OnRefreshButtonClick()
     {
-        RemoveCachedListsAtCurrentLocation();
+        RemoveCachedLists();
         StartCoroutine(Refresh());
     }
 
@@ -562,12 +661,19 @@ public class SelectTrackPanel : MonoBehaviour
     {
         currentLocation = new DirectoryInfo(currentLocation)
             .Parent.FullName;
+        selectedCardIndex = -1;
         StartCoroutine(Refresh());
+    }
+
+    public void OnOpenInExplorerButtonClick()
+    {
+        Application.OpenURL(currentLocation);
     }
 
     private void OnSubfolderCardClick(GameObject o)
     {
         currentLocation = cardToSubfolder[o];
+        selectedCardIndex = -1;
         StartCoroutine(Refresh());
     }
 
@@ -592,6 +698,13 @@ public class SelectTrackPanel : MonoBehaviour
     {
         throw new NotImplementedException(
             "SelectTrackPanel in the game scene should not show the New Track card.");
+    }
+
+    public void OnCardSelected(int cardIndex)
+    {
+        // Record the index of selected card so we can restore it
+        // later. IndexOf return -1 if not found.
+        selectedCardIndex = cardIndex;
     }
     #endregion
 }

@@ -21,11 +21,13 @@ public class SelectPatternPanel : MonoBehaviour
     public PatternRadioList patternList;
 
     [Header("Pattern details")]
-    public ScrollingText authorText;
+    public ScrollingText bpmText;
     public TextMeshProUGUI lengthText;
     public TextMeshProUGUI notesText;
+    public Radar radar;
+    public ScrollingText authorText;
     public ScrollingText modifiersText;
-    public ScrollingText specialModifiersText;
+    public Color specialModifierColor;
 
     [Header("Buttons")]
     public ModifierSidesheet modifierSidesheet;
@@ -89,21 +91,58 @@ public class SelectPatternPanel : MonoBehaviour
     {
         if (p == null)
         {
-            authorText.SetUp("-");
+            bpmText.SetUp("-");
             lengthText.text = "-";
             notesText.text = "-";
+            radar.SetEmpty();
+            authorText.SetUp("-");
             playButton.interactable = false;
         }
         else
         {
             p.PrepareForTimeCalculation();
-            float length = p.GetLengthInSeconds();
+            float length;
+            p.GetLengthInSecondsAndScans(out length, out _);
 
-            authorText.SetUp(p.patternMetadata.author);
+            // Get BPM.
+            double minBPM = p.patternMetadata.initBpm;
+            double maxBPM = minBPM;
+            foreach (BpmEvent e in p.bpmEvents)
+            {
+                if (e.bpm < minBPM) minBPM = e.bpm;
+                if (e.bpm > maxBPM) maxBPM = e.bpm;
+            }
+            string bpmString;
+            if (minBPM < maxBPM)
+            {
+                bpmString = 
+                    $"{FormatBPM(minBPM)} - {FormatBPM(maxBPM)}";
+            }
+            else
+            {
+                bpmString = FormatBPM(minBPM);
+            }
+
+            bpmText.SetUp(bpmString);
             lengthText.text = UIUtils.FormatTime(length,
                 includeMillisecond: false);
             notesText.text = p.NumPlayableNotes().ToString();
+            radar.SetRadar(p.CalculateRadar());
+            authorText.SetUp(p.patternMetadata.author);
             playButton.interactable = true;
+        }
+    }
+
+    private string FormatBPM(double bpm)
+    {
+        int floored = Mathf.FloorToInt((float)bpm);
+        if (Mathf.Abs(floored - (float)bpm) < Mathf.Epsilon)
+        {
+            return floored.ToString();
+        }
+        else
+        {
+            return bpm.ToString("F2");
         }
     }
 
@@ -114,12 +153,9 @@ public class SelectPatternPanel : MonoBehaviour
 
     private void OnModifierChanged()
     {
-        string modifierLine1, modifierLine2;
-        modifierSidesheet.GetModifierDisplay(
-            out modifierLine1, out modifierLine2);
-
-        modifiersText.SetUp(modifierLine1);
-        specialModifiersText.SetUp(modifierLine2);
+        bool noVideo = GameSetup.trackOptions.noVideo;
+        modifiersText.SetUp(ModifierSidesheet.GetDisplayString(
+            noVideo, specialModifierColor));
     }
 
     public void OnModifierButtonClick()

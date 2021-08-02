@@ -351,8 +351,11 @@ public class GameUISkin : GameUISkinBase
     // half-beats or quarter-beats, if bps is low).
     // Background is flipped for right-to-left scans, number is not.
     // These two sprite sheets use additiveShader.
+    // If scanCountdownCoversFiveEighthScans is true, countdown
+    // covers 5/8 scans instead of 3 beats.
     public SpriteSheet scanCountdownBackground;
     public SpriteSheet scanCountdownNumbers;
+    public bool scanCountdownCoversFiveEighthScans;
 
     // Uses speed and additiveShader.
     public SpriteSheet touchClickFeedback;

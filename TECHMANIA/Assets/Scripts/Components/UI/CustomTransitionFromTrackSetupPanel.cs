@@ -18,7 +18,12 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
                     "track_setup_discard_changes_confirm"),
                 Locale.GetString(
                     "track_setup_discard_changes_cancel"),
-                ForceTransition);
+                () =>
+                {
+                    SelectTrackPanel.ReloadOneTrack(
+                        EditorContext.trackFolder);
+                    ForceTransition();
+                });
         }
         else
         {

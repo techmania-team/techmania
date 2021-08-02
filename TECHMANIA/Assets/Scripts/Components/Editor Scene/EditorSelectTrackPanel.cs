@@ -11,11 +11,6 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     public NewTrackDialog newTrackDialog;
     public Panel trackSetupPanel;
 
-    private void OnEnable()
-    {
-        StartCoroutine(Refresh());
-    }
-
     protected override bool ShowNewTrackCard()
     {
         return true;
@@ -80,7 +75,12 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             return;
         }
 
-        RemoveCachedListsAtCurrentLocation();
+        // Update in-memory track list.
+        trackList[currentLocation].Add(new TrackInFolder()
+        {
+            folder = newDir,
+            track = track
+        });
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;

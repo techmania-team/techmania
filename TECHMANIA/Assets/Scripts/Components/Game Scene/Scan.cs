@@ -354,25 +354,33 @@ public class Scan : MonoBehaviour
         }
 
         // When do we start the countdown?
-        int bps = GameSetup.pattern.patternMetadata.bps;
-        float durationBeats;
-        if (bps >= 3)
+        if (GlobalResource.gameUiSkin
+            .scanCountdownCoversFiveEighthScans)
         {
-            // Count down the last 3 beats.
-            durationBeats = 3f;
-        }
-        else if (bps >= 2)
-        {
-            // Count down the last 3 half-beats.
-            durationBeats = 1.5f;
+            floatScanToStartCountdown = scanNumber - 0.625f;
         }
         else
         {
-            // Count down the last 3 quarter-beats.
-            durationBeats = 0.75f;
+            int bps = GameSetup.pattern.patternMetadata.bps;
+            float durationBeats;
+            if (bps >= 3)
+            {
+                // Count down the last 3 beats.
+                durationBeats = 3f;
+            }
+            else if (bps >= 2)
+            {
+                // Count down the last 3 half-beats.
+                durationBeats = 1.5f;
+            }
+            else
+            {
+                // Count down the last 3 quarter-beats.
+                durationBeats = 0.75f;
+            }
+            float durationScans = durationBeats / bps;
+            floatScanToStartCountdown = scanNumber - durationScans;
         }
-        float durationScans = durationBeats / bps;
-        floatScanToStartCountdown = scanNumber - durationScans;
     }
 
     private void UpdateCountdown()

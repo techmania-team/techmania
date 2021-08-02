@@ -460,7 +460,6 @@ public class PatternMetadataV1
         metadata.patternName = patternName;
         metadata.level = level;
         metadata.controlScheme = controlScheme;
-        metadata.lanes = lanes;
         metadata.author = author;
 
         metadata.backingTrack = backingTrack;

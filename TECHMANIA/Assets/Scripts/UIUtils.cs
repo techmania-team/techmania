@@ -291,4 +291,135 @@ public class UIUtils
         image.GetComponent<AspectRatioFitter>().aspectRatio =
             sprite.rect.width / sprite.rect.height;
     }
+
+    #region Scroll into view
+    // Scroll scrollRect so that rect is fully visible. If it
+    // already is fully visible, do nothing.
+    //
+    // normalizedMargin: scroll so that there's this much margin
+    // between rect's edge and scrollRect's edge.
+    //
+    // viewRectAsPoint: ignore the size of rect and view it as a point.
+    public static void ScrollIntoView(
+        RectTransform rect, ScrollRect scrollRect,
+        float normalizedMargin, bool viewRectAsPoint,
+        bool horizontal, bool vertical)
+    {
+        float minX, maxX, minY, maxY;
+        GetMinMaxXY(rect, out minX, out maxX,
+            out minY, out maxY);
+        InnerScrollIntoView(
+            minX, maxX, minY, maxY, scrollRect,
+            normalizedMargin, viewRectAsPoint,
+            horizontal, vertical);
+    }
+
+    public static void ScrollIntoView(
+        Vector2 positionInWorld, ScrollRect scrollRect,
+        float normalizedMargin, bool viewRectAsPoint,
+        bool horizontal, bool vertical)
+    {
+        float minX = positionInWorld.x,
+            maxX = positionInWorld.x,
+            minY = positionInWorld.y,
+            maxY = positionInWorld.y;
+        InnerScrollIntoView(
+            minX, maxX, minY, maxY, scrollRect,
+            normalizedMargin, viewRectAsPoint,
+            horizontal, vertical);
+    }
+
+    private static void InnerScrollIntoView(
+        float minX, float maxX, float minY, float maxY,
+        ScrollRect scrollRect,
+        float normalizedMargin, bool viewRectAsPoint,
+        bool horizontal, bool vertical)
+    {
+        RectTransform viewPort = scrollRect.viewport;
+        RectTransform content = scrollRect.content;
+        
+        float viewMinX, viewMaxX, viewMinY, viewMaxY;
+        float contentMinX, contentMaxX, contentMinY, contentMaxY;
+
+        GetMinMaxXY(viewPort, out viewMinX, out viewMaxX,
+            out viewMinY, out viewMaxY);
+        GetMinMaxXY(content, out contentMinX, out contentMaxX,
+            out contentMinY, out contentMaxY);
+
+        if (viewRectAsPoint)
+        {
+            minX = (minX + maxX) * 0.5f;
+            maxX = minX;
+            minY = (minY + maxY) * 0.5f;
+            maxY = minY;
+        }
+
+        float viewWidth = viewMaxX - viewMinX;
+        float viewHeight = viewMaxY - viewMinY;
+        float contentWidth = contentMaxX - contentMinX;
+        float contentHeight = contentMaxY - contentMinY;
+
+        if (horizontal)
+        {
+            float horizontalPosition =
+                scrollRect.horizontalNormalizedPosition;
+            if (maxX > viewMaxX)
+            {
+                horizontalPosition =
+                    (maxX - contentMinX -
+                        (1f - normalizedMargin) * viewWidth) /
+                    (contentWidth - viewWidth);
+            }
+            else if (minX < viewMinX)
+            {
+                horizontalPosition =
+                    (minX - contentMinX -
+                        normalizedMargin * viewWidth) /
+                    (contentWidth - viewWidth);
+            }
+            scrollRect.horizontalNormalizedPosition =
+                Mathf.Clamp01(horizontalPosition);
+        }
+        if (vertical)
+        {
+            float verticalPosition =
+                scrollRect.verticalNormalizedPosition;
+            if (maxY > viewMaxY)
+            {
+                verticalPosition =
+                    (maxY - contentMinY -
+                        (1f - normalizedMargin) * viewHeight) /
+                    (contentHeight - viewHeight);
+            }
+            else if (minY < viewMinY)
+            {
+                verticalPosition =
+                    (minY - contentMinY -
+                        normalizedMargin * viewHeight) /
+                    (contentHeight - viewHeight);
+            }
+            scrollRect.verticalNormalizedPosition =
+                Mathf.Clamp01(verticalPosition);
+        }
+    }
+
+    private static void GetMinMaxXY(RectTransform r,
+        out float minX, out float maxX,
+        out float minY, out float maxY)
+    {
+        Vector3[] corners = new Vector3[4];
+        r.GetWorldCorners(corners);
+        minX = float.MaxValue;
+        maxX = float.MinValue;
+        minY = float.MaxValue;
+        maxY = float.MinValue;
+        foreach (Vector3 c in corners)
+        {
+            if (c.x < minX) minX = c.x;
+            if (c.x > maxX) maxX = c.x;
+            if (c.y < minY) minY = c.y;
+            if (c.y > maxY) maxY = c.y;
+        }
+    }
+    #endregion
 }
