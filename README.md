@@ -43,11 +43,14 @@ For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.co
 ## Making your own builds
 While other OSes are not supported, it may be possible to build the project on these platforms. Follow the standard building process:
 * Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
+  * Make sure you include iOS build support - see following notes.
 * Clone this repo, then open it from Unity.
 * File - Build Settings
 * Choose your target platform, then build.
 
-Note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
+Please note the following:
+* Due to special [post-build processing](TECHMANIA/Assets/Editor/BuildPostProcessor.cs) on iOS, you need to install iOS Build Support when installing Unity, whether you plan to build for iOS or not.
+* The default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
 
