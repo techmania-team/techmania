@@ -176,7 +176,7 @@ public partial class Pattern
     }
 
     // Returns the pattern length between the start of the first
-    // non-empty scan, and the end of t he last non-empty scan.
+    // non-empty scan, and the end of the last non-empty scan.
     // Ignores end-of-scan.
     public void GetLengthInSecondsAndScans(out float seconds,
         out int scans)
