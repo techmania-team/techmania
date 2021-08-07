@@ -375,6 +375,7 @@ public class Note
     // Calculated at runtime:
 
     public float time;
+    public Dictionary<Judgement, float> timeWindow;
 
     // Optional parameters:
 

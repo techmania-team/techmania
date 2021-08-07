@@ -1249,7 +1249,8 @@ public class Game : MonoBehaviour
                     // playable lane.
                     if (Time > upcomingNote.note.time
                             + LatencyForNote(upcomingNote.note)
-                            + Ruleset.instance.breakThreshold * speed
+                            + upcomingNote.note.timeWindow[
+                                Judgement.Miss] * speed
                         && !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         ResolveNote(upcomingNote, Judgement.Break);
@@ -1925,7 +1926,7 @@ public class Game : MonoBehaviour
                     + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;
                 if (Mathf.Abs(difference) > 
-                    Ruleset.instance.breakThreshold)
+                    n.note.timeWindow[Judgement.Miss])
                 {
                     // The touch or click is too early or too late
                     // for this note. Ignore.
@@ -2021,7 +2022,8 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
+        if (Mathf.Abs(difference) >
+            earliestNote.note.timeWindow[Judgement.Miss])
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -2094,7 +2096,8 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
+        if (Mathf.Abs(difference) > 
+            earliestNote.note.timeWindow[Judgement.Miss])
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -2151,29 +2154,24 @@ public class Game : MonoBehaviour
         // All code paths into this method should have ignored
         // ongoing notes.
 
-        Judgement judgement;
+        Judgement judgement = Judgement.Miss;
         float absDifference = Mathf.Abs(timeDifference);
         // Compensate for speed.
         absDifference /= speed;
-        if (absDifference <= Ruleset.instance.rainbowMaxWindow)
+
+        foreach (Judgement j in new List<Judgement>{
+            Judgement.RainbowMax,
+            Judgement.Max,
+            Judgement.Cool,
+            Judgement.Good,
+            Judgement.Miss
+        })
         {
-            judgement = Judgement.RainbowMax;
-        }
-        else if (absDifference <= Ruleset.instance.maxWindow)
-        {
-            judgement = Judgement.Max;
-        }
-        else if (absDifference <= Ruleset.instance.coolWindow)
-        {
-            judgement = Judgement.Cool;
-        }
-        else if (absDifference <= Ruleset.instance.goodWindow)
-        {
-            judgement = Judgement.Good;
-        }
-        else
-        {
-            judgement = Judgement.Miss;
+            if (absDifference <= n.note.timeWindow[j])
+            {
+                judgement = j;
+                break;
+            }
         }
 
         vfxSpawner.SpawnVFXOnHit(n, judgement);
@@ -2266,9 +2264,9 @@ public class Game : MonoBehaviour
 
             if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                hp += feverState == FeverState.Active ?
-                Ruleset.instance.hpRecoveryDuringFever :
-                Ruleset.instance.hpRecovery;
+                hp += Ruleset.instance.GetHpDelta(
+                    judgement, n.note.type,
+                    feverState == FeverState.Active);
                 if (hp >= Ruleset.instance.maxHp)
                 {
                     hp = Ruleset.instance.maxHp;
@@ -2304,9 +2302,9 @@ public class Game : MonoBehaviour
 
             if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                hp -= feverState == FeverState.Active ?
-                   Ruleset.instance.hpLossDuringFever :
-                   Ruleset.instance.hpLoss;
+                hp += Ruleset.instance.GetHpDelta(
+                    judgement, n.note.type,
+                    feverState == FeverState.Active);
                 if (hp < 0) hp = 0;
                 if (hp <= 0 &&
                     Modifiers.instance.mode !=

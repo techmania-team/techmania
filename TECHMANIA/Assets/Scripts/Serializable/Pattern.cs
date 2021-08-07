@@ -235,6 +235,41 @@ public partial class Pattern
                 DragNote d = n as DragNote;
                 d.endTime = PulseToTime(d.pulse + d.Duration());
             }
+
+            // Calculate time window according to current ruleset.
+            n.timeWindow = new Dictionary<Judgement, float>();
+            if (Ruleset.instance.timeWindowsInPulses)
+            {
+                float bpm = GetBPMAt(n.pulse);
+                float secondsPerPulse =
+                    // seconds per minute *
+                    // minutes per beat *
+                    // beats per pulse
+                    60f / bpm / pulsesPerBeat;
+                n.timeWindow.Add(Judgement.RainbowMax,
+                    secondsPerPulse * Ruleset.instance.timeWindows[0]);
+                n.timeWindow.Add(Judgement.Max,
+                    secondsPerPulse * Ruleset.instance.timeWindows[1]);
+                n.timeWindow.Add(Judgement.Cool,
+                    secondsPerPulse * Ruleset.instance.timeWindows[2]);
+                n.timeWindow.Add(Judgement.Good,
+                    secondsPerPulse * Ruleset.instance.timeWindows[3]);
+                n.timeWindow.Add(Judgement.Miss,
+                    secondsPerPulse * Ruleset.instance.timeWindows[4]);
+            }
+            else
+            {
+                n.timeWindow.Add(Judgement.RainbowMax,
+                    Ruleset.instance.timeWindows[0]);
+                n.timeWindow.Add(Judgement.Max,
+                    Ruleset.instance.timeWindows[1]);
+                n.timeWindow.Add(Judgement.Cool,
+                    Ruleset.instance.timeWindows[2]);
+                n.timeWindow.Add(Judgement.Good,
+                    Ruleset.instance.timeWindows[3]);
+                n.timeWindow.Add(Judgement.Miss,
+                    Ruleset.instance.timeWindows[4]);
+            }
         }
     }
 
@@ -308,6 +343,17 @@ public partial class Pattern
 
         return referenceTime +
             secondsPerPulse * (pulse - referencePulse);
+    }
+
+    public float GetBPMAt(int pulse)
+    {
+        float bpm = (float)patternMetadata.initBpm;
+        foreach (BpmEvent e in bpmEvents)
+        {
+            if (e.pulse > pulse) break;
+            bpm = (float)e.bpm;
+        }
+        return bpm;
     }
     #endregion
 
