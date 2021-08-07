@@ -25,56 +25,56 @@ public class AudioSliders : MonoBehaviour
     private void MemoryToUI()
     {
         masterVolumeSlider.SetValueWithoutNotify(
-           Options.instance.masterVolume);
+            Options.instance.masterVolumePercent);
         musicVolumeSlider.SetValueWithoutNotify(
-            Options.instance.musicVolume);
+            Options.instance.musicVolumePercent);
         keysoundVolumeSlider.SetValueWithoutNotify(
-            Options.instance.keysoundVolume);
+            Options.instance.keysoundVolumePercent);
         sfxVolumeSlider.SetValueWithoutNotify(
-            Options.instance.sfxVolume);
+            Options.instance.sfxVolumePercent);
         UpdateVolumeDisplay();
     }
 
     private void UpdateVolumeDisplay()
     {
-        masterVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.masterVolume);
-        musicVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.musicVolume);
-        keysoundVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.keysoundVolume);
-        sfxVolumeDisplay.text = VolumeValueToDisplay(
-            Options.instance.sfxVolume);
+        masterVolumeDisplay.text =
+            Options.instance.masterVolumePercent.ToString();
+        musicVolumeDisplay.text = 
+            Options.instance.musicVolumePercent.ToString();
+        keysoundVolumeDisplay.text = 
+            Options.instance.keysoundVolumePercent.ToString();
+        sfxVolumeDisplay.text = 
+            Options.instance.sfxVolumePercent.ToString();
     }
 
-    private float VolumeValueToDb(float volume)
+    private float VolumeValueToDb(int volumePercent)
     {
+        float volume = volumePercent * 0.01f;
         return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
-    }
-
-    private string VolumeValueToDisplay(float volume)
-    {
-        return Mathf.RoundToInt(volume * 100f).ToString();
     }
 
     public void ApplyVolume()
     {
         audioMixer.SetFloat("MasterVolume", VolumeValueToDb(
-            Options.instance.masterVolume));
+            Options.instance.masterVolumePercent));
         audioMixer.SetFloat("MusicVolume", VolumeValueToDb(
-            Options.instance.musicVolume));
+            Options.instance.musicVolumePercent));
         audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(
-            Options.instance.keysoundVolume));
+            Options.instance.keysoundVolumePercent));
         audioMixer.SetFloat("SfxVolume", VolumeValueToDb(
-            Options.instance.sfxVolume));
+            Options.instance.sfxVolumePercent));
     }
 
     public void OnVolumeChanged()
     {
-        Options.instance.masterVolume = masterVolumeSlider.value;
-        Options.instance.musicVolume = musicVolumeSlider.value;
-        Options.instance.keysoundVolume = keysoundVolumeSlider.value;
-        Options.instance.sfxVolume = sfxVolumeSlider.value;
+        Options.instance.masterVolumePercent =
+            Mathf.FloorToInt(masterVolumeSlider.value);
+        Options.instance.musicVolumePercent = 
+            Mathf.FloorToInt(musicVolumeSlider.value);
+        Options.instance.keysoundVolumePercent = 
+            Mathf.FloorToInt(keysoundVolumeSlider.value);
+        Options.instance.sfxVolumePercent = 
+            Mathf.FloorToInt(sfxVolumeSlider.value);
 
         UpdateVolumeDisplay();
         ApplyVolume();

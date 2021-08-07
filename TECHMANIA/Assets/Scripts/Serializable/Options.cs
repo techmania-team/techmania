@@ -9,16 +9,21 @@ using UnityEngine.Audio;
 // Each format version is a derived class of OptionsBase.
 
 [Serializable]
+[FormatVersion(OptionsV1.kVersion, typeof(OptionsV1), isLatest: false)]
 [FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
 public class OptionsBase : SerializableClass<OptionsBase> {}
 
 // Deserialization will call the constructor, so we can set whatever
 // weird default values in the constructor, and they will naturally
 // apply to options from earlier versions.
+//
+// Updates in version 2:
+// - Now defines volumes in integer percents, so there's less
+//   float fuckery.
 [Serializable]
 public class Options : OptionsBase
 {
-    public const string kVersion = "1";
+    public const string kVersion = "2";
 
     // Graphics
 
@@ -30,10 +35,10 @@ public class Options : OptionsBase
 
     // Audio
 
-    public float masterVolume;
-    public float musicVolume;
-    public float keysoundVolume;
-    public float sfxVolume;
+    public int masterVolumePercent;
+    public int musicVolumePercent;
+    public int keysoundVolumePercent;
+    public int sfxVolumePercent;
     public int audioBufferSize;
 
     // Appearance
@@ -99,10 +104,10 @@ public class Options : OptionsBase
         fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         vSync = false;
 
-        masterVolume = 1f;
-        musicVolume = 0.8f;
-        keysoundVolume = 1f;
-        sfxVolume = 1f;
+        masterVolumePercent = 100;
+        musicVolumePercent = 80;
+        keysoundVolumePercent = 100;
+        sfxVolumePercent = 100;
         // Cannot call GetDefaultAudioBufferSize() here, because
         // somehow Unity calls this constructor during serialization,
         // and calling AudioSettings.GetConfiguration() at that time
@@ -291,6 +296,25 @@ public class EditorOptions
         metronome = false;
         assistTickOnSilentNotes = false;
         returnScanlineAfterPlayback = true;
+    }
+
+    public EditorOptions Clone()
+    {
+        return new EditorOptions()
+        {
+            showKeysounds = showKeysounds,
+            keepScanlineInView = keepScanlineInView,
+
+            applyKeysoundToSelection = applyKeysoundToSelection,
+            applyNoteTypeToSelection = applyNoteTypeToSelection,
+            lockNotesInTime = lockNotesInTime,
+            lockDragAnchorsInTime = lockDragAnchorsInTime,
+            snapDragAnchors = snapDragAnchors,
+
+            metronome = metronome,
+            assistTickOnSilentNotes = assistTickOnSilentNotes,
+            returnScanlineAfterPlayback = returnScanlineAfterPlayback
+        };
     }
 }
 
@@ -559,6 +583,24 @@ public class Modifiers
                 throw new Exception();
         }
     }
+
+    public Modifiers Clone()
+    {
+        return new Modifiers()
+        {
+            noteOpacity = noteOpacity,
+            scanlineOpacity = scanlineOpacity,
+            scanDirection = scanDirection,
+            notePosition = notePosition,
+            scanPosition = scanPosition,
+            fever = fever,
+            keysound = keysound,
+            assistTick = assistTick,
+            mode = mode,
+            controlOverride = controlOverride,
+            scrollSpeed = scrollSpeed
+        };
+    }
 }
 
 [Serializable]
@@ -574,6 +616,15 @@ public class PerTrackOptions
         this.trackGuid = trackGuid;
         noVideo = false;
         backgroundBrightness = kMaxBrightness;
+    }
+
+    public PerTrackOptions Clone()
+    {
+        return new PerTrackOptions(trackGuid)
+        {
+            noVideo = noVideo,
+            backgroundBrightness = backgroundBrightness
+        };
     }
 }
 
@@ -621,4 +672,130 @@ public class TrackFilter
         "track_filter_sidesheet_sort_basis_keys_level",
         "track_filter_sidesheet_sort_basis_km_level"
     };
+
+    public TrackFilter Clone()
+    {
+        return new TrackFilter()
+        {
+            showTracksInAllFolders = showTracksInAllFolders,
+            sortBasis = sortBasis,
+            sortOrder = sortOrder
+        };
+    }
+}
+
+[Serializable]
+public class OptionsV1 : OptionsBase
+{
+    public const string kVersion = "1";
+
+    // Graphics
+
+    public int width;
+    public int height;
+    public int refreshRate;
+    public FullScreenMode fullScreenMode;
+    public bool vSync;
+
+    // Audio
+
+    public float masterVolume;
+    public float musicVolume;
+    public float keysoundVolume;
+    public float sfxVolume;
+    public int audioBufferSize;
+
+    // Appearance
+
+    public string locale;
+    public bool showLoadingBar;
+    public bool showFps;
+    public bool showJudgementTally;
+    public bool showLaneDividers;
+    public Options.BeatMarkerVisibility beatMarkers;
+    public Options.BackgroundScalingMode backgroundScalingMode;
+    public string noteSkin;
+    public string vfxSkin;
+    public string comboSkin;
+    public string gameUiSkin;
+    public bool reloadSkinsWhenLoadingPattern;
+
+    // Timing
+
+    public int touchOffsetMs;
+    public int touchLatencyMs;
+    public int keyboardMouseOffsetMs;
+    public int keyboardMouseLatencyMs;
+
+    // Editor options
+
+    public EditorOptions editorOptions;
+
+    // Modifiers
+
+    public Modifiers modifiers;
+
+    // Track list options.
+
+    public TrackFilter trackFilter;
+
+    // Per-track options.
+    // This should be a dictionary, but dictionaries are not
+    // directly serializable, and we don't expect more than a
+    // few hundred elements anyway.
+    public List<PerTrackOptions> perTrackOptions;
+
+    protected override OptionsBase Upgrade()
+    {
+        Options upgraded = new Options()
+        {
+            width = width,
+            height = height,
+            refreshRate = refreshRate,
+            fullScreenMode = fullScreenMode,
+            vSync = vSync,
+
+            masterVolumePercent = Mathf.FloorToInt(
+                masterVolume * 100f),
+            musicVolumePercent = Mathf.FloorToInt(
+                musicVolume * 100f),
+            keysoundVolumePercent = Mathf.FloorToInt(
+                keysoundVolume * 100f),
+            sfxVolumePercent = Mathf.FloorToInt(
+                sfxVolume * 100f),
+            audioBufferSize = audioBufferSize,
+
+            locale = locale,
+            showLoadingBar = showLoadingBar,
+            showFps = showFps,
+            showJudgementTally = showJudgementTally,
+            showLaneDividers = showLaneDividers,
+            beatMarkers = beatMarkers,
+            backgroundScalingMode = backgroundScalingMode,
+            noteSkin = noteSkin,
+            vfxSkin = vfxSkin,
+            comboSkin = comboSkin,
+            gameUiSkin = gameUiSkin,
+            reloadSkinsWhenLoadingPattern =
+                reloadSkinsWhenLoadingPattern,
+
+            touchOffsetMs = touchOffsetMs,
+            touchLatencyMs = touchLatencyMs,
+            keyboardMouseOffsetMs = keyboardMouseOffsetMs,
+            keyboardMouseLatencyMs = keyboardMouseLatencyMs,
+
+            editorOptions = editorOptions.Clone(),
+
+            modifiers = modifiers.Clone(),
+
+            trackFilter = trackFilter.Clone(),
+
+            perTrackOptions = new List<PerTrackOptions>()
+        };
+        foreach (PerTrackOptions o in perTrackOptions)
+        {
+            upgraded.perTrackOptions.Add(o.Clone());
+        }
+        return upgraded;
+    }
 }
