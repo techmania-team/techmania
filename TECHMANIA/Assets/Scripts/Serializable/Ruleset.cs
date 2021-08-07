@@ -19,9 +19,6 @@ public class Ruleset : RulesetBase
 {
     public const string kVersion = "2";
 
-    [NonSerialized]
-    public bool isCustom;
-
     // Time windows
 
     // 5 time windows for Rainbow MAX, MAX, COOL, GOOD and MISS,
@@ -183,30 +180,22 @@ public class Ruleset : RulesetBase
 
     private static Ruleset GetInstance()
     {
-        // TODO: return the correct instance based on options and
-        // overrides.
-        return legacy;
+        switch (Options.instance.ruleset)
+        {
+            case Options.Ruleset.Standard:
+                return standard;
+            case Options.Ruleset.Legacy:
+                return legacy;
+            case Options.Ruleset.Custom:
+                return custom;
+        }
+        return null;
     }
 
-    public static void RefreshInstance()
+    // May throw exceptions.
+    public static void LoadCustomRuleset()
     {
-        //try
-        //{
-        //    instance = LoadFromFile(
-        //        Paths.GetRulesetFilePath()) as Ruleset;
-        //    instance.isCustom = true;
-        //}
-        //catch (IOException)
-        //{
-        //    instance = new Ruleset();
-        //    instance.isCustom = false;
-        //}
-        //catch (Exception ex)
-        //{
-        //    instance = new Ruleset();
-        //    instance.isCustom = false;
-        //    throw ex;
-        //}
+        custom = LoadFromFile(Paths.GetRulesetFilePath()) as Ruleset;
     }
     #endregion
 }

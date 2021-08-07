@@ -76,6 +76,16 @@ public class Options : OptionsBase
     public int keyboardMouseOffsetMs;
     public int keyboardMouseLatencyMs;
 
+    // Miscellaneous
+
+    public enum Ruleset
+    {
+        Standard,
+        Legacy,
+        Custom
+    }
+    public Ruleset ruleset;
+
     // Editor options
 
     public EditorOptions editorOptions;
@@ -132,6 +142,8 @@ public class Options : OptionsBase
         touchLatencyMs = 0;
         keyboardMouseOffsetMs = 0;
         keyboardMouseLatencyMs = 0;
+
+        ruleset = Ruleset.Standard;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();

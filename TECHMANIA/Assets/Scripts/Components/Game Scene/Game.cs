@@ -262,7 +262,7 @@ public class Game : MonoBehaviour
 
         // Load options.
         Options.RefreshInstance();
-        Ruleset.RefreshInstance();
+        Ruleset.LoadCustomRuleset();
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
             GameSetup.track);
         if (inEditor)

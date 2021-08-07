@@ -102,8 +102,8 @@ Please select a valid skin from the options menu.","读取游戏内界面皮肤�
 ,main_menu_information_button,Information,须知,須知,情報,안내
 ,main_menu_quit_button,QUIT,退出,離開,終了,종료
 ,,,,,,
-,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,自訂規則使用中,カスタムルールセット有効,사용자 지정 규칙 사용 중
-,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
+Deleted in 1.0.,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,自訂規則使用中,カスタムルールセット有効,사용자 지정 규칙 사용 중
+Delete the last line in 1.0.,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
 
 {0}
 
@@ -380,8 +380,8 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,result_panel_full_combo_medal,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
 ,result_panel_rank_label,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
 ,result_panel_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
-,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
-,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
+Deleted in 1.0.,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
+Deleted in 1.0.,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
 ,result_panel_select_track_button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
 ,result_panel_retry_button,RETRY,重试,重新開始,RETRY,RETRY
@@ -863,8 +863,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * このレベルはおすすめのレベルです。参考用として利用してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
 ,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
+1.0 strings start here.,options_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
+,options_ruleset_standard,Standard,标准,,,
+,options_ruleset_legacy,Legacy,经典,,,
+,options_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정

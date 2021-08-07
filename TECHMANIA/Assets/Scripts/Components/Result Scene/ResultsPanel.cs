@@ -122,10 +122,21 @@ public class ResultsPanel : MonoBehaviour
         rankText.text = rank;
 
         // Ruleset
-        ruleset.text = Locale.GetString(
-            Ruleset.instance.isCustom ?
-            "result_panel_ruleset_custom" :
-            "result_panel_ruleset_default");
+        switch (Options.instance.ruleset)
+        {
+            case Options.Ruleset.Standard:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_standard");
+                break;
+            case Options.Ruleset.Legacy:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_legacy");
+                break;
+            case Options.Ruleset.Custom:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_custom");
+                break;
+        }
 
         // Modifier display
         modifierDisplay.SetUp(ModifierSidesheet.GetDisplayString(
