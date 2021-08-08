@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 // The deprecated, version 1 of Track definition, retained so
 // the game can automatically convert outdated tracks to
@@ -78,7 +79,8 @@ public class TrackV1 : TrackBase
 
     protected override TrackBase Upgrade()
     {
-        Track track = new Track(trackMetadata.title,
+        Debug.Log("Upgrading a version 1 track to version 2.");
+        TrackV2 track = new TrackV2(trackMetadata.title,
             trackMetadata.artist);
         trackMetadata.UpgradeTo(track.trackMetadata);
         foreach (PatternV1 p in patterns)
@@ -121,7 +123,7 @@ public class TrackMetadataV1
     // Play BGA from this time.
     public double bgaOffset;
 
-    public void UpgradeTo(TrackMetadata metadata)
+    public void UpgradeTo(TrackMetadataV2 metadata)
     {
         // GUID should persist through upgrades.
         metadata.guid = guid;
@@ -391,9 +393,9 @@ public class PatternV1
             secondsPerPulse * (pulse - referencePulse);
     }
 
-    public Pattern Upgrade(TrackMetadataV1 oldTrackMetadata)
+    public PatternV2 Upgrade(TrackMetadataV1 oldTrackMetadata)
     {
-        Pattern pattern = new Pattern();
+        PatternV2 pattern = new PatternV2();
         patternMetadata.UpgradeTo(pattern.patternMetadata,
             oldTrackMetadata);
         foreach (BpmEvent e in bpmEvents)
@@ -405,15 +407,15 @@ public class PatternV1
             string sound = channel.name;
             foreach (NoteV1 n in channel.notes)
             {
-                pattern.notes.Add(n.Upgrade(sound));
+                pattern.packedNotes.Add(n.Upgrade(sound).Pack());
             }
             foreach (HoldNoteV1 n in channel.holdNotes)
             {
-                pattern.notes.Add(n.Upgrade(sound));
+                pattern.packedHoldNotes.Add(n.Upgrade(sound).Pack());
             }
             foreach (DragNoteV1 n in channel.dragNotes)
             {
-                pattern.notes.Add(n.Upgrade(sound));
+                pattern.packedDragNotes.Add(n.Upgrade(sound).Pack());
             }
         }
         return pattern;
@@ -452,7 +454,7 @@ public class PatternMetadataV1
         bps = PatternV1.minBps;
     }
 
-    public void UpgradeTo(PatternMetadata metadata,
+    public void UpgradeTo(PatternMetadataV2 metadata,
         TrackMetadataV1 oldTrackMetadata)
     {
         metadata.guid = guid;
@@ -539,9 +541,9 @@ public class NoteV1
         };
     }
 
-    public Note Upgrade(string sound)
+    public NoteV2 Upgrade(string sound)
     {
-        return new Note()
+        return new NoteV2()
         {
             type = type,
             pulse = pulse,
@@ -556,9 +558,9 @@ public class HoldNoteV1 : NoteV1
 {
     public int duration;  // in pulses
 
-    public new HoldNote Upgrade(string sound)
+    public new HoldNoteV2 Upgrade(string sound)
     {
-        return new HoldNote()
+        return new HoldNoteV2()
         {
             type = type,
             pulse = pulse,
@@ -620,9 +622,9 @@ public class DragNoteV1 : NoteV1
         return result;
     }
 
-    public new DragNote Upgrade(string sound)
+    public new DragNoteV2 Upgrade(string sound)
     {
-        DragNote newNote = new DragNote()
+        DragNoteV2 newNote = new DragNoteV2()
         {
             type = type,
             pulse = pulse,

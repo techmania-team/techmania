@@ -11,18 +11,14 @@ using System.Globalization;
 // current version class will always be called "Track", and
 // deprecated versions will be renamed to "TrackV1" or such.
 
-// The current version ("2") introduces "packing", which basically
-// compresses notes to concise strings before serialization,
-// so we don't output field names and hundreds of spaces for
-// each note. This should bring the serialized tracks to a
-// reasonable size.
-//
-// Notes contain optional parameters. A note with non-default values
-// on any such parameter is considered an "extended" note, and
-// is packed differently from normal notes.
+// The current version ("3") is a minor routine update from 2
+// with the 1.0 release. The changes are:
+// - Fixed wrong order of pulse and lane for hold notes
+// - Volume and pan are now serialized as integer percentages
 
 [Serializable]
 [FormatVersion(TrackV1.kVersion, typeof(TrackV1), isLatest: false)]
+[FormatVersion(TrackV2.kVersion, typeof(TrackV2), isLatest: false)]
 [FormatVersion(Track.kVersion, typeof(Track), isLatest: true)]
 public class TrackBase : SerializableClass<TrackBase> {}
 
@@ -117,7 +113,12 @@ public class TimeStop : TimeEvent
 [Serializable]
 public partial class Track : TrackBase
 {
-    public const string kVersion = "2";
+    public const string kVersion = "3";
+
+    public Track()
+    {
+        version = kVersion;
+    }
 
     public Track(string title, string artist)
     {
@@ -178,7 +179,7 @@ public partial class Track : TrackBase
     {
         SwitchToInvariantCulture();
         patterns.ForEach(p => p.UnpackAllNotes());
-        SwitchToInvariantCulture();
+        RestoreToSystemCulture();
     }
 }
 
