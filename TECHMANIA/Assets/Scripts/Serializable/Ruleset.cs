@@ -144,9 +144,8 @@ public class Ruleset : RulesetBase
         };
         legacy = new Ruleset()
         {
-            // TODO: fill these.
             timeWindows = new List<float>()
-            { 20f, 40f, 60f, 120f, 240f },
+            { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
             timeWindowsInPulses = true,
             longNoteGracePeriod = 0.15f,
 
@@ -157,15 +156,15 @@ public class Ruleset : RulesetBase
             ongoingDragHitboxWidth = 2f,
             ongoingDragHitboxHeight = 2f,
 
-            maxHp = 1000,
+            maxHp = 10000,
             hpDelta = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
+            { 30, 30, 15, 0, -300, -600 },
             hpDeltaNonBasic = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
+            { 30, 30, 15, 0, -350, -500 },
             hpDeltaDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
+            { 30, 30, 30, 0, -300, -600 },
             hpDeltaNonBasicDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
+            { 30, 30, 30, 0, -350, -500},
 
             comboBonus = true,
 
