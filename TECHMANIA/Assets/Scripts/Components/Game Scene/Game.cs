@@ -1668,7 +1668,7 @@ public class Game : MonoBehaviour
                     audioSourceManager.PlayKeysound(clip,
                         n.lane > playableLanes,
                         startTime: BaseTime - n.time,
-                        n.volume, n.pan);
+                        n.volumePercent, n.panPercent);
                 }
             });
         }
@@ -2394,7 +2394,7 @@ public class Game : MonoBehaviour
         AudioSource source = audioSourceManager.PlayKeysound(clip,
             hidden,
             startTime: 0f,
-            n.note.volume, n.note.pan);
+            n.note.volumePercent, n.note.panPercent);
         noteToAudioSource[n.note] = source;
     }
 

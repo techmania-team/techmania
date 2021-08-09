@@ -12,7 +12,7 @@ using System.Globalization;
 // deprecated versions will be renamed to "TrackV1" or such.
 
 // The current version ("3") is a minor routine update from 2
-// with the 1.0 release. The changes are:
+// with the game's 1.0 release. The changes are:
 // - Fixed wrong order of pulse and lane for hold notes
 // - Volume and pan are now serialized as integer percentages
 
@@ -380,33 +380,33 @@ public class Note
 
     // Optional parameters:
 
-    public float volume;
-    public float pan;
+    public int volumePercent;
+    public int panPercent;
     public bool endOfScan;
     protected string endOfScanString
     {
         get { return endOfScan ? "1" : "0"; }
         set { endOfScan = value == "1"; }
     }
-    public const float minVolume = 0f;
-    public const float defaultVolume = 1f;
-    public const float maxVolume = 1f;
-    public const float minPan = -1f;
-    public const float defaultPan = 0f;
-    public const float maxPan = 1f;
+    public const int minVolume = 0;
+    public const int defaultVolume = 100;
+    public const int maxVolume = 100;
+    public const int minPan = -100;
+    public const int defaultPan = 0;
+    public const int maxPan = 100;
 
     public Note()
     {
         // These will apply to HoldNote and DragNote.
-        volume = defaultVolume;
-        pan = defaultPan;
+        volumePercent = defaultVolume;
+        panPercent = defaultPan;
         endOfScan = false;
     }
 
     public virtual bool IsExtended()
     {
-        if (volume != defaultVolume) return true;
-        if (pan != defaultPan) return true;
+        if (volumePercent != defaultVolume) return true;
+        if (panPercent != defaultPan) return true;
         if (endOfScan) return true;
         return false;
     }
@@ -416,7 +416,7 @@ public class Note
         if (IsExtended())
         {
             // Enums will be formatted as strings.
-            return $"E|{type}|{pulse}|{lane}|{volume}|{pan}|{endOfScanString}|{sound}";
+            return $"E|{type}|{pulse}|{lane}|{volumePercent}|{panPercent}|{endOfScanString}|{sound}";
         }
         else
         {
@@ -439,8 +439,8 @@ public class Note
                     typeof(NoteType), splits[1]),
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4]),
-                pan = float.Parse(splits[5]),
+                volumePercent = int.Parse(splits[4]),
+                panPercent = int.Parse(splits[5]),
                 endOfScanString = splits[6],
                 sound = splits[7]
             };
@@ -481,8 +481,8 @@ public class Note
     public void CopyFrom(Note other)
     {
         sound = other.sound;
-        volume = other.volume;
-        pan = other.pan;
+        volumePercent = other.volumePercent;
+        panPercent = other.panPercent;
         endOfScan = other.endOfScan;
         if (this is HoldNote && other is HoldNote)
         {
@@ -514,8 +514,6 @@ public class Note
     }
 }
 
-// There has been a bug with HoldNote since 0.1 but only found
-// in 0.3: the order of pulse and lane are swapped when packing.
 public class HoldNote : Note
 {
     // Calculated at unpack time:
@@ -531,11 +529,11 @@ public class HoldNote : Note
         if (IsExtended())
         {
             // Enums will be formatted as strings.
-            return $"E|{type}|{lane}|{pulse}|{duration}|{volume}|{pan}|{endOfScanString}|{sound}";
+            return $"E|{type}|{pulse}|{lane}|{duration}|{volumePercent}|{panPercent}|{endOfScanString}|{sound}";
         }
         else
         {
-            return $"{type}|{lane}|{pulse}|{duration}|{sound}";
+            return $"{type}|{pulse}|{lane}|{duration}|{sound}";
         }
     }
 
@@ -552,11 +550,11 @@ public class HoldNote : Note
             {
                 type = (NoteType)Enum.Parse(
                     typeof(NoteType), splits[1]),
-                lane = int.Parse(splits[2]),
-                pulse = int.Parse(splits[3]),
+                pulse = int.Parse(splits[2]),
+                lane = int.Parse(splits[3]),
                 duration = int.Parse(splits[4]),
-                volume = float.Parse(splits[5]),
-                pan = float.Parse(splits[6]),
+                volumePercent = int.Parse(splits[5]),
+                panPercent = int.Parse(splits[6]),
                 endOfScanString = splits[7],
                 sound = splits[8]
             };
@@ -568,8 +566,8 @@ public class HoldNote : Note
             {
                 type = (NoteType)Enum.Parse(
                     typeof(NoteType), splits[0]),
-                lane = int.Parse(splits[1]),
-                pulse = int.Parse(splits[2]),
+                pulse = int.Parse(splits[1]),
+                lane = int.Parse(splits[2]),
                 duration = int.Parse(splits[3]),
                 sound = splits[4]
             };
@@ -711,8 +709,8 @@ public class DragNote : Note
 
     public override bool IsExtended()
     {
-        if (volume != defaultVolume) return true;
-        if (pan != defaultPan) return true;
+        if (volumePercent != defaultVolume) return true;
+        if (panPercent != defaultPan) return true;
         if (curveType != CurveType.Bezier) return true;
         return false;
     }
@@ -723,7 +721,7 @@ public class DragNote : Note
         if (IsExtended())
         {
             // Enums will be formatted as strings.
-            packed.packedNote = $"E|{type}|{pulse}|{lane}|{volume}|{pan}|{(int)curveType}|{sound}";
+            packed.packedNote = $"E|{type}|{pulse}|{lane}|{volumePercent}|{panPercent}|{(int)curveType}|{sound}";
         }
         else
         {
@@ -750,8 +748,8 @@ public class DragNote : Note
             {
                 pulse = int.Parse(splits[2]),
                 lane = int.Parse(splits[3]),
-                volume = float.Parse(splits[4]),
-                pan = float.Parse(splits[5]),
+                volumePercent = int.Parse(splits[4]),
+                panPercent = int.Parse(splits[5]),
                 curveType = (CurveType)int.Parse(splits[6]),
                 sound = splits[7]
             };

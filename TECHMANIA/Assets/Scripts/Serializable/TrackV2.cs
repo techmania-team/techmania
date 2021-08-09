@@ -305,8 +305,8 @@ public class NoteV2
             lane = lane,
             sound = sound,
 
-            volume = volume,
-            pan = pan,
+            volumePercent = Mathf.FloorToInt(volume * 100f),
+            panPercent = Mathf.FloorToInt(pan * 100f),
             endOfScan = endOfScan
         };
     }
@@ -375,8 +375,8 @@ public class HoldNoteV2 : NoteV2
             lane = lane,
             sound = sound,
 
-            volume = volume,
-            pan = pan,
+            volumePercent = Mathf.FloorToInt(volume * 100f),
+            panPercent = Mathf.FloorToInt(pan * 100f),
             endOfScan = endOfScan,
 
             duration = duration
@@ -463,8 +463,8 @@ public class DragNoteV2 : NoteV2
             lane = lane,
             sound = sound,
 
-            volume = volume,
-            pan = pan,
+            volumePercent = Mathf.FloorToInt(volume * 100f),
+            panPercent = Mathf.FloorToInt(pan * 100f),
             endOfScan = endOfScan,
 
             curveType = curveType,
