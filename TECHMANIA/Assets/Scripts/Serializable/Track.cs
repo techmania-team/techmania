@@ -210,6 +210,7 @@ public class TrackMetadata
 public partial class Pattern
 {
     public PatternMetadata patternMetadata;
+    public LegacyRulesetOverride legacyRulesetOverride;
     public List<BpmEvent> bpmEvents;
     public List<TimeStop> timeStops;
 
@@ -243,6 +244,7 @@ public partial class Pattern
     public Pattern()
     {
         patternMetadata = new PatternMetadata();
+        legacyRulesetOverride = new LegacyRulesetOverride();
         bpmEvents = new List<BpmEvent>();
         timeStops = new List<TimeStop>();
         notes = new SortedSet<Note>(new NoteComparer());
@@ -362,6 +364,18 @@ public class PatternMetadata
         initBpm = Pattern.defaultBpm;
         bps = Pattern.defaultBps;
     }
+}
+
+[Serializable]
+public class LegacyRulesetOverride
+{
+    // Empty list means no override.
+
+    public List<float> timeWindows;
+    public List<int> hpDelta;
+    public List<int> hpDeltaNonBasic;
+    public List<int> hpDeltaDuringFever;
+    public List<int> hpDeltaNonBasicDuringFever;
 }
 
 public class Note

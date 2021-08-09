@@ -43,13 +43,17 @@ public class Ruleset : RulesetBase
 
     public int maxHp;
     // 6 values for Rainbow MAX, MAX, COOL, GOOD, MISS and BREAK,
-    // respectively. hpDelta and hpDeltaDuringFever are for basic
-    // notes; hpDeltaNonBasic and hpDeltaNonBasicDuringFever are for
-    // all other types.
-    public List<int> hpDelta;
-    public List<int> hpDeltaNonBasic;
-    public List<int> hpDeltaDuringFever;
-    public List<int> hpDeltaNonBasicDuringFever;
+    // respectively.
+    public List<int> hpDeltaBasic;
+    public List<int> hpDeltaChain;
+    public List<int> hpDeltaHold;
+    public List<int> hpDeltaDrag;
+    public List<int> hpDeltaRepeat;
+    public List<int> hpDeltaBasicDuringFever;
+    public List<int> hpDeltaChainDuringFever;
+    public List<int> hpDeltaHoldDuringFever;
+    public List<int> hpDeltaDragDuringFever;
+    public List<int> hpDeltaRepeatDuringFever;
 
     // Score
     public bool comboBonus;
@@ -69,19 +73,42 @@ public class Ruleset : RulesetBase
     public int GetHpDelta(Judgement j, NoteType type, bool fever)
     {
         List<int> list = null;
-        if (type == NoteType.Basic)
+        switch (type)
         {
-            if (fever)
-                list = hpDeltaDuringFever;
-            else
-                list = hpDelta;
-        }
-        else
-        {
-            if (fever)
-                list = hpDeltaNonBasicDuringFever;
-            else
-                list = hpDeltaNonBasic;
+            case NoteType.Basic:
+                if (fever)
+                    list = hpDeltaBasicDuringFever;
+                else
+                    list = hpDeltaBasic;
+                break;
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+                if (fever)
+                    list = hpDeltaChainDuringFever;
+                else
+                    list = hpDeltaChain;
+                break;
+            case NoteType.Hold:
+                if (fever)
+                    list = hpDeltaHoldDuringFever;
+                else
+                    list = hpDeltaHold;
+                break;
+            case NoteType.Drag:
+                if (fever)
+                    list = hpDeltaDragDuringFever;
+                else
+                    list = hpDeltaDrag;
+                break;
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                if (fever)
+                    list = hpDeltaRepeatDuringFever;
+                else
+                    list = hpDeltaRepeat;
+                break;
         }
 
         switch (j)
@@ -126,13 +153,25 @@ public class Ruleset : RulesetBase
             ongoingDragHitboxHeight = 2f,
 
             maxHp = 1000,
-            hpDelta = new List<int>()
+            hpDeltaBasic = new List<int>()
             { 3, 3, 3, 3, -50, -50 },
-            hpDeltaNonBasic = new List<int>()
+            hpDeltaChain = new List<int>()
             { 3, 3, 3, 3, -50, -50 },
-            hpDeltaDuringFever = new List<int>()
+            hpDeltaHold = new List<int>()
+            { 3, 3, 3, 3, -50, -50 },
+            hpDeltaDrag = new List<int>()
+            { 3, 3, 3, 3, -50, -50 },
+            hpDeltaRepeat = new List<int>()
+            { 3, 3, 3, 3, -50, -50 },
+            hpDeltaBasicDuringFever = new List<int>()
             { 5, 5, 5, 5, -50, -50 },
-            hpDeltaNonBasicDuringFever = new List<int>()
+            hpDeltaChainDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 },
+            hpDeltaHoldDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 },
+            hpDeltaDragDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 },
+            hpDeltaRepeatDuringFever = new List<int>()
             { 5, 5, 5, 5, -50, -50 },
 
             comboBonus = false,
@@ -157,14 +196,26 @@ public class Ruleset : RulesetBase
             ongoingDragHitboxHeight = 2f,
 
             maxHp = 10000,
-            hpDelta = new List<int>()
+            hpDeltaBasic = new List<int>()
             { 30, 30, 15, 0, -300, -600 },
-            hpDeltaNonBasic = new List<int>()
+            hpDeltaChain = new List<int>()
             { 30, 30, 15, 0, -350, -500 },
-            hpDeltaDuringFever = new List<int>()
+            hpDeltaHold = new List<int>()
+            { 30, 30, 15, 0, -350, -500 },
+            hpDeltaDrag = new List<int>()
+            { 30, 30, 15, 0, -350, -500 },
+            hpDeltaRepeat = new List<int>()
+            { 30, 30, 15, 0, -350, -500 },
+            hpDeltaBasicDuringFever = new List<int>()
             { 30, 30, 30, 0, -300, -600 },
-            hpDeltaNonBasicDuringFever = new List<int>()
-            { 30, 30, 30, 0, -350, -500},
+            hpDeltaChainDuringFever = new List<int>()
+            { 30, 30, 30, 0, -350, -500 },
+            hpDeltaHoldDuringFever = new List<int>()
+            { 30, 30, 30, 0, -350, -500 },
+            hpDeltaDragDuringFever = new List<int>()
+            { 30, 30, 30, 0, -350, -500 },
+            hpDeltaRepeatDuringFever = new List<int>()
+            { 30, 30, 30, 0, -350, -500 },
 
             comboBonus = true,
 
@@ -259,7 +310,7 @@ public class RulesetV1 : RulesetBase
             ongoingDragHitboxHeight = ongoingDragHitboxHeight,
 
             maxHp = maxHp,
-            hpDelta = new List<int>()
+            hpDeltaBasic = new List<int>()
             { 
                 hpRecovery,
                 hpRecovery,
@@ -268,7 +319,7 @@ public class RulesetV1 : RulesetBase
                 hpLoss,
                 hpLoss
             },
-            hpDeltaNonBasic = new List<int>()
+            hpDeltaChain = new List<int>()
             {
                 hpRecovery,
                 hpRecovery,
@@ -277,7 +328,34 @@ public class RulesetV1 : RulesetBase
                 hpLoss,
                 hpLoss
             },
-            hpDeltaDuringFever = new List<int>()
+            hpDeltaHold = new List<int>()
+            {
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpLoss,
+                hpLoss
+            },
+            hpDeltaDrag = new List<int>()
+            {
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpLoss,
+                hpLoss
+            },
+            hpDeltaRepeat = new List<int>()
+            {
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpRecovery,
+                hpLoss,
+                hpLoss
+            },
+            hpDeltaBasicDuringFever = new List<int>()
             { 
                 hpRecoveryDuringFever,
                 hpRecoveryDuringFever,
@@ -286,7 +364,34 @@ public class RulesetV1 : RulesetBase
                 hpLossDuringFever,
                 hpLossDuringFever
             },
-            hpDeltaNonBasicDuringFever = new List<int>()
+            hpDeltaChainDuringFever = new List<int>()
+            {
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpLossDuringFever,
+                hpLossDuringFever
+            },
+            hpDeltaHoldDuringFever = new List<int>()
+            {
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpLossDuringFever,
+                hpLossDuringFever
+            },
+            hpDeltaDragDuringFever = new List<int>()
+            {
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpRecoveryDuringFever,
+                hpLossDuringFever,
+                hpLossDuringFever
+            },
+            hpDeltaRepeatDuringFever = new List<int>()
             {
                 hpRecoveryDuringFever,
                 hpRecoveryDuringFever,
