@@ -111,6 +111,56 @@ public class Ruleset : RulesetBase
                 break;
         }
 
+        List<int> overrideList = null;
+        if (Options.instance.ruleset == Options.Ruleset.Legacy &&
+            GameSetup.pattern.legacyRulesetOverride != null)
+        {
+            LegacyRulesetOverride o =
+                GameSetup.pattern.legacyRulesetOverride;
+            switch (type)
+            {
+                case NoteType.Basic:
+                    if (fever)
+                        overrideList = o.hpDeltaBasicDuringFever;
+                    else
+                        overrideList = o.hpDeltaBasic;
+                    break;
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                    if (fever)
+                        overrideList = o.hpDeltaChainDuringFever;
+                    else
+                        overrideList = o.hpDeltaChain;
+                    break;
+                case NoteType.Hold:
+                    if (fever)
+                        overrideList = o.hpDeltaHoldDuringFever;
+                    else
+                        overrideList = o.hpDeltaHold;
+                    break;
+                case NoteType.Drag:
+                    if (fever)
+                        overrideList = o.hpDeltaDragDuringFever;
+                    else
+                        overrideList = o.hpDeltaDrag;
+                    break;
+                case NoteType.RepeatHead:
+                case NoteType.RepeatHeadHold:
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    if (fever)
+                        overrideList = o.hpDeltaRepeatDuringFever;
+                    else
+                        overrideList = o.hpDeltaRepeat;
+                    break;
+            }
+        }
+
+        if (overrideList != null && overrideList.Count > 0)
+        {
+            list = overrideList;
+        }
+
         switch (j)
         {
             case Judgement.RainbowMax:

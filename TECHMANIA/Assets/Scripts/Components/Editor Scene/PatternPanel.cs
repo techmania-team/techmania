@@ -3571,7 +3571,8 @@ public class PatternPanel : MonoBehaviour
 
         Pattern pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
-        pattern.CalculateTimeOfAllNotes();
+        pattern.CalculateTimeOfAllNotes(
+            calculateTimeWindows: false);
         playbackStartingPulse = scanline.floatPulse;
         playbackStartingTime = pattern.PulseToTime(
             (int)playbackStartingPulse);

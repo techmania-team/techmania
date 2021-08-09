@@ -220,8 +220,19 @@ public partial class Pattern
         scans = lastScan - firstScan + 1;
     }
 
-    public void CalculateTimeOfAllNotes()
+    public void CalculateTimeOfAllNotes(bool calculateTimeWindows)
     {
+        List<float> timeWindows = Ruleset.instance.timeWindows;
+        if (calculateTimeWindows &&
+            Options.instance.ruleset == Options.Ruleset.Legacy &&
+            GameSetup.pattern.legacyRulesetOverride != null &&
+            GameSetup.pattern.legacyRulesetOverride
+                .timeWindows.Count > 0)
+        {
+            timeWindows = GameSetup.pattern.legacyRulesetOverride
+                .timeWindows;
+        }
+
         foreach (Note n in notes)
         {
             n.time = PulseToTime(n.pulse);
@@ -237,6 +248,7 @@ public partial class Pattern
             }
 
             // Calculate time window according to current ruleset.
+            if (!calculateTimeWindows) continue;
             n.timeWindow = new Dictionary<Judgement, float>();
             if (Ruleset.instance.timeWindowsInPulses)
             {
@@ -247,28 +259,28 @@ public partial class Pattern
                     // beats per pulse
                     60f / bpm / pulsesPerBeat;
                 n.timeWindow.Add(Judgement.RainbowMax,
-                    secondsPerPulse * Ruleset.instance.timeWindows[0]);
+                    secondsPerPulse * timeWindows[0]);
                 n.timeWindow.Add(Judgement.Max,
-                    secondsPerPulse * Ruleset.instance.timeWindows[1]);
+                    secondsPerPulse * timeWindows[1]);
                 n.timeWindow.Add(Judgement.Cool,
-                    secondsPerPulse * Ruleset.instance.timeWindows[2]);
+                    secondsPerPulse * timeWindows[2]);
                 n.timeWindow.Add(Judgement.Good,
-                    secondsPerPulse * Ruleset.instance.timeWindows[3]);
+                    secondsPerPulse * timeWindows[3]);
                 n.timeWindow.Add(Judgement.Miss,
-                    secondsPerPulse * Ruleset.instance.timeWindows[4]);
+                    secondsPerPulse * timeWindows[4]);
             }
             else
             {
                 n.timeWindow.Add(Judgement.RainbowMax,
-                    Ruleset.instance.timeWindows[0]);
+                    timeWindows[0]);
                 n.timeWindow.Add(Judgement.Max,
-                    Ruleset.instance.timeWindows[1]);
+                    timeWindows[1]);
                 n.timeWindow.Add(Judgement.Cool,
-                    Ruleset.instance.timeWindows[2]);
+                    timeWindows[2]);
                 n.timeWindow.Add(Judgement.Good,
-                    Ruleset.instance.timeWindows[3]);
+                    timeWindows[3]);
                 n.timeWindow.Add(Judgement.Miss,
-                    Ruleset.instance.timeWindows[4]);
+                    timeWindows[4]);
             }
         }
     }

@@ -372,10 +372,16 @@ public class LegacyRulesetOverride
     // Empty list means no override.
 
     public List<float> timeWindows;
-    public List<int> hpDelta;
-    public List<int> hpDeltaNonBasic;
-    public List<int> hpDeltaDuringFever;
-    public List<int> hpDeltaNonBasicDuringFever;
+    public List<int> hpDeltaBasic;
+    public List<int> hpDeltaChain;
+    public List<int> hpDeltaHold;
+    public List<int> hpDeltaDrag;
+    public List<int> hpDeltaRepeat;
+    public List<int> hpDeltaBasicDuringFever;
+    public List<int> hpDeltaChainDuringFever;
+    public List<int> hpDeltaHoldDuringFever;
+    public List<int> hpDeltaDragDuringFever;
+    public List<int> hpDeltaRepeatDuringFever;
 }
 
 public class Note

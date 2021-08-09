@@ -547,7 +547,8 @@ public class Game : MonoBehaviour
 
         // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
-        GameSetup.pattern.CalculateTimeOfAllNotes();
+        GameSetup.pattern.CalculateTimeOfAllNotes(
+            calculateTimeWindows: true);
         firstScan = 0;
         previousComboTick = 0;
 
