@@ -71,7 +71,10 @@ public static class Paths
     {
         return trackRootFolder;
     }
-
+    public static string GetSaTrackRootFolder()
+    {
+        return Path.Combine(Application.streamingAssetsPath, "Tracks");
+    }
     public static string GetSkinFolder()
     {
         return skinFolder;
@@ -84,7 +87,8 @@ public static class Paths
 
     public static string GetNoteSkinFolder(string name)
     {
-        return Path.Combine(GetNoteSkinRootFolder(), name);
+        string temp = Path.Combine(GetNoteSkinRootFolder(), name);
+        return Directory.Exists(temp) ? temp : Path.Combine(GetSaNoteSkinRootFolder(), name);
     }
 
     public static string GetVfxSkinRootFolder()
@@ -94,7 +98,8 @@ public static class Paths
 
     public static string GetVfxSkinFolder(string name)
     {
-        return Path.Combine(GetVfxSkinRootFolder(), name);
+        string temp = Path.Combine(GetVfxSkinRootFolder(), name);
+        return Directory.Exists(temp) ? temp : Path.Combine(GetSaVfxSkinRootFolder(), name);
     }
 
     public static string GetComboSkinRootFolder()
@@ -104,7 +109,8 @@ public static class Paths
 
     public static string GetComboSkinFolder(string name)
     {
-        return Path.Combine(GetComboSkinRootFolder(), name);
+        string temp = Path.Combine(GetComboSkinRootFolder(), name);
+        return Directory.Exists(temp) ? temp : Path.Combine(GetSaComboSkinRootFolder(), name);
     }
 
     public static string GetGameUiSkinRootFolder()
@@ -114,7 +120,33 @@ public static class Paths
 
     public static string GetGameUiSkinFolder(string name)
     {
-        return Path.Combine(GetGameUiSkinRootFolder(), name);
+        string temp = Path.Combine(GetGameUiSkinRootFolder(), name);
+        return Directory.Exists(temp) ? temp : Path.Combine(GetSaGameUiSkinRootFolder(), name);
+    }
+
+    public static string GetSaSkinFolder()
+    {
+        return Path.Combine(Application.streamingAssetsPath, "Skins");
+    }
+
+    public static string GetSaNoteSkinRootFolder()
+    {
+        return Path.Combine(GetSaSkinFolder(), "Note");
+    }
+
+    public static string GetSaVfxSkinRootFolder()
+    {
+        return Path.Combine(GetSaSkinFolder(), "VFX");
+    }
+
+    public static string GetSaComboSkinRootFolder()
+    {
+        return Path.Combine(GetSaSkinFolder(), "Combo");
+    }
+
+    public static string GetSaGameUiSkinRootFolder()
+    {
+        return Path.Combine(GetSaSkinFolder(), "Game UI");
     }
     #endregion
 

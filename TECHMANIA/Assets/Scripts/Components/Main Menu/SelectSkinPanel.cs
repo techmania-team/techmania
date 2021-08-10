@@ -30,11 +30,25 @@ public class SelectSkinPanel : MonoBehaviour
     private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
-        string skinFolder, string currentSkinName)
+        string skinFolder, string skinSaFolder, string currentSkinName)
     {
         dropdown.options.Clear();
         int value = 0, index = 0;
         bool foundOption = false;
+        foreach (string folder in
+            Directory.EnumerateDirectories(skinSaFolder))
+        {
+            // folder does not end in directory separator.
+            string skinName = Path.GetFileName(folder);
+            if (skinName == currentSkinName)
+            {
+                value = index;
+                foundOption = true;
+            }
+            index++;
+            dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
+        }
+        
         foreach (string folder in
             Directory.EnumerateDirectories(skinFolder))
         {
@@ -69,14 +83,16 @@ public class SelectSkinPanel : MonoBehaviour
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
-            Paths.GetNoteSkinRootFolder(), Options.instance.noteSkin);
+            Paths.GetNoteSkinRootFolder(), Paths.GetSaNoteSkinRootFolder(), Options.instance.noteSkin);
         InitializeDropdown(vfxSkinDropdown,
-            Paths.GetVfxSkinRootFolder(), Options.instance.vfxSkin);
+            Paths.GetVfxSkinRootFolder(), Paths.GetSaVfxSkinRootFolder(), Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
-            Paths.GetComboSkinRootFolder(), 
+            Paths.GetComboSkinRootFolder(),
+            Paths.GetSaComboSkinRootFolder(), 
             Options.instance.comboSkin);
         InitializeDropdown(gameUiSkinDropdown,
             Paths.GetGameUiSkinRootFolder(),
+            Paths.GetSaGameUiSkinRootFolder(),
             Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
