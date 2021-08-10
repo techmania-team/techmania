@@ -65,7 +65,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 #endif
     }
 
-    public static T Deserialize(string json)
+    public static T Deserialize(string json, out bool upgraded)
     {
 #if UNITY_2020
         string version = JsonUtility.FromJson<T>(json).version;
@@ -101,15 +101,22 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
         // Deserialize, upgrade if necessary, initialize if necessary.
         T t = JsonUtility.FromJson(json, subclassType) as T;
+        upgraded = false;
         while (t.version != latestVersion)
         {
             t = t.Upgrade();
+            upgraded = true;
         }
         t.InitAfterDeserialize();
         return t;
 #else
         return null;
 #endif
+    }
+
+    public static T Deserialize(string json)
+    {
+        return Deserialize(json, out _);
     }
 
     public T Clone()
@@ -123,10 +130,15 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
             optimizeForSaving: true));
     }
 
-    public static T LoadFromFile(string path)
+    public static T LoadFromFile(string path, out bool upgraded)
     {
         string fileContent = System.IO.File.ReadAllText(path);
-        return Deserialize(fileContent);
+        return Deserialize(fileContent, out upgraded);
+    }
+
+    public static T LoadFromFile(string path)
+    {
+        return LoadFromFile(path, out _);
     }
 
     protected virtual T Upgrade()
