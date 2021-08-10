@@ -46,6 +46,11 @@ public static class Paths
         skinFolder = Path.Combine(workingDirectory, "Skins");
         Directory.CreateDirectory(skinFolder);
 
+        Directory.CreateDirectory(Path.Combine(GetSkinFolder(), "Note"));
+        Directory.CreateDirectory(Path.Combine(GetSkinFolder(), "VFX"));
+        Directory.CreateDirectory(Path.Combine(GetSkinFolder(), "Combo"));
+        Directory.CreateDirectory(Path.Combine(GetSkinFolder(), "Game UI"));
+
         // Data folder
 #if UNITY_ANDROID || UNITY_IOS
         dataFolder = Path.Combine(
