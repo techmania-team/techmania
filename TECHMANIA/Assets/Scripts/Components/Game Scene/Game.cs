@@ -2204,10 +2204,7 @@ public class Game : MonoBehaviour
                 break;
         }
 
-        if (judgement != Judgement.Miss)
-        {
-            PlayKeysound(n, emptyHit: false);
-        }
+        PlayKeysound(n, emptyHit: false);
     }
 
     private void EmptyHit(int lane)
