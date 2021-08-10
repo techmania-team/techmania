@@ -85,11 +85,6 @@ public class Score
         int score = Mathf.FloorToInt(
             maxScore * maxMultiplier / totalNotes);
         score -= notesPerJudgement[Judgement.Max];
-        score += totalFeverBonus;
-        if (feverActive)
-        {
-            score += oneTimeFeverBonus;
-        }
         return score;
     }
 

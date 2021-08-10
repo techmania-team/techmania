@@ -73,7 +73,9 @@ public class ResultsPanel : MonoBehaviour
         feverBonus.text = Game.score.totalFeverBonus.ToString();
 
         // Score and medal
-        int score = Game.score.CurrentScore() + Game.score.comboBonus;
+        int score = Game.score.CurrentScore()
+            + Game.score.comboBonus
+            + Game.score.totalFeverBonus;
         totalScore.text = score.ToString();
 
         if (Game.score.notesPerJudgement[Judgement.Miss] == 0 &&
