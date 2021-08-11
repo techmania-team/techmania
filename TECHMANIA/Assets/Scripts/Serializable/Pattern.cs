@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 public partial class Pattern
 {
@@ -645,6 +647,29 @@ public partial class Pattern
         }
 
         return p;
+    }
+    #endregion
+
+    #region Fingerprint
+    public string GetFingerprint()
+    {
+        // Serialize pattern, then convert to binary.
+        string json = UnityEngine.JsonUtility.ToJson(this,
+            prettyPrint: false);
+        byte[] hashInput = Encoding.UTF8.GetBytes(json);
+
+        // Compute hash.
+        using System.Security.Cryptography.SHA256 sha =
+            System.Security.Cryptography.SHA256.Create();
+        byte[] hashOutput = sha.ComputeHash(hashInput);
+
+        // Convert to string.
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (byte b in hashOutput)
+        {
+            stringBuilder.Append($"{b:X2}");
+        }
+        return stringBuilder.ToString();
     }
     #endregion
 }

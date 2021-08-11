@@ -10,7 +10,7 @@ public class RecordsBase : SerializableClass<RecordsBase> { }
 public class Record
 {
     public string guid;  // For pattern
-    public string fingerprint;
+    public string fingerprint;  // SHA256
     public int score;
     public PerformanceMedal medal;
 }
@@ -20,8 +20,10 @@ public class Records : RecordsBase
 {
     public const string kVersion = "1";
 
+    // The format stored on disk.
     public List<Record> records;
 
+    // The format stored in memory.
     [NonSerialized]
     public Dictionary<string, Record> guidToRecord;
 
