@@ -30,7 +30,7 @@ public class ResultsPanel : MonoBehaviour
 
     [Header("Other")]
     public TextMeshProUGUI totalScore;
-    public GameObject performanceMedal;
+    public GameObject performanceMedalText;
     public TextMeshProUGUI rankText;
     public TextMeshProUGUI ruleset;
     public ScrollingText modifierDisplay;
@@ -78,49 +78,40 @@ public class ResultsPanel : MonoBehaviour
             + Game.score.totalFeverBonus;
         totalScore.text = score.ToString();
 
-        if (Game.score.notesPerJudgement[Judgement.Miss] == 0 &&
-            Game.score.notesPerJudgement[Judgement.Break] == 0)
+        TextMeshProUGUI medalText = performanceMedalText
+            .GetComponentInChildren<TextMeshProUGUI>();
+        switch (Game.score.Medal())
         {
-            // Qualified for performance medal.
-            performanceMedal.SetActive(true);
-            TextMeshProUGUI medalText = performanceMedal
-                .GetComponentInChildren<TextMeshProUGUI>();
-            if (Game.score.notesPerJudgement[Judgement.Cool] == 0 &&
-                Game.score.notesPerJudgement[Judgement.Good] == 0)
-            {
-                if (score == 300000)
-                {
-                    medalText.text = Locale.GetString(
-                        "result_panel_absolute_perfect_medal");
-                }
-                else
-                {
-                    medalText.text = Locale.GetString(
-                        "result_panel_perfect_play_medal");
-                }
-            }
-            else
-            {
+            case PerformanceMedal.NoMedal:
+                performanceMedalText.SetActive(false);
+                break;
+            case PerformanceMedal.AllCombo:
+                performanceMedalText.SetActive(true);
                 medalText.text = Locale.GetString(
                     "result_panel_full_combo_medal");
-            }
-        }
-        else
-        {
-            performanceMedal.SetActive(false);
+                break;
+            case PerformanceMedal.PerfectPlay:
+                performanceMedalText.SetActive(true);
+                medalText.text = Locale.GetString(
+                    "result_panel_perfect_play_medal");
+                break;
+            case PerformanceMedal.AbsolutePerfect:
+                performanceMedalText.SetActive(true);
+                medalText.text = Locale.GetString(
+                    "result_panel_absolute_perfect_medal");
+                break;
         }
 
         // Rank
-        // The choice of rank is quite arbitrary.
-        string rank = "C";
-        if (score > 220000) rank = "B";
-        if (score > 260000) rank = "A";
-        if (score > 270000) rank = "A+";
-        if (score > 280000) rank = "A++";
-        if (score > 285000) rank = "S";
-        if (score > 290000) rank = "S+";
-        if (score > 295000) rank = "S++";
-        if (Game.score.stageFailed) rank = "F";
+        string rank;
+        if (Game.score.stageFailed)
+        {
+            rank = "F";
+        }
+        else
+        {
+            rank = Score.ScoreToRank(score);
+        }
         rankText.text = rank;
 
         // Ruleset
