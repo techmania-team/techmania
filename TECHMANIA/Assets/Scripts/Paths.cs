@@ -123,6 +123,11 @@ public static class Paths
     {
         return Path.Combine(dataFolder, "ruleset.json");
     }
+
+    public static string GetRecordsFilePath()
+    {
+        return Path.Combine(dataFolder, "records.json");
+    }
     #endregion
 
     private static List<string> GetAllMatchingFiles(string folder, 

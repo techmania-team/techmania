@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PerformanceMedal
+{
+    NoMedal,
+    AllCombo,
+    PerfectPlay,
+    AbsolutePerfect
+}
+
 public class Score
 {
     private int totalNotes;
