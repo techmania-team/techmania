@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -507,7 +507,9 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
 
         BuildTrackListFor(Paths.GetTrackRootFolder());
-        BuildTrackListFor(Paths.GetStreamingTrackRootFolder());
+        if (Directory.Exists(Paths.GetStreamingTrackRootFolder())) {
+            BuildTrackListFor(Paths.GetStreamingTrackRootFolder());
+        }
     }
 
     private void BuildTrackListFor(string folder)
