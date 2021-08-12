@@ -69,11 +69,21 @@ public static class Paths
     #region Things in working directory
     public static string GetTrackRootFolder()
     {
+// Normalize Windows platform slash to \
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        return trackRootFolder.Replace("/","\\");
+#else
         return trackRootFolder;
+#endif
     }
     public static string GetStreamingTrackRootFolder()
     {
+// Normalize Windows platform slash to \
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        return Path.Combine(Application.streamingAssetsPath, "Tracks").Replace("/","\\");
+#else
         return Path.Combine(Application.streamingAssetsPath, "Tracks");
+#endif
     }
     public static string GetSkinFolder()
     {

@@ -668,13 +668,9 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        if (currentLocation.Contains(Paths.GetStreamingTrackRootFolder())) {
-            Debug.Log("is sa");
-            currentLocation = Paths.GetTrackRootFolder();
-        } else {
-            currentLocation = new DirectoryInfo(currentLocation)
-                .Parent.FullName;
-        }
+        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
+        if (currentLocation.Equals(Paths.GetStreamingTrackRootFolder())) currentLocation = Paths.GetTrackRootFolder();
+
         selectedCardIndex = -1;
         StartCoroutine(Refresh());
     }
