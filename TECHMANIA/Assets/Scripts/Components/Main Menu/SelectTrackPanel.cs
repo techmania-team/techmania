@@ -507,7 +507,7 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
 
         BuildTrackListFor(Paths.GetTrackRootFolder());
-        BuildTrackListFor(Paths.GetSaTrackRootFolder());
+        BuildTrackListFor(Paths.GetStreamingTrackRootFolder());
     }
 
     private void BuildTrackListFor(string folder)
@@ -564,7 +564,7 @@ public class SelectTrackPanel : MonoBehaviour
                 }
 
                 // Record as a subfolder.
-                if (folder.Equals(Paths.GetSaTrackRootFolder())) {
+                if (folder.Equals(Paths.GetStreamingTrackRootFolder())) {
                     subfolderList[Paths.GetTrackRootFolder()].Add(subfolder);
                 } else {
                     subfolderList[folder].Add(subfolder);
@@ -666,7 +666,7 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        if (currentLocation.Contains(Paths.GetSaTrackRootFolder())) {
+        if (currentLocation.Contains(Paths.GetStreamingTrackRootFolder())) {
             Debug.Log("is sa");
             currentLocation = Paths.GetTrackRootFolder();
         } else {

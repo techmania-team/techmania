@@ -83,16 +83,16 @@ public class SelectSkinPanel : MonoBehaviour
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
-            Paths.GetNoteSkinRootFolder(), Paths.GetSaNoteSkinRootFolder(), Options.instance.noteSkin);
+            Paths.GetNoteSkinRootFolder(), Paths.GetStreamingNoteSkinRootFolder(), Options.instance.noteSkin);
         InitializeDropdown(vfxSkinDropdown,
-            Paths.GetVfxSkinRootFolder(), Paths.GetSaVfxSkinRootFolder(), Options.instance.vfxSkin);
+            Paths.GetVfxSkinRootFolder(), Paths.GetStreamingVfxSkinRootFolder(), Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
             Paths.GetComboSkinRootFolder(),
-            Paths.GetSaComboSkinRootFolder(), 
+            Paths.GetStreamingComboSkinRootFolder(), 
             Options.instance.comboSkin);
         InitializeDropdown(gameUiSkinDropdown,
             Paths.GetGameUiSkinRootFolder(),
-            Paths.GetSaGameUiSkinRootFolder(),
+            Paths.GetStreamingGameUiSkinRootFolder(),
             Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
