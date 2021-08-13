@@ -12,6 +12,12 @@ public static class Paths
     public const string kSkinFilename = "skin.json";
     public const string kSubfolderEyecatchPngFilename = "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = "eyecatch.jpg";
+    public const string kTrackFolderName = "Tracks";
+    public const string kSkinFolderName = "Skins";
+    public const string kNoteSkinFolderName = "Note";
+    public const string kVfxSkinFolderName = "VFX";
+    public const string kComboSkinFolderName = "Combo";
+    public const string kGameUiFolderName = "Game UI";
 
     #region Important folders
     public static string workingDirectory { get; private set; }
@@ -39,11 +45,11 @@ public static class Paths
         }
 
         // Track root folder
-        trackRootFolder = Path.Combine(workingDirectory, "Tracks");
+        trackRootFolder = Path.Combine(workingDirectory, kTrackFolderName);
         Directory.CreateDirectory(trackRootFolder);
 
         // Skin folder
-        skinFolder = Path.Combine(workingDirectory, "Skins");
+        skinFolder = Path.Combine(workingDirectory, kSkinFolderName);
         Directory.CreateDirectory(skinFolder);
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
@@ -80,9 +86,9 @@ public static class Paths
     {
 // Normalize Windows platform slash to \
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        return Path.Combine(Application.streamingAssetsPath, "Tracks").Replace("/","\\");
+        return Path.Combine(Application.streamingAssetsPath, kTrackFolderName).Replace("/","\\");
 #else
-        return Path.Combine(Application.streamingAssetsPath, "Tracks");
+        return Path.Combine(Application.streamingAssetsPath, kTrackFolderName);
 #endif
     }
     public static string GetSkinFolder()
@@ -91,15 +97,15 @@ public static class Paths
     }
     public static string GetStreamingSkinFolder()
     {
-        return Path.Combine(Application.streamingAssetsPath, "Skins");
+        return Path.Combine(Application.streamingAssetsPath, kSkinFolderName);
     }
     public static string GetNoteSkinRootFolder()
     {
-        return Path.Combine(GetSkinFolder(), "Note");
+        return Path.Combine(GetSkinFolder(), kNoteSkinFolderName);
     }
     public static string GetStreamingNoteSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), "Note");
+        return Path.Combine(GetStreamingSkinFolder(), kNoteSkinFolderName);
     }
     public static string GetNoteSkinFolder(string name)
     {
@@ -108,11 +114,11 @@ public static class Paths
     }
     public static string GetVfxSkinRootFolder()
     {
-        return Path.Combine(GetSkinFolder(), "VFX");
+        return Path.Combine(GetSkinFolder(), kVfxSkinFolderName);
     }
     public static string GetStreamingVfxSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), "VFX");
+        return Path.Combine(GetStreamingSkinFolder(), kVfxSkinFolderName);
     }
     public static string GetVfxSkinFolder(string name)
     {
@@ -121,11 +127,11 @@ public static class Paths
     }
     public static string GetComboSkinRootFolder()
     {
-        return Path.Combine(GetSkinFolder(), "Combo");
+        return Path.Combine(GetSkinFolder(), kComboSkinFolderName);
     }
     public static string GetStreamingComboSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), "Combo");
+        return Path.Combine(GetStreamingSkinFolder(), kComboSkinFolderName);
     }
     public static string GetComboSkinFolder(string name)
     {
@@ -134,11 +140,11 @@ public static class Paths
     }
     public static string GetGameUiSkinRootFolder()
     {
-        return Path.Combine(GetSkinFolder(), "Game UI");
+        return Path.Combine(GetSkinFolder(), kGameUiFolderName);
     }
     public static string GetStreamingGameUiSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), "Game UI");
+        return Path.Combine(GetStreamingSkinFolder(), kGameUiFolderName);
     }
     public static string GetGameUiSkinFolder(string name)
     {
