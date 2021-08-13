@@ -30,37 +30,17 @@ public class SelectSkinPanel : MonoBehaviour
     private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
-        string skinFolder, string skinSaFolder, string currentSkinName)
+        string skinFolder, string skinStreamingFolder, string currentSkinName)
     {
         dropdown.options.Clear();
         int value = 0, index = 0;
         bool foundOption = false;
-        foreach (string folder in
-            Directory.EnumerateDirectories(skinSaFolder))
+
+        AddSkinToDropdown(dropdown, skinFolder, currentSkinName, ref value, ref index, ref foundOption);
+
+        if (Directory.Exists(skinStreamingFolder))
         {
-            // folder does not end in directory separator.
-            string skinName = Path.GetFileName(folder);
-            if (skinName == currentSkinName)
-            {
-                value = index;
-                foundOption = true;
-            }
-            index++;
-            dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
-        }
-        
-        foreach (string folder in
-            Directory.EnumerateDirectories(skinFolder))
-        {
-            // folder does not end in directory separator.
-            string skinName = Path.GetFileName(folder);
-            if (skinName == currentSkinName)
-            {
-                value = index;
-                foundOption = true;
-            }
-            index++;
-            dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
+            AddSkinToDropdown(dropdown, skinStreamingFolder, currentSkinName, ref value, ref index, ref foundOption);
         }
 
         if (dropdown.options.Count == 0)
@@ -79,7 +59,27 @@ public class SelectSkinPanel : MonoBehaviour
 
         dropdown.RefreshShownValue();
     }
-
+    private void AddSkinToDropdown(TMP_Dropdown dropdown,
+        string skinFolder, string currentSkinName, ref int value, ref int index, ref bool foundOption)
+    {
+        foreach (string folder in
+            Directory.EnumerateDirectories(skinFolder))
+        {
+            // folder does not end in directory separator.
+            string skinName = Path.GetFileName(folder);
+            bool exists = dropdown.options.Exists(o => o.text == skinName);
+            if (!exists)
+            {
+                if (skinName == currentSkinName && !exists)
+                {
+                    value = index;
+                    foundOption = true;
+                }
+                index++;
+                dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
+            }
+        }
+    }
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
