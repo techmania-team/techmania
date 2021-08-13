@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+[Serializable]
+[FormatVersion(Records.kVersion, typeof(Records), isLatest: true)]
 public class RecordsBase : SerializableClass<RecordsBase> { }
 
 [Serializable]
@@ -11,8 +13,19 @@ public class Record
 {
     public string guid;  // For pattern
     public string fingerprint;  // SHA256
+    public Options.Ruleset ruleset;
     public int score;
     public PerformanceMedal medal;
+
+    public override string ToString()
+    {
+        return $"{score}   {Score.ScoreToRank(score)}";
+    }
+
+    public static string EmptyRecordString()
+    {
+        return "---";
+    }
 }
 
 [Serializable]
@@ -25,46 +38,81 @@ public class Records : RecordsBase
 
     // The format stored in memory.
     [NonSerialized]
-    public Dictionary<string, Record> guidToRecord;
+    public Dictionary<Options.Ruleset, Dictionary<string, Record>> 
+        recordDict;
 
     public Records()
     {
+        version = kVersion;
+
         records = new List<Record>();
-        guidToRecord = new Dictionary<string, Record>();
+        recordDict = new Dictionary<Options.Ruleset,
+            Dictionary<string, Record>>();
+        recordDict[Options.Ruleset.Standard] =
+            new Dictionary<string, Record>();
+        recordDict[Options.Ruleset.Legacy] =
+            new Dictionary<string, Record>();
     }
 
-    public Record GetRecord(string guid)
+    public Record GetRecord(Pattern p)
     {
-        if (guidToRecord.ContainsKey(guid))
-        {
-            return guidToRecord[guid];
-        }
-        else
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
         {
             return null;
         }
+        Dictionary<string, Record> dict = recordDict[
+            Options.instance.ruleset];
+        if (dict.ContainsKey(p.patternMetadata.guid))
+        {
+            Record r = dict[p.patternMetadata.guid];
+            if (r.fingerprint == p.GetFingerprint())
+            {
+                return r;
+            }
+        }
+        return null;
     }
 
-    public void SetRecord(Record r)
+    public void SetRecord(Pattern p, Score s)
     {
-        guidToRecord[r.guid] = r;
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            return;
+        }
+        int totalScore = s.CurrentScore() +
+            s.totalFeverBonus + s.comboBonus;
+        Record r = new Record()
+        {
+            guid = p.patternMetadata.guid,
+            fingerprint = p.GetFingerprint(),
+            ruleset = Options.instance.ruleset,
+            score = totalScore,
+            medal = s.Medal()
+        };
+        recordDict[r.ruleset][r.guid] = r;
     }
 
     protected override void PrepareToSerialize()
     {
         records.Clear();
-        foreach (Record r in guidToRecord.Values)
+        foreach (Dictionary<string, Record> dict in
+            recordDict.Values)
         {
-            records.Add(r);
+            foreach (Record r in dict.Values)
+            {
+                records.Add(r);
+            }
         }
     }
 
     protected override void InitAfterDeserialize()
     {
-        guidToRecord.Clear();
+        recordDict[Options.Ruleset.Standard].Clear();
+        recordDict[Options.Ruleset.Legacy].Clear();
         foreach (Record r in records)
         {
-            guidToRecord.Add(r.guid, r);
+            if (r.ruleset == Options.Ruleset.Custom) continue;
+            recordDict[r.ruleset].Add(r.guid, r);
         }
     }
 

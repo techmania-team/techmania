@@ -32,6 +32,8 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI totalScore;
     public GameObject performanceMedalText;
     public TextMeshProUGUI rankText;
+    public TextMeshProUGUI recordText;
+    public GameObject newRecordMedalText;
     public TextMeshProUGUI ruleset;
     public ScrollingText modifierDisplay;
     public Color specialModifierColor;
@@ -113,6 +115,38 @@ public class ResultsPanel : MonoBehaviour
             rank = Score.ScoreToRank(score);
         }
         rankText.text = rank;
+
+        // My record
+        Record record = Records.instance.GetRecord(
+            GameSetup.patternBeforeApplyingModifier);
+        bool newRecord;
+        if (record == null)
+        {
+            recordText.text = Record.EmptyRecordString();
+            newRecord = true;
+        }
+        else
+        {
+            recordText.text = record.ToString();
+            newRecord = score > record.score;
+        }
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            newRecord = false;
+        }
+        if (Modifiers.instance.HasAnySpecialModifier())
+        {
+            newRecord = false;
+        }
+
+        newRecordMedalText.SetActive(newRecord);
+        if (newRecord)
+        {
+            Records.instance.SetRecord(
+                GameSetup.patternBeforeApplyingModifier,
+                Game.score);
+            Records.instance.SaveToFile(Paths.GetRecordsFilePath());
+        }
 
         // Ruleset
         switch (Options.instance.ruleset)

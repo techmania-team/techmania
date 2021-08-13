@@ -654,6 +654,7 @@ public partial class Pattern
     public string GetFingerprint()
     {
         // Serialize pattern, then convert to binary.
+        PackAllNotes();
         string json = UnityEngine.JsonUtility.ToJson(this,
             prettyPrint: false);
         byte[] hashInput = Encoding.UTF8.GetBytes(json);

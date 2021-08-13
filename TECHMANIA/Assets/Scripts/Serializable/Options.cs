@@ -596,6 +596,14 @@ public class Modifiers
         }
     }
 
+    public bool HasAnySpecialModifier()
+    {
+        if (mode != Mode.Normal) return true;
+        if (controlOverride != ControlOverride.None) return true;
+        if (scrollSpeed != ScrollSpeed.Normal) return true;
+        return false;
+    }
+
     public Modifiers Clone()
     {
         return new Modifiers()
