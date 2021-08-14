@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -507,6 +507,9 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
 
         BuildTrackListFor(Paths.GetTrackRootFolder());
+        if (Directory.Exists(Paths.GetStreamingTrackRootFolder())) {
+            BuildTrackListFor(Paths.GetStreamingTrackRootFolder());
+        }
     }
 
     private void BuildTrackListFor(string folder)
@@ -563,7 +566,11 @@ public class SelectTrackPanel : MonoBehaviour
                 }
 
                 // Record as a subfolder.
-                subfolderList[folder].Add(subfolder);
+                if (folder.Equals(Paths.GetStreamingTrackRootFolder())) {
+                    subfolderList[Paths.GetTrackRootFolder()].Add(subfolder);
+                } else {
+                    subfolderList[folder].Add(subfolder);
+                }
 
                 // Build recursively.
                 BuildTrackListFor(dir);
@@ -659,8 +666,11 @@ public class SelectTrackPanel : MonoBehaviour
 
     public void OnGoUpButtonClick()
     {
-        currentLocation = new DirectoryInfo(currentLocation)
-            .Parent.FullName;
+        Debug.Log(currentLocation);
+
+        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
+        if (currentLocation.Equals(Paths.GetStreamingTrackRootFolder())) currentLocation = Paths.GetTrackRootFolder();
+
         selectedCardIndex = -1;
         StartCoroutine(Refresh());
     }
