@@ -70,7 +70,7 @@ public class SelectSkinPanel : MonoBehaviour
             bool exists = dropdown.options.Exists(o => o.text == skinName);
             if (!exists)
             {
-                if (skinName == currentSkinName && !exists)
+                if (skinName == currentSkinName)
                 {
                     value = index;
                     foundOption = true;
