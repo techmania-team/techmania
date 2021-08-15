@@ -24,13 +24,13 @@ public partial class Pattern
         List<List<Note>> repeatSeries = new List<List<Note>>();
         // Indexed by lane.
         List<List<Note>> currentRepeatSeries = new List<List<Note>>();
-        for (int i = 0; i < patternMetadata.lanes; i++)
+        for (int i = 0; i < patternMetadata.playableLanes; i++)
         {
             currentRepeatSeries.Add(new List<Note>());
         }
         foreach (Note n in notes)
         {
-            if (n.lane < 0 || n.lane >= patternMetadata.lanes)
+            if (n.lane < 0 || n.lane >= patternMetadata.playableLanes)
             {
                 continue;
             }
@@ -138,7 +138,7 @@ public partial class Pattern
                 }
                 float lane = p.lane + n.lane;
                 if (lane < -0.5f ||
-                    lane >= patternMetadata.lanes + 0.5f)
+                    lane >= patternMetadata.playableLanes + 0.5f)
                 {
                     notesWithIssue.Add(n);
                     return Locale.GetString(

@@ -234,6 +234,7 @@ public partial class Pattern
     public List<PackedDragNote> packedDragNotes;
 
     public const int pulsesPerBeat = 240;
+    public const int defaultPlayableLanes = 4;
     public const int minLevel = 1;
     public const int defaultLevel = 1;
     public const double minBpm = 1;
@@ -316,7 +317,7 @@ public class PatternMetadata
     public string patternName;
     public int level;
     public ControlScheme controlScheme;
-    public int lanes => 4;  // Currently unused
+    public int playableLanes;
     public string author;
 
     // Background AV.
@@ -357,6 +358,8 @@ public class PatternMetadata
         patternName = "New pattern";
 #endif
         level = Pattern.defaultLevel;
+        controlScheme = ControlScheme.Touch;
+        playableLanes = Pattern.defaultPlayableLanes;
 
         waitForEndOfBga = true;
         playBgaOnLoop = false;

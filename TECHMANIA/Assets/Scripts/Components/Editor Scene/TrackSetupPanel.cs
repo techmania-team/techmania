@@ -368,7 +368,7 @@ public class TrackSetupPanel : MonoBehaviour
     private void RefreshPatternList()
     {
         patternList.InitializeAndReturnFirstPatternObject(
-            EditorContext.track, selectedPattern);
+            EditorContext.track, records: null, selectedPattern);
     }
 
     private void RefreshPatternMetadata()

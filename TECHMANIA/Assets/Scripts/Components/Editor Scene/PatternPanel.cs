@@ -128,7 +128,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Vertical Spacing
     private static int PlayableLanes => 
-        EditorContext.Pattern.patternMetadata.lanes;
+        EditorContext.Pattern.patternMetadata.playableLanes;
     private static int TotalLanes => 64;
 
     private static float WorkspaceViewportHeight;
@@ -740,8 +740,8 @@ public class PatternPanel : MonoBehaviour
             EditorContext.Pattern.patternMetadata.bps * 2;
         maxPulse += Pattern.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps * 2;
-        minLane -= EditorContext.Pattern.patternMetadata.lanes;
-        maxLane += EditorContext.Pattern.patternMetadata.lanes;
+        minLane -= EditorContext.Pattern.patternMetadata.playableLanes;
+        maxLane += EditorContext.Pattern.patternMetadata.playableLanes;
 
         // Find all notes that should spawn.
         Note topLeftNote = new Note()

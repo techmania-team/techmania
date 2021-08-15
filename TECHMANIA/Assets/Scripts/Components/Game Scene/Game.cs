@@ -144,7 +144,7 @@ public class Game : MonoBehaviour
     public static float feverAmount { get; private set; }
 
     private int playableLanes => 
-        GameSetup.pattern.patternMetadata.lanes;
+        GameSetup.pattern.patternMetadata.playableLanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when

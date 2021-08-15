@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -377,7 +378,7 @@ public partial class Pattern
         int count = 0;
         foreach (Note n in notes)
         {
-            if (n.lane < patternMetadata.lanes) count++;
+            if (n.lane < patternMetadata.playableLanes) count++;
         }
         return count;
     }
@@ -418,7 +419,7 @@ public partial class Pattern
         float numAsyncNotes = 0;
         foreach (Note n in notes)
         {
-            if (n.lane >= patternMetadata.lanes) continue;
+            if (n.lane >= patternMetadata.playableLanes) continue;
             playableNotes.Add(n);
 
             int scan = n.pulse / pulsesPerScan;
@@ -563,7 +564,7 @@ public partial class Pattern
     public Pattern ApplyModifiers(Modifiers modifiers)
     {
         Pattern p = CloneWithDifferentGuid();
-        int playableLanes = patternMetadata.lanes;
+        int playableLanes = patternMetadata.playableLanes;
         const int kAutoKeysoundFirstLane = 64;
         const int kAutoAssistTickFirstLane = 68;
 
@@ -651,7 +652,18 @@ public partial class Pattern
     #endregion
 
     #region Fingerprint
-    public string GetFingerprint()
+    public string fingerprint { get; private set; }
+
+    public void CheckFingerprintCalculated()
+    {
+        if (fingerprint == null ||
+            fingerprint.Length == 0)
+        {
+            throw new Exception("Fingerprint not calculated.");
+        }
+    }
+
+    public void CalculateFingerprint()
     {
         // Serialize pattern, then convert to binary.
         PackAllNotes();
@@ -668,9 +680,9 @@ public partial class Pattern
         StringBuilder stringBuilder = new StringBuilder();
         foreach (byte b in hashOutput)
         {
-            stringBuilder.Append($"{b:X2}");
+            stringBuilder.Append($"{b:x2}");
         }
-        return stringBuilder.ToString();
+        fingerprint = stringBuilder.ToString();
     }
     #endregion
 }

@@ -44,9 +44,19 @@ public class SelectPatternPanel : MonoBehaviour
         artistText.text = track.trackMetadata.artist;
         trackDetailsScrollingText.SetUp();
 
+        // Read records of all patterns.
+        Dictionary<Pattern, Record> records = new
+            Dictionary<Pattern, Record>();
+        foreach (Pattern p in track.patterns)
+        {
+            p.CalculateFingerprint();
+            records.Add(p, Records.instance.GetRecord(p));
+        }
+
         // Initialize pattern list.
         GameObject firstObject =
-            patternList.InitializeAndReturnFirstPatternObject(track);
+            patternList.InitializeAndReturnFirstPatternObject(
+                track, records);
         PatternRadioList.SelectedPatternChanged += 
             OnSelectedPatternObjectChanged;
 

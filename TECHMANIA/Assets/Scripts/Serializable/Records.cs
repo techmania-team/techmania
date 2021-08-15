@@ -16,6 +16,7 @@ public class Record
     public Options.Ruleset ruleset;
     public int score;
     public PerformanceMedal medal;
+    public string gameVersion;
 
     public override string ToString()
     {
@@ -54,18 +55,20 @@ public class Records : RecordsBase
             new Dictionary<string, Record>();
     }
 
+    // Requires fingerprints to have been calculated.
     public Record GetRecord(Pattern p)
     {
         if (Options.instance.ruleset == Options.Ruleset.Custom)
         {
             return null;
         }
+        p.CheckFingerprintCalculated();
         Dictionary<string, Record> dict = recordDict[
             Options.instance.ruleset];
         if (dict.ContainsKey(p.patternMetadata.guid))
         {
             Record r = dict[p.patternMetadata.guid];
-            if (r.fingerprint == p.GetFingerprint())
+            if (r.fingerprint == p.fingerprint)
             {
                 return r;
             }
@@ -73,21 +76,24 @@ public class Records : RecordsBase
         return null;
     }
 
+    // Requires fingerprints to have been calculated.
     public void SetRecord(Pattern p, Score s)
     {
         if (Options.instance.ruleset == Options.Ruleset.Custom)
         {
             return;
         }
+        p.CheckFingerprintCalculated();
         int totalScore = s.CurrentScore() +
             s.totalFeverBonus + s.comboBonus;
         Record r = new Record()
         {
             guid = p.patternMetadata.guid,
-            fingerprint = p.GetFingerprint(),
+            fingerprint = p.fingerprint,
             ruleset = Options.instance.ruleset,
             score = totalScore,
-            medal = s.Medal()
+            medal = s.Medal(),
+            gameVersion = Application.version
         };
         recordDict[r.ruleset][r.guid] = r;
     }

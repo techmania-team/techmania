@@ -44,6 +44,8 @@ public class ResultsPanel : MonoBehaviour
         title.text = Locale.GetString(Game.score.stageFailed ?
             "result_panel_stage_failed_title" :
             "result_panel_stage_clear_title");
+        GameSetup.patternBeforeApplyingModifier
+            .CalculateFingerprint();
 
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
