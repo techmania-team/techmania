@@ -30,9 +30,6 @@ public class PatternBanner : MonoBehaviour
     public Image medalIcon;
     public Sprite allComboIcon;
     public Sprite perfectPlayIcon;
-
-    [Header("Rank")]
-    public TextMeshProUGUI rankText;
    
     private ControlScheme intendedScheme;
     
@@ -83,16 +80,6 @@ public class PatternBanner : MonoBehaviour
                     medalIcon.enabled = false;
                     break;
             }
-        }
-
-        if (rankText != null)
-        {
-            string rank = "";
-            if (r != null)
-            {
-                rank = Score.ScoreToRank(r.score);
-            }
-            rankText.text = rank;
         }
     }
 

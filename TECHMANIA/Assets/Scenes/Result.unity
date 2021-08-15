@@ -2459,9 +2459,19 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 32421489}
     m_Modifications:
+    - target: {fileID: 68960024332521188, guid: 70ac3775d92d28447a90a0911994abd5,
+        type: 3}
+      propertyPath: medalIcon
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3037451667769240144, guid: 70ac3775d92d28447a90a0911994abd5,
         type: 3}
       propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476368606893756722, guid: 70ac3775d92d28447a90a0911994abd5,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6744529770136800070, guid: 70ac3775d92d28447a90a0911994abd5,
@@ -2573,6 +2583,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pattern Banner
+      objectReference: {fileID: 0}
+    - target: {fileID: 8767939467814625351, guid: 70ac3775d92d28447a90a0911994abd5,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -145
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 70ac3775d92d28447a90a0911994abd5, type: 3}
