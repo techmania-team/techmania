@@ -339,6 +339,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField patternAuthor;
     public TMP_Dropdown controlScheme;
     public TMP_InputField patternLevel;
+    public TMP_Dropdown playableLanes;
     public TMP_Dropdown patternBackingTrack;
     public TMP_Dropdown backgroundImage;
     public TMP_Dropdown backgroundVideo;
@@ -394,6 +395,8 @@ public class TrackSetupPanel : MonoBehaviour
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
         controlScheme.RefreshShownValue();
         patternLevel.SetTextWithoutNotify(m.level.ToString());
+        playableLanes.SetValueWithoutNotify(m.playableLanes - 2);
+        playableLanes.RefreshShownValue();
 
         UIUtils.MemoryToDropdown(patternBackingTrack,
             m.backingTrack, audioFilesCache);
@@ -447,6 +450,17 @@ public class TrackSetupPanel : MonoBehaviour
                 madeChange = true;
             }
             m.controlScheme = (ControlScheme)controlScheme.value;
+        }
+
+        // Special handling for playable lanes
+        if (m.playableLanes != playableLanes.value + 2)
+        {
+            if (!madeChange)
+            {
+                EditorContext.PrepareToModifyMetadata();
+                madeChange = true;
+            }
+            m.playableLanes = playableLanes.value + 2;
         }
 
         UIUtils.UpdateMetadataInMemory(ref m.backingTrack,
