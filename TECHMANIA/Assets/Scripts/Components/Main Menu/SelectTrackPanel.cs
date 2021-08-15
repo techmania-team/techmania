@@ -601,8 +601,10 @@ public class SelectTrackPanel : MonoBehaviour
                 }
 
                 // Record as a subfolder.
-                if (folder.Equals(Paths.GetStreamingTrackRootFolder())) {
-                    subfolderList[Paths.GetTrackRootFolder()].Add(subfolder);
+                if (folder.Equals(
+                    Paths.GetStreamingTrackRootFolder())) {
+                    subfolderList[Paths.GetTrackRootFolder()]
+                        .Add(subfolder);
                 } else {
                     subfolderList[folder].Add(subfolder);
                 }
@@ -733,8 +735,11 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
-        if (currentLocation.Equals(Paths.GetStreamingTrackRootFolder())) currentLocation = Paths.GetTrackRootFolder();
+        currentLocation = new DirectoryInfo(currentLocation)
+            .Parent.FullName;
+        if (currentLocation.Equals(
+            Paths.GetStreamingTrackRootFolder()))
+            currentLocation = Paths.GetTrackRootFolder();
 
         selectedCardIndex = -1;
         StartCoroutine(Refresh());

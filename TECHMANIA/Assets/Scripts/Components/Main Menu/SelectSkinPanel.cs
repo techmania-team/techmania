@@ -36,11 +36,34 @@ public class SelectSkinPanel : MonoBehaviour
         int value = 0, index = 0;
         bool foundOption = false;
 
-        AddSkinToDropdown(dropdown, skinFolder, currentSkinName, ref value, ref index, ref foundOption);
+        System.Action<string> addSkinsInFolder = (string skinFolder) =>
+        {
+            foreach (string folder in
+                Directory.EnumerateDirectories(skinFolder))
+            {
+                // folder does not end in directory separator.
+                string skinName = Path.GetFileName(folder);
+                bool exists = dropdown.options.Exists(
+                    o => o.text == skinName);
+                // It's possible for there to be 2 skins of the same
+                // name, one in working directory, one in streaming
+                // folder. In that case, we skip the second one.
+                if (exists) continue;
+                if (skinName == currentSkinName)
+                {
+                    value = index;
+                    foundOption = true;
+                }
+                index++;
+                dropdown.options.Add(new TMP_Dropdown.OptionData(
+                    skinName));
+            }
+        };
 
+        addSkinsInFolder(skinFolder);
         if (Directory.Exists(skinStreamingFolder))
         {
-            AddSkinToDropdown(dropdown, skinStreamingFolder, currentSkinName, ref value, ref index, ref foundOption);
+            addSkinsInFolder(skinStreamingFolder);
         }
 
         if (dropdown.options.Count == 0)
@@ -59,33 +82,16 @@ public class SelectSkinPanel : MonoBehaviour
 
         dropdown.RefreshShownValue();
     }
-    private void AddSkinToDropdown(TMP_Dropdown dropdown,
-        string skinFolder, string currentSkinName, ref int value, ref int index, ref bool foundOption)
-    {
-        foreach (string folder in
-            Directory.EnumerateDirectories(skinFolder))
-        {
-            // folder does not end in directory separator.
-            string skinName = Path.GetFileName(folder);
-            bool exists = dropdown.options.Exists(o => o.text == skinName);
-            if (!exists)
-            {
-                if (skinName == currentSkinName)
-                {
-                    value = index;
-                    foundOption = true;
-                }
-                index++;
-                dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
-            }
-        }
-    }
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
-            Paths.GetNoteSkinRootFolder(), Paths.GetStreamingNoteSkinRootFolder(), Options.instance.noteSkin);
+            Paths.GetNoteSkinRootFolder(), 
+            Paths.GetStreamingNoteSkinRootFolder(), 
+            Options.instance.noteSkin);
         InitializeDropdown(vfxSkinDropdown,
-            Paths.GetVfxSkinRootFolder(), Paths.GetStreamingVfxSkinRootFolder(), Options.instance.vfxSkin);
+            Paths.GetVfxSkinRootFolder(), 
+            Paths.GetStreamingVfxSkinRootFolder(), 
+            Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
             Paths.GetComboSkinRootFolder(),
             Paths.GetStreamingComboSkinRootFolder(), 

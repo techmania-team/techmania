@@ -20,10 +20,26 @@ public static class Paths
     public const string kGameUiFolderName = "Game UI";
 
     #region Important folders
-    public static string workingDirectory { get; private set; }
-    public static string trackRootFolder { get; private set; }
-    public static string skinFolder { get; private set; }
-    public static string dataFolder { get; private set; }
+    // "Streaming" refers to streaming assets. On PC this brings no
+    // benefit, but on mobile, anything in the streaming assets gets
+    // copied to a system location during app installation, so we take
+    // advantage of this to install official tracks and skins without
+    // requiring the user to copy files.
+    //
+    // Both tracks and skins read from 2 locations, the folder in
+    // working directory and the streaming folder. SelectTrackPanel
+    // displays contents of both directories, effectively merging
+    // them into one. Skins are a bit problematic since they load
+    // on startup and we don't store paths in options, so we add
+    // special logic to try both the working directory and
+    // streaming folder.
+
+    private static string workingDirectory;
+    private static string trackRootFolder;
+    private static string streamingTrackRootFolder;
+    private static string skinFolder;
+    private static string streamingSkinFolder;
+    private static string dataFolder;
 
     public static void PrepareFolders()
     {
@@ -45,12 +61,24 @@ public static class Paths
         }
 
         // Track root folder
-        trackRootFolder = Path.Combine(workingDirectory, kTrackFolderName);
+        trackRootFolder = Path.Combine(workingDirectory, 
+            kTrackFolderName);
         Directory.CreateDirectory(trackRootFolder);
+        streamingTrackRootFolder = Path.Combine(
+            Application.streamingAssetsPath, kTrackFolderName);
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        // Application.streamingAssetsPath gives '/' on Windows, which
+        // causes problems when comparing paths.
+        trackRootFolder = trackRootFolder.Replace("/", "\\");
+        streamingTrackRootFolder = streamingTrackRootFolder
+            .Replace("/", "\\");
+#endif
 
         // Skin folder
         skinFolder = Path.Combine(workingDirectory, kSkinFolderName);
         Directory.CreateDirectory(skinFolder);
+        streamingSkinFolder = Path.Combine(
+            Application.streamingAssetsPath, kSkinFolderName);
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
         Directory.CreateDirectory(GetVfxSkinRootFolder());
@@ -75,81 +103,90 @@ public static class Paths
     #region Things in working directory
     public static string GetTrackRootFolder()
     {
-// Normalize Windows platform slash to \
-#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        return trackRootFolder.Replace("/","\\");
-#else
         return trackRootFolder;
-#endif
     }
+
     public static string GetStreamingTrackRootFolder()
     {
-// Normalize Windows platform slash to \
-#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        return Path.Combine(Application.streamingAssetsPath, kTrackFolderName).Replace("/","\\");
-#else
-        return Path.Combine(Application.streamingAssetsPath, kTrackFolderName);
-#endif
+        return streamingTrackRootFolder;
     }
+
     public static string GetSkinFolder()
     {
         return skinFolder;
     }
+
     public static string GetStreamingSkinFolder()
     {
-        return Path.Combine(Application.streamingAssetsPath, kSkinFolderName);
+        return streamingSkinFolder;
     }
+
     public static string GetNoteSkinRootFolder()
     {
         return Path.Combine(GetSkinFolder(), kNoteSkinFolderName);
     }
     public static string GetStreamingNoteSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), kNoteSkinFolderName);
+        return Path.Combine(GetStreamingSkinFolder(), 
+            kNoteSkinFolderName);
     }
     public static string GetNoteSkinFolder(string name)
     {
         string temp = Path.Combine(GetNoteSkinRootFolder(), name);
-        return Directory.Exists(temp) ? temp : Path.Combine(GetStreamingNoteSkinRootFolder(), name);
+        return Directory.Exists(temp) ?
+            temp :
+            Path.Combine(GetStreamingNoteSkinRootFolder(), name);
     }
+
     public static string GetVfxSkinRootFolder()
     {
         return Path.Combine(GetSkinFolder(), kVfxSkinFolderName);
     }
     public static string GetStreamingVfxSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), kVfxSkinFolderName);
+        return Path.Combine(GetStreamingSkinFolder(), 
+            kVfxSkinFolderName);
     }
     public static string GetVfxSkinFolder(string name)
     {
         string temp = Path.Combine(GetVfxSkinRootFolder(), name);
-        return Directory.Exists(temp) ? temp : Path.Combine(GetStreamingVfxSkinRootFolder(), name);
+        return Directory.Exists(temp) ?
+            temp :
+            Path.Combine(GetStreamingVfxSkinRootFolder(), name);
     }
+
     public static string GetComboSkinRootFolder()
     {
         return Path.Combine(GetSkinFolder(), kComboSkinFolderName);
     }
     public static string GetStreamingComboSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), kComboSkinFolderName);
+        return Path.Combine(GetStreamingSkinFolder(), 
+            kComboSkinFolderName);
     }
     public static string GetComboSkinFolder(string name)
     {
         string temp = Path.Combine(GetComboSkinRootFolder(), name);
-        return Directory.Exists(temp) ? temp : Path.Combine(GetStreamingComboSkinRootFolder(), name);
+        return Directory.Exists(temp) ?
+            temp :
+            Path.Combine(GetStreamingComboSkinRootFolder(), name);
     }
+
     public static string GetGameUiSkinRootFolder()
     {
         return Path.Combine(GetSkinFolder(), kGameUiFolderName);
     }
     public static string GetStreamingGameUiSkinRootFolder()
     {
-        return Path.Combine(GetStreamingSkinFolder(), kGameUiFolderName);
+        return Path.Combine(GetStreamingSkinFolder(), 
+            kGameUiFolderName);
     }
     public static string GetGameUiSkinFolder(string name)
     {
         string temp = Path.Combine(GetGameUiSkinRootFolder(), name);
-        return Directory.Exists(temp) ? temp : Path.Combine(GetStreamingGameUiSkinRootFolder(), name);
+        return Directory.Exists(temp) ? 
+            temp :
+            Path.Combine(GetStreamingGameUiSkinRootFolder(), name);
     }
     #endregion
 
