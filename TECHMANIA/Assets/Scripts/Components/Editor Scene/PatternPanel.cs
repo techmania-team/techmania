@@ -166,6 +166,11 @@ public class PatternPanel : MonoBehaviour
     #region MonoBehavior APIs
     private void OnEnable()
     {
+        // Hidden lanes
+        hiddenLaneBackground.anchorMin = Vector2.zero;
+        hiddenLaneBackground.anchorMax = new Vector2(
+            1f, 1f - (float)PlayableLanes / TotalLanes);
+
         // Vertical spacing
         VisibleLanes = int.Parse(
             visibleLanesDropdown.options
