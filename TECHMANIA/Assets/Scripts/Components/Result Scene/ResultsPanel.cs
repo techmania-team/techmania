@@ -84,27 +84,7 @@ public class ResultsPanel : MonoBehaviour
 
         TextMeshProUGUI medalText = performanceMedalText
             .GetComponentInChildren<TextMeshProUGUI>();
-        switch (Game.score.Medal())
-        {
-            case PerformanceMedal.NoMedal:
-                performanceMedalText.SetActive(false);
-                break;
-            case PerformanceMedal.AllCombo:
-                performanceMedalText.SetActive(true);
-                medalText.text = Locale.GetString(
-                    "result_panel_full_combo_medal");
-                break;
-            case PerformanceMedal.PerfectPlay:
-                performanceMedalText.SetActive(true);
-                medalText.text = Locale.GetString(
-                    "result_panel_perfect_play_medal");
-                break;
-            case PerformanceMedal.AbsolutePerfect:
-                performanceMedalText.SetActive(true);
-                medalText.text = Locale.GetString(
-                    "result_panel_absolute_perfect_medal");
-                break;
-        }
+        medalText.text = Record.MedalToString(Game.score.Medal());
 
         // Rank
         string rank;

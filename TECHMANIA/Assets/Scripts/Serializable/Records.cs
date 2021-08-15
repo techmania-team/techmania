@@ -27,6 +27,26 @@ public class Record
     {
         return "---";
     }
+
+    public static string MedalToString(PerformanceMedal medal)
+    {
+        switch (medal)
+        {
+            case PerformanceMedal.NoMedal:
+                return "";
+            case PerformanceMedal.AllCombo:
+                return Locale.GetString(
+                    "result_panel_full_combo_medal");
+            case PerformanceMedal.PerfectPlay:
+                return Locale.GetString(
+                    "result_panel_perfect_play_medal");
+            case PerformanceMedal.AbsolutePerfect:
+                return Locale.GetString(
+                    "result_panel_absolute_perfect_medal");
+            default:
+                return "";
+        }
+    }
 }
 
 [Serializable]
