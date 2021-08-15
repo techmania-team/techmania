@@ -30,23 +30,17 @@ public class SelectSkinPanel : MonoBehaviour
     private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
-        string skinFolder, string currentSkinName)
+        string skinFolder, string skinStreamingFolder, string currentSkinName)
     {
         dropdown.options.Clear();
         int value = 0, index = 0;
         bool foundOption = false;
-        foreach (string folder in
-            Directory.EnumerateDirectories(skinFolder))
+
+        AddSkinToDropdown(dropdown, skinFolder, currentSkinName, ref value, ref index, ref foundOption);
+
+        if (Directory.Exists(skinStreamingFolder))
         {
-            // folder does not end in directory separator.
-            string skinName = Path.GetFileName(folder);
-            if (skinName == currentSkinName)
-            {
-                value = index;
-                foundOption = true;
-            }
-            index++;
-            dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
+            AddSkinToDropdown(dropdown, skinStreamingFolder, currentSkinName, ref value, ref index, ref foundOption);
         }
 
         if (dropdown.options.Count == 0)
@@ -65,18 +59,40 @@ public class SelectSkinPanel : MonoBehaviour
 
         dropdown.RefreshShownValue();
     }
-
+    private void AddSkinToDropdown(TMP_Dropdown dropdown,
+        string skinFolder, string currentSkinName, ref int value, ref int index, ref bool foundOption)
+    {
+        foreach (string folder in
+            Directory.EnumerateDirectories(skinFolder))
+        {
+            // folder does not end in directory separator.
+            string skinName = Path.GetFileName(folder);
+            bool exists = dropdown.options.Exists(o => o.text == skinName);
+            if (!exists)
+            {
+                if (skinName == currentSkinName)
+                {
+                    value = index;
+                    foundOption = true;
+                }
+                index++;
+                dropdown.options.Add(new TMP_Dropdown.OptionData(skinName));
+            }
+        }
+    }
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
-            Paths.GetNoteSkinRootFolder(), Options.instance.noteSkin);
+            Paths.GetNoteSkinRootFolder(), Paths.GetStreamingNoteSkinRootFolder(), Options.instance.noteSkin);
         InitializeDropdown(vfxSkinDropdown,
-            Paths.GetVfxSkinRootFolder(), Options.instance.vfxSkin);
+            Paths.GetVfxSkinRootFolder(), Paths.GetStreamingVfxSkinRootFolder(), Options.instance.vfxSkin);
         InitializeDropdown(comboSkinDropdown,
-            Paths.GetComboSkinRootFolder(), 
+            Paths.GetComboSkinRootFolder(),
+            Paths.GetStreamingComboSkinRootFolder(), 
             Options.instance.comboSkin);
         InitializeDropdown(gameUiSkinDropdown,
             Paths.GetGameUiSkinRootFolder(),
+            Paths.GetStreamingGameUiSkinRootFolder(),
             Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
