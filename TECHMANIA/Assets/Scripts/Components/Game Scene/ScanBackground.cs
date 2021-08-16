@@ -50,28 +50,43 @@ public class ScanBackground : MonoBehaviour
     {
         // Lanes
         float laneHeightRelative =
-            (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
-        lanes[3].anchorMin = new Vector2(
-            0f, 0f);
-        lanes[3].anchorMax = new Vector2(
-            1f, 0.5f - laneHeightRelative);
-        lanes[2].anchorMin = new Vector2(
-            0f, 0.5f - laneHeightRelative);
-        lanes[2].anchorMax = new Vector2(
-            1f, 0.5f);
-        lanes[1].anchorMin = new Vector2(
-            0f, 0.5f);
-        lanes[1].anchorMax = new Vector2(
-            1f, 0.5f + laneHeightRelative);
-        lanes[0].anchorMin = new Vector2(
-            0f, 0.5f + laneHeightRelative);
-        lanes[0].anchorMax = new Vector2(
-            1f, 1f);
+            (1f - Ruleset.instance.scanMargin * 2f) /
+            Game.playableLanes;
+        List<float> anchors = new List<float>();
+        anchors.Add(1f);
+        switch (Game.playableLanes)
+        {
+            case 4:
+                anchors.Add(0.5f + laneHeightRelative);
+                anchors.Add(0.5f);
+                anchors.Add(0.5f - laneHeightRelative);
+                break;
+            case 3:
+                anchors.Add(1f - Ruleset.instance.scanMargin -
+                    laneHeightRelative);
+                anchors.Add(Ruleset.instance.scanMargin +
+                    laneHeightRelative);
+                break;
+            case 2:
+                anchors.Add(0.5f);
+                break;
+        }
+        anchors.Add(0f);
+        for (int i = 0; i < Game.playableLanes; i++)
+        {
+            lanes[i].anchorMin = new Vector2(0f, anchors[i + 1]);
+            lanes[i].anchorMax = new Vector2(1f, anchors[i]);
+        }
 
         // Lane dividers
-        foreach (GameObject o in laneDividers)
+        for (int i = 0; i < laneDividers.Count; i++)
         {
-            o.SetActive(Options.instance.showLaneDividers);
+            if (!Options.instance.showLaneDividers)
+            {
+                laneDividers[i].SetActive(false);
+                continue;
+            }
+            laneDividers[i].SetActive(i + 1 < Game.playableLanes);
         }
 
         // Beat markers
@@ -126,7 +141,7 @@ public class ScanBackground : MonoBehaviour
         {
             case ControlScheme.Touch: return;
             case ControlScheme.Keys:
-                for (int i = 0; i < lanes.Count; i++)
+                for (int i = 0; i < Game.playableLanes; i++)
                 {
                     foreach (KeyCode c in Game.keysForLane[i])
                     {
@@ -154,7 +169,7 @@ public class ScanBackground : MonoBehaviour
                 }
                 break;
             case ControlScheme.KM:
-                for (int i = 0; i < lanes.Count; i++)
+                for (int i = 0; i < Game.playableLanes; i++)
                 {
                     foreach (KeyCode c in Game.keysForLane[i])
                     {

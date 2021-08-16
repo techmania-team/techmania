@@ -52,7 +52,8 @@ public class Scan : MonoBehaviour
         screenWidth = rect.width;
         scanHeight = rect.height;
         laneHeight = scanHeight 
-            * (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
+            * (1f - Ruleset.instance.scanMargin * 2f) /
+            Game.playableLanes;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();

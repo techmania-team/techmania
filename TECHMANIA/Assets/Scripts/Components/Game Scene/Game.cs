@@ -143,7 +143,7 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
-    private int playableLanes => 
+    public static int playableLanes => 
         GameSetup.pattern.patternMetadata.playableLanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
@@ -209,6 +209,7 @@ public class Game : MonoBehaviour
     #endregion
 
     #region Editor Preview
+    [HideInInspector]
     public Options optionsBackup;
     #endregion
 
@@ -763,44 +764,50 @@ public class Game : MonoBehaviour
     private void InitializeKeysForLane()
     {
         keysForLane = new List<List<KeyCode>>();
-        keysForLane.Add(new List<KeyCode>()
+        if (playableLanes >= 4)
         {
-            KeyCode.BackQuote,
-            KeyCode.Alpha0,
-            KeyCode.Alpha1,
-            KeyCode.Alpha2,
-            KeyCode.Alpha3,
-            KeyCode.Alpha4,
-            KeyCode.Alpha5,
-            KeyCode.Alpha6,
-            KeyCode.Alpha7,
-            KeyCode.Alpha8,
-            KeyCode.Alpha9,
-            KeyCode.Minus,
-            KeyCode.Equals,
-            KeyCode.KeypadDivide,
-            KeyCode.KeypadMultiply,
-            KeyCode.KeypadMinus
-        });
-        keysForLane.Add(new List<KeyCode>()
+            keysForLane.Add(new List<KeyCode>()
+            {
+                KeyCode.BackQuote,
+                KeyCode.Alpha0,
+                KeyCode.Alpha1,
+                KeyCode.Alpha2,
+                KeyCode.Alpha3,
+                KeyCode.Alpha4,
+                KeyCode.Alpha5,
+                KeyCode.Alpha6,
+                KeyCode.Alpha7,
+                KeyCode.Alpha8,
+                KeyCode.Alpha9,
+                KeyCode.Minus,
+                KeyCode.Equals,
+                KeyCode.KeypadDivide,
+                KeyCode.KeypadMultiply,
+                KeyCode.KeypadMinus
+            });
+        }
+        if (playableLanes >= 3)
         {
-            KeyCode.Q,
-            KeyCode.W,
-            KeyCode.E,
-            KeyCode.R,
-            KeyCode.T,
-            KeyCode.Y,
-            KeyCode.U,
-            KeyCode.I,
-            KeyCode.O,
-            KeyCode.P,
-            KeyCode.LeftBracket,
-            KeyCode.RightBracket,
-            KeyCode.Backslash,
-            KeyCode.Keypad7,
-            KeyCode.Keypad8,
-            KeyCode.Keypad9
-        });
+            keysForLane.Add(new List<KeyCode>()
+            {
+                KeyCode.Q,
+                KeyCode.W,
+                KeyCode.E,
+                KeyCode.R,
+                KeyCode.T,
+                KeyCode.Y,
+                KeyCode.U,
+                KeyCode.I,
+                KeyCode.O,
+                KeyCode.P,
+                KeyCode.LeftBracket,
+                KeyCode.RightBracket,
+                KeyCode.Backslash,
+                KeyCode.Keypad7,
+                KeyCode.Keypad8,
+                KeyCode.Keypad9
+            });
+        }
         keysForLane.Add(new List<KeyCode>()
         {
             KeyCode.A,
