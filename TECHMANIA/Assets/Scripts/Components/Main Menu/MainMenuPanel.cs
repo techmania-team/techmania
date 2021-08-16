@@ -15,6 +15,10 @@ public class MainMenuPanel : MonoBehaviour
     // text again.
     public static bool returnToLoadingText;
 
+    // When a mobile user clicks confirm on the "editor on mobile"
+    // warning, don't show it again in the same session.
+    public static bool seenEditorOnMobileWarning;
+
     public GameObject selectTrackPanel;
     public GameObject welcomeMat;
     public TextMeshProUGUI loadingText;
@@ -22,11 +26,13 @@ public class MainMenuPanel : MonoBehaviour
     public GameObject menuButtons;
     public GameObject firstMenuButton;
     public MessageDialog messageDialog;
+    public ConfirmDialog confirmDialog;
 
     static MainMenuPanel()
     {
         skipToTrackSelect = false;
         returnToLoadingText = false;
+        seenEditorOnMobileWarning = false;
     }
 
     private void Start()
@@ -107,9 +113,31 @@ public class MainMenuPanel : MonoBehaviour
         }
     }
 
-    public void OnEditorButtonClick()
+    private void GoToEditor()
     {
         Curtain.DrawCurtainThenGoToScene("Editor");
+    }
+
+    public void OnEditorButtonClick()
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        if (seenEditorOnMobileWarning)
+        {
+            GoToEditor();
+            return;
+        }
+        confirmDialog.Show(Locale.GetString(
+            "main_menu_editor_on_mobile_confirmation"),
+            Locale.GetString("main_menu_editor_on_mobile_confirm"),
+            Locale.GetString("main_menu_editor_on_mobile_cancel"),
+            () =>
+            {
+                seenEditorOnMobileWarning = true;
+                GoToEditor();
+            });
+#else
+        GoToEditor();
+#endif
     }
 
     public void OnQuitButtonClick()
