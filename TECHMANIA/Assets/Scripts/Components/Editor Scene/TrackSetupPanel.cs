@@ -332,9 +332,11 @@ public class TrackSetupPanel : MonoBehaviour
     #region Patterns tab
     [Header("Patterns tab")]
     public PatternRadioList patternList;
+    public Toggle autoPatternOrder;
     public GameObject patternMetadata;
     public GameObject patternButtons;
     public GameObject noPatternSelectedNotice;
+    public List<GameObject> orderControls;
     public TMP_InputField patternName;
     public TMP_InputField patternAuthor;
     public TMP_Dropdown controlScheme;
@@ -532,6 +534,16 @@ public class TrackSetupPanel : MonoBehaviour
         EditorContext.patternIndex = index;
 
         transitionToPatternPanel.Invoke();
+    }
+
+    public void OnMovePatternUpButtonClick()
+    {
+
+    }
+
+    public void OnMovePatternDownButtonClick()
+    {
+
     }
     #endregion
 }

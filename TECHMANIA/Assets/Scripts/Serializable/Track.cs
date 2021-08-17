@@ -123,10 +123,12 @@ public partial class Track : TrackBase
     public Track(string title, string artist)
     {
         version = kVersion;
-        trackMetadata = new TrackMetadata();
-        trackMetadata.guid = Guid.NewGuid().ToString();
-        trackMetadata.title = title;
-        trackMetadata.artist = artist;
+        trackMetadata = new TrackMetadata()
+        {
+            guid = Guid.NewGuid().ToString(),
+            title = title,
+            artist = artist
+        };
         patterns = new List<Pattern>();
     }
 
@@ -204,6 +206,15 @@ public class TrackMetadata
     // In seconds.
     public double previewStartTime;
     public double previewEndTime;
+
+    // Patterns.
+
+    public bool autoOrderPatterns;
+
+    public TrackMetadata()
+    {
+        autoOrderPatterns = true;
+    }
 }
 
 [Serializable]
