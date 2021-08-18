@@ -41,8 +41,7 @@ public class RadarDialog : MonoBehaviour
 
         suggestedLevel.text = "(" +
             radar.suggestedLevel.ToString("F2") + ")";
-        suggestedLevelRounded.text = radar.suggestedLevelRounded
-            .ToString();
+        suggestedLevelRounded.text = $"{radar.suggestedLevelRounded - 1} - {radar.suggestedLevelRounded + 1}";
 
         GetComponent<Dialog>().FadeIn();
     }
