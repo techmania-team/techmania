@@ -16,10 +16,13 @@ public class PatternTimingTab : MonoBehaviour
 
     private void OnEnable()
     {
+        SetTextFieldInteractable(true);
         MemoryToUI();
 
         EditorContext.UndoInvoked += OnUndoRedo;
         EditorContext.RedoInvoked += OnUndoRedo;
+        PatternPanel.PlaybackStarted += OnPlaybackStarted;
+        PatternPanel.PlaybackStopped += OnPlaybackStopped;
     }
 
     private void OnDisable()
@@ -28,6 +31,8 @@ public class PatternTimingTab : MonoBehaviour
 
         EditorContext.UndoInvoked -= OnUndoRedo;
         EditorContext.RedoInvoked -= OnUndoRedo;
+        PatternPanel.PlaybackStarted -= OnPlaybackStarted;
+        PatternPanel.PlaybackStopped -= OnPlaybackStopped;
     }
 
     private void OnUndoRedo(EditTransaction transaction)
@@ -87,5 +92,22 @@ public class PatternTimingTab : MonoBehaviour
         {
             TimingUpdated?.Invoke();
         }
+    }
+
+    private void OnPlaybackStarted()
+    {
+        SetTextFieldInteractable(false);
+    }
+
+    private void OnPlaybackStopped()
+    {
+        SetTextFieldInteractable(true);
+    }
+
+    private void SetTextFieldInteractable(bool interactable)
+    {
+        firstBeatOffset.interactable = interactable;
+        initialBpm.interactable = interactable;
+        bps.interactable = interactable;
     }
 }

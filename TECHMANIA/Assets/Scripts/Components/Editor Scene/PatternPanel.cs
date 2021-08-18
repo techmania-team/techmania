@@ -161,6 +161,8 @@ public class PatternPanel : MonoBehaviour
     public static event UnityAction<HashSet<Note>> 
         SelectionChanged;
     public static event UnityAction KeysoundVisibilityChanged;
+    public static event UnityAction PlaybackStarted;
+    public static event UnityAction PlaybackStopped;
     #endregion
 
     #region MonoBehavior APIs
@@ -3515,6 +3517,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Playback
     // During playback, the following features are disabled:
+    // - All timing options
     // - Adding or deleting notes, including by clicking, dragging
     //   and cut/copy/paste
     // - Applying note types and/or keysounds to selection, if
@@ -3612,6 +3615,8 @@ public class PatternPanel : MonoBehaviour
         systemTimeOnPlaybackStart = DateTime.Now;
         playbackBeatOnPreviousFrame = -1f;
         backingTrackPlaying = false;
+
+        PlaybackStarted?.Invoke();
     }
 
     public void StopPlayback()
@@ -3631,6 +3636,8 @@ public class PatternPanel : MonoBehaviour
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
+
+        PlaybackStopped?.Invoke();
     }
 
     public void UpdatePlayback()
