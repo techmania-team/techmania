@@ -332,7 +332,7 @@ public class TrackSetupPanel : MonoBehaviour
     #region Patterns tab
     [Header("Patterns tab")]
     public PatternRadioList patternList;
-    public Toggle autoPatternOrder;
+    public Toggle autoOrderPatterns;
     public GameObject patternMetadata;
     public GameObject patternButtons;
     public GameObject noPatternSelectedNotice;
@@ -371,11 +371,20 @@ public class TrackSetupPanel : MonoBehaviour
     private void RefreshPatternList()
     {
         patternList.InitializeAndReturnFirstPatternObject(
-            EditorContext.track, records: null, selectedPattern);
+            EditorContext.track, records: null,
+            initialSelectedPattern: selectedPattern);
+        autoOrderPatterns.SetIsOnWithoutNotify(
+            EditorContext.track.trackMetadata.autoOrderPatterns);
     }
 
     private void RefreshPatternMetadata()
     {
+        foreach (GameObject o in orderControls)
+        {
+            o.SetActive(
+                !EditorContext.track.trackMetadata.autoOrderPatterns);
+        }
+
         patternMetadata.SetActive(selectedPattern != null);
         patternButtons.SetActive(selectedPattern != null);
         noPatternSelectedNotice.SetActive(selectedPattern == null);
@@ -426,6 +435,19 @@ public class TrackSetupPanel : MonoBehaviour
     private void SelectedPatternChanged(Pattern newSelection)
     {
         selectedPattern = newSelection;
+        RefreshPatternMetadata();
+    }
+
+    public void OnAutoOrderPatternChanged()
+    {
+        EditorContext.PrepareToModifyMetadata();
+        EditorContext.track.trackMetadata.autoOrderPatterns =
+            !EditorContext.track.trackMetadata.autoOrderPatterns;
+        if (EditorContext.track.trackMetadata.autoOrderPatterns)
+        {
+            EditorContext.track.SortPatterns();
+        }
+        RefreshPatternList();
         RefreshPatternMetadata();
     }
 
@@ -501,9 +523,13 @@ public class TrackSetupPanel : MonoBehaviour
     {
         EditorContext.PrepareToModifyMetadata();
         EditorContext.track.patterns.Add(new Pattern());
-        EditorContext.track.SortPatterns();
+        if (EditorContext.track.trackMetadata.autoOrderPatterns)
+        {
+            EditorContext.track.SortPatterns();
+        }
 
         RefreshPatternList();
+        RefreshPatternMetadata();
     }
 
     public void OnDeletePatternButtonClick()
@@ -520,10 +546,15 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDuplicatePatternButtonClick()
     {
         EditorContext.PrepareToModifyMetadata();
-        EditorContext.track.patterns.Add(selectedPattern.CloneWithDifferentGuid());
-        EditorContext.track.SortPatterns();
+        EditorContext.track.patterns.Add(
+            selectedPattern.CloneWithDifferentGuid());
+        if (EditorContext.track.trackMetadata.autoOrderPatterns)
+        {
+            EditorContext.track.SortPatterns();
+        }
 
         RefreshPatternList();
+        RefreshPatternMetadata();
     }
 
     public void OnOpenPatternButtonClick()
@@ -536,14 +567,40 @@ public class TrackSetupPanel : MonoBehaviour
         transitionToPatternPanel.Invoke();
     }
 
+    private void MoveSelectedPattern(int oldIndex, int newIndex)
+    {
+        EditorContext.track.patterns.RemoveAt(oldIndex);
+        EditorContext.track.patterns.Insert(newIndex, selectedPattern);
+        RefreshPatternList();
+        RefreshPatternMetadata();
+    }
+
     public void OnMovePatternUpButtonClick()
     {
+        EditorContext.PrepareToModifyMetadata();
+        int index = EditorContext.track.FindPatternIndexByGuid(
+            selectedPattern.patternMetadata.guid);
+        int newIndex = index - 1;
+        if (newIndex < 0)
+        {
+            newIndex = EditorContext.track.patterns.Count - 1;
+        }
 
+        MoveSelectedPattern(index, newIndex);
     }
 
     public void OnMovePatternDownButtonClick()
     {
+        EditorContext.PrepareToModifyMetadata();
+        int index = EditorContext.track.FindPatternIndexByGuid(
+            selectedPattern.patternMetadata.guid);
+        int newIndex = index + 1;
+        if (newIndex >= EditorContext.track.patterns.Count)
+        {
+            newIndex = 0;
+        }
 
+        MoveSelectedPattern(index, newIndex);
     }
     #endregion
 }
