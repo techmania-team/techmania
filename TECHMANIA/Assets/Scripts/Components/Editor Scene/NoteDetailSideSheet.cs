@@ -12,7 +12,6 @@ public class NoteDetailSideSheet : MonoBehaviour
     public TextMeshProUGUI volumeDisplay;
     public Slider panSlider;
     public TextMeshProUGUI panDisplay;
-    public Button previewButton;
     public GameObject endOfScanOptions;
     public Toggle endOfScanToggle;
     public GameObject bSplineOptions;
@@ -60,7 +59,6 @@ public class NoteDetailSideSheet : MonoBehaviour
             panSlider.SetValueWithoutNotify(notes[0].panPercent);
         }
         RefreshVolumeAndPanDisplay();
-        previewButton.interactable = !multiple;
 
         bool allNotesOnScanDividers = true;
         bool allNotesAreDragNotes = true;
@@ -174,11 +172,6 @@ public class NoteDetailSideSheet : MonoBehaviour
         EditorContext.EndTransaction();
 
         RefreshVolumeAndPanDisplay();
-    }
-
-    public void OnPreviewButtonClick()
-    {
-        patternPanel.PlayKeysound(notes[0]);
     }
 
     public void OnEndOfScanToggleValueChanged(bool newValue)

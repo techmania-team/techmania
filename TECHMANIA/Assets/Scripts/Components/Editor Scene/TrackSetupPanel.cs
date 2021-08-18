@@ -361,6 +361,8 @@ public class TrackSetupPanel : MonoBehaviour
     {
         if (selectedPattern != null)
         {
+            // This ensures selectedPattern still points to a pattern
+            // in EditorContext.track even after undo and redo.
             selectedPattern = EditorContext.track.FindPatternByGuid(
                 selectedPattern.patternMetadata.guid);
         }
