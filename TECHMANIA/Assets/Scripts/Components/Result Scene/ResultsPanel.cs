@@ -120,6 +120,10 @@ public class ResultsPanel : MonoBehaviour
         {
             newRecord = false;
         }
+        if (Game.score.stageFailed)
+        {
+            newRecord = false;
+        }
 
         newRecordMedalText.SetActive(newRecord);
         if (newRecord)
