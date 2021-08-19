@@ -67,6 +67,49 @@ public class Ruleset : RulesetBase
     public Ruleset()
     {
         version = kVersion;
+
+        // The constructor constructs the standard ruleset, so
+        // custom ruleset can selectively override fields.
+        timeWindows = new List<float>()
+            { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f };
+        timeWindowsInPulses = false;
+        longNoteGracePeriod = 0.15f;
+
+        scanMargin = 0.05f;
+        hitboxWidth = 1.5f;
+        chainHeadHitboxWidth = 1.5f;
+        chainNodeHitboxWidth = 3f;
+        ongoingDragHitboxWidth = 2f;
+        ongoingDragHitboxHeight = 2f;
+
+        maxHp = 1000;
+        hpDeltaBasic = new List<int>()
+            { 3, 3, 3, 3, -50, -50 };
+        hpDeltaChain = new List<int>()
+            { 3, 3, 3, 3, -50, -50 };
+        hpDeltaHold = new List<int>()
+            { 3, 3, 3, 3, -50, -50 };
+        hpDeltaDrag = new List<int>()
+            { 3, 3, 3, 3, -50, -50 };
+        hpDeltaRepeat = new List<int>()
+            { 3, 3, 3, 3, -50, -50 };
+        hpDeltaBasicDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 };
+        hpDeltaChainDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 };
+        hpDeltaHoldDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 };
+        hpDeltaDragDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 };
+        hpDeltaRepeatDuringFever = new List<int>()
+            { 5, 5, 5, 5, -50, -50 };
+
+        comboBonus = false;
+
+        constantFeverCoefficient = false;
+        feverBonusOnMax = 1;
+        feverBonusOnCool = 1;
+        feverBonusOnGood = 0;
     }
 
     #region Accessors
@@ -188,49 +231,7 @@ public class Ruleset : RulesetBase
 
     static Ruleset()
     {
-        standard = new Ruleset()
-        {
-            timeWindows = new List<float>()
-            { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
-            timeWindowsInPulses = false,
-            longNoteGracePeriod = 0.15f,
-
-            scanMargin = 0.05f,
-            hitboxWidth = 1.5f,
-            chainHeadHitboxWidth = 1.5f,
-            chainNodeHitboxWidth = 3f,
-            ongoingDragHitboxWidth = 2f,
-            ongoingDragHitboxHeight = 2f,
-
-            maxHp = 1000,
-            hpDeltaBasic = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
-            hpDeltaChain = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
-            hpDeltaHold = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
-            hpDeltaDrag = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
-            hpDeltaRepeat = new List<int>()
-            { 3, 3, 3, 3, -50, -50 },
-            hpDeltaBasicDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
-            hpDeltaChainDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
-            hpDeltaHoldDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
-            hpDeltaDragDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
-            hpDeltaRepeatDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 },
-
-            comboBonus = false,
-
-            constantFeverCoefficient = false,
-            feverBonusOnMax = 1,
-            feverBonusOnCool = 1,
-            feverBonusOnGood = 0
-        };
+        standard = new Ruleset();
         legacy = new Ruleset()
         {
             timeWindows = new List<float>()
@@ -303,7 +304,7 @@ public class Ruleset : RulesetBase
 [Serializable]
 public class RulesetV1 : RulesetBase
 {
-    public const string kVersion = "2";
+    public const string kVersion = "1";
 
     // Timing window
     public float rainbowMaxWindow;
