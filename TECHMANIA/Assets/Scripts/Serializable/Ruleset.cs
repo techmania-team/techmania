@@ -34,6 +34,7 @@ public class Ruleset : RulesetBase
 
     public float scanMargin;
     public float hitboxWidth;
+    public float hitboxHeight;
     public float chainHeadHitboxWidth;
     public float chainNodeHitboxWidth;
     public float ongoingDragHitboxWidth;
@@ -77,6 +78,7 @@ public class Ruleset : RulesetBase
 
         scanMargin = 0.05f;
         hitboxWidth = 1.5f;
+        hitboxHeight = 1f;
         chainHeadHitboxWidth = 1.5f;
         chainNodeHitboxWidth = 3f;
         ongoingDragHitboxWidth = 2f;
@@ -240,7 +242,8 @@ public class Ruleset : RulesetBase
             longNoteGracePeriod = 0.15f,
 
             scanMargin = 0.05f,
-            hitboxWidth = 1.5f,
+            hitboxWidth = 1.25f,
+            hitboxHeight = 1.1f,
             chainHeadHitboxWidth = 100f,
             chainNodeHitboxWidth = 100f,
             ongoingDragHitboxWidth = 2f,
