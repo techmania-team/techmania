@@ -239,15 +239,44 @@ public partial class Pattern
         foreach (Note n in notes)
         {
             n.time = PulseToTime(n.pulse);
+            float bpm = GetBPMAt(n.pulse);
+            float secondsPerPulse =
+                // seconds per minute *
+                // minutes per beat *
+                // beats per pulse
+                60f / bpm / pulsesPerBeat;
+
             if (n is HoldNote)
             {
                 HoldNote h = n as HoldNote;
                 h.endTime = PulseToTime(h.pulse + h.duration);
+                if (Ruleset.instance.longNoteGracePeriodInPulses)
+                {
+                    h.gracePeriodStartTime = h.endTime -
+                        Ruleset.instance.longNoteGracePeriod *
+                        secondsPerPulse;
+                }
+                else
+                {
+                    h.gracePeriodStartTime = h.endTime -
+                        Ruleset.instance.longNoteGracePeriod;
+                }
             }
             if (n is DragNote)
             {
                 DragNote d = n as DragNote;
                 d.endTime = PulseToTime(d.pulse + d.Duration());
+                if (Ruleset.instance.longNoteGracePeriodInPulses)
+                {
+                    d.gracePeriodStartTime = d.endTime -
+                        Ruleset.instance.longNoteGracePeriod *
+                        secondsPerPulse;
+                }
+                else
+                {
+                    d.gracePeriodStartTime = d.endTime -
+                        Ruleset.instance.longNoteGracePeriod;
+                }
             }
 
             // Calculate time window according to current ruleset.
@@ -255,12 +284,6 @@ public partial class Pattern
             n.timeWindow = new Dictionary<Judgement, float>();
             if (Ruleset.instance.timeWindowsInPulses)
             {
-                float bpm = GetBPMAt(n.pulse);
-                float secondsPerPulse =
-                    // seconds per minute *
-                    // minutes per beat *
-                    // beats per pulse
-                    60f / bpm / pulsesPerBeat;
                 n.timeWindow.Add(Judgement.RainbowMax,
                     secondsPerPulse * timeWindows[0]);
                 n.timeWindow.Add(Judgement.Max,

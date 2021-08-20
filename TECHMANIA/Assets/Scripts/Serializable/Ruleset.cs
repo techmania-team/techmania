@@ -27,8 +27,8 @@ public class Ruleset : RulesetBase
     // True: time windows are in pulses.
     // False: time windows are in seconds.
     public bool timeWindowsInPulses;
-    // TODO: should this be affected by timeWindowInPulses too?
     public float longNoteGracePeriod;
+    public bool longNoteGracePeriodInPulses;
 
     // Hitbox sizes
 
@@ -75,6 +75,7 @@ public class Ruleset : RulesetBase
             { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f };
         timeWindowsInPulses = false;
         longNoteGracePeriod = 0.15f;
+        longNoteGracePeriodInPulses = false;
 
         scanMargin = 0.05f;
         hitboxWidth = 1.5f;
@@ -240,6 +241,7 @@ public class Ruleset : RulesetBase
             { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
             timeWindowsInPulses = true,
             longNoteGracePeriod = 0.15f,
+            longNoteGracePeriodInPulses = false,
 
             scanMargin = 0.05f,
             hitboxWidth = 1.25f,
