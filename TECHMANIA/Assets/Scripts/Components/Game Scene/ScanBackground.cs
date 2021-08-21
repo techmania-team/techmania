@@ -9,10 +9,8 @@ public class ScanBackground : MonoBehaviour
     public GameObject halfBeatMarkerTemplate;
     public List<RectTransform> lanes;
     public List<GameObject> laneDividers;
-    public KeystrokeFeedback kmKeystrokeFeedback;
 
     private List<int> numKeysHeldOnLane;
-    private int totalKeysHeld;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +22,6 @@ public class ScanBackground : MonoBehaviour
 
         numKeysHeldOnLane = new List<int>();
         foreach (var l in lanes) numKeysHeldOnLane.Add(0);
-        totalKeysHeld = 0;
     }
 
     private void SpawnMarker(GameObject template,
@@ -118,80 +115,28 @@ public class ScanBackground : MonoBehaviour
                 }
                 break;
         }
-
-        // Keystroke feedback
-        if (scanDirection == Scan.Direction.Left)
-        {
-            kmKeystrokeFeedback.GetComponent<RectTransform>()
-                .localScale = new Vector3(-1f, 1f, 1f);
-            foreach (RectTransform l in lanes)
-            {
-                l.localScale = new Vector3(-1f, 1f, 1f);
-            }
-        }
     }
 
     private void Update()
     {
         ControlScheme scheme = GameSetup.pattern.patternMetadata
             .controlScheme;
+        if (scheme != ControlScheme.Keys) return;
         if (Game.keysForLane == null) return;
 
-        switch (scheme)
+        for (int i = 0; i < Game.playableLanes; i++)
         {
-            case ControlScheme.Touch: return;
-            case ControlScheme.Keys:
-                for (int i = 0; i < Game.playableLanes; i++)
+            foreach (KeyCode c in Game.keysForLane[i])
+            {
+                if (Input.GetKeyDown(c))
                 {
-                    foreach (KeyCode c in Game.keysForLane[i])
-                    {
-                        if (Input.GetKeyDown(c))
-                        {
-                            numKeysHeldOnLane[i]++;
-                            if (numKeysHeldOnLane[i] == 1)
-                            {
-                                lanes[i]
-                                    .GetComponent<KeystrokeFeedback>()
-                                    .Play();
-                            }
-                        }
-                        if (Input.GetKeyUp(c))
-                        {
-                            numKeysHeldOnLane[i]--;
-                            if (numKeysHeldOnLane[i] <= 0)
-                            {
-                                lanes[i]
-                                    .GetComponent<KeystrokeFeedback>()
-                                    .Stop();
-                            }
-                        }
-                    }
+                    numKeysHeldOnLane[i]++;
                 }
-                break;
-            case ControlScheme.KM:
-                for (int i = 0; i < Game.playableLanes; i++)
+                if (Input.GetKeyUp(c))
                 {
-                    foreach (KeyCode c in Game.keysForLane[i])
-                    {
-                        if (Input.GetKeyDown(c))
-                        {
-                            totalKeysHeld++;
-                            if (totalKeysHeld == 1)
-                            {
-                                kmKeystrokeFeedback.Play();
-                            }
-                        }
-                        if (Input.GetKeyUp(c))
-                        {
-                            totalKeysHeld--;
-                            if (totalKeysHeld <= 0)
-                            {
-                                kmKeystrokeFeedback.Stop();
-                            }
-                        }
-                    }
+                    numKeysHeldOnLane[i]--;
                 }
-                break;
+            }
         }
     }
 }

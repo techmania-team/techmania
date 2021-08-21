@@ -360,8 +360,6 @@ public class GameUISkin : GameUISkinBase
     // Uses speed and additiveShader.
     public SpriteSheet touchClickFeedback;
     public float touchClickFeedbackSize;  // In pixels
-    // Scaled to fill the entire lane. Uses speed and additiveShader.
-    public SpriteSheet keystrokeFeedback;
 
     // Uses scale.
     public SpriteSheet approachOverlay;
