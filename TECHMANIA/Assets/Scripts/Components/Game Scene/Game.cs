@@ -2365,12 +2365,6 @@ public class Game : MonoBehaviour
         n.GetComponent<NoteAppearance>().Resolve();
         // Call this after updating combo to show the correct
         // combo on judgement text.
-        Judgement judgementOnComboText = judgement;
-        if (judgement == Judgement.Cool &&
-            feverState == FeverState.Active)
-        {
-            judgementOnComboText = Judgement.Max;
-        }
         comboText.Show(n, judgement);
     }
 
