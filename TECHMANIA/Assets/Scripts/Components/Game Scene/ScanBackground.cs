@@ -10,8 +10,6 @@ public class ScanBackground : MonoBehaviour
     public List<RectTransform> lanes;
     public List<GameObject> laneDividers;
 
-    private List<int> numKeysHeldOnLane;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -19,9 +17,6 @@ public class ScanBackground : MonoBehaviour
         {
             o.SetActive(false);
         }
-
-        numKeysHeldOnLane = new List<int>();
-        foreach (var l in lanes) numKeysHeldOnLane.Add(0);
     }
 
     private void SpawnMarker(GameObject template,
@@ -123,20 +118,13 @@ public class ScanBackground : MonoBehaviour
             .controlScheme;
         if (scheme != ControlScheme.Keys) return;
         if (Game.keysForLane == null) return;
+    }
 
-        for (int i = 0; i < Game.playableLanes; i++)
-        {
-            foreach (KeyCode c in Game.keysForLane[i])
-            {
-                if (Input.GetKeyDown(c))
-                {
-                    numKeysHeldOnLane[i]++;
-                }
-                if (Input.GetKeyUp(c))
-                {
-                    numKeysHeldOnLane[i]--;
-                }
-            }
-        }
+    public float GetMiddleYOfLaneInWorldSpace(int lane)
+    {
+        Vector3[] corners = new Vector3[4];
+        lanes[lane].GetWorldCorners(corners);
+        return (corners[0].y + corners[1].y +
+            corners[2].y + corners[3].y) * 0.25f;
     }
 }

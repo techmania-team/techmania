@@ -584,12 +584,7 @@ public class Game : MonoBehaviour
             Modifiers.instance.GetBottomScanDirection();
         for (int i = firstScan; i <= lastScan; i++)
         {
-            bool isBottomScan = i % 2 == 0;
-            if (Modifiers.instance.scanPosition == 
-                Modifiers.ScanPosition.Swap)
-            {
-                isBottomScan = !isBottomScan;
-            }
+            bool isBottomScan = Modifiers.instance.IsBottomScan(i);
             Transform parent = isBottomScan ?
                 bottomScanContainer : topScanContainer;
             GameObject template = isBottomScan ?
@@ -1129,6 +1124,24 @@ public class Game : MonoBehaviour
             bgaCover.color.g,
             bgaCover.color.b,
             0f);
+    }
+
+    public Vector2 GetScreenPositionOnCurrentScanline(int lane)
+    {
+        if (!scanObjects.ContainsKey(Scan))
+        {
+            return new Vector2(-100f, -100f);
+        }
+        Scan s = scanObjects[Scan];
+        float x = s.GetComponentInChildren<Scanline>()
+            .transform.position.x;
+        ScanBackground scanBackground =
+            Modifiers.instance.IsBottomScan(Scan) ?
+            bottomScanBackground : topScanBackground;
+        float y = scanBackground.GetMiddleYOfLaneInWorldSpace(lane);
+        Vector3 worldPosition = new Vector3(x, y, 0f);
+        return RectTransformUtility.WorldToScreenPoint(null,
+            worldPosition);
     }
     #endregion
 

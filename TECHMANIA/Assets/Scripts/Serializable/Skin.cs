@@ -373,7 +373,6 @@ public class GameUISkin : GameUISkinBase
         list.Add(scanCountdownBackground);
         list.Add(scanCountdownNumbers);
         list.Add(touchClickFeedback);
-        list.Add(keystrokeFeedback);
         list.Add(approachOverlay);
 
         return list;

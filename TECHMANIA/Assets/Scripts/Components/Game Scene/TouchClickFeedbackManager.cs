@@ -5,15 +5,23 @@ using UnityEngine.UI;
 
 public class TouchClickFeedbackManager : MonoBehaviour
 {
+    public Game game;
     public GameObject template;
     public Material additiveMaterial;
 
+    // In Keys, reuse lane number as finger#.
     private Dictionary<int, GameObject> fingerToFeedback;
+    private List<int> numKeysHeldOnLane;
 
     // Start is called before the first frame update
     void Start()
     {
         fingerToFeedback = new Dictionary<int, GameObject>();
+        numKeysHeldOnLane = new List<int>();
+        for (int i = 0; i < Game.playableLanes; i++)
+        {
+            numKeysHeldOnLane.Add(0);
+        }
     }
 
     // Update is called once per frame
@@ -46,6 +54,33 @@ public class TouchClickFeedbackManager : MonoBehaviour
                         case TouchPhase.Ended:
                             DestroyFeedback(t.fingerId);
                             break;
+                    }
+                }
+                break;
+            case ControlScheme.Keys:
+                for (int i = 0; i < Game.playableLanes; i++)
+                {
+                    if (Game.keysForLane == null ||
+                        Game.keysForLane[i] == null) continue;
+                    foreach (KeyCode c in Game.keysForLane[i])
+                    {
+                        if (Input.GetKeyDown(c))
+                        {
+                            numKeysHeldOnLane[i]++;
+                        }
+                        if (Input.GetKeyUp(c))
+                        {
+                            numKeysHeldOnLane[i]--;
+                        }
+                    }
+                    if (numKeysHeldOnLane[i] > 0)
+                    {
+                        MoveFeedback(i, game
+                            .GetScreenPositionOnCurrentScanline(i));
+                    }
+                    else
+                    {
+                        DestroyFeedback(i);
                     }
                 }
                 break;
