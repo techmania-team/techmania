@@ -9106,12 +9106,12 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 200
+      value: 79.63
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 54.01
+      value: 24.01
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
@@ -30991,6 +30991,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 303258131}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: modifier_sidesheet_special_modifiers_warning
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -36271,6 +36276,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 166346663}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: options_audio_buffer_size_explanation
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -39430,25 +39440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2125224416 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
-    type: 3}
-  m_PrefabInstance: {fileID: 1943350133}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2125224417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2125224416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dc0c2e64a808dd44877f823093e989e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: options_audio_buffer_size_explanation
 --- !u!114 &2128153742 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6153932699934028245, guid: 5a38dbb6b4a007e42bd014199f1ba827,

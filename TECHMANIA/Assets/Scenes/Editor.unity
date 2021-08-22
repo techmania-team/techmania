@@ -717,6 +717,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 700251220}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_apply_note_type_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -2362,6 +2367,11 @@ PrefabInstance:
       value: Background image
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_background_image_label
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: key
       value: track_setup_patterns_tab_background_image_label
@@ -4046,6 +4056,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106648}
     m_Modifications:
+    - target: {fileID: 442984385854306113, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_eyecatch_image_label
+      objectReference: {fileID: 0}
     - target: {fileID: 1397902320140785393, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -4257,6 +4272,11 @@ PrefabInstance:
       value: Eyecatch image
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_eyecatch_image_label
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: key
       value: track_setup_metadata_tab_eyecatch_image_label
@@ -5848,6 +5868,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_backing_track_label
       objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_backing_track_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!224 &215824566 stripped
@@ -6032,6 +6057,11 @@ PrefabInstance:
         type: 3}
       propertyPath: key
       value: pattern_panel_note_details_end_of_scan_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_note_details_bspline_help
       objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
@@ -6367,6 +6397,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1762942125}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_radar_dialog_disclaimer
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -10244,7 +10279,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48.405
       objectReference: {fileID: 0}
+    - target: {fileID: 3702119624082878861, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_help
+      objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: track_setup_metadata_tab_preview_help
@@ -10540,6 +10585,11 @@ PrefabInstance:
       value: Background video (BGA)
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bga_label
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: key
       value: track_setup_patterns_tab_bga_label
@@ -11802,6 +11852,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_control_scheme_label
       objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_control_scheme_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!114 &364529117 stripped
@@ -12356,6 +12411,11 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_note_details_bspline_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_note_details_end_of_scan_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -12461,7 +12521,7 @@ PrefabInstance:
     - target: {fileID: 2039164072656650311, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 49.81
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074046922689, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -14039,6 +14099,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 716588239}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_apply_keysounds_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -15477,7 +15542,7 @@ PrefabInstance:
     - target: {fileID: 2039164072656650311, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 49.81
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074046922689, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -16070,6 +16135,11 @@ PrefabInstance:
         Ctrl or Shift; they will apply sequentially.'
       objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_keysounds_upcoming_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: pattern_panel_keysounds_upcoming_help
@@ -17759,7 +17829,7 @@ PrefabInstance:
     - target: {fileID: 2039164072656650311, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 49.81
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074046922689, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -21200,6 +21270,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106648}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_eyecatch_preview
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -22319,6 +22394,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1736220995}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_legend_scan_beat
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -24543,6 +24623,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_bps_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bps_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -26010,6 +26095,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_backing_track_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_backing_track_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -26107,7 +26197,7 @@ PrefabInstance:
     - target: {fileID: 2039164072656650311, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 49.81
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074046922689, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -26293,6 +26383,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1752106648}
     m_Modifications:
+    - target: {fileID: 442984385854306113, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_track_label
+      objectReference: {fileID: 0}
     - target: {fileID: 1397902320140785393, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -26479,6 +26574,11 @@ PrefabInstance:
       value: Preview track
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_metadata_tab_preview_track_label
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: key
       value: track_setup_metadata_tab_preview_track_label
@@ -27028,6 +27128,11 @@ PrefabInstance:
         when snapping notes.'
       objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_beat_snap_divisor_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: pattern_panel_edit_tab_beat_snap_divisor_help
@@ -27928,6 +28033,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1736220995}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_legend_time_stop
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -28094,6 +28204,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2035745494}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_return_scanline_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -29675,12 +29790,12 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 260
+      value: 76.02
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 59.999996
+      value: 24.01
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
@@ -30022,7 +30137,7 @@ PrefabInstance:
     - target: {fileID: 1895446606552306653, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: m_text
-      value: Touch
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1895446606552306653, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
@@ -30065,6 +30180,11 @@ PrefabInstance:
       value: Playable lanes
       objectReference: {fileID: 0}
     - target: {fileID: 5292104935633800245, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_playable_lanes_label
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
         type: 3}
       propertyPath: key
       value: track_setup_patterns_tab_playable_lanes_label
@@ -31450,7 +31570,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -38.805
       objectReference: {fileID: 0}
+    - target: {fileID: 3702119624082878861, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_import_button_help
+      objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_resource_tab_import_button_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: track_setup_resource_tab_import_button_help
@@ -32802,6 +32932,11 @@ PrefabInstance:
         has completed playing.'
       objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_wait_for_bga_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: track_setup_patterns_tab_wait_for_bga_help
@@ -34625,6 +34760,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1303414405}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_lock_anchors_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -34773,7 +34913,7 @@ PrefabInstance:
     - target: {fileID: 2039164072656650311, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 49.81
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074046922689, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -35610,6 +35750,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1469812034}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_lock_notes_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -35894,6 +36039,11 @@ PrefabInstance:
         the pattern.'
       objectReference: {fileID: 0}
     - target: {fileID: 6400070719860100042, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_initial_bpm_help
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: key
       value: track_setup_patterns_tab_initial_bpm_help
@@ -40547,12 +40697,12 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 260
+      value: 93.21
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 59.999996
+      value: 24.01
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
@@ -40909,6 +41059,11 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_visible_lanes_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_visible_lanes_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -40934,6 +41089,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1736220995}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_legend_bpm
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -41805,6 +41965,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1256451227}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_snap_anchors_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -46544,6 +46709,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_bga_offset_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_bga_offset_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -48147,6 +48317,11 @@ PrefabInstance:
       propertyPath: key
       value: pattern_panel_edit_tab_visible_lanes_label
       objectReference: {fileID: 0}
+    - target: {fileID: 5382955556453591978, guid: 280a5ae1d7d661e46abd6fdde0be3ffc,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_visible_lanes_label
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 280a5ae1d7d661e46abd6fdde0be3ffc, type: 3}
 --- !u!224 &1851550119 stripped
@@ -48672,6 +48847,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1089736457}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_options_keep_scanline_in_view_description
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
@@ -53182,6 +53362,11 @@ PrefabInstance:
       propertyPath: key
       value: track_setup_patterns_tab_first_beat_offset_help
       objectReference: {fileID: 0}
+    - target: {fileID: 6563102011297442901, guid: 42f84447140ff6042b515e448dc94de2,
+        type: 3}
+      propertyPath: key
+      value: track_setup_patterns_tab_first_beat_offset_help
+      objectReference: {fileID: 0}
     - target: {fileID: 7305995142628928120, guid: 42f84447140ff6042b515e448dc94de2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -53562,6 +53747,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1736220995}
     m_Modifications:
+    - target: {fileID: -2648511816848854137, guid: 0159e2c2d7d31f8459b93f9392689828,
+        type: 3}
+      propertyPath: key
+      value: pattern_panel_edit_tab_legend_time
+      objectReference: {fileID: 0}
     - target: {fileID: 3034328191725606138, guid: 0159e2c2d7d31f8459b93f9392689828,
         type: 3}
       propertyPath: m_Name
