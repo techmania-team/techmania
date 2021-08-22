@@ -287,8 +287,14 @@ public class Scan : MonoBehaviour
 
     private void Start()
     {
-        countdownBackground.color = Color.clear;
-        countdownNumber.color = Color.clear;
+        if (countdownBackground != null)
+        {
+            countdownBackground.color = Color.clear;
+        }
+        if (countdownNumber != null)
+        {
+            countdownNumber.color = Color.clear;
+        }
     }
 
     // Update is called once per frame
@@ -301,6 +307,12 @@ public class Scan : MonoBehaviour
     private float floatScanToStartCountdown;
     private void InitializeCountdown()
     {
+        if (countdownBackground == null ||
+            countdownNumber == null)
+        {
+            return;
+        }
+
         RectTransform backgroundRect = countdownBackground
             .GetComponent<RectTransform>();
         RectTransform numberRect = countdownNumber
@@ -386,6 +398,12 @@ public class Scan : MonoBehaviour
 
     private void UpdateCountdown()
     {
+        if (countdownBackground == null ||
+            countdownNumber == null)
+        {
+            return;
+        }
+
         if (Game.FloatScan < floatScanToStartCountdown ||
             Game.FloatScan > scanNumber)
         {
