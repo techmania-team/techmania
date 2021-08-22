@@ -12,7 +12,6 @@ using UnityEngine;
 public class RulesetBase : SerializableClass<RulesetBase> {}
 
 // Updates in version 2:
-// - Allows defining timing window in pulses instead of seconds.
 // - Allows defining HP delta by each judgement.
 [Serializable]
 public class Ruleset : RulesetBase
