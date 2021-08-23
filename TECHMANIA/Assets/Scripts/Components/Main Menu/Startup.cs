@@ -11,6 +11,7 @@ public class Startup : MonoBehaviour
         Paths.PrepareFolders();
         OptionsPanel.ApplyOptionsOnStartUp();
         SpriteSheet.PrepareEmptySpriteSheet();
+        Records.RefreshInstance();
         GetComponent<GlobalResourceLoader>().StartLoading();
     }
 }

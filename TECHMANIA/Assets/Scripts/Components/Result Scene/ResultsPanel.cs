@@ -30,8 +30,10 @@ public class ResultsPanel : MonoBehaviour
 
     [Header("Other")]
     public TextMeshProUGUI totalScore;
-    public GameObject performanceMedal;
+    public GameObject performanceMedalText;
     public TextMeshProUGUI rankText;
+    public TextMeshProUGUI recordText;
+    public GameObject newRecordMedalText;
     public TextMeshProUGUI ruleset;
     public ScrollingText modifierDisplay;
     public Color specialModifierColor;
@@ -42,6 +44,8 @@ public class ResultsPanel : MonoBehaviour
         title.text = Locale.GetString(Game.score.stageFailed ?
             "result_panel_stage_failed_title" :
             "result_panel_stage_clear_title");
+        GameSetup.patternBeforeApplyingModifier
+            .CalculateFingerprint();
 
         // Track and Pattern
         TrackMetadata track = GameSetup.track.trackMetadata;
@@ -73,59 +77,79 @@ public class ResultsPanel : MonoBehaviour
         feverBonus.text = Game.score.totalFeverBonus.ToString();
 
         // Score and medal
-        int score = Game.score.CurrentScore() + Game.score.comboBonus;
+        int score = Game.score.CurrentScore()
+            + Game.score.comboBonus
+            + Game.score.totalFeverBonus;
         totalScore.text = score.ToString();
 
-        if (Game.score.notesPerJudgement[Judgement.Miss] == 0 &&
-            Game.score.notesPerJudgement[Judgement.Break] == 0)
+        TextMeshProUGUI medalText = performanceMedalText
+            .GetComponentInChildren<TextMeshProUGUI>();
+        medalText.text = Record.MedalToString(Game.score.Medal());
+
+        // Rank
+        string rank;
+        if (Game.score.stageFailed)
         {
-            // Qualified for performance medal.
-            performanceMedal.SetActive(true);
-            TextMeshProUGUI medalText = performanceMedal
-                .GetComponentInChildren<TextMeshProUGUI>();
-            if (Game.score.notesPerJudgement[Judgement.Cool] == 0 &&
-                Game.score.notesPerJudgement[Judgement.Good] == 0)
-            {
-                if (score == 300000)
-                {
-                    medalText.text = Locale.GetString(
-                        "result_panel_absolute_perfect_medal");
-                }
-                else
-                {
-                    medalText.text = Locale.GetString(
-                        "result_panel_perfect_play_medal");
-                }
-            }
-            else
-            {
-                medalText.text = Locale.GetString(
-                    "result_panel_full_combo_medal");
-            }
+            rank = "F";
         }
         else
         {
-            performanceMedal.SetActive(false);
+            rank = Score.ScoreToRank(score);
         }
-
-        // Rank
-        // The choice of rank is quite arbitrary.
-        string rank = "C";
-        if (score > 220000) rank = "B";
-        if (score > 260000) rank = "A";
-        if (score > 270000) rank = "A+";
-        if (score > 280000) rank = "A++";
-        if (score > 285000) rank = "S";
-        if (score > 290000) rank = "S+";
-        if (score > 295000) rank = "S++";
-        if (Game.score.stageFailed) rank = "F";
         rankText.text = rank;
 
+        // My record
+        Record record = Records.instance.GetRecord(
+            GameSetup.patternBeforeApplyingModifier);
+        bool newRecord;
+        if (record == null)
+        {
+            recordText.text = Record.EmptyRecordString();
+            newRecord = true;
+        }
+        else
+        {
+            recordText.text = record.ToString();
+            newRecord = score > record.score;
+        }
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            newRecord = false;
+        }
+        if (Modifiers.instance.HasAnySpecialModifier())
+        {
+            newRecord = false;
+        }
+        if (Game.score.stageFailed)
+        {
+            newRecord = false;
+        }
+
+        newRecordMedalText.SetActive(newRecord);
+        if (newRecord)
+        {
+            Records.instance.SetRecord(
+                GameSetup.patternBeforeApplyingModifier,
+                Game.score);
+            Records.instance.SaveToFile(Paths.GetRecordsFilePath());
+        }
+
         // Ruleset
-        ruleset.text = Locale.GetString(
-            Ruleset.instance.isCustom ?
-            "result_panel_ruleset_custom" :
-            "result_panel_ruleset_default");
+        switch (Options.instance.ruleset)
+        {
+            case Options.Ruleset.Standard:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_standard");
+                break;
+            case Options.Ruleset.Legacy:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_legacy");
+                break;
+            case Options.Ruleset.Custom:
+                ruleset.text = Locale.GetString(
+                    "options_ruleset_custom");
+                break;
+        }
 
         // Modifier display
         modifierDisplay.SetUp(ModifierSidesheet.GetDisplayString(

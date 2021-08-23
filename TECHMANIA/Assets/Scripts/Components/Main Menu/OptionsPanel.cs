@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class OptionsPanel : MonoBehaviour
 {
+    public MessageDialog messageDialog;
+
     [Header("Graphics")]
     public TMP_Dropdown resolutionDropdown;
     public TMP_Dropdown fullscreenDropdown;
@@ -28,6 +30,7 @@ public class OptionsPanel : MonoBehaviour
     public TMP_Dropdown backgroundScalingDropdown;
 
     [Header("Miscellaneous")]
+    public TMP_Dropdown rulesetDropdown;
     public TextMeshProUGUI latencyDisplay;
 
     // Make a backup of all available resolutions at startup, because
@@ -78,6 +81,20 @@ public class OptionsPanel : MonoBehaviour
                 resolutions[resolutionIndex].height;
             Options.instance.refreshRate =
                 resolutions[resolutionIndex].refreshRate;
+        }
+
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            try
+            {
+                Ruleset.LoadCustomRuleset();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("An error occurred when loading custom ruleset, reverting to standard ruleset: " + ex.ToString());
+                // Silently ignore errors.
+                Options.instance.ruleset = Options.Ruleset.Standard;
+            }
         }
     }
 
@@ -183,6 +200,15 @@ public class OptionsPanel : MonoBehaviour
         backgroundScalingDropdown.SetValueWithoutNotify(
             (int)Options.instance.backgroundScalingMode);
         backgroundScalingDropdown.RefreshShownValue();
+
+        UIUtils.InitializeDropdownWithLocalizedOptions(
+            rulesetDropdown,
+            "options_ruleset_standard",
+            "options_ruleset_legacy",
+            "options_ruleset_custom");
+        rulesetDropdown.SetValueWithoutNotify(
+            (int)Options.instance.ruleset);
+        rulesetDropdown.RefreshShownValue();
     }
 
     #region Graphics
@@ -268,6 +294,30 @@ public class OptionsPanel : MonoBehaviour
         Options.instance.backgroundScalingMode =
             (Options.BackgroundScalingMode)
             backgroundScalingDropdown.value;
+    }
+    #endregion
+
+    #region Miscellaneous
+    public void OnRulesetChanged()
+    {
+        Options.instance.ruleset = (Options.Ruleset)
+            rulesetDropdown.value;
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            // Attempt to load custom ruleset.
+            try
+            {
+                Ruleset.LoadCustomRuleset();
+            }
+            catch (System.Exception ex)
+            {
+                messageDialog.Show(Locale.GetStringAndFormat(
+                    "custom_ruleset_load_error_format",
+                    ex.Message));
+                Options.instance.ruleset = Options.Ruleset.Standard;
+                MemoryToUI();
+            }
+        }
     }
     #endregion
 }

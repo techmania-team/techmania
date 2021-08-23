@@ -396,7 +396,7 @@ public class NoteAppearance : MonoBehaviour
             approachOverlay.GetComponent<RectTransform>().localScale =
                 new Vector3(
                     scanRef.direction == Scan.Direction.Right 
-                    ? scale : -scale,
+                        ? scale : -scale,
                     scale,
                     1f);
         }
@@ -409,16 +409,17 @@ public class NoteAppearance : MonoBehaviour
 
     #region Hitbox
     // Chain heads and chain nodes override this.
-    protected virtual float GetHitboxWidth()
+    protected virtual Vector2 GetHitboxSizeFromRuleset()
     {
-        return Ruleset.instance.hitboxWidth;
+        return new Vector2(Ruleset.instance.hitboxWidth,
+            Ruleset.instance.hitboxHeight);
     }
 
     private void InitializeHitbox()
     {
         if (hitbox == null) return;
-        float hitboxWidth = GetHitboxWidth();
-        SetHitboxSize(hitboxWidth, 1f);
+        Vector2 hitboxSize = GetHitboxSizeFromRuleset();
+        SetHitboxSize(hitboxSize.x, hitboxSize.y);
     }
 
     protected void SetHitboxSize(float width, float height)

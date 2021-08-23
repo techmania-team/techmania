@@ -62,7 +62,7 @@ public class AudioSourceManager : MonoBehaviour
     }
 
     private void PlaySound(AudioSource source, AudioClip clip,
-        float startTime, float volume, float pan)
+        float startTime, int volumePercent, int panPercent)
     {
         if (clip == null)
         {
@@ -73,8 +73,8 @@ public class AudioSourceManager : MonoBehaviour
             startTime * clip.frequency);
         source.clip = clip;
         source.timeSamples = Mathf.Min(clip.samples, startSample);
-        source.volume = volume;
-        source.panStereo = pan;
+        source.volume = volumePercent * 0.01f;
+        source.panStereo = panPercent * 0.01f;
         source.Play();
     }
 
@@ -82,7 +82,8 @@ public class AudioSourceManager : MonoBehaviour
         float startTime = 0f)
     {
         PlaySound(backingTrack, clip, startTime,
-            volume: 1f, pan: 0f);
+            volumePercent: Note.defaultVolume,
+            panPercent: Note.defaultPan);
     }
 
     private AudioSource FindSource(AudioSource[] sources,
@@ -112,8 +113,8 @@ public class AudioSourceManager : MonoBehaviour
     // Returns the AudioSource chosen to play the clip, if not null.
     public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
         float startTime = 0f,
-        float volume = Note.defaultVolume,
-        float pan = Note.defaultPan)
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan)
     {
         if (clip == null) return null;
 
@@ -129,7 +130,7 @@ public class AudioSourceManager : MonoBehaviour
                 "keysound in playable lane");
         }
 
-        PlaySound(source, clip, startTime, volume, pan);
+        PlaySound(source, clip, startTime, volumePercent, panPercent);
         return source;
     }
 
@@ -137,7 +138,8 @@ public class AudioSourceManager : MonoBehaviour
     {
         AudioSource source = FindSource(sfxSources,
             "SFX");
-        PlaySound(source, clip, 0f, 1f, 0f);
+        PlaySound(source, clip, 0f,
+            volumePercent: 100, panPercent: 0);
     }
 
     public void PauseAll()

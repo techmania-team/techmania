@@ -30,6 +30,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected static string currentLocation;
     protected static int selectedCardIndex;
+    protected static bool anyOutdatedTrack;
     // Cached, keyed by track folder's parent folder.
     protected static Dictionary<string, List<Subfolder>> 
         subfolderList;
@@ -41,6 +42,7 @@ public class SelectTrackPanel : MonoBehaviour
     {
         currentLocation = "";
         selectedCardIndex = -1;
+        anyOutdatedTrack = false;
         subfolderList = new Dictionary<string, List<Subfolder>>();
         trackList = new Dictionary<string, List<TrackInFolder>>();
         errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
@@ -78,6 +80,7 @@ public class SelectTrackPanel : MonoBehaviour
     }
 
     public Button backButton;
+    public Button upgradeFormatButton;
     public Button trackFilterButton;
     public Button refreshButton;
     public Button goUpButton;
@@ -94,6 +97,7 @@ public class SelectTrackPanel : MonoBehaviour
     public TrackFilterSidesheet trackFilterSidesheet;
     public Panel selectPatternPanel;
     public MessageDialog messageDialog;
+    public ConfirmDialog confirmDialog;
 
     protected Dictionary<GameObject, string> cardToSubfolder;
     protected Dictionary<GameObject, TrackInFolder> cardToTrack;
@@ -122,7 +126,7 @@ public class SelectTrackPanel : MonoBehaviour
             OnTrackFilterChanged;
     }
 
-    protected IEnumerator Refresh()
+    protected IEnumerator Refresh(bool upgradeVersion = false)
     {
         refreshing = true;
 
@@ -164,6 +168,7 @@ public class SelectTrackPanel : MonoBehaviour
         if (!trackList.ContainsKey(currentLocation))
         {
             backButton.interactable = false;
+            upgradeFormatButton.gameObject.SetActive(false);
             trackFilterButton.interactable = false;
             refreshButton.interactable = false;
             goUpButton.interactable = false;
@@ -179,7 +184,11 @@ public class SelectTrackPanel : MonoBehaviour
             builderDone = false;
             builderProgress = "";
             Options.TemporarilyDisableVSync();
-            trackListBuilder.RunWorkerAsync();
+            trackListBuilder.RunWorkerAsync(
+                new BackgroundWorkerArgument()
+            {
+                upgradeVersion = upgradeVersion
+            });
             do
             {
                 trackListBuildingProgress.text =
@@ -197,6 +206,10 @@ public class SelectTrackPanel : MonoBehaviour
         // Enable go up button if applicable.
         goUpButton.interactable = currentLocation !=
             Paths.GetTrackRootFolder();
+
+        // Show upgrade button if any track is outdated.
+        upgradeFormatButton.gameObject.SetActive(
+            anyOutdatedTrack);
 
         // Prepare subfolder list. Make a local copy so we can
         // sort it. This also applies to the track list below.
@@ -393,6 +406,12 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         refreshing = false;
+
+        if (upgradeVersion)
+        {
+            messageDialog.Show(Locale.GetString(
+                "select_track_upgrade_complete_message"));
+        }
     }
 
     private void SelectCard(int index)
@@ -497,6 +516,10 @@ public class SelectTrackPanel : MonoBehaviour
     private BackgroundWorker trackListBuilder;
     private string builderProgress;
     private bool builderDone;
+    private class BackgroundWorkerArgument
+    {
+        public bool upgradeVersion;
+    }
 
     private void TrackListBuilderDoWork(object sender,
         DoWorkEventArgs e)
@@ -505,14 +528,18 @@ public class SelectTrackPanel : MonoBehaviour
         subfolderList.Clear();
         trackList.Clear();
         errorTrackList.Clear();
+        anyOutdatedTrack = false;
 
-        BuildTrackListFor(Paths.GetTrackRootFolder());
+        BuildTrackListFor(Paths.GetTrackRootFolder(),
+            (e.Argument as BackgroundWorkerArgument).upgradeVersion);
         if (Directory.Exists(Paths.GetStreamingTrackRootFolder())) {
-            BuildTrackListFor(Paths.GetStreamingTrackRootFolder());
+            BuildTrackListFor(Paths.GetStreamingTrackRootFolder(),
+                upgradeVersion: false);
         }
     }
 
-    private void BuildTrackListFor(string folder)
+    private void BuildTrackListFor(string folder,
+        bool upgradeVersion)
     {
         subfolderList.Add(folder, new List<Subfolder>());
         trackList.Add(folder, new List<TrackInFolder>());
@@ -538,8 +565,16 @@ public class SelectTrackPanel : MonoBehaviour
         foreach (string dir in Directory.EnumerateDirectories(
             folder))
         {
-            builderProgress = Locale.GetStringAndFormat(
-                "select_track_scanning_text", dir);
+            if (upgradeVersion)
+            {
+                builderProgress = Locale.GetStringAndFormat(
+                    "select_track_upgrading_text", dir);
+            }
+            else
+            {
+                builderProgress = Locale.GetStringAndFormat(
+                    "select_track_scanning_text", dir);
+            }
 
             // Is there a track?
             string possibleTrackFile = Path.Combine(
@@ -566,14 +601,16 @@ public class SelectTrackPanel : MonoBehaviour
                 }
 
                 // Record as a subfolder.
-                if (folder.Equals(Paths.GetStreamingTrackRootFolder())) {
-                    subfolderList[Paths.GetTrackRootFolder()].Add(subfolder);
+                if (folder.Equals(
+                    Paths.GetStreamingTrackRootFolder())) {
+                    subfolderList[Paths.GetTrackRootFolder()]
+                        .Add(subfolder);
                 } else {
                     subfolderList[folder].Add(subfolder);
                 }
 
                 // Build recursively.
-                BuildTrackListFor(dir);
+                BuildTrackListFor(dir, upgradeVersion);
 
                 continue;
             }
@@ -582,7 +619,21 @@ public class SelectTrackPanel : MonoBehaviour
             Track track = null;
             try
             {
-                track = Track.LoadFromFile(possibleTrackFile) as Track;
+                bool upgradedWhenLoading;
+                track = Track.LoadFromFile(possibleTrackFile,
+                    out upgradedWhenLoading) as Track;
+                if (upgradedWhenLoading)
+                {
+                    // If upgrading, write the track back to disk.
+                    if (upgradeVersion)
+                    {
+                        track.SaveToFile(possibleTrackFile);
+                    }
+                    else
+                    {
+                        anyOutdatedTrack = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -658,6 +709,22 @@ public class SelectTrackPanel : MonoBehaviour
     #endregion
 
     #region Events from cards and buttons
+    public void OnUpgradeFormatButtonClick()
+    {
+        if (!anyOutdatedTrack) return;
+
+        confirmDialog.Show(
+            Locale.GetString(
+                "select_track_upgrade_version_confirmation"),
+            Locale.GetString("select_track_upgrade_version_confirm"),
+            Locale.GetString("select_track_upgrade_version_cancel"),
+            () =>
+            {
+                RemoveCachedLists();
+                StartCoroutine(Refresh(upgradeVersion: true));
+            });
+    }
+
     public void OnRefreshButtonClick()
     {
         RemoveCachedLists();
@@ -668,8 +735,11 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        currentLocation = new DirectoryInfo(currentLocation).Parent.FullName;
-        if (currentLocation.Equals(Paths.GetStreamingTrackRootFolder())) currentLocation = Paths.GetTrackRootFolder();
+        currentLocation = new DirectoryInfo(currentLocation)
+            .Parent.FullName;
+        if (currentLocation.Equals(
+            Paths.GetStreamingTrackRootFolder()))
+            currentLocation = Paths.GetTrackRootFolder();
 
         selectedCardIndex = -1;
         StartCoroutine(Refresh());

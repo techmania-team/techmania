@@ -9,10 +9,6 @@ public class ScanBackground : MonoBehaviour
     public GameObject halfBeatMarkerTemplate;
     public List<RectTransform> lanes;
     public List<GameObject> laneDividers;
-    public KeystrokeFeedback kmKeystrokeFeedback;
-
-    private List<int> numKeysHeldOnLane;
-    private int totalKeysHeld;
 
     // Start is called before the first frame update
     void Start()
@@ -21,10 +17,6 @@ public class ScanBackground : MonoBehaviour
         {
             o.SetActive(false);
         }
-
-        numKeysHeldOnLane = new List<int>();
-        foreach (var l in lanes) numKeysHeldOnLane.Add(0);
-        totalKeysHeld = 0;
     }
 
     private void SpawnMarker(GameObject template,
@@ -50,28 +42,43 @@ public class ScanBackground : MonoBehaviour
     {
         // Lanes
         float laneHeightRelative =
-            (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
-        lanes[3].anchorMin = new Vector2(
-            0f, 0f);
-        lanes[3].anchorMax = new Vector2(
-            1f, 0.5f - laneHeightRelative);
-        lanes[2].anchorMin = new Vector2(
-            0f, 0.5f - laneHeightRelative);
-        lanes[2].anchorMax = new Vector2(
-            1f, 0.5f);
-        lanes[1].anchorMin = new Vector2(
-            0f, 0.5f);
-        lanes[1].anchorMax = new Vector2(
-            1f, 0.5f + laneHeightRelative);
-        lanes[0].anchorMin = new Vector2(
-            0f, 0.5f + laneHeightRelative);
-        lanes[0].anchorMax = new Vector2(
-            1f, 1f);
+            (1f - Ruleset.instance.scanMargin * 2f) /
+            Game.playableLanes;
+        List<float> anchors = new List<float>();
+        anchors.Add(1f);
+        switch (Game.playableLanes)
+        {
+            case 4:
+                anchors.Add(0.5f + laneHeightRelative);
+                anchors.Add(0.5f);
+                anchors.Add(0.5f - laneHeightRelative);
+                break;
+            case 3:
+                anchors.Add(1f - Ruleset.instance.scanMargin -
+                    laneHeightRelative);
+                anchors.Add(Ruleset.instance.scanMargin +
+                    laneHeightRelative);
+                break;
+            case 2:
+                anchors.Add(0.5f);
+                break;
+        }
+        anchors.Add(0f);
+        for (int i = 0; i < Game.playableLanes; i++)
+        {
+            lanes[i].anchorMin = new Vector2(0f, anchors[i + 1]);
+            lanes[i].anchorMax = new Vector2(1f, anchors[i]);
+        }
 
         // Lane dividers
-        foreach (GameObject o in laneDividers)
+        for (int i = 0; i < laneDividers.Count; i++)
         {
-            o.SetActive(Options.instance.showLaneDividers);
+            if (!Options.instance.showLaneDividers)
+            {
+                laneDividers[i].SetActive(false);
+                continue;
+            }
+            laneDividers[i].SetActive(i + 1 < Game.playableLanes);
         }
 
         // Beat markers
@@ -103,80 +110,21 @@ public class ScanBackground : MonoBehaviour
                 }
                 break;
         }
-
-        // Keystroke feedback
-        if (scanDirection == Scan.Direction.Left)
-        {
-            kmKeystrokeFeedback.GetComponent<RectTransform>()
-                .localScale = new Vector3(-1f, 1f, 1f);
-            foreach (RectTransform l in lanes)
-            {
-                l.localScale = new Vector3(-1f, 1f, 1f);
-            }
-        }
     }
 
     private void Update()
     {
         ControlScheme scheme = GameSetup.pattern.patternMetadata
             .controlScheme;
+        if (scheme != ControlScheme.Keys) return;
         if (Game.keysForLane == null) return;
+    }
 
-        switch (scheme)
-        {
-            case ControlScheme.Touch: return;
-            case ControlScheme.Keys:
-                for (int i = 0; i < lanes.Count; i++)
-                {
-                    foreach (KeyCode c in Game.keysForLane[i])
-                    {
-                        if (Input.GetKeyDown(c))
-                        {
-                            numKeysHeldOnLane[i]++;
-                            if (numKeysHeldOnLane[i] == 1)
-                            {
-                                lanes[i]
-                                    .GetComponent<KeystrokeFeedback>()
-                                    .Play();
-                            }
-                        }
-                        if (Input.GetKeyUp(c))
-                        {
-                            numKeysHeldOnLane[i]--;
-                            if (numKeysHeldOnLane[i] <= 0)
-                            {
-                                lanes[i]
-                                    .GetComponent<KeystrokeFeedback>()
-                                    .Stop();
-                            }
-                        }
-                    }
-                }
-                break;
-            case ControlScheme.KM:
-                for (int i = 0; i < lanes.Count; i++)
-                {
-                    foreach (KeyCode c in Game.keysForLane[i])
-                    {
-                        if (Input.GetKeyDown(c))
-                        {
-                            totalKeysHeld++;
-                            if (totalKeysHeld == 1)
-                            {
-                                kmKeystrokeFeedback.Play();
-                            }
-                        }
-                        if (Input.GetKeyUp(c))
-                        {
-                            totalKeysHeld--;
-                            if (totalKeysHeld <= 0)
-                            {
-                                kmKeystrokeFeedback.Stop();
-                            }
-                        }
-                    }
-                }
-                break;
-        }
+    public float GetMiddleYOfLaneInWorldSpace(int lane)
+    {
+        Vector3[] corners = new Vector3[4];
+        lanes[lane].GetWorldCorners(corners);
+        return (corners[0].y + corners[1].y +
+            corners[2].y + corners[3].y) * 0.25f;
     }
 }

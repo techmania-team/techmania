@@ -92,12 +92,13 @@ public class MaterialTextField : MonoBehaviour,
     public void RefreshMiniLabel()
     {
         miniLabel.text = label.text;
-        miniLabelObject.SetActive(GetComponent<TMP_InputField>().text != "");
+        miniLabelObject.SetActive(
+            GetComponent<TMP_InputField>().text != "");
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        if (eventData is AxisEventData)
+        if (eventData is AxisEventData && interactable)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -106,7 +107,8 @@ public class MaterialTextField : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (TouchInducedPointer.EventIsFromActualMouse(eventData))
+        if (TouchInducedPointer.EventIsFromActualMouse(eventData)
+            && interactable)
         {
             MenuSfx.instance.PlaySelectSound();
         }
@@ -114,6 +116,9 @@ public class MaterialTextField : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        MenuSfx.instance.PlayClickSound();
+        if (interactable)
+        {
+            MenuSfx.instance.PlayClickSound();
+        }
     }
 }

@@ -17,8 +17,9 @@ public class ChainHeadAppearance : ChainAppearanceBase
             .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 
-    protected override float GetHitboxWidth()
+    protected override Vector2 GetHitboxSizeFromRuleset()
     {
-        return Ruleset.instance.chainHeadHitboxWidth;
+        return new Vector2(Ruleset.instance.chainHeadHitboxWidth,
+            Ruleset.instance.hitboxHeight);
     }
 }

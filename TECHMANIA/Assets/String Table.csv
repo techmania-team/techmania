@@ -102,28 +102,17 @@ Please select a valid skin from the options menu.","读取游戏内界面皮肤�
 ,main_menu_information_button,Information,须知,須知,情報,안내
 ,main_menu_quit_button,QUIT,退出,離開,終了,종료
 ,,,,,,
-,custom_ruleset_indicator,Custom ruleset active,自定义规则使用中,自訂規則使用中,カスタムルールセット有効,사용자 지정 규칙 사용 중
 ,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
 
-{0}
+{0}","读取自定义规则时发生错误：
 
-For this session TECHMANIA will use the default ruleset.","读取自定义规则时发生错误：
+{0}","載入自訂規則時發生錯誤：
 
-{0}
+{0}","カスタムルールセットの読み込み中にエラーが発生しました：
 
-本次游戏TECHMANIA将使用默认规则。","載入自訂規則時發生錯誤：
+{0}","사용자 지정 규칙을 불러오는 중 오류가 발생했습니다.
 
-{0}
-
-本次遊戲將使用預設規則。","カスタムルールセットの読み込み中にエラーが発生しました：
-
-{0}
-
-このセッションでTECHMANIAはデフォルトルールセットを使用します。","사용자 지정 규칙을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-판정/점수 기본 설정을 사용합니다. "
+{0}"
 ,,,,,,
 ,select_track_panel_title,Select Track,选择曲目,選擇歌曲,トラック選択,Select Track
 ,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
@@ -154,7 +143,7 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 ,track_filter_sidesheet_search_title,Search,搜索,搜尋,検索,검색
 ,track_filter_sidesheet_keyword_label,Keyword,关键字,關鍵字,キーワード,키워드
 ,track_filter_sidesheet_options_title,Options,设置,設定,設定,정렬 옵션
-,track_filter_sidesheet_show_tracks_in_all_folders_label,Show tracks in all folders,显示所有文件夹内的曲目,顯示所有資料夾內的曲目,すべてのトラックを見る,모든 음악 보기
+,track_filter_sidesheet_show_tracks_in_all_folders_label,Show tracks in all folders,显示所有文件夹内的曲目,顯示所有資料夾內的曲目,全てのトラックを見る,모든 음악 보기
 ,track_filter_sidesheet_sort_by_label,Sort by,排序,排序,並べ替え,정렬 기준
 ,track_filter_sidesheet_sort_ascending_label,Ascending,升序,升冪,昇順,오름차순
 ,track_filter_sidesheet_sort_descending_label,Descending,降序,降冪,降順,내림차순
@@ -360,7 +349,7 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,pause_dialog_title,PAUSE,暂停,暫停,PAUSE,PAUSE
 ,pause_resume_button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
 ,pause_restart_button,RESTART,重试,再試一次,RESTART,RESTART
-,pause_select_track_button,SELECT TRACK,选曲,選擇曲目,SELECT MUSIC,SELECT MUSIC
+,pause_select_track_button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
 ,,,,,,
 `===== Result scene =====,,,,,,
 ,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,STAGE CLEARED,STAGE CLEARED
@@ -380,8 +369,6 @@ Shown behind the HP bar when no fail is active.,game_no_fail_indicator,No fail,�
 ,result_panel_full_combo_medal,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
 ,result_panel_rank_label,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
 ,result_panel_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
-,result_panel_ruleset_default,Default,默认,預設,デフォルト,기본
-,result_panel_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,result_panel_my_record_label,My record,最高纪录,最高紀錄,自分の記録,나의 기록
 ,result_panel_select_track_button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
 ,result_panel_retry_button,RETRY,重试,重新開始,RETRY,RETRY
@@ -423,7 +410,7 @@ backgrounds, and more.","导入音频、图像、视频文件后，
 "Strings in the open file dialog shown when
 the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
 ,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
-,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,すべてのファイル,모든 파일
+,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
 "A warning shown when the newly imported
 files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
 
@@ -494,7 +481,7 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 미리듣기 음악 전체를 재생하려면 두 값을 모두 
 0으로 설정하십시오."
 ,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,刪除歌曲,トラック削除,곡 삭제
-,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} のすべてのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구 삭제합니다. 계속하시겠습니까?
+,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구 삭제합니다. 계속하시겠습니까?
 ,track_setup_metadata_tab_delete_track_confirm,Delete,删除,刪除,削除,삭제
 ,track_setup_metadata_tab_delete_track_cancel,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
@@ -620,7 +607,7 @@ B-样条更为平滑，但是不经过所有的锚点，
 B-樣條更為平滑，但是不會經過所有的錨點，
 也不受控制點影響。","ドラッグノートにB-スプライン曲線を適用します。
 B-スプライン曲線はベジェ曲線よりもっと滑らかな曲線で、
-配置したアンカーを通らずすべてのコントロールポイントを無視します。","선택한 드래그 노트를 B 스플라인 곡선으로 처리합니다.
+配置したアンカーを通らず全てのコントロールポイントを無視します。","선택한 드래그 노트를 B 스플라인 곡선으로 처리합니다.
 B 스플라인은 베지어보다 더 부드러운 곡선으로,
 설정한 고정점을 지나지 않으며, 모든 컨트롤 포인트를 무시합니다."
 ,pattern_panel_keysounds_title,Keysounds,按键音,按鍵音,ノート音,사운드
@@ -859,12 +846,59 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,pattern_radar_dialog_disclaimer,"* Refer to the manual for the definition and formula of each item.
 * Suggested level is only a suggestion. Use your own judgement when deciding a pattern's level.","* 有关各数值的定义与计算方式请查阅文档。
 * 建议难度仅供参考，请以个人判断来确定谱面的最终难度。","* 有關個數值的定義與計算方式請查看說明文件。
-* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* 各項目の計算方式と定義は公式マニュアルをご参照ください。
-* このレベルはおすすめのレベルです。参考用として利用してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
+* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* 各項目の定義と計算方式は公式マニュアルをご参照ください。
+* このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
 ,,,,,,
+1.0 strings start here.,options_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
+,options_ruleset_standard,Standard,标准,標準,スタンダード,표준
+,options_ruleset_legacy,Legacy,经典,經典,レガシー,레거시
+,options_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,,,,,,
+,select_track_upgrading_text,Upgrading: {0},正在升级：{0},正在升級：{0},更新中：{0},업그레이드 중: {0}
+,select_track_upgrade_version_confirmation,"Some tracks are created with older versions of TECHMANIA. They will still work, but it will take longer for the select track screen to scan them.
+
+Would you like to upgrade all tracks to the current version?
+
+It is recommended that you backup your tracks before upgrading.","有一部分曲目是使用旧版本的TECHMANIA制作。你仍然可以游玩这些曲目，但是扫描这些曲目将需要更长时间。
+
+是否将所有曲目升级至当前版本？
+
+建议在备份所有曲目后再开始升级。","有一部分的歌曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些歌曲，但是掃描這些歌曲將需要更長時間。
+
+是否將所有歌曲升級至目前版本？
+
+建議備份所有歌曲後再開始升級。","旧バージョンのTECHMANIAで作成されたトラックがあります。プレイはできますが、トラック選択画面のロードに遅延が発生する可能性があります。
+
+全てのトラックを更新しますか？
+
+更新する前にトラックをバックアップすることを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
+
+모든 패턴을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 패턴 백업을 권장합니다."
+,select_track_upgrade_version_confirm,Upgrade,升级,升級,更新,업그레이드
+,select_track_upgrade_version_cancel,Cancel,取消,取消,キャンセル,취소
+,select_track_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
 ,,,,,,
+,result_panel_new_record_medal,New record,新纪录,新紀錄,新記録,NEW RECORD
+,,,,,,
+,track_setup_patterns_tab_playable_lanes_label,Playable lanes,可操作轨道数,可遊玩軌道數,プレイ可能なレーン数,플레이 트랙 수
+,,,,,,
+,main_menu_editor_on_mobile_confirmation,"The editor is designed for PC. Many features will be inaccessible without a mouse and keyboard.
+
+Continue anyway?","谱面编辑器是为PC设计，某些功能只有用鼠标键盘才能使用。
+
+仍然要进入编辑器吗？","譜面編輯器是為 PC 設計，某些功能只有鍵盤滑鼠才能使用。
+
+仍要進入編輯器嗎？","エディタはPCで使用することを想定しています。マウスとキーボードを使用しない場合、多くの機能が使えなくなります。
+
+続けますか？","패턴 편집기는 PC 환경에 최적화되어 있습니다. 모바일 환경에서는 일부 기능을 이용하지 못할 수 있습니다.
+
+계속하시겠습니까?"
+,main_menu_editor_on_mobile_confirm,Continue,进入,進入,続ける,계속하기
+,main_menu_editor_on_mobile_cancel,Cancel,取消,取消,キャンセル,취소
+,,,,,,
+,track_setup_patterns_tab_auto_order_label,Automatically order patterns,自动谱面排序,自動排序譜面,パターンを自動で並べる,패턴 자동 정렬
+,track_setup_patterns_tab_order_header,Order,顺序,排序,順序,패턴 순서
 ,,,,,,
 ,,,,,,
 ,,,,,,

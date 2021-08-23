@@ -52,7 +52,8 @@ public class Scan : MonoBehaviour
         screenWidth = rect.width;
         scanHeight = rect.height;
         laneHeight = scanHeight 
-            * (1f - Ruleset.instance.scanMargin * 2f) * 0.25f;
+            * (1f - Ruleset.instance.scanMargin * 2f) /
+            Game.playableLanes;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
@@ -286,8 +287,14 @@ public class Scan : MonoBehaviour
 
     private void Start()
     {
-        countdownBackground.color = Color.clear;
-        countdownNumber.color = Color.clear;
+        if (countdownBackground != null)
+        {
+            countdownBackground.color = Color.clear;
+        }
+        if (countdownNumber != null)
+        {
+            countdownNumber.color = Color.clear;
+        }
     }
 
     // Update is called once per frame
@@ -300,6 +307,12 @@ public class Scan : MonoBehaviour
     private float floatScanToStartCountdown;
     private void InitializeCountdown()
     {
+        if (countdownBackground == null ||
+            countdownNumber == null)
+        {
+            return;
+        }
+
         RectTransform backgroundRect = countdownBackground
             .GetComponent<RectTransform>();
         RectTransform numberRect = countdownNumber
@@ -385,6 +398,12 @@ public class Scan : MonoBehaviour
 
     private void UpdateCountdown()
     {
+        if (countdownBackground == null ||
+            countdownNumber == null)
+        {
+            return;
+        }
+
         if (Game.FloatScan < floatScanToStartCountdown ||
             Game.FloatScan > scanNumber)
         {

@@ -12,7 +12,6 @@ public class NoteDetailSideSheet : MonoBehaviour
     public TextMeshProUGUI volumeDisplay;
     public Slider panSlider;
     public TextMeshProUGUI panDisplay;
-    public Button previewButton;
     public GameObject endOfScanOptions;
     public Toggle endOfScanToggle;
     public GameObject bSplineOptions;
@@ -55,11 +54,11 @@ public class NoteDetailSideSheet : MonoBehaviour
 
         if (!multiple)
         {
-            volumeSlider.SetValueWithoutNotify(notes[0].volume * 100f);
-            panSlider.SetValueWithoutNotify(notes[0].pan * 100f);
+            volumeSlider.SetValueWithoutNotify(
+                notes[0].volumePercent);
+            panSlider.SetValueWithoutNotify(notes[0].panPercent);
         }
         RefreshVolumeAndPanDisplay();
-        previewButton.interactable = !multiple;
 
         bool allNotesOnScanDividers = true;
         bool allNotesAreDragNotes = true;
@@ -101,17 +100,17 @@ public class NoteDetailSideSheet : MonoBehaviour
     private void RefreshVolumeAndPanDisplay()
     {
         bool sameValue = true;
-        float volume = notes[0].volume;
+        int volumePercent = notes[0].volumePercent;
         for (int i = 1; i < notes.Count; i++)
         {
-            if (notes[i].volume != volume)
+            if (notes[i].volumePercent != volumePercent)
             {
                 sameValue = false;
             }
         }
         if (sameValue)
         {
-            volumeDisplay.text = Mathf.RoundToInt(volume * 100f) + "%";
+            volumeDisplay.text = volumePercent + "%";
         }
         else
         {
@@ -119,17 +118,17 @@ public class NoteDetailSideSheet : MonoBehaviour
         }
 
         sameValue = true;
-        float pan = notes[0].pan;
+        int panPercent = notes[0].panPercent;
         for (int i = 1; i < notes.Count; i++)
         {
-            if (notes[i].pan != pan)
+            if (notes[i].panPercent != panPercent)
             {
                 sameValue = false;
             }
         }
         if (sameValue)
         {
-            panDisplay.text = Mathf.RoundToInt(pan * 100f) + "%";
+            panDisplay.text = panPercent + "%";
         }
         else
         {
@@ -151,7 +150,7 @@ public class NoteDetailSideSheet : MonoBehaviour
             EditOperation op = EditorContext
                 .BeginModifyNoteOperation();
             op.noteBeforeOp = n.Clone();
-            n.volume = newValue * 0.01f;
+            n.volumePercent = Mathf.FloorToInt(newValue);
             op.noteAfterOp = n.Clone();
         }
         EditorContext.EndTransaction();
@@ -167,17 +166,12 @@ public class NoteDetailSideSheet : MonoBehaviour
             EditOperation op = EditorContext
                 .BeginModifyNoteOperation();
             op.noteBeforeOp = n.Clone();
-            n.pan = newValue * 0.01f;
+            n.panPercent = Mathf.FloorToInt(newValue);
             op.noteAfterOp = n.Clone();
         }
         EditorContext.EndTransaction();
 
         RefreshVolumeAndPanDisplay();
-    }
-
-    public void OnPreviewButtonClick()
-    {
-        patternPanel.PlayKeysound(notes[0]);
     }
 
     public void OnEndOfScanToggleValueChanged(bool newValue)

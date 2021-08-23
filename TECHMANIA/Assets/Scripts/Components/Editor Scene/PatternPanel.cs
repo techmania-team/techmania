@@ -128,7 +128,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Vertical Spacing
     private static int PlayableLanes => 
-        EditorContext.Pattern.patternMetadata.lanes;
+        EditorContext.Pattern.patternMetadata.playableLanes;
     private static int TotalLanes => 64;
 
     private static float WorkspaceViewportHeight;
@@ -161,11 +161,18 @@ public class PatternPanel : MonoBehaviour
     public static event UnityAction<HashSet<Note>> 
         SelectionChanged;
     public static event UnityAction KeysoundVisibilityChanged;
+    public static event UnityAction PlaybackStarted;
+    public static event UnityAction PlaybackStopped;
     #endregion
 
     #region MonoBehavior APIs
     private void OnEnable()
     {
+        // Hidden lanes
+        hiddenLaneBackground.anchorMin = Vector2.zero;
+        hiddenLaneBackground.anchorMax = new Vector2(
+            1f, 1f - (float)PlayableLanes / TotalLanes);
+
         // Vertical spacing
         VisibleLanes = int.Parse(
             visibleLanesDropdown.options
@@ -443,19 +450,20 @@ public class PatternPanel : MonoBehaviour
             case NoteType.RepeatHead:
             case NoteType.Repeat:
                 AddNote(n.type, n.pulse, n.lane, n.sound,
-                    n.volume, n.pan, n.endOfScan);
+                    n.volumePercent, n.panPercent, n.endOfScan);
                 break;
             case NoteType.Hold:
             case NoteType.RepeatHeadHold:
             case NoteType.RepeatHold:
                 AddHoldNote(n.type, n.pulse, n.lane,
                     (n as HoldNote).duration, n.sound,
-                    n.volume, n.pan, n.endOfScan);
+                    n.volumePercent, n.panPercent, n.endOfScan);
                 break;
             case NoteType.Drag:
                 AddDragNote(n.pulse, n.lane,
                     (n as DragNote).nodes, n.sound,
-                    n.volume, n.pan, (n as DragNote).curveType);
+                    n.volumePercent, n.panPercent,
+                    (n as DragNote).curveType);
                 break;
         }
     }
@@ -739,8 +747,8 @@ public class PatternPanel : MonoBehaviour
             EditorContext.Pattern.patternMetadata.bps * 2;
         maxPulse += Pattern.pulsesPerBeat *
             EditorContext.Pattern.patternMetadata.bps * 2;
-        minLane -= EditorContext.Pattern.patternMetadata.lanes;
-        maxLane += EditorContext.Pattern.patternMetadata.lanes;
+        minLane -= EditorContext.Pattern.patternMetadata.playableLanes;
+        maxLane += EditorContext.Pattern.patternMetadata.playableLanes;
 
         // Find all notes that should spawn.
         Note topLeftNote = new Note()
@@ -1258,8 +1266,8 @@ public class PatternPanel : MonoBehaviour
             int pulse = n.pulse;
             int lane = n.lane;
             string sound = n.sound;
-            float volume = n.volume;
-            float pan = n.pan;
+            int volumePercent = n.volumePercent;
+            int panPercent = n.panPercent;
             bool endOfScan = n.endOfScan;
 
             // Inherit the previous duration if applicable.
@@ -1294,7 +1302,7 @@ public class PatternPanel : MonoBehaviour
                     EditorContext.RecordDeletedNote(n.Clone());
                     DeleteNote(n);
                     newObject = AddNote(noteType, pulse, lane, sound,
-                        volume, pan, endOfScan);
+                        volumePercent, panPercent, endOfScan);
                     newNote = GetNoteFromGameObject(newObject);
                     EditorContext.RecordAddedNote(newNote);
                     break;
@@ -1310,7 +1318,7 @@ public class PatternPanel : MonoBehaviour
                     DeleteNote(n);
                     newObject = AddHoldNote(noteType, pulse, lane,
                         duration: currentDuration, sound,
-                        volume, pan, endOfScan);
+                        volumePercent, panPercent, endOfScan);
                     newNote = GetNoteFromGameObject(newObject);
                     EditorContext.RecordAddedNote(newNote);
                     break;
@@ -1327,7 +1335,7 @@ public class PatternPanel : MonoBehaviour
                     EditorContext.RecordDeletedNote(n.Clone());
                     DeleteNote(n);
                     newObject = AddDragNote(pulse, lane,
-                        nodes, sound, volume, pan);
+                        nodes, sound, volumePercent, panPercent);
                     newNote = GetNoteFromGameObject(newObject);
                     EditorContext.RecordAddedNote(newNote);
                     break;
@@ -1665,8 +1673,8 @@ public class PatternPanel : MonoBehaviour
                             movedNote.pulse,
                             movedNote.lane,
                             movedNote.sound,
-                            movedNote.volume,
-                            movedNote.pan,
+                            movedNote.volumePercent,
+                            movedNote.panPercent,
                             movedNote.endOfScan);
                         break;
                     case NoteType.Hold:
@@ -1677,8 +1685,8 @@ public class PatternPanel : MonoBehaviour
                             movedNote.lane,
                             (movedNote as HoldNote).duration,
                             movedNote.sound,
-                            movedNote.volume,
-                            movedNote.pan,
+                            movedNote.volumePercent,
+                            movedNote.panPercent,
                             movedNote.endOfScan);
                         break;
                     case NoteType.Drag:
@@ -1687,8 +1695,8 @@ public class PatternPanel : MonoBehaviour
                             movedNote.lane,
                             (movedNote as DragNote).nodes,
                             movedNote.sound,
-                            movedNote.volume,
-                            movedNote.pan,
+                            movedNote.volumePercent,
+                            movedNote.panPercent,
                             (movedNote as DragNote).curveType);
                         break;
                 }
@@ -3021,8 +3029,8 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject AddNote(NoteType type, int pulse, int lane,
         string sound,
-        float volume = Note.defaultVolume,
-        float pan = Note.defaultPan,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
         bool endOfScan = false)
     {
         Note n = new Note()
@@ -3031,8 +3039,8 @@ public class PatternPanel : MonoBehaviour
             pulse = pulse,
             lane = lane,
             sound = sound,
-            volume = volume,
-            pan = pan,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
             endOfScan = endOfScan
         };
         return FinishAddNote(n);
@@ -3040,8 +3048,8 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject AddHoldNote(NoteType type,
         int pulse, int lane, int? duration, string sound,
-        float volume = Note.defaultVolume,
-        float pan = Note.defaultPan,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
         bool endOfScan = false)
     {
         if (!duration.HasValue)
@@ -3071,8 +3079,8 @@ public class PatternPanel : MonoBehaviour
             lane = lane,
             sound = sound,
             duration = duration.Value,
-            volume = volume,
-            pan = pan,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
             endOfScan = endOfScan
         };
         return FinishAddNote(n);
@@ -3080,8 +3088,8 @@ public class PatternPanel : MonoBehaviour
 
     private GameObject AddDragNote(int pulse, int lane,
         List<DragNode> nodes, string sound,
-        float volume = Note.defaultVolume,
-        float pan = Note.defaultPan,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
         CurveType curveType = CurveType.Bezier)
     {
         if (nodes == null)
@@ -3124,8 +3132,8 @@ public class PatternPanel : MonoBehaviour
             lane = lane,
             sound = sound,
             nodes = nodes,
-            volume = volume,
-            pan = pan,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
             curveType = curveType
         };
         return FinishAddNote(n);
@@ -3464,7 +3472,7 @@ public class PatternPanel : MonoBehaviour
                 case NoteType.Repeat:
                     newObject = AddNote(n.type, newPulse,
                         n.lane, n.sound,
-                        n.volume, n.pan, n.endOfScan);
+                        n.volumePercent, n.panPercent, n.endOfScan);
                     break;
                 case NoteType.Hold:
                 case NoteType.RepeatHeadHold:
@@ -3472,13 +3480,14 @@ public class PatternPanel : MonoBehaviour
                     newObject = AddHoldNote(n.type, newPulse,
                         n.lane, (n as HoldNote).duration,
                         n.sound,
-                        n.volume, n.pan, n.endOfScan);
+                        n.volumePercent, n.panPercent, n.endOfScan);
                     break;
                 case NoteType.Drag:
                     newObject = AddDragNote(newPulse, n.lane,
                         (n as DragNote).nodes,
                         n.sound,
-                        n.volume, n.pan, (n as DragNote).curveType);
+                        n.volumePercent, n.panPercent,
+                        (n as DragNote).curveType);
                     break;
             }
             EditorContext.RecordAddedNote(
@@ -3508,6 +3517,7 @@ public class PatternPanel : MonoBehaviour
 
     #region Playback
     // During playback, the following features are disabled:
+    // - All timing options
     // - Adding or deleting notes, including by clicking, dragging
     //   and cut/copy/paste
     // - Applying note types and/or keysounds to selection, if
@@ -3569,7 +3579,8 @@ public class PatternPanel : MonoBehaviour
 
         Pattern pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
-        pattern.CalculateTimeOfAllNotes();
+        pattern.CalculateTimeOfAllNotes(
+            calculateTimeWindows: false);
         playbackStartingPulse = scanline.floatPulse;
         playbackStartingTime = pattern.PulseToTime(
             (int)playbackStartingPulse);
@@ -3592,7 +3603,7 @@ public class PatternPanel : MonoBehaviour
                     audioSourceManager.PlayKeysound(clip,
                         n.lane > PlayableLanes,
                         startTime: playbackStartingTime - n.time,
-                        n.volume, n.pan);
+                        n.volumePercent, n.panPercent);
                 }
             }
             else
@@ -3604,6 +3615,8 @@ public class PatternPanel : MonoBehaviour
         systemTimeOnPlaybackStart = DateTime.Now;
         playbackBeatOnPreviousFrame = -1f;
         backingTrackPlaying = false;
+
+        PlaybackStarted?.Invoke();
     }
 
     public void StopPlayback()
@@ -3623,6 +3636,8 @@ public class PatternPanel : MonoBehaviour
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
         RefreshScanlinePositionSlider();
+
+        PlaybackStopped?.Invoke();
     }
 
     public void UpdatePlayback()
@@ -3691,7 +3706,7 @@ public class PatternPanel : MonoBehaviour
             audioSourceManager.PlayKeysound(clip,
                 nextNote.lane > PlayableLanes,
                 startTime: 0f,
-                nextNote.volume, nextNote.pan);
+                nextNote.volumePercent, nextNote.panPercent);
         }
 
         // Move scanline.
@@ -3707,7 +3722,7 @@ public class PatternPanel : MonoBehaviour
             n.sound);
         audioSourceManager.PlayKeysound(clip,
             n.lane > PlayableLanes, 0f,
-            n.volume, n.pan);
+            n.volumePercent, n.panPercent);
     }
     #endregion
 

@@ -80,7 +80,8 @@ public class ComboText : MonoBehaviour
         List<SpriteSheet> comboDigitSpriteSheetList = null;
         if (Game.feverState == Game.FeverState.Active &&
             (judgement == Judgement.RainbowMax ||
-             judgement == Judgement.Max))
+             judgement == Judgement.Max ||
+             judgement == Judgement.Cool))
         {
             judgementSpriteSheet = GlobalResource.comboSkin
                 .feverMaxJudgement;

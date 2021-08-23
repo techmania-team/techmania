@@ -26,12 +26,16 @@ public class SelectPatternPanel : MonoBehaviour
     public TextMeshProUGUI notesText;
     public Radar radar;
     public ScrollingText authorText;
+    public TextMeshProUGUI recordText;
+    public TextMeshProUGUI recordMedalText;
     public ScrollingText modifiersText;
     public Color specialModifierColor;
 
     [Header("Buttons")]
     public ModifierSidesheet modifierSidesheet;
     public Button playButton;
+
+    private Dictionary<Pattern, Record> records;
 
     private void OnEnable()
     {
@@ -44,9 +48,18 @@ public class SelectPatternPanel : MonoBehaviour
         artistText.text = track.trackMetadata.artist;
         trackDetailsScrollingText.SetUp();
 
+        // Read records of all patterns.
+        records = new Dictionary<Pattern, Record>();
+        foreach (Pattern p in track.patterns)
+        {
+            p.CalculateFingerprint();
+            records.Add(p, Records.instance.GetRecord(p));
+        }
+
         // Initialize pattern list.
         GameObject firstObject =
-            patternList.InitializeAndReturnFirstPatternObject(track);
+            patternList.InitializeAndReturnFirstPatternObject(
+                track, records);
         PatternRadioList.SelectedPatternChanged += 
             OnSelectedPatternObjectChanged;
 
@@ -96,6 +109,8 @@ public class SelectPatternPanel : MonoBehaviour
             notesText.text = "-";
             radar.SetEmpty();
             authorText.SetUp("-");
+            recordText.text = Record.EmptyRecordString();
+            recordMedalText.text = "";
             playButton.interactable = false;
         }
         else
@@ -129,6 +144,18 @@ public class SelectPatternPanel : MonoBehaviour
             notesText.text = p.NumPlayableNotes().ToString();
             radar.SetRadar(p.CalculateRadar());
             authorText.SetUp(p.patternMetadata.author);
+            Record r = records[p];
+            if (r != null)
+            {
+                recordText.text = r.ToString();
+                recordMedalText.text = Record.MedalToString(
+                    r.medal);
+            }
+            else
+            {
+                recordText.text = Record.EmptyRecordString();
+                recordMedalText.text = "";
+            }
             playButton.interactable = true;
         }
     }

@@ -143,8 +143,8 @@ public class Game : MonoBehaviour
     public static FeverState feverState { get; private set; }
     public static float feverAmount { get; private set; }
 
-    private int playableLanes => 
-        GameSetup.pattern.patternMetadata.lanes;
+    public static int playableLanes => 
+        GameSetup.pattern.patternMetadata.playableLanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
@@ -209,6 +209,7 @@ public class Game : MonoBehaviour
     #endregion
 
     #region Editor Preview
+    [HideInInspector]
     public Options optionsBackup;
     #endregion
 
@@ -262,7 +263,10 @@ public class Game : MonoBehaviour
 
         // Load options.
         Options.RefreshInstance();
-        Ruleset.RefreshInstance();
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            Ruleset.LoadCustomRuleset();
+        }
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
             GameSetup.track);
         if (inEditor)
@@ -544,7 +548,8 @@ public class Game : MonoBehaviour
 
         // Time calculations.
         GameSetup.pattern.PrepareForTimeCalculation();
-        GameSetup.pattern.CalculateTimeOfAllNotes();
+        GameSetup.pattern.CalculateTimeOfAllNotes(
+            calculateTimeWindows: true);
         firstScan = 0;
         previousComboTick = 0;
 
@@ -579,12 +584,7 @@ public class Game : MonoBehaviour
             Modifiers.instance.GetBottomScanDirection();
         for (int i = firstScan; i <= lastScan; i++)
         {
-            bool isBottomScan = i % 2 == 0;
-            if (Modifiers.instance.scanPosition == 
-                Modifiers.ScanPosition.Swap)
-            {
-                isBottomScan = !isBottomScan;
-            }
+            bool isBottomScan = Modifiers.instance.IsBottomScan(i);
             Transform parent = isBottomScan ?
                 bottomScanContainer : topScanContainer;
             GameObject template = isBottomScan ?
@@ -759,44 +759,50 @@ public class Game : MonoBehaviour
     private void InitializeKeysForLane()
     {
         keysForLane = new List<List<KeyCode>>();
-        keysForLane.Add(new List<KeyCode>()
+        if (playableLanes >= 4)
         {
-            KeyCode.BackQuote,
-            KeyCode.Alpha0,
-            KeyCode.Alpha1,
-            KeyCode.Alpha2,
-            KeyCode.Alpha3,
-            KeyCode.Alpha4,
-            KeyCode.Alpha5,
-            KeyCode.Alpha6,
-            KeyCode.Alpha7,
-            KeyCode.Alpha8,
-            KeyCode.Alpha9,
-            KeyCode.Minus,
-            KeyCode.Equals,
-            KeyCode.KeypadDivide,
-            KeyCode.KeypadMultiply,
-            KeyCode.KeypadMinus
-        });
-        keysForLane.Add(new List<KeyCode>()
+            keysForLane.Add(new List<KeyCode>()
+            {
+                KeyCode.BackQuote,
+                KeyCode.Alpha0,
+                KeyCode.Alpha1,
+                KeyCode.Alpha2,
+                KeyCode.Alpha3,
+                KeyCode.Alpha4,
+                KeyCode.Alpha5,
+                KeyCode.Alpha6,
+                KeyCode.Alpha7,
+                KeyCode.Alpha8,
+                KeyCode.Alpha9,
+                KeyCode.Minus,
+                KeyCode.Equals,
+                KeyCode.KeypadDivide,
+                KeyCode.KeypadMultiply,
+                KeyCode.KeypadMinus
+            });
+        }
+        if (playableLanes >= 3)
         {
-            KeyCode.Q,
-            KeyCode.W,
-            KeyCode.E,
-            KeyCode.R,
-            KeyCode.T,
-            KeyCode.Y,
-            KeyCode.U,
-            KeyCode.I,
-            KeyCode.O,
-            KeyCode.P,
-            KeyCode.LeftBracket,
-            KeyCode.RightBracket,
-            KeyCode.Backslash,
-            KeyCode.Keypad7,
-            KeyCode.Keypad8,
-            KeyCode.Keypad9
-        });
+            keysForLane.Add(new List<KeyCode>()
+            {
+                KeyCode.Q,
+                KeyCode.W,
+                KeyCode.E,
+                KeyCode.R,
+                KeyCode.T,
+                KeyCode.Y,
+                KeyCode.U,
+                KeyCode.I,
+                KeyCode.O,
+                KeyCode.P,
+                KeyCode.LeftBracket,
+                KeyCode.RightBracket,
+                KeyCode.Backslash,
+                KeyCode.Keypad7,
+                KeyCode.Keypad8,
+                KeyCode.Keypad9
+            });
+        }
         keysForLane.Add(new List<KeyCode>()
         {
             KeyCode.A,
@@ -1119,6 +1125,24 @@ public class Game : MonoBehaviour
             bgaCover.color.b,
             0f);
     }
+
+    public Vector2 GetScreenPositionOnCurrentScanline(int lane)
+    {
+        if (!scanObjects.ContainsKey(Scan))
+        {
+            return new Vector2(-100f, -100f);
+        }
+        Scan s = scanObjects[Scan];
+        float x = s.GetComponentInChildren<Scanline>()
+            .transform.position.x;
+        ScanBackground scanBackground =
+            Modifiers.instance.IsBottomScan(Scan) ?
+            bottomScanBackground : topScanBackground;
+        float y = scanBackground.GetMiddleYOfLaneInWorldSpace(lane);
+        Vector3 worldPosition = new Vector3(x, y, 0f);
+        return RectTransformUtility.WorldToScreenPoint(null,
+            worldPosition);
+    }
     #endregion
 
     #region Update
@@ -1249,7 +1273,8 @@ public class Game : MonoBehaviour
                     // playable lane.
                     if (Time > upcomingNote.note.time
                             + LatencyForNote(upcomingNote.note)
-                            + Ruleset.instance.breakThreshold * speed
+                            + upcomingNote.note.timeWindow[
+                                Judgement.Miss] * speed
                         && !ongoingNotes.ContainsKey(upcomingNote))
                     {
                         ResolveNote(upcomingNote, Judgement.Break);
@@ -1433,15 +1458,18 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             float latency = LatencyForNote(pair.Key.note);
+            float gracePeriodStartTime = 0f;
             float endTime = 0f;
             if (pair.Key.note is HoldNote)
             {
                 HoldNote holdNote = pair.Key.note as HoldNote;
+                gracePeriodStartTime = holdNote.gracePeriodStartTime;
                 endTime = holdNote.endTime + latency;
             }
             else if (pair.Key.note is DragNote)
             {
                 DragNote dragNote = pair.Key.note as DragNote;
+                gracePeriodStartTime = dragNote.gracePeriodStartTime;
                 endTime = dragNote.endTime + latency;
             }
             if (Time >= endTime)
@@ -1452,11 +1480,9 @@ public class Game : MonoBehaviour
                 continue;
             }
 
-            float gracePeriodStart = endTime - 
-                Ruleset.instance.longNoteGracePeriod * speed;
             if (pair.Value == false
                 && !autoPlay
-                && Time < gracePeriodStart)
+                && Time < gracePeriodStartTime)
             {
                 // No hit on this note during this frame, resolve
                 // as a Miss.
@@ -1664,7 +1690,7 @@ public class Game : MonoBehaviour
                     audioSourceManager.PlayKeysound(clip,
                         n.lane > playableLanes,
                         startTime: BaseTime - n.time,
-                        n.volume, n.pan);
+                        n.volumePercent, n.panPercent);
                 }
             });
         }
@@ -1925,7 +1951,7 @@ public class Game : MonoBehaviour
                     + LatencyForNote(noteToCheck.note);
                 float difference = Time - correctTime;
                 if (Mathf.Abs(difference) > 
-                    Ruleset.instance.breakThreshold)
+                    n.note.timeWindow[Judgement.Miss])
                 {
                     // The touch or click is too early or too late
                     // for this note. Ignore.
@@ -2021,7 +2047,8 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
+        if (Mathf.Abs(difference) >
+            earliestNote.note.timeWindow[Judgement.Miss])
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -2094,7 +2121,8 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > Ruleset.instance.breakThreshold)
+        if (Mathf.Abs(difference) > 
+            earliestNote.note.timeWindow[Judgement.Miss])
         {
             // The keystroke is too early or too late
             // for this note. Ignore.
@@ -2151,29 +2179,24 @@ public class Game : MonoBehaviour
         // All code paths into this method should have ignored
         // ongoing notes.
 
-        Judgement judgement;
+        Judgement judgement = Judgement.Miss;
         float absDifference = Mathf.Abs(timeDifference);
         // Compensate for speed.
         absDifference /= speed;
-        if (absDifference <= Ruleset.instance.rainbowMaxWindow)
+
+        foreach (Judgement j in new List<Judgement>{
+            Judgement.RainbowMax,
+            Judgement.Max,
+            Judgement.Cool,
+            Judgement.Good,
+            Judgement.Miss
+        })
         {
-            judgement = Judgement.RainbowMax;
-        }
-        else if (absDifference <= Ruleset.instance.maxWindow)
-        {
-            judgement = Judgement.Max;
-        }
-        else if (absDifference <= Ruleset.instance.coolWindow)
-        {
-            judgement = Judgement.Cool;
-        }
-        else if (absDifference <= Ruleset.instance.goodWindow)
-        {
-            judgement = Judgement.Good;
-        }
-        else
-        {
-            judgement = Judgement.Miss;
+            if (absDifference <= n.note.timeWindow[j])
+            {
+                judgement = j;
+                break;
+            }
         }
 
         vfxSpawner.SpawnVFXOnHit(n, judgement);
@@ -2202,10 +2225,7 @@ public class Game : MonoBehaviour
                 break;
         }
 
-        if (judgement != Judgement.Miss)
-        {
-            PlayKeysound(n, emptyHit: false);
-        }
+        PlayKeysound(n, emptyHit: false);
     }
 
     private void EmptyHit(int lane)
@@ -2266,9 +2286,9 @@ public class Game : MonoBehaviour
 
             if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                hp += feverState == FeverState.Active ?
-                Ruleset.instance.hpRecoveryDuringFever :
-                Ruleset.instance.hpRecovery;
+                hp += Ruleset.instance.GetHpDelta(
+                    judgement, n.note.type,
+                    feverState == FeverState.Active);
                 if (hp >= Ruleset.instance.maxHp)
                 {
                     hp = Ruleset.instance.maxHp;
@@ -2304,9 +2324,9 @@ public class Game : MonoBehaviour
 
             if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
-                hp -= feverState == FeverState.Active ?
-                   Ruleset.instance.hpLossDuringFever :
-                   Ruleset.instance.hpLoss;
+                hp += Ruleset.instance.GetHpDelta(
+                    judgement, n.note.type,
+                    feverState == FeverState.Active);
                 if (hp < 0) hp = 0;
                 if (hp <= 0 &&
                     Modifiers.instance.mode !=
@@ -2393,7 +2413,7 @@ public class Game : MonoBehaviour
         AudioSource source = audioSourceManager.PlayKeysound(clip,
             hidden,
             startTime: 0f,
-            n.note.volume, n.note.pan);
+            n.note.volumePercent, n.note.panPercent);
         noteToAudioSource[n.note] = source;
     }
 

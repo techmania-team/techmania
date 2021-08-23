@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 public partial class Pattern
 {
@@ -220,20 +223,90 @@ public partial class Pattern
         scans = lastScan - firstScan + 1;
     }
 
-    public void CalculateTimeOfAllNotes()
+    public void CalculateTimeOfAllNotes(bool calculateTimeWindows)
     {
+        List<float> timeWindows = Ruleset.instance.timeWindows;
+        if (calculateTimeWindows &&
+            Options.instance.ruleset == Options.Ruleset.Legacy &&
+            GameSetup.pattern.legacyRulesetOverride != null &&
+            GameSetup.pattern.legacyRulesetOverride
+                .timeWindows.Count > 0)
+        {
+            timeWindows = GameSetup.pattern.legacyRulesetOverride
+                .timeWindows;
+        }
+
         foreach (Note n in notes)
         {
             n.time = PulseToTime(n.pulse);
+            float bpm = GetBPMAt(n.pulse);
+            float secondsPerPulse =
+                // seconds per minute *
+                // minutes per beat *
+                // beats per pulse
+                60f / bpm / pulsesPerBeat;
+
             if (n is HoldNote)
             {
                 HoldNote h = n as HoldNote;
                 h.endTime = PulseToTime(h.pulse + h.duration);
+                if (Ruleset.instance.longNoteGracePeriodInPulses)
+                {
+                    h.gracePeriodStartTime = h.endTime -
+                        Ruleset.instance.longNoteGracePeriod *
+                        secondsPerPulse;
+                }
+                else
+                {
+                    h.gracePeriodStartTime = h.endTime -
+                        Ruleset.instance.longNoteGracePeriod;
+                }
             }
             if (n is DragNote)
             {
                 DragNote d = n as DragNote;
                 d.endTime = PulseToTime(d.pulse + d.Duration());
+                if (Ruleset.instance.longNoteGracePeriodInPulses)
+                {
+                    d.gracePeriodStartTime = d.endTime -
+                        Ruleset.instance.longNoteGracePeriod *
+                        secondsPerPulse;
+                }
+                else
+                {
+                    d.gracePeriodStartTime = d.endTime -
+                        Ruleset.instance.longNoteGracePeriod;
+                }
+            }
+
+            // Calculate time window according to current ruleset.
+            if (!calculateTimeWindows) continue;
+            n.timeWindow = new Dictionary<Judgement, float>();
+            if (Ruleset.instance.timeWindowsInPulses)
+            {
+                n.timeWindow.Add(Judgement.RainbowMax,
+                    secondsPerPulse * timeWindows[0]);
+                n.timeWindow.Add(Judgement.Max,
+                    secondsPerPulse * timeWindows[1]);
+                n.timeWindow.Add(Judgement.Cool,
+                    secondsPerPulse * timeWindows[2]);
+                n.timeWindow.Add(Judgement.Good,
+                    secondsPerPulse * timeWindows[3]);
+                n.timeWindow.Add(Judgement.Miss,
+                    secondsPerPulse * timeWindows[4]);
+            }
+            else
+            {
+                n.timeWindow.Add(Judgement.RainbowMax,
+                    timeWindows[0]);
+                n.timeWindow.Add(Judgement.Max,
+                    timeWindows[1]);
+                n.timeWindow.Add(Judgement.Cool,
+                    timeWindows[2]);
+                n.timeWindow.Add(Judgement.Good,
+                    timeWindows[3]);
+                n.timeWindow.Add(Judgement.Miss,
+                    timeWindows[4]);
             }
         }
     }
@@ -309,6 +382,17 @@ public partial class Pattern
         return referenceTime +
             secondsPerPulse * (pulse - referencePulse);
     }
+
+    public float GetBPMAt(int pulse)
+    {
+        float bpm = (float)patternMetadata.initBpm;
+        foreach (BpmEvent e in bpmEvents)
+        {
+            if (e.pulse > pulse) break;
+            bpm = (float)e.bpm;
+        }
+        return bpm;
+    }
     #endregion
 
     #region Statistics and Radar
@@ -317,7 +401,7 @@ public partial class Pattern
         int count = 0;
         foreach (Note n in notes)
         {
-            if (n.lane < patternMetadata.lanes) count++;
+            if (n.lane < patternMetadata.playableLanes) count++;
         }
         return count;
     }
@@ -358,7 +442,7 @@ public partial class Pattern
         float numAsyncNotes = 0;
         foreach (Note n in notes)
         {
-            if (n.lane >= patternMetadata.lanes) continue;
+            if (n.lane >= patternMetadata.playableLanes) continue;
             playableNotes.Add(n);
 
             int scan = n.pulse / pulsesPerScan;
@@ -503,7 +587,7 @@ public partial class Pattern
     public Pattern ApplyModifiers(Modifiers modifiers)
     {
         Pattern p = CloneWithDifferentGuid();
-        int playableLanes = patternMetadata.lanes;
+        int playableLanes = patternMetadata.playableLanes;
         const int kAutoKeysoundFirstLane = 64;
         const int kAutoAssistTickFirstLane = 68;
 
@@ -587,6 +671,41 @@ public partial class Pattern
         }
 
         return p;
+    }
+    #endregion
+
+    #region Fingerprint
+    public string fingerprint { get; private set; }
+
+    public void CheckFingerprintCalculated()
+    {
+        if (fingerprint == null ||
+            fingerprint.Length == 0)
+        {
+            throw new Exception("Fingerprint not calculated.");
+        }
+    }
+
+    public void CalculateFingerprint()
+    {
+        // Serialize pattern, then convert to binary.
+        PackAllNotes();
+        string json = UnityEngine.JsonUtility.ToJson(this,
+            prettyPrint: false);
+        byte[] hashInput = Encoding.UTF8.GetBytes(json);
+
+        // Compute hash.
+        using System.Security.Cryptography.SHA256 sha =
+            System.Security.Cryptography.SHA256.Create();
+        byte[] hashOutput = sha.ComputeHash(hashInput);
+
+        // Convert to string.
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (byte b in hashOutput)
+        {
+            stringBuilder.Append($"{b:x2}");
+        }
+        fingerprint = stringBuilder.ToString();
     }
     #endregion
 }

@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PerformanceMedal
+{
+    NoMedal,
+    AllCombo,
+    PerfectPlay,
+    AbsolutePerfect
+}
+
 public class Score
 {
     private int totalNotes;
@@ -85,11 +93,6 @@ public class Score
         int score = Mathf.FloorToInt(
             maxScore * maxMultiplier / totalNotes);
         score -= notesPerJudgement[Judgement.Max];
-        score += totalFeverBonus;
-        if (feverActive)
-        {
-            score += oneTimeFeverBonus;
-        }
         return score;
     }
 
@@ -128,5 +131,37 @@ public class Score
             numNotesResolved += pair.Value;
         }
         return numNotesResolved >= totalNotes;
+    }
+
+    public PerformanceMedal Medal()
+    {
+        if (notesPerJudgement[Judgement.Miss] +
+            notesPerJudgement[Judgement.Break] > 0)
+        {
+            return PerformanceMedal.NoMedal;
+        }
+        if (notesPerJudgement[Judgement.Cool] +
+            notesPerJudgement[Judgement.Good] > 0)
+        {
+            return PerformanceMedal.AllCombo;
+        }
+        if (notesPerJudgement[Judgement.Max] > 0)
+        {
+            return PerformanceMedal.PerfectPlay;
+        }
+        return PerformanceMedal.AbsolutePerfect;
+    }
+
+    // Assumes player did not fail.
+    public static string ScoreToRank(int score)
+    {
+        if (score > 295000) return "S++";
+        if (score > 290000) return "S+";
+        if (score > 285000) return "S";
+        if (score > 280000) return "A++";
+        if (score > 270000) return "A+";
+        if (score > 260000) return "A";
+        if (score > 220000) return "B";
+        return "C";
     }
 }
