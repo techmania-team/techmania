@@ -11319,6 +11319,7 @@ MonoBehaviour:
   trackGrid: {fileID: 5692625536388981624}
   trackCardTemplate: {fileID: 755302739}
   errorCardTemplate: {fileID: 903616122}
+  upgradeErrorCardTemplate: {fileID: 5692625536388981635}
   newTrackCard: {fileID: 1508468628}
   trackListBuildingProgress: {fileID: 5692625536388981622}
   trackStatusText: {fileID: 5692625536388981631}
@@ -56242,6 +56243,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5692625536388981635 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5708166803369494075, guid: 3a51faf5a17d9ce45839976a67c5503f,
+    type: 3}
+  m_PrefabInstance: {fileID: 5692625536388981620}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5944429722083260665
 MonoBehaviour:
   m_ObjectHideFlags: 0
