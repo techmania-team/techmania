@@ -14,7 +14,7 @@ public class BuildPostProcessor
         {
             string plistPath = path + "/Info.plist";
             UnityEditor.iOS.Xcode.PlistDocument plist =
-                new PlistDocument();
+                new UnityEditor.iOS.Xcode.PlistDocument();
             plist.ReadFromFile(plistPath);
             UnityEditor.iOS.Xcode.PlistElementDict rootDict = 
                 plist.root;
