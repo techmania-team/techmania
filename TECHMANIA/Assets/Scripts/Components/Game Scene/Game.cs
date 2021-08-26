@@ -476,9 +476,11 @@ public class Game : MonoBehaviour
         }
         SetBrightness();
         topScanBackground.Initialize(
-            Modifiers.instance.GetTopScanDirection());
+            Modifiers.instance.GetTopScanDirection(), 
+            global::Scan.Position.Top);
         bottomScanBackground.Initialize(
-            Modifiers.instance.GetBottomScanDirection());
+            Modifiers.instance.GetBottomScanDirection(),
+            global::Scan.Position.Bottom);
 
         int offsetMs =
             GameSetup.pattern.patternMetadata.controlScheme
@@ -584,18 +586,31 @@ public class Game : MonoBehaviour
             Modifiers.instance.GetBottomScanDirection();
         for (int i = firstScan; i <= lastScan; i++)
         {
-            bool isBottomScan = Modifiers.instance.IsBottomScan(i);
-            Transform parent = isBottomScan ?
-                bottomScanContainer : topScanContainer;
-            GameObject template = isBottomScan ?
-                bottomScanTemplate : topScanTemplate;
+            global::Scan.Position position = 
+                Modifiers.instance.GetScanPosition(i);
+            Transform parent = position switch
+            {
+                global::Scan.Position.Top => topScanContainer,
+                global::Scan.Position.Bottom => bottomScanContainer,
+                _ => null
+            };
+            GameObject template = position switch
+            {
+                global::Scan.Position.Top => topScanTemplate,
+                global::Scan.Position.Bottom => bottomScanTemplate,
+                _ => null
+            };
             GameObject scanObject = Instantiate(template, parent);
             scanObject.SetActive(true);
 
             Scan s = scanObject.GetComponent<Scan>();
-            global::Scan.Direction direction = isBottomScan ?
-                bottomScanDirection : topScanDirection;
-            s.Initialize(scanNumber: i, direction);
+            global::Scan.Direction direction = position switch
+            {
+                global::Scan.Position.Top => topScanDirection,
+                global::Scan.Position.Bottom => bottomScanDirection,
+                _ => throw new NotImplementedException()
+            };
+            s.Initialize(scanNumber: i, direction, position);
             scanObjects.Add(i, s);
         }
 

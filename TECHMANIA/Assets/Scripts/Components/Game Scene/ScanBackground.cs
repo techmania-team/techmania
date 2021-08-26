@@ -38,32 +38,30 @@ public class ScanBackground : MonoBehaviour
         marker.gameObject.SetActive(true);
     }
 
-    public void Initialize(Scan.Direction scanDirection)
+    public void Initialize(Scan.Direction scanDirection,
+        Scan.Position position)
     {
+        float marginAbove, marginBelow;
+        Ruleset.instance.GetScanMargin(
+            GameSetup.pattern.patternMetadata.playableLanes,
+            position, out marginAbove, out marginBelow);
+
         // Lanes
         float laneHeightRelative =
-            (1f - Ruleset.instance.scanMargin * 2f) /
+            (1f - marginAbove - marginBelow) /
             Game.playableLanes;
         List<float> anchors = new List<float>();
-        anchors.Add(1f);
-        switch (Game.playableLanes)
+        for (int i = 0; i <= Game.playableLanes; i++)
         {
-            case 4:
-                anchors.Add(0.5f + laneHeightRelative);
-                anchors.Add(0.5f);
-                anchors.Add(0.5f - laneHeightRelative);
-                break;
-            case 3:
-                anchors.Add(1f - Ruleset.instance.scanMargin -
-                    laneHeightRelative);
-                anchors.Add(Ruleset.instance.scanMargin +
-                    laneHeightRelative);
-                break;
-            case 2:
-                anchors.Add(0.5f);
-                break;
+            anchors.Add(1f - marginAbove - laneHeightRelative * i);
         }
-        anchors.Add(0f);
+        anchors[0] = 1f;
+        anchors[anchors.Count - 1] = 0f;
+        for (int i = 0; i < lanes.Count; i++)
+        {
+            lanes[i].anchorMin = Vector2.zero;
+            lanes[i].anchorMax = Vector2.zero;
+        }
         for (int i = 0; i < Game.playableLanes; i++)
         {
             lanes[i].anchorMin = new Vector2(0f, anchors[i + 1]);

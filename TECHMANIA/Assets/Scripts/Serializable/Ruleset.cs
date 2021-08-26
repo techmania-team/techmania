@@ -31,7 +31,8 @@ public class Ruleset : RulesetBase
 
     // Hitbox sizes
 
-    public float scanMargin;
+    public List<float> scanMarginTopBottom;
+    public List<float> scanMarginMiddle;
     public float hitboxWidth;
     public float hitboxHeight;
     public float chainHeadHitboxWidth;
@@ -76,7 +77,10 @@ public class Ruleset : RulesetBase
         longNoteGracePeriod = 0.15f;
         longNoteGracePeriodInPulses = false;
 
-        scanMargin = 0.05f;
+        scanMarginTopBottom = new List<float>()
+            { 0.05f, 0.05f, 0.05f };
+        scanMarginMiddle = new List<float>()
+            { 0.05f, 0.05f, 0.05f };
         hitboxWidth = 1.5f;
         hitboxHeight = 1f;
         chainHeadHitboxWidth = 1.5f;
@@ -224,6 +228,28 @@ public class Ruleset : RulesetBase
                 return 0;
         }
     }
+
+    public void GetScanMargin(int playableLanes,
+        Scan.Position scanPosition,
+        out float marginAbove, out float marginBelow)
+    {
+        int index = playableLanes - 2;
+        float marginTopBottom = scanMarginTopBottom[index];
+        float marginMiddle = scanMarginMiddle[index];
+        switch (scanPosition)
+        {
+            case Scan.Position.Top:
+                marginAbove = marginTopBottom;
+                marginBelow = marginMiddle;
+                break;
+            case Scan.Position.Bottom:
+                marginAbove = marginMiddle;
+                marginBelow = marginTopBottom;
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+    }
     #endregion
 
     #region Instances
@@ -242,7 +268,10 @@ public class Ruleset : RulesetBase
             longNoteGracePeriod = 0.15f,
             longNoteGracePeriodInPulses = false,
 
-            scanMargin = 0.05f,
+            scanMarginTopBottom = new List<float>()
+                { 0.05f, 0.05f, 0.05f },
+            scanMarginMiddle = new List<float>()
+                { 0.05f, 0.05f, 0.05f },
             hitboxWidth = 1.25f,
             hitboxHeight = 1.1f,
             chainHeadHitboxWidth = 100f,
@@ -357,7 +386,10 @@ public class RulesetV1 : RulesetBase
             timeWindowsInPulses = false,
             longNoteGracePeriod = longNoteGracePeriod,
 
-            scanMargin = scanMargin,
+            scanMarginTopBottom = new List<float>()
+                { scanMargin, scanMargin, scanMargin },
+            scanMarginMiddle = new List<float>()
+                { scanMargin, scanMargin, scanMargin },
             hitboxWidth = hitboxWidth,
             chainHeadHitboxWidth = chainHeadHitboxWidth,
             chainNodeHitboxWidth = chainNodeHitboxWidth,

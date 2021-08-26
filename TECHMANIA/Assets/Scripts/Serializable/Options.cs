@@ -596,14 +596,20 @@ public class Modifiers
         }
     }
 
-    public bool IsBottomScan(int scanNumber)
+    public Scan.Position GetScanPosition(int scanNumber)
     {
         bool isBottomScan = scanNumber % 2 == 0;
         if (scanPosition == ScanPosition.Swap)
         {
             isBottomScan = !isBottomScan;
         }
-        return isBottomScan;
+        return isBottomScan ?
+            Scan.Position.Bottom : Scan.Position.Top;
+    }
+
+    public bool IsBottomScan(int scanNumber)
+    {
+        return true;
     }
 
     public bool HasAnySpecialModifier()
