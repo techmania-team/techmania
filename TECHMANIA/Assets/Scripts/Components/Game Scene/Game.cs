@@ -1151,8 +1151,12 @@ public class Game : MonoBehaviour
         float x = s.GetComponentInChildren<Scanline>()
             .transform.position.x;
         ScanBackground scanBackground =
-            Modifiers.instance.IsBottomScan(Scan) ?
-            bottomScanBackground : topScanBackground;
+            Modifiers.instance.GetScanPosition(Scan) switch
+            {
+                global::Scan.Position.Top => topScanBackground,
+                global::Scan.Position.Bottom => bottomScanBackground,
+                _ => null
+            };
         float y = scanBackground.GetMiddleYOfLaneInWorldSpace(lane);
         Vector3 worldPosition = new Vector3(x, y, 0f);
         return RectTransformUtility.WorldToScreenPoint(null,

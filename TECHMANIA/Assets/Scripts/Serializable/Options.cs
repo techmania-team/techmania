@@ -607,11 +607,6 @@ public class Modifiers
             Scan.Position.Bottom : Scan.Position.Top;
     }
 
-    public bool IsBottomScan(int scanNumber)
-    {
-        return true;
-    }
-
     public bool HasAnySpecialModifier()
     {
         if (mode != Mode.Normal) return true;
