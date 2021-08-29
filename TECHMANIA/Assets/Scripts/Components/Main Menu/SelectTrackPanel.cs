@@ -415,7 +415,8 @@ public class SelectTrackPanel : MonoBehaviour
                 tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
         }
-        else if (cardToTrack.Count + cardToError.Count == 0)
+        else if (cardToSubfolder.Count + 
+            cardToTrack.Count + cardToError.Count == 0)
         {
             trackStatusText.gameObject.SetActive(true);
             trackStatusText.text = Locale.GetString(
