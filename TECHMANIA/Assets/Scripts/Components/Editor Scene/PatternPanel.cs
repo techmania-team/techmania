@@ -132,7 +132,8 @@ public class PatternPanel : MonoBehaviour
     private static int TotalLanes => 64;
 
     private static float WorkspaceViewportHeight;
-    private static int VisibleLanes;
+    private static int VisibleLanes =>
+        Options.instance.editorOptions.visibleLanes;
     public static float LaneHeight =>
         WorkspaceViewportHeight / VisibleLanes;
     public static float WorkspaceContentHeight => LaneHeight *
@@ -142,7 +143,6 @@ public class PatternPanel : MonoBehaviour
     #region Horizontal Spacing
     private int numScans;
     private static int zoom;
-    private int beatSnapDivisor;
     public static float ScanWidth => 10f * zoom;
     public static float PulseWidth
     {
@@ -168,22 +168,20 @@ public class PatternPanel : MonoBehaviour
     #region MonoBehavior APIs
     private void OnEnable()
     {
+        Options.RefreshInstance();
+
         // Hidden lanes
         hiddenLaneBackground.anchorMin = Vector2.zero;
         hiddenLaneBackground.anchorMax = new Vector2(
             1f, 1f - (float)PlayableLanes / TotalLanes);
 
         // Vertical spacing
-        VisibleLanes = int.Parse(
-            visibleLanesDropdown.options
-            [visibleLanesDropdown.value].text);
         Canvas.ForceUpdateCanvases();
         WorkspaceViewportHeight = workspaceViewport.rect.height;
 
         // Horizontal spacing
         numScans = 0;  // Will be updated in Refresh()
         zoom = 100;
-        beatSnapDivisor = 2;
 
         // Scanline
         scanline.floatPulse = 0f;
@@ -197,8 +195,8 @@ public class PatternPanel : MonoBehaviour
         noteType = NoteType.Basic;
         UpdateToolAndNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
+        UpdateVisibleLaneDisplay();
         keysoundSheet.Initialize();
-        Options.RefreshInstance();
 
         // Playback
         audioLoaded = false;
@@ -279,6 +277,8 @@ public class PatternPanel : MonoBehaviour
         PatternTimingTab.TimingUpdated -= OnPatternTimingUpdated;
         EditorOptionsTab.Opened -= OnOptionsTabOpened;
         EditorOptionsTab.Closed -= OnOptionsTabClosed;
+
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
     }
 
     // Update is called once per frame
@@ -1122,25 +1122,30 @@ public class PatternPanel : MonoBehaviour
 
     public void OnBeatSnapDivisorChanged(int direction)
     {
+        int divisor = Options.instance.editorOptions.beatSnapDivisor;
         do
         {
-            beatSnapDivisor += direction;
-            if (beatSnapDivisor <= 0 && direction < 0)
+            divisor += direction;
+            if (divisor <= 0 && direction < 0)
             {
-                beatSnapDivisor = Pattern.pulsesPerBeat;
+                divisor = Pattern.pulsesPerBeat;
             }
-            if (beatSnapDivisor > Pattern.pulsesPerBeat && direction > 0)
+            if (divisor > Pattern.pulsesPerBeat &&
+                direction > 0)
             {
-                beatSnapDivisor = 1;
+                divisor = 1;
             }
         }
-        while (Pattern.pulsesPerBeat % beatSnapDivisor != 0);
+        while (Pattern.pulsesPerBeat % divisor != 0);
+        Options.instance.editorOptions.beatSnapDivisor =
+            divisor;
         UpdateBeatSnapDivisorDisplay();
     }
 
     private void UpdateBeatSnapDivisorDisplay()
     {
-        beatSnapDividerDisplay.text = beatSnapDivisor.ToString();
+        beatSnapDividerDisplay.text =
+            Options.instance.editorOptions.beatSnapDivisor.ToString();
     }
 
     public void OnTimeEventButtonClick()
@@ -1224,13 +1229,19 @@ public class PatternPanel : MonoBehaviour
 
     public void OnVisibleLaneNumberChanged(int newValue)
     {
-        VisibleLanes = int.Parse(
+        Options.instance.editorOptions.visibleLanes = int.Parse(
             visibleLanesDropdown.options
             [newValue].text);
 
         ResizeWorkspace();
         RepositionNeeded?.Invoke();
         AdjustAllPathsAndTrails();
+    }
+
+    private void UpdateVisibleLaneDisplay()
+    {
+        UIUtils.MemoryToDropdown(visibleLanesDropdown,
+            VisibleLanes.ToString());
     }
 
     public void OnRectangleToolButtonClick()
@@ -3729,8 +3740,10 @@ public class PatternPanel : MonoBehaviour
     #region Utilities
     private int SnapPulse(float rawPulse)
     {
-        int pulsesPerDivision = Pattern.pulsesPerBeat / beatSnapDivisor;
-        int snappedPulse = Mathf.RoundToInt(rawPulse / pulsesPerDivision)
+        int pulsesPerDivision = Pattern.pulsesPerBeat
+            / Options.instance.editorOptions.beatSnapDivisor;
+        int snappedPulse = Mathf.RoundToInt(
+            rawPulse / pulsesPerDivision)
             * pulsesPerDivision;
         return snappedPulse;
     }

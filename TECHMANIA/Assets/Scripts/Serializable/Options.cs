@@ -275,6 +275,11 @@ public class Options : OptionsBase
 [Serializable]
 public class EditorOptions
 {
+    // Edit tab
+
+    public int beatSnapDivisor;
+    public int visibleLanes;
+
     // Appearance
 
     public bool showKeysounds;
@@ -296,6 +301,9 @@ public class EditorOptions
 
     public EditorOptions()
     {
+        beatSnapDivisor = 2;
+        visibleLanes = 12;
+
         showKeysounds = true;
         keepScanlineInView = true;
 
