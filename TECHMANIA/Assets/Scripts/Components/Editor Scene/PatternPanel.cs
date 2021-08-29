@@ -661,11 +661,11 @@ public class PatternPanel : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (selectedNotes.Count == 1)
+            if (selectedNotes.Count == 1 && !isPlaying)
             {
                 foreach (Note n in selectedNotes)
                 {
-                    PlayKeysound(n);
+                    PreviewKeysound(n);
                 }
             }
         }
@@ -3548,6 +3548,10 @@ public class PatternPanel : MonoBehaviour
     // a note is removed from the queue.
     private Queue<Note> sortedNotesForPlayback;
 
+    // Keep a reference to the audio source playing a keysound preview
+    // so we can stop a preview before starting the next one.
+    private AudioSource keysoundPreviewSource;
+
     private void OnResourceLoadComplete(string error)
     {
         if (error != null)
@@ -3727,11 +3731,16 @@ public class PatternPanel : MonoBehaviour
         RefreshScanlinePositionSlider();
     }
 
-    public void PlayKeysound(Note n)
+    public void PreviewKeysound(Note n)
     {
+        if (keysoundPreviewSource != null)
+        {
+            keysoundPreviewSource.Stop();
+        }
         AudioClip clip = ResourceLoader.GetCachedClip(
             n.sound);
-        audioSourceManager.PlayKeysound(clip,
+        keysoundPreviewSource = audioSourceManager.PlayKeysound(
+            clip,
             n.lane > PlayableLanes, 0f,
             n.volumePercent, n.panPercent);
     }
