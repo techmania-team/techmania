@@ -516,7 +516,10 @@ public class TrackSetupPanel : MonoBehaviour
 
         if (madeChange)
         {
-            EditorContext.track.SortPatterns();
+            if (EditorContext.track.trackMetadata.autoOrderPatterns)
+            {
+                EditorContext.track.SortPatterns();
+            }
             RefreshPatternList();
         }
     }

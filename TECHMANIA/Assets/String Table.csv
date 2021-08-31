@@ -900,5 +900,23 @@ Continue anyway?","谱面编辑器是为PC设计，某些功能只有用鼠标�
 ,track_setup_patterns_tab_auto_order_label,Automatically order patterns,自动谱面排序,自動排序譜面,パターンを自動で並べる,패턴 자동 정렬
 ,track_setup_patterns_tab_order_header,Order,顺序,排序,順序,패턴 순서
 ,,,,,,
+,select_track_upgrade_error_format,"An error occurred when upgrading {0}:
+
+{1}","升级{0}时发生错误：
+
+{1}",,,
+,select_track_upgrade_complete_with_error_message,"Upgrade completed, but some tracks failed to upgrade. Click the error cards for details.",升级完毕，但是有部分曲目升级失败。请点击显示错误的卡片以查看详情。,,,
+,select_track_upgrade_error_card_title,Could not upgrade track,无法升级曲目,,,
 ,,,,,,
+,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,,,
 ,,,,,,
+,result_panel_legacy_override_indicator,*Pattern contains legacy ruleset override,*谱面包含对经典规则的修改,,,
+,,,,,,
+,information_panel_getting_started_header,Getting started,入门,,,
+,information_panel_getting_started_text,"Download tracks and skins from the official website, then extract them into the ""Tracks"" and ""Skins"" folders.",从官方网站下载曲目和皮肤，然后解压到Tracks和Skins文件夹。,,,
+,information_panel_tracks_skins_location_pc,"On PC, these folders are next to TECHMANIA.exe.",在PC上，这两个文件夹和TECHMANIA.exe位于同一位置。,,,
+,information_panel_tracks_skins_location_ios,"On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer.",在iOS/iPadOS上，使用文件app或者iTunes的文件共享来访问这两个文件夹。,,,
+,information_panel_tracks_skins_location_android,"On Android, you can find these folders in /storage/Android/data/com.TECHMANIA.",在Android上，这两个文件夹位于/storage/Android/data/com.TECHMANIA。,,,
+,information_panel_links_header,Links,链接,,,
+,information_panel_links_website,Website,网站,,,
+,information_panel_links_documentation,Documentation,文档,,,

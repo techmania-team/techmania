@@ -13,6 +13,13 @@ public class Scan : MonoBehaviour
     }
     [HideInInspector]
     public Direction direction;
+    public enum Position
+    {
+        Top,
+        Bottom
+    }
+    [HideInInspector]
+    public Position position;
     [HideInInspector]
     public int scanNumber;
 
@@ -25,6 +32,10 @@ public class Scan : MonoBehaviour
     private float screenWidth;
     private float scanHeight;
     public static float laneHeight { get; private set; }
+
+    private float marginAbove;
+    private float marginBelow;
+
     private List<NoteAppearance> noteAppearances;
     private List<HoldExtension> holdExtensions;
     private List<RepeatPathExtension> repeatPathExtensions;
@@ -42,24 +53,30 @@ public class Scan : MonoBehaviour
         Game.JumpedToScan -= OnJumpedToScan;
     }
 
-    public void Initialize(int scanNumber, Direction direction)
+    public void Initialize(int scanNumber, Direction direction,
+        Position position)
     {
         Game.ScanChanged += OnScanChanged;
         Game.ScanAboutToChange += OnScanAboutToChange;
         Game.JumpedToScan += OnJumpedToScan;
 
+        this.scanNumber = scanNumber;
+        this.direction = direction;
+        this.position = position;
+
         Rect rect = GetComponent<RectTransform>().rect;
         screenWidth = rect.width;
         scanHeight = rect.height;
+        Ruleset.instance.GetScanMargin(
+            GameSetup.pattern.patternMetadata.playableLanes,
+            position, out marginAbove, out marginBelow);
         laneHeight = scanHeight 
-            * (1f - Ruleset.instance.scanMargin * 2f) /
+            * (1f - marginAbove - marginBelow) /
             Game.playableLanes;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<HoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
 
-        this.scanNumber = scanNumber;
-        this.direction = direction;
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
         scanline.Initialize(this, scanHeight);
@@ -280,7 +297,7 @@ public class Scan : MonoBehaviour
 
     public float FloatLaneToYPosition(float lane)
     {
-        return scanHeight * (1f - Ruleset.instance.scanMargin)
+        return scanHeight * (1f - marginAbove)
             - (lane + 0.5f) * laneHeight;
     }
     #endregion

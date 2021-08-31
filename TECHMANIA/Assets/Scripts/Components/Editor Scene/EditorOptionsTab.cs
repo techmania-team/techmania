@@ -33,7 +33,6 @@ public class EditorOptionsTab : MonoBehaviour
 
     private void OnDisable()
     {
-        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
         Closed?.Invoke();
     }
 

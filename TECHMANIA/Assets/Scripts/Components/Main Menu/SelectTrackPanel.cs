@@ -24,6 +24,12 @@ public class SelectTrackPanel : MonoBehaviour
     }
     protected class ErrorInTrack
     {
+        public enum Type
+        {
+            Load,
+            Upgrade
+        }
+        public Type type;
         public string trackFile;
         public string message;
     }
@@ -91,6 +97,7 @@ public class SelectTrackPanel : MonoBehaviour
     public GridLayoutGroup trackGrid;
     public GameObject trackCardTemplate;
     public GameObject errorCardTemplate;
+    public GameObject upgradeErrorCardTemplate;
     public GameObject newTrackCard;
     public TextMeshProUGUI trackListBuildingProgress;
     public TextMeshProUGUI trackStatusText;
@@ -161,6 +168,7 @@ public class SelectTrackPanel : MonoBehaviour
             GameObject o = trackGrid.transform.GetChild(i).gameObject;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
+            if (o == upgradeErrorCardTemplate) continue;
             if (o == newTrackCard) continue;
             Destroy(o);
         }
@@ -319,14 +327,27 @@ public class SelectTrackPanel : MonoBehaviour
             errorTrackList[currentLocation])
         {
             GameObject card = null;
+            string key = error.type switch
+            {
+                ErrorInTrack.Type.Load
+                    => "select_track_error_format",
+                ErrorInTrack.Type.Upgrade
+                    => "select_track_upgrade_error_format",
+                _ => ""
+            };
             string message = Locale.GetStringAndFormat(
-                "select_track_error_format",
+                key,
                 error.trackFile,
                 error.message);
 
             // Instantiate card.
-            card = Instantiate(errorCardTemplate, 
-                trackGrid.transform);
+            GameObject template = error.type switch
+            {
+                ErrorInTrack.Type.Load => errorCardTemplate,
+                ErrorInTrack.Type.Upgrade => upgradeErrorCardTemplate,
+                _ => null
+            };
+            card = Instantiate(template, trackGrid.transform);
             card.name = "Error Card";
             card.SetActive(true);
             trackGridEmpty = false;
@@ -394,7 +415,8 @@ public class SelectTrackPanel : MonoBehaviour
                 tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
         }
-        else if (cardToTrack.Count + cardToError.Count == 0)
+        else if (cardToSubfolder.Count + 
+            cardToTrack.Count + cardToError.Count == 0)
         {
             trackStatusText.gameObject.SetActive(true);
             trackStatusText.text = Locale.GetString(
@@ -409,7 +431,22 @@ public class SelectTrackPanel : MonoBehaviour
 
         if (upgradeVersion)
         {
+            bool anyUpgradeError = false;
+            foreach (List<ErrorInTrack> list in errorTrackList.Values)
+            {
+                foreach (ErrorInTrack e in list)
+                {
+                    if (e.type == ErrorInTrack.Type.Upgrade)
+                    {
+                        anyUpgradeError = true;
+                        break;
+                    }
+                }
+                if (anyUpgradeError) break;
+            }
             messageDialog.Show(Locale.GetString(
+                anyUpgradeError ?
+                "select_track_upgrade_complete_with_error_message" :
                 "select_track_upgrade_complete_message"));
         }
     }
@@ -617,32 +654,46 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Attempt to load track.
             Track track = null;
+            bool upgradedWhenLoading;
             try
             {
-                bool upgradedWhenLoading;
                 track = Track.LoadFromFile(possibleTrackFile,
                     out upgradedWhenLoading) as Track;
-                if (upgradedWhenLoading)
-                {
-                    // If upgrading, write the track back to disk.
-                    if (upgradeVersion)
-                    {
-                        track.SaveToFile(possibleTrackFile);
-                    }
-                    else
-                    {
-                        anyOutdatedTrack = true;
-                    }
-                }
             }
             catch (Exception ex)
             {
                 errorTrackList[folder].Add(new ErrorInTrack()
                 {
+                    type = ErrorInTrack.Type.Load,
                     trackFile = possibleTrackFile,
                     message = ex.Message
                 });
                 continue;
+            }
+            if (upgradedWhenLoading)
+            {
+                // If upgrading, write the track back to disk.
+                if (upgradeVersion)
+                {
+                    try
+                    {
+                        track.SaveToFile(possibleTrackFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        errorTrackList[folder].Add(new ErrorInTrack()
+                        {
+                            type = ErrorInTrack.Type.Upgrade,
+                            trackFile = possibleTrackFile,
+                            message = ex.Message
+                        });
+                        continue;
+                    }
+                }
+                else
+                {
+                    anyOutdatedTrack = true;
+                }
             }
 
             trackList[folder].Add(new TrackInFolder()

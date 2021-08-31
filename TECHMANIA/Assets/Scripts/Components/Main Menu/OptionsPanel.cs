@@ -309,6 +309,14 @@ public class OptionsPanel : MonoBehaviour
             {
                 Ruleset.LoadCustomRuleset();
             }
+            catch (System.IO.FileNotFoundException)
+            {
+                messageDialog.Show(Locale.GetStringAndFormat(
+                    "custom_ruleset_not_found_error_format",
+                    Paths.GetRulesetFilePath()));
+                Options.instance.ruleset = Options.Ruleset.Standard;
+                MemoryToUI();
+            }
             catch (System.Exception ex)
             {
                 messageDialog.Show(Locale.GetStringAndFormat(

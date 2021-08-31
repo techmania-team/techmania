@@ -275,6 +275,11 @@ public class Options : OptionsBase
 [Serializable]
 public class EditorOptions
 {
+    // Edit tab
+
+    public int beatSnapDivisor;
+    public int visibleLanes;
+
     // Appearance
 
     public bool showKeysounds;
@@ -296,6 +301,9 @@ public class EditorOptions
 
     public EditorOptions()
     {
+        beatSnapDivisor = 2;
+        visibleLanes = 12;
+
         showKeysounds = true;
         keepScanlineInView = true;
 
@@ -596,14 +604,15 @@ public class Modifiers
         }
     }
 
-    public bool IsBottomScan(int scanNumber)
+    public Scan.Position GetScanPosition(int scanNumber)
     {
         bool isBottomScan = scanNumber % 2 == 0;
         if (scanPosition == ScanPosition.Swap)
         {
             isBottomScan = !isBottomScan;
         }
-        return isBottomScan;
+        return isBottomScan ?
+            Scan.Position.Bottom : Scan.Position.Top;
     }
 
     public bool HasAnySpecialModifier()

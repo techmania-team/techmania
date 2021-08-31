@@ -396,6 +396,38 @@ public class LegacyRulesetOverride
     public List<int> hpDeltaHoldDuringFever;
     public List<int> hpDeltaDragDuringFever;
     public List<int> hpDeltaRepeatDuringFever;
+
+    public bool HasAny()
+    {
+        if (timeWindows != null && timeWindows.Count > 0)
+            return true;
+        if (hpDeltaBasic != null && hpDeltaBasic.Count > 0)
+            return true;
+        if (hpDeltaChain != null && hpDeltaChain.Count > 0)
+            return true;
+        if (hpDeltaHold != null && hpDeltaHold.Count > 0)
+            return true;
+        if (hpDeltaDrag != null && hpDeltaDrag.Count > 0)
+            return true;
+        if (hpDeltaRepeat != null && hpDeltaRepeat.Count > 0)
+            return true;
+        if (hpDeltaBasicDuringFever != null
+            && hpDeltaBasicDuringFever.Count > 0)
+            return true;
+        if (hpDeltaChainDuringFever != null
+            && hpDeltaChainDuringFever.Count > 0)
+            return true;
+        if (hpDeltaHoldDuringFever != null
+            && hpDeltaHoldDuringFever.Count > 0)
+            return true;
+        if (hpDeltaDragDuringFever != null
+            && hpDeltaDragDuringFever.Count > 0)
+            return true;
+        if (hpDeltaRepeatDuringFever != null
+            && hpDeltaRepeatDuringFever.Count > 0)
+            return true;
+        return false;
+    }
 }
 
 public class Note

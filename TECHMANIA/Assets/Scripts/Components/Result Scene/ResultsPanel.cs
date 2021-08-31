@@ -37,6 +37,7 @@ public class ResultsPanel : MonoBehaviour
     public TextMeshProUGUI ruleset;
     public ScrollingText modifierDisplay;
     public Color specialModifierColor;
+    public GameObject legacyRulesetOverrideIndicator;
 
     // Start is called before the first frame update
     void Start()
@@ -135,6 +136,7 @@ public class ResultsPanel : MonoBehaviour
         }
 
         // Ruleset
+        legacyRulesetOverrideIndicator.SetActive(false);
         switch (Options.instance.ruleset)
         {
             case Options.Ruleset.Standard:
@@ -144,6 +146,11 @@ public class ResultsPanel : MonoBehaviour
             case Options.Ruleset.Legacy:
                 ruleset.text = Locale.GetString(
                     "options_ruleset_legacy");
+                if (GameSetup.pattern.legacyRulesetOverride.HasAny())
+                {
+                    ruleset.text = ruleset.text + "*";
+                    legacyRulesetOverrideIndicator.SetActive(true);
+                }
                 break;
             case Options.Ruleset.Custom:
                 ruleset.text = Locale.GetString(
