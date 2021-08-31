@@ -252,13 +252,13 @@ public partial class Pattern
                 h.endTime = PulseToTime(h.pulse + h.duration);
                 if (Ruleset.instance.longNoteGracePeriodInPulses)
                 {
-                    h.gracePeriodStartTime = h.endTime -
+                    h.gracePeriodLength =
                         Ruleset.instance.longNoteGracePeriod *
                         secondsPerPulse;
                 }
                 else
                 {
-                    h.gracePeriodStartTime = h.endTime -
+                    h.gracePeriodLength =
                         Ruleset.instance.longNoteGracePeriod;
                 }
             }
@@ -266,17 +266,10 @@ public partial class Pattern
             {
                 DragNote d = n as DragNote;
                 d.endTime = PulseToTime(d.pulse + d.Duration());
-                if (Ruleset.instance.longNoteGracePeriodInPulses)
-                {
-                    d.gracePeriodStartTime = d.endTime -
-                        Ruleset.instance.longNoteGracePeriod *
-                        secondsPerPulse;
-                }
-                else
-                {
-                    d.gracePeriodStartTime = d.endTime -
-                        Ruleset.instance.longNoteGracePeriod;
-                }
+                // There is no grace period for drag notes but
+                // we leave the code here in case we need it again
+                // later.
+                d.gracePeriodLength = 0f;
             }
 
             // Calculate time window according to current ruleset.

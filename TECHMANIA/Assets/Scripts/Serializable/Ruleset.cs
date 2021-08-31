@@ -269,7 +269,7 @@ public class Ruleset : RulesetBase
             timeWindows = new List<float>()
             { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
             timeWindowsInPulses = true,
-            longNoteGracePeriod = 0.15f,
+            longNoteGracePeriod = 0.1f,
             longNoteGracePeriodInPulses = false,
 
             scanMarginTopBottom = new List<float>()

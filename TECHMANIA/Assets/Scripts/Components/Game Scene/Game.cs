@@ -233,6 +233,7 @@ public class Game : MonoBehaviour
     // Value is the judgement at note's head.
     private Dictionary<NoteObject, Judgement> ongoingNotes;
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
+    private Dictionary<NoteObject, float> ongoingNoteLastInput;
 
     #region Monobehavior messages
     // Start is called before the first frame update
@@ -767,6 +768,7 @@ public class Game : MonoBehaviour
         ongoingNotes = new Dictionary<NoteObject, Judgement>();
         ongoingNoteIsHitOnThisFrame =
             new Dictionary<NoteObject, bool>();
+        ongoingNoteLastInput = new Dictionary<NoteObject, float>();
         noteToAudioSource = new Dictionary<Note, AudioSource>();
     }
 
@@ -1477,19 +1479,19 @@ public class Game : MonoBehaviour
         {
             // Has the note's duration finished?
             float latency = LatencyForNote(pair.Key.note);
-            float gracePeriodStartTime = 0f;
             float endTime = 0f;
+            float gracePeriodLength = 0f;
             if (pair.Key.note is HoldNote)
             {
                 HoldNote holdNote = pair.Key.note as HoldNote;
-                gracePeriodStartTime = holdNote.gracePeriodStartTime;
                 endTime = holdNote.endTime + latency;
+                gracePeriodLength = holdNote.gracePeriodLength;
             }
             else if (pair.Key.note is DragNote)
             {
                 DragNote dragNote = pair.Key.note as DragNote;
-                gracePeriodStartTime = dragNote.gracePeriodStartTime;
                 endTime = dragNote.endTime + latency;
+                gracePeriodLength = dragNote.gracePeriodLength;
             }
             if (Time >= endTime)
             {
@@ -1499,15 +1501,24 @@ public class Game : MonoBehaviour
                 continue;
             }
 
-            if (pair.Value == false
-                && !autoPlay
-                && Time < gracePeriodStartTime)
+            // Update time of last input.
+            if (pair.Value == true)
             {
-                // No hit on this note during this frame, resolve
-                // as a Miss.
-                ResolveNote(pair.Key, Judgement.Miss);
-                StopKeysoundIfPlaying(pair.Key);
-                ongoingNotes.Remove(pair.Key);
+                // Will create new element if not existing.
+                ongoingNoteLastInput[pair.Key] = Time;
+            }
+            else if (!autoPlay)
+            {
+                float lastInput = ongoingNoteLastInput[pair.Key];
+                if (Time > lastInput + gracePeriodLength)
+                {
+                    // No input on this note for too long, resolve
+                    // as MISS.
+                    ResolveNote(pair.Key, Judgement.Miss);
+                    StopKeysoundIfPlaying(pair.Key);
+                    ongoingNotes.Remove(pair.Key);
+                    ongoingNoteLastInput.Remove(pair.Key);
+                }
             }
         }
 
