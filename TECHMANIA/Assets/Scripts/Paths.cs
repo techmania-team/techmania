@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -79,6 +79,12 @@ public static class Paths
         Directory.CreateDirectory(skinFolder);
         streamingSkinFolder = Path.Combine(
             Application.streamingAssetsPath, kSkinFolderName);
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        // Application.streamingAssetsPath gives '/' on Windows, which
+        // causes problems when comparing paths.
+        streamingSkinFolder = streamingSkinFolder
+            .Replace("/", "\\");
+#endif
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
         Directory.CreateDirectory(GetVfxSkinRootFolder());
