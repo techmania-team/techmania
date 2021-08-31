@@ -72,6 +72,12 @@ public class DragNoteAppearance : NoteAppearance,
             .GetSpriteAtFloatIndex(Game.FloatBeat);
     }
 
+    protected override Vector2 GetHitboxSizeFromRuleset()
+    {
+        return new Vector2(Ruleset.instance.dragHitboxWidth,
+            Ruleset.instance.dragHitboxHeight);
+    }
+
     #region Curve
     // All positions relative to note head.
     private ListView<Vector2> visiblePointsOnCurve;

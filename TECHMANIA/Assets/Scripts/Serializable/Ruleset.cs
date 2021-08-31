@@ -37,6 +37,8 @@ public class Ruleset : RulesetBase
     public float hitboxHeight;
     public float chainHeadHitboxWidth;
     public float chainNodeHitboxWidth;
+    public float dragHitboxWidth;
+    public float dragHitboxHeight;
     public float ongoingDragHitboxWidth;
     public float ongoingDragHitboxHeight;
 
@@ -85,6 +87,8 @@ public class Ruleset : RulesetBase
         hitboxHeight = 1f;
         chainHeadHitboxWidth = 1.5f;
         chainNodeHitboxWidth = 3f;
+        dragHitboxWidth = 1.5f;
+        dragHitboxHeight = 1f;
         ongoingDragHitboxWidth = 2f;
         ongoingDragHitboxHeight = 2f;
 
@@ -276,8 +280,10 @@ public class Ruleset : RulesetBase
             hitboxHeight = 1.1f,
             chainHeadHitboxWidth = 100f,
             chainNodeHitboxWidth = 100f,
-            ongoingDragHitboxWidth = 2f,
-            ongoingDragHitboxHeight = 2f,
+            dragHitboxWidth = 3f,
+            dragHitboxHeight = 1.1f,
+            ongoingDragHitboxWidth = 3f,
+            ongoingDragHitboxHeight = 1.1f,
 
             maxHp = 10000,
             hpDeltaBasic = new List<int>()
