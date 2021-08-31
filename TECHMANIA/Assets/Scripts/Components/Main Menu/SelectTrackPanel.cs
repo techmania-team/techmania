@@ -149,7 +149,8 @@ public class SelectTrackPanel : MonoBehaviour
         {
             currentLocation = Paths.GetTrackRootFolder();
         }
-        locationDisplay.text = currentLocation;
+
+        locationDisplay.text = Paths.ReplacePlatformPathText(currentLocation);
 
         // Activate all grids regardless of content.
         subfolderGrid.gameObject.SetActive(true);

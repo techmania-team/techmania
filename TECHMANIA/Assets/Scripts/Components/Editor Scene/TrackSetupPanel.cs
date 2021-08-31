@@ -146,7 +146,7 @@ public class TrackSetupPanel : MonoBehaviour
                 else
                 {
                     if (fileList != "") fileList += "\n";
-                    fileList += filesToBeOverwritten[i];
+                    fileList += Paths.ReplacePlatformPathText(filesToBeOverwritten[i]);
                 }
             }
             confirmDialog.Show(

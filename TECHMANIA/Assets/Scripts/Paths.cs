@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -275,5 +275,18 @@ public static class Paths
             .Replace("=", "%3d")
             .Replace("?", "%3f")
             .Replace("@", "%40");
+    }
+
+    public static string ReplacePlatformPathText(string fullPath)
+    {
+#if UNITY_IOS
+        return fullPath
+            .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
+            .Replace(Paths.GetTrackRootFolder(), "Tracks")
+            .Replace(Paths.GetStreamingSkinFolder(), "Skins")
+            .Replace(Paths.GetSkinFolder(), "Skins");
+#else
+        return fullPath
+#endif
     }
 }

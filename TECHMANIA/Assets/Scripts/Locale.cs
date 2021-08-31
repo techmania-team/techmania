@@ -165,6 +165,10 @@ public class Locale
         params object[] args)
     {
         string format = GetString(formatKey);
-        return string.Format(format, args);
+#if UNITY_IOS
+        return Paths.ReplacePlatformPathText(string.Format(format, args));
+#else
+        return string.Format(format, args)
+#endif
     }
 }
