@@ -236,7 +236,7 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = Locale.GetStringAndFormat(
+            error = Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_error_format",
                 fullPath,
                 request.error);
@@ -247,7 +247,7 @@ public class ResourceLoader : MonoBehaviour
 
         if (clip == null)
         {
-            error = Locale.GetStringAndFormat(
+            error = Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_error_format",
                 fullPath,
                 request.error);
@@ -256,7 +256,7 @@ public class ResourceLoader : MonoBehaviour
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = Locale.GetStringAndFormat(
+            error = Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_unsupported_format_error_format",
                 fullPath);
             return;
@@ -295,7 +295,7 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormat(
+                Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_error_format",
                     fullPath,
                     request.error));
@@ -306,7 +306,7 @@ public class ResourceLoader : MonoBehaviour
         if (texture == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormat(
+                Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_error_format",
                     fullPath,
                     request.error));
@@ -316,7 +316,7 @@ public class ResourceLoader : MonoBehaviour
         if (t2d == null)
         {
             loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormat(
+                Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_unsupported_format_error_format",
                     fullPath));
             yield break;

@@ -3556,7 +3556,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (error != null)
         {
-            messageDialog.Show(Locale.GetStringAndFormat(
+            messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
                 "pattern_panel_resource_loading_error_format",
                 error));
         }

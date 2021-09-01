@@ -165,10 +165,11 @@ public class Locale
         params object[] args)
     {
         string format = GetString(formatKey);
-#if UNITY_IOS
-        return Paths.HidePlatformInternalPath(string.Format(format, args));
-#else
-        return string.Format(format, args)
-#endif
+        return string.Format(format, args);
+    }
+    public static string GetStringAndFormatIncludingPaths(string formatKey,
+        params object[] args)
+    {
+        return Paths.HidePlatformInternalPath(GetStringAndFormat(formatKey, args));
     }
 }

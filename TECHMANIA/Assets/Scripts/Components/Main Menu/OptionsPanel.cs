@@ -311,7 +311,7 @@ public class OptionsPanel : MonoBehaviour
             }
             catch (System.IO.FileNotFoundException)
             {
-                messageDialog.Show(Locale.GetStringAndFormat(
+                messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_not_found_error_format",
                     Paths.GetRulesetFilePath()));
                 Options.instance.ruleset = Options.Ruleset.Standard;
@@ -319,7 +319,7 @@ public class OptionsPanel : MonoBehaviour
             }
             catch (System.Exception ex)
             {
-                messageDialog.Show(Locale.GetStringAndFormat(
+                messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_load_error_format",
                     ex.Message));
                 Options.instance.ruleset = Options.Ruleset.Standard;

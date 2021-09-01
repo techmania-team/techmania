@@ -138,7 +138,7 @@ public class TrackSetupPanel : MonoBehaviour
                 if (i == 10)
                 {
                     fileList += "\n";
-                    fileList += Locale.GetStringAndFormat(
+                    fileList += Locale.GetStringAndFormatIncludingPaths(
                         "track_setup_resource_tab_overwrite_omitted_files",
                         filesToBeOverwritten.Count - 10);
                     break;
@@ -150,7 +150,7 @@ public class TrackSetupPanel : MonoBehaviour
                 }
             }
             confirmDialog.Show(
-                Locale.GetStringAndFormat(
+                Locale.GetStringAndFormatIncludingPaths(
                     "track_setup_resource_tab_overwrite_warning",
                     fileList),
                 Locale.GetString(
@@ -179,7 +179,7 @@ public class TrackSetupPanel : MonoBehaviour
             catch (Exception e)
             {
                 messageDialog.Show(
-                    Locale.GetStringAndFormat(
+                    Locale.GetStringAndFormatIncludingPaths(
                         "track_setup_resource_tab_import_error_format",
                         pair.Item1,
                         pair.Item2,
@@ -308,7 +308,7 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDeleteTrackButtonClick()
     {
         confirmDialog.Show(
-            Locale.GetStringAndFormat(
+            Locale.GetStringAndFormatIncludingPaths(
                 "track_setup_metadata_tab_delete_track_confirmation",
                 EditorContext.trackFolder),
             Locale.GetString(
