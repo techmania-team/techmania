@@ -277,7 +277,7 @@ public static class Paths
             .Replace("@", "%40");
     }
 
-    public static string ReplacePlatformPathText(string fullPath)
+    public static string HidePlatformInternalPath(string fullPath)
     {
 #if UNITY_IOS
         return fullPath

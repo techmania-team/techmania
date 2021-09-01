@@ -166,7 +166,7 @@ public class Locale
     {
         string format = GetString(formatKey);
 #if UNITY_IOS
-        return Paths.ReplacePlatformPathText(string.Format(format, args));
+        return Paths.HidePlatformInternalPath(string.Format(format, args));
 #else
         return string.Format(format, args)
 #endif
