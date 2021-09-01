@@ -284,7 +284,8 @@ public static class Paths
             .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
             .Replace(Paths.GetTrackRootFolder(), "Tracks")
             .Replace(Paths.GetStreamingSkinFolder(), "Skins")
-            .Replace(Paths.GetSkinFolder(), "Skins");
+            .Replace(Paths.GetSkinFolder(), "Skins")
+            .Replace(dataFolder, "TECHMANIA");
 #else
         return fullPath;
 #endif
