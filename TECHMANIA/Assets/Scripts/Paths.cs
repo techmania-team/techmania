@@ -286,7 +286,7 @@ public static class Paths
             .Replace(Paths.GetStreamingSkinFolder(), "Skins")
             .Replace(Paths.GetSkinFolder(), "Skins");
 #else
-        return fullPath
+        return fullPath;
 #endif
     }
 }
