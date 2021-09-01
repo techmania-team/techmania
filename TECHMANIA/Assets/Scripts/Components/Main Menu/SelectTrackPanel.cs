@@ -411,7 +411,7 @@ public class SelectTrackPanel : MonoBehaviour
         if (cardToTrack.Count < tracks.Count)
         {
             trackStatusText.gameObject.SetActive(true);
-            trackStatusText.text = Locale.GetStringAndFormatIncludingPaths(
+            trackStatusText.text = Locale.GetStringAndFormat(
                 "select_track_some_tracks_hidden_text",
                 tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
