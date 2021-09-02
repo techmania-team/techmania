@@ -1,7 +1,7 @@
 # TECHMANIA
 An open source rhythm game, written in Unity, playable with or without a touchscreen.
 
-[Download for PC](https://github.com/techmania-team/techmania/releases)
+[Download for Windows](https://github.com/techmania-team/techmania/releases)
 
 Download for iOS/iPadOS (link pending)
 
@@ -47,7 +47,7 @@ Per the MIT license, you are free to produce any Content with TECHMANIA, includi
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
 
-For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania) or [Discord](https://discord.gg/K4Nf7AnAZt).
+For general discussions, head to [Discord](https://discord.gg/K4Nf7AnAZt).
 
 ## Making your own builds
 Follow the standard building process:
