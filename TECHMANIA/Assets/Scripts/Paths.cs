@@ -69,7 +69,6 @@ public static class Paths
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         // Application.streamingAssetsPath gives '/' on Windows, which
         // causes problems when comparing paths.
-        trackRootFolder = trackRootFolder.Replace("/", "\\");
         streamingTrackRootFolder = streamingTrackRootFolder
             .Replace("/", "\\");
 #endif
