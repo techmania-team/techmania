@@ -93,7 +93,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormat(
+            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_note_skin_error_format",
                 ex.Message)); 
             return;
@@ -123,7 +123,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormat(
+            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_vfx_skin_error_format",
                 ex.Message));
             return;
@@ -153,7 +153,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormat(
+            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_combo_skin_error_format",
                 ex.Message));
             return;
@@ -200,7 +200,7 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormat(
+            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_game_ui_skin_error_format",
                 ex.Message));
             return;

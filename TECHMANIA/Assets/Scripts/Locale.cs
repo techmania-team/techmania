@@ -167,4 +167,9 @@ public class Locale
         string format = GetString(formatKey);
         return string.Format(format, args);
     }
+    public static string GetStringAndFormatIncludingPaths(string formatKey,
+        params object[] args)
+    {
+        return Paths.HidePlatformInternalPath(GetStringAndFormat(formatKey, args));
+    }
 }

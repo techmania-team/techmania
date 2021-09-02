@@ -79,6 +79,12 @@ public static class Paths
         Directory.CreateDirectory(skinFolder);
         streamingSkinFolder = Path.Combine(
             Application.streamingAssetsPath, kSkinFolderName);
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        // Application.streamingAssetsPath gives '/' on Windows, which
+        // causes problems when comparing paths.
+        streamingSkinFolder = streamingSkinFolder
+            .Replace("/", "\\");
+#endif
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
         Directory.CreateDirectory(GetVfxSkinRootFolder());
@@ -269,5 +275,19 @@ public static class Paths
             .Replace("=", "%3d")
             .Replace("?", "%3f")
             .Replace("@", "%40");
+    }
+
+    public static string HidePlatformInternalPath(string fullPath)
+    {
+#if UNITY_IOS
+        return fullPath
+            .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
+            .Replace(Paths.GetTrackRootFolder(), "Tracks")
+            .Replace(Paths.GetStreamingSkinFolder(), "Skins")
+            .Replace(Paths.GetSkinFolder(), "Skins")
+            .Replace(dataFolder, "TECHMANIA");
+#else
+        return fullPath;
+#endif
     }
 }

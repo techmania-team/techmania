@@ -149,7 +149,8 @@ public class SelectTrackPanel : MonoBehaviour
         {
             currentLocation = Paths.GetTrackRootFolder();
         }
-        locationDisplay.text = currentLocation;
+
+        locationDisplay.text = Paths.HidePlatformInternalPath(currentLocation);
 
         // Activate all grids regardless of content.
         subfolderGrid.gameObject.SetActive(true);
@@ -335,7 +336,7 @@ public class SelectTrackPanel : MonoBehaviour
                     => "select_track_upgrade_error_format",
                 _ => ""
             };
-            string message = Locale.GetStringAndFormat(
+            string message = Locale.GetStringAndFormatIncludingPaths(
                 key,
                 error.trackFile,
                 error.message);
@@ -586,7 +587,7 @@ public class SelectTrackPanel : MonoBehaviour
             folder, "*.zip"))
         {
             // Attempt to extract this archive.
-            builderProgress = Locale.GetStringAndFormat(
+            builderProgress = Locale.GetStringAndFormatIncludingPaths(
                 "select_track_extracting_text", file);
             try
             {
@@ -604,12 +605,12 @@ public class SelectTrackPanel : MonoBehaviour
         {
             if (upgradeVersion)
             {
-                builderProgress = Locale.GetStringAndFormat(
+                builderProgress = Locale.GetStringAndFormatIncludingPaths(
                     "select_track_upgrading_text", dir);
             }
             else
             {
-                builderProgress = Locale.GetStringAndFormat(
+                builderProgress = Locale.GetStringAndFormatIncludingPaths(
                     "select_track_scanning_text", dir);
             }
 
