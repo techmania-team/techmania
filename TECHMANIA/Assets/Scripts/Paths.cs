@@ -279,7 +279,7 @@ public static class Paths
 
     public static string HidePlatformInternalPath(string fullPath)
     {
-#if UNITY_IOS
+#if UNITY_ANDROID || UNITY_IOS
         return fullPath
             .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
             .Replace(Paths.GetTrackRootFolder(), "Tracks")
