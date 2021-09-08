@@ -137,6 +137,8 @@ public class SelectTrackPanel : MonoBehaviour
     {
         refreshing = true;
 
+        // If player is inside streaming assets track folder in select track panel,
+        // move them out to track root folder when they enter editor selct track panel.
         if (ShowNewTrackCard() && currentLocation.Contains(Paths.GetStreamingTrackRootFolder()))
         {
             currentLocation = "";
