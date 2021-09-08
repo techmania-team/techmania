@@ -137,6 +137,14 @@ public class SelectTrackPanel : MonoBehaviour
     {
         refreshing = true;
 
+        // If player is inside streaming assets track folder in select track panel,
+        // move them out to track root folder when they enter editor selct track panel.
+        if (ShowNewTrackCard() && currentLocation.Contains(Paths.GetStreamingTrackRootFolder()))
+        {
+            currentLocation = "";
+            selectedCardIndex = -1;
+        }
+
         // Initialization and/or disaster recovery.
         if (currentLocation == "" ||
             !Directory.Exists(currentLocation))
@@ -228,6 +236,9 @@ public class SelectTrackPanel : MonoBehaviour
         {
             foreach (Subfolder s in subfolderList[currentLocation])
             {
+                if (ShowNewTrackCard() &&
+                    s.path.Contains(Paths.GetStreamingTrackRootFolder())
+                ) continue;
                 subfolders.Add(s);
             }
             subfolders.Sort((Subfolder s1, Subfolder s2) =>
