@@ -135,6 +135,9 @@ public static class Paths
     }
     public static string GetNoteSkinFolder(string name)
     {
+        // If there's a name collision between a skin in the
+        // working directory and streaming assets, prioritize the
+        // former. This is the same behavior as SelectSkinPanel.
         string temp = Path.Combine(GetNoteSkinRootFolder(), name);
         return Directory.Exists(temp) ?
             temp :

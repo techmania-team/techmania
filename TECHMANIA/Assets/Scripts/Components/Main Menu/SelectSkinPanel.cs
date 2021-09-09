@@ -30,40 +30,48 @@ public class SelectSkinPanel : MonoBehaviour
     private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
-        string skinFolder, string skinStreamingFolder, string currentSkinName)
+        string skinFolder, string skinStreamingFolder,
+        string currentSkinName)
     {
         dropdown.options.Clear();
         int value = 0, index = 0;
         bool foundOption = false;
 
-        System.Action<string> addSkinsInFolder = (string skinFolder) =>
+        System.Action<string> addToDropdown = (string skinName) =>
         {
-            foreach (string folder in
-                Directory.EnumerateDirectories(skinFolder))
+            bool exists = dropdown.options.Exists(
+                o => o.text == skinName);
+            if (exists) return;
+
+            if (skinName == currentSkinName)
             {
-                // folder does not end in directory separator.
-                string skinName = Path.GetFileName(folder);
-                bool exists = dropdown.options.Exists(
-                    o => o.text == skinName);
-                // It's possible for there to be 2 skins of the same
-                // name, one in working directory, one in streaming
-                // folder. In that case, we skip the second one.
-                if (exists) continue;
-                if (skinName == currentSkinName)
-                {
-                    value = index;
-                    foundOption = true;
-                }
-                index++;
-                dropdown.options.Add(new TMP_Dropdown.OptionData(
-                    skinName));
+                value = index;
+                foundOption = true;
             }
+            index++;
+            dropdown.options.Add(new TMP_Dropdown.OptionData(
+                skinName));
         };
 
-        addSkinsInFolder(skinFolder);
-        if (Directory.Exists(skinStreamingFolder))
+        // Enumerate skins in the skin folder.
+        foreach (string folder in
+            Directory.EnumerateDirectories(skinFolder))
         {
-            addSkinsInFolder(skinStreamingFolder);
+            // folder does not end in directory separator.
+            string skinName = Path.GetFileName(folder);
+            addToDropdown(skinName);
+        }
+
+        // Enumerate skins in the streaming assets folder.
+        foreach (string relativeFilename in 
+            BetterStreamingAssets.GetFiles(
+            Paths.RelativePathInStreamingAssets(skinStreamingFolder), 
+            Paths.kSkinFilename, 
+            SearchOption.AllDirectories))
+        {
+            string folder = Path.GetDirectoryName(relativeFilename);
+            string skinName = Path.GetFileName(folder);
+            addToDropdown(skinName);
         }
 
         if (dropdown.options.Count == 0)
@@ -82,6 +90,7 @@ public class SelectSkinPanel : MonoBehaviour
 
         dropdown.RefreshShownValue();
     }
+
     private void OnEnable()
     {
         InitializeDropdown(noteSkinDropdown,
