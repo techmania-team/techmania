@@ -582,7 +582,8 @@ public class SelectTrackPanel : MonoBehaviour
 
         BuildTrackListFor(Paths.GetTrackRootFolder(),
             (e.Argument as BackgroundWorkerArgument).upgradeVersion);
-        if (Directory.Exists(Paths.GetStreamingTrackRootFolder())) {
+        if (Directory.Exists(Paths.GetStreamingTrackRootFolder()))
+        {
             BuildTrackListFor(Paths.GetStreamingTrackRootFolder(),
                 upgradeVersion: false);
         }
@@ -617,12 +618,14 @@ public class SelectTrackPanel : MonoBehaviour
         {
             if (upgradeVersion)
             {
-                builderProgress = Locale.GetStringAndFormatIncludingPaths(
+                builderProgress = Locale.
+                    GetStringAndFormatIncludingPaths(
                     "select_track_upgrading_text", dir);
             }
             else
             {
-                builderProgress = Locale.GetStringAndFormatIncludingPaths(
+                builderProgress = Locale.
+                    GetStringAndFormatIncludingPaths(
                     "select_track_scanning_text", dir);
             }
 
@@ -652,10 +655,13 @@ public class SelectTrackPanel : MonoBehaviour
 
                 // Record as a subfolder.
                 if (folder.Equals(
-                    Paths.GetStreamingTrackRootFolder())) {
+                    Paths.GetStreamingTrackRootFolder()))
+                {
                     subfolderList[Paths.GetTrackRootFolder()]
                         .Add(subfolder);
-                } else {
+                } 
+                else 
+                {
                     subfolderList[folder].Add(subfolder);
                 }
 

@@ -132,7 +132,18 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
-        string fileContent = System.IO.File.ReadAllText(path);
+        string fileContent;
+        if (Paths.IsInStreamingAssets(path))
+        {
+            string relativePath = Paths
+                .RelativePathInStreamingAssets(path);
+            fileContent = BetterStreamingAssets.ReadAllText(
+                relativePath);
+        }
+        else
+        {
+            fileContent = System.IO.File.ReadAllText(path);
+        }
         return Deserialize(fileContent, out upgraded);
     }
 

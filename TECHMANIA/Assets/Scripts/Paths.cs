@@ -34,6 +34,7 @@ public static class Paths
     // special logic to try both the working directory and
     // streaming folder.
 
+    private static string streamingAssetsFolder;
     private static string workingDirectory;
     private static string trackRootFolder;
     private static string streamingTrackRootFolder;
@@ -43,6 +44,15 @@ public static class Paths
 
     public static void PrepareFolders()
     {
+        // Streaming assets folder
+        streamingAssetsFolder = Application.streamingAssetsPath;
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        // Application.streamingAssetsPath gives '/' on Windows, which
+        // causes problems when comparing paths.
+        streamingAssetsFolder = streamingAssetsFolder.Replace(
+            '/', '\\');
+#endif
+
         // Working directory
 #if UNITY_ANDROID || UNITY_IOS
         string current = Application.persistentDataPath;
@@ -65,25 +75,13 @@ public static class Paths
             kTrackFolderName);
         Directory.CreateDirectory(trackRootFolder);
         streamingTrackRootFolder = Path.Combine(
-            Application.streamingAssetsPath, kTrackFolderName);
-#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        // Application.streamingAssetsPath gives '/' on Windows, which
-        // causes problems when comparing paths.
-        streamingTrackRootFolder = streamingTrackRootFolder
-            .Replace("/", "\\");
-#endif
+            streamingAssetsFolder, kTrackFolderName);
 
         // Skin folder
         skinFolder = Path.Combine(workingDirectory, kSkinFolderName);
         Directory.CreateDirectory(skinFolder);
         streamingSkinFolder = Path.Combine(
-            Application.streamingAssetsPath, kSkinFolderName);
-#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        // Application.streamingAssetsPath gives '/' on Windows, which
-        // causes problems when comparing paths.
-        streamingSkinFolder = streamingSkinFolder
-            .Replace("/", "\\");
-#endif
+            streamingAssetsFolder, kSkinFolderName);
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
         Directory.CreateDirectory(GetVfxSkinRootFolder());
@@ -212,6 +210,7 @@ public static class Paths
     }
     #endregion
 
+    #region Listing files of specific type
     private static List<string> GetAllMatchingFiles(string folder, 
         List<string> patterns)
     {
@@ -247,9 +246,11 @@ public static class Paths
             { "*.mp4", "*.wmv"}
         );
     }
+    #endregion
 
-    // Removes characters that aren't allowed in file names.
-    public static string FilterString(string input)
+    #region Path manipulation
+    public static string RemoveCharsNotAllowedOnFileSystem(
+        string input)
     {
         StringBuilder builder = new StringBuilder();
         const string invalidChars = "\\/*:?\"<>|";
@@ -289,4 +290,17 @@ public static class Paths
         return fullPath;
 #endif
     }
+    #endregion
+
+    #region Streaming assets
+    public static bool IsInStreamingAssets(string path)
+    {
+        return path.StartsWith(streamingAssetsFolder);
+    }
+
+    public static string RelativePathInStreamingAssets(string path)
+    {
+        return path.Substring(streamingAssetsFolder.Length);
+    }
+    #endregion
 }
