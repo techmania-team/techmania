@@ -149,7 +149,7 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Initialization and/or disaster recovery.
         if (currentLocation == "" ||
-            !Directory.Exists(currentLocation))
+            !UniversalIO.DirectoryExists(currentLocation))
         {
             currentLocation = Paths.GetTrackRootFolder();
         }
@@ -737,6 +737,12 @@ public class SelectTrackPanel : MonoBehaviour
         // We can't enumerate directories in streaming assets,
         // so instead we enumerate track.tech files and process each
         // directory above them.
+        if (!BetterStreamingAssets.DirectoryExists(
+                Paths.RelativePathInStreamingAssets(
+                    Paths.GetStreamingTrackRootFolder())))
+        {
+            return;
+        }
 
         string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
             Paths.RelativePathInStreamingAssets(

@@ -63,15 +63,21 @@ public class SelectSkinPanel : MonoBehaviour
         }
 
         // Enumerate skins in the streaming assets folder.
-        foreach (string relativeFilename in 
-            BetterStreamingAssets.GetFiles(
-            Paths.RelativePathInStreamingAssets(skinStreamingFolder), 
-            Paths.kSkinFilename, 
-            SearchOption.AllDirectories))
+        if (BetterStreamingAssets.DirectoryExists(
+            Paths.RelativePathInStreamingAssets(skinStreamingFolder)))
         {
-            string folder = Path.GetDirectoryName(relativeFilename);
-            string skinName = Path.GetFileName(folder);
-            addToDropdown(skinName);
+            foreach (string relativeFilename in
+                BetterStreamingAssets.GetFiles(
+                Paths.RelativePathInStreamingAssets(
+                    skinStreamingFolder),
+                Paths.kSkinFilename,
+                SearchOption.AllDirectories))
+            {
+                string folder = Path.GetDirectoryName(
+                    relativeFilename);
+                string skinName = Path.GetFileName(folder);
+                addToDropdown(skinName);
+            }
         }
 
         if (dropdown.options.Count == 0)
