@@ -12,6 +12,7 @@ public class Startup : MonoBehaviour
         OptionsPanel.ApplyOptionsOnStartUp();
         SpriteSheet.PrepareEmptySpriteSheet();
         Records.RefreshInstance();
+        BetterStreamingAssets.Initialize();
         GetComponent<GlobalResourceLoader>().StartLoading();
     }
 }

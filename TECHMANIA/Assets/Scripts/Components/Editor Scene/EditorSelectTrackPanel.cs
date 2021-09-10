@@ -39,8 +39,8 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     {
         // Attempt to create track directory. Contains timestamp
         // so collisions are very unlikely.
-        string filteredTitle = Paths.FilterString(title);
-        string filteredArtist = Paths.FilterString(artist);
+        string filteredTitle = Paths.RemoveCharsNotAllowedOnFileSystem(title);
+        string filteredArtist = Paths.RemoveCharsNotAllowedOnFileSystem(artist);
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
         string newDir = Path.Combine(currentLocation,

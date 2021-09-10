@@ -408,7 +408,7 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region Hitbox
-    // Chain heads and chain nodes override this.
+    // Chain heads, chain nodes and drag notes override this.
     protected virtual Vector2 GetHitboxSizeFromRuleset()
     {
         return new Vector2(Ruleset.instance.hitboxWidth,

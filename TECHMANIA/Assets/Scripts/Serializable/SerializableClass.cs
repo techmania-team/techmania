@@ -132,7 +132,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
-        string fileContent = System.IO.File.ReadAllText(path);
+        string fileContent = UniversalIO.ReadAllText(path);
         return Deserialize(fileContent, out upgraded);
     }
 

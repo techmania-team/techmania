@@ -1,15 +1,15 @@
 # TECHMANIA
-An open source rhythm game for Windows, written in Unity, playable with or without a touchscreen.
+An open source rhythm game, written in Unity, playable with or without a touchscreen.
 
-[Announcement trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
+[Download for Windows](https://github.com/techmania-team/techmania/releases)
 
-[Subreddit](https://www.reddit.com/r/TechMania/)
+Download for iOS/iPadOS (link pending)
+
+[Trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
 
 [Discord](https://discord.gg/K4Nf7AnAZt)
 
 [Official website](https://techmania-team.herokuapp.com/)
-
-Head to [Releases](https://github.com/techmania-team/techmania/releases) to download the released versions.
 
 ## Licensing
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
@@ -26,7 +26,15 @@ Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
 Refer to the [documentation website](https://techmania-team.github.io/techmania-docs/).
 
 ## Platform
-The current target is Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard. Due to the associated cost and lack of hardware, we do not officially support Linux, macOS, Android or iOS/iPadOS.
+The game is designed for Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard.
+
+We also provide support for iOS/iPadOS, in that we are able to respond to bug reports and some feature requests. However please be aware of the following:
+
+- The game's UI is designed for PC and may be difficult to navigate on a phone;
+- The game's difficulty is tuned for PC and may prove too difficult for mobile players;
+- Some features in the included editor require mouse and keyboard, and therefore are unavailble to mobile users.
+
+[Builds for other platforms](#platform-specific-forks) also exist, but are not officially supported at the moment.
 
 ## Content policy
 Per the MIT license, you are free to produce any Content with TECHMANIA, including but not limited to screenshots, videos and livestreams. Attributions are appreciated, but not required. However, please keep the following in mind:
@@ -39,24 +47,21 @@ Per the MIT license, you are free to produce any Content with TECHMANIA, includi
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
 
-For general discussions, head to the [TECHMANIA subreddit](https://www.reddit.com/r/techmania) or [Discord](https://discord.gg/K4Nf7AnAZt).
+For general discussions, head to [Discord](https://discord.gg/K4Nf7AnAZt).
 
 ## Making your own builds
-While other OSes are not supported, it may be possible to build the project on these platforms. Follow the standard building process:
+Follow the standard building process:
 * Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
-  * Make sure you include iOS build support - see following notes.
 * Clone this repo, then open it from Unity.
 * File - Build Settings
 * Choose your target platform, then build.
 
-Please note the following:
-* Due to special [post-build processing](TECHMANIA/Assets/Editor/BuildPostProcessor.cs) on iOS, you need to install iOS Build Support when installing Unity, whether you plan to build for iOS or not.
-* The default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
+Please note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
 
-If the build fails or produces a platform-specific bug, you can submit an issue, but I do not guarantee support.
+If the build fails or produces a platform-specific bug, you can submit an issue, but we do not guarantee support.
 
-There are a few unofficial builds available:
-* fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
+## Platform-specific forks
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
 * MoonLight's Android builds: https://github.com/yyj01004/techmania/releases
+* fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
 * samnyan's Android build on 0.2: https://github.com/samnyan/techmania/releases
