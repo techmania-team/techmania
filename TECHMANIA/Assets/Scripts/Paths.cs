@@ -301,9 +301,21 @@ public static class Paths
         return path.StartsWith(streamingAssetsFolder);
     }
 
-    public static string RelativePathInStreamingAssets(string path)
+    public static string RelativePathInStreamingAssets(string 
+        absolutePath)
     {
-        return path.Substring(streamingAssetsFolder.Length);
+        return absolutePath.Substring(streamingAssetsFolder.Length);
+    }
+
+    public static string AbsolutePathInStreamingAssets(string
+        relativePath)
+    {
+        string absolutePath = Path.Combine(streamingAssetsFolder,
+            relativePath);
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        absolutePath = absolutePath.Replace('/', '\\');
+#endif
+        return absolutePath;
     }
     #endregion
 }

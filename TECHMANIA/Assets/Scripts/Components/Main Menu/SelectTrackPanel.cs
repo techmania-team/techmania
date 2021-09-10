@@ -137,9 +137,11 @@ public class SelectTrackPanel : MonoBehaviour
     {
         refreshing = true;
 
-        // If player is inside streaming assets track folder in select track panel,
-        // move them out to track root folder when they enter editor selct track panel.
-        if (ShowNewTrackCard() && currentLocation.Contains(Paths.GetStreamingTrackRootFolder()))
+        // If player is inside streaming assets track folder in
+        // select track panel, move them out to track root folder
+        // when they enter editor selct track panel.
+        if (ShowNewTrackCard() &&
+            Paths.IsInStreamingAssets(currentLocation))
         {
             currentLocation = "";
             selectedCardIndex = -1;
@@ -234,12 +236,18 @@ public class SelectTrackPanel : MonoBehaviour
         List<Subfolder> subfolders = new List<Subfolder>();
         if (!TrackFilter.instance.showTracksInAllFolders)
         {
-            foreach (Subfolder s in subfolderList[currentLocation])
+            if (subfolderList.ContainsKey(currentLocation))
             {
-                if (ShowNewTrackCard() &&
-                    s.path.Contains(Paths.GetStreamingTrackRootFolder())
-                ) continue;
-                subfolders.Add(s);
+                foreach (Subfolder s in
+                    subfolderList[currentLocation])
+                {
+                    // Don't show streaming assets in editor.
+                    if (ShowNewTrackCard() &&
+                        s.path.Contains(
+                            Paths.GetStreamingTrackRootFolder())
+                    ) continue;
+                    subfolders.Add(s);
+                }
             }
             subfolders.Sort((Subfolder s1, Subfolder s2) =>
             {
@@ -336,44 +344,49 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Instantiate error cards.
         cardToError = new Dictionary<GameObject, string>();
-        foreach (ErrorInTrack error in 
-            errorTrackList[currentLocation])
+        if (errorTrackList.ContainsKey(currentLocation))
         {
-            GameObject card = null;
-            string key = error.type switch
+            foreach (ErrorInTrack error in
+                errorTrackList[currentLocation])
             {
-                ErrorInTrack.Type.Load
-                    => "select_track_error_format",
-                ErrorInTrack.Type.Upgrade
-                    => "select_track_upgrade_error_format",
-                _ => ""
-            };
-            string message = Locale.GetStringAndFormatIncludingPaths(
-                key,
-                error.trackFile,
-                error.message);
+                GameObject card = null;
+                string key = error.type switch
+                {
+                    ErrorInTrack.Type.Load
+                        => "select_track_error_format",
+                    ErrorInTrack.Type.Upgrade
+                        => "select_track_upgrade_error_format",
+                    _ => ""
+                };
+                string message = Locale.
+                    GetStringAndFormatIncludingPaths(
+                        key,
+                        error.trackFile,
+                        error.message);
 
-            // Instantiate card.
-            GameObject template = error.type switch
-            {
-                ErrorInTrack.Type.Load => errorCardTemplate,
-                ErrorInTrack.Type.Upgrade => upgradeErrorCardTemplate,
-                _ => null
-            };
-            card = Instantiate(template, trackGrid.transform);
-            card.name = "Error Card";
-            card.SetActive(true);
-            trackGridEmpty = false;
+                // Instantiate card.
+                GameObject template = error.type switch
+                {
+                    ErrorInTrack.Type.Load => errorCardTemplate,
+                    ErrorInTrack.Type.Upgrade => 
+                        upgradeErrorCardTemplate,
+                    _ => null
+                };
+                card = Instantiate(template, trackGrid.transform);
+                card.name = "Error Card";
+                card.SetActive(true);
+                trackGridEmpty = false;
 
-            // Record mapping.
-            cardToError.Add(card, message);
-            AddToCardList(card);
+                // Record mapping.
+                cardToError.Add(card, message);
+                AddToCardList(card);
 
-            // Bind click event.
-            card.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                OnErrorCardClick(card);
-            });
+                // Bind click event.
+                card.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    OnErrorCardClick(card);
+                });
+            }
         }
 
         if (ShowNewTrackCard())
@@ -582,11 +595,7 @@ public class SelectTrackPanel : MonoBehaviour
 
         BuildTrackListFor(Paths.GetTrackRootFolder(),
             (e.Argument as BackgroundWorkerArgument).upgradeVersion);
-        if (Directory.Exists(Paths.GetStreamingTrackRootFolder()))
-        {
-            BuildTrackListFor(Paths.GetStreamingTrackRootFolder(),
-                upgradeVersion: false);
-        }
+        BuildStreamingTrackList();
     }
 
     private void BuildTrackListFor(string folder,
@@ -720,6 +729,114 @@ public class SelectTrackPanel : MonoBehaviour
                 folder = dir,
                 track = track
             });
+        }
+    }
+
+    private void BuildStreamingTrackList()
+    {
+        // We can't enumerate directories in streaming assets,
+        // so instead we enumerate track.tech files and process each
+        // directory above them.
+
+        string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
+            Paths.RelativePathInStreamingAssets(
+                Paths.GetStreamingTrackRootFolder()),
+            Paths.kTrackFilename,
+            SearchOption.AllDirectories);
+        foreach (string relativeTrackFile in relativeTrackFiles)
+        {
+            string trackFile = Paths.AbsolutePathInStreamingAssets(
+                relativeTrackFile);
+            string trackFolder = Path.GetDirectoryName(trackFile);
+            string trackParent = Path.GetDirectoryName(trackFolder);
+            if (trackParent == Paths.GetStreamingTrackRootFolder())
+            {
+                trackParent = Paths.GetTrackRootFolder();
+            }
+
+            builderProgress = Locale.
+                GetStringAndFormatIncludingPaths(
+                "select_track_scanning_text", trackFolder);
+
+            Track t = null;
+            try
+            {
+                t = TrackBase.LoadFromFile(trackFile) as Track;
+                if (!trackList.ContainsKey(trackParent))
+                {
+                    trackList.Add(trackParent,
+                        new List<TrackInFolder>());
+                }
+                trackList[trackParent].Add(new TrackInFolder()
+                {
+                    track = t,
+                    folder = trackFolder
+                });
+            }
+            catch (Exception ex)
+            {
+                if (!errorTrackList.ContainsKey(trackParent))
+                {
+                    errorTrackList.Add(trackParent,
+                        new List<ErrorInTrack>());
+                }
+                errorTrackList[trackParent].Add(new ErrorInTrack()
+                {
+                    type = ErrorInTrack.Type.Load,
+                    trackFile = trackFile,
+                    message = ex.Message
+                });
+            }
+
+            // Process subfolders at or above trackParent, if any.
+            string subfolder = trackFolder;
+            string subfolderParent = trackParent;
+            while (subfolderParent != Paths.GetTrackRootFolder())
+            {
+                subfolder = subfolderParent;
+                subfolderParent = Path.GetDirectoryName(
+                    subfolderParent);
+                if (subfolderParent == Paths
+                    .GetStreamingTrackRootFolder())
+                {
+                    subfolderParent = Paths.GetTrackRootFolder();
+                }
+                if (!subfolderList.ContainsKey(subfolderParent))
+                {
+                    subfolderList.Add(subfolderParent,
+                        new List<Subfolder>());
+                }
+                if (subfolderList[subfolderParent].Exists(
+                    (Subfolder s) =>
+                    {
+                        return s.path == subfolder;
+                    }))
+                {
+                    continue;
+                }
+
+                // Find eyecatch, if any.
+                Subfolder s = new Subfolder()
+                {
+                    path = subfolder
+                };
+                string pngEyecatch = Path.Combine(subfolder,
+                    Paths.kSubfolderEyecatchPngFilename);
+                if (BetterStreamingAssets.FileExists(
+                    Paths.RelativePathInStreamingAssets(pngEyecatch)))
+                {
+                    s.eyecatchFullPath = pngEyecatch;
+                }
+                string jpgEyecatch = Path.Combine(subfolder,
+                    Paths.kSubfolderEyecatchJpgFilename);
+                if (BetterStreamingAssets.FileExists(
+                    Paths.RelativePathInStreamingAssets(jpgEyecatch)))
+                {
+                    s.eyecatchFullPath = jpgEyecatch;
+                }
+
+                subfolderList[subfolderParent].Add(s);
+            }
         }
     }
 
