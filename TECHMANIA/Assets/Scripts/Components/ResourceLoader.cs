@@ -224,6 +224,10 @@ public class ResourceLoader : MonoBehaviour
 
     private static bool IsEmptyFile(string fullPath)
     {
+        if (Paths.IsInStreamingAssets(fullPath))
+        {
+            return false;
+        }
         FileInfo fileInfo = new FileInfo(fullPath);
         return fileInfo.Length == 0;
     }

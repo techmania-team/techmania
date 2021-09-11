@@ -13,7 +13,7 @@ public class GameSetup
     {
         get
         {
-            return new FileInfo(trackPath).DirectoryName;
+            return new FileInfo(trackPath).DirectoryName.Replace("/jar:file:/data", "jar:file:///data");
         }
     }
     public static PerTrackOptions trackOptions;
