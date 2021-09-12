@@ -8,7 +8,7 @@ public class InformationPanel : MonoBehaviour
     public TextMeshProUGUI tracksSkinsLocation;
 
     // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
 #if UNITY_IOS
         tracksSkinsLocation.text = Locale.GetString(
