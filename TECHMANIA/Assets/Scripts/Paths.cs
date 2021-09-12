@@ -270,6 +270,7 @@ public static class Paths
     public static string FullPathToUri(string fullPath)
     {
 #if UNITY_ANDROID
+        // Streaming assets on Android are not files, so they are inaccessible with "file://".
         if (fullPath.Contains(Application.streamingAssetsPath))
         {
             return fullPath;

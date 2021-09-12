@@ -13,6 +13,7 @@ public class GameSetup
     {
         get
         {
+            // FileInfo.DirectoryName turns "jar:file:///" into "/jar:file:/", so we need to correct it.
             return new FileInfo(trackPath).DirectoryName.Replace("/jar:file:/data", "jar:file:///data");
         }
     }
