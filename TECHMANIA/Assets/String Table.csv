@@ -496,7 +496,7 @@ The default name of newly created patterns.,track_setup_patterns_tab_new_pattern
 ,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,觸控,タッチ,터치
 ,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
 ,track_setup_patterns_tab_control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
-,track_setup_patterns_tab_level_label,Level,难度,難度,難易度,난이도
+,track_setup_patterns_tab_level_label,Level,难度,難度,レベル,난이도
 ,track_setup_patterns_tab_background_header,Background,背景,背景,背景,배경
 ,track_setup_patterns_tab_backing_track_label,Backing track,背景音乐,背景音樂,背景音楽,배경 음악
 ,track_setup_patterns_tab_backing_track_help,"The background music played during gameplay.
@@ -872,7 +872,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 全てのトラックを更新しますか？
 
-更新する前にトラックをバックアップすることを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
+更新する前にトラックのバックアップを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
 
 모든 패턴을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 패턴 백업을 권장합니다."
 ,select_track_upgrade_version_confirm,Upgrade,升级,升級,更新,업그레이드
@@ -904,19 +904,25 @@ Continue anyway?","谱面编辑器是为PC设计，某些功能只有用鼠标�
 
 {1}","升级{0}时发生错误：
 
-{1}",,,
-,select_track_upgrade_complete_with_error_message,"Upgrade completed, but some tracks failed to upgrade. Click the error cards for details.",升级完毕，但是有部分曲目升级失败。请点击显示错误的卡片以查看详情。,,,
-,select_track_upgrade_error_card_title,Could not upgrade track,无法升级曲目,,,
+{1}","升級 {0} 時發生錯誤：
+
+{1}","{0}の更新中にエラーが発生しました：
+
+{1}","{0}을/를 업그레이드하는 중 오류가 발생했습니다.
+
+{1}"
+,select_track_upgrade_complete_with_error_message,"Upgrade completed, but some tracks failed to upgrade. Click the error cards for details.",升级完毕，但是有部分曲目升级失败。请点击显示错误的卡片以查看详情。,升級完成，但是有部分歌曲升級失敗。請點擊顯示錯誤的卡片查看詳細資訊。,一部のトラックの更新に失敗しました。詳細はエラーカードをご確認ください。,일부 음악 데이터를 업그레이드하지 못했습니다. 자세한 오류 내용은 해당 음악 아이콘을 클릭하여 확인하십시오.
+,select_track_upgrade_error_card_title,Could not upgrade track,无法升级曲目,無法升級歌曲,更新できません,업그레이드할 수 없음
 ,,,,,,
-,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,,,
+,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일({0})을 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
 ,,,,,,
-,result_panel_legacy_override_indicator,*Pattern contains legacy ruleset override,*谱面包含对经典规则的修改,,,
+,result_panel_legacy_override_indicator,*Pattern contains legacy ruleset override,*谱面包含对经典规则的修改,*譜面包含對經典規則的修改,*レガシールールセットを使用中,* 레거시 규칙 사용 중
 ,,,,,,
-,information_panel_getting_started_header,Getting started,入门,,,
-,information_panel_getting_started_text,"Download tracks and skins from the official website, then extract them into the ""Tracks"" and ""Skins"" folders.",从官方网站下载曲目和皮肤，然后解压到Tracks和Skins文件夹。,,,
-,information_panel_tracks_skins_location_pc,"On PC, these folders are next to TECHMANIA.exe.",在PC上，这两个文件夹和TECHMANIA.exe位于同一位置。,,,
-,information_panel_tracks_skins_location_ios,"On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer.",在iOS/iPadOS上，使用文件app或者iTunes的文件共享来访问这两个文件夹。,,,
-,information_panel_tracks_skins_location_android,"On Android, you can find these folders in /storage/Android/data/com.TECHMANIA.",在Android上，这两个文件夹位于/storage/Android/data/com.TECHMANIA。,,,
-,information_panel_links_header,Links,链接,,,
-,information_panel_links_website,Website,网站,,,
-,information_panel_links_documentation,Documentation,文档,,,
+,information_panel_getting_started_header,Getting started,入门,開始,はじめに,게임 시작하기
+,information_panel_getting_started_text,"Download tracks and skins from the official website, then extract them into the ""Tracks"" and ""Skins"" folders.",从官方网站下载曲目和皮肤，然后解压到Tracks和Skins文件夹。,從官方網站下載歌曲和造型，然後解壓縮到 Tracks 和 Skins 資料夾。,公式ウェブサイトでトラックとスキンをダウンロードし、「Tracks」と「Skins」フォルダに解凍します。,"공식 웹사이트에서 음악과 스킨을 내려받고, ""Tracks""와 ""Skins"" 폴더에 각각 압축을 해제합니다."
+,information_panel_tracks_skins_location_pc,"On PC, these folders are next to TECHMANIA.exe.",在PC上，这两个文件夹和TECHMANIA.exe位于同一位置。,在 PC 上，這兩個資料夾和 TECHMANIA.exe 在同一個位置。,PCの場合、これらのフォルダはTECHMANIA.exeと同じパスにあります。,해당 폴더는 게임 실행 파일과 같은 위치에서 찾을 수 있습니다.
+,information_panel_tracks_skins_location_ios,"On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer.",在iOS/iPadOS上，使用文件app或者iTunes的文件共享来访问这两个文件夹。,在 iOS/iPadOS 上，使用檔案 app 或 iTunes 檔案共享來查看這兩個資料夾,iOS・iPadOSの場合、ファイルアプリまたはiTunesのファイル共有をご利用ください。,파일 앱 또는 iTunes의 파일 공유 기능을 사용하십시오.
+,information_panel_tracks_skins_location_android,"On Android, you can find these folders in /storage/Android/data/com.TECHMANIA.",在Android上，这两个文件夹位于/storage/Android/data/com.TECHMANIA。,在 Android 上，這兩個資料夾在 /storage/Android/data/com.TECHMANIA。,Androidの場合、これらのフォルダは/storage/Android/data/com.TECHMANIAにあります。,해당 폴더는 /storage/Android/data/com.TECHMANIA에서 찾을 수 있습니다.
+,information_panel_links_header,Links,链接,連結,リンク,링크
+,information_panel_links_website,Website,网站,網站,ウェブサイト,웹사이트
+,information_panel_links_documentation,Documentation,文档,文件,公式マニュアル,기술 문서
