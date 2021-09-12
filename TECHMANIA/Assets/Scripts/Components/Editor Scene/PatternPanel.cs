@@ -2921,11 +2921,28 @@ public class PatternPanel : MonoBehaviour
         foreach (Note n in EditorContext.Pattern.notes)
         {
             GameObject o = GetGameObjectFromNote(n);
+            if (n.type == NoteType.Hold ||
+                n.type == NoteType.RepeatHeadHold ||
+                n.type == NoteType.RepeatHold)
+            {
+                // Adjust the trails of hold notes.
+                o?.GetComponent<NoteInEditor>().ResetTrail();
+            }
+            if (n.type == NoteType.Drag)
+            {
+                // Draw curves of drag notes.
+                o?.GetComponent<NoteInEditor>().ResetCurve();
+                o?.GetComponent<NoteInEditor>()
+                    .ResetAllAnchorsAndControlPoints();
+            }
+
+            // For chain paths and repeat paths, ignore hidden notes.
+            if (n.lane >= PlayableLanes) continue;
+
             if (n.type == NoteType.ChainHead ||
                 n.type == NoteType.ChainNode)
             {
                 // Adjust the paths of chain nodes.
-                if (n.lane >= PlayableLanes) continue;
                 if (n.type == NoteType.ChainNode)
                 {
                     o?.GetComponent<NoteInEditor>()
@@ -2946,7 +2963,6 @@ public class PatternPanel : MonoBehaviour
                 n.type == NoteType.RepeatHold)
             {
                 // Adjust the paths of repeat notes.
-                if (n.lane >= PlayableLanes) continue;
                 if (n.type == NoteType.Repeat ||
                     n.type == NoteType.RepeatHold)
                 {
@@ -2954,20 +2970,6 @@ public class PatternPanel : MonoBehaviour
                         .PointPathToward(previousRepeat[n.lane]);
                 }
                 previousRepeat[n.lane] = n;
-            }
-            if (n.type == NoteType.Hold ||
-                n.type == NoteType.RepeatHeadHold ||
-                n.type == NoteType.RepeatHold)
-            {
-                // Adjust the trails of hold notes.
-                o?.GetComponent<NoteInEditor>().ResetTrail();
-            }
-            if (n.type == NoteType.Drag)
-            {
-                // Draw curves of drag notes.
-                o?.GetComponent<NoteInEditor>().ResetCurve();
-                o?.GetComponent<NoteInEditor>()
-                    .ResetAllAnchorsAndControlPoints();
             }
         }
     }
