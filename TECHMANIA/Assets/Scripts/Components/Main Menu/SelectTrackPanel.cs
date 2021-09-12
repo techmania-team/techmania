@@ -743,109 +743,113 @@ public class SelectTrackPanel : MonoBehaviour
         {
             return;
         }
-
+        
+        // Get all track.tech files.
         string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
             Paths.RelativePathInStreamingAssets(
-                Paths.GetStreamingTrackRootFolder()),
+                Paths.GetStreamingTrackRootFolder()
+            ),
             Paths.kTrackFilename,
-            SearchOption.AllDirectories);
+            SearchOption.AllDirectories
+        );
+
+        // Get all directories above them.
         foreach (string relativeTrackFile in relativeTrackFiles)
         {
-            string trackFile = Paths.AbsolutePathInStreamingAssets(
-                relativeTrackFile);
-            string trackFolder = Path.GetDirectoryName(trackFile);
-            string trackParent = Path.GetDirectoryName(trackFolder);
-            if (trackParent == Paths.GetStreamingTrackRootFolder())
+            // Get absolute track.tech file path.
+            string absoluteTrackFile = Paths.AbsolutePathInStreamingAssets(relativeTrackFile);
+            // Get relative directory path.
+            string relativeTrackFolder = Path.GetDirectoryName(relativeTrackFile);
+            // Get absolute directory path.
+            string absoluteTrackFolder = Paths.AbsolutePathInStreamingAssets(relativeTrackFolder);
+
+            string processingRelativeFolder = Path.GetDirectoryName(relativeTrackFolder);
+            string processingAbsoluteFolder = Paths.AbsolutePathInStreamingAssets(processingRelativeFolder);
+
+            if (processingAbsoluteFolder == Paths.GetStreamingTrackRootFolder())
             {
-                trackParent = Paths.GetTrackRootFolder();
+                processingAbsoluteFolder = Paths.GetTrackRootFolder();
             }
 
             builderProgress = Locale.
                 GetStringAndFormatIncludingPaths(
-                "select_track_scanning_text", trackFolder);
+                "select_track_scanning_text", absoluteTrackFolder);
 
             Track t = null;
             try
             {
-                t = TrackBase.LoadFromFile(trackFile) as Track;
-                if (!trackList.ContainsKey(trackParent))
+                t = TrackBase.LoadFromFile(absoluteTrackFile) as Track;
+                if (!trackList.ContainsKey(processingAbsoluteFolder))
                 {
-                    trackList.Add(trackParent,
+                    trackList.Add(processingAbsoluteFolder,
                         new List<TrackInFolder>());
                 }
-                trackList[trackParent].Add(new TrackInFolder()
+                trackList[processingAbsoluteFolder].Add(new TrackInFolder()
                 {
                     track = t,
-                    folder = trackFolder
+                    folder = absoluteTrackFolder
                 });
             }
             catch (Exception ex)
             {
-                if (!errorTrackList.ContainsKey(trackParent))
+                if (!errorTrackList.ContainsKey(processingAbsoluteFolder))
                 {
-                    errorTrackList.Add(trackParent,
+                    errorTrackList.Add(processingAbsoluteFolder,
                         new List<ErrorInTrack>());
                 }
-                errorTrackList[trackParent].Add(new ErrorInTrack()
+                errorTrackList[processingAbsoluteFolder].Add(new ErrorInTrack()
                 {
                     type = ErrorInTrack.Type.Load,
-                    trackFile = trackFile,
+                    trackFile = absoluteTrackFile,
                     message = ex.Message
                 });
             }
 
-            // Process subfolders at or above trackParent, if any.
-            string subfolder = trackFolder;
-            string subfolderParent = trackParent;
-            while (subfolderParent != Paths.GetTrackRootFolder())
+            // Process path folders one by one.
+            while (processingAbsoluteFolder != Paths.GetStreamingTrackRootFolder())
             {
-                subfolder = subfolderParent;
-                subfolderParent = Path.GetDirectoryName(
-                    subfolderParent);
-                if (subfolderParent == Paths
-                    .GetStreamingTrackRootFolder())
+                string processingRelativeParentFolder = Path.GetDirectoryName(processingRelativeFolder);
+                string processingAbsoluteParentFolder = Paths.AbsolutePathInStreamingAssets(processingRelativeParentFolder);
+                string dirKey = processingAbsoluteParentFolder;
+
+                if (processingAbsoluteParentFolder == Paths.GetStreamingTrackRootFolder())
                 {
-                    subfolderParent = Paths.GetTrackRootFolder();
+                    dirKey = Paths.GetTrackRootFolder();
                 }
-                if (!subfolderList.ContainsKey(subfolderParent))
+                if (!subfolderList.ContainsKey(dirKey))
                 {
-                    subfolderList.Add(subfolderParent,
+                    subfolderList.Add(dirKey,
                         new List<Subfolder>());
                 }
-                if (subfolderList[subfolderParent].Exists(
+                if (!subfolderList[dirKey].Exists(
                     (Subfolder s) =>
                     {
-                        return s.path == subfolder;
+                        return s.path == processingAbsoluteFolder;
                     }))
                 {
-                    continue;
+                    Subfolder s = new Subfolder()
+                    {
+                        path = processingAbsoluteFolder
+                    };
+                    string pngEyecatch = Path.Combine(processingRelativeFolder,
+                        Paths.kSubfolderEyecatchPngFilename);
+                    if (BetterStreamingAssets.FileExists(pngEyecatch))
+                    {
+                        s.eyecatchFullPath = Paths.AbsolutePathInStreamingAssets(pngEyecatch);
+                    }
+                    string jpgEyecatch = Path.Combine(processingRelativeFolder,
+                        Paths.kSubfolderEyecatchJpgFilename);
+                    if (BetterStreamingAssets.FileExists(jpgEyecatch))
+                    {
+                        s.eyecatchFullPath = Paths.AbsolutePathInStreamingAssets(jpgEyecatch);
+                    }
+                    subfolderList[dirKey].Add(s);
                 }
-
-                // Find eyecatch, if any.
-                Subfolder s = new Subfolder()
-                {
-                    path = subfolder
-                };
-                string pngEyecatch = Path.Combine(subfolder,
-                    Paths.kSubfolderEyecatchPngFilename);
-                if (BetterStreamingAssets.FileExists(
-                    Paths.RelativePathInStreamingAssets(pngEyecatch)))
-                {
-                    s.eyecatchFullPath = pngEyecatch;
-                }
-                string jpgEyecatch = Path.Combine(subfolder,
-                    Paths.kSubfolderEyecatchJpgFilename);
-                if (BetterStreamingAssets.FileExists(
-                    Paths.RelativePathInStreamingAssets(jpgEyecatch)))
-                {
-                    s.eyecatchFullPath = jpgEyecatch;
-                }
-
-                subfolderList[subfolderParent].Add(s);
+                processingRelativeFolder = processingRelativeParentFolder;
+                processingAbsoluteFolder = processingAbsoluteParentFolder;
             }
         }
     }
-
     private void TrackListBuilderCompleted(object sender, 
         RunWorkerCompletedEventArgs e)
     {

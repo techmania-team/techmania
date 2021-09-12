@@ -224,6 +224,12 @@ public class ResourceLoader : MonoBehaviour
 
     private static bool IsEmptyFile(string fullPath)
     {
+        // FileInfo.Length causes a read, which doesn't work on streaming assets on Android
+        // so we simply bypass the test for streaming assets.
+        if (Paths.IsInStreamingAssets(fullPath))
+        {
+            return false;
+        }
         FileInfo fileInfo = new FileInfo(fullPath);
         return fileInfo.Length == 0;
     }

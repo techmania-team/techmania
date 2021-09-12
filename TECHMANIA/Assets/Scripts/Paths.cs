@@ -269,6 +269,25 @@ public static class Paths
 
     public static string FullPathToUri(string fullPath)
     {
+#if UNITY_ANDROID
+        // Streaming assets on Android are not files, so they are inaccessible with "file://".
+        if (fullPath.Contains(Application.streamingAssetsPath))
+        {
+            return fullPath;
+        }
+        else
+        {
+            return "file://" + fullPath.Replace("#", "%23")
+                .Replace("$", "%24")
+                .Replace("&", "%26")
+                .Replace("+", "%2b")
+                .Replace(",", "%2c")
+                .Replace(";", "%3b")
+                .Replace("=", "%3d")
+                .Replace("?", "%3f")
+                .Replace("@", "%40");
+        }
+#else
         return "file://" + fullPath.Replace("#", "%23")
             .Replace("$", "%24")
             .Replace("&", "%26")
@@ -278,6 +297,7 @@ public static class Paths
             .Replace("=", "%3d")
             .Replace("?", "%3f")
             .Replace("@", "%40");
+#endif
     }
 
     public static string HidePlatformInternalPath(string fullPath)
@@ -310,6 +330,10 @@ public static class Paths
     public static string AbsolutePathInStreamingAssets(string
         relativePath)
     {
+        // If an argument other than the first contains a rooted path,
+        // any previous path components are ignored,
+        // and the returned string begins with that rooted path component.
+        if (relativePath.StartsWith("/")) relativePath = relativePath.Substring(1);
         string absolutePath = Path.Combine(streamingAssetsFolder,
             relativePath);
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
