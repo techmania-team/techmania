@@ -766,6 +766,11 @@ public class SelectTrackPanel : MonoBehaviour
             string processingRelativeFolder = Path.GetDirectoryName(relativeTrackFolder);
             string processingAbsoluteFolder = Paths.AbsolutePathInStreamingAssets(processingRelativeFolder);
 
+            if (processingAbsoluteFolder == Paths.GetStreamingTrackRootFolder())
+            {
+                processingAbsoluteFolder = Paths.GetTrackRootFolder();
+            }
+
             builderProgress = Locale.
                 GetStringAndFormatIncludingPaths(
                 "select_track_scanning_text", absoluteTrackFolder);
