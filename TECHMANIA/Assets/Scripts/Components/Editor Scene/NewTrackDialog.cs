@@ -18,6 +18,8 @@ public class NewTrackDialog : MonoBehaviour
 
     public void Show(UnityAction<string, string> createCallback)
     {
+        titleField.text = "";
+        artistField.text = "";
         this.createCallback = createCallback;
         GetComponent<Dialog>().FadeIn();
     }
