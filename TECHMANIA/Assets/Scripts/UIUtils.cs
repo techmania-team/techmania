@@ -164,7 +164,7 @@ public class UIUtils
             NoneOptionInDropdowns()));
         for (int i = 0; i < allOptions.Count; i++)
         {
-            string name = new FileInfo(allOptions[i]).Name;
+            string name = Path.GetFileName(allOptions[i]);
             if (currentOption == name)
             {
                 value = i + 1;

@@ -331,9 +331,9 @@ public static class Paths
         relativePath)
     {
         // If an argument other than the first contains a rooted path,
-        // any previous path components are ignored,
-        // and the returned string begins with that rooted path component.
-        if (relativePath.StartsWith("/")) relativePath = relativePath.Substring(1);
+        // any previous path components are ignored, and the
+        // returned string begins with that rooted path component.
+        relativePath = relativePath.TrimStart('/', '\\');
         string absolutePath = Path.Combine(streamingAssetsFolder,
             relativePath);
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

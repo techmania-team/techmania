@@ -80,7 +80,7 @@ public class EditorContext : MonoBehaviour
     {
         get
         {
-            return new FileInfo(trackPath).DirectoryName;
+            return Path.GetDirectoryName(trackPath);
         }
     }
 

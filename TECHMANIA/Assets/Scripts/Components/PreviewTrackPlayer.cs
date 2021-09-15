@@ -48,7 +48,8 @@ public class PreviewTrackPlayer : MonoBehaviour
         // We could use ResourceLoader.LoadAudio, but this creates
         // problems when the user stops preview track playback
         // before the loading completes.
-        string filename = Path.Combine(trackFolder, previewTrackFilename);
+        string filename = Path.Combine(trackFolder, 
+            previewTrackFilename);
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(filename), AudioType.UNKNOWN);

@@ -121,7 +121,8 @@ public class TrackSetupPanel : MonoBehaviour
         {
             FileInfo fileInfo = new FileInfo(source);
             if (fileInfo.DirectoryName == trackFolder) continue;
-            string destination = Path.Combine(trackFolder, fileInfo.Name);
+            string destination = Path.Combine(trackFolder, 
+                fileInfo.Name);
 
             if (File.Exists(destination))
             {
@@ -197,7 +198,7 @@ public class TrackSetupPanel : MonoBehaviour
         string str = "";
         foreach (string file in fullPaths)
         {
-            str += new FileInfo(file).Name + "\n";
+            str += Path.GetFileName(file) + "\n";
         }
         return str.TrimEnd('\n');
     }
