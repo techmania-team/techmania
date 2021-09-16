@@ -85,6 +85,9 @@ public class Options : OptionsBase
         Custom
     }
     public Ruleset ruleset;
+    public bool customDataLocation;
+    public string tracksFolderLocation;
+    public string skinsFolderLocation;
 
     // Editor options
 
@@ -144,6 +147,9 @@ public class Options : OptionsBase
         keyboardMouseLatencyMs = 0;
 
         ruleset = Ruleset.Standard;
+        customDataLocation = false;
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
@@ -783,6 +789,51 @@ public class OptionsV1 : OptionsBase
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
     public List<PerTrackOptions> perTrackOptions;
+
+    public OptionsV1()
+    {
+        version = kVersion;
+
+        width = 0;
+        height = 0;
+        refreshRate = 0;
+        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        vSync = false;
+
+        masterVolume = 1f;
+        musicVolume = 0.8f;
+        keysoundVolume = 1f;
+        sfxVolume = 1f;
+        // Cannot call GetDefaultAudioBufferSize() here, because
+        // somehow Unity calls this constructor during serialization,
+        // and calling AudioSettings.GetConfiguration() at that time
+        // causes an exception.
+        audioBufferSize = 512;
+
+        locale = Locale.kDefaultLocale;
+        showLoadingBar = true;
+        showFps = false;
+        showJudgementTally = false;
+        showLaneDividers = false;
+        beatMarkers = Options.BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = Options.BackgroundScalingMode
+            .FillEntireScreen;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        reloadSkinsWhenLoadingPattern = false;
+
+        touchOffsetMs = 0;
+        touchLatencyMs = 0;
+        keyboardMouseOffsetMs = 0;
+        keyboardMouseLatencyMs = 0;
+
+        editorOptions = new EditorOptions();
+        modifiers = new Modifiers();
+        perTrackOptions = new List<PerTrackOptions>();
+        trackFilter = new TrackFilter();
+    }
 
     protected override OptionsBase Upgrade()
     {

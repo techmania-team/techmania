@@ -31,6 +31,11 @@ public class OptionsPanel : MonoBehaviour
 
     [Header("Miscellaneous")]
     public TMP_Dropdown rulesetDropdown;
+    public Toggle customDataLocation;
+    public GameObject tracksFolder;
+    public TextMeshProUGUI tracksFolderDisplay;
+    public GameObject skinsFolder;
+    public TextMeshProUGUI skinsFolderDisplay;
     public TextMeshProUGUI latencyDisplay;
 
     // Make a backup of all available resolutions at startup, because
@@ -167,6 +172,14 @@ public class OptionsPanel : MonoBehaviour
 
         // Miscellaneous
 
+        customDataLocation.SetIsOnWithoutNotify(
+            Options.instance.customDataLocation);
+        tracksFolder.SetActive(Options.instance.customDataLocation);
+        tracksFolderDisplay.text = Options.instance
+            .tracksFolderLocation;
+        skinsFolder.SetActive(Options.instance.customDataLocation);
+        skinsFolderDisplay.text = Options.instance
+            .skinsFolderLocation;
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
     }
 
@@ -325,6 +338,62 @@ public class OptionsPanel : MonoBehaviour
                 Options.instance.ruleset = Options.Ruleset.Standard;
                 MemoryToUI();
             }
+        }
+    }
+
+    public void OnCustomDataLocationChanged()
+    {
+        Options.instance.customDataLocation =
+            customDataLocation.isOn;
+        if (Options.instance.customDataLocation)
+        {
+            if (string.IsNullOrEmpty(
+                Options.instance.tracksFolderLocation))
+            {
+                Options.instance.tracksFolderLocation =
+                    Paths.GetTrackRootFolder();
+            }
+            if (string.IsNullOrEmpty(
+                Options.instance.skinsFolderLocation))
+            {
+                Options.instance.skinsFolderLocation =
+                    Paths.GetSkinFolder();
+            }
+        }
+        SelectTrackPanel.RemoveCachedLists();
+        SelectTrackPanel.ResetLocation();
+        MemoryToUI();
+        Paths.ApplyCustomDataLocation();
+    }
+
+    public void OnTracksFolderBrowseButtonClick()
+    {
+        string[] folders = SFB.StandaloneFileBrowser
+            .OpenFolderPanel("",
+            Options.instance.tracksFolderLocation,
+            multiselect: false);
+        if (folders.Length == 1)
+        {
+            Options.instance.tracksFolderLocation =
+                folders[0];
+            SelectTrackPanel.RemoveCachedLists();
+            SelectTrackPanel.ResetLocation();
+            MemoryToUI();
+            Paths.ApplyCustomDataLocation();
+        }
+    }
+
+    public void OnSkinsFolderBrowseButtonClick()
+    {
+        string[] folders = SFB.StandaloneFileBrowser
+            .OpenFolderPanel("",
+            Options.instance.skinsFolderLocation,
+            multiselect: false);
+        if (folders.Length == 1)
+        {
+            Options.instance.skinsFolderLocation = folders[0];
+            MemoryToUI();
+            Paths.ApplyCustomDataLocation();
         }
     }
     #endregion

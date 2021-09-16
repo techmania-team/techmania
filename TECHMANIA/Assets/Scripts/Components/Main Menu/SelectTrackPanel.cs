@@ -61,9 +61,14 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
     }
 
+    public static void ResetLocation()
+    {
+        currentLocation = "";
+    }
+
     public static void RemoveOneTrack(string trackFolder)
     {
-        string parent = new FileInfo(trackFolder).DirectoryName;
+        string parent = Path.GetDirectoryName(trackFolder);
         trackList[parent].RemoveAll((TrackInFolder t) =>
         {
             return t.folder == trackFolder;
@@ -72,7 +77,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     public static void ReloadOneTrack(string trackFolder)
     {
-        string parent = new FileInfo(trackFolder).DirectoryName;
+        string parent = Path.GetDirectoryName(trackFolder);
         foreach (TrackInFolder t in trackList[parent])
         {
             if (t.folder == trackFolder)
@@ -588,9 +593,6 @@ public class SelectTrackPanel : MonoBehaviour
         DoWorkEventArgs e)
     {
         RemoveCachedLists();
-        subfolderList.Clear();
-        trackList.Clear();
-        errorTrackList.Clear();
         anyOutdatedTrack = false;
 
         BuildTrackListFor(Paths.GetTrackRootFolder(),
@@ -831,17 +833,25 @@ public class SelectTrackPanel : MonoBehaviour
                     {
                         path = processingAbsoluteFolder
                     };
-                    string pngEyecatch = Path.Combine(processingRelativeFolder,
+                    string pngEyecatch = Path.Combine(
+                        processingRelativeFolder,
                         Paths.kSubfolderEyecatchPngFilename);
-                    if (BetterStreamingAssets.FileExists(pngEyecatch))
+                    if (BetterStreamingAssets.FileExists(
+                        pngEyecatch))
                     {
-                        s.eyecatchFullPath = Paths.AbsolutePathInStreamingAssets(pngEyecatch);
+                        s.eyecatchFullPath = Paths.
+                            AbsolutePathInStreamingAssets(
+                            pngEyecatch);
                     }
-                    string jpgEyecatch = Path.Combine(processingRelativeFolder,
+                    string jpgEyecatch = Path.Combine(
+                        processingRelativeFolder,
                         Paths.kSubfolderEyecatchJpgFilename);
-                    if (BetterStreamingAssets.FileExists(jpgEyecatch))
+                    if (BetterStreamingAssets.FileExists(
+                        jpgEyecatch))
                     {
-                        s.eyecatchFullPath = Paths.AbsolutePathInStreamingAssets(jpgEyecatch);
+                        s.eyecatchFullPath = Paths.
+                            AbsolutePathInStreamingAssets(
+                            jpgEyecatch);
                     }
                     subfolderList[dirKey].Add(s);
                 }
@@ -932,8 +942,7 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        currentLocation = new DirectoryInfo(currentLocation)
-            .Parent.FullName;
+        currentLocation = Path.GetDirectoryName(currentLocation);
         if (currentLocation.Equals(
             Paths.GetStreamingTrackRootFolder()))
             currentLocation = Paths.GetTrackRootFolder();

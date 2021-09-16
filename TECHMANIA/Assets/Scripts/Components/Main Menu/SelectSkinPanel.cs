@@ -88,6 +88,8 @@ public class SelectSkinPanel : MonoBehaviour
         if (!foundOption)
         {
             dropdown.onValueChanged.Invoke(0);  // This causes a reload
+            // TODO: this may call UIToMemory on dropdowns not yet
+            // reset.
         }
         else
         {

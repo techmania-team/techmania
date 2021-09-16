@@ -10,8 +10,10 @@ public static class Paths
 {
     public const string kTrackFilename = "track.tech";
     public const string kSkinFilename = "skin.json";
-    public const string kSubfolderEyecatchPngFilename = "eyecatch.png";
-    public const string kSubfolderEyecatchJpgFilename = "eyecatch.jpg";
+    public const string kSubfolderEyecatchPngFilename = 
+        "eyecatch.png";
+    public const string kSubfolderEyecatchJpgFilename = 
+        "eyecatch.jpg";
     public const string kTrackFolderName = "Tracks";
     public const string kSkinFolderName = "Skins";
     public const string kNoteSkinFolderName = "Note";
@@ -71,14 +73,15 @@ public static class Paths
         }
 
         // Track root folder
-        trackRootFolder = Path.Combine(workingDirectory, 
+        trackRootFolder = Path.Combine(workingDirectory,
             kTrackFolderName);
         Directory.CreateDirectory(trackRootFolder);
         streamingTrackRootFolder = Path.Combine(
             streamingAssetsFolder, kTrackFolderName);
 
         // Skin folder
-        skinFolder = Path.Combine(workingDirectory, kSkinFolderName);
+        skinFolder = Path.Combine(workingDirectory, 
+            kSkinFolderName);
         Directory.CreateDirectory(skinFolder);
         streamingSkinFolder = Path.Combine(
             streamingAssetsFolder, kSkinFolderName);
@@ -100,6 +103,22 @@ public static class Paths
             "TECHMANIA");
 #endif
         Directory.CreateDirectory(dataFolder);
+    }
+
+    public static void ApplyCustomDataLocation()
+    {
+        if (Options.instance.customDataLocation)
+        {
+            trackRootFolder = Options.instance.tracksFolderLocation;
+            skinFolder = Options.instance.skinsFolderLocation;
+        }
+        else
+        {
+            trackRootFolder = Path.Combine(workingDirectory,
+                kTrackFolderName);
+            skinFolder = Path.Combine(workingDirectory,
+                kSkinFolderName);
+        }
     }
     #endregion
 
@@ -331,9 +350,9 @@ public static class Paths
         relativePath)
     {
         // If an argument other than the first contains a rooted path,
-        // any previous path components are ignored,
-        // and the returned string begins with that rooted path component.
-        if (relativePath.StartsWith("/")) relativePath = relativePath.Substring(1);
+        // any previous path components are ignored, and the
+        // returned string begins with that rooted path component.
+        relativePath = relativePath.TrimStart('/', '\\');
         string absolutePath = Path.Combine(streamingAssetsFolder,
             relativePath);
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

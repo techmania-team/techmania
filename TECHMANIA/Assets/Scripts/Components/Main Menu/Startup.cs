@@ -10,6 +10,7 @@ public class Startup : MonoBehaviour
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
         OptionsPanel.ApplyOptionsOnStartUp();
+        Paths.ApplyCustomDataLocation();
         SpriteSheet.PrepareEmptySpriteSheet();
         Records.RefreshInstance();
         BetterStreamingAssets.Initialize();

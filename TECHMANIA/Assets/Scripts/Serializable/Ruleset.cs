@@ -277,13 +277,13 @@ public class Ruleset : RulesetBase
             scanMarginMiddle = new List<float>()
                 { 0.05f, 0.05f, 0.05f },
             hitboxWidth = 1.25f,
-            hitboxHeight = 1.1f,
+            hitboxHeight = 1.15f,
             chainHeadHitboxWidth = 100f,
             chainNodeHitboxWidth = 100f,
             dragHitboxWidth = 3f,
-            dragHitboxHeight = 1.1f,
+            dragHitboxHeight = 1.15f,
             ongoingDragHitboxWidth = 3f,
-            ongoingDragHitboxHeight = 1.1f,
+            ongoingDragHitboxHeight = 1.15f,
 
             maxHp = 10000,
             hpDeltaBasic = new List<int>()

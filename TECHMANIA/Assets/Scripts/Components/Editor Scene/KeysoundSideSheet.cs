@@ -44,7 +44,7 @@ public class KeysoundSideSheet : MonoBehaviour
         for (int i = 0; i < audioFilesNoFolder.Count; i++)
         {
             string file = audioFilesNoFolder[i];
-            file = new FileInfo(file).Name;
+            file = Path.GetFileName(file);
             audioFilesNoFolder[i] = file;
 
             int iCopy = i;

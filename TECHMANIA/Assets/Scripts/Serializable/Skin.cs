@@ -59,11 +59,21 @@ public class SpriteSheet
             // (0, 0) is top left. So we inverse y here.
             int inverseRow = rows - 1 - row;
             int column = i % columns;
+
+            float rectX = column * spriteWidth + padding;
+            float rectY = inverseRow * spriteHeight + padding;
+            float rectWidth = spriteWidth - padding * 2;
+            float rectHeight = spriteHeight - padding * 2;
+            // In rare cases, floating number division may cause
+            // sprite rects to go very slightly out of bounds of
+            // the texture, causing Unity to freak out.
+            rectWidth = Mathf.Min(rectWidth,
+                texture.width - rectX);
+            rectHeight = Mathf.Min(rectHeight,
+                texture.height - rectY);
             Sprite s = Sprite.Create(texture,
-                new Rect(column * spriteWidth + padding,
-                    inverseRow * spriteHeight + padding,
-                    spriteWidth - padding * 2,
-                    spriteHeight - padding * 2),
+                new Rect(rectX, rectY,
+                    rectWidth, rectHeight),
                 new Vector2(0.5f, 0.5f),
                 pixelsPerUnit: 100f,
                 extrude: 0,

@@ -117,7 +117,7 @@ public class ResourceLoader : MonoBehaviour
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            string fileWithoutFolder = new FileInfo(file).Name;
+            string fileWithoutFolder = Path.GetFileName(file);
             if (!audioClips.ContainsKey(fileWithoutFolder))
             {
                 // Handle empty files.
@@ -224,8 +224,9 @@ public class ResourceLoader : MonoBehaviour
 
     private static bool IsEmptyFile(string fullPath)
     {
-        // FileInfo.Length causes a read, which doesn't work on streaming assets on Android
-        // so we simply bypass the test for streaming assets.
+        // FileInfo.Length causes a read, which doesn't work
+        // on streaming assets on Android, so we simply bypass
+        // the test for streaming assets.
         if (Paths.IsInStreamingAssets(fullPath))
         {
             return false;
