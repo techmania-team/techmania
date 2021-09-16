@@ -360,7 +360,10 @@ public class OptionsPanel : MonoBehaviour
                     Paths.GetSkinFolder();
             }
         }
+        SelectTrackPanel.RemoveCachedLists();
+        SelectTrackPanel.ResetLocation();
         MemoryToUI();
+        Paths.ApplyCustomDataLocation();
     }
 
     public void OnTracksFolderBrowseButtonClick()
@@ -374,7 +377,9 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.tracksFolderLocation =
                 folders[0];
             SelectTrackPanel.RemoveCachedLists();
+            SelectTrackPanel.ResetLocation();
             MemoryToUI();
+            Paths.ApplyCustomDataLocation();
         }
     }
 
@@ -388,6 +393,7 @@ public class OptionsPanel : MonoBehaviour
         {
             Options.instance.skinsFolderLocation = folders[0];
             MemoryToUI();
+            Paths.ApplyCustomDataLocation();
         }
     }
     #endregion

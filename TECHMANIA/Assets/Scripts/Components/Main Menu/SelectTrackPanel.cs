@@ -61,6 +61,11 @@ public class SelectTrackPanel : MonoBehaviour
         errorTrackList.Clear();
     }
 
+    public static void ResetLocation()
+    {
+        currentLocation = "";
+    }
+
     public static void RemoveOneTrack(string trackFolder)
     {
         string parent = Path.GetDirectoryName(trackFolder);
@@ -588,9 +593,6 @@ public class SelectTrackPanel : MonoBehaviour
         DoWorkEventArgs e)
     {
         RemoveCachedLists();
-        subfolderList.Clear();
-        trackList.Clear();
-        errorTrackList.Clear();
         anyOutdatedTrack = false;
 
         BuildTrackListFor(Paths.GetTrackRootFolder(),
