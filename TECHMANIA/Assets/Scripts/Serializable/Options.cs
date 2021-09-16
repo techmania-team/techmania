@@ -85,6 +85,9 @@ public class Options : OptionsBase
         Custom
     }
     public Ruleset ruleset;
+    public bool customDataLocation;
+    public string tracksFolderLocation;
+    public string skinsFolderLocation;
 
     // Editor options
 
@@ -144,6 +147,9 @@ public class Options : OptionsBase
         keyboardMouseLatencyMs = 0;
 
         ruleset = Ruleset.Standard;
+        customDataLocation = false;
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
