@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1618968612685512
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4292895903331310}
+  - component: {fileID: 114783233008362550}
+  - component: {fileID: 114638831348474818}
+  m_Layer: 0
+  m_Name: MultiLineTextDialogController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4292895903331310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618968612685512}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114783233008362550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618968612685512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c28aa9aed18ce854c81e1aa700742199, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Title
+  message: Message
+  text: Text
+  maxLength: 0
+  lines: 5
+  okButton: OK
+  cancelButton: Cancel
+  style: android:Theme.DeviceDefault.Light.Dialog.Alert
+  saveValue: 0
+  saveKey: 
+  localize:
+    localizeResource: {fileID: 0}
+    titleID: title
+    messageID: message
+    okButtonID: okButton
+    cancelButtonID: cancelButton
+    textID: text
+  OnResult:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &114638831348474818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618968612685512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf18b9b5c452e74689b2f9e1b4ee78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - id: title
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30BF\u30A4\u30C8\u30EB"
+      fontSize: 0
+    - language: 40
+      text: "\u6807\u9898"
+      fontSize: 0
+    - language: 23
+      text: "\uC81C\uBAA9"
+      fontSize: 0
+    - language: 10
+      text: Title
+      fontSize: 0
+  - id: message
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30E1\u30C3\u30BB\u30FC\u30B8"
+      fontSize: 0
+    - language: 40
+      text: "\u4FE1\u606F"
+      fontSize: 0
+    - language: 23
+      text: "\uBA54\uC2DC\uC9C0"
+      fontSize: 0
+    - language: 10
+      text: Message
+      fontSize: 0
+  - id: okButton
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: OK
+      fontSize: 0
+    - language: 40
+      text: "\u786E\u5B9A"
+      fontSize: 0
+    - language: 23
+      text: "\uD655\uC778"
+      fontSize: 0
+    - language: 10
+      text: OK
+      fontSize: 0
+  - id: cancelButton
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30AD\u30E3\u30F3\u30BB\u30EB"
+      fontSize: 0
+    - language: 40
+      text: "\u53D6\u6D88"
+      fontSize: 0
+    - language: 23
+      text: "\uCDE8\uC18C"
+      fontSize: 0
+    - language: 10
+      text: Cancel
+      fontSize: 0
+  - id: text
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30C6\u30AD\u30B9\u30C8"
+      fontSize: 0
+    - language: 40
+      text: "\u6587\u672C"
+      fontSize: 0
+    - language: 23
+      text: "\uD14D\uC2A4\uD2B8"
+      fontSize: 0
+    - language: 10
+      text: Text
+      fontSize: 0

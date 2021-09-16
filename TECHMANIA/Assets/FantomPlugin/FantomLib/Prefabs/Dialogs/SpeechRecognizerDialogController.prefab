@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1682165297015334
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4091834958788602}
+  - component: {fileID: 114674099505533862}
+  - component: {fileID: 114128283579080586}
+  m_Layer: 0
+  m_Name: SpeechRecognizerDialogController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4091834958788602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682165297015334}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114674099505533862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682165297015334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f45b8e4cb501b44c979183dc676bbbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locale: 
+  message: Message
+  saveSetting: 0
+  saveKey: 
+  localize:
+    localizeResource: {fileID: 0}
+    messageID: message
+  OnResult:
+    m_PersistentCalls:
+      m_Calls: []
+  OnError:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &114128283579080586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682165297015334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf18b9b5c452e74689b2f9e1b4ee78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - id: message
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30E1\u30C3\u30BB\u30FC\u30B8"
+      fontSize: 0
+    - language: 40
+      text: "\u4FE1\u606F"
+      fontSize: 0
+    - language: 23
+      text: "\uBA54\uC2DC\uC9C0"
+      fontSize: 0
+    - language: 10
+      text: Message
+      fontSize: 0

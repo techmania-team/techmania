@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1418260080457852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4951603740509102}
+  - component: {fileID: 114233224120669674}
+  - component: {fileID: 114291896657271154}
+  m_Layer: 0
+  m_Name: MultiChoiceDialogController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4951603740509102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418260080457852}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114233224120669674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418260080457852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0065360fbaa145a45a077e5602a09141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Title
+  items:
+  - text: item1
+    value: value1
+    isOn: 0
+  - text: item2
+    value: value2
+    isOn: 0
+  - text: item3
+    value: value3
+    isOn: 0
+  resultType: 2
+  okButton: OK
+  cancelButton: Cancel
+  style: android:Theme.DeviceDefault.Light.Dialog.Alert
+  saveValue: 0
+  saveKey: 
+  localize:
+    localizeResource: {fileID: 0}
+    titleID: title
+    okButtonID: okButton
+    cancelButtonID: cancelButton
+    items:
+      localizeResource: {fileID: 0}
+      textID:
+      - value1
+      - value2
+      - value3
+  OnResult:
+    m_PersistentCalls:
+      m_Calls: []
+  OnResultIndex:
+    m_PersistentCalls:
+      m_Calls: []
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnValueIndexChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCancel:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCancelIndex:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &114291896657271154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418260080457852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf18b9b5c452e74689b2f9e1b4ee78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - id: title
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30BF\u30A4\u30C8\u30EB"
+      fontSize: 0
+    - language: 40
+      text: "\u6807\u9898"
+      fontSize: 0
+    - language: 23
+      text: "\uC81C\uBAA9"
+      fontSize: 0
+    - language: 10
+      text: Title
+      fontSize: 0
+  - id: okButton
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: OK
+      fontSize: 0
+    - language: 40
+      text: "\u786E\u5B9A"
+      fontSize: 0
+    - language: 23
+      text: "\uC120\uD0DD\uC644\uB8CC"
+      fontSize: 0
+    - language: 10
+      text: OK
+      fontSize: 0
+  - id: cancelButton
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30AD\u30E3\u30F3\u30BB\u30EB"
+      fontSize: 0
+    - language: 40
+      text: "\u53D6\u6D88"
+      fontSize: 0
+    - language: 23
+      text: "\uCDE8\uC18C"
+      fontSize: 0
+    - language: 10
+      text: Cancel
+      fontSize: 0

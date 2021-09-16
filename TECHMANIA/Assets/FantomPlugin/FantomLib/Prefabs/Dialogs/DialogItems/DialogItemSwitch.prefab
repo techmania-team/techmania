@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1629623308159876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4323948499025162}
+  - component: {fileID: 114793086846504384}
+  - component: {fileID: 114888616708437248}
+  m_Layer: 0
+  m_Name: DialogItemSwitch
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4323948499025162
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629623308159876}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114793086846504384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629623308159876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36395537bc1d95e448a66651d3ac034c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+  key: switch1
+  lineHeight: 1
+  lineColor: {r: 0, g: 0, b: 0, a: 1}
+  text: Messsage
+  textColor: {r: 0, g: 0, b: 0, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  align: 0
+  defaultChecked: 0
+  value: 0
+  minValue: 0
+  maxValue: 0
+  digit: 0
+  toggleItems: []
+  checkedIndex: 0
+  localize:
+    localizeResource: {fileID: 0}
+    textID: text
+  localizeItems:
+    localizeResource: {fileID: 0}
+    textID: []
+--- !u!114 &114888616708437248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629623308159876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf18b9b5c452e74689b2f9e1b4ee78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - id: text
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30C6\u30AD\u30B9\u30C8"
+      fontSize: 0
+    - language: 40
+      text: "\u6587\u672C"
+      fontSize: 0
+    - language: 23
+      text: "\uBCF8\uBB38"
+      fontSize: 0
