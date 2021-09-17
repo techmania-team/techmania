@@ -390,12 +390,7 @@ public class OptionsPanel : MonoBehaviour
             multiselect: false);
         if (folders.Length == 1)
         {
-            Options.instance.tracksFolderLocation =
-                folders[0];
-            SelectTrackPanel.RemoveCachedLists();
-            SelectTrackPanel.ResetLocation();
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnTracksFolderSelected(folders[0]);
         }
 #endif
     }
@@ -419,23 +414,18 @@ public class OptionsPanel : MonoBehaviour
             multiselect: false);
         if (folders.Length == 1)
         {
-            Options.instance.tracksFolderLocation = folders[0];
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnSkinsFolderSelected(folders[0]);
         }
 #endif
     }
+    
 
     private void OnAndroidTracksFolderSelected(string result)
     {
         if (result[0] == '{')
         {
             ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-            Options.instance.tracksFolderLocation = info.path;
-            SelectTrackPanel.RemoveCachedLists();
-            SelectTrackPanel.ResetLocation();
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnTracksFolderSelected(info.path);
         }
     }
 
@@ -444,10 +434,24 @@ public class OptionsPanel : MonoBehaviour
         if (result[0] == '{')
         {
             ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-            Options.instance.skinsFolderLocation = info.path;
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnSkinsFolderSelected(info.path);
         }
+    }
+
+    private void OnTracksFolderSelected(string fullPath)
+    {
+        Options.instance.tracksFolderLocation = fullPath;
+        SelectTrackPanel.RemoveCachedLists();
+        SelectTrackPanel.ResetLocation();
+        MemoryToUI();
+        Paths.ApplyCustomDataLocation();
+    }
+
+    private void OnSkinsFolderSelected(string fullPath)
+    {
+        Options.instance.skinsFolderLocation = fullPath;
+        MemoryToUI();
+        Paths.ApplyCustomDataLocation();
     }
     #endregion
 }
