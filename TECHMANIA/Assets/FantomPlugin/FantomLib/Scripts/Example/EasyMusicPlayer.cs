@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -935,13 +936,12 @@ namespace FantomLib.Example
         //ファイルを AudioClip としてダウンロードする
         IEnumerator LoadToAudioClip(string path)
         {
-            using(WWW www = new WWW("file://" + path))
-            {
-                while (!www.isDone)
-                    yield return null;
-
-                loadedClip = www.GetAudioClip(false, true);
-            }
+            UnityWebRequest request =
+                UnityWebRequestMultimedia.GetAudioClip(
+                    "file://" + path, AudioType.UNKNOWN);
+            yield return request.SendWebRequest();
+            loadedClip = DownloadHandlerAudioClip.GetContent(
+                request);
         }
 
         //Load processing complete callback handler
