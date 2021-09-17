@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1003626953492182
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4274234942131624}
+  - component: {fileID: 114107106216820330}
+  - component: {fileID: 114406560967235198}
+  m_Layer: 0
+  m_Name: MailerController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4274234942131624
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003626953492182}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114107106216820330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003626953492182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43bf2400a9a29f841aec5402c3f47e14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mailAddress: xxx@example.com
+  subject: Title
+  body: Message
+  localize:
+    localizeResource: {fileID: 0}
+    subjecctID: subject
+    bodyID: body
+--- !u!114 &114406560967235198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003626953492182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf18b9b5c452e74689b2f9e1b4ee78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - id: subject
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30BF\u30A4\u30C8\u30EB"
+      fontSize: 0
+    - language: 40
+      text: "\u6807\u9898"
+      fontSize: 0
+    - language: 23
+      text: "\uC81C\uBAA9"
+      fontSize: 0
+    - language: 10
+      text: Title
+      fontSize: 0
+  - id: body
+    defaultLanguage: 10
+    list:
+    - language: 22
+      text: "\u30E1\u30C3\u30BB\u30FC\u30B8"
+      fontSize: 0
+    - language: 40
+      text: "\u4FE1\u606F"
+      fontSize: 0
+    - language: 23
+      text: "\uBA54\uC2DC\uC9C0"
+      fontSize: 0
+    - language: 10
+      text: Message
+      fontSize: 0

@@ -5,6 +5,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using FantomLib;
+using UnityEngine.Networking;
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
 
 public class OptionsPanel : MonoBehaviour
 {
@@ -368,33 +373,85 @@ public class OptionsPanel : MonoBehaviour
 
     public void OnTracksFolderBrowseButtonClick()
     {
+#if UNITY_ANDROID
+        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+        }
+        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageRead);
+        }
+        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
+#else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
             Options.instance.tracksFolderLocation,
             multiselect: false);
         if (folders.Length == 1)
         {
-            Options.instance.tracksFolderLocation =
-                folders[0];
-            SelectTrackPanel.RemoveCachedLists();
-            SelectTrackPanel.ResetLocation();
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnTracksFolderSelected(folders[0]);
         }
+#endif
     }
 
     public void OnSkinsFolderBrowseButtonClick()
     {
+#if UNITY_ANDROID
+        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+        }
+        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageRead);
+        }
+        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidSkinsFolderSelected", "", true);
+#else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
             Options.instance.skinsFolderLocation,
             multiselect: false);
         if (folders.Length == 1)
         {
-            Options.instance.skinsFolderLocation = folders[0];
-            MemoryToUI();
-            Paths.ApplyCustomDataLocation();
+            OnSkinsFolderSelected(folders[0]);
         }
+#endif
+    }
+    
+
+    private void OnAndroidTracksFolderSelected(string result)
+    {
+        if (result[0] == '{')
+        {
+            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+            OnTracksFolderSelected(info.path);
+        }
+    }
+
+    private void OnAndroidSkinsFolderSelected(string result)
+    {
+        if (result[0] == '{')
+        {
+            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+            OnSkinsFolderSelected(info.path);
+        }
+    }
+
+    private void OnTracksFolderSelected(string fullPath)
+    {
+        Options.instance.tracksFolderLocation = fullPath;
+        SelectTrackPanel.RemoveCachedLists();
+        SelectTrackPanel.ResetLocation();
+        MemoryToUI();
+        Paths.ApplyCustomDataLocation();
+    }
+
+    private void OnSkinsFolderSelected(string fullPath)
+    {
+        Options.instance.skinsFolderLocation = fullPath;
+        MemoryToUI();
+        Paths.ApplyCustomDataLocation();
     }
     #endregion
 }
