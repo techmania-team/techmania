@@ -16,11 +16,11 @@ Refer to [Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md).
 
 # Images
 
-The [Material icons](TECHMANIA/Assets/Sprits/Material%20Icons) are distributed under the [Apache License 2.0](TECHMANIA/Assets/Sprits/Material%20Icons/LICENSE).
+The [Material icons](TECHMANIA/Assets/Sprites/Material%20Icons) are distributed under the [Apache License 2.0](TECHMANIA/Assets/Sprites/Material%20Icons/LICENSE).
 
 # Libraries
 
-[Fantom Plugin](TECHMANIA/Assets/FantomPlugin) is acquired from the [Unity Asset Store](https://assetstore.unity.com/packages/tools/gui/android-native-dialogs-and-functions-plugin-106497). This library is not available open source, however the author states the following on their website:
+[Fantom Plugin](TECHMANIA/Assets/FantomPlugin) is acquired from the [Unity Asset Store](https://assetstore.unity.com/packages/tools/gui/android-native-dialogs-and-functions-plugin-106497). This library is not available open source, however the author states the following on their [website](http://fantom1x.blog130.fc2.com/):
 
 "コードやアセットなどの使用はご自由に。著作者明記、使用報告・許諾なども不要。特に利用制限はありません。"
 
