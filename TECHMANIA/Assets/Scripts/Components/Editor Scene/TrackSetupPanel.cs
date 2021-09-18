@@ -31,6 +31,10 @@ public class TrackSetupPanel : MonoBehaviour
     #region Refreshing
     private void OnEnable()
     {
+        // Load full track from disk.
+        EditorContext.track = Track.LoadFromFile(
+            EditorContext.trackPath) as Track;
+
         Tabs.tabChanged += Refresh;
         EditorContext.UndoInvoked += OnUndoOrRedo;
         EditorContext.RedoInvoked += OnUndoOrRedo;
@@ -324,7 +328,7 @@ public class TrackSetupPanel : MonoBehaviour
                     EditorContext.trackFolder);
                 GetComponentInChildren<
                     CustomTransitionFromTrackSetupPanel>().
-                ForceTransition();
+                Transition();
             });
     }
 

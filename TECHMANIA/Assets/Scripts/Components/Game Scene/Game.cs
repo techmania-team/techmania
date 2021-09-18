@@ -269,7 +269,7 @@ public class Game : MonoBehaviour
             Ruleset.LoadCustomRuleset();
         }
         GameSetup.trackOptions = Options.instance.GetPerTrackOptions(
-            GameSetup.track);
+            GameSetup.track.trackMetadata.guid);
         if (inEditor)
         {
             Options.MakeBackup();
