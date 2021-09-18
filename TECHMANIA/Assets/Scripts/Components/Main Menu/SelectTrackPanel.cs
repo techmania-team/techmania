@@ -85,6 +85,7 @@ public class SelectTrackPanel : MonoBehaviour
                 string trackPath = Path.Combine(
                     trackFolder, Paths.kTrackFilename);
                 t.track = Track.LoadFromFile(trackPath) as Track;
+                t.track = MinimizeTrack(t.track);
                 break;
             }
         }
@@ -561,7 +562,8 @@ public class SelectTrackPanel : MonoBehaviour
 
     private void MoveSelectionDown()
     {
-        Selectable down = EventSystem.current.currentSelectedGameObject
+        Selectable down = EventSystem.current
+            .currentSelectedGameObject
             .GetComponent<Selectable>().FindSelectableOnDown();
         int index = cardList.IndexOf(down?.gameObject);
         if (index < 0) return;
@@ -729,7 +731,7 @@ public class SelectTrackPanel : MonoBehaviour
             trackList[folder].Add(new TrackInFolder()
             {
                 folder = dir,
-                track = track
+                track = MinimizeTrack(track)
             });
         }
     }
@@ -993,4 +995,25 @@ public class SelectTrackPanel : MonoBehaviour
         selectedCardIndex = cardIndex;
     }
     #endregion
+
+    // Returns a clone of the input track that only retains
+    // the information necessary for this track to function:
+    // - metadata
+    // - pattern metadata
+    private static Track MinimizeTrack(Track t)
+    {
+        Track mini = new Track()
+        {
+            trackMetadata = t.trackMetadata.Clone(),
+            patterns = new List<Pattern>()
+        };
+        foreach (Pattern p in t.patterns)
+        {
+            mini.patterns.Add(new Pattern()
+            {
+                patternMetadata = p.patternMetadata.Clone()
+            });
+        }
+        return mini;
+    }
 }
