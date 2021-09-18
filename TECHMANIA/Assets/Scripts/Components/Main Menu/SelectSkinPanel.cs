@@ -26,7 +26,7 @@ public class SelectSkinPanel : MonoBehaviour
     private System.Diagnostics.Stopwatch stopwatch;
     private const float beatPerSecond = 1.5f;
     private float previousBeat;
-    private bool showPreview;
+    private int skinsBeingLoaded;
     private List<GameObject> vfxInstances;
 
     private void InitializeDropdown(TMP_Dropdown dropdown,
@@ -54,12 +54,19 @@ public class SelectSkinPanel : MonoBehaviour
         };
 
         // Enumerate skins in the skin folder.
-        foreach (string folder in
-            Directory.EnumerateDirectories(skinFolder))
+        try
         {
-            // folder does not end in directory separator.
-            string skinName = Path.GetFileName(folder);
-            addToDropdown(skinName);
+            foreach (string folder in
+                Directory.EnumerateDirectories(skinFolder))
+            {
+                // folder does not end in directory separator.
+                string skinName = Path.GetFileName(folder);
+                addToDropdown(skinName);
+            }
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // Silently ignore.
         }
 
         // Enumerate skins in the streaming assets folder.
@@ -87,9 +94,8 @@ public class SelectSkinPanel : MonoBehaviour
         }
         if (!foundOption)
         {
-            dropdown.onValueChanged.Invoke(0);  // This causes a reload
-            // TODO: this may call UIToMemory on dropdowns not yet
-            // reset.
+            // This causes a reload
+            dropdown.value = 0;
         }
         else
         {
@@ -101,6 +107,12 @@ public class SelectSkinPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        Scan.InjectLaneHeight(120f);
+        stopwatch = new System.Diagnostics.Stopwatch();
+        vfxInstances = new List<GameObject>();
+        skinsBeingLoaded = 0;
+        RestartPreview();
+
         InitializeDropdown(noteSkinDropdown,
             Paths.GetNoteSkinRootFolder(), 
             Paths.GetStreamingNoteSkinRootFolder(), 
@@ -119,11 +131,6 @@ public class SelectSkinPanel : MonoBehaviour
             Options.instance.gameUiSkin);
         reloadSkinsToggle.SetIsOnWithoutNotify(
             Options.instance.reloadSkinsWhenLoadingPattern);
-
-        Scan.InjectLaneHeight(120f);
-        stopwatch = new System.Diagnostics.Stopwatch();
-        vfxInstances = new List<GameObject>();
-        RestartPreview();
     }
 
     private void OnDisable()
@@ -141,7 +148,7 @@ public class SelectSkinPanel : MonoBehaviour
         bool noteVisible = beat < 2f;
         bool resolveNote = (previousBeat < 2f && beat >= 2f);
 
-        if (showPreview &&
+        if (skinsBeingLoaded == 0 &&
             GlobalResource.noteSkin != null &&
             GlobalResource.vfxSkin != null &&
             GlobalResource.comboSkin != null &&
@@ -260,63 +267,88 @@ public class SelectSkinPanel : MonoBehaviour
 
     private void PrepareToLoadSkin()
     {
-        showPreview = false;
-
-        // Controls
-        backButton.GetComponent<Button>().interactable = false;
-        noteSkinDropdown.interactable = false;
-        vfxSkinDropdown.interactable = false;
-        comboSkinDropdown.interactable = false;
-        gameUiSkinDropdown.interactable = false;
-
-        // VFX preview
-        if (vfxInstances != null)
+        if (skinsBeingLoaded == 0)
         {
-            foreach (GameObject o in vfxInstances)
+            // Controls
+            backButton.GetComponent<Button>().interactable = false;
+            noteSkinDropdown.interactable = false;
+            vfxSkinDropdown.interactable = false;
+            comboSkinDropdown.interactable = false;
+            gameUiSkinDropdown.interactable = false;
+
+            // VFX preview
+            if (vfxInstances != null)
             {
-                Destroy(o);
+                foreach (GameObject o in vfxInstances)
+                {
+                    Destroy(o);
+                }
+                vfxInstances.Clear();
             }
-            vfxInstances.Clear();
+
+            // Combo preview
+            comboPreview.Hide();
         }
 
-        // Combo preview
-        comboPreview.Hide();
+        skinsBeingLoaded++;
     }
 
     private void RestartPreview()
     {
-        showPreview = true;
+        skinsBeingLoaded--;
 
-        // Note preview
-        if (GlobalResource.noteSkin != null)
+        if (skinsBeingLoaded <= 0)
         {
-            float noteScale = GlobalResource.noteSkin.basic.scale;
-            float noteSize = Scan.laneHeight * noteScale;
-            notePreview.GetComponent<RectTransform>().sizeDelta =
-                new Vector2(noteSize, noteSize);
-        }
+            skinsBeingLoaded = 0;
 
-        // Combo preview
-        if (GlobalResource.comboSkin != null)
-        {
-            comboPreview.ResetSizes();
-        }
+            // Note preview
+            if (GlobalResource.noteSkin != null)
+            {
+                float noteScale = 
+                    GlobalResource.noteSkin.basic.scale;
+                float noteSize = Scan.laneHeight * noteScale;
+                notePreview.GetComponent<RectTransform>().sizeDelta =
+                    new Vector2(noteSize, noteSize);
+            }
 
-        // Timing
-        stopwatch.Restart();
-        previousBeat = 0f;
+            // Combo preview
+            if (GlobalResource.comboSkin != null)
+            {
+                comboPreview.ResetSizes();
+            }
+
+            // Timing
+            stopwatch.Restart();
+            previousBeat = 0f;
+        }
     }
 
     public void UIToMemory()
     {
-        Options.instance.noteSkin = noteSkinDropdown.options[
-            noteSkinDropdown.value].text;
-        Options.instance.vfxSkin = vfxSkinDropdown.options[
-            vfxSkinDropdown.value].text;
-        Options.instance.comboSkin = comboSkinDropdown.options[
-            comboSkinDropdown.value].text;
-        Options.instance.gameUiSkin = gameUiSkinDropdown.options[
-            gameUiSkinDropdown.value].text;
+        if (noteSkinDropdown.value <
+            noteSkinDropdown.options.Count)
+        {
+            Options.instance.noteSkin = noteSkinDropdown.options[
+                noteSkinDropdown.value].text;
+        }
+        if (vfxSkinDropdown.value <
+            vfxSkinDropdown.options.Count)
+        {
+            Options.instance.vfxSkin = vfxSkinDropdown.options[
+                vfxSkinDropdown.value].text;
+        }
+        if (comboSkinDropdown.value < 
+            comboSkinDropdown.options.Count)
+        {
+            Options.instance.comboSkin = comboSkinDropdown.options[
+                comboSkinDropdown.value].text;
+        }
+        if (gameUiSkinDropdown.value <
+            gameUiSkinDropdown.options.Count)
+        {
+            Options.instance.gameUiSkin = gameUiSkinDropdown.options[
+                gameUiSkinDropdown.value].text;
+        }
         Options.instance.reloadSkinsWhenLoadingPattern =
             reloadSkinsToggle.isOn;
     }
