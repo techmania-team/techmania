@@ -997,7 +997,7 @@ public class SelectTrackPanel : MonoBehaviour
     #endregion
 
     // Returns a clone of the input track that only retains
-    // the information necessary for this track to function:
+    // the information necessary for this panel to function:
     // - metadata
     // - pattern metadata
     private static Track MinimizeTrack(Track t)

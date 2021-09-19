@@ -301,12 +301,16 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_bg_scaling_label,Background scaling,背景缩放方式,背景縮放方式,BGAのスケーリング,BGA 맞춤
 ,options_bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,覆蓋整個螢幕,画面に合わせる,전체 화면
 ,options_bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
+,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
 ,options_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
 ,options_ruleset_standard,Standard,标准,標準,スタンダード,표준
 ,options_ruleset_legacy,Legacy,经典,經典,レガシー,레거시
 ,options_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일({0})을 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
-,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
+,options_custom_data_location_label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
+,options_custom_data_location_browse_button,Browse,浏览,瀏覽,参照…,찾아보기
+,options_tracks_folder_label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
+,options_skins_folder_label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
 ,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
 ,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
@@ -907,17 +911,44 @@ You can continue to edit this pattern, but playback and preview will be disabled
 ,time_event_dialog_ok_button,OK,确定,確定,OK,확인
 ,time_event_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
-,pattern_radar_dialog_raw_header,Raw,计算结果,計算結果,生の数値,계산 결과
+,pattern_radar_dialog_raw_header,Raw,计算结果,計算結果,計算結果,계산 결과
 ,pattern_radar_dialog_normalized_header,Normalized,标准化结果,標準化結果,正規化,정규화
 ,pattern_radar_dialog_suggested_level_label,Suggested level:,建议难度：,建議難度：,おすすめのレベル：,추천 레벨:
 ,pattern_radar_dialog_disclaimer,"* Refer to the manual for the definition and formula of each item.
 * Suggested level is only a suggestion. Use your own judgement when deciding a pattern's level.","* 有关各数值的定义与计算方式请查阅文档。
 * 建议难度仅供参考，请以个人判断来确定谱面的最终难度。","* 有關個數值的定義與計算方式請查看說明文件。
-* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* 各項目の定義と計算方式は公式マニュアルをご参照ください。
+* 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* それぞれの項目の定義と計算方式は公式マニュアルをご参照ください。
 * このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
 ,,,,,,
-,options_custom_data_location_label,Custom data location,自定义数据位置,,,
-,options_custom_data_location_browse_button,Browse,浏览,,,
-,options_tracks_folder_label,Tracks folder,曲目文件夹,,,
-,options_skins_folder_label,Skins folder,皮肤文件夹,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
