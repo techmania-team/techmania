@@ -19,9 +19,8 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     protected override void OnTrackCardClick(GameObject o)
     {
         EditorContext.Reset();
-        EditorContext.trackPath = Path.Combine(cardToTrack[o].folder, 
+        EditorContext.trackPath = Path.Combine(cardToTrack[o].folder,
             Paths.kTrackFilename);
-        EditorContext.track = cardToTrack[o].track;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
             TransitionToPanel.Direction.Right);
     }

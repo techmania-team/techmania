@@ -20,19 +20,18 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
                     "track_setup_discard_changes_cancel"),
                 () =>
                 {
-                    SelectTrackPanel.ReloadOneTrack(
-                        EditorContext.trackFolder);
-                    ForceTransition();
+                    Transition();
                 });
         }
         else
         {
-            ForceTransition();
+            Transition();
         }
     }
 
-    public void ForceTransition()
+    public void Transition()
     {
+        SelectTrackPanel.ReloadOneTrack(EditorContext.trackFolder);
         PanelTransitioner.TransitionTo(target, targetAppearsFrom);
     }
 }

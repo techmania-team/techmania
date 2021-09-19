@@ -215,6 +215,26 @@ public class TrackMetadata
     {
         autoOrderPatterns = true;
     }
+
+    public TrackMetadata Clone()
+    {
+        return new TrackMetadata()
+        {
+            guid = guid,
+
+            title = title,
+            artist = artist,
+            genre = genre,
+            additionalCredits = additionalCredits,
+
+            eyecatchImage = eyecatchImage,
+            previewTrack = previewTrack,
+            previewStartTime = previewStartTime,
+            previewEndTime = previewEndTime,
+
+            autoOrderPatterns = autoOrderPatterns
+        };
+    }
 }
 
 [Serializable]
@@ -377,6 +397,31 @@ public class PatternMetadata
 
         initBpm = Pattern.defaultBpm;
         bps = Pattern.defaultBps;
+    }
+
+    public PatternMetadata Clone()
+    {
+        return new PatternMetadata()
+        {
+            guid = guid,
+
+            patternName = patternName,
+            level = level,
+            controlScheme = controlScheme,
+            playableLanes = playableLanes,
+            author = author,
+
+            backingTrack = backingTrack,
+            backImage = backImage,
+            bga = bga,
+            bgaOffset = bgaOffset,
+            waitForEndOfBga = waitForEndOfBga,
+            playBgaOnLoop = playBgaOnLoop,
+
+            firstBeatOffset = firstBeatOffset,
+            initBpm = initBpm,
+            bps = bps
+        };
     }
 }
 

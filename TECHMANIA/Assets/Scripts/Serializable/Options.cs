@@ -247,9 +247,8 @@ public class Options : OptionsBase
 #endregion
 
 #region Per-track options
-    public PerTrackOptions GetPerTrackOptions(Track t)
+    public PerTrackOptions GetPerTrackOptions(string guid)
     {
-        string guid = t.trackMetadata.guid;
         foreach (PerTrackOptions options in perTrackOptions)
         {
             if (options.trackGuid == guid) return options;

@@ -38,9 +38,9 @@ public class OptionsPanel : MonoBehaviour
     public TMP_Dropdown rulesetDropdown;
     public Toggle customDataLocation;
     public GameObject tracksFolder;
-    public TextMeshProUGUI tracksFolderDisplay;
+    public ScrollingText tracksFolderDisplay;
     public GameObject skinsFolder;
-    public TextMeshProUGUI skinsFolderDisplay;
+    public ScrollingText skinsFolderDisplay;
     public TextMeshProUGUI latencyDisplay;
 
     // Make a backup of all available resolutions at startup, because
@@ -180,11 +180,11 @@ public class OptionsPanel : MonoBehaviour
         customDataLocation.SetIsOnWithoutNotify(
             Options.instance.customDataLocation);
         tracksFolder.SetActive(Options.instance.customDataLocation);
-        tracksFolderDisplay.text = Options.instance
-            .tracksFolderLocation;
+        tracksFolderDisplay.SetUp(Options.instance
+            .tracksFolderLocation);
         skinsFolder.SetActive(Options.instance.customDataLocation);
-        skinsFolderDisplay.text = Options.instance
-            .skinsFolderLocation;
+        skinsFolderDisplay.SetUp(Options.instance
+            .skinsFolderLocation);
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
     }
 

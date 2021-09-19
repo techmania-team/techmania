@@ -52,9 +52,18 @@ public class EyecatchSelfLoader : MonoBehaviour
             return;
         }
 
-        image.sprite = ResourceLoader.CreateSpriteFromTexture(texture);
+        image.sprite = ResourceLoader.CreateSpriteFromTexture(
+            texture);
         image.gameObject.SetActive(true);
         progressIndicator.SetActive(false);
         noImageIndicator.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (image.sprite != null)
+        {
+            Destroy(image.sprite.texture);
+        }
     }
 }

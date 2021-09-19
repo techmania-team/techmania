@@ -21,7 +21,14 @@ public class Marker : MonoBehaviour
 
         float time = EditorContext.Pattern.PulseToTime(pulse);
 
-        scanBeatText.text = $"{scan}-{beatInScan}";
+        string scanPosition = "";
+        if (beatInScan == 0)
+        {
+            scanPosition = (scan % 2 == 0) ?
+                "↓" : "↑";
+        }
+
+        scanBeatText.text = $"{scanPosition}{scan}-{beatInScan}";
         timeText.text = UIUtils.FormatTime(time,
             includeMillisecond: true);
     }

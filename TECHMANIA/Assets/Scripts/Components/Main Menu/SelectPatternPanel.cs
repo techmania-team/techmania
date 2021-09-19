@@ -39,6 +39,10 @@ public class SelectPatternPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        // Load full track from disk.
+        GameSetup.track = Track.LoadFromFile(GameSetup.trackPath)
+            as Track;
+
         // Show track details.
         Track track = GameSetup.track;
         eyecatchImage.LoadImage(GameSetup.trackFolder,
