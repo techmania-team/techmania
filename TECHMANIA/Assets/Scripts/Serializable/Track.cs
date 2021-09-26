@@ -487,9 +487,7 @@ public class Note
     // Calculated at runtime:
 
     public float time;
-#if UNITY_2020
     public Dictionary<Judgement, float> timeWindow;
-#endif
 
     // Optional parameters:
 
