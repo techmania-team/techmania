@@ -1686,7 +1686,8 @@ public class Game : MonoBehaviour
                 BaseTime);
         }
         if (GameSetup.pattern.patternMetadata.bga != null
-            && GameSetup.pattern.patternMetadata.bga != "")
+            && GameSetup.pattern.patternMetadata.bga != ""
+            && !GameSetup.trackOptions.noVideo)
         {
             if (BaseTime >= GameSetup.pattern.patternMetadata
                 .bgaOffset)
