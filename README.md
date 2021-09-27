@@ -28,7 +28,7 @@ Refer to the [documentation website](https://techmania-team.github.io/techmania-
 ## Platform
 The game is designed for Windows PCs, with the Touch control scheme requiring a touchscreen monitor. Patterns using other control schemes are playable with a mouse and keyboard.
 
-We also provide support for iOS/iPadOS, in that we are able to respond to bug reports and some feature requests. However please be aware of the following:
+We also provide technical support for iOS/iPadOS, in that we are able to respond to bug reports and some feature requests. However please be aware of the following:
 
 - The game's UI is designed for PC and may be difficult to navigate on a phone;
 - The game's difficulty is tuned for PC and may prove too difficult for mobile players;
