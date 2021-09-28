@@ -20,7 +20,7 @@ using System.Globalization;
 [FormatVersion(TrackV1.kVersion, typeof(TrackV1), isLatest: false)]
 [FormatVersion(TrackV2.kVersion, typeof(TrackV2), isLatest: false)]
 [FormatVersion(Track.kVersion, typeof(Track), isLatest: true)]
-public class TrackBase : SerializableClass<TrackBase> {}
+public class TrackBase : SerializableClass<TrackBase> { }
 
 #region Enums
 [Serializable]

@@ -88,10 +88,15 @@ public class Records : RecordsBase
         if (dict.ContainsKey(p.patternMetadata.guid))
         {
             Record r = dict[p.patternMetadata.guid];
-            if (r.fingerprint == p.fingerprint)
+            if (r.fingerprint != p.fingerprint)
             {
-                return r;
+                return null;
             }
+            if (IsGameVersionOutdated(r.gameVersion))
+            {
+                return null;
+            }
+            return r;
         }
         return null;
     }
@@ -139,6 +144,19 @@ public class Records : RecordsBase
         {
             if (r.ruleset == Options.Ruleset.Custom) continue;
             recordDict[r.ruleset].Add(r.guid, r);
+        }
+    }
+
+    private static bool IsGameVersionOutdated(string version)
+    {
+        switch (version)
+        {
+            // There were ruleset changes between 1.0 beta and
+            // 1.0.
+            case "1.0 beta":
+                return true;
+            default:
+                return false;
         }
     }
 

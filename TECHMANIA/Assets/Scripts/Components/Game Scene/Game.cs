@@ -274,6 +274,8 @@ public class Game : MonoBehaviour
         {
             Options.MakeBackup();
             Options.instance.modifiers = new Modifiers();
+            GameSetup.trackOptions.backgroundBrightness = 10;
+            GameSetup.trackOptions.noVideo = false;
             Modifiers.instance.mode = Modifiers.Mode.Practice;
 
             practiceTopBar.SetActive(true);
@@ -1684,7 +1686,8 @@ public class Game : MonoBehaviour
                 BaseTime);
         }
         if (GameSetup.pattern.patternMetadata.bga != null
-            && GameSetup.pattern.patternMetadata.bga != "")
+            && GameSetup.pattern.patternMetadata.bga != ""
+            && !GameSetup.trackOptions.noVideo)
         {
             if (BaseTime >= GameSetup.pattern.patternMetadata
                 .bgaOffset)

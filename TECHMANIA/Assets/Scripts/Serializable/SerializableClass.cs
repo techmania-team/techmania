@@ -25,7 +25,7 @@ public class FormatVersionAttribute : Attribute
     public string version { get; private set; }
     public Type subclassType { get; private set; }
     public bool isLatest { get; private set; }
-    
+
     public FormatVersionAttribute(string version,
         Type subclassType, bool isLatest)
     {
@@ -110,6 +110,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         t.InitAfterDeserialize();
         return t;
 #else
+        upgraded = false;
         return null;
 #endif
     }
@@ -132,8 +133,13 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
+#if UNITY_2020
         string fileContent = UniversalIO.ReadAllText(path);
         return Deserialize(fileContent, out upgraded);
+#else
+        upgraded = false;
+        return null;
+#endif
     }
 
     public static T LoadFromFile(string path)
@@ -169,7 +175,8 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 [FormatVersion(SerializableDemoV2.kVersion,
     typeof(SerializableDemoV2), isLatest: true)]
 public class SerializableDemoBase :
-    SerializableClass<SerializableDemoBase> {}
+    SerializableClass<SerializableDemoBase>
+{ }
 
 [Serializable]
 public class SerializableDemoV1 : SerializableDemoBase
