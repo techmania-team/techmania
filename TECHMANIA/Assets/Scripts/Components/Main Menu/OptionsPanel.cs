@@ -7,9 +7,6 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 using FantomLib;
 using UnityEngine.Networking;
-#if UNITY_ANDROID
-using UnityEngine.Android;
-#endif
 
 public class OptionsPanel : MonoBehaviour
 {
@@ -374,14 +371,6 @@ public class OptionsPanel : MonoBehaviour
     public void OnTracksFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
-        {
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-        }
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
-        {
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-        }
         AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
 #else
         string[] folders = SFB.StandaloneFileBrowser
@@ -398,14 +387,6 @@ public class OptionsPanel : MonoBehaviour
     public void OnSkinsFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
-        {
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-        }
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
-        {
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-        }
         AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidSkinsFolderSelected", "", true);
 #else
         string[] folders = SFB.StandaloneFileBrowser
@@ -418,7 +399,6 @@ public class OptionsPanel : MonoBehaviour
         }
 #endif
     }
-    
 
     private void OnAndroidTracksFolderSelected(string result)
     {
