@@ -5,6 +5,9 @@ using System.IO;
 using System.Text;
 using UnityEngine.Events;
 using System;
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
 
 public static class Paths
 {
@@ -109,6 +112,16 @@ public static class Paths
     {
         if (Options.instance.customDataLocation)
         {
+#if UNITY_ANDROID
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+            {
+                Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+            }
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+            {
+                Permission.RequestUserPermission(Permission.ExternalStorageRead);
+            }
+#endif
             trackRootFolder = Options.instance.tracksFolderLocation;
             skinFolder = Options.instance.skinsFolderLocation;
         }
