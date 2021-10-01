@@ -3,7 +3,7 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 
 [Download for Windows](https://github.com/techmania-team/techmania/releases)
 
-Download for iOS/iPadOS (link pending)
+[Download for iOS/iPadOS](https://apps.apple.com/us/app/techmania/id1581524513)
 
 [Trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
 
