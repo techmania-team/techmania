@@ -63,7 +63,7 @@ If the build fails or produces a platform-specific bug, you can submit an issue,
 ## On streaming assets
 In PC builds we release the base game and resources (official tracks and skins) separately so PC players don't need to redownload resources when updating. On mobile builds, however, it's more beneficial to include the resources in the release so the installation process is easier. To achieve this, we take advantage of [streaming assets](https://docs.unity3d.com/Manual/StreamingAssets.html).
 
-In order to keep this repo focused, the streaming assets folder (TECHMANIA/Assets/StreamingAssets) is ignored. To set up streaming assets in your local clone:
+In order to keep this repo focused, the streaming assets folder (TECHMANIA/Assets/StreamingAssets) is ignored in `.gitignore`. To set up streaming assets in your local clone:
 * Create the following folders:
   * `TECHMANIA/Assets/StreamingAssets`
   * `TECHMANIA/Assets/StreamingAssets/Tracks`
@@ -75,6 +75,10 @@ In order to keep this repo focused, the streaming assets folder (TECHMANIA/Asset
   * from `Skins_and_Tracks.zip/Skins` to `TECHMANIA/Assets/StreamingAssets/Skins`
 
 If done correctly, you should see official tracks and skins in the game even when they are not in the build folder.
+
+Additionally, we perform the following optimizations / decorations for the mobile releases:
+* In tracks, convert .wav to .ogg, and .wmv to .mp4, in order to decrease file size and increase compatibility. When doing so, make sure to also update filenames in `track.tech`.
+* Copy `TECHMANIA/Assets/Sprites/Logo.png` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks` so it shows up as eyecatch.
 
 ## Platform-specific forks
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
