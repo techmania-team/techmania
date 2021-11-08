@@ -197,6 +197,9 @@ public class Options : OptionsBase
         //
         // Resolution is not supported at all on iOS.
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
+#elif !UNITY_ANDROID
+		Screen.SetResolution(width, height, fullScreenMode, refreshRate);
+		Application.targetFrameRate = 360;
 #endif
 
 #if UNITY_IOS
