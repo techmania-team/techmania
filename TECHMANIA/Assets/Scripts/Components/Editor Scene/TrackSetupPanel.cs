@@ -31,9 +31,14 @@ public class TrackSetupPanel : MonoBehaviour
     #region Refreshing
     private void OnEnable()
     {
-        // Load full track from disk.
-        EditorContext.track = Track.LoadFromFile(
-            EditorContext.trackPath) as Track;
+        if (!EditorContext.Dirty)
+        {
+            // Load full track from disk. If the editor is dirty,
+            // however, we don't want to overwrite the in-memory
+            // track with unsaved changes.
+            EditorContext.track = Track.LoadFromFile(
+                EditorContext.trackPath) as Track;
+        }
 
         Tabs.tabChanged += Refresh;
         EditorContext.UndoInvoked += OnUndoOrRedo;

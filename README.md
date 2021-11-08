@@ -3,7 +3,7 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 
 [Download for Windows](https://github.com/techmania-team/techmania/releases)
 
-Download for iOS/iPadOS (link pending)
+[Download for iOS/iPadOS](https://apps.apple.com/us/app/techmania/id1581524513)
 
 [Trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
 
@@ -56,9 +56,29 @@ Follow the standard building process:
 * File - Build Settings
 * Choose your target platform, then build.
 
-Please note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable.
+Please note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable. Alternatively, set up [streaming assets](#on-streaming-assets) in your local clone.
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but we do not guarantee support.
+
+## On streaming assets
+In PC builds we release the base game and resources (official tracks and skins) separately so PC players don't need to redownload resources when updating. On mobile builds, however, it's more beneficial to include the resources in the release so the installation process is easier. To achieve this, we take advantage of [streaming assets](https://docs.unity3d.com/Manual/StreamingAssets.html).
+
+In order to keep this repo focused, the streaming assets folder (TECHMANIA/Assets/StreamingAssets) is ignored in `.gitignore`. To set up streaming assets in your local clone:
+* Create the following folders:
+  * `TECHMANIA/Assets/StreamingAssets`
+  * `TECHMANIA/Assets/StreamingAssets/Tracks`
+  * `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks`
+  * `TECHMANIA/Assets/StreamingAssets/Skins`
+* Download `Skins_and_Tracks.zip` from an official release.
+* Copy everything:
+  * from `Skins_and_Tracks.zip/Tracks` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks`
+  * from `Skins_and_Tracks.zip/Skins` to `TECHMANIA/Assets/StreamingAssets/Skins`
+
+If done correctly, you should see official tracks and skins in the game even when they are not in the build folder.
+
+Additionally, we perform the following optimizations / decorations for the mobile releases:
+* In tracks, convert .wav to .ogg, and .wmv to .mp4, in order to decrease file size and increase compatibility. When doing so, make sure to also update filenames in `track.tech`.
+* Copy `TECHMANIA/Assets/Sprites/Logo.png` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks` so it shows up as eyecatch.
 
 ## Platform-specific forks
 * rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases

@@ -199,10 +199,11 @@ public class Options : OptionsBase
         Screen.SetResolution(width, height, fullScreenMode, refreshRate);
 #endif
 
-#if UNITY_IOS
-        // iOS ignores VSync, and caps the FPS at 30 by default.
+#if UNITY_IOS || UNITY_ANDROID
+        // iOS  ignores VSync, and caps the FPS at 30 by default.
         Application.targetFrameRate =   
             Screen.currentResolution.refreshRate;
+        QualitySettings.vSyncCount = 0;
 #else
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
