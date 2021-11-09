@@ -54,7 +54,7 @@ public class OptionsPanel : MonoBehaviour
 
         Locale.Initialize(instance.stringTable);
         Locale.SetLocale(Options.instance.locale);
-        Options.instance.ApplyGraphicSettings();
+        // Options.instance.ApplyGraphicSettings();
         instance.ApplyAudioBufferSize();
         instance.audioSliders.ApplyVolume();
     }
