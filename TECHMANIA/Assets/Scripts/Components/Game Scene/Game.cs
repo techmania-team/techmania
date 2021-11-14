@@ -523,7 +523,7 @@ public class Game : MonoBehaviour
         backgroundImage.color = Color.white;
         backgroundImage.GetComponent<AspectRatioFitter>()
             .aspectRatio =
-            texture.width / texture.height;
+            (float)texture.width / texture.height;
         backgroundImageLoaded = true;
     }
 
