@@ -107,9 +107,10 @@ public class TimingCalibrationPanel : MonoBehaviour
 
     private float FloatScanToAnchorX(float scan)
     {
-        return Mathf.LerpUnclamped(Scan.kSpaceBeforeScan,
-                    1f - Scan.kSpaceAfterScan,
-                    scan);
+        return Mathf.LerpUnclamped(
+            Ruleset.instance.scanMarginBeforeFirstBeat,
+            1f - Ruleset.instance.scanMarginAfterLastBeat,
+            scan);
     }
 
     // Update is called once per frame

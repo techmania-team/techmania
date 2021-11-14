@@ -24,7 +24,8 @@ public class ScanBackground : MonoBehaviour
         Scan.Direction scanDirection)
     {
         float x = Mathf.Lerp(
-            Scan.kSpaceBeforeScan, 1f - Scan.kSpaceAfterScan,
+            Ruleset.instance.scanMarginBeforeFirstBeat,
+            1f - Ruleset.instance.scanMarginAfterLastBeat,
             relativePosition);
         if (scanDirection == Scan.Direction.Left)
         {
