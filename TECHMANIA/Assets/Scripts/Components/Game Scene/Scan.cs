@@ -79,7 +79,7 @@ public class Scan : MonoBehaviour
 
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
-        scanline.Initialize(this, scanHeight);
+        scanline.Initialize(this, direction, scanHeight);
 
         InitializeCountdown();
     }

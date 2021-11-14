@@ -12,7 +12,8 @@ public class Scanline : MonoBehaviour
     private Image image;
     private Scan scanRef;
 
-    public void Initialize(Scan scanRef, float height)
+    public void Initialize(Scan scanRef, Scan.Direction direction,
+        float height)
     {
         image = GetComponent<Image>();
         this.scanRef = scanRef;
@@ -23,6 +24,10 @@ public class Scanline : MonoBehaviour
         rect.anchorMax = Vector2.zero;
         rect.anchoredPosition = new Vector2(-height, 0f);
         rect.sizeDelta = new Vector2(height, height);
+        rect.localScale = new Vector3(
+            direction == Scan.Direction.Right ? 1f : -1f,
+            1f,
+            1f);
     }
 
     private void Update()
