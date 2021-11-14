@@ -356,6 +356,8 @@ public class Game : MonoBehaviour
         HideBGACover();
         vfxSpawner.RemoveAll();
         comboText.Hide();
+        topScanBackground.HideAllMarkers();
+        bottomScanBackground.HideAllMarkers();
 
         // Step 1: load background image, if any. This makes the
         // loading screen not too dull.

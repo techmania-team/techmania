@@ -10,12 +10,27 @@ public class ScanBackground : MonoBehaviour
     public List<RectTransform> lanes;
     public List<GameObject> laneDividers;
 
+    private List<GameObject> beatMarkers;
+
     // Start is called before the first frame update
     void Start()
+    {
+        HideAllMarkers();
+    }
+
+    public void HideAllMarkers()
     {
         foreach (GameObject o in laneDividers)
         {
             o.SetActive(false);
+        }
+        if (beatMarkers != null)
+        {
+            foreach (GameObject o in beatMarkers)
+            {
+                Destroy(o);
+            }
+            beatMarkers.Clear();
         }
     }
 
@@ -37,6 +52,12 @@ public class ScanBackground : MonoBehaviour
         marker.anchorMin = new Vector2(x, 0f);
         marker.anchorMax = new Vector2(x, 1f);
         marker.gameObject.SetActive(true);
+
+        if (beatMarkers == null)
+        {
+            beatMarkers = new List<GameObject>();
+        }
+        beatMarkers.Add(marker.gameObject);
     }
 
     public void Initialize(Scan.Direction scanDirection,
