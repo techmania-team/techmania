@@ -270,23 +270,32 @@ public class VFXSpawner : MonoBehaviour
 
     public void RemoveAll()
     {
-        foreach (List<GameObject> list in 
-            holdNoteToOngoingHeadVfx.Values)
+        if (holdNoteToOngoingHeadVfx != null)
         {
-            foreach (GameObject o in list) Destroy(o);
+            foreach (List<GameObject> list in
+                holdNoteToOngoingHeadVfx.Values)
+            {
+                foreach (GameObject o in list) Destroy(o);
+            }
+            holdNoteToOngoingHeadVfx.Clear();
         }
-        holdNoteToOngoingHeadVfx.Clear();
-        foreach (List<GameObject> list in
-            holdNoteToOngoingTrailVfx.Values)
+        if (holdNoteToOngoingTrailVfx != null)
         {
-            foreach (GameObject o in list) Destroy(o);
+            foreach (List<GameObject> list in
+                holdNoteToOngoingTrailVfx.Values)
+            {
+                foreach (GameObject o in list) Destroy(o);
+            }
+            holdNoteToOngoingTrailVfx.Clear();
         }
-        holdNoteToOngoingTrailVfx.Clear();
-        foreach (List<GameObject> list in
-            dragNoteToOngoingVfx.Values)
+        if (dragNoteToOngoingVfx != null)
         {
-            foreach (GameObject o in list) Destroy(o);
+            foreach (List<GameObject> list in
+                dragNoteToOngoingVfx.Values)
+            {
+                foreach (GameObject o in list) Destroy(o);
+            }
+            dragNoteToOngoingVfx.Clear();
         }
-        dragNoteToOngoingVfx.Clear();
     }
 }

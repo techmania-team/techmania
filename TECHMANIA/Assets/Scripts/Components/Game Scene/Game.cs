@@ -349,6 +349,14 @@ public class Game : MonoBehaviour
     private bool keysoundsLoaded;
     private IEnumerator LoadSequence()
     {
+        // Hide all background and VFX so they don't "leak" from
+        // one preview session to the next.
+        backgroundImage.color = Color.clear;
+        bga.color = Color.clear;
+        HideBGACover();
+        vfxSpawner.RemoveAll();
+        comboText.Hide();
+
         // Step 1: load background image, if any. This makes the
         // loading screen not too dull.
         if (GameSetup.pattern.patternMetadata.backImage != null &&
@@ -360,10 +368,6 @@ public class Game : MonoBehaviour
             ResourceLoader.LoadImage(fullPath,
                 OnImageLoadComplete);
             yield return new WaitUntil(() => backgroundImageLoaded);
-        }
-        else
-        {
-            backgroundImage.color = Color.clear;
         }
 
         // Step 2: load skins, if told to.
@@ -410,6 +414,10 @@ public class Game : MonoBehaviour
                 OnBackingTrackLoadComplete);
             yield return new WaitUntil(() => backingTrackLoaded);
         }
+        else
+        {
+            backingTrackClip = null;
+        }
 
         // Step 4: load keysounds, if any.
         keysoundsLoaded = false;
@@ -420,12 +428,10 @@ public class Game : MonoBehaviour
         yield return new WaitUntil(() => keysoundsLoaded);
 
         // Step 5: load BGA, if any.
-        bool hasBga;
         if (!GameSetup.trackOptions.noVideo &&
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
-            hasBga = true;
             string fullPath = Path.Combine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.bga);
             videoPlayer.url = fullPath;
@@ -433,13 +439,8 @@ public class Game : MonoBehaviour
             videoPlayer.Prepare();
             yield return new WaitUntil(() => videoPlayer.isPrepared);
             videoPlayer.errorReceived -= VideoPlayerErrorReceived;
-            PrepareVideoPlayer();
-        }
-        else
-        {
-            hasBga = false;
-            bga.color = Color.clear;
-            HideBGACover();
+            PrepareVideoPlayer();  // This also shows BGA cover
+            backgroundImage.color = Color.clear;
         }
 
         // Step 6: initialize pattern. This sadly cannot be done
@@ -472,10 +473,6 @@ public class Game : MonoBehaviour
         {
             judgementTally.gameObject.SetActive(true);
             judgementTally.Refresh(score);
-        }
-        if (hasBga)
-        {
-            backgroundImage.color = Color.clear;
         }
         SetBrightness();
         topScanBackground.Initialize(
