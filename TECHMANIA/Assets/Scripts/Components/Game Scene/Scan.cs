@@ -27,8 +27,6 @@ public class Scan : MonoBehaviour
     public Image countdownNumber;
     public Material additiveMaterial;
 
-    public const float kSpaceBeforeScan = 0.15f;
-    public const float kSpaceAfterScan = 0.1f;
     private float screenWidth;
     private float scanHeight;
     public static float laneHeight { get; private set; }
@@ -79,7 +77,7 @@ public class Scan : MonoBehaviour
 
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
-        scanline.Initialize(this, scanHeight);
+        scanline.Initialize(this, direction, scanHeight);
 
         InitializeCountdown();
     }
@@ -278,7 +276,8 @@ public class Scan : MonoBehaviour
         float relativeNormalizedScan = pulse / Game.PulsesPerScan
             - scanNumber;
         float normalizedX = Mathf.LerpUnclamped(
-            kSpaceBeforeScan, 1f - kSpaceAfterScan,
+            Ruleset.instance.scanMarginBeforeFirstBeat,
+            1f - Ruleset.instance.scanMarginAfterLastBeat,
             relativeNormalizedScan);
 
         if (relativeNormalizedScan == 1f &&

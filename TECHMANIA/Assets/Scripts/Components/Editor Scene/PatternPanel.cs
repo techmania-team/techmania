@@ -68,6 +68,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject playButton;
     public GameObject stopButton;
     public GameObject audioLoadingIndicator;
+    public TextMeshProUGUI timeDisplay;
     public Slider scanlinePositionSlider;
     public Snackbar snackbar;
     public MessageDialog messageDialog;
@@ -243,7 +244,7 @@ public class PatternPanel : MonoBehaviour
                 .Reposition();
             scanlinePulseBeforePreview = null;
             ScrollScanlineIntoView();
-            RefreshScanlinePositionSlider();
+            RefreshPlaybackBar();
         }
     }
 
@@ -588,7 +589,7 @@ public class PatternPanel : MonoBehaviour
 
         scanline.floatPulse = snappedCursorPulse;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        RefreshScanlinePositionSlider();
+        RefreshPlaybackBar();
     }
 
     private void HandleKeyboardShortcuts()
@@ -683,7 +684,7 @@ public class PatternPanel : MonoBehaviour
             scanline.floatPulse = pulse;
             scanline.GetComponent<SelfPositionerInEditor>()
                 .Reposition();
-            RefreshScanlinePositionSlider();
+            RefreshPlaybackBar();
             ScrollScanlineIntoView();
         };
         float pulsesPerScan =
@@ -1388,6 +1389,7 @@ public class PatternPanel : MonoBehaviour
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
+        RefreshScanlineTimeDisplay();
     }
 
     private void OnSelectedKeysoundsUpdated(List<string> keysounds)
@@ -2423,7 +2425,7 @@ public class PatternPanel : MonoBehaviour
         UpdateNumScans();
         DestroyAndRespawnAllMarkers();
         ResizeWorkspace();
-        RefreshScanlinePositionSlider();
+        RefreshPlaybackBar();
     }
 
     // Returns whether the number changed.
@@ -2500,8 +2502,19 @@ public class PatternPanel : MonoBehaviour
         SynchronizeScrollRects();
     }
 
-    private void RefreshScanlinePositionSlider()
+    private void RefreshScanlineTimeDisplay()
     {
+        float scanlineTime = EditorContext.Pattern.PulseToTime(
+            (int)scanline.floatPulse);
+        timeDisplay.text = UIUtils.FormatTime(scanlineTime,
+            includeMillisecond: true);
+    }
+
+    // This includes both the time display and slider.
+    private void RefreshPlaybackBar()
+    {
+        RefreshScanlineTimeDisplay();
+
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float scanlineNormalizedPosition = scanline.floatPulse /
             (numScans * bps * Pattern.pulsesPerBeat);
@@ -3652,7 +3665,7 @@ public class PatternPanel : MonoBehaviour
         }
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
-        RefreshScanlinePositionSlider();
+        RefreshPlaybackBar();
 
         PlaybackStopped?.Invoke();
     }
@@ -3730,7 +3743,7 @@ public class PatternPanel : MonoBehaviour
         scanline.floatPulse = playbackCurrentPulse;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
         ScrollScanlineIntoView();
-        RefreshScanlinePositionSlider();
+        RefreshPlaybackBar();
     }
 
     public void PreviewKeysound(Note n)

@@ -33,6 +33,8 @@ public class Ruleset : RulesetBase
 
     public List<float> scanMarginTopBottom;
     public List<float> scanMarginMiddle;
+    public float scanMarginBeforeFirstBeat;
+    public float scanMarginAfterLastBeat;
     public float hitboxWidth;
     public float hitboxHeight;
     public float chainHeadHitboxWidth;
@@ -83,6 +85,8 @@ public class Ruleset : RulesetBase
             { 0.05f, 0.05f, 0.05f };
         scanMarginMiddle = new List<float>()
             { 0.05f, 0.05f, 0.05f };
+        scanMarginBeforeFirstBeat = 0.15f;
+        scanMarginAfterLastBeat = 0.1f;
         hitboxWidth = 1.5f;
         hitboxHeight = 1f;
         chainHeadHitboxWidth = 1.5f;
@@ -276,6 +280,8 @@ public class Ruleset : RulesetBase
                 { 0.05f, 0.05f, 0.05f },
             scanMarginMiddle = new List<float>()
                 { 0.05f, 0.05f, 0.05f },
+            scanMarginBeforeFirstBeat = 0.157f,
+            scanMarginAfterLastBeat = 0.093f,
             hitboxWidth = 1.25f,
             hitboxHeight = 1.15f,
             chainHeadHitboxWidth = 100f,

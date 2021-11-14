@@ -191,20 +191,17 @@ public class Options : OptionsBase
 
     public void ApplyGraphicSettings()
     {
-#if !UNITY_ANDROID && !UNITY_IOS
-        // Setting resolution on Android causes the graphics to
-        // be stretched in the wrong direction.
-        //
-        // Resolution is not supported at all on iOS.
-        Screen.SetResolution(width, height, fullScreenMode, refreshRate);
-#endif
-
 #if UNITY_IOS || UNITY_ANDROID
-        // iOS  ignores VSync, and caps the FPS at 30 by default.
+        // Ignore resolution and VSync as they don't make sense
+        // on mobile platforms.
+        // However, these platforms cap FPS at 30 by default, so we
+        // need to unlock it.
         Application.targetFrameRate =   
             Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 0;
 #else
+        Screen.SetResolution(width, height, fullScreenMode, 
+            refreshRate);
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
     }
