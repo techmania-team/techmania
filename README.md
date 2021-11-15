@@ -5,7 +5,7 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 
 [Download for iOS/iPadOS](https://apps.apple.com/us/app/techmania/id1581524513)
 
-[Trailer](https://www.youtube.com/watch?v=hcqb0Rwm1xY)
+[Trailer](https://www.youtube.com/watch?v=MtkxhEmCWwU)
 
 [Discord](https://discord.gg/K4Nf7AnAZt)
 
@@ -81,7 +81,7 @@ Additionally, we perform the following optimizations / decorations for the mobil
 * Copy `TECHMANIA/Assets/Sprites/Logo.png` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks` so it shows up as eyecatch.
 
 ## Platform-specific forks
-* rogeraabbccdd's iOS builds: https://github.com/rogeraabbccdd/techmania/releases
+* rogeraabbccdd's iOS & Android builds: https://github.com/rogeraabbccdd/techmania/releases
 * MoonLight's Android builds: https://github.com/yyj01004/techmania/releases
 * fhalfkg's macOS builds: https://github.com/fhalfkg/techmania/releases
 * samnyan's Android build on 0.2: https://github.com/samnyan/techmania/releases
