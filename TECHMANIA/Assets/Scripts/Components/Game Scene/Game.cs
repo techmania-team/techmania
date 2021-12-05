@@ -1717,10 +1717,11 @@ public class Game : MonoBehaviour
                 AudioClip clip = ResourceLoader.GetCachedClip(
                     n.sound);
                 if (clip == null) return;
-                if (n.time + clip.length > BaseTime)
+                if (n.time < BaseTime &&
+                    n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane > playableLanes,
+                        n.lane >= playableLanes,
                         startTime: BaseTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
