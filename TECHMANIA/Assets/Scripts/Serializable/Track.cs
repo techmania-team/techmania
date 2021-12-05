@@ -483,6 +483,7 @@ public class Note
     public int pulse;
     public int lane;
     public string sound;  // Filename with extension, no folder
+    public bool fromAutoKeysound = false;  // Indicates auto keysound generated notes in hidden lanes
 
     // Calculated at runtime:
 

@@ -620,6 +620,7 @@ public partial class Pattern
                 if (n.sound == null || n.sound == "") continue;
                 Note hiddenNote = n.Clone();
                 hiddenNote.lane += kAutoKeysoundFirstLane;
+                hiddenNote.fromAutoKeysound = true;
                 addedNotes.Add(hiddenNote);
                 n.sound = "";
             }

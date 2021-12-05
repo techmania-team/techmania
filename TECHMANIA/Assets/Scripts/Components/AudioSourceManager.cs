@@ -114,12 +114,13 @@ public class AudioSourceManager : MonoBehaviour
     public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
         float startTime = 0f,
         int volumePercent = Note.defaultVolume,
-        int panPercent = Note.defaultPan)
+        int panPercent = Note.defaultPan,
+        bool fromAutoKeysound = false)
     {
         if (clip == null) return null;
 
         AudioSource source;
-        if (hiddenLane)
+        if (hiddenLane && !fromAutoKeysound)
         {
             source = FindSource(hiddenLanes,
                 "keysound in hidden lane");

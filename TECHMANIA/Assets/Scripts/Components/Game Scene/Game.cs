@@ -2445,7 +2445,8 @@ public class Game : MonoBehaviour
         AudioSource source = audioSourceManager.PlayKeysound(clip,
             hidden,
             startTime: 0f,
-            n.note.volumePercent, n.note.panPercent);
+            n.note.volumePercent, n.note.panPercent,
+            n.note.fromAutoKeysound);
         noteToAudioSource[n.note] = source;
     }
 
