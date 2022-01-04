@@ -72,6 +72,7 @@ public class ResourceLoader : MonoBehaviour
 
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
+            trackFolder,
             Paths.GetAllAudioFiles(trackFolder),
             cacheAudioCompleteCallback,
             progressCallback: null));
@@ -104,11 +105,13 @@ public class ResourceLoader : MonoBehaviour
         }
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
+            trackFolder,
             filenames, cacheAudioCompleteCallback,
             progressCallback));
     }
 
     private IEnumerator InnerCacheAudioResources(
+        string trackFolder,
         ICollection<string> filenameWithFolder,
         UnityAction<string> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
@@ -117,8 +120,8 @@ public class ResourceLoader : MonoBehaviour
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            string fileWithoutFolder = Path.GetFileName(file);
-            if (!audioClips.ContainsKey(fileWithoutFolder))
+            string fileRelativePath = file.Remove(0, trackFolder.Length + 1).Replace("\\", "/");
+            if (!audioClips.ContainsKey(fileRelativePath))
             {
                 // Handle empty files.
                 try
@@ -126,7 +129,7 @@ public class ResourceLoader : MonoBehaviour
                     if (IsEmptyFile(file))
                     {
                         Debug.Log($"{file} is a 0-byte file, loaded as empty clip.");
-                        audioClips.Add(fileWithoutFolder, emptyClip);
+                        audioClips.Add(fileRelativePath, emptyClip);
                         continue;
                     }
                 }
@@ -152,7 +155,7 @@ public class ResourceLoader : MonoBehaviour
                     cacheAudioCompleteCallback?.Invoke(error);
                     yield break;
                 }
-                audioClips.Add(fileWithoutFolder, clip);
+                audioClips.Add(fileRelativePath, clip);
             }
             
             numLoaded++;

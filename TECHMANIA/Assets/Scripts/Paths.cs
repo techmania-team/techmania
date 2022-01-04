@@ -253,7 +253,7 @@ public static class Paths
         foreach (string pattern in patterns)
         {
             foreach (string file in
-                Directory.EnumerateFiles(folder, pattern))
+                Directory.EnumerateFiles(folder, pattern, SearchOption.AllDirectories))
             {
                 files.Add(file);
             }

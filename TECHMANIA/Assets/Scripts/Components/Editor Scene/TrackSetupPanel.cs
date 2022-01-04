@@ -207,7 +207,7 @@ public class TrackSetupPanel : MonoBehaviour
         string str = "";
         foreach (string file in fullPaths)
         {
-            str += Path.GetFileName(file) + "\n";
+            str += file.Remove(0, EditorContext.trackFolder.Length + 1).Replace("\\", "/") + "\n";
         }
         return str.TrimEnd('\n');
     }
