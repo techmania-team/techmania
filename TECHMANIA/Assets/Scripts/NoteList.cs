@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // A custom data structure for storing notes in Game.
@@ -73,7 +74,8 @@ public class NoteList
             }
             else if (list[i].note.pulse == pulseThreshold)
             {
-                beforeThreshold = list[i].note.endOfScan;
+                beforeThreshold = list[i].note.endOfScan
+                    && list[i].note.lane < Pattern.kAutoKeysoundFirstLane;
             }
             else
             {
@@ -113,5 +115,10 @@ public class NoteList
     public void ForEach(Action<NoteObject> action)
     {
         list.ForEach(action);
+    }
+
+    public void ForEachRemoved(Action<NoteObject> action)
+    {
+        list.Where((e, i) => !active[i]).ToList<NoteObject>().ForEach(action);
     }
 }

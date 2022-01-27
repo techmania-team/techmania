@@ -345,6 +345,16 @@ public static class Paths
         return fullPath;
 #endif
     }
+
+    public static string RelativePath(string absPathToRoot, string absPath)
+    {
+        return absPath
+            .Substring(absPathToRoot.Length + 1)
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            .Replace("\\", "/")
+#endif
+            ;
+    }
     #endregion
 
     #region Streaming assets

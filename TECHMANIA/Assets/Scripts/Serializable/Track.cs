@@ -266,6 +266,8 @@ public partial class Pattern
 
     public const int pulsesPerBeat = 240;
     public const int defaultPlayableLanes = 4;
+    public const int kAutoKeysoundFirstLane = 64;
+    public const int kAutoAssistTickFirstLane = 68;
     public const int minLevel = 1;
     public const int defaultLevel = 1;
     public const double minBpm = 1;
@@ -483,7 +485,6 @@ public class Note
     public int pulse;
     public int lane;
     public string sound;  // Filename with extension, no folder
-    public bool fromAutoKeysound = false;  // Indicates auto keysound generated notes in hidden lanes
 
     // Calculated at runtime:
 

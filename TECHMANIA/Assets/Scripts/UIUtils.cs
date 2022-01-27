@@ -164,7 +164,7 @@ public class UIUtils
             NoneOptionInDropdowns()));
         for (int i = 0; i < allOptions.Count; i++)
         {
-            string name = allOptions[i].Remove(0, EditorContext.trackFolder.Length + 1).Replace("\\", "/");
+            string name = Paths.RelativePath(EditorContext.trackFolder, allOptions[i]);
             if (currentOption == name)
             {
                 value = i + 1;

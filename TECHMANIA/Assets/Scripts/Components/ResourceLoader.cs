@@ -120,7 +120,7 @@ public class ResourceLoader : MonoBehaviour
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            string fileRelativePath = file.Remove(0, trackFolder.Length + 1).Replace("\\", "/");
+            string fileRelativePath = Paths.RelativePath(trackFolder, file);
             if (!audioClips.ContainsKey(fileRelativePath))
             {
                 // Handle empty files.

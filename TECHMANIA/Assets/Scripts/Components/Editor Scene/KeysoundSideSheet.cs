@@ -44,7 +44,7 @@ public class KeysoundSideSheet : MonoBehaviour
         for (int i = 0; i < audioFilesNoFolder.Count; i++)
         {
             string file = audioFilesNoFolder[i];
-            file = file.Remove(0, EditorContext.trackFolder.Length + 1);
+            file = Paths.RelativePath(EditorContext.trackFolder, file);
             audioFilesNoFolder[i] = file;
 
             int iCopy = i;
