@@ -1548,7 +1548,7 @@ MonoBehaviour:
   graph: {fileID: 866758531940520821}
   size: 20
   density: {fileID: 7375054922987225200}
-  voltage: {fileID: 7375054922690290861}
+  peak: {fileID: 7375054922690290861}
   speed: {fileID: 7375054923366685335}
   chaos: {fileID: 7375054922316475239}
   async: {fileID: 7375054924193853587}
@@ -2500,7 +2500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 866758532127298167}
   m_Layer: 5
-  m_Name: Voltage
+  m_Name: Peak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2954,7 +2954,7 @@ PrefabInstance:
     - target: {fileID: 718694571794500550, guid: dda3c230703f70d4599bc6dcf8e0a63e,
         type: 3}
       propertyPath: m_text
-      value: voltage
+      value: peak
       objectReference: {fileID: 0}
     - target: {fileID: 718694571794500550, guid: dda3c230703f70d4599bc6dcf8e0a63e,
         type: 3}
@@ -2969,7 +2969,7 @@ PrefabInstance:
     - target: {fileID: 5185773477840090523, guid: dda3c230703f70d4599bc6dcf8e0a63e,
         type: 3}
       propertyPath: key
-      value: radar_dimension_voltage
+      value: radar_dimension_peak
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dda3c230703f70d4599bc6dcf8e0a63e, type: 3}

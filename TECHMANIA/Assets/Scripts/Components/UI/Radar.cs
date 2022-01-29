@@ -15,7 +15,7 @@ public class Radar : MonoBehaviour
 
     [Header("Value display")]
     public TextMeshProUGUI density;
-    public TextMeshProUGUI voltage;
+    public TextMeshProUGUI peak;
     public TextMeshProUGUI speed;
     public TextMeshProUGUI chaos;
     public TextMeshProUGUI async;
@@ -80,7 +80,7 @@ public class Radar : MonoBehaviour
                     Mathf.Sin(angleInRadian)) * displayDistance;
             };
         placeDisplay(density, 90f);
-        placeDisplay(voltage, 18f);
+        placeDisplay(peak, 18f);
         placeDisplay(speed, -54f);
         placeDisplay(chaos, -126f);
         placeDisplay(async, 162f);
@@ -93,7 +93,7 @@ public class Radar : MonoBehaviour
         graph.SetVerticesDirty();
 
         density.text = radar.density.normalized.ToString();
-        voltage.text = radar.voltage.normalized.ToString();
+        peak.text = radar.peak.normalized.ToString();
         speed.text = radar.speed.normalized.ToString();
         chaos.text = radar.chaos.normalized.ToString();
         async.text = radar.async.normalized.ToString();

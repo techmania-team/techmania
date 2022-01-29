@@ -38,7 +38,7 @@ public class RadarGraph : Image
         addPoint(radar.async.normalized, 162f);
         addPoint(radar.chaos.normalized, 234f);
         addPoint(radar.speed.normalized, 306f);
-        addPoint(radar.voltage.normalized, 18f);
+        addPoint(radar.peak.normalized, 18f);
 
         for (int i = 0; i < 5; i++)
         {

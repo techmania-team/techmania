@@ -414,7 +414,7 @@ public partial class Pattern
     public struct Radar
     {
         public RadarDimension density;
-        public RadarDimension voltage;
+        public RadarDimension peak;
         public RadarDimension speed;
         public RadarDimension chaos;
         public RadarDimension async;
@@ -482,20 +482,20 @@ public partial class Pattern
         r.density.normalized = NormalizeRadarValue(r.density.raw,
             0.5f, 8f);
 
-        // Voltage: peak number of notes per second.
+        // Peak: peak number of notes per second.
         foreach (KeyValuePair<int, int> pair in scanToNumNotes)
         {
             int scan = pair.Key;
             int numNotes = pair.Value;
             float startTime = PulseToTime(scan * pulsesPerScan);
             float endTime = PulseToTime((scan + 1) * pulsesPerScan);
-            float voltage = numNotes / (endTime - startTime);
-            if (voltage > r.voltage.raw)
+            float peak = numNotes / (endTime - startTime);
+            if (peak > r.peak.raw)
             {
-                r.voltage.raw = voltage;
+                r.peak.raw = peak;
             }
         }
-        r.voltage.normalized = NormalizeRadarValue(r.voltage.raw,
+        r.peak.normalized = NormalizeRadarValue(r.peak.raw,
             1f, 18f);
 
         // Speed: average scans per minute.
@@ -556,7 +556,7 @@ public partial class Pattern
         // linear regression.
         r.suggestedLevel =
             r.density.raw * 0.85f +
-            r.voltage.raw * 0.12f +
+            r.peak.raw * 0.12f +
             r.speed.raw * 0.02f +
             r.chaos.raw * 0f +
             r.async.raw * 0.03f +

@@ -9,8 +9,8 @@ public class RadarDialog : MonoBehaviour
 
     public TextMeshProUGUI densityRaw;
     public TextMeshProUGUI densityNormalized;
-    public TextMeshProUGUI voltageRaw;
-    public TextMeshProUGUI voltageNormalized;
+    public TextMeshProUGUI peakRaw;
+    public TextMeshProUGUI peakNormalized;
     public TextMeshProUGUI speedRaw;
     public TextMeshProUGUI speedNormalized;
     public TextMeshProUGUI chaosRaw;
@@ -29,8 +29,8 @@ public class RadarDialog : MonoBehaviour
 
         densityRaw.text = radar.density.raw.ToString("F2");
         densityNormalized.text = radar.density.normalized.ToString();
-        voltageRaw.text = radar.voltage.raw.ToString("F2");
-        voltageNormalized.text = radar.voltage.normalized.ToString();
+        peakRaw.text = radar.peak.raw.ToString("F2");
+        peakNormalized.text = radar.peak.normalized.ToString();
         speedRaw.text = radar.speed.raw.ToString("F2");
         speedNormalized.text = radar.speed.normalized.ToString();
         chaosRaw.text = radar.chaos.raw.ToString("F2");
