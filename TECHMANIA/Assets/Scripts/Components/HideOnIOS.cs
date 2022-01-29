@@ -9,6 +9,8 @@ public class HideOnIOS : MonoBehaviour
     {
 #if UNITY_IOS
         gameObject.SetActive(false);
+#else
+        gameObject.SetActive(true);
 #endif
     }
 }
