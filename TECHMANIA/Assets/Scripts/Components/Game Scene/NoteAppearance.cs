@@ -68,6 +68,7 @@ public class NoteAppearance : MonoBehaviour
 
     protected Scan scanRef;
     protected Scanline scanlineRef;
+    protected Image hitboxImage;
 
     private float alphaUpperBound;
     [Tooltip("This NoteAppearance shall not update itself.")]
@@ -203,6 +204,10 @@ public class NoteAppearance : MonoBehaviour
         if (hitbox != null)
         {
             hitbox.gameObject.SetActive(v != Visibility.Hidden);
+            if (hitboxImage != null)
+            {
+                hitboxImage.raycastTarget = v != Visibility.Hidden;
+            }
         }
     }
 
@@ -438,7 +443,10 @@ public class NoteAppearance : MonoBehaviour
 
         float alpha = noteImage.color.a;
         if (!Game.hitboxVisible) alpha = 0f;
-        Image hitboxImage = hitbox.GetComponent<Image>();
+        if (hitboxImage == null)
+        {
+            hitboxImage = hitbox.GetComponent<Image>();
+        }
         hitboxImage.color = new Color(
             hitboxImage.color.r,
             hitboxImage.color.g,
