@@ -266,6 +266,8 @@ public partial class Pattern
 
     public const int pulsesPerBeat = 240;
     public const int defaultPlayableLanes = 4;
+    public const int kAutoKeysoundFirstLane = 64;
+    public const int kAutoAssistTickFirstLane = 68;
     public const int minLevel = 1;
     public const int defaultLevel = 1;
     public const double minBpm = 1;

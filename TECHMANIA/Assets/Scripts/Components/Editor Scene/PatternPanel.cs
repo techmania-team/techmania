@@ -3633,7 +3633,7 @@ public class PatternPanel : MonoBehaviour
                 if (n.time + clip.length > playbackStartingTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane > PlayableLanes,
+                        n.lane >= PlayableLanes,
                         startTime: playbackStartingTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
@@ -3736,7 +3736,7 @@ public class PatternPanel : MonoBehaviour
                 clip = assistTick;
             }
             audioSourceManager.PlayKeysound(clip,
-                nextNote.lane > PlayableLanes,
+                nextNote.lane >= PlayableLanes,
                 startTime: 0f,
                 nextNote.volumePercent, nextNote.panPercent);
         }
@@ -3758,7 +3758,7 @@ public class PatternPanel : MonoBehaviour
             n.sound);
         keysoundPreviewSource = audioSourceManager.PlayKeysound(
             clip,
-            n.lane > PlayableLanes, 0f,
+            n.lane >= PlayableLanes, 0f,
             n.volumePercent, n.panPercent);
     }
     #endregion
