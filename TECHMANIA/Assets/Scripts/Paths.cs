@@ -346,10 +346,12 @@ public static class Paths
 #endif
     }
 
-    public static string RelativePath(string absPathToRoot, string absPath)
+    // Returns the path of absolutePath relative to reference.
+    public static string RelativePath(string reference,
+        string absolutePath)
     {
-        return absPath
-            .Substring(absPathToRoot.Length + 1)
+        return absolutePath
+            .Substring(reference.Length + 1)
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             .Replace("\\", "/")
 #endif

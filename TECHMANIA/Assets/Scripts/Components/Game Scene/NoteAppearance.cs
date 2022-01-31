@@ -206,6 +206,7 @@ public class NoteAppearance : MonoBehaviour
             hitbox.gameObject.SetActive(v != Visibility.Hidden);
             if (hitboxImage != null)
             {
+                // So that raycasting ignores invisible notes.
                 hitboxImage.raycastTarget = v != Visibility.Hidden;
             }
         }

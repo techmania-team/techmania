@@ -1706,6 +1706,8 @@ public class Game : MonoBehaviour
         }
 
         // Play keysounds before this moment if they last enough.
+        // Only go through the notes removed earlier; unremoved
+        // notes will be handled by gameplay or UpdateTime.
         foreach (NoteList l in noteObjectsInLane)
         {
             l.ForEachRemoved((NoteObject noteObject) =>
@@ -1719,7 +1721,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane >= playableLanes,
+                        GameSetup.pattern.IsHiddenNote(n.lane),
                         startTime: BaseTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
@@ -2435,8 +2437,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        bool hidden = n.note.lane >= playableLanes
-            && n.note.lane < Pattern.kAutoKeysoundFirstLane;
+        bool hidden = GameSetup.pattern.IsHiddenNote(n.note.lane);
         if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden

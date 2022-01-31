@@ -617,7 +617,7 @@ public partial class Pattern
                 if (n.lane >= playableLanes) continue;
                 if (n.sound == null || n.sound == "") continue;
                 Note hiddenNote = n.Clone();
-                hiddenNote.lane += Pattern.kAutoKeysoundFirstLane;
+                hiddenNote.lane += kAutoKeysoundFirstLane;
                 addedNotes.Add(hiddenNote);
                 n.sound = "";
             }
@@ -638,7 +638,7 @@ public partial class Pattern
                 AssistTickNote assistTickNote = new AssistTickNote()
                 {
                     pulse = n.pulse,
-                    lane = n.lane + Pattern.kAutoAssistTickFirstLane
+                    lane = n.lane + kAutoAssistTickFirstLane
                 };
                 addedNotes.Add(assistTickNote);
             }
