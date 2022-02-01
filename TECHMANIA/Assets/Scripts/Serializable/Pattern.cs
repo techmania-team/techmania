@@ -4,6 +4,43 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+[Serializable]
+// A subset of Pattern meant to calculate fingerprint.
+public class MinimizedPattern
+{
+    public ControlScheme controlScheme;
+    public int playableLanes;
+    public double initBpm;
+    public int bps;
+    public List<string> packedNotes;
+    public List<BpmEvent> bpmEvents;
+    public List<TimeStop> timeStops;
+
+    // For anything we need to add in the future.
+    public List<string> additionalStrings;
+
+    public MinimizedPattern(Pattern p)
+    {
+        controlScheme = p.patternMetadata.controlScheme;
+        playableLanes = p.patternMetadata.playableLanes;
+        initBpm = p.patternMetadata.initBpm;
+        bps = p.patternMetadata.bps;
+
+        packedNotes = new List<string>();
+        foreach (Note n in p.notes)
+        {
+            string soundBackup = n.sound;
+            n.sound = "";
+            packedNotes.Add(n.Pack());
+            n.sound = soundBackup;
+        }
+        bpmEvents = p.bpmEvents;
+        timeStops = p.timeStops;
+
+        additionalStrings = new List<string>();
+    }
+}
+
 public partial class Pattern
 {
     // The "main" part is defined in Track.cs.
@@ -686,9 +723,9 @@ public partial class Pattern
 
     public void CalculateFingerprint()
     {
-        // Serialize pattern, then convert to binary.
-        PackAllNotes();
-        string json = UnityEngine.JsonUtility.ToJson(this,
+        // Minimize pattern, serialize, then convert to binary.
+        MinimizedPattern miniP = new MinimizedPattern(this);
+        string json = UnityEngine.JsonUtility.ToJson(miniP,
             prettyPrint: false);
         byte[] hashInput = Encoding.UTF8.GetBytes(json);
 
