@@ -39,6 +39,7 @@ public class OptionsPanel : MonoBehaviour
     public GameObject skinsFolder;
     public ScrollingText skinsFolderDisplay;
     public TextMeshProUGUI latencyDisplay;
+    public Toggle pauseWhenGameLosesFocusToggle;
 
     // Make a backup of all available resolutions at startup, because
     // Screen.resolutions may change at runtime. I have no idea why.
@@ -183,6 +184,8 @@ public class OptionsPanel : MonoBehaviour
         skinsFolderDisplay.SetUp(Options.instance
             .skinsFolderLocation);
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
+        pauseWhenGameLosesFocusToggle.SetIsOnWithoutNotify(
+            Options.instance.pauseWhenGameLosesFocus);
     }
 
     // The portion of MemoryToUI that should respond to
@@ -433,5 +436,11 @@ public class OptionsPanel : MonoBehaviour
         MemoryToUI();
         Paths.ApplyCustomDataLocation();
     }
+
+    public void OnPauseWhenGameLosesFocusChanged()
+    {
+        Options.instance.pauseWhenGameLosesFocus =
+            pauseWhenGameLosesFocusToggle.isOn;
+    }    
     #endregion
 }

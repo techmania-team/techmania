@@ -88,6 +88,7 @@ public class Options : OptionsBase
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
+    public bool pauseWhenGameLosesFocus;
 
     // Editor options
 
@@ -150,6 +151,7 @@ public class Options : OptionsBase
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
+        pauseWhenGameLosesFocus = true;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();

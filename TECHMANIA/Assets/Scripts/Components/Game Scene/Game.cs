@@ -318,7 +318,8 @@ public class Game : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus && !IsPaused() && !loading && !inEditor)
+        if (!focus && !IsPaused() && !loading && !inEditor &&
+            Options.instance.pauseWhenGameLosesFocus)
         {
             OnPauseButtonClickOrTouch(playSound: false);
         }
