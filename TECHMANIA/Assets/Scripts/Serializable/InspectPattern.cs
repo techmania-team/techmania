@@ -104,12 +104,12 @@ public partial class Pattern
                     "pattern_inspection_chain_head_with_no_node");
             }
             if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
-                chainHeadsAndNodes[i - 1].lane ==
-                chainHeadsAndNodes[i].lane)
+                Mathf.Abs(chainHeadsAndNodes[i - 1].lane -
+                    chainHeadsAndNodes[i].lane) != 1)
             {
                 notesWithIssue.Add(chainHeadsAndNodes[i]);
                 return Locale.GetString(
-                    "pattern_inspection_chain_node_in_same_lane_as_previous");
+                    "pattern_inspection_chain_node_not_in_adjacent_lane");
             }
             if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
                 chainHeadsAndNodes[i - 1].GetScanNumber(bps) !=
