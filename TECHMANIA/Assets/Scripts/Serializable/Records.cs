@@ -47,6 +47,19 @@ public class Record
                 return "";
         }
     }
+
+    public Record Clone()
+    {
+        return new Record()
+        {
+            guid = this.guid,
+            fingerprint = this.fingerprint,
+            ruleset = this.ruleset,
+            score = this.score,
+            medal = this.medal,
+            gameVersion = this.gameVersion
+        };
+    }
 }
 
 [Serializable]
@@ -85,29 +98,99 @@ public class Records : RecordsBase
         p.CheckFingerprintCalculated();
         Dictionary<string, Record> dict = recordDict[
             Options.instance.ruleset];
-        if (dict.ContainsKey(p.patternMetadata.guid))
+        if (!dict.ContainsKey(p.patternMetadata.guid))
         {
-            Record r = dict[p.patternMetadata.guid];
-            if (r.fingerprint != p.fingerprint)
-            {
-                return null;
-            }
-            if (IsGameVersionOutdated(r.gameVersion))
-            {
-                return null;
-            }
-            return r;
+            return null;
         }
-        return null;
+
+        Record r = dict[p.patternMetadata.guid];
+
+        bool checkFingerprint = true;
+        switch (r.gameVersion)
+        {
+            case "1.0 beta":
+                // There were ruleset changes between 1.0 beta and
+                // 1.0.
+                return null;
+            case "1.0":
+            case "1.0.1":
+                // Records on these versions were not calculated
+                // with MinimizedPattern. They will be fixed by
+                // UpdateRecord.
+                checkFingerprint = false;
+                break;
+        }
+
+        if (checkFingerprint && r.fingerprint != p.fingerprint)
+        {
+            return null;
+        }
+        return r;
+    }
+
+    // If the score is invalid for any reason (modifiers,
+    // stage failed, etc.), pass in null. currentRecord can also
+    // be null.
+    public void UpdateRecord(Pattern p, Score s,
+        Record currentRecord, out bool newRecord)
+    {
+        p.CheckFingerprintCalculated();
+        Record updatedRecord = null;
+        if (currentRecord != null)
+        {
+            updatedRecord = currentRecord.Clone();
+        }
+
+        // First, fix outdated records if applicable.
+        if (currentRecord != null &&
+            (currentRecord.gameVersion == "1.0" ||
+            currentRecord.gameVersion == "1.0.1"))
+        {
+            updatedRecord.fingerprint = p.fingerprint;
+            updatedRecord.gameVersion = Application.version;
+        }
+
+        // Then, update medal if applicable.
+        if (currentRecord != null &&
+            s != null &&
+            s.Medal() > currentRecord.medal)
+        {
+            updatedRecord.medal = s.Medal();
+            updatedRecord.gameVersion = Application.version;
+        }
+
+        // Finally, update score if applicable.
+        newRecord = false;
+        if (s != null)
+        {
+            int totalScore = s.CurrentScore() +
+                s.totalFeverBonus + s.comboBonus;
+            if (currentRecord == null ||
+                totalScore > currentRecord.score)
+            {
+                newRecord = true;
+                updatedRecord = new Record()
+                {
+                    guid = p.patternMetadata.guid,
+                    fingerprint = p.fingerprint,
+                    ruleset = Options.instance.ruleset,
+                    score = totalScore,
+                    medal = s.Medal(),
+                    gameVersion = Application.version
+                };
+            }    
+        }
+
+        if (updatedRecord != null)
+        {
+            recordDict[updatedRecord.ruleset][updatedRecord.guid]
+                = updatedRecord;
+        }
     }
 
     // Requires fingerprints to have been calculated.
     public void SetRecord(Pattern p, Score s)
     {
-        if (Options.instance.ruleset == Options.Ruleset.Custom)
-        {
-            return;
-        }
         p.CheckFingerprintCalculated();
         int totalScore = s.CurrentScore() +
             s.totalFeverBonus + s.comboBonus;
@@ -144,19 +227,6 @@ public class Records : RecordsBase
         {
             if (r.ruleset == Options.Ruleset.Custom) continue;
             recordDict[r.ruleset].Add(r.guid, r);
-        }
-    }
-
-    private static bool IsGameVersionOutdated(string version)
-    {
-        switch (version)
-        {
-            // There were ruleset changes between 1.0 beta and
-            // 1.0.
-            case "1.0 beta":
-                return true;
-            default:
-                return false;
         }
     }
 
