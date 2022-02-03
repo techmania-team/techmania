@@ -6352,7 +6352,7 @@ PrefabInstance:
     - target: {fileID: 7299862028387148677, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
       propertyPath: m_Name
-      value: Voltage
+      value: Peak
       objectReference: {fileID: 0}
     - target: {fileID: 7299862028387148678, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
@@ -39193,7 +39193,7 @@ PrefabInstance:
     - target: {fileID: 7299862028387148677, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
       propertyPath: m_Name
-      value: Voltage
+      value: Peak
       objectReference: {fileID: 0}
     - target: {fileID: 7299862028387148678, guid: ab430c3b23fa3a046b8a0af014a2f552,
         type: 3}
@@ -46373,8 +46373,8 @@ MonoBehaviour:
   radarDisplay: {fileID: 637981774}
   densityRaw: {fileID: 97296821}
   densityNormalized: {fileID: 534913608}
-  voltageRaw: {fileID: 1486637998}
-  voltageNormalized: {fileID: 224271701}
+  peakRaw: {fileID: 1486637998}
+  peakNormalized: {fileID: 224271701}
   speedRaw: {fileID: 277600595}
   speedNormalized: {fileID: 1151444866}
   chaosRaw: {fileID: 1030057486}
@@ -49574,12 +49574,12 @@ PrefabInstance:
     - target: {fileID: 532432800814719921, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: key
-      value: radar_dimension_voltage
+      value: radar_dimension_peak
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481883, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}
       propertyPath: m_Name
-      value: Voltage
+      value: Peak
       objectReference: {fileID: 0}
     - target: {fileID: 6024100903353481884, guid: c492613baa5aa5443a2ff6505c7ee213,
         type: 3}

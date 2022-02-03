@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // A custom data structure for storing notes in Game.
@@ -109,9 +110,8 @@ public class NoteList
         for (int i = 0; i < Count; i++) active[i] = true;
     }
 
-    // This applies to inactive elements too.
-    public void ForEach(Action<NoteObject> action)
+    public void ForEachRemoved(Action<NoteObject> action)
     {
-        list.ForEach(action);
+        list.Where((e, i) => !active[i]).ToList().ForEach(action);
     }
 }

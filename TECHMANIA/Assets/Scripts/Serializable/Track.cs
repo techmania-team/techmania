@@ -273,6 +273,9 @@ public partial class Pattern
     public const int minBps = 1;
     public const int defaultBps = 4;
 
+    private const int kAutoKeysoundFirstLane = 64;
+    private const int kAutoAssistTickFirstLane = 68;
+
     public Pattern()
     {
         patternMetadata = new PatternMetadata();
@@ -335,6 +338,15 @@ public partial class Pattern
         {
             notes.Add(DragNote.Unpack(n));
         }
+    }
+
+    // This is meant for choosing the audio channel for keysounds,
+    // and therefore does not consider auto keysound or auto assist
+    // tick notes to be hidden.
+    public bool IsHiddenNote(int lane)
+    {
+        return lane >= patternMetadata.playableLanes &&
+            lane < kAutoKeysoundFirstLane;
     }
 }
 

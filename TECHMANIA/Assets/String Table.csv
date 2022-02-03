@@ -214,7 +214,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 ,select_pattern_modifier_button,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,,,,,,
 ,radar_dimension_density,Density,密度,平均密度,密度,평균 밀도
-,radar_dimension_voltage,Voltage,电压,最大密度,最大密度,최대 밀도
+Changed in 1.0.2.,radar_dimension_peak,Peak,峰值,峰值,ピーク値,최고 밀도
 ,radar_dimension_speed,Speed,速度,速度,速さ,빠르기
 ,radar_dimension_chaos,Chaos,混乱,混亂度,混乱度,복잡도
 ,radar_dimension_async,Async,异地,異步,非同期,비동기 터치
@@ -306,7 +306,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_ruleset_standard,Standard,标准,標準,スタンダード,표준
 ,options_ruleset_legacy,Legacy,经典,經典,レガシー,레거시
 ,options_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
-,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일({0})을 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
+,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일을 {0}에서 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
 ,options_custom_data_location_label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
 ,options_custom_data_location_browse_button,Browse,浏览,瀏覽,参照…,찾아보기
 ,options_tracks_folder_label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
@@ -315,6 +315,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_touchscreen_test_button,START,开始,開始,開始,시작
 ,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,options_offset_latency_button,CALIBRATE,校对,校正,調整,보정하기
+Added in 1.0.2.,options_pause_when_game_loses_focus,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
 ,,,,,,
 ,touchscreen_test_panel_title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
@@ -354,6 +355,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,information_panel_tracks_skins_location_pc,"On PC, these folders are next to TECHMANIA.exe.",在PC上，这两个文件夹和TECHMANIA.exe位于同一位置。,在 PC 上，這兩個資料夾和 TECHMANIA.exe 在同一個位置。,PCの場合、これらのフォルダはTECHMANIA.exeと同じパスにあります。,해당 폴더는 게임 실행 파일과 같은 위치에서 찾을 수 있습니다.
 ,information_panel_tracks_skins_location_ios,"On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer.",在iOS/iPadOS上，使用文件app或者iTunes的文件共享来访问这两个文件夹。,在 iOS/iPadOS 上，使用檔案 app 或 iTunes 檔案共享來查看這兩個資料夾,iOS・iPadOSの場合、ファイルアプリまたはiTunesのファイル共有をご利用ください。,파일 앱 또는 iTunes의 파일 공유 기능을 사용하십시오.
 ,information_panel_tracks_skins_location_android,"On Android, you can find these folders in /storage/Android/data/com.TECHMANIA.",在Android上，这两个文件夹位于/storage/Android/data/com.TECHMANIA。,在 Android 上，這兩個資料夾在 /storage/Android/data/com.TECHMANIA。,Androidの場合、これらのフォルダは/storage/Android/data/com.TECHMANIAにあります。,해당 폴더는 /storage/Android/data/com.TECHMANIA에서 찾을 수 있습니다.
+Added in 1.0.2,information_panel_ios_guided_access,Enable Guided Access from your device's accessibility settings to avoid returning to the Home Screen when swiping.,在系统设置——辅助功能中启用引导式访问，可以避免滑动操作时返回主屏幕。,在設定——輔助使用中啟用引導使用模式，可以避免滑動操作時返回主畫面。,画面をスワイプしたときにホーム画面に移動することを防止するにはデバイス設定のアクセシビリティでアクセスガイドを有効にしてください。,화면을 스와이프했을 때 홈 화면으로 이동하는 것을 막으려면 기기 설정 > 손쉬운 설정 항목에서 '사용법 유도'를 활성화하십시오.
 ,information_panel_links_header,Links,链接,連結,リンク,링크
 ,information_panel_links_website,Website,网站,網站,ウェブサイト,웹사이트
 ,information_panel_links_documentation,Documentation,文档,文件,公式マニュアル,기술 문서
@@ -644,7 +646,7 @@ when snapping notes.","对齐音符时把每一拍
 ,pattern_inspection_no_issue,TECHMANIA inspected the pattern and found no issues. Well done!,TECHMANIA检查了此谱面并且没有发现任何问题。恭喜！,恭喜，這個譜面沒有任何問題！,問題が見つかりませんでした。よくやりましたね！,오류가 없습니다.
 ,pattern_inspection_chain_head_with_no_node,This chain head is not followed by any chain node.,这个锁链头音符的后面没有连接任何锁链节点。,這個鎖鏈音符後面沒有連接任何節點。,チェーンノートの頭がチェーンノードと繋がっていません。,연결형 노트의 중간점(끝점)이 정의되어 있지 않습니다.
 ,pattern_inspection_chain_node_with_no_head,This chain node is not connected to a chain head.,这个锁链节点没有连接在一个锁链头音符上。,這個鎖鏈節點沒有連接鎖鏈頭音符。,チェーンノードがチェーンノートの頭と繋がっていません。,연결형 노트의 시작점이 정의되어 있지 않습니다.
-,pattern_inspection_chain_node_in_same_lane_as_previous,This chain node must be in a different lane than the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点不位于同一轨道。,這個鎖鏈節點必須和前面的鎖鏈頭/節點位於不同軌道。,チェーンノートの頭のすぐ横のチェーンノードは同じトラックに配置することができません。,인접한 연결형 노트는 같은 트랙에 위치할 수 없습니다.
+Replaced in 1.0.2.,pattern_inspection_chain_node_not_in_adjacent_lane,This chain node must be in an adjacent lane to the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点位于相邻的轨道。,這個鎖鏈節點必須和前面的鎖鏈頭/節點位於相鄰的軌道。,このチェーンノードは他のチェーンノートの頭またはチェーンノードと隣接のレーンに位置しなければなりません。,인접한 연결형 노트는 인접한 트랙에 위치해야 합니다.
 ,pattern_inspection_chain_node_crosses_scans,This chain node must be in a same scan as the chain head or chain node before it.,这个锁链节点必须和前面的锁链头/节点位于同一扫描。,這個鎖鏈結點必須和前面的鎖鏈頭/節點位於同一個掃描。,チェーンノードはチェーンノートの頭と同じトラックに配置しなければなりません。,연결형 노트는 그 시작점과 같은 스크롤 영역에 있어야 합니다.
 ,pattern_inspection_drag_crosses_scans,This drag note spans multiple scans.,这个拖拽音符跨越了多于一个扫描。,這個拖動音符跨越了多個掃描。,ドラッグノートは二つ以上のスキャンを通れません。,드래그 노트는 여러 스크롤 영역에 걸칠 수 없습니다.
 ,pattern_inspection_drag_leaves_playable_lanes,This drag note leaves the playable lanes at some point.,这个拖拽音符在某处偏离了可操作轨道。,這個拖動音符偏離了遊玩軌道。,ドラッグノートがプレイエリアを離脱しました。,드래그 노트의 경로가 플레이 영역을 벗어났습니다.
@@ -920,35 +922,4 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* それぞれの項目の定義と計算方式は公式マニュアルをご参照ください。
 * このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
 ,,,,,,

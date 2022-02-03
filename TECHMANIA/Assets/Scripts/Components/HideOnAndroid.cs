@@ -9,6 +9,8 @@ public class HideOnAndroid : MonoBehaviour
     {
 #if UNITY_ANDROID
         gameObject.SetActive(false);
+#else
+        gameObject.SetActive(true);
 #endif
     }
 }

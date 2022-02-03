@@ -318,7 +318,8 @@ public class Game : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus && !IsPaused() && !loading && !inEditor)
+        if (!focus && !IsPaused() && !loading && !inEditor &&
+            Options.instance.pauseWhenGameLosesFocus)
         {
             OnPauseButtonClickOrTouch(playSound: false);
         }
@@ -1706,12 +1707,13 @@ public class Game : MonoBehaviour
         }
 
         // Play keysounds before this moment if they last enough.
+        // Only go through the notes removed earlier; unremoved
+        // notes will be handled by gameplay or UpdateTime.
         foreach (NoteList l in noteObjectsInLane)
         {
-            l.ForEach((NoteObject noteObject) =>
+            l.ForEachRemoved((NoteObject noteObject) =>
             {
                 Note n = noteObject.note;
-                if (n.time > BaseTime) return;
                 if (n.sound == null || n.sound == "") return;
 
                 AudioClip clip = ResourceLoader.GetCachedClip(
@@ -1720,7 +1722,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        n.lane > playableLanes,
+                        GameSetup.pattern.IsHiddenNote(n.lane),
                         startTime: BaseTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
@@ -2153,7 +2155,7 @@ public class Game : MonoBehaviour
         float correctTime = earliestNote.note.time
             + LatencyForNote(earliestNote.note);
         float difference = Time - correctTime;
-        if (Mathf.Abs(difference) > 
+        if (Mathf.Abs(difference) >
             earliestNote.note.timeWindow[Judgement.Miss])
         {
             // The keystroke is too early or too late
@@ -2282,8 +2284,8 @@ public class Game : MonoBehaviour
                 break;
         }
 
-        if (upcomingNote != null &&
-            !ongoingNotes.ContainsKey(upcomingNote))
+        if (upcomingNote != null
+            && !ongoingNotes.ContainsKey(upcomingNote))
         {
             PlayKeysound(upcomingNote, emptyHit: true);
         }
@@ -2425,7 +2427,18 @@ public class Game : MonoBehaviour
     private Dictionary<Note, AudioSource> noteToAudioSource;
     private void PlayKeysound(NoteObject n, bool emptyHit)
     {
-        bool hidden = n.note.lane >= playableLanes;
+        if (emptyHit
+            && ((IList) new NoteType[]{
+                NoteType.Hold,
+                NoteType.Drag,
+                NoteType.RepeatHeadHold,
+                NoteType.RepeatHold
+            }).Contains(n.note.type))
+        {
+            return;
+        }
+
+        bool hidden = GameSetup.pattern.IsHiddenNote(n.note.lane);
         if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden

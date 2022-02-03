@@ -4,6 +4,43 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+[Serializable]
+// A subset of Pattern meant to calculate fingerprint.
+public class MinimizedPattern
+{
+    public ControlScheme controlScheme;
+    public int playableLanes;
+    public double initBpm;
+    public int bps;
+    public List<string> packedNotes;
+    public List<BpmEvent> bpmEvents;
+    public List<TimeStop> timeStops;
+
+    // For anything we need to add in the future.
+    public List<string> additionalStrings;
+
+    public MinimizedPattern(Pattern p)
+    {
+        controlScheme = p.patternMetadata.controlScheme;
+        playableLanes = p.patternMetadata.playableLanes;
+        initBpm = p.patternMetadata.initBpm;
+        bps = p.patternMetadata.bps;
+
+        packedNotes = new List<string>();
+        foreach (Note n in p.notes)
+        {
+            string soundBackup = n.sound;
+            n.sound = "";
+            packedNotes.Add(n.Pack());
+            n.sound = soundBackup;
+        }
+        bpmEvents = p.bpmEvents;
+        timeStops = p.timeStops;
+
+        additionalStrings = new List<string>();
+    }
+}
+
 public partial class Pattern
 {
     // The "main" part is defined in Track.cs.
@@ -414,7 +451,7 @@ public partial class Pattern
     public struct Radar
     {
         public RadarDimension density;
-        public RadarDimension voltage;
+        public RadarDimension peak;
         public RadarDimension speed;
         public RadarDimension chaos;
         public RadarDimension async;
@@ -482,20 +519,20 @@ public partial class Pattern
         r.density.normalized = NormalizeRadarValue(r.density.raw,
             0.5f, 8f);
 
-        // Voltage: peak number of notes per second.
+        // Peak: peak number of notes per second.
         foreach (KeyValuePair<int, int> pair in scanToNumNotes)
         {
             int scan = pair.Key;
             int numNotes = pair.Value;
             float startTime = PulseToTime(scan * pulsesPerScan);
             float endTime = PulseToTime((scan + 1) * pulsesPerScan);
-            float voltage = numNotes / (endTime - startTime);
-            if (voltage > r.voltage.raw)
+            float peak = numNotes / (endTime - startTime);
+            if (peak > r.peak.raw)
             {
-                r.voltage.raw = voltage;
+                r.peak.raw = peak;
             }
         }
-        r.voltage.normalized = NormalizeRadarValue(r.voltage.raw,
+        r.peak.normalized = NormalizeRadarValue(r.peak.raw,
             1f, 18f);
 
         // Speed: average scans per minute.
@@ -556,7 +593,7 @@ public partial class Pattern
         // linear regression.
         r.suggestedLevel =
             r.density.raw * 0.85f +
-            r.voltage.raw * 0.12f +
+            r.peak.raw * 0.12f +
             r.speed.raw * 0.02f +
             r.chaos.raw * 0f +
             r.async.raw * 0.03f +
@@ -588,8 +625,6 @@ public partial class Pattern
     {
         Pattern p = CloneWithDifferentGuid();
         int playableLanes = patternMetadata.playableLanes;
-        const int kAutoKeysoundFirstLane = 64;
-        const int kAutoAssistTickFirstLane = 68;
 
         if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
         {
@@ -688,9 +723,9 @@ public partial class Pattern
 
     public void CalculateFingerprint()
     {
-        // Serialize pattern, then convert to binary.
-        PackAllNotes();
-        string json = UnityEngine.JsonUtility.ToJson(this,
+        // Minimize pattern, serialize, then convert to binary.
+        MinimizedPattern miniP = new MinimizedPattern(this);
+        string json = UnityEngine.JsonUtility.ToJson(miniP,
             prettyPrint: false);
         byte[] hashInput = Encoding.UTF8.GetBytes(json);
 

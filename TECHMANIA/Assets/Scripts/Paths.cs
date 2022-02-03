@@ -253,7 +253,7 @@ public static class Paths
         foreach (string pattern in patterns)
         {
             foreach (string file in
-                Directory.EnumerateFiles(folder, pattern))
+                Directory.EnumerateFiles(folder, pattern, SearchOption.AllDirectories))
             {
                 files.Add(file);
             }
@@ -344,6 +344,18 @@ public static class Paths
 #else
         return fullPath;
 #endif
+    }
+
+    // Returns the path of absolutePath relative to reference.
+    public static string RelativePath(string reference,
+        string absolutePath)
+    {
+        return absolutePath
+            .Substring(reference.Length + 1)
+#if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            .Replace("\\", "/")
+#endif
+            ;
     }
     #endregion
 
