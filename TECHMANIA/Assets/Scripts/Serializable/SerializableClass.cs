@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-#if UNITY_2020
+#if UNITY_2021
 using UnityEngine;
 #endif
 
@@ -44,7 +44,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
     public string Serialize(bool optimizeForSaving)
     {
         PrepareToSerialize();
-#if UNITY_2020
+#if UNITY_2021
         if (optimizeForSaving)
         {
             return JsonUtility.ToJson(this, prettyPrint: true)
@@ -67,7 +67,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public static T Deserialize(string json, out bool upgraded)
     {
-#if UNITY_2020
+#if UNITY_2021
         string version = JsonUtility.FromJson<T>(json).version;
         Type subclassType = null;
         string latestVersion = null;
@@ -133,7 +133,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
-#if UNITY_2020
+#if UNITY_2021
         string fileContent = UniversalIO.ReadAllText(path);
         return Deserialize(fileContent, out upgraded);
 #else
@@ -186,7 +186,7 @@ public class SerializableDemoV1 : SerializableDemoBase
 
     public SerializableDemoV1()
     {
-#if UNITY_2020
+#if UNITY_2021
         Debug.Log("V1 constructor called");
 #endif
         version = kVersion;
@@ -209,7 +209,7 @@ public class SerializableDemoV2 : SerializableDemoBase
 
     public SerializableDemoV2()
     {
-#if UNITY_2020
+#if UNITY_2021
         Debug.Log("V2 constructor called");
 #endif
         version = kVersion;
