@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/System%20Style.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#System Style" />
+    <ui:VisualElement name="theme-loader" style="left: 0; top: 0; bottom: 0; right: 0; position: absolute;" />
+    <ui:VisualElement style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
+        <ui:VisualElement name="alert-box" class="surface" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-top-left-radius: 2px; border-bottom-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-left-color: rgba(255, 255, 255, 0.12); border-right-color: rgba(255, 255, 255, 0.12); border-top-color: rgba(255, 255, 255, 0.12); border-bottom-color: rgba(255, 255, 255, 0.12); padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; width: 700px;">
+            <ui:Label text="This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. " display-tooltip-when-elided="true" name="alert-text" class="body-text" />
+            <ui:VisualElement style="height: 100px; flex-direction: column-reverse; align-items: flex-end;">
+                <ui:Button text="Button" display-tooltip-when-elided="true" style="width: 100px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
