@@ -81,6 +81,17 @@ public class SelectPatternPanel : MonoBehaviour
         previewPlayer.Play(GameSetup.trackFolder,
             GameSetup.track.trackMetadata,
             loop: true);
+
+#if !UNITY_IOS && !UNITY_ANDROID
+        DiscordController.SetActivity(new Discord.Activity
+        {
+            Details = GameSetup.track.trackMetadata.title,
+            State = "Selecting Pattern",
+            Assets = {
+                LargeImage = "techmania"
+            }
+        });
+#endif
     }
 
     private void OnDisable()

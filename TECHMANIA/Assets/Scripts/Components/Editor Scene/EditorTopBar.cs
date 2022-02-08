@@ -27,6 +27,19 @@ public class EditorTopBar : MonoBehaviour
     public void Save()
     {
         EditorContext.Save();
+#if !UNITY_IOS && !UNITY_ANDROID
+        DiscordController.SetActivity(new Discord.Activity
+        {
+            Details = EditorContext.track.trackMetadata.title,
+            State = "Editing Pattern",
+            Assets = {
+                LargeImage = "techmania"
+            },
+            Timestamps = {
+                Start = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            }
+        });
+#endif
     }
 
     public void Undo()

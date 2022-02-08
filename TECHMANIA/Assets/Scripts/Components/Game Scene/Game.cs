@@ -281,7 +281,36 @@ public class Game : MonoBehaviour
             practiceTopBar.SetActive(true);
             regularTopBar.SetActive(false);
         }
+#if !UNITY_IOS && !UNITY_ANDROID
+        else
+        {
+            string mode = "";
+            switch (GameSetup.pattern.patternMetadata.controlScheme)
+            {
+                case ControlScheme.Touch:
+                    mode = "Touch";
+                    break;
+                case ControlScheme.Keys:
+                    mode = "Keys";
+                    break;
+                case ControlScheme.KM:
+                    mode = "KM";
+                    break;
+            }
 
+            DiscordController.SetActivity(new Discord.Activity
+            {
+                Details = GameSetup.track.trackMetadata.title,
+                State = String.Format("{0}L {1} - {2}", playableLanes, mode, GameSetup.pattern.patternMetadata.patternName),
+                Assets = {
+                    LargeImage = "techmania"
+                },
+                Timestamps = {
+                    Start = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                }
+            });
+        }
+#endif
         // Start the load sequence.
         StartCoroutine(LoadSequence());
     }

@@ -131,6 +131,16 @@ public class SelectTrackPanel : MonoBehaviour
         StartCoroutine(Refresh());
         TrackFilterSidesheet.trackFilterChanged += 
             OnTrackFilterChanged;
+
+#if !UNITY_IOS && !UNITY_ANDROID
+        DiscordController.SetActivity(new Discord.Activity
+        {
+            Details = "Selecting Track",
+            Assets = {
+                LargeImage = "techmania"
+            }
+        });
+#endif
     }
 
     protected void OnDisable()

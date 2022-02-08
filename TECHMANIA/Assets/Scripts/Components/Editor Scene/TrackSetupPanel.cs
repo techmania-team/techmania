@@ -50,6 +50,19 @@ public class TrackSetupPanel : MonoBehaviour
         EditorContext.ClearUndoRedoStack();
         RefreshFilenameCaches();
         Refresh();
+#if !UNITY_IOS && !UNITY_ANDROID
+        DiscordController.SetActivity(new Discord.Activity
+        {
+            Details = EditorContext.track.trackMetadata.title,
+            State = "Editing Pattern",
+            Assets = {
+                LargeImage = "techmania"
+            },
+            Timestamps = {
+                Start = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            }
+        });
+#endif
     }
 
     private void OnDisable()
