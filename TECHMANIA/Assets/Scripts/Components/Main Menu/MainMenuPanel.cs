@@ -58,6 +58,14 @@ public class MainMenuPanel : MonoBehaviour
             returnToLoadingText = false;
             ShowLoadingText();
         }
+
+        DiscordController.SetActivity(new Discord.Activity
+        {
+            Details = "Main Menu",
+            Assets = {
+                LargeImage = "techmania"
+            }
+        });
     }
 
     public void ShowWelcomeMat()
