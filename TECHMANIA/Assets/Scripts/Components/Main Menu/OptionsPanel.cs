@@ -111,7 +111,6 @@ public class OptionsPanel : MonoBehaviour
         LoadOrCreateOptions();
         MemoryToUI();
 
-#if !UNITY_IOS && !UNITY_ANDROID
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = "Options",
@@ -119,7 +118,6 @@ public class OptionsPanel : MonoBehaviour
                 LargeImage = "techmania"
             }
         });
-#endif
     }
 
     private void OnDisable()

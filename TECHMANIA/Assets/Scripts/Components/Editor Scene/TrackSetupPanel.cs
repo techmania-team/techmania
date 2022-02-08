@@ -50,7 +50,7 @@ public class TrackSetupPanel : MonoBehaviour
         EditorContext.ClearUndoRedoStack();
         RefreshFilenameCaches();
         Refresh();
-#if !UNITY_IOS && !UNITY_ANDROID
+
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = EditorContext.track.trackMetadata.title,
@@ -62,7 +62,6 @@ public class TrackSetupPanel : MonoBehaviour
                 Start = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
             }
         });
-#endif
     }
 
     private void OnDisable()

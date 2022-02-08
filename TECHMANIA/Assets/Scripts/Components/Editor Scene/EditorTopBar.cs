@@ -27,7 +27,7 @@ public class EditorTopBar : MonoBehaviour
     public void Save()
     {
         EditorContext.Save();
-#if !UNITY_IOS && !UNITY_ANDROID
+
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = EditorContext.track.trackMetadata.title,
@@ -39,7 +39,6 @@ public class EditorTopBar : MonoBehaviour
                 Start = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds()
             }
         });
-#endif
     }
 
     public void Undo()

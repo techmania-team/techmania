@@ -281,7 +281,6 @@ public class Game : MonoBehaviour
             practiceTopBar.SetActive(true);
             regularTopBar.SetActive(false);
         }
-#if !UNITY_IOS && !UNITY_ANDROID
         else
         {
             string mode = "";
@@ -310,7 +309,6 @@ public class Game : MonoBehaviour
                 }
             });
         }
-#endif
         // Start the load sequence.
         StartCoroutine(LoadSequence());
     }

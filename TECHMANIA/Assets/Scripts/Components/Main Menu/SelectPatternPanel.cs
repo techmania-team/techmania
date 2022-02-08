@@ -82,7 +82,6 @@ public class SelectPatternPanel : MonoBehaviour
             GameSetup.track.trackMetadata,
             loop: true);
 
-#if !UNITY_IOS && !UNITY_ANDROID
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = GameSetup.track.trackMetadata.title,
@@ -91,7 +90,6 @@ public class SelectPatternPanel : MonoBehaviour
                 LargeImage = "techmania"
             }
         });
-#endif
     }
 
     private void OnDisable()
