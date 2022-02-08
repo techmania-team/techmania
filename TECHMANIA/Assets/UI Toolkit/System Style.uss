@@ -1,10 +1,83 @@
+* {
+    --primary-color: rgb(165, 214, 167);
+}
+
 .surface {
     background-color: rgb(18, 18, 18);
 }
 
-.body-text {
+.surface-8dp {
+    background-color: rgb(47, 47, 47);
+}
+
+.text-body {
     -unity-font-definition: url('project://database/Assets/Fonts/Open%20Sans/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=a3e17acdfc9389c45996e1d42a2a5f2f&type=2#OpenSans-Regular SDF non-TMP');
     color: rgba(255, 255, 255, 0.6);
     font-size: 24px;
     white-space: normal;
+    letter-spacing: 2px;
+}
+
+.button-text {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    color: var(--primary-color);
+    font-size: 20px;
+    -unity-font-definition: url('project://database/Assets/Fonts/Lato/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
+    letter-spacing: 10px;
+    height: 55px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.button-outlined {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    color: var(--primary-color);
+    font-size: 20px;
+    -unity-font-definition: url('project://database/Assets/Fonts/Lato/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
+    letter-spacing: 10px;
+    border-left-color: rgba(255, 255, 255, 0.12);
+    border-right-color: rgba(255, 255, 255, 0.12);
+    border-top-color: rgba(255, 255, 255, 0.12);
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+    height: 55px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.elevation-shadow {
+    position: absolute;
+    left: -128px;
+    top: -128px;
+    right: -128px;
+    bottom: -128px;
+    background-image: url('project://database/Assets/Sprites/Shadow.png?fileID=2800000&guid=cddfafa72e29a454ca60dce1e625edd2&type=3#Shadow');
+    -unity-slice-left: 128;
+    -unity-slice-top: 128;
+    -unity-slice-right: 128;
+    -unity-slice-bottom: 128;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+}
+
+.emphasis-high {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.87);
+}
+
+.unity-label {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
