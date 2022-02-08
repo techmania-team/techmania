@@ -36,7 +36,7 @@ public class EditorTopBar : MonoBehaviour
                 LargeImage = "techmania"
             },
             Timestamps = {
-                Start = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                Start = DiscordController.timeStart
             }
         });
     }

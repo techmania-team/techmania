@@ -51,6 +51,7 @@ public class TrackSetupPanel : MonoBehaviour
         RefreshFilenameCaches();
         Refresh();
 
+        DiscordController.timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = EditorContext.track.trackMetadata.title,
@@ -59,7 +60,7 @@ public class TrackSetupPanel : MonoBehaviour
                 LargeImage = "techmania"
             },
             Timestamps = {
-                Start = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                Start = DiscordController.timeStart
             }
         });
     }

@@ -4,6 +4,8 @@ public class DiscordController
 {
     private static Discord.Discord discord;
 
+    public static Int64 timeStart;
+
     public static void Start ()
     {
         if (discord != null || !SupportedOnCurrentPlatform()) return;

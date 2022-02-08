@@ -297,6 +297,7 @@ public class Game : MonoBehaviour
                     break;
             }
 
+            DiscordController.timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             DiscordController.SetActivity(new Discord.Activity
             {
                 Details = GameSetup.track.trackMetadata.title,
@@ -305,7 +306,7 @@ public class Game : MonoBehaviour
                     LargeImage = "techmania"
                 },
                 Timestamps = {
-                    Start = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                    Start = DiscordController.timeStart
                 }
             });
         }
