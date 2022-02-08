@@ -55,7 +55,7 @@ public class TrackSetupPanel : MonoBehaviour
         DiscordController.SetActivity(new Discord.Activity
         {
             Details = EditorContext.track.trackMetadata.title,
-            State = "Editing Pattern",
+            State = "Editing Track",
             Assets = {
                 LargeImage = "techmania"
             },

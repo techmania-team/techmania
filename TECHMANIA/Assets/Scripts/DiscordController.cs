@@ -38,4 +38,19 @@ public class DiscordController
         return false;
 #endif
     }
+
+    public static string GetModeName (ControlScheme controlScheme)
+    {
+        switch (controlScheme)
+        {
+            case ControlScheme.Touch:
+                return "Touch";
+            case ControlScheme.Keys:
+                return "Keys";
+            case ControlScheme.KM:
+                return "KM";
+            default:
+                return "";
+        }
+    }
 }
