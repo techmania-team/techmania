@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-public class DiscordController : MonoBehaviour
+public class DiscordController
 {
 #if !UNITY_IOS && !UNITY_ANDROID
     private static Discord.Discord discord;
@@ -9,7 +8,7 @@ public class DiscordController : MonoBehaviour
     public static void Start ()
     {
         if (discord != null) return;
-        discord = new Discord.Discord(802017593086836767, (System.UInt64)Discord.CreateFlags.Default);
+        discord = new Discord.Discord(802017593086836767, (UInt64)Discord.CreateFlags.Default);
     }
     
     public static void RunCallbacks ()
