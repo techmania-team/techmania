@@ -20,13 +20,7 @@ public class InformationPanel : MonoBehaviour
         tracksSkinsLocation.text = Locale.GetString(
             "information_panel_tracks_skins_location_pc");
 
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = "Information",
-            Assets = {
-                LargeImage = "techmania"
-            }
-        });
+        DiscordController.SetActivity("Information");
 #endif
     }
 

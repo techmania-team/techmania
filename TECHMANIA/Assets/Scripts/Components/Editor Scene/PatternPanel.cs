@@ -247,18 +247,7 @@ public class PatternPanel : MonoBehaviour
             RefreshPlaybackBar();
         }
 
-        DiscordController.timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = EditorContext.track.trackMetadata.title,
-            State = String.Format("Editing {0}L {1} - {2}", EditorContext.Pattern.patternMetadata.playableLanes, DiscordController.GetModeName(EditorContext.Pattern.patternMetadata.controlScheme), EditorContext.Pattern.patternMetadata.patternName),
-            Assets = {
-                LargeImage = "techmania"
-            },
-            Timestamps = {
-                Start = DiscordController.timeStart
-            }
-        });
+        DiscordController.SetActivity("Editor Pattern");
     }
 
     private void OnDisable()

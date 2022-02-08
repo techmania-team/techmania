@@ -283,18 +283,7 @@ public class Game : MonoBehaviour
         }
         else
         {
-            DiscordController.timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            DiscordController.SetActivity(new Discord.Activity
-            {
-                Details = GameSetup.track.trackMetadata.title,
-                State = String.Format("{0}L {1} - {2}", playableLanes, DiscordController.GetModeName(GameSetup.pattern.patternMetadata.controlScheme), GameSetup.pattern.patternMetadata.patternName),
-                Assets = {
-                    LargeImage = "techmania"
-                },
-                Timestamps = {
-                    Start = DiscordController.timeStart
-                }
-            });
+            DiscordController.SetActivity("Game");
         }
         // Start the load sequence.
         StartCoroutine(LoadSequence());

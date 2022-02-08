@@ -111,13 +111,7 @@ public class OptionsPanel : MonoBehaviour
         LoadOrCreateOptions();
         MemoryToUI();
 
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = "Options",
-            Assets = {
-                LargeImage = "techmania"
-            }
-        });
+        DiscordController.SetActivity("Options");
     }
 
     private void OnDisable()

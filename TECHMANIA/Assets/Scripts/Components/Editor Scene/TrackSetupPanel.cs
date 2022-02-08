@@ -51,18 +51,7 @@ public class TrackSetupPanel : MonoBehaviour
         RefreshFilenameCaches();
         Refresh();
 
-        DiscordController.timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = EditorContext.track.trackMetadata.title,
-            State = "Editing Track",
-            Assets = {
-                LargeImage = "techmania"
-            },
-            Timestamps = {
-                Start = DiscordController.timeStart
-            }
-        });
+        DiscordController.SetActivity("Editor Track");
     }
 
     private void OnDisable()

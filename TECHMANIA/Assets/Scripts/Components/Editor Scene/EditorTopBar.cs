@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -27,18 +28,8 @@ public class EditorTopBar : MonoBehaviour
     public void Save()
     {
         EditorContext.Save();
-
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = EditorContext.track.trackMetadata.title,
-            State = "Editing Pattern",
-            Assets = {
-                LargeImage = "techmania"
-            },
-            Timestamps = {
-                Start = DiscordController.timeStart
-            }
-        });
+        
+        DiscordController.SetActivity("Editor Save");
     }
 
     public void Undo()

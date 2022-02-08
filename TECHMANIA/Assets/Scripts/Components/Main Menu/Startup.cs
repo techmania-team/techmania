@@ -16,12 +16,6 @@ public class Startup : MonoBehaviour
         BetterStreamingAssets.Initialize();
         GetComponent<GlobalResourceLoader>().StartLoading();
         DiscordController.Start();
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = "Main Menu",
-            Assets = {
-                LargeImage = "techmania"
-            }
-        });
+        DiscordController.SetActivity("Main Menu");
     }
 }

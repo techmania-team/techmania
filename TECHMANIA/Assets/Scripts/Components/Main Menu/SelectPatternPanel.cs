@@ -82,14 +82,7 @@ public class SelectPatternPanel : MonoBehaviour
             GameSetup.track.trackMetadata,
             loop: true);
 
-        DiscordController.SetActivity(new Discord.Activity
-        {
-            Details = GameSetup.track.trackMetadata.title,
-            State = "Selecting Pattern",
-            Assets = {
-                LargeImage = "techmania"
-            }
-        });
+        DiscordController.SetActivity("Selecting Pattern");
     }
 
     private void OnDisable()
