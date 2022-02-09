@@ -82,7 +82,7 @@ public class SelectPatternPanel : MonoBehaviour
             GameSetup.track.trackMetadata,
             loop: true);
 
-        DiscordController.SetActivity("Selecting Pattern");
+        DiscordController.SetActivity(DiscordActivityType.SelectingPattern);
     }
 
     private void OnDisable()

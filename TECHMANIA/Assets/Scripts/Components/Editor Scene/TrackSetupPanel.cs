@@ -51,7 +51,7 @@ public class TrackSetupPanel : MonoBehaviour
         RefreshFilenameCaches();
         Refresh();
 
-        DiscordController.SetActivity("Editor Track");
+        DiscordController.SetActivity(DiscordActivityType.EditorTrack);
     }
 
     private void OnDisable()

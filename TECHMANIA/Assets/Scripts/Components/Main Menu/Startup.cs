@@ -16,6 +16,6 @@ public class Startup : MonoBehaviour
         BetterStreamingAssets.Initialize();
         GetComponent<GlobalResourceLoader>().StartLoading();
         DiscordController.Start();
-        DiscordController.SetActivity("Main Menu");
+        DiscordController.SetActivity(DiscordActivityType.MainMenu);
     }
 }

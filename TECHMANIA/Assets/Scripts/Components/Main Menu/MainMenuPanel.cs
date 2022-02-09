@@ -59,7 +59,7 @@ public class MainMenuPanel : MonoBehaviour
             ShowLoadingText();
         }
 
-        DiscordController.SetActivity("Main Menu");
+        DiscordController.SetActivity(DiscordActivityType.MainMenu);
     }
 
     public void ShowWelcomeMat()

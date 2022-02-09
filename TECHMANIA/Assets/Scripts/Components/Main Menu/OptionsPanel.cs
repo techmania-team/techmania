@@ -111,7 +111,7 @@ public class OptionsPanel : MonoBehaviour
         LoadOrCreateOptions();
         MemoryToUI();
 
-        DiscordController.SetActivity("Options");
+        DiscordController.SetActivity(DiscordActivityType.Options);
     }
 
     private void OnDisable()

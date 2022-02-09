@@ -1,12 +1,25 @@
 using System;
 
+public enum DiscordActivityType
+{
+    MainMenu,
+    Options,
+    Information,
+    SelectingTrack,
+    SelectingPattern,
+    EditorTrack,
+    EditorPattern,
+    EditorSave,
+    Game
+}
+
 public class DiscordController
 {
     private static Discord.Discord discord;
     public static Int64 timeStart;
     private static string details = "";
     private static string state = "";
-    private static string lastActivityType = "";
+    private static DiscordActivityType lastActivityType;
 
     public static void Start ()
     {
@@ -20,49 +33,49 @@ public class DiscordController
         discord.RunCallbacks();
     }
 
-    public static void SetActivity (string type)
+    public static void SetActivity (DiscordActivityType type)
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
         bool shouldSetTimestamp = false;
         switch (type)
         {
-            case "Main Menu":
+            case DiscordActivityType.MainMenu:
                 details = "Main Menu";
                 state = "";
                 break;
-            case "Options":
+            case DiscordActivityType.Options:
                 details = "Options";
                 state = "";
                 break;
-            case "Information":
+            case DiscordActivityType.Information:
                 details = "Information";
                 state = "";
                 break;
-            case "Selecting Track":
+            case DiscordActivityType.SelectingTrack:
                 details = "Selecting Track";
                 state = "";
                 break;
-            case "Selecting Pattern":
+            case DiscordActivityType.SelectingPattern:
                 details = GameSetup.track.trackMetadata.title;
                 state = "Selecting Pattern";
                 break;
-            case "Editor Track":
-                if (lastActivityType != "Editing Track") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            case DiscordActivityType.EditorTrack:
+                if (lastActivityType != DiscordActivityType.EditorTrack) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 details = EditorContext.track.trackMetadata.title;
                 state = "Editing Track";
                 shouldSetTimestamp = true;
                 break;
-            case "Editor Pattern":
-                if (lastActivityType != "Editor Pattern") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            case DiscordActivityType.EditorPattern:
+                if (lastActivityType != DiscordActivityType.EditorPattern) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 state = String.Format("Editing {0}L {1} - {2}", EditorContext.Pattern.patternMetadata.playableLanes, GetModeName(EditorContext.Pattern.patternMetadata.controlScheme), EditorContext.Pattern.patternMetadata.patternName);
                 shouldSetTimestamp = true;
                 break;
-            case "Editor Save":
+            case DiscordActivityType.EditorSave:
                 details = EditorContext.track.trackMetadata.title;
                 shouldSetTimestamp = true;
                 break;
-            case "Game":
-                if (lastActivityType != "Game") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            case DiscordActivityType.Game:
+                if (lastActivityType != DiscordActivityType.Game) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 details = GameSetup.track.trackMetadata.title;
                 state = String.Format("{0}L {1} - {2}", GameSetup.pattern.patternMetadata.playableLanes, GetModeName(GameSetup.pattern.patternMetadata.controlScheme), GameSetup.pattern.patternMetadata.patternName);
                 shouldSetTimestamp = true;

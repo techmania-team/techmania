@@ -132,7 +132,7 @@ public class SelectTrackPanel : MonoBehaviour
         TrackFilterSidesheet.trackFilterChanged += 
             OnTrackFilterChanged;
 
-        DiscordController.SetActivity("Selecting Track");
+        DiscordController.SetActivity(DiscordActivityType.SelectingTrack);
     }
 
     protected void OnDisable()

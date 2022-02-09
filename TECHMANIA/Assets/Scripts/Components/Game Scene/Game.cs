@@ -283,7 +283,7 @@ public class Game : MonoBehaviour
         }
         else
         {
-            DiscordController.SetActivity("Game");
+            DiscordController.SetActivity(DiscordActivityType.Game);
         }
         // Start the load sequence.
         StartCoroutine(LoadSequence());
