@@ -47,21 +47,15 @@ public class AudioSliders : MonoBehaviour
             Options.instance.sfxVolumePercent.ToString();
     }
 
-    private float VolumeValueToDb(int volumePercent)
-    {
-        float volume = volumePercent * 0.01f;
-        return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
-    }
-
     public void ApplyVolume()
     {
-        audioMixer.SetFloat("MasterVolume", VolumeValueToDb(
+        audioMixer.SetFloat("MasterVolume", Options.VolumeValueToDb(
             Options.instance.masterVolumePercent));
-        audioMixer.SetFloat("MusicVolume", VolumeValueToDb(
+        audioMixer.SetFloat("MusicVolume", Options.VolumeValueToDb(
             Options.instance.musicVolumePercent));
-        audioMixer.SetFloat("KeysoundVolume", VolumeValueToDb(
+        audioMixer.SetFloat("KeysoundVolume", Options.VolumeValueToDb(
             Options.instance.keysoundVolumePercent));
-        audioMixer.SetFloat("SfxVolume", VolumeValueToDb(
+        audioMixer.SetFloat("SfxVolume", Options.VolumeValueToDb(
             Options.instance.sfxVolumePercent));
     }
 

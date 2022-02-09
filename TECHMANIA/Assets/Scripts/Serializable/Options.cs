@@ -25,6 +25,8 @@ public class Options : OptionsBase
 {
     public const string kVersion = "2";
 
+    public const string kDefaultTheme = "Default";
+
     // Graphics
 
     public int width; 
@@ -68,6 +70,7 @@ public class Options : OptionsBase
     public string comboSkin;
     public string gameUiSkin;
     public bool reloadSkinsWhenLoadingPattern;
+    public string theme;
 
     // Timing
 
@@ -141,6 +144,7 @@ public class Options : OptionsBase
         comboSkin = "Default";
         gameUiSkin = "Default";
         reloadSkinsWhenLoadingPattern = false;
+        theme = kDefaultTheme;
 
         touchOffsetMs = 0;
         touchLatencyMs = 0;
@@ -191,6 +195,7 @@ public class Options : OptionsBase
         }
     }
 
+    #region Graphics
     public void ApplyGraphicSettings()
     {
 #if UNITY_IOS || UNITY_ANDROID
@@ -218,8 +223,31 @@ public class Options : OptionsBase
     {
         QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
     }
+    #endregion
 
-#region Instance
+    #region Audio
+    // This resets the audio mixer, AND it only happens in
+    // the standalone player. What the heck? Anyway always reset
+    // the audio mixer after calling this.
+    public void ApplyAudioBufferSize()
+    {
+        AudioConfiguration config = AudioSettings.GetConfiguration();
+        if (config.dspBufferSize != audioBufferSize)
+        {
+            config.dspBufferSize = audioBufferSize;
+            AudioSettings.Reset(config);
+            ResourceLoader.forceReload = true;
+        }
+    }
+
+    public static float VolumeValueToDb(int volumePercent)
+    {
+        float volume = volumePercent * 0.01f;
+        return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
+    }
+    #endregion
+
+    #region Instance
     public static Options instance { get; private set; }
     private static Options backupInstance;
     public static void RefreshInstance()

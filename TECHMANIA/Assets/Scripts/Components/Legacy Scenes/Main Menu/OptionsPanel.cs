@@ -52,18 +52,10 @@ public class OptionsPanel : MonoBehaviour
             .GetComponentInChildren<OptionsPanel>(
             includeInactive: true);
         instance.LoadOrCreateOptions();
-
-        Locale.Initialize(instance.stringTable);
-        Locale.SetLocale(Options.instance.locale);
-        Options.instance.ApplyGraphicSettings();
-        instance.ApplyAudioBufferSize();
-        instance.audioSliders.ApplyVolume();
     }
 
     private void LoadOrCreateOptions()
     {
-        Options.RefreshInstance();
-
         // Find all resolutions, as well as resolutionIndex.
         resolutions = new List<Resolution>();
         resolutionIndex = -1;
@@ -89,20 +81,6 @@ public class OptionsPanel : MonoBehaviour
                 resolutions[resolutionIndex].height;
             Options.instance.refreshRate =
                 resolutions[resolutionIndex].refreshRate;
-        }
-
-        if (Options.instance.ruleset == Options.Ruleset.Custom)
-        {
-            try
-            {
-                Ruleset.LoadCustomRuleset();
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError("An error occurred when loading custom ruleset, reverting to standard ruleset: " + ex.ToString());
-                // Silently ignore errors.
-                Options.instance.ruleset = Options.Ruleset.Standard;
-            }
         }
     }
 
@@ -262,23 +240,8 @@ public class OptionsPanel : MonoBehaviour
         Options.instance.audioBufferSize = int.Parse(
             audioBufferDropdown.options[
             audioBufferDropdown.value].text);
-
-        ApplyAudioBufferSize();
+        Options.instance.ApplyAudioBufferSize();
         audioSliders.ApplyVolume();
-    }
-
-    // This resets the audio mixer, AND it only happens in
-    // the standalone player. What the heck? Anyway always reset
-    // the audio mixer after calling this.
-    private void ApplyAudioBufferSize()
-    {
-        AudioConfiguration config = AudioSettings.GetConfiguration();
-        if (config.dspBufferSize != Options.instance.audioBufferSize)
-        {
-            config.dspBufferSize = Options.instance.audioBufferSize;
-            AudioSettings.Reset(config);
-            ResourceLoader.forceReload = true;
-        }
     }
     #endregion
 

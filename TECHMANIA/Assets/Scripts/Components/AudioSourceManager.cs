@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class AudioSourceManager : MonoBehaviour
 {
+    public UnityEngine.Audio.AudioMixer audioMixer;
+
     public AudioSource backingTrack;
     public Transform playableLanesContainer;
     public Transform hiddenLanesContainer;
@@ -194,5 +196,21 @@ public class AudioSourceManager : MonoBehaviour
             if (SourceIsPlaying(s)) return true;
         }
         return false;
+    }
+
+    public void ApplyVolume()
+    {
+        audioMixer.SetFloat("MasterVolume",
+            Options.VolumeValueToDb(
+            Options.instance.masterVolumePercent));
+        audioMixer.SetFloat("MusicVolume",
+            Options.VolumeValueToDb(
+            Options.instance.musicVolumePercent));
+        audioMixer.SetFloat("KeysoundVolume",
+            Options.VolumeValueToDb(
+            Options.instance.keysoundVolumePercent));
+        audioMixer.SetFloat("SfxVolume",
+            Options.VolumeValueToDb(
+            Options.instance.sfxVolumePercent));
     }
 }
