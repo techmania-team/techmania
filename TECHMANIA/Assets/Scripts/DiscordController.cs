@@ -23,7 +23,7 @@ public class DiscordController
     public static void SetActivity (string type)
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
-        bool timestamp = false;
+        bool shouldSetTimestamp = false;
         switch (type)
         {
             case "Main Menu":
@@ -50,22 +50,22 @@ public class DiscordController
                 if (lastActivityType != "Editing Track") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 details = EditorContext.track.trackMetadata.title;
                 state = "Editing Track";
-                timestamp = true;
+                shouldSetTimestamp = true;
                 break;
             case "Editor Pattern":
                 if (lastActivityType != "Editor Pattern") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 state = String.Format("Editing {0}L {1} - {2}", EditorContext.Pattern.patternMetadata.playableLanes, GetModeName(EditorContext.Pattern.patternMetadata.controlScheme), EditorContext.Pattern.patternMetadata.patternName);
-                timestamp = true;
+                shouldSetTimestamp = true;
                 break;
             case "Editor Save":
                 details = EditorContext.track.trackMetadata.title;
-                timestamp = true;
+                shouldSetTimestamp = true;
                 break;
             case "Game":
                 if (lastActivityType != "Game") timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 details = GameSetup.track.trackMetadata.title;
                 state = String.Format("{0}L {1} - {2}", GameSetup.pattern.patternMetadata.playableLanes, GetModeName(GameSetup.pattern.patternMetadata.controlScheme), GameSetup.pattern.patternMetadata.patternName);
-                timestamp = true;
+                shouldSetTimestamp = true;
                 break;
         }
         lastActivityType = type;
@@ -77,7 +77,7 @@ public class DiscordController
                 LargeImage = "techmania"
             }
         };
-        if (timestamp)
+        if (shouldSetTimestamp)
         {
             activity.Timestamps.Start = DiscordController.timeStart;
         }
