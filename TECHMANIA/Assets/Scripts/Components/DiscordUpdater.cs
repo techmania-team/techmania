@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class DiscordUpdater : MonoBehaviour
 {
-#if !UNITY_IOS && !UNITY_ANDROID
     void Update ()
     {
         DiscordController.RunCallbacks();
@@ -12,5 +11,4 @@ public class DiscordUpdater : MonoBehaviour
     {
         DiscordController.Dispose();
     }
-#endif
 }
