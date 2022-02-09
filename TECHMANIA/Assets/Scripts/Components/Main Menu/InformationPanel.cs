@@ -19,9 +19,8 @@ public class InformationPanel : MonoBehaviour
 #else
         tracksSkinsLocation.text = Locale.GetString(
             "information_panel_tracks_skins_location_pc");
-
-        DiscordController.SetActivity("Information");
 #endif
+        DiscordController.SetActivity("Information");
     }
 
     public void OnWebsiteButtonClick()
