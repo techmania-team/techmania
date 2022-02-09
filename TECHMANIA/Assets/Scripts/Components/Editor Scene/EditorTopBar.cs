@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class EditorTopBar : MonoBehaviour
     public void Save()
     {
         EditorContext.Save();
+        
+        DiscordController.SetActivity(DiscordActivityType.EditorSave);
     }
 
     public void Undo()

@@ -15,5 +15,7 @@ public class Startup : MonoBehaviour
         Records.RefreshInstance();
         BetterStreamingAssets.Initialize();
         GetComponent<GlobalResourceLoader>().StartLoading();
+        DiscordController.Start();
+        DiscordController.SetActivity(DiscordActivityType.MainMenu);
     }
 }

@@ -281,7 +281,10 @@ public class Game : MonoBehaviour
             practiceTopBar.SetActive(true);
             regularTopBar.SetActive(false);
         }
-
+        else
+        {
+            DiscordController.SetActivity(DiscordActivityType.Game);
+        }
         // Start the load sequence.
         StartCoroutine(LoadSequence());
     }
