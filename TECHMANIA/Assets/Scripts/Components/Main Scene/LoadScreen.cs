@@ -8,6 +8,7 @@ public class LoadScreen : MonoBehaviour
     public TextMeshProUGUI progressText;
     public GameObject revertButtonContainer;
     public TextMeshProUGUI revertMessage;
+    public MessageDialog messageDialog;
 
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;
@@ -17,6 +18,35 @@ public class LoadScreen : MonoBehaviour
         themeDecided = false;
         revertPromptCoroutine = StartCoroutine(
             ShowRevertDefaultThemePrompt());
+
+        StartCoroutine(LoadSequence());
+    }
+
+    private IEnumerator LoadSequence()
+    {
+        // Step 1: load skins.
+        string progressTextLine1 = Locale.GetStringAndFormat(
+            "resource_loader_loading_skins", 1, 3);
+        bool skinsLoaded = false;
+        GlobalResourceLoader.ProgressCallback progressCallback =
+            (string currentlyLoadingFile) =>
+            {
+                string progressTextLine2 = Paths
+                    .HidePlatformInternalPath(currentlyLoadingFile);
+                progressText.text = $"{progressTextLine1}\n{progressTextLine2}";
+            };
+        GlobalResourceLoader.CompleteCallback completeCallback =
+            (bool success, string errorMessage) =>
+            {
+                if (!success)
+                {
+                    messageDialog.Show(errorMessage);
+                }
+                skinsLoaded = true;
+            };
+        GetComponent<GlobalResourceLoader>().LoadAllSkins(
+            progressCallback, completeCallback);
+        yield return new WaitUntil(() => skinsLoaded);
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()

@@ -47,7 +47,6 @@ public class Startup : MonoBehaviour
         Records.RefreshInstance();
         BetterStreamingAssets.Initialize();
 
-        // GetComponent<GlobalResourceLoader>().StartLoading();
         loadScreen.StartLoading();
     }
 }

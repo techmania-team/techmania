@@ -483,32 +483,32 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 84.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 24.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -27
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9216e6c758963bf4c97d2e773fcfebdb, type: 3}
@@ -713,6 +713,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 411146260}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &411146263 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9212173601138465303, guid: ff899dd7c8ae9f542a0080012f5ce641,
+    type: 3}
+  m_PrefabInstance: {fileID: 411146260}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9105cb7061b1a644bed3e1121aa5d21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &492538771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -720,6 +732,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1622777474285759386}
     m_Modifications:
+    - target: {fileID: 7664613274378453128, guid: 26f88fd551da9c247a8f0127571e99ac,
+        type: 3}
+      propertyPath: m_HorizontalFit
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_Pivot.x
@@ -758,7 +775,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -828,9 +845,14 @@ PrefabInstance:
     - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_text
-      value: 'Loading track list (1/3)...
+      value: 'Loading track list (2/3)...
 
-        123123123123'
+        123123123123123'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
+        type: 3}
+      propertyPath: m_overflowMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -841,6 +863,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
+        type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453131, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -962,7 +989,7 @@ PrefabInstance:
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 162.825
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7664613274378453129, guid: 26f88fd551da9c247a8f0127571e99ac,
         type: 3}
@@ -1701,6 +1728,7 @@ MonoBehaviour:
   progressText: {fileID: 492538773}
   revertButtonContainer: {fileID: 1109665364}
   revertMessage: {fileID: 2087462596}
+  messageDialog: {fileID: 411146263}
 --- !u!114 &1622777474285759390
 MonoBehaviour:
   m_ObjectHideFlags: 0

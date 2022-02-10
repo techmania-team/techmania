@@ -16,11 +16,11 @@ public class GlobalResourceLoader : MonoBehaviour
         ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        StartCoroutine(LoadResourcesOnStartUp(
+        StartCoroutine(LoadAllSkinsCoroutine(
             progressCallback, completeCallback));
     }
 
-    private IEnumerator LoadResourcesOnStartUp(
+    private IEnumerator LoadAllSkinsCoroutine(
         ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
