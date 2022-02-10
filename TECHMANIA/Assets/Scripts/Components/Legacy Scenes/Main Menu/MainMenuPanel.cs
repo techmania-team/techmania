@@ -71,12 +71,12 @@ public class MainMenuPanel : MonoBehaviour
 
     public void ShowLoadingText()
     {
-        if (globalResourceLoader.state == 
-            GlobalResourceLoader.State.Complete)
-        {
-            ShowMenuButtons();
-            return;
-        }
+        //if (globalResourceLoader.state == 
+        //    GlobalResourceLoader.State.Complete)
+        //{
+        //    ShowMenuButtons();
+        //    return;
+        //}
 
         welcomeMat.SetActive(false);
         loadingText.gameObject.SetActive(true);
@@ -99,17 +99,17 @@ public class MainMenuPanel : MonoBehaviour
     {
         if (loadingText.gameObject.activeSelf)
         {
-            loadingText.text = globalResourceLoader.statusText;
-            if (globalResourceLoader.state !=
-                GlobalResourceLoader.State.Loading)
-            {
-                if (globalResourceLoader.state ==
-                    GlobalResourceLoader.State.Error)
-                {
-                    messageDialog.Show(globalResourceLoader.error);
-                }
-                ShowMenuButtons();
-            }
+            //loadingText.text = globalResourceLoader.statusText;
+            //if (globalResourceLoader.state !=
+            //    GlobalResourceLoader.State.Loading)
+            //{
+            //    if (globalResourceLoader.state ==
+            //        GlobalResourceLoader.State.Error)
+            //    {
+            //        messageDialog.Show(globalResourceLoader.error);
+            //    }
+            //    ShowMenuButtons();
+            //}
         }
     }
 

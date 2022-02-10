@@ -376,33 +376,18 @@ public class Game : MonoBehaviour
         // Step 2: load skins, if told to.
         if (Options.instance.reloadSkinsWhenLoadingPattern)
         {
-            bool skinLoaded = false;
-            UnityAction<string> loadSkinCallback = (string error) =>
+            GlobalResourceLoader.CompleteCallback loadSkinCallback =
+                (bool success, string error) =>
             {
-                if (error != null)
+                if (!success)
                 {
                     ReportFatalError(error);
                 }
-                else
-                {
-                    skinLoaded = true;
-                }
             };
 
-            globalResourceLoader.LoadNoteSkin(null,
-                loadSkinCallback);
-            yield return new WaitUntil(() => skinLoaded);
-            skinLoaded = false;
-            globalResourceLoader.LoadVfxSkin(null, loadSkinCallback);
-            yield return new WaitUntil(() => skinLoaded);
-            skinLoaded = false;
-            globalResourceLoader.LoadComboSkin(null,
-                loadSkinCallback);
-            yield return new WaitUntil(() => skinLoaded);
-            skinLoaded = false;
-            globalResourceLoader.LoadGameUiSkin(null, 
-                loadSkinCallback);
-            yield return new WaitUntil(() => skinLoaded);
+            globalResourceLoader.LoadAllSkins(
+                progressCallback: null,
+                completeCallback: loadSkinCallback);
         }
 
         // Step 3: load backing track, if any.
@@ -508,10 +493,11 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void OnImageLoadComplete(Texture2D texture,
+    private void OnImageLoadComplete(bool success,
+        Texture2D texture,
         string error)
     {
-        if (error != null)
+        if (!success)
         {
             backgroundImage.color = Color.clear;
             ReportFatalError(error);

@@ -8,10 +8,8 @@ public static class GlobalResource
     public static VfxSkin vfxSkin;
     public static ComboSkin comboSkin;
     public static GameUISkin gameUiSkin;
-    public static bool loaded;
 
-    static GlobalResource()
-    {
-        loaded = false;
-    }
+    // TODO: track list
+
+    public static AssetBundle theme;
 }

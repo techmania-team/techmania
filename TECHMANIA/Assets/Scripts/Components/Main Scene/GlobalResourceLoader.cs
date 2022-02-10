@@ -7,80 +7,66 @@ using UnityEngine.Events;
 
 public class GlobalResourceLoader : MonoBehaviour
 {
-    public enum State
-    {
-        Loading,
-        Complete,
-        Error
-    }
-    public State state { get; private set; }
-    public string error { get; private set; }
-    public string statusText { get; private set; }
+    public delegate void ProgressCallback(
+        string currentlyLoadingFile);
+    public delegate void CompleteCallback(
+        bool success, string errorMessage = null);
 
-    public void StartLoading()
+    public void LoadAllSkins(
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
-        StartCoroutine(LoadResourcesOnStartUp());
+        StartCoroutine(LoadResourcesOnStartUp(
+            progressCallback, completeCallback));
     }
 
-    private IEnumerator LoadResourcesOnStartUp()
+    private IEnumerator LoadResourcesOnStartUp(
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
-        state = State.Loading;
-        error = null;
-        statusText = "";
-
-        if (GlobalResource.loaded)
-        {
-            state = State.Complete;
-            yield break;
-        }
-
-        UnityAction<string> progressCallback = (string progress) =>
-        {
-            statusText = progress;
-        };
         bool oneSkinLoaded = false;
-        string lastError = null;
-        UnityAction<string> completeCallback = (string errorMessage) =>
+        bool anyError = false;
+        string lastErrorMessage = null;
+        CompleteCallback localCompleteCallback = (bool success,
+            string errorMessage) =>
         {
             oneSkinLoaded = true;
-            if (errorMessage != null)
+            if (!success)
             {
-                lastError = errorMessage;
+                anyError = true;
+                lastErrorMessage = errorMessage;
             }
         };
 
         oneSkinLoaded = false;
-        LoadNoteSkin(progressCallback, completeCallback);
+        LoadNoteSkin(progressCallback, localCompleteCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
         oneSkinLoaded = false;
-        LoadVfxSkin(progressCallback, completeCallback);
+        LoadVfxSkin(progressCallback, localCompleteCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
         oneSkinLoaded = false;
-        LoadComboSkin(progressCallback, completeCallback);
+        LoadComboSkin(progressCallback, localCompleteCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
         oneSkinLoaded = false;
-        LoadGameUiSkin(progressCallback, completeCallback);
+        LoadGameUiSkin(progressCallback, localCompleteCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
-        yield return null;
-        if (lastError == null)
+        if (anyError)
         {
-            GlobalResource.loaded = true;
-            state = State.Complete;
+            completeCallback?.Invoke(success: false,
+                lastErrorMessage);
         }
         else
         {
-            error = lastError;
-            state = State.Error;
+            completeCallback?.Invoke(success: true);
         }
     }
 
-    // completeCallback's argument is error message; null if no error.
-    public void LoadNoteSkin(UnityAction<string> progressCallback,
-        UnityAction<string> completeCallback)
+    public void LoadNoteSkin(ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
         string noteSkinFolder = Paths.GetNoteSkinFolder(
             Options.instance.noteSkin);
@@ -93,7 +79,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
+            completeCallback?.Invoke(success: false,
+                Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_note_skin_error_format",
                 ex.Message)); 
             return;
@@ -103,14 +90,12 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(noteSkinFolder,
             spriteSheets,
-            Locale.GetString("resource_loader_loading_note_skin"),
             progressCallback,
             completeCallback));
     }
 
-    // completeCallback's argument is error message; null if no error.
-    public void LoadVfxSkin(UnityAction<string> progressCallback,
-        UnityAction<string> completeCallback)
+    public void LoadVfxSkin(ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
         string vfxSkinFolder = Paths.GetVfxSkinFolder(
             Options.instance.vfxSkin);
@@ -123,7 +108,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
+            completeCallback?.Invoke(success: false,
+                Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_vfx_skin_error_format",
                 ex.Message));
             return;
@@ -133,14 +119,12 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(vfxSkinFolder,
             spriteSheets,
-            Locale.GetString("resource_loader_loading_vfx_skin"),
             progressCallback,
             completeCallback));
     }
 
-    // completeCallback's argument is error message; null if no error.
-    public void LoadComboSkin(UnityAction<string> progressCallback,
-        UnityAction<string> completeCallback)
+    public void LoadComboSkin(ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
         string comboSkinFolder = Paths.GetComboSkinFolder(
             Options.instance.comboSkin);
@@ -153,17 +137,19 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
+            completeCallback?.Invoke(success: false,
+                Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_combo_skin_error_format",
                 ex.Message));
             return;
         }
 
-        UnityAction<string> localCallback = (string error) =>
+        CompleteCallback localCallback = (
+            bool success, string errorMessage) =>
         {
-            if (error != null)
+            if (!success)
             {
-                completeCallback(error);
+                completeCallback(success, errorMessage);
                 return;
             }
             // The game expects 10 digits in each set.
@@ -175,19 +161,18 @@ public class GlobalResourceLoader : MonoBehaviour
                     list.Add(SpriteSheet.MakeNewEmptySpriteSheet());
                 }
             }
-            completeCallback(null);
+            completeCallback(success: true);
         };
         List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(comboSkinFolder,
             spriteSheets,
-            Locale.GetString("resource_loader_loading_combo_skin"),
             progressCallback,
             localCallback));
     }
 
-    public void LoadGameUiSkin(UnityAction<string> progressCallback,
-        UnityAction<string> completeCallback)
+    public void LoadGameUiSkin(ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
         string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
             Options.instance.gameUiSkin);
@@ -200,7 +185,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Locale.GetStringAndFormatIncludingPaths(
+            completeCallback?.Invoke(success: false,
+                Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_game_ui_skin_error_format",
                 ex.Message));
             return;
@@ -210,23 +196,18 @@ public class GlobalResourceLoader : MonoBehaviour
             .GetReferenceToAllSpriteSheets();
         StartCoroutine(LoadSkin(gameUiSkinFolder,
             spriteSheets,
-            Locale.GetString("resource_loader_loading_game_ui_skin"),
             progressCallback,
             completeCallback));
     }
 
-    // completeCallback's argument is error message; null if no error.
     private IEnumerator LoadSkin(string skinFolder,
         List<SpriteSheet> spriteSheetReferences,
-        string loadMessage,
-        UnityAction<string> progressCallback,
-        UnityAction<string> completeCallback)
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
     {
         Options.TemporarilyDisableVSync();
         for (int i = 0; i < spriteSheetReferences.Count; i++)
         {
-            progressCallback?.Invoke($"{loadMessage} ({i + 1}/{spriteSheetReferences.Count})");
-
             if (spriteSheetReferences[i] == null ||
                 spriteSheetReferences[i].filename == null)
             {
@@ -236,20 +217,24 @@ public class GlobalResourceLoader : MonoBehaviour
 
             string filename = Path.Combine(skinFolder,
                 spriteSheetReferences[i].filename);
+            progressCallback?.Invoke(filename);
             bool loaded = false;
             bool error = false;
             ResourceLoader.LoadImage(filename,
-                (texture, errorMessage) =>
+                (success, texture, errorMessage) =>
                 {
                     loaded = true;
-                    if (errorMessage != null)
+                    error = !success;
+                    if (success)
                     {
-                        completeCallback?.Invoke(errorMessage);
-                        error = true;
+                        spriteSheetReferences[i].texture = texture;
                     }
                     else
                     {
-                        spriteSheetReferences[i].texture = texture;
+                        completeCallback?.Invoke(
+                            success: false,
+                            errorMessage);
+                        error = true;
                     }
                 });
             yield return new WaitUntil(() => loaded);
@@ -260,7 +245,7 @@ public class GlobalResourceLoader : MonoBehaviour
             }
             spriteSheetReferences[i].GenerateSprites();
         }
-        completeCallback?.Invoke(null);
+        completeCallback?.Invoke(success: true);
         Options.RestoreVSync();
     }
 }

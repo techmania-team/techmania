@@ -250,9 +250,9 @@ public class SelectSkinPanel : MonoBehaviour
             completeCallback: OnSkinLoaded);
     }
 
-    public void OnSkinLoaded(string error)
+    public void OnSkinLoaded(bool success, string error)
     {
-        if (error != null)
+        if (!success)
         {
             messageDialog.Show(error);
         }

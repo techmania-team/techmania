@@ -275,12 +275,15 @@ public class ResourceLoader : MonoBehaviour
     #endregion
 
     #region Image
+    public delegate void ImageLoadCompleteCallback(
+        bool success, Texture2D texture, string errorMessage = null);
+
     public static void LoadImage(string fullPath,
-        UnityAction<Texture2D, string> loadImageCompleteCallback)
+        ImageLoadCompleteCallback completeCallback)
     {
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadImage(
-            fullPath, loadImageCompleteCallback));
+            fullPath, completeCallback));
     }
 
     public static Sprite CreateSpriteFromTexture(Texture2D texture)
@@ -296,36 +299,37 @@ public class ResourceLoader : MonoBehaviour
     }
 
     private IEnumerator InnerLoadImage(string fullPath,
-        UnityAction<Texture2D, string> loadImageCompleteCallback)
+        ImageLoadCompleteCallback loadImageCompleteCallback)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(
             Paths.FullPathToUri(fullPath), nonReadable: true);
         yield return request.SendWebRequest();
 
-        if (request.result != UnityWebRequest.Result.Success)
+        UnityAction reportResourceLoaderError = () =>
         {
-            loadImageCompleteCallback?.Invoke(null,
+            loadImageCompleteCallback?.Invoke(success: false,
+                texture: null,
                 Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_error_format",
-                    fullPath,
-                    request.error));
+                    fullPath, request.error));
+        };
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            reportResourceLoaderError();
             yield break;
         }
-
         Texture texture = DownloadHandlerTexture.GetContent(request);
         if (texture == null)
         {
-            loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormatIncludingPaths(
-                    "resource_loader_error_format",
-                    fullPath,
-                    request.error));
+            reportResourceLoaderError();
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
-            loadImageCompleteCallback?.Invoke(null,
+            loadImageCompleteCallback?.Invoke(success: false,
+                texture: null,
                 Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_unsupported_format_error_format",
                     fullPath));
@@ -334,7 +338,8 @@ public class ResourceLoader : MonoBehaviour
 
         Debug.Log("Loaded: " + fullPath);
         t2d.wrapMode = TextureWrapMode.Clamp;
-        loadImageCompleteCallback.Invoke(t2d, null);
+        loadImageCompleteCallback.Invoke(success: true,
+            texture: t2d);
     }
     #endregion
 }

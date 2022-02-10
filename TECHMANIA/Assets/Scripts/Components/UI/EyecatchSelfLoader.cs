@@ -43,10 +43,11 @@ public class EyecatchSelfLoader : MonoBehaviour
         }
     }
 
-    private void OnLoadImageComplete(Texture2D texture, string error)
+    private void OnLoadImageComplete(bool success, 
+        Texture2D texture, string error)
     {
         if (!gameObject.activeInHierarchy) return;
-        if (texture == null)
+        if (!success)
         {
             NoImage();
             return;
