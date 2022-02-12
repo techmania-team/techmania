@@ -276,7 +276,7 @@ public class ResourceLoader : MonoBehaviour
 
     #region Image
     public delegate void ImageLoadCompleteCallback(
-        bool success, Texture2D texture, string errorMessage = null);
+        Status status, Texture2D texture = null);
 
     public static void LoadImage(string fullPath,
         ImageLoadCompleteCallback completeCallback)
@@ -307,11 +307,10 @@ public class ResourceLoader : MonoBehaviour
 
         UnityAction reportResourceLoaderError = () =>
         {
-            loadImageCompleteCallback?.Invoke(success: false,
-                texture: null,
-                Locale.GetStringAndFormatIncludingPaths(
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_error_format",
-                    fullPath, request.error));
+                    fullPath, request.error)));
         };
 
         if (request.result != UnityWebRequest.Result.Success)
@@ -328,17 +327,17 @@ public class ResourceLoader : MonoBehaviour
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
-            loadImageCompleteCallback?.Invoke(success: false,
-                texture: null,
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(
                 Locale.GetStringAndFormatIncludingPaths(
                     "resource_loader_unsupported_format_error_format",
-                    fullPath));
+                    fullPath)));
             yield break;
         }
 
         Debug.Log("Loaded: " + fullPath);
         t2d.wrapMode = TextureWrapMode.Clamp;
-        loadImageCompleteCallback.Invoke(success: true,
+        loadImageCompleteCallback.Invoke(Status.OKStatus(),
             texture: t2d);
     }
     #endregion

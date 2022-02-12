@@ -5,12 +5,14 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
+// GlobalResource is not a MonoBehaviour but this has to be, due to
+// coroutines.
 public class GlobalResourceLoader : MonoBehaviour
 {
     public delegate void ProgressCallback(
         string currentlyLoadingFile);
     public delegate void CompleteCallback(
-        bool success, string errorMessage = null);
+        Status status);
 
     public void LoadAllSkins(
         ProgressCallback progressCallback,
@@ -25,16 +27,13 @@ public class GlobalResourceLoader : MonoBehaviour
         CompleteCallback completeCallback)
     {
         bool oneSkinLoaded = false;
-        bool anyError = false;
-        string lastErrorMessage = null;
-        CompleteCallback localCompleteCallback = (bool success,
-            string errorMessage) =>
+        Status lastError = Status.OKStatus();
+        CompleteCallback localCompleteCallback = (status) =>
         {
             oneSkinLoaded = true;
-            if (!success)
+            if (!status.ok)
             {
-                anyError = true;
-                lastErrorMessage = errorMessage;
+                lastError = status;
             }
         };
 
@@ -54,15 +53,7 @@ public class GlobalResourceLoader : MonoBehaviour
         LoadGameUiSkin(progressCallback, localCompleteCallback);
         yield return new WaitUntil(() => oneSkinLoaded);
 
-        if (anyError)
-        {
-            completeCallback?.Invoke(success: false,
-                lastErrorMessage);
-        }
-        else
-        {
-            completeCallback?.Invoke(success: true);
-        }
+        completeCallback?.Invoke(lastError);
     }
 
     public void LoadNoteSkin(ProgressCallback progressCallback,
@@ -79,10 +70,10 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(success: false,
+            completeCallback?.Invoke(Status.Error(
                 Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_note_skin_error_format",
-                ex.Message)); 
+                ex.Message))); 
             return;
         }
 
@@ -108,10 +99,10 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(success: false,
+            completeCallback?.Invoke(Status.Error(
                 Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_vfx_skin_error_format",
-                ex.Message));
+                ex.Message)));
             return;
         }
 
@@ -137,19 +128,18 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(success: false,
+            completeCallback?.Invoke(Status.Error(
                 Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_combo_skin_error_format",
-                ex.Message));
+                ex.Message)));
             return;
         }
 
-        CompleteCallback localCallback = (
-            bool success, string errorMessage) =>
+        CompleteCallback localCallback = (status) =>
         {
-            if (!success)
+            if (!status.ok)
             {
-                completeCallback(success, errorMessage);
+                completeCallback(status);
                 return;
             }
             // The game expects 10 digits in each set.
@@ -161,7 +151,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     list.Add(SpriteSheet.MakeNewEmptySpriteSheet());
                 }
             }
-            completeCallback(success: true);
+            completeCallback(Status.OKStatus());
         };
         List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
             .GetReferenceToAllSpriteSheets();
@@ -185,10 +175,10 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(success: false,
+            completeCallback?.Invoke(Status.Error(
                 Locale.GetStringAndFormatIncludingPaths(
                 "resource_loader_game_ui_skin_error_format",
-                ex.Message));
+                ex.Message)));
             return;
         }
 
@@ -221,20 +211,17 @@ public class GlobalResourceLoader : MonoBehaviour
             bool loaded = false;
             bool error = false;
             ResourceLoader.LoadImage(filename,
-                (success, texture, errorMessage) =>
+                (status, texture) =>
                 {
                     loaded = true;
-                    error = !success;
-                    if (success)
+                    error = !status.ok;
+                    if (status.ok)
                     {
                         spriteSheetReferences[i].texture = texture;
                     }
                     else
                     {
-                        completeCallback?.Invoke(
-                            success: false,
-                            errorMessage);
-                        error = true;
+                        completeCallback?.Invoke(status);
                     }
                 });
             yield return new WaitUntil(() => loaded);
@@ -245,7 +232,7 @@ public class GlobalResourceLoader : MonoBehaviour
             }
             spriteSheetReferences[i].GenerateSprites();
         }
-        completeCallback?.Invoke(success: true);
+        completeCallback?.Invoke(Status.OKStatus());
         Options.RestoreVSync();
     }
 }

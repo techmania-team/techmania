@@ -377,11 +377,11 @@ public class Game : MonoBehaviour
         if (Options.instance.reloadSkinsWhenLoadingPattern)
         {
             GlobalResourceLoader.CompleteCallback loadSkinCallback =
-                (bool success, string error) =>
+                (status) =>
             {
-                if (!success)
+                if (!status.ok)
                 {
-                    ReportFatalError(error);
+                    ReportFatalError(status.errorMessage);
                 }
             };
 
@@ -493,14 +493,13 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void OnImageLoadComplete(bool success,
-        Texture2D texture,
-        string error)
+    private void OnImageLoadComplete(Status status,
+        Texture2D texture)
     {
-        if (!success)
+        if (!status.ok)
         {
             backgroundImage.color = Color.clear;
-            ReportFatalError(error);
+            ReportFatalError(status.errorMessage);
             return;
         }
 

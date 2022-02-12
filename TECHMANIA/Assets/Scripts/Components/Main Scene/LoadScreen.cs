@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class LoadScreen : MonoBehaviour
 {
-    public TextMeshProUGUI progressText;
+    public TextMeshProUGUI progressLine1;
+    public TextMeshProUGUI progressLine2;
     public GameObject revertButtonContainer;
     public TextMeshProUGUI revertMessage;
     public MessageDialog messageDialog;
@@ -25,28 +26,29 @@ public class LoadScreen : MonoBehaviour
     private IEnumerator LoadSequence()
     {
         // Step 1: load skins.
-        string progressTextLine1 = Locale.GetStringAndFormat(
+        progressLine1.text = Locale.GetStringAndFormat(
             "resource_loader_loading_skins", 1, 3);
         bool skinsLoaded = false;
         GlobalResourceLoader.ProgressCallback progressCallback =
             (string currentlyLoadingFile) =>
             {
-                string progressTextLine2 = Paths
+                progressLine2.text = Paths
                     .HidePlatformInternalPath(currentlyLoadingFile);
-                progressText.text = $"{progressTextLine1}\n{progressTextLine2}";
             };
         GlobalResourceLoader.CompleteCallback completeCallback =
-            (bool success, string errorMessage) =>
+            (status) =>
             {
-                if (!success)
+                if (!status.ok)
                 {
-                    messageDialog.Show(errorMessage);
+                    messageDialog.Show(status.errorMessage);
                 }
                 skinsLoaded = true;
             };
         GetComponent<GlobalResourceLoader>().LoadAllSkins(
             progressCallback, completeCallback);
         yield return new WaitUntil(() => skinsLoaded);
+        yield return new WaitUntil(() =>
+            !messageDialog.gameObject.activeSelf);
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()
