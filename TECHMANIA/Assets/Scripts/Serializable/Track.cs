@@ -53,6 +53,7 @@ public enum CurveType
 }
 #endregion
 
+#region Time events
 public class TimeEvent
 {
     public int pulse;
@@ -109,7 +110,9 @@ public class TimeStop : TimeEvent
         };
     }
 }
+#endregion
 
+#region Track
 [Serializable]
 public partial class Track : TrackBase
 {
@@ -183,6 +186,24 @@ public partial class Track : TrackBase
         patterns.ForEach(p => p.UnpackAllNotes());
         RestoreToSystemCulture();
     }
+
+    // Returns a clone that only contains metadata, no notes.
+    public static Track Minimize(Track t)
+    {
+        Track mini = new Track()
+        {
+            trackMetadata = t.trackMetadata.Clone(),
+            patterns = new List<Pattern>()
+        };
+        foreach (Pattern p in t.patterns)
+        {
+            mini.patterns.Add(new Pattern()
+            {
+                patternMetadata = p.patternMetadata.Clone()
+            });
+        }
+        return mini;
+    }
 }
 
 [Serializable]
@@ -236,7 +257,9 @@ public class TrackMetadata
         };
     }
 }
+#endregion
 
+#region Pattern
 [Serializable]
 public partial class Pattern
 {
@@ -486,7 +509,9 @@ public class LegacyRulesetOverride
         return false;
     }
 }
+#endregion
 
+#region Notes
 public class Note
 {
     // Calculated at unpack time:
@@ -901,8 +926,8 @@ public class DragNote : Note
     }
 }
 
-// Used to play auto assist ticks. Inaccessible to players and pattern
-// authors.
+// Used to play auto assist ticks. Inaccessible to players
+// and pattern authors.
 public class AssistTickNote : Note { }
 
 public class NoteComparer : IComparer<Note>
@@ -916,6 +941,7 @@ public class NoteComparer : IComparer<Note>
         return 0;
     }
 }
+#endregion
 
 #region Drag note dependencies
 // Version 2 does not serialize the following classes, but

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,7 +32,22 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
 
     public void Transition()
     {
-        SelectTrackPanel.ReloadOneTrack(EditorContext.trackFolder);
+        // Reload track into track list.
+        string parent = Path.GetDirectoryName(EditorContext.trackFolder);
+        foreach (GlobalResource.TrackInFolder t in
+            GlobalResource.trackList[parent])
+        {
+            if (t.folder == EditorContext.trackFolder)
+            {
+                string trackPath = Path.Combine(
+                    EditorContext.trackFolder, Paths.kTrackFilename);
+                t.minimizedTrack = Track.LoadFromFile(trackPath)
+                    as Track;
+                t.minimizedTrack = Track.Minimize(t.minimizedTrack);
+                break;
+            }
+        }
+
         PanelTransitioner.TransitionTo(target, targetAppearsFrom);
     }
 }

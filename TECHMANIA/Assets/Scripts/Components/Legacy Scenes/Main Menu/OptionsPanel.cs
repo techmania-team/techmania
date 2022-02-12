@@ -328,7 +328,7 @@ public class OptionsPanel : MonoBehaviour
                     Paths.GetSkinFolder();
             }
         }
-        SelectTrackPanel.RemoveCachedLists();
+        GlobalResourceLoader.ClearCachedTrackList();
         SelectTrackPanel.ResetLocation();
         MemoryToUI();
         Paths.ApplyCustomDataLocation();
@@ -387,7 +387,7 @@ public class OptionsPanel : MonoBehaviour
     private void OnTracksFolderSelected(string fullPath)
     {
         Options.instance.tracksFolderLocation = fullPath;
-        SelectTrackPanel.RemoveCachedLists();
+        GlobalResourceLoader.ClearCachedTrackList();
         SelectTrackPanel.ResetLocation();
         MemoryToUI();
         Paths.ApplyCustomDataLocation();

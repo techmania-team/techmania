@@ -77,10 +77,10 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
 
         // Update in-memory track list.
-        trackList[currentLocation].Add(new TrackInFolder()
+        GlobalResource.trackList[currentLocation].Add(new GlobalResource.TrackInFolder()
         {
             folder = newDir,
-            track = track
+            minimizedTrack = track
         });
 
         EditorContext.Reset();

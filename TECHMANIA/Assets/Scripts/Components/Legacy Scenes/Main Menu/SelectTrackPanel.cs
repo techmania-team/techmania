@@ -11,84 +11,18 @@ using UnityEngine.UI;
 
 public class SelectTrackPanel : MonoBehaviour
 {
-    protected class Subfolder
-    {
-        public string path;
-        public string eyecatchFullPath;
-    }
-    protected class TrackInFolder
-    {
-        // The folder that track.tech is in.
-        public string folder;
-        public Track track;
-    }
-    protected class ErrorInTrack
-    {
-        public enum Type
-        {
-            Load,
-            Upgrade
-        }
-        public Type type;
-        public string trackFile;
-        public string message;
-    }
-
     protected static string currentLocation;
     protected static int selectedCardIndex;
-    protected static bool anyOutdatedTrack;
-    // Cached, keyed by track folder's parent folder.
-    protected static Dictionary<string, List<Subfolder>> 
-        subfolderList;
-    protected static Dictionary<string, List<TrackInFolder>> 
-        trackList;
-    protected static Dictionary<string, List<ErrorInTrack>>
-        errorTrackList;
+   
     static SelectTrackPanel()
     {
         currentLocation = "";
         selectedCardIndex = -1;
-        anyOutdatedTrack = false;
-        subfolderList = new Dictionary<string, List<Subfolder>>();
-        trackList = new Dictionary<string, List<TrackInFolder>>();
-        errorTrackList = new Dictionary<string, List<ErrorInTrack>>();
-    }
-
-    public static void RemoveCachedLists()
-    {
-        subfolderList.Clear();
-        trackList.Clear();
-        errorTrackList.Clear();
     }
 
     public static void ResetLocation()
     {
         currentLocation = "";
-    }
-
-    public static void RemoveOneTrack(string trackFolder)
-    {
-        string parent = Path.GetDirectoryName(trackFolder);
-        trackList[parent].RemoveAll((TrackInFolder t) =>
-        {
-            return t.folder == trackFolder;
-        });
-    }
-
-    public static void ReloadOneTrack(string trackFolder)
-    {
-        string parent = Path.GetDirectoryName(trackFolder);
-        foreach (TrackInFolder t in trackList[parent])
-        {
-            if (t.folder == trackFolder)
-            {
-                string trackPath = Path.Combine(
-                    trackFolder, Paths.kTrackFilename);
-                t.track = Track.LoadFromFile(trackPath) as Track;
-                t.track = MinimizeTrack(t.track);
-                break;
-            }
-        }
     }
 
     public Button backButton;
@@ -113,7 +47,8 @@ public class SelectTrackPanel : MonoBehaviour
     public ConfirmDialog confirmDialog;
 
     protected Dictionary<GameObject, string> cardToSubfolder;
-    protected Dictionary<GameObject, TrackInFolder> cardToTrack;
+    protected Dictionary<GameObject,
+        GlobalResource.TrackInFolder> cardToTrack;
     protected Dictionary<GameObject, string> cardToError;
     protected List<GameObject> cardList;
 
@@ -183,7 +118,8 @@ public class SelectTrackPanel : MonoBehaviour
         }
         for (int i = 0; i < trackGrid.transform.childCount; i++)
         {
-            GameObject o = trackGrid.transform.GetChild(i).gameObject;
+            GameObject o = trackGrid.transform.GetChild(i)
+                .gameObject;
             if (o == trackCardTemplate) continue;
             if (o == errorCardTemplate) continue;
             if (o == upgradeErrorCardTemplate) continue;
@@ -191,7 +127,7 @@ public class SelectTrackPanel : MonoBehaviour
             Destroy(o);
         }
 
-        if (!trackList.ContainsKey(currentLocation))
+        if (!GlobalResource.trackList.ContainsKey(currentLocation))
         {
             backButton.interactable = false;
             upgradeFormatButton.gameObject.SetActive(false);
@@ -235,17 +171,17 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Show upgrade button if any track is outdated.
         upgradeFormatButton.gameObject.SetActive(
-            anyOutdatedTrack);
+            GlobalResource.anyOutdatedTrack);
 
         // Prepare subfolder list. Make a local copy so we can
         // sort it. This also applies to the track list below.
-        List<Subfolder> subfolders = new List<Subfolder>();
+        List<GlobalResource.TrackSubfolder> subfolders = new List<GlobalResource.TrackSubfolder>();
         if (!TrackFilter.instance.showTracksInAllFolders)
         {
-            if (subfolderList.ContainsKey(currentLocation))
+            if (GlobalResource.trackSubfolderList.ContainsKey(currentLocation))
             {
-                foreach (Subfolder s in
-                    subfolderList[currentLocation])
+                foreach (GlobalResource.TrackSubfolder s in
+                    GlobalResource.trackSubfolderList[currentLocation])
                 {
                     // Don't show streaming assets in editor.
                     if (ShowNewTrackCard() &&
@@ -255,7 +191,7 @@ public class SelectTrackPanel : MonoBehaviour
                     subfolders.Add(s);
                 }
             }
-            subfolders.Sort((Subfolder s1, Subfolder s2) =>
+            subfolders.Sort((GlobalResource.TrackSubfolder s1, GlobalResource.TrackSubfolder s2) =>
             {
                 return string.Compare(s1.path, s2.path);
             });
@@ -266,7 +202,7 @@ public class SelectTrackPanel : MonoBehaviour
         cardList = new List<GameObject>();
         bool subfolderGridEmpty = true;
         bool trackGridEmpty = true;
-        foreach (Subfolder subfolder in subfolders)
+        foreach (GlobalResource.TrackSubfolder subfolder in subfolders)
         {
             GameObject card = Instantiate(subfolderCardTemplate,
                 subfolderGrid.transform);
@@ -289,12 +225,12 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         // Prepare track list.
-        List<TrackInFolder> tracks = new List<TrackInFolder>();
+        List<GlobalResource.TrackInFolder> tracks = new List<GlobalResource.TrackInFolder>();
         if (TrackFilter.instance.showTracksInAllFolders)
         {
-            foreach (List<TrackInFolder> oneFolder in trackList.Values)
+            foreach (List<GlobalResource.TrackInFolder> oneFolder in GlobalResource.trackList.Values)
             {
-                foreach (TrackInFolder t in oneFolder)
+                foreach (GlobalResource.TrackInFolder t in oneFolder)
                 {
                     tracks.Add(t);
                 }
@@ -302,26 +238,26 @@ public class SelectTrackPanel : MonoBehaviour
         }
         else
         {
-            foreach (TrackInFolder t in trackList[currentLocation])
+            foreach (GlobalResource.TrackInFolder t in GlobalResource.trackList[currentLocation])
             {
                 tracks.Add(t);
             }
         }
         tracks.Sort(
-            (TrackInFolder t1, TrackInFolder t2) =>
+            (GlobalResource.TrackInFolder t1, GlobalResource.TrackInFolder t2) =>
             {
-                return Track.Compare(t1.track, t2.track,
+                return Track.Compare(t1.minimizedTrack, t2.minimizedTrack,
                     TrackFilter.instance.sortBasis,
                     TrackFilter.instance.sortOrder);
             });
 
         // Instantiate track cards. Also apply filter.
-        cardToTrack = new Dictionary<GameObject, TrackInFolder>();
-        foreach (TrackInFolder trackInFolder in tracks)
+        cardToTrack = new Dictionary<GameObject, GlobalResource.TrackInFolder>();
+        foreach (GlobalResource.TrackInFolder trackInFolder in tracks)
         {
             if (trackFilterSidesheet.searchKeyword != null &&
                 trackFilterSidesheet.searchKeyword != "" &&
-                !trackInFolder.track.ContainsKeywords(
+                !trackInFolder.minimizedTrack.ContainsKeywords(
                     trackFilterSidesheet.searchKeyword))
             {
                 // Filtered out.
@@ -333,7 +269,7 @@ public class SelectTrackPanel : MonoBehaviour
             card.name = "Track Card";
             card.GetComponent<TrackCard>().Initialize(
                 trackInFolder.folder,
-                trackInFolder.track.trackMetadata);
+                trackInFolder.minimizedTrack.trackMetadata);
             card.SetActive(true);
             trackGridEmpty = false;
 
@@ -350,17 +286,17 @@ public class SelectTrackPanel : MonoBehaviour
 
         // Instantiate error cards.
         cardToError = new Dictionary<GameObject, string>();
-        if (errorTrackList.ContainsKey(currentLocation))
+        if (GlobalResource.trackWithErrorList.ContainsKey(currentLocation))
         {
-            foreach (ErrorInTrack error in
-                errorTrackList[currentLocation])
+            foreach (GlobalResource.TrackWithError error in
+                GlobalResource.trackWithErrorList[currentLocation])
             {
                 GameObject card = null;
                 string key = error.type switch
                 {
-                    ErrorInTrack.Type.Load
+                    GlobalResource.TrackWithError.Type.Load
                         => "select_track_error_format",
-                    ErrorInTrack.Type.Upgrade
+                    GlobalResource.TrackWithError.Type.Upgrade
                         => "select_track_upgrade_error_format",
                     _ => ""
                 };
@@ -373,8 +309,8 @@ public class SelectTrackPanel : MonoBehaviour
                 // Instantiate card.
                 GameObject template = error.type switch
                 {
-                    ErrorInTrack.Type.Load => errorCardTemplate,
-                    ErrorInTrack.Type.Upgrade => 
+                    GlobalResource.TrackWithError.Type.Load => errorCardTemplate,
+                    GlobalResource.TrackWithError.Type.Upgrade => 
                         upgradeErrorCardTemplate,
                     _ => null
                 };
@@ -464,11 +400,11 @@ public class SelectTrackPanel : MonoBehaviour
         if (upgradeVersion)
         {
             bool anyUpgradeError = false;
-            foreach (List<ErrorInTrack> list in errorTrackList.Values)
+            foreach (List<GlobalResource.TrackWithError> list in GlobalResource.trackWithErrorList.Values)
             {
-                foreach (ErrorInTrack e in list)
+                foreach (GlobalResource.TrackWithError e in list)
                 {
-                    if (e.type == ErrorInTrack.Type.Upgrade)
+                    if (e.type == GlobalResource.TrackWithError.Type.Upgrade)
                     {
                         anyUpgradeError = true;
                         break;
@@ -594,8 +530,8 @@ public class SelectTrackPanel : MonoBehaviour
     private void TrackListBuilderDoWork(object sender,
         DoWorkEventArgs e)
     {
-        RemoveCachedLists();
-        anyOutdatedTrack = false;
+        GlobalResourceLoader.ClearCachedTrackList();
+        GlobalResource.anyOutdatedTrack = false;
 
         BuildTrackListFor(Paths.GetTrackRootFolder(),
             (e.Argument as BackgroundWorkerArgument).upgradeVersion);
@@ -605,9 +541,9 @@ public class SelectTrackPanel : MonoBehaviour
     private void BuildTrackListFor(string folder,
         bool upgradeVersion)
     {
-        subfolderList.Add(folder, new List<Subfolder>());
-        trackList.Add(folder, new List<TrackInFolder>());
-        errorTrackList.Add(folder, new List<ErrorInTrack>());
+        GlobalResource.trackSubfolderList.Add(folder, new List<GlobalResource.TrackSubfolder>());
+        GlobalResource.trackList.Add(folder, new List<GlobalResource.TrackInFolder>());
+        GlobalResource.trackWithErrorList.Add(folder, new List<GlobalResource.TrackWithError>());
 
         foreach (string file in Directory.EnumerateFiles(
             folder, "*.zip"))
@@ -647,7 +583,7 @@ public class SelectTrackPanel : MonoBehaviour
                 dir, Paths.kTrackFilename);
             if (!File.Exists(possibleTrackFile))
             {
-                Subfolder subfolder = new Subfolder()
+                GlobalResource.TrackSubfolder subfolder = new GlobalResource.TrackSubfolder()
                 {
                     path = dir
                 };
@@ -670,12 +606,12 @@ public class SelectTrackPanel : MonoBehaviour
                 if (folder.Equals(
                     Paths.GetStreamingTrackRootFolder()))
                 {
-                    subfolderList[Paths.GetTrackRootFolder()]
+                    GlobalResource.trackSubfolderList[Paths.GetTrackRootFolder()]
                         .Add(subfolder);
                 } 
                 else 
                 {
-                    subfolderList[folder].Add(subfolder);
+                    GlobalResource.trackSubfolderList[folder].Add(subfolder);
                 }
 
                 // Build recursively.
@@ -694,9 +630,9 @@ public class SelectTrackPanel : MonoBehaviour
             }
             catch (Exception ex)
             {
-                errorTrackList[folder].Add(new ErrorInTrack()
+                GlobalResource.trackWithErrorList[folder].Add(new GlobalResource.TrackWithError()
                 {
-                    type = ErrorInTrack.Type.Load,
+                    type = GlobalResource.TrackWithError.Type.Load,
                     trackFile = possibleTrackFile,
                     message = ex.Message
                 });
@@ -713,9 +649,9 @@ public class SelectTrackPanel : MonoBehaviour
                     }
                     catch (Exception ex)
                     {
-                        errorTrackList[folder].Add(new ErrorInTrack()
+                        GlobalResource.trackWithErrorList[folder].Add(new GlobalResource.TrackWithError()
                         {
-                            type = ErrorInTrack.Type.Upgrade,
+                            type = GlobalResource.TrackWithError.Type.Upgrade,
                             trackFile = possibleTrackFile,
                             message = ex.Message
                         });
@@ -724,14 +660,14 @@ public class SelectTrackPanel : MonoBehaviour
                 }
                 else
                 {
-                    anyOutdatedTrack = true;
+                    GlobalResource.anyOutdatedTrack = true;
                 }
             }
 
-            trackList[folder].Add(new TrackInFolder()
+            GlobalResource.trackList[folder].Add(new GlobalResource.TrackInFolder()
             {
                 folder = dir,
-                track = MinimizeTrack(track)
+                minimizedTrack = Track.Minimize(track)
             });
         }
     }
@@ -783,27 +719,27 @@ public class SelectTrackPanel : MonoBehaviour
             try
             {
                 t = TrackBase.LoadFromFile(absoluteTrackFile) as Track;
-                if (!trackList.ContainsKey(processingAbsoluteFolder))
+                if (!GlobalResource.trackList.ContainsKey(processingAbsoluteFolder))
                 {
-                    trackList.Add(processingAbsoluteFolder,
-                        new List<TrackInFolder>());
+                    GlobalResource.trackList.Add(processingAbsoluteFolder,
+                        new List<GlobalResource.TrackInFolder>());
                 }
-                trackList[processingAbsoluteFolder].Add(new TrackInFolder()
+                GlobalResource.trackList[processingAbsoluteFolder].Add(new GlobalResource.TrackInFolder()
                 {
-                    track = t,
+                    minimizedTrack = t,
                     folder = absoluteTrackFolder
                 });
             }
             catch (Exception ex)
             {
-                if (!errorTrackList.ContainsKey(processingAbsoluteFolder))
+                if (!GlobalResource.trackWithErrorList.ContainsKey(processingAbsoluteFolder))
                 {
-                    errorTrackList.Add(processingAbsoluteFolder,
-                        new List<ErrorInTrack>());
+                    GlobalResource.trackWithErrorList.Add(processingAbsoluteFolder,
+                        new List<GlobalResource.TrackWithError>());
                 }
-                errorTrackList[processingAbsoluteFolder].Add(new ErrorInTrack()
+                GlobalResource.trackWithErrorList[processingAbsoluteFolder].Add(new GlobalResource.TrackWithError()
                 {
-                    type = ErrorInTrack.Type.Load,
+                    type = GlobalResource.TrackWithError.Type.Load,
                     trackFile = absoluteTrackFile,
                     message = ex.Message
                 });
@@ -820,18 +756,18 @@ public class SelectTrackPanel : MonoBehaviour
                 {
                     dirKey = Paths.GetTrackRootFolder();
                 }
-                if (!subfolderList.ContainsKey(dirKey))
+                if (!GlobalResource.trackSubfolderList.ContainsKey(dirKey))
                 {
-                    subfolderList.Add(dirKey,
-                        new List<Subfolder>());
+                    GlobalResource.trackSubfolderList.Add(dirKey,
+                        new List<GlobalResource.TrackSubfolder>());
                 }
-                if (!subfolderList[dirKey].Exists(
-                    (Subfolder s) =>
+                if (!GlobalResource.trackSubfolderList[dirKey].Exists(
+                    (GlobalResource.TrackSubfolder s) =>
                     {
                         return s.path == processingAbsoluteFolder;
                     }))
                 {
-                    Subfolder s = new Subfolder()
+                    GlobalResource.TrackSubfolder s = new GlobalResource.TrackSubfolder()
                     {
                         path = processingAbsoluteFolder
                     };
@@ -855,7 +791,7 @@ public class SelectTrackPanel : MonoBehaviour
                             AbsolutePathInStreamingAssets(
                             jpgEyecatch);
                     }
-                    subfolderList[dirKey].Add(s);
+                    GlobalResource.trackSubfolderList[dirKey].Add(s);
                 }
                 processingRelativeFolder = processingRelativeParentFolder;
                 processingAbsoluteFolder = processingAbsoluteParentFolder;
@@ -920,7 +856,7 @@ public class SelectTrackPanel : MonoBehaviour
     #region Events from cards and buttons
     public void OnUpgradeFormatButtonClick()
     {
-        if (!anyOutdatedTrack) return;
+        if (!GlobalResource.anyOutdatedTrack) return;
 
         confirmDialog.Show(
             Locale.GetString(
@@ -929,14 +865,14 @@ public class SelectTrackPanel : MonoBehaviour
             Locale.GetString("select_track_upgrade_version_cancel"),
             () =>
             {
-                RemoveCachedLists();
+                GlobalResourceLoader.ClearCachedTrackList();
                 StartCoroutine(Refresh(upgradeVersion: true));
             });
     }
 
     public void OnRefreshButtonClick()
     {
-        RemoveCachedLists();
+        GlobalResourceLoader.ClearCachedTrackList();
         StartCoroutine(Refresh());
     }
 
@@ -971,7 +907,7 @@ public class SelectTrackPanel : MonoBehaviour
             Paths.kTrackFilename);
         GameSetup.trackOptions = Options.instance
             .GetPerTrackOptions(
-            cardToTrack[o].track.trackMetadata.guid);
+            cardToTrack[o].minimizedTrack.trackMetadata.guid);
         PanelTransitioner.TransitionTo(selectPatternPanel,
             TransitionToPanel.Direction.Right);
     }
@@ -995,25 +931,4 @@ public class SelectTrackPanel : MonoBehaviour
         selectedCardIndex = cardIndex;
     }
     #endregion
-
-    // Returns a clone of the input track that only retains
-    // the information necessary for this panel to function:
-    // - metadata
-    // - pattern metadata
-    private static Track MinimizeTrack(Track t)
-    {
-        Track mini = new Track()
-        {
-            trackMetadata = t.trackMetadata.Clone(),
-            patterns = new List<Pattern>()
-        };
-        foreach (Pattern p in t.patterns)
-        {
-            mini.patterns.Add(new Pattern()
-            {
-                patternMetadata = p.patternMetadata.Clone()
-            });
-        }
-        return mini;
-    }
 }

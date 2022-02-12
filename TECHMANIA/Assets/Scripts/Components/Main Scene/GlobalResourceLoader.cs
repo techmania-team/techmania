@@ -14,6 +14,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public delegate void CompleteCallback(
         Status status);
 
+    #region Skins
     public void LoadAllSkins(
         ProgressCallback progressCallback,
         CompleteCallback completeCallback)
@@ -235,4 +236,36 @@ public class GlobalResourceLoader : MonoBehaviour
         completeCallback?.Invoke(Status.OKStatus());
         Options.RestoreVSync();
     }
+    #endregion
+
+    #region Track list
+    public void LoadTrackList(ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
+    {
+        StartCoroutine(LoadTrackListCoroutine(progressCallback,
+            completeCallback));
+    }
+
+    private IEnumerator LoadTrackListCoroutine(
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
+    {
+        GlobalResource.trackSubfolderList = new Dictionary<
+            string, List<GlobalResource.TrackSubfolder>>();
+        GlobalResource.trackList = new Dictionary<
+            string, List<GlobalResource.TrackInFolder>>();
+        GlobalResource.trackWithErrorList = new Dictionary<
+            string, List<GlobalResource.TrackWithError>>();
+        GlobalResource.anyOutdatedTrack = false;
+        yield return null;
+    }
+
+    public static void ClearCachedTrackList()
+    {
+        GlobalResource.trackSubfolderList.Clear();
+        GlobalResource.trackList.Clear();
+        GlobalResource.trackWithErrorList.Clear();
+        GlobalResource.anyOutdatedTrack = false;
+    }
+    #endregion
 }

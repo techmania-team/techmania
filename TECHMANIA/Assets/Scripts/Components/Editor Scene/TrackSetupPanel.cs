@@ -327,10 +327,19 @@ public class TrackSetupPanel : MonoBehaviour
                 "track_setup_metadata_tab_delete_track_cancel"),
             () =>
             {
+                // Delete from disk
                 Directory.Delete(EditorContext.trackFolder,
                     recursive: true);
-                SelectTrackPanel.RemoveOneTrack(
+
+                // Delete from RAM
+                string parent = Path.GetDirectoryName(
                     EditorContext.trackFolder);
+                GlobalResource.trackList[parent].RemoveAll(
+                    (GlobalResource.TrackInFolder t) =>
+                {
+                    return t.folder == EditorContext.trackFolder;
+                });
+
                 GetComponentInChildren<
                     CustomTransitionFromTrackSetupPanel>().
                 Transition();
