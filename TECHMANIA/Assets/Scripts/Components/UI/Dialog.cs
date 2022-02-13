@@ -32,8 +32,11 @@ public class Dialog : MonoBehaviour
 
     public void FadeIn()
     {
-        previousGroup = Panel.current.GetComponent<CanvasGroup>();
-        previousGroup.interactable = false;
+        previousGroup = Panel.current?.GetComponent<CanvasGroup>();
+        if (previousGroup != null)
+        {
+            previousGroup.interactable = false;
+        }
         previousSelected = 
             EventSystem.current.currentSelectedGameObject;
 
@@ -102,7 +105,10 @@ public class Dialog : MonoBehaviour
         }
 
         currentGroup.alpha = 0f;
-        previousGroup.interactable = true;
+        if (previousGroup != null)
+        {
+            previousGroup.interactable = true;
+        }
         EventSystem.current.SetSelectedGameObject(previousSelected);
         transitioning = false;
         rect.anchoredPosition = restingAnchoredPosition;

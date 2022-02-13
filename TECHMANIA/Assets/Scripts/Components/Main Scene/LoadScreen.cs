@@ -25,10 +25,7 @@ public class LoadScreen : MonoBehaviour
 
     private IEnumerator LoadSequence()
     {
-        // Step 1: load skins.
-        progressLine1.text = Locale.GetStringAndFormat(
-            "resource_loader_loading_skins", 1, 3);
-        bool skinsLoaded = false;
+        bool loaded = false;
         GlobalResourceLoader.ProgressCallback progressCallback =
             (string currentlyLoadingFile) =>
             {
@@ -42,11 +39,25 @@ public class LoadScreen : MonoBehaviour
                 {
                     messageDialog.Show(status.errorMessage);
                 }
-                skinsLoaded = true;
+                loaded = true;
             };
+
+        // Step 1: load skins.
+        progressLine1.text = Locale.GetStringAndFormat(
+            "resource_loader_loading_skins", 1, 3);
         GetComponent<GlobalResourceLoader>().LoadAllSkins(
             progressCallback, completeCallback);
-        yield return new WaitUntil(() => skinsLoaded);
+        yield return new WaitUntil(() => loaded);
+        yield return new WaitUntil(() =>
+            !messageDialog.gameObject.activeSelf);
+
+        // Step 2: load track list.
+        progressLine1.text = Locale.GetStringAndFormat(
+            "resource_loader_loading_track_list", 2, 3);
+        loaded = false;
+        GetComponent<GlobalResourceLoader>().LoadTrackList(
+            progressCallback, completeCallback);
+        yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>
             !messageDialog.gameObject.activeSelf);
     }
