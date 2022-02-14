@@ -17,12 +17,17 @@ public static class Paths
         "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = 
         "eyecatch.jpg";
+    public const string kThemeExtension = ".tmtheme";
     public const string kTrackFolderName = "Tracks";
     public const string kSkinFolderName = "Skins";
     public const string kNoteSkinFolderName = "Note";
     public const string kVfxSkinFolderName = "VFX";
     public const string kComboSkinFolderName = "Combo";
     public const string kGameUiFolderName = "Game UI";
+    public const string kThemeFolderName = "Themes";
+
+    public const string kAssetBundleFolder = "Assets/AssetBundles";
+    public const string kDefaultBundleName = "default";
 
     #region Important folders
     // "Streaming" refers to streaming assets. On PC this brings no
