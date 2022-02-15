@@ -48,6 +48,6 @@ public static class GlobalResource
     #endregion
 
     #region Theme
-    public static AssetBundle theme;
+    public static Dictionary<string, Object> themeContent;
     #endregion
 }

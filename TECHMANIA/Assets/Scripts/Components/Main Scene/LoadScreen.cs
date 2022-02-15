@@ -60,6 +60,32 @@ public class LoadScreen : MonoBehaviour
         yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>
             !messageDialog.gameObject.activeSelf);
+        yield return new WaitUntil(() => themeDecided);
+
+        // Step 3: load theme.
+        GlobalResourceLoader.CompleteCallback themeCompleteCallback =
+            (status) =>
+            {
+                loaded = true;
+                if (status.ok) return;
+
+                messageDialog.Show(status.errorMessage, () =>
+                {
+                    Options.instance.theme = Options.kDefaultTheme;
+                    Options.instance.SaveToFile(
+                        Paths.GetOptionsFilePath());
+                    UnityEngine.SceneManagement.SceneManager
+                        .LoadScene("Main");
+                });
+            };
+        progressLine1.text = Locale.GetStringAndFormat(
+            "resource_loader_loading_theme", 3, 3);
+        loaded = false;
+        GetComponent<GlobalResourceLoader>().LoadTheme(
+            progressCallback, themeCompleteCallback);
+        yield return new WaitUntil(() => loaded);
+        yield return new WaitUntil(() =>
+            !messageDialog.gameObject.activeSelf);
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()

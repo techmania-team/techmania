@@ -50,6 +50,8 @@ public static class Paths
     private static string streamingTrackRootFolder;
     private static string skinFolder;
     private static string streamingSkinFolder;
+    private static string themeFolder;
+    private static string streamingThemeFolder;
     private static string dataFolder;
 
     public static void PrepareFolders()
@@ -93,6 +95,13 @@ public static class Paths
         Directory.CreateDirectory(skinFolder);
         streamingSkinFolder = Path.Combine(
             streamingAssetsFolder, kSkinFolderName);
+
+        // Theme flder
+        themeFolder = Path.Combine(workingDirectory,
+            kThemeFolderName);
+        Directory.CreateDirectory(themeFolder);
+        streamingThemeFolder = Path.Combine(
+            streamingAssetsFolder, kThemeFolderName);
 
         Directory.CreateDirectory(GetNoteSkinRootFolder());
         Directory.CreateDirectory(GetVfxSkinRootFolder());
@@ -230,6 +239,27 @@ public static class Paths
         return Directory.Exists(temp) ? 
             temp :
             Path.Combine(GetStreamingGameUiSkinRootFolder(), name);
+    }
+
+    public static string GetThemeFolder()
+    {
+        return themeFolder;
+    }
+
+    public static string GetStreamingThemeFolder()
+    {
+        return streamingThemeFolder;
+    }
+
+    public static string GetThemeFilename(string name)
+    {
+        string filenameInFolder = name + kThemeExtension;
+        string temp = Path.Combine(
+            GetThemeFolder(), filenameInFolder);
+        return File.Exists(temp) ?
+            temp :
+            Path.Combine(
+                GetStreamingThemeFolder(), filenameInFolder);
     }
     #endregion
 

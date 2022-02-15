@@ -9,7 +9,7 @@ public class BuildAssetBundleWindow : EditorWindow
     private BuildTarget buildTarget;
 
     [MenuItem("Window/TECHMANIA/Build AssetBundles")]
-    private static void BuildForDefaultPlatform()
+    public static void BuildForDefaultPlatform()
     {
         BuildAssetBundle(EditorUserBuildSettings.activeBuildTarget);
     }

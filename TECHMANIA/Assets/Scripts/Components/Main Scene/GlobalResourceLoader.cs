@@ -230,6 +230,7 @@ public class GlobalResourceLoader : MonoBehaviour
 
             if (error)
             {
+                Options.RestoreVSync();
                 yield break;
             }
             spriteSheetReferences[i].GenerateSprites();
@@ -661,6 +662,95 @@ public class GlobalResourceLoader : MonoBehaviour
 
         Debug.Log($"Extract successful. Deleting: {zipFilename}");
         File.Delete(zipFilename);
+    }
+    #endregion
+
+    #region Theme
+    public void LoadTheme(
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
+    {
+        string themePath;
+        if (Application.isEditor &&
+            Options.instance.theme == Options.kDefaultTheme)
+        {
+            // Load from project.
+            themePath = Path.Combine(
+                Paths.kAssetBundleFolder,
+                Paths.kDefaultBundleName);
+        }
+        else
+        {
+            // Load from theme folder.
+            themePath = Paths.GetThemeFilename(
+                Options.instance.theme);
+        }
+        if (!File.Exists(themePath))
+        {
+            string errorMessage = Locale.GetStringAndFormat(
+                "resource_loader_theme_not_found",
+                Options.instance.theme);
+            if (Options.instance.theme != Options.kDefaultTheme)
+            {
+                errorMessage += "\n" + Locale.GetString(
+                    "resource_loader_revert_default_theme");
+            }
+            completeCallback?.Invoke(Status.Error(errorMessage));
+        }
+        else
+        {
+            StartCoroutine(LoadThemeCoroutine(themePath,
+                progressCallback, completeCallback));
+        }
+    }
+
+    private IEnumerator LoadThemeCoroutine(
+        string path,
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback)
+    {
+        Options.TemporarilyDisableVSync();
+        GlobalResource.themeContent =
+            new Dictionary<string, UnityEngine.Object>();
+        progressCallback?.Invoke(path);
+        AssetBundleCreateRequest bundleRequest = 
+            AssetBundle.LoadFromFileAsync(path);
+        yield return bundleRequest;
+
+        AssetBundle bundle = bundleRequest.assetBundle;
+        Action reportFailedToLoadError = () =>
+        {
+            string errorMessage = Locale.GetStringAndFormat(
+                "resource_loader_theme_failed_to_load",
+                Options.instance.theme);
+            if (Options.instance.theme != Options.kDefaultTheme)
+            {
+                errorMessage += "\n" + Locale.GetString(
+                    "resource_loader_revert_default_theme");
+            }
+            Options.RestoreVSync();
+            completeCallback?.Invoke(Status.Error(errorMessage));
+        };
+        if (bundle == null)
+        {
+            reportFailedToLoadError();
+            yield break;
+        }
+
+        foreach (string name in bundle.GetAllAssetNames())
+        {
+            progressCallback?.Invoke(name);
+            AssetBundleRequest request = bundle.LoadAssetAsync(name);
+            yield return request;
+            if (request.asset == null)
+            {
+                reportFailedToLoadError();
+                yield break;
+            }
+
+            GlobalResource.themeContent.Add(name, request.asset);
+        }
+        Options.RestoreVSync();
     }
     #endregion
 }
