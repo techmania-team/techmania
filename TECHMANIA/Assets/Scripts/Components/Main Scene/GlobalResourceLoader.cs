@@ -751,6 +751,7 @@ public class GlobalResourceLoader : MonoBehaviour
             GlobalResource.themeContent.Add(name, request.asset);
         }
         Options.RestoreVSync();
+        completeCallback?.Invoke(Status.OKStatus());
     }
     #endregion
 }

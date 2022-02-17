@@ -1589,8 +1589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 047015035457dd24aa848985ad6c8de4, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 3d7926af2a35fd04a878bd3ab7dfa593,
-    type: 3}
+  sourceAsset: {fileID: 0}
   m_SortingOrder: 0
 --- !u!4 &1527373381
 Transform:
@@ -1901,6 +1900,7 @@ MonoBehaviour:
   revertButtonContainer: {fileID: 1109665364}
   revertMessage: {fileID: 2087462596}
   messageDialog: {fileID: 411146263}
+  uiDocument: {fileID: 1527373380}
 --- !u!114 &1622777474285759390
 MonoBehaviour:
   m_ObjectHideFlags: 0

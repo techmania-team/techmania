@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LoadScreen : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class LoadScreen : MonoBehaviour
     public GameObject revertButtonContainer;
     public TextMeshProUGUI revertMessage;
     public MessageDialog messageDialog;
+
+    public UIDocument uiDocument;
 
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;
@@ -69,13 +72,12 @@ public class LoadScreen : MonoBehaviour
                 loaded = true;
                 if (status.ok) return;
 
+                Options.instance.theme = Options.kDefaultTheme;
+                Options.instance.SaveToFile(
+                    Paths.GetOptionsFilePath());
                 messageDialog.Show(status.errorMessage, () =>
                 {
-                    Options.instance.theme = Options.kDefaultTheme;
-                    Options.instance.SaveToFile(
-                        Paths.GetOptionsFilePath());
-                    UnityEngine.SceneManagement.SceneManager
-                        .LoadScene("Main");
+                    QuitGame();
                 });
             };
         progressLine1.text = Locale.GetStringAndFormat(
@@ -86,6 +88,38 @@ public class LoadScreen : MonoBehaviour
         yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>
             !messageDialog.gameObject.activeSelf);
+
+        // Display UIDocument.
+        string mainTreePath = "assets/ui/maintree.uxml";
+        VisualTreeAsset mainTree = GlobalResource.GetThemeContent
+            <VisualTreeAsset>(mainTreePath);
+        if (mainTree == null)
+        {
+            messageDialog.Show($"{Locale.GetString("theme_error_critical_file_missing")}\n\n{mainTreePath}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+            yield break;
+        }
+        string mainScriptPath = "assets/ui/mainscript.txt";
+        TextAsset mainScript = GlobalResource.GetThemeContent
+            <TextAsset>(mainScriptPath);
+        if (mainScript == null)
+        {
+            messageDialog.Show($"{Locale.GetString("theme_error_critical_file_missing")}\n\n{mainScriptPath}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+            yield break;
+        }
+
+        uiDocument.visualTreeAsset = GlobalResource
+            .themeContent[mainTreePath] as VisualTreeAsset;
+        GetComponentInParent<Canvas>().gameObject.SetActive(false);
+
+        ThemeApi.ScriptSession.Prepare();
+        try
+        {
+            ThemeApi.ScriptSession.Execute(mainScript.text);
+        }
+        catch (ThemeApi.ApiNotSupportedException)
+        {
+            messageDialog.Show($"{Locale.GetString("theme_error_api_not_supported")}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+        }
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()
@@ -116,5 +150,14 @@ public class LoadScreen : MonoBehaviour
         Options.instance.SaveToFile(Paths.GetOptionsFilePath());
         revertButtonContainer.SetActive(false);
         themeDecided = true;
+    }
+
+    private void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

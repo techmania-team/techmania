@@ -49,5 +49,13 @@ public static class GlobalResource
 
     #region Theme
     public static Dictionary<string, Object> themeContent;
+
+    public static T GetThemeContent<T>(string name) where T : Object
+    {
+        if (!themeContent.ContainsKey(name)) return null;
+        Object content = themeContent[name];
+        if (content.GetType() != typeof(T)) return null;
+        return content as T;
+    }
     #endregion
 }
