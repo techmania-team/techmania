@@ -20,9 +20,12 @@ namespace ThemeApi
             // Register types
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
+            UserData.RegisterType<PanelSettings>();
+            UserData.RegisterType<StyleSheet>();
+            UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<Button>();
             UserData.RegisterType<Label>();
-            UserData.RegisterType<Techmania>();
+            UserData.RegisterAssembly();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
         }

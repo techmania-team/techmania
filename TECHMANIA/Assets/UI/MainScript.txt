@@ -1,2 +1,5 @@
 tm = getApi(1)
-tm.print("Successfully acquired API!")
+root = tm.rootVisualElement
+root.Query().ForEach(function(e)
+    print(e.name)
+end)
