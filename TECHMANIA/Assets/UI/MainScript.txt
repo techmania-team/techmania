@@ -1,5 +1,7 @@
 tm = getApi(1)
 root = tm.rootVisualElement
 root.Query().ForEach(function(e)
-    print(e.name)
+    if (e.IsTextElement()) then
+        print(e.text)
+    end
 end)

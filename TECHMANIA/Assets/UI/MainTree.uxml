@@ -1,5 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Label text="Label" display-tooltip-when-elided="true" name="label-1" style="color: rgb(255, 255, 255);" />
-    <ui:Label text="Label" display-tooltip-when-elided="true" name="label-2" class="test-class" style="color: rgb(255, 255, 255);" />
-    <ui:Label text="Label" display-tooltip-when-elided="true" name="label-3" style="color: rgb(255, 255, 255);" />
+    <ui:Label text="Label 1" display-tooltip-when-elided="true" name="label-1" style="color: rgb(255, 255, 255);" />
+    <ui:Label text="Label 2" display-tooltip-when-elided="true" name="label-2" class="test-class" style="color: rgb(255, 255, 255);">
+        <ui:Label text="Label 3" display-tooltip-when-elided="true" name="label-3" style="color: rgb(255, 255, 255);" />
+    </ui:Label>
+    <ui:VisualElement />
 </ui:UXML>
