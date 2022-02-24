@@ -52,6 +52,7 @@ public static class GlobalResource
 
     public static T GetThemeContent<T>(string name) where T : Object
     {
+        name = name.ToLower();
         if (!themeContent.ContainsKey(name)) return null;
         Object content = themeContent[name];
         if (content.GetType() != typeof(T)) return null;

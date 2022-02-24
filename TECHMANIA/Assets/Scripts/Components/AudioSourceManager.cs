@@ -80,12 +80,15 @@ public class AudioSourceManager : MonoBehaviour
         source.Play();
     }
 
-    public void PlayBackingTrack(AudioClip clip,
-        float startTime = 0f)
+    public AudioSource PlayBackingTrack(AudioClip clip,
+        float startTime = 0f,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan)
     {
         PlaySound(backingTrack, clip, startTime,
             volumePercent: Note.defaultVolume,
             panPercent: Note.defaultPan);
+        return backingTrack;
     }
 
     private AudioSource FindSource(AudioSource[] sources,
@@ -136,12 +139,14 @@ public class AudioSourceManager : MonoBehaviour
         return source;
     }
 
-    public void PlaySfx(AudioClip clip)
+    public AudioSource PlaySfx(AudioClip clip,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan)
     {
         AudioSource source = FindSource(sfxSources,
             "SFX");
-        PlaySound(source, clip, 0f,
-            volumePercent: 100, panPercent: 0);
+        PlaySound(source, clip, 0f, volumePercent, panPercent);
+        return source;
     }
 
     public void PauseAll()

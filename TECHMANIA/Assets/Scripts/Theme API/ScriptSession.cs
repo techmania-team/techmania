@@ -25,7 +25,10 @@ namespace ThemeApi
             UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<Button>();
             UserData.RegisterType<Label>();
+            UserData.RegisterType<AudioSource>();
             UserData.RegisterAssembly();
+            // Type-specific preparations
+            Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
         }

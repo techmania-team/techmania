@@ -1,7 +1,11 @@
 tm = getApi(1)
 root = tm.rootVisualElement
-root.Query().ForEach(function(e)
-    if (e.IsTextElement()) then
-        print(e.text)
-    end
+audio = tm.audio
+-- root.Query().ForEach(function(e)
+--     if (e.IsTextElement()) then
+--         print(e.text)
+--     end
+-- end)
+root.Q("test-button").OnClick(function(button)
+    audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
 end)

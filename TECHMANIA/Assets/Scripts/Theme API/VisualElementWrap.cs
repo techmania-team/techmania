@@ -11,12 +11,12 @@ namespace ThemeApi
     // - Lua doesn't support generics or extension methods
     // - Lua functions aren't automatically converted to Actions
     [MoonSharpUserData]
-    public class VisualElementApi
+    public class VisualElementWrap
     {
         public VisualElement inner { get; private set; }
 
         [MoonSharpHidden]
-        public VisualElementApi(VisualElement e)
+        public VisualElementWrap(VisualElement e)
         {
             inner = e;
         }
@@ -26,17 +26,17 @@ namespace ThemeApi
         public bool enabledInHierarchy => inner.enabledInHierarchy;
         public bool enabledSelf => inner.enabledSelf;
         public string name => inner.name;
-        public VisualElementApi parent =>
-            new VisualElementApi(inner.parent);
+        public VisualElementWrap parent =>
+            new VisualElementWrap(inner.parent);
         public bool visible => inner.visible;
         #endregion
 
         #region Subclass-specific properties
-        public void CheckType(System.Type type, string targetProperty)
+        public void CheckType(System.Type type, string targetMember)
         {
             if (!type.IsAssignableFrom(inner.GetType()))
             {
-                throw new System.Exception($"VisualElement {name} is not a {type.Name}, and therefore does not have the '{targetProperty}' property.");
+                throw new System.Exception($"VisualElement {name} is not a {type.Name}, and therefore does not have the '{targetMember}' member.");
             }
         }
 
@@ -57,30 +57,43 @@ namespace ThemeApi
         }
         #endregion
 
+        #region Events
+        public void OnClick(DynValue handler)
+        {
+            CheckType(typeof(Button), "OnClick");
+            handler.CheckType("VisualElementWrap.OnClick",
+                DataType.Function);
+            (inner as Button).clicked += () =>
+            {
+                handler.Function.Call(this);
+            };
+        }
+        #endregion
+
         #region Query
         // className is optional, even in Lua.
-        public VisualElementApi Q(string name,
+        public VisualElementWrap Q(string name,
             string className = null)
         {
-            return new VisualElementApi(inner.Q(name, className));
+            return new VisualElementWrap(inner.Q(name, className));
         }
 
         // Leave out `name` to query all elements.
-        public UQueryStateApi Query(string name = null,
+        public UQueryStateWrap Query(string name = null,
             string className = null)
         {
-            return new UQueryStateApi(inner.Query(
+            return new UQueryStateWrap(inner.Query(
                 name, className).Build());
         }
         #endregion
     }
 
     [MoonSharpUserData]
-    public class UQueryStateApi
+    public class UQueryStateWrap
     {
         public UQueryState<VisualElement> inner { get; private set; }
         [MoonSharpHidden]
-        public UQueryStateApi(UQueryState<VisualElement> s)
+        public UQueryStateWrap(UQueryState<VisualElement> s)
         {
             inner = s;
         }
@@ -90,7 +103,7 @@ namespace ThemeApi
             f.CheckType("UQueryStateApi.ForEach", DataType.Function);
             inner.ForEach((VisualElement e) =>
             {
-                f.Function.Call(new VisualElementApi(e));
+                f.Function.Call(new VisualElementWrap(e));
             });
         }
     }
