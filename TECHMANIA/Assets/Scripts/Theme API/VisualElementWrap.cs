@@ -10,6 +10,9 @@ namespace ThemeApi
     // class because:
     // - Lua doesn't support generics or extension methods
     // - Lua functions aren't automatically converted to Actions
+    //
+    // Note that it's possible to create multiple wraps on the same
+    // VisualElement.
     [MoonSharpUserData]
     public class VisualElementWrap
     {
@@ -67,14 +70,25 @@ namespace ThemeApi
         #endregion
 
         #region Events
-        public void OnClick(DynValue handler)
+        // Callback parameters:
+        // 1. The VisualElementWrap receiving the event
+        // 2. The data (if registered with the ..WithData variant)
+        // 3. The event
+
+        public void OnClick(DynValue callback)
         {
-            handler.CheckType("VisualElementWrap.OnClick",
+            callback.CheckType("VisualElementWrap.OnClick",
                 DataType.Function);
-            inner.RegisterCallback((ClickEvent e) =>
-            {
-                handler.Function.Call(this, e);
-            });
+            CallbackRegistry.AddCallback<ClickEvent>(
+                inner, callback);
+        }
+
+        public void OnClickWithData(DynValue callback, DynValue data)
+        {
+            callback.CheckType("VisualElementWrap.OnClickWithData",
+                DataType.Function);
+            CallbackRegistry.AddCallbackWithData<ClickEvent>(
+                inner, callback, data);
         }
         #endregion
 

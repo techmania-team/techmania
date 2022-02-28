@@ -7,5 +7,12 @@ audio = tm.audio
 --     end
 -- end)
 root.Q("test-button").OnClick(function(button)
+    print("button clicked: " .. button.name)
     audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
 end)
+root.Q("test-button").OnClick(function()
+    print("Another callback!")
+end)
+root.Q("test-button").OnClickWithData(function(button, data)
+    print("Callback with data: " .. data)
+end, 1)

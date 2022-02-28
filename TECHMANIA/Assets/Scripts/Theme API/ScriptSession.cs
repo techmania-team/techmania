@@ -28,7 +28,7 @@ namespace ThemeApi
             UserData.RegisterType<Label>();
             UserData.RegisterType<AudioSource>();
             UserData.RegisterAssembly();
-            // Type-specific preparations
+            // Preparations
             Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;

@@ -16,6 +16,7 @@ namespace ThemeApi
         {
             uiDocument = Object.FindObjectOfType<UIDocument>();
             audioManager = new AudioManager();
+            CallbackRegistry.Prepare();
         }
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 
