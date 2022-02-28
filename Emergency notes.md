@@ -40,6 +40,8 @@ Likewise I have kept a list of leads for new official tracks. I intend to pursue
   * https://soundcloud.com/sotuiofficial
   * info@sotuiofficial.com
   * https://www.youtube.com/SOTUI
+* Jehezukiel
+  * Composer for various rhythm games including PIU
 * MoAE
   * Kento found this person, accepting commissions
   * https://twitter.com/MoA_E_
