@@ -29,6 +29,15 @@ namespace ThemeApi
         public VisualElementWrap parent =>
             new VisualElementWrap(inner.parent);
         public bool visible => inner.visible;
+        public bool pickable
+        {
+            get { return inner.pickingMode == PickingMode.Position; }
+            set
+            {
+                inner.pickingMode = value ?
+                    PickingMode.Position : PickingMode.Ignore;
+            }
+        }
         #endregion
 
         #region Subclass-specific properties
