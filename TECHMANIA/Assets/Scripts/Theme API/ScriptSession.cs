@@ -20,6 +20,7 @@ namespace ThemeApi
             // Register types
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
+            UserData.RegisterType<ClickEvent>();
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<UQueryState<VisualElement>>();

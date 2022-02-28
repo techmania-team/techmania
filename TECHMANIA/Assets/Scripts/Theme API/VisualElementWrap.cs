@@ -60,13 +60,12 @@ namespace ThemeApi
         #region Events
         public void OnClick(DynValue handler)
         {
-            CheckType(typeof(Button), "OnClick");
             handler.CheckType("VisualElementWrap.OnClick",
                 DataType.Function);
-            (inner as Button).clicked += () =>
+            inner.RegisterCallback((ClickEvent e) =>
             {
-                handler.Function.Call(this);
-            };
+                handler.Function.Call(this, e);
+            });
         }
         #endregion
 
