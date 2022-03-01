@@ -1,5 +1,8 @@
-* {
+:root {
     --primary-color: rgb(165, 214, 167);
+    --primary-color-4-percent: rgba(165, 214, 167, 0.04);
+    --primary-color-12-percent: rgba(165, 214, 167, 0.12);
+    --disabled-text-color: rgba(255, 255, 255, 0.38);
 }
 
 .surface {
@@ -33,6 +36,21 @@
     padding-right: 20px;
 }
 
+.button-text:hover {
+    background-color: var(--primary-color-4-percent);
+    color: var(--primary-color);
+}
+
+.button-text:active {
+    background-color: var(--primary-color-12-percent);
+    color: var(--primary-color);
+}
+
+.button-text:disabled {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--disabled-text-color);
+}
+
 .button-outlined {
     background-color: rgba(0, 0, 0, 0);
     border-left-width: 2px;
@@ -47,6 +65,36 @@
     border-right-color: rgba(255, 255, 255, 0.12);
     border-top-color: rgba(255, 255, 255, 0.12);
     border-bottom-color: rgba(255, 255, 255, 0.12);
+    height: 55px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.button-outlined:hover {
+    background-color: var(--primary-color-4-percent);
+    color: var(--primary-color);
+}
+
+.button-outlined:active {
+    background-color: var(--primary-color-12-percent);
+    color: var(--primary-color);
+}
+
+.button-outlined:disabled {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--disabled-text-color);
+}
+
+.button-contained {
+    background-color: var(--primary-color);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    -unity-font-definition: url('project://database/Assets/Fonts/Lato/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
+    letter-spacing: 10px;
     height: 55px;
     padding-left: 20px;
     padding-right: 20px;

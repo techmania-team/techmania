@@ -32,6 +32,7 @@ namespace ThemeApi
         public VisualElementWrap parent =>
             new VisualElementWrap(inner.parent);
         public bool visible => inner.visible;
+        // If false, this element will ignore pointer events.
         public bool pickable
         {
             get { return inner.pickingMode == PickingMode.Position; }
