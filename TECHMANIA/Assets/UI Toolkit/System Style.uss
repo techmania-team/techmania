@@ -87,11 +87,14 @@
 .button-text:hover {
     background-color: var(--primary-color-4-percent);
     color: var(--primary-color);
+    transition-property: background-color;
+    transition-duration: 0.1s;
 }
 
 .button-text:active {
     background-color: var(--primary-color-12-percent);
     color: var(--primary-color);
+    transition-duration: 0s;
 }
 
 .button-text:focus {
@@ -128,11 +131,14 @@
 .button-outlined:hover {
     background-color: var(--primary-color-4-percent);
     color: var(--primary-color);
+    transition-property: background-color;
+    transition-duration: 0.1s;
 }
 
 .button-outlined:active {
     background-color: var(--primary-color-12-percent);
     color: var(--primary-color);
+    transition-duration: 0s;
 }
 
 .button-outlined:focus {
