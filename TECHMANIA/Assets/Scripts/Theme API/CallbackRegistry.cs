@@ -14,22 +14,19 @@ namespace ThemeApi
     // This class is not exposed to Lua.
     public class CallbackRegistry
     {
-        // Type is event type.
-        private static Dictionary<
-            Tuple<VisualElement, Type>,
-            HashSet<DynValue>> 
-            callbacks;
+        // Key: <VisualElement, event type>
+        // Value: <Callback, data>
+        // For callbacks without data, the data element is of
+        // type Void.
         private static Dictionary<
             Tuple<VisualElement, Type>,
             // Tuple content is callback and data.
             HashSet<Tuple<DynValue, DynValue>>>
-            callbacksWithData;
+            callbacks;
 
         public static void Prepare()
         {
             callbacks = new Dictionary<
-                Tuple<VisualElement, Type>, HashSet<DynValue>>();
-            callbacksWithData = new Dictionary<
                 Tuple<VisualElement, Type>,
                 HashSet<Tuple<DynValue, DynValue>>>();
         }
@@ -38,22 +35,14 @@ namespace ThemeApi
             (Tuple<VisualElement, Type> key)
             where TEventType : EventBase<TEventType>, new()
         {
-            if (callbacks.ContainsKey(key) ||
-                callbacksWithData.ContainsKey(key)) return;
+            if (callbacks.ContainsKey(key)) return;
 
-            callbacks.Add(key, new HashSet<DynValue>());
-            callbacksWithData.Add(key,
+            callbacks.Add(key,
                 new HashSet<Tuple<DynValue, DynValue>>());
             key.Item1.RegisterCallback((TEventType e) =>
             {
-                foreach (DynValue c in callbacks[key])
-                {
-                    c.Function.Call(
-                        new VisualElementWrap(key.Item1),
-                        e);
-                }
                 foreach (Tuple<DynValue, DynValue> tuple
-                    in callbacksWithData[key])
+                    in callbacks[key])
                 {
                     tuple.Item1.Function.Call(
                         new VisualElementWrap(key.Item1), 
@@ -63,20 +52,8 @@ namespace ThemeApi
             });
         }
 
-        // Callback parameters: element, event.
-        public static void AddCallback<TEventType>(
-            VisualElement element, DynValue callback)
-            where TEventType : EventBase<TEventType>, new()
-        {
-            Tuple<VisualElement, Type> key =
-                new Tuple<VisualElement, Type>(
-                    element, typeof(TEventType));
-            CheckCallback<TEventType>(key);
-            callbacks[key].Add(callback);
-        }
-
         // Callback parameters: element, data, event.
-        public static void AddCallbackWithData<TEventType>(
+        public static void AddCallback<TEventType>(
             VisualElement element, DynValue callback,
             DynValue data)
             where TEventType : EventBase<TEventType>, new()
@@ -85,8 +62,29 @@ namespace ThemeApi
                 new Tuple<VisualElement, Type>(
                     element, typeof(TEventType));
             CheckCallback<TEventType>(key);
-            callbacksWithData[key].Add(
+            callbacks[key].Add(
                 new Tuple<DynValue, DynValue>(callback, data));
+        }
+
+        public static void RemoveCallback<TEventType>(
+            VisualElement element, DynValue callback)
+            where TEventType : EventBase<TEventType>, new()
+        {
+            Tuple<VisualElement, Type> key =
+                new Tuple<VisualElement, Type>(
+                    element, typeof(TEventType));
+            if (!callbacks.ContainsKey(key)) return;
+            HashSet<Tuple<DynValue, DynValue>> remainingCallbacks
+                = new HashSet<Tuple<DynValue, DynValue>>();
+            foreach (Tuple<DynValue, DynValue> tuple in
+                callbacks[key])
+            {
+                if (tuple.Item1 != callback)
+                {
+                    remainingCallbacks.Add(tuple);
+                }
+            }
+            callbacks[key] = remainingCallbacks;
         }
     }
 }

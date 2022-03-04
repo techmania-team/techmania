@@ -71,24 +71,30 @@ namespace ThemeApi
         #endregion
 
         #region Events
+        public enum EventType
+        {
+            // Pointer events
+            PointerDown = 0,
+            PointerMove = 1,
+            PointerStationary = 2,
+            PointerCancel = 3,
+            PointerUp = 4,
+            Click = 5,
+            
+            // Keyboard events
+            KeyDown = 10,
+            KeyUp = 11,
+        }
+        public int clickEvent => (int)EventType.Click;
         // Callback parameters:
         // 1. The VisualElementWrap receiving the event
-        // 2. The data (if registered with the ..WithData variant)
+        // 2. The data (Void if nonexistent)
         // 3. The event
-
-        public void OnClick(DynValue callback)
-        {
-            callback.CheckType("VisualElementWrap.OnClick",
-                DataType.Function);
-            CallbackRegistry.AddCallback<ClickEvent>(
-                inner, callback);
-        }
-
-        public void OnClickWithData(DynValue callback, DynValue data)
+        public void RegisterCallback(DynValue callback, DynValue data)
         {
             callback.CheckType("VisualElementWrap.OnClickWithData",
                 DataType.Function);
-            CallbackRegistry.AddCallbackWithData<ClickEvent>(
+            CallbackRegistry.AddCallback<ClickEvent>(
                 inner, callback, data);
         }
         #endregion
