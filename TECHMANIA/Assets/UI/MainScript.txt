@@ -10,6 +10,8 @@ audio = tm.audio
 --     print("button clicked: " .. button.name)
 --     audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
 -- end)
-root.Q("welcome-mat").RegisterCallback(eventType.Click, function()
+function onClick()
     audio.Play("Assets/UI/SFX/Click.wav", audioChannel.SFX)
-end)
+end
+root.Q("welcome-mat").RegisterCallback(eventType.Click, onClick)
+root.Q("welcome-mat").UnregisterCallback(eventType.Click, onClick)

@@ -136,13 +136,30 @@ namespace ThemeApi
         public void RegisterCallback(EventType eventType,
             DynValue callback, DynValue data)
         {
-            callback.CheckType("VisualElementWrap.OnClickWithData",
+            callback.CheckType("VisualElementWrap.RegisterCallback",
                 DataType.Function);
             switch (eventType)
             {
                 case EventType.Click:
                     CallbackRegistry.AddCallback<ClickEvent>(
                         inner, callback, data);
+                    break;
+                default:
+                    throw new System.Exception("Unsupported event type: " + eventType);
+            }
+        }
+
+        public void UnregisterCallback(EventType eventType,
+            DynValue callback)
+        {
+            callback.CheckType(
+                "VisualElementWrap.UnregisterCallback",
+                DataType.Function);
+            switch (eventType)
+            {
+                case EventType.Click:
+                    CallbackRegistry.RemoveCallback<ClickEvent>(
+                        inner, callback);
                     break;
                 default:
                     throw new System.Exception("Unsupported event type: " + eventType);

@@ -79,7 +79,8 @@ namespace ThemeApi
             foreach (Tuple<DynValue, DynValue> tuple in
                 callbacks[key])
             {
-                if (tuple.Item1 != callback)
+                if (tuple.Item1.Function.EntryPointByteCodeLocation
+                    != callback.Function.EntryPointByteCodeLocation)
                 {
                     remainingCallbacks.Add(tuple);
                 }
