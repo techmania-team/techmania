@@ -85,17 +85,24 @@ namespace ThemeApi
             KeyDown = 10,
             KeyUp = 11,
         }
-        public int clickEvent => (int)EventType.Click;
         // Callback parameters:
         // 1. The VisualElementWrap receiving the event
         // 2. The data (Void if nonexistent)
         // 3. The event
-        public void RegisterCallback(DynValue callback, DynValue data)
+        public void RegisterCallback(EventType eventType,
+            DynValue callback, DynValue data)
         {
             callback.CheckType("VisualElementWrap.OnClickWithData",
                 DataType.Function);
-            CallbackRegistry.AddCallback<ClickEvent>(
-                inner, callback, data);
+            switch (eventType)
+            {
+                case EventType.Click:
+                    CallbackRegistry.AddCallback<ClickEvent>(
+                        inner, callback, data);
+                    break;
+                default:
+                    throw new System.Exception("Unsupported event type: " + eventType);
+            }
         }
         #endregion
 

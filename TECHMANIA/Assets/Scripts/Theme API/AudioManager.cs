@@ -22,17 +22,12 @@ namespace ThemeApi
             HiddenKeysound,
             SFX
         }
-        public int musicChannel => (int)Channel.Music;
-        public int keysoundChannel => (int)Channel.Keysound;
-        public int hiddenKeysoundChannel =>
-            (int)Channel.HiddenKeysound;
-        public int sfxChannel => (int)Channel.SFX;
 
         // name: file name of audio clip in theme
         // channel: one of Channel enums
         // volumePercent: [0, 100]
         // panPercent: [-100, 100]
-        public AudioSource Play(string name, int channel,
+        public AudioSource Play(string name, Channel channel,
             int volumePercent = 100, int panPercent = 0)
         {
             AudioClip clip = GlobalResource.GetThemeContent
@@ -44,18 +39,18 @@ namespace ThemeApi
 
             switch (channel)
             {
-                case (int)Channel.Music:
+                case Channel.Music:
                     return manager.PlayBackingTrack(clip,
                         volumePercent, panPercent);
-                case (int)Channel.Keysound:
+                case Channel.Keysound:
                     return manager.PlayKeysound(clip,
                         hiddenLane: false,
                         startTime: 0f, volumePercent, panPercent);
-                case (int)Channel.HiddenKeysound:
+                case Channel.HiddenKeysound:
                     return manager.PlayKeysound(clip,
                         hiddenLane: true,
                         startTime: 0f, volumePercent, panPercent);
-                case (int)Channel.SFX:
+                case Channel.SFX:
                     return manager.PlaySfx(clip,
                         volumePercent, panPercent);
                 default:

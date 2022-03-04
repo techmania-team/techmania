@@ -32,6 +32,11 @@ namespace ThemeApi
             Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
+            // Expose enums
+            session.Globals["audioChannel"] = 
+                UserData.CreateStatic<AudioManager.Channel>();
+            session.Globals["eventType"] =
+                UserData.CreateStatic<VisualElementWrap.EventType>();
         }
 
         public static void Execute(string script)
