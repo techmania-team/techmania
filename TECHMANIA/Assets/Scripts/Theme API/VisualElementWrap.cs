@@ -71,24 +71,68 @@ namespace ThemeApi
         #endregion
 
         #region Events
+        // https://docs.unity3d.com/2021.2/Documentation/Manual/UIE-Events-Reference.html
         public enum EventType
         {
-            // Pointer events
-            PointerDown = 0,
-            PointerMove = 1,
-            PointerStationary = 2,
-            PointerCancel = 3,
-            PointerUp = 4,
-            Click = 5,
-            
+            // Capture events: omitted
+
+            // Change events
+            Change,
+
+            // Command events: omitted
+
+            // Drag events
+            DragExited,
+            DragUpdated,
+            DragPerform,
+            DragEnter,
+            DragLeave,
+
+            // Focus events
+            FocusOut,
+            FocusIn,
+            Blur,
+            Focus,
+
+            // Input events
+            Input,
+
             // Keyboard events
-            KeyDown = 10,
-            KeyUp = 11,
+            KeyDown,
+            KeyUp,
+
+            // Layout events
+            GeometryChanged,
+
+            // Pointer & mouse events
+            // (mouse fires both, touchscreen only fires pointer)
+            PointerDown,
+            PointerUp,
+            PointerMove,
+            PointerEnter,
+            PointerLeave,
+            PointerOver,
+            PointerOut,
+            PointerStationary,
+            PointerCancel,
+            Click,
+            Wheel,
+            
+            // Panel events
+            AttachToPanel,
+            DetachFromPanel,
+
+            // Tooltip events
+            Tooptip,
+
+            // TECHMANIA-specific events
+            FrameUpdate,
         }
+
         // Callback parameters:
         // 1. The VisualElementWrap receiving the event
-        // 2. The data (Void if nonexistent)
-        // 3. The event
+        // 2. The event
+        // 3. The data (Void if nonexistent)
         public void RegisterCallback(EventType eventType,
             DynValue callback, DynValue data)
         {

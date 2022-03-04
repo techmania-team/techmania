@@ -45,14 +45,14 @@ namespace ThemeApi
                     in callbacks[key])
                 {
                     tuple.Item1.Function.Call(
-                        new VisualElementWrap(key.Item1), 
-                        tuple.Item2,
-                        e);
+                        new VisualElementWrap(key.Item1),
+                        e,
+                        tuple.Item2);
                 }
             });
         }
 
-        // Callback parameters: element, data, event.
+        // Callback parameters: element, event, data.
         public static void AddCallback<TEventType>(
             VisualElement element, DynValue callback,
             DynValue data)
