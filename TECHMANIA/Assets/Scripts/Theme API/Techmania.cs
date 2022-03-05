@@ -17,6 +17,7 @@ namespace ThemeApi
             uiDocument = Object.FindObjectOfType<UIDocument>();
             audioManager = new AudioManager();
             CallbackRegistry.Prepare();
+            UnityEventSynthesizer.Prepare();
         }
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 

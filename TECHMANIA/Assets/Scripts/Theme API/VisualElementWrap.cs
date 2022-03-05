@@ -42,6 +42,11 @@ namespace ThemeApi
                     PickingMode.Position : PickingMode.Ignore;
             }
         }
+
+        public void SetEnabled(bool enabled)
+        {
+            inner.SetEnabled(enabled);
+        }
         #endregion
 
         #region Subclass-specific properties
@@ -72,6 +77,7 @@ namespace ThemeApi
 
         #region Events
         // https://docs.unity3d.com/2021.2/Documentation/Manual/UIE-Events-Reference.html
+        // Exposed as the "eventType" global table
         public enum EventType
         {
             // Capture events: omitted
@@ -125,14 +131,15 @@ namespace ThemeApi
             // Tooltip events
             Tooptip,
 
-            // TECHMANIA-specific events
+            // Unity events
             FrameUpdate,
+            ApplicationFocus,
         }
 
         // Callback parameters:
         // 1. The VisualElementWrap receiving the event
         // 2. The event
-        // 3. The data (Void if nonexistent)
+        // 3. The data (Void if called without this parameters)
         public void RegisterCallback(EventType eventType,
             DynValue callback, DynValue data)
         {
@@ -143,6 +150,19 @@ namespace ThemeApi
                 case EventType.Click:
                     CallbackRegistry.AddCallback<ClickEvent>(
                         inner, callback, data);
+                    break;
+                case EventType.FrameUpdate:
+                    CallbackRegistry.AddCallback<FrameUpdateEvent>(
+                        inner, callback, data);
+                    UnityEventSynthesizer.AddListener
+                        <FrameUpdateEvent>(inner);
+                    break;
+                case EventType.ApplicationFocus:
+                    CallbackRegistry.AddCallback
+                        <ApplicationFocusEvent>(
+                        inner, callback, data);
+                    UnityEventSynthesizer.AddListener
+                        <ApplicationFocusEvent>(inner);
                     break;
                 default:
                     throw new System.Exception("Unsupported event type: " + eventType);
@@ -160,6 +180,20 @@ namespace ThemeApi
                 case EventType.Click:
                     CallbackRegistry.RemoveCallback<ClickEvent>(
                         inner, callback);
+                    break;
+                case EventType.FrameUpdate:
+                    CallbackRegistry.RemoveCallback
+                        <FrameUpdateEvent>(
+                        inner, callback);
+                    UnityEventSynthesizer.RemoveListener
+                        <FrameUpdateEvent>(inner);
+                    break;
+                case EventType.ApplicationFocus:
+                    CallbackRegistry.RemoveCallback
+                        <ApplicationFocusEvent>(
+                        inner, callback);
+                    UnityEventSynthesizer.RemoveListener
+                        <ApplicationFocusEvent>(inner);
                     break;
                 default:
                     throw new System.Exception("Unsupported event type: " + eventType);
