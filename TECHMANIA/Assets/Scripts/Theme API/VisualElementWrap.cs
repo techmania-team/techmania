@@ -47,6 +47,9 @@ namespace ThemeApi
         {
             inner.SetEnabled(enabled);
         }
+
+        public IResolvedStyle resolvedStyle => inner.resolvedStyle;
+        public IStyle style => inner.style;
         #endregion
 
         #region Subclass-specific properties
@@ -215,6 +218,20 @@ namespace ThemeApi
         {
             return new UQueryStateWrap(inner.Query(
                 name, className).Build());
+        }
+        #endregion
+
+        #region Style shortcuts
+        public void SetDisplay(bool display)
+        {
+            style.display = display ? DisplayStyle.Flex
+                : DisplayStyle.None;
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            style.visibility = visible ? Visibility.Visible
+                : Visibility.Hidden;
         }
         #endregion
     }

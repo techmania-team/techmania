@@ -13,8 +13,10 @@ audio = tm.audio
 
 welcomeMat = root.Q("welcome-mat")
 welcomeMat.RegisterCallback(eventType.FrameUpdate, function ()
-    print("Update")
+    -- print("Update")
 end)
 welcomeMat.RegisterCallback(eventType.Click, function ()
-    welcomeMat.SetEnabled(false)
+    print("clicked on mat")
+    welcomeMat.SetVisibility(false)
+    root.Q("main-menu").Q("buttons").SetVisibility(true)
 end)
