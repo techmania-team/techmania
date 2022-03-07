@@ -221,6 +221,23 @@ namespace ThemeApi
         }
         #endregion
 
+        #region Class manipulation
+        public IEnumerable<string> GetClasses()
+            => inner.GetClasses();
+        public bool ClassListContains(string className)
+            => inner.ClassListContains(className);
+        public void AddToClassList(string className)
+            => inner.AddToClassList(className);
+        public void RemoveFromClassList(string className)
+            => inner.RemoveFromClassList(className);
+        public void ClearClassList()
+            => inner.ClearClassList();
+        public void EnableInClassList(string className, bool enable)
+            => inner.EnableInClassList(className, enable);
+        public void ToggleInClassList(string className)
+            => inner.ToggleInClassList(className);
+        #endregion
+
         #region Style shortcuts
         public void SetDisplay(bool display)
         {
