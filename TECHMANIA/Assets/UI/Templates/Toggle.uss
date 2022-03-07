@@ -1,0 +1,73 @@
+.toggle-track {
+    width: 42px;
+    height: 25px;
+    background-image: url('project://database/Assets/UI/Templates/ToggleTrack.png?fileID=2800000&guid=a1643958ace01ba4ba5bbc8ca76ae1ab&type=3#ToggleTrack');
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    background-color: rgba(255, 255, 255, 0);
+    overflow: visible;
+}
+
+.toggle-track-on {
+    -unity-background-image-tint-color: var(--primary-color-38-percent);
+    flex-direction: row-reverse;
+}
+
+.toggle-track-off {
+    -unity-background-image-tint-color: var(--disabled-text-color);
+    flex-direction: row;
+}
+
+.toggle-thumb {
+    width: 25px;
+    height: 25px;
+    background-image: url('project://database/Assets/UI/Templates/Circle.png?fileID=2800000&guid=c799946e734660240af8f63a40d2d6ec&type=3#Circle');
+}
+
+.toggle-track-on .toggle-thumb {
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+.toggle-track-off .toggle-thumb {
+    -unity-background-image-tint-color: rgb(153, 153, 153);
+}
+
+.toggle-overlay {
+    position: absolute;
+    left: -25px;
+    top: -25px;
+    right: -25px;
+    bottom: -25px;
+    background-image: url('project://database/Assets/UI/Templates/Circle.png?fileID=2800000&guid=c799946e734660240af8f63a40d2d6ec&type=3#Circle');
+    opacity: 0;
+}
+
+.toggle-track-on .toggle-overlay {
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+.toggle-track-off .toggle-overlay {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.toggle-track:hover .toggle-overlay {
+    opacity: 0.04;
+}
+
+.toggle-track:active .toggle-overlay {
+    opacity: 0.12;
+}
+
+.toggle-track:focus .toggle-overlay {
+    opacity: 0.12;
+}
