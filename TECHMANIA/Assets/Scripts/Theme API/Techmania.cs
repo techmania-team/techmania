@@ -31,5 +31,14 @@ namespace ThemeApi
         #region Audio and video
         public AudioManager audio => audioManager;
         #endregion
+
+        #region Miscellaneous
+        public void ExecuteScript(string name)
+        {
+            string script = GlobalResource
+                .GetThemeContent<TextAsset>(name).text;
+            ScriptSession.Execute(script);
+        }
+        #endregion
     }
 }

@@ -50,6 +50,13 @@ public static class GlobalResource
     #region Theme
     public static Dictionary<string, Object> themeContent;
 
+    /// <summary>
+    /// Returns null if the specified file doesn't exist, or isn't
+    /// the correct type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public static T GetThemeContent<T>(string name) where T : Object
     {
         name = name.ToLower();

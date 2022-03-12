@@ -6,169 +6,6 @@
     background-color: rgb(47, 47, 47);
 }
 
-.text-headline-1 {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Light%20SDF%20non-TMP.asset?fileID=11400000&guid=b16ae80e2c0daf64eb9a9d67e85c430a&type=2#OpenSans-Light SDF non-TMP');
-    color: var(--primary-color);
-    font-size: 128px;
-    letter-spacing: -1.5px;
-}
-
-.text-headline-4 {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
-    color: var(--primary-color);
-    font-size: 44px;
-}
-
-.text-headline-6 {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
-    color: var(--high-emphasis-text-color);
-    font-size: 28px;
-    letter-spacing: 1.2px;
-}
-
-.text-subtitle {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
-    color: var(--medium-emphasis-text-color);
-    font-size: 22px;
-    letter-spacing: 0.9px;
-}
-
-.text-body {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 24px;
-    white-space: normal;
-    letter-spacing: 2px;
-}
-
-.text-caption {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    color: var(--medium-emphasis-text-color);
-    font-size: 16px;
-    letter-spacing: 3.2px;
-}
-
-.text-overline {
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    color: var(--medium-emphasis-text-color);
-    font-size: 14px;
-    letter-spacing: 12px;
-}
-
-.button-text {
-    background-color: rgba(0, 0, 0, 0);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    color: var(--primary-color);
-    font-size: 20px;
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    letter-spacing: 10px;
-    height: 55px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
-}
-
-.button-text:hover {
-    background-color: var(--primary-color-4-percent);
-    color: var(--primary-color);
-    transition-property: background-color;
-    transition-duration: 0.1s;
-}
-
-.button-text:active {
-    background-color: var(--primary-color-12-percent);
-    color: var(--primary-color);
-    transition-duration: 0s;
-}
-
-.button-text:focus {
-    border-left-color: var(--primary-color);
-    border-right-color: var(--primary-color);
-    border-top-color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-}
-
-.button-text:disabled {
-    background-color: rgba(0, 0, 0, 0);
-    color: var(--disabled-text-color);
-}
-
-.button-outlined {
-    background-color: rgba(0, 0, 0, 0);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    color: var(--primary-color);
-    font-size: 20px;
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    letter-spacing: 10px;
-    border-left-color: rgba(255, 255, 255, 0.12);
-    border-right-color: rgba(255, 255, 255, 0.12);
-    border-top-color: rgba(255, 255, 255, 0.12);
-    border-bottom-color: rgba(255, 255, 255, 0.12);
-    height: 55px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.button-outlined:hover {
-    background-color: var(--primary-color-4-percent);
-    color: var(--primary-color);
-    transition-property: background-color;
-    transition-duration: 0.1s;
-}
-
-.button-outlined:active {
-    background-color: var(--primary-color-12-percent);
-    color: var(--primary-color);
-    transition-duration: 0s;
-}
-
-.button-outlined:focus {
-    border-left-color: var(--primary-color);
-    border-right-color: var(--primary-color);
-    border-top-color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-}
-
-.button-outlined:disabled {
-    background-color: rgba(0, 0, 0, 0);
-    color: var(--disabled-text-color);
-}
-
-.button-contained {
-    background-color: var(--primary-color);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    color: rgb(0, 0, 0);
-    font-size: 20px;
-    -unity-font-definition: url('project://database/Assets/UI/Fonts/Lato-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=81a58116683cf124d860eed878588078&type=2#Lato-Regular SDF non-TMP');
-    letter-spacing: 10px;
-    height: 55px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
-}
-
-.button-contained:focus {
-    border-left-color: var(--primary-color-variant);
-    border-right-color: var(--primary-color-variant);
-    border-top-color: var(--primary-color-variant);
-    border-bottom-color: var(--primary-color-variant);
-}
-
 .elevation-shadow {
     position: absolute;
     left: -128px;
@@ -197,4 +34,50 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.unity-text-field {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 55px;
+}
+
+.unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    white-space: nowrap;
+    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
+    color: var(--high-emphasis-text-color);
+    font-size: 22px;
+    border-left-color: var(--disabled-text-color);
+    border-right-color: var(--disabled-text-color);
+    border-top-color: var(--disabled-text-color);
+    border-bottom-color: var(--disabled-text-color);
+}
+
+.unity-text-field__input:hover {
+    border-left-color: var(--medium-emphasis-text-color);
+    border-right-color: var(--medium-emphasis-text-color);
+    border-top-color: var(--medium-emphasis-text-color);
+    border-bottom-color: var(--medium-emphasis-text-color);
+}
+
+.unity-text-field__input:focus {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
 }
