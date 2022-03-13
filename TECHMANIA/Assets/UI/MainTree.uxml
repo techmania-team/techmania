@@ -5,6 +5,7 @@
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
     <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
     <Style src="project://database/Assets/UI/Style/Text%20Field.uss?fileID=7433441132597879392&amp;guid=70472956b6bcd7844b39a64400687152&amp;type=3#Text Field" />
+    <Style src="project://database/Assets/UI/Style/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <ui:VisualElement name="background" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
     <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
@@ -41,5 +42,6 @@
         <ui:Label text="OVERLINE" display-tooltip-when-elided="true" enable-rich-text="true" class="text-overline" />
         <ui:Instance template="Toggle" name="test-toggle" />
         <ui:TextField picking-mode="Ignore" value="filler text" text="filler text" name="test-text-field" class="text-field" style="width: 200px;" />
+        <ui:Slider picking-mode="Ignore" value="42" high-value="100" show-input-field="false" style="width: 200px;" />
     </ui:VisualElement>
 </ui:UXML>

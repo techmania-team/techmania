@@ -1,0 +1,61 @@
+Slider {
+    height: 25px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    min-height: 25px;
+}
+
+Slider #unity-drag-container {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+Slider #unity-tracker {
+    background-color: var(--primary-color-38-percent);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    height: 4px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    position: absolute;
+    left: 0;
+    top: 10.5px;
+    right: 0;
+    bottom: 10.5px;
+}
+
+Slider #unity-dragger {
+    width: 25px;
+    height: 25px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    background-image: url('project://database/Assets/UI/Templates/Circle.png?fileID=21300000&guid=c799946e734660240af8f63a40d2d6ec&type=3#Circle');
+    -unity-background-image-tint-color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0);
+}
