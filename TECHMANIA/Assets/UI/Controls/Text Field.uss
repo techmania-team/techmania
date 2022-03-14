@@ -4,6 +4,17 @@ TextField {
     margin-top: 0;
     margin-bottom: 0;
     height: 55px;
+    overflow: visible;
+}
+
+TextField #mini-label-background {
+    position: absolute;
+    left: 10px;
+    top: -9px;
+    background-color: var(--surface-color);
+}
+
+TextField #mini-label {
 }
 
 TextField #unity-text-input {
