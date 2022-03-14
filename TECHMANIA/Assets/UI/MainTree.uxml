@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
+    <ui:Template name="Slider" src="project://database/Assets/UI/Controls/Slider.uxml?fileID=9197481963319205126&amp;guid=96a6b460681d17a4e8c140fa1a925dd6&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
@@ -44,6 +45,7 @@
         <ui:Instance template="Toggle" name="test-toggle" />
         <ui:TextField picking-mode="Ignore" value="filler text" text="filler text" name="test-text-field" class="text-field" style="width: 200px;" />
         <ui:Instance template="Progress Bar" name="test-progress-bar" style="width: 300px;" />
+        <ui:Instance template="Slider" name="Slider" style="width: 300px;" />
         <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" />
         <ui:RadioButton label="Radio Button" />
     </ui:VisualElement>

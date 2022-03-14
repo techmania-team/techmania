@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
+using System.Reflection;
 
 namespace ThemeApi
 {
@@ -65,17 +66,45 @@ namespace ThemeApi
         public bool IsButton() { return inner is Button; }
         public bool IsToggle() { return inner is Toggle; }
 
-        public string text
+        public string text => (inner as TextElement).text;
+
+        public float lowValue
         {
             get
             {
-                CheckType(typeof(TextElement), "text");
-                return (inner as TextElement).text;
+                if (inner is Slider)
+                    return (inner as Slider).lowValue;
+                if (inner is SliderInt)
+                    return (inner as SliderInt).lowValue;
+                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'lowValue' member.");
             }
             set
             {
-                CheckType(typeof(TextElement), "text");
-                (inner as TextElement).text = value;
+                if (inner is Slider)
+                    (inner as Slider).lowValue = value;
+                if (inner is SliderInt)
+                    (inner as SliderInt).lowValue = (int)value;
+                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'lowValue' member.");
+            }
+        }
+
+        public float highValue
+        {
+            get
+            {
+                if (inner is Slider)
+                    return (inner as Slider).highValue;
+                if (inner is SliderInt)
+                    return (inner as SliderInt).highValue;
+                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'highValue' member.");
+            }
+            set
+            {
+                if (inner is Slider)
+                    (inner as Slider).highValue = value;
+                if (inner is SliderInt)
+                    (inner as SliderInt).highValue = (int)value;
+                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'highValue' member.");
             }
         }
         #endregion
@@ -88,7 +117,9 @@ namespace ThemeApi
             // Capture events: omitted
 
             // Change events
-            Change,
+            ChangeBool,
+            ChangeInt,
+            ChangeFloat,
 
             // Command events: omitted
 
@@ -141,6 +172,22 @@ namespace ThemeApi
             ApplicationFocus,
         }
 
+        private System.Type EventTypeEnumToType(EventType t)
+        {
+            return t switch
+            {
+                EventType.ChangeBool => typeof(ChangeEvent<bool>),
+                EventType.ChangeInt => typeof(ChangeEvent<int>),
+                EventType.ChangeFloat => typeof(ChangeEvent<float>),
+                EventType.Click => typeof(ClickEvent),
+                EventType.FrameUpdate => typeof(FrameUpdateEvent),
+                EventType.ApplicationFocus =>
+                    typeof(ApplicationFocusEvent),
+                _ => throw new System.Exception(
+                    "Unsupported event type: " + t)
+            };
+        }
+
         // Callback parameters:
         // 1. The VisualElementWrap receiving the event
         // 2. The event
@@ -150,28 +197,24 @@ namespace ThemeApi
         {
             callback.CheckType("VisualElementWrap.RegisterCallback",
                 DataType.Function);
+            System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
             {
-                case EventType.Click:
-                    CallbackRegistry.AddCallback<ClickEvent>(
-                        inner, callback, data);
-                    break;
                 case EventType.FrameUpdate:
-                    CallbackRegistry.AddCallback<FrameUpdateEvent>(
-                        inner, callback, data);
                     UnityEventSynthesizer.AddListener
                         <FrameUpdateEvent>(inner);
                     break;
                 case EventType.ApplicationFocus:
-                    CallbackRegistry.AddCallback
-                        <ApplicationFocusEvent>(
-                        inner, callback, data);
                     UnityEventSynthesizer.AddListener
                         <ApplicationFocusEvent>(inner);
                     break;
-                default:
-                    throw new System.Exception("Unsupported event type: " + eventType);
             }
+            MethodInfo methodInfo = typeof(CallbackRegistry)
+                .GetMethod("AddCallback",
+                BindingFlags.Static | BindingFlags.Public)
+                .MakeGenericMethod(genericType);
+            methodInfo.Invoke(null, new object[] {
+                inner, callback, data });
         }
 
         public void UnregisterCallback(EventType eventType,
@@ -180,29 +223,26 @@ namespace ThemeApi
             callback.CheckType(
                 "VisualElementWrap.UnregisterCallback",
                 DataType.Function);
+            System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
             {
-                case EventType.Click:
-                    CallbackRegistry.RemoveCallback<ClickEvent>(
-                        inner, callback);
-                    break;
                 case EventType.FrameUpdate:
-                    CallbackRegistry.RemoveCallback
-                        <FrameUpdateEvent>(
-                        inner, callback);
                     UnityEventSynthesizer.RemoveListener
                         <FrameUpdateEvent>(inner);
                     break;
                 case EventType.ApplicationFocus:
-                    CallbackRegistry.RemoveCallback
-                        <ApplicationFocusEvent>(
-                        inner, callback);
                     UnityEventSynthesizer.RemoveListener
                         <ApplicationFocusEvent>(inner);
                     break;
                 default:
                     throw new System.Exception("Unsupported event type: " + eventType);
             }
+            MethodInfo methodInfo = typeof(CallbackRegistry)
+                .GetMethod("RemoveCallback",
+                BindingFlags.Static | BindingFlags.Public)
+                .MakeGenericMethod(genericType);
+            methodInfo.Invoke(null, new object[] {
+                inner, callback });
         }
         #endregion
 
@@ -252,12 +292,6 @@ namespace ThemeApi
             style.visibility = visible ? Visibility.Visible
                 : Visibility.Hidden;
         }
-
-        //public StyleLength marginLeft => inner.style.marginLeft;
-        //public StyleLength marginRight => inner.style.marginRight;
-        //public StyleLength marginTop => inner.style.marginTop;
-        //public StyleLength marginBottom => inner.style.marginBottom;
-        
         #endregion
     }
 

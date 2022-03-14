@@ -1,13 +1,8 @@
-function SetUpToggle(toggle)
-    toggle.RegisterCallback(eventType.Click, function (toggle)
-        local track = toggle.Q("track")
-        track.ToggleInClassList("toggle-track-on")
-        track.ToggleInClassList("toggle-track-off")
-    end)
-end
-
 function SetUpAllToggles(root)
     root.Query(nil, "toggle-track").ForEach(function (element)
-        SetUpToggle(element)
+        element.RegisterCallback(eventType.Click, function (track)
+            track.ToggleInClassList("toggle-track-on")
+            track.ToggleInClassList("toggle-track-off")
+        end)
     end)
 end
