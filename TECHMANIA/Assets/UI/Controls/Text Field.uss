@@ -7,10 +7,21 @@ TextField {
     overflow: visible;
 }
 
-TextField #mini-label-background {
+TextField #mini-label-container {
     position: absolute;
     left: 10px;
-    top: -9px;
+    top: -14px;
+    height: 30px;
+    flex-direction: row;
+    align-items: center;
+}
+
+TextField #mini-label-background {
+    position: absolute;
+    left: 0;
+    top: 14px;
+    right: 0;
+    bottom: 14px;
     background-color: var(--surface-color);
 }
 
