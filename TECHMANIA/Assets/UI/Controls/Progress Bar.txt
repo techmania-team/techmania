@@ -1,0 +1,3 @@
+function SetProgressBar(progressBar, percent)
+    progressBar.Q("filled-portion").style.right = tm.style.LengthInPercent(100 - percent)
+end

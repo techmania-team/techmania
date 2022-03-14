@@ -22,5 +22,8 @@ welcomeMat.RegisterCallback(eventType.Click, function ()
 end)
 
 tm.ExecuteScript("Assets/UI/Controls/Toggle.txt")
+tm.ExecuteScript("Assets/UI/Controls/Progress Bar.txt")
 
 SetUpAllToggles(root)
+
+SetProgressBar(root.Q("test-progress-bar"), 10)

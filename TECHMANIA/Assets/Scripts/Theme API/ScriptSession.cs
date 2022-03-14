@@ -22,8 +22,10 @@ namespace ThemeApi
             UserData.RegisterType<VisualElement>();
             UserData.RegisterType<ClickEvent>();
             UserData.RegisterType<PanelSettings>();
-            UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<UQueryState<VisualElement>>();
+            UserData.RegisterType<IStyle>();
+            UserData.RegisterType<StyleSheet>();
+            UserData.RegisterType<StyleLength>();
             UserData.RegisterType<Button>();
             UserData.RegisterType<Label>();
             UserData.RegisterType<AudioSource>();

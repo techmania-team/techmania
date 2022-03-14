@@ -252,6 +252,12 @@ namespace ThemeApi
             style.visibility = visible ? Visibility.Visible
                 : Visibility.Hidden;
         }
+
+        //public StyleLength marginLeft => inner.style.marginLeft;
+        //public StyleLength marginRight => inner.style.marginRight;
+        //public StyleLength marginTop => inner.style.marginTop;
+        //public StyleLength marginBottom => inner.style.marginBottom;
+        
         #endregion
     }
 

@@ -11,11 +11,13 @@ namespace ThemeApi
     {
         private static UIDocument uiDocument;
         private static AudioManager audioManager;
+        private static StyleHelper styleHelper;
         [MoonSharpHidden]
         public static void Prepare()
         {
             uiDocument = Object.FindObjectOfType<UIDocument>();
             audioManager = new AudioManager();
+            styleHelper = new StyleHelper();
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
         }
@@ -26,6 +28,8 @@ namespace ThemeApi
             new VisualElementWrap(uiDocument.rootVisualElement);
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
+
+        public StyleHelper style => styleHelper;
         #endregion
 
         #region Audio and video
