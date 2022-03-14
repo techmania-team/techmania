@@ -62,6 +62,8 @@ namespace ThemeApi
         }
 
         public bool IsTextElement() { return inner is TextElement; }
+        public bool IsButton() { return inner is Button; }
+        public bool IsToggle() { return inner is Toggle; }
 
         public string text
         {

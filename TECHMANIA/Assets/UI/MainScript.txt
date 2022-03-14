@@ -21,8 +21,6 @@ welcomeMat.RegisterCallback(eventType.Click, function ()
     root.Q("main-menu").Q("buttons").SetVisibility(true)
 end)
 
-root.Q("test-toggle").RegisterCallback(eventType.Click, function (toggle)
-    local track = toggle.Q("track")
-    track.ToggleInClassList("toggle-track-on")
-    track.ToggleInClassList("toggle-track-off")
-end)
+tm.ExecuteScript("Assets/UI/Controls/Toggle.txt")
+
+SetUpAllToggles(root)
