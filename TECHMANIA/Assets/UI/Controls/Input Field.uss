@@ -1,4 +1,4 @@
-TextField {
+.input-field {
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
@@ -7,28 +7,7 @@ TextField {
     overflow: visible;
 }
 
-TextField #mini-label-container {
-    position: absolute;
-    left: 10px;
-    top: -14px;
-    height: 30px;
-    flex-direction: row;
-    align-items: center;
-}
-
-TextField #mini-label-background {
-    position: absolute;
-    left: 0;
-    top: 14px;
-    right: 0;
-    bottom: 14px;
-    background-color: var(--surface-color);
-}
-
-TextField #mini-label {
-}
-
-TextField #unity-text-input {
+.input-field .unity-base-field__input {
     background-color: rgba(0, 0, 0, 0);
     border-left-width: 2px;
     border-right-width: 2px;
@@ -52,18 +31,52 @@ TextField #unity-text-input {
     border-bottom-color: var(--disabled-text-color);
 }
 
-TextField #unity-text-input:hover {
+.input-field .unity-base-field__input:hover {
     border-left-color: var(--medium-emphasis-text-color);
     border-right-color: var(--medium-emphasis-text-color);
     border-top-color: var(--medium-emphasis-text-color);
     border-bottom-color: var(--medium-emphasis-text-color);
 }
 
-TextField #unity-text-input:focus {
+.input-field .unity-base-field__input:focus {
     border-left-color: var(--primary-color);
     border-right-color: var(--primary-color);
     border-top-color: var(--primary-color);
     border-bottom-color: var(--primary-color);
     --unity-cursor-color: var(--high-emphasis-text-color);
     --unity-selection-color: var(--primary-color-variant);
+}
+
+.input-field .unity-base-popup-field__text {
+    margin-right: 35px;
+}
+
+.input-field .unity-base-popup-field__arrow {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    right: 10px;
+    background-image: url('project://database/Assets/UI/Images/baseline_arrow_drop_down_white_48dp.png?fileID=2800000&guid=4d7224a74c3e99b4fa1f849f09c5323e&type=3#baseline_arrow_drop_down_white_48dp');
+    -unity-background-image-tint-color: var(--medium-emphasis-text-color);
+}
+
+.input-field #mini-label-container {
+    position: absolute;
+    left: 10px;
+    top: -14px;
+    height: 30px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.input-field #mini-label-background {
+    position: absolute;
+    left: 0;
+    top: 13px;
+    right: 0;
+    bottom: 13px;
+    background-color: var(--surface-color);
+}
+
+.input-field #mini-label {
 }
