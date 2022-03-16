@@ -55,5 +55,6 @@
         <ui:ScrollView style="width: 300px; height: 100px;">
             <ui:Label text="This is a paragraph of lengthy text. This is a paragraph of lengthy text. This is a paragraph of lengthy text. This is a paragraph of lengthy text. " display-tooltip-when-elided="true" class="text-body" />
         </ui:ScrollView>
+        <ui:Button display-tooltip-when-elided="true" name="test-card" class="button-card" style="width: 300px; height: 200px;" />
     </ui:VisualElement>
 </ui:UXML>

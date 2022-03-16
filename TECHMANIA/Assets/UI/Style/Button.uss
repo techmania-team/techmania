@@ -15,6 +15,10 @@
     border-right-color: rgba(0, 0, 0, 0);
     border-top-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .button-text:hover {
@@ -59,6 +63,10 @@
     height: 55px;
     padding-left: 20px;
     padding-right: 20px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .button-outlined:hover {
@@ -103,6 +111,10 @@
     border-right-color: rgba(0, 0, 0, 0);
     border-top-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .button-contained:focus {
@@ -110,4 +122,45 @@
     border-right-color: var(--primary-color-variant);
     border-top-color: var(--primary-color-variant);
     border-bottom-color: var(--primary-color-variant);
+}
+
+.button-card {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.button-card:hover {
+    background-color: var(--primary-color-4-percent);
+    color: var(--primary-color);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}
+
+.button-card:active {
+    background-color: var(--primary-color-12-percent);
+    color: var(--primary-color);
+    transition-duration: 0s;
+}
+
+.button-card:focus {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.button-card:disabled {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--disabled-text-color);
 }
