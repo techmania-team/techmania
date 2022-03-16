@@ -1,8 +1,0 @@
-function SetUpAllToggles(root)
-    root.Query(nil, "toggle-track").ForEach(function (element)
-        element.RegisterCallback(eventType.Click, function (track)
-            track.ToggleInClassList("toggle-track-on")
-            track.ToggleInClassList("toggle-track-off")
-        end)
-    end)
-end

@@ -20,10 +20,6 @@ namespace ThemeApi
             // Register types
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
-            UserData.RegisterType<ChangeEvent<bool>>();
-            UserData.RegisterType<ChangeEvent<int>>();
-            UserData.RegisterType<ChangeEvent<float>>();
-            UserData.RegisterType<ClickEvent>();
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<IStyle>();
@@ -32,6 +28,21 @@ namespace ThemeApi
             UserData.RegisterType<Button>();
             UserData.RegisterType<Label>();
             UserData.RegisterType<AudioSource>();
+            foreach (VisualElementWrap.EventType typeEnum in
+                Enum.GetValues(typeof(VisualElementWrap.EventType)))
+            {
+                try
+                {
+                    Type type = VisualElementWrap.EventTypeEnumToType(
+                        typeEnum);
+                    UserData.RegisterType(type);
+                }
+                catch (Exception)
+                {
+                    // Skip unsupported event types
+                    continue;
+                }
+            }
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();

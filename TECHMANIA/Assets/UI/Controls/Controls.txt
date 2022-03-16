@@ -1,0 +1,42 @@
+function SetProgressBar(progressBar, percent)
+    progressBar.Q("filled-portion").style.right = tm.style.LengthInPercent(100 - percent)
+end
+
+function SetUpAllSliders(root)
+    root.Query(nil, "slider").ForEach(function (element)
+        element.RegisterCallback(eventType.ChangeFloat, function (slider, event)
+            local percent = (event.newValue - slider.lowValue) * 100 / (slider.highValue - slider.lowValue)
+            SetProgressBar(element.parent, percent)
+            element.Q("overlay-center").style.left = tm.style.LengthInPercent(percent)
+        end)
+    end)
+end
+
+function SetUpAllToggles(root)
+    root.Query(nil, "toggle-track").ForEach(function (element)
+        element.RegisterCallback(eventType.Click, function (track)
+            track.ToggleInClassList("toggle-track-on")
+            track.ToggleInClassList("toggle-track-off")
+        end)
+    end)
+end
+
+function SetUpAllButtons(root, audio, className)
+    root.Query(nil, className).ForEach(function (element)
+        element.RegisterCallback(eventType.Click, function ()
+            audio.Play("Assets/UI/SFX/Click.wav", audioChannel.SFX)
+        end)
+        element.RegisterCallback(eventType.PointerOver, function ()
+            audio.Play("Assets/UI/SFX/Select.wav", audioChannel.SFX)
+        end)
+    end)
+end
+
+function InitializeControls(root, audio)
+    SetUpAllSliders(root)
+    SetUpAllToggles(root)
+    SetUpAllButtons(root, audio, "button-text")
+    SetUpAllButtons(root, audio, "button-outlined")
+    SetUpAllButtons(root, audio, "button-contained")
+    SetUpAllButtons(root, audio, "button-card")
+end

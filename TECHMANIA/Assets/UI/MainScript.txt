@@ -21,11 +21,7 @@ welcomeMat.RegisterCallback(eventType.Click, function ()
     root.Q("main-menu").Q("buttons").SetVisibility(true)
 end)
 
-tm.ExecuteScript("Assets/UI/Controls/Slider.txt")
-tm.ExecuteScript("Assets/UI/Controls/Toggle.txt")
-tm.ExecuteScript("Assets/UI/Controls/Progress Bar.txt")
-
-SetUpAllSliders(root)
-SetUpAllToggles(root)
+tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
+InitializeControls(root, audio)
 
 SetProgressBar(root.Q("test-progress-bar"), 10)

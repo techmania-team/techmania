@@ -172,13 +172,15 @@ namespace ThemeApi
             ApplicationFocus,
         }
 
-        private System.Type EventTypeEnumToType(EventType t)
+        [MoonSharpHidden]
+        public static System.Type EventTypeEnumToType(EventType t)
         {
             return t switch
             {
                 EventType.ChangeBool => typeof(ChangeEvent<bool>),
                 EventType.ChangeInt => typeof(ChangeEvent<int>),
                 EventType.ChangeFloat => typeof(ChangeEvent<float>),
+                EventType.PointerOver => typeof(PointerOverEvent),
                 EventType.Click => typeof(ClickEvent),
                 EventType.FrameUpdate => typeof(FrameUpdateEvent),
                 EventType.ApplicationFocus =>

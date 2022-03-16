@@ -1,9 +1,0 @@
-function SetUpAllSliders(root)
-    root.Query(nil, "slider").ForEach(function (element)
-        element.RegisterCallback(eventType.ChangeFloat, function (slider, event)
-            local percent = (event.newValue - slider.lowValue) * 100 / (slider.highValue - slider.lowValue)
-            SetProgressBar(element.parent, percent)
-            element.Q("overlay-center").style.left = tm.style.LengthInPercent(percent)
-        end)
-    end)
-end
