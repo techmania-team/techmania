@@ -45,6 +45,7 @@ namespace ThemeApi
             }
             UserData.RegisterType<Time>();
             UserData.RegisterType<Mathf>();
+            UserData.RegisterType<Vector3>();
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();
@@ -53,6 +54,8 @@ namespace ThemeApi
             // Expose Unity classes
             session.Globals["time"] = UserData.CreateStatic<Time>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
+            session.Globals["vector3"] =
+                UserData.CreateStatic<Vector3>();
             // Expose enums
             session.Globals["audioChannel"] = 
                 UserData.CreateStatic<AudioManager.Channel>();

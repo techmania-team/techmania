@@ -1,34 +1,43 @@
 tm = getApi(1)
 root = tm.rootVisualElement
 audio = tm.audio
--- root.Query().ForEach(function(e)
---     if (e.IsTextElement()) then
---         print(e.text)
---     end
--- end)
--- root.Q("test-button").OnClick(function(button)
---     print("button clicked: " .. button.name)
---     audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
--- end)
+
+tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
+InitializeControls(root, audio)
 
 welcomeMat = root.Q("welcome-mat")
-welcomeMat.RegisterCallback(eventType.FrameUpdate, function ()
-    -- print("Update")
-end)
 welcomeMat.RegisterCallback(eventType.Click, function ()
     print("clicked on mat")
     welcomeMat.SetVisibility(false)
     root.Q("main-menu").Q("buttons").SetVisibility(true)
 end)
 
-tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
-InitializeControls(root, audio)
-
 SetProgressBar(root.Q("test-progress-bar"), 10)
 
-tm.StartCoroutine(function ()
-    for i = 1, 100 do
-        print("Current frame: " .. time.frameCount)
-        coroutine.yield()
-    end
-end)
+-- Query example
+-- root.Query().ForEach(function(e)
+--     if (e.IsTextElement()) then
+--         print(e.text)
+--     end
+-- end)
+
+-- Audio example
+-- root.Q("test-button").OnClick(function(button)
+--     print("button clicked: " .. button.name)
+--     audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
+-- end)
+
+-- Vector3 example
+-- function Vector3(x, y, z)
+--     return vector3.__new(x, y, z)
+-- end
+-- v = Vector3(1, 2, 3)
+-- print(v.y)
+
+-- Coroutine example
+-- tm.StartCoroutine(function ()
+--     for i = 1, 100 do
+--         print("Current frame: " .. time.frameCount)
+--         coroutine.yield()
+--     end
+-- end)
