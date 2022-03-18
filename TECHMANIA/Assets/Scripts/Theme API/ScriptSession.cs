@@ -43,11 +43,16 @@ namespace ThemeApi
                     continue;
                 }
             }
+            UserData.RegisterType<Time>();
+            UserData.RegisterType<Mathf>();
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
+            // Expose Unity classes
+            session.Globals["time"] = UserData.CreateStatic<Time>();
+            session.Globals["math"] = UserData.CreateStatic<Mathf>();
             // Expose enums
             session.Globals["audioChannel"] = 
                 UserData.CreateStatic<AudioManager.Channel>();

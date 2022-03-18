@@ -28,7 +28,7 @@ SetProgressBar(root.Q("test-progress-bar"), 10)
 
 tm.StartCoroutine(function ()
     for i = 1, 100 do
-        print("Coroutine running with i = " .. i)
+        print("Current frame: " .. time.frameCount)
         coroutine.yield()
     end
 end)

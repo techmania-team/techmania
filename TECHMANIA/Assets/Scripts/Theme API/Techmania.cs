@@ -12,6 +12,7 @@ namespace ThemeApi
         private static UIDocument uiDocument;
         private static AudioManager audioManager;
         private static StyleHelper styleHelper;
+
         [MoonSharpHidden]
         public static void Prepare()
         {
