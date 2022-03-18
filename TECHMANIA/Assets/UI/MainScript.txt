@@ -25,3 +25,10 @@ tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(root, audio)
 
 SetProgressBar(root.Q("test-progress-bar"), 10)
+
+tm.StartCoroutine(function ()
+    for i = 1, 100 do
+        print("Coroutine running with i = " .. i)
+        coroutine.yield()
+    end
+end)

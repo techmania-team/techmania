@@ -9,7 +9,7 @@ namespace ThemeApi
 {
     public class ScriptSession
     {
-        private static Script session;
+        public static Script session { get; private set; }
 
         public static void Prepare()
         {

@@ -20,6 +20,7 @@ namespace ThemeApi
             styleHelper = new StyleHelper();
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
+            CoroutineRunner.Prepare();
         }
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 
@@ -42,6 +43,15 @@ namespace ThemeApi
             string script = GlobalResource
                 .GetThemeContent<TextAsset>(name).text;
             ScriptSession.Execute(script);
+        }
+
+        public void StartCoroutine(DynValue function)
+        {
+            function.CheckType("Techmania.StartCoroutine", 
+                DataType.Function);
+            CoroutineRunner.Add(
+                ScriptSession.session.CreateCoroutine(function)
+                .Coroutine);
         }
         #endregion
     }
