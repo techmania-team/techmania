@@ -14,6 +14,20 @@ end)
 
 SetProgressBar(root.Q("test-progress-bar"), 10)
 
+function Vector3(x, y, z)
+    return vector3.__new(x, y, z)
+end
+root.Q("button-text").RegisterCallback(eventType.Click, function (button)
+    tm.StartCoroutine(function ()
+        local timeElapsed = 0
+        while (timeElapsed < 5) do
+            timeElapsed = timeElapsed + time.deltaTime
+            button.transform.position = Vector3(timeElapsed * 100, 0, 0)
+            coroutine.yield()
+        end
+    end)
+end)
+
 -- Query example
 -- root.Query().ForEach(function(e)
 --     if (e.IsTextElement()) then
@@ -28,9 +42,6 @@ SetProgressBar(root.Q("test-progress-bar"), 10)
 -- end)
 
 -- Vector3 example
--- function Vector3(x, y, z)
---     return vector3.__new(x, y, z)
--- end
 -- v = Vector3(1, 2, 3)
 -- print(v.y)
 

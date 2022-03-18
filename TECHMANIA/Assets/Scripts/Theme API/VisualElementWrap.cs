@@ -32,7 +32,6 @@ namespace ThemeApi
         public string name => inner.name;
         public VisualElementWrap parent =>
             new VisualElementWrap(inner.parent);
-        public bool visible => inner.visible;
         // If false, this element will ignore pointer events.
         public bool pickable
         {
@@ -51,6 +50,7 @@ namespace ThemeApi
 
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
         public IStyle style => inner.style;
+        public ITransform transform => inner.transform;
         #endregion
 
         #region Subclass-specific properties
@@ -283,17 +283,17 @@ namespace ThemeApi
         #endregion
 
         #region Style shortcuts
-        public void SetDisplay(bool display)
+        public bool display
         {
-            style.display = display ? DisplayStyle.Flex
-                : DisplayStyle.None;
+            get { return style.display == DisplayStyle.Flex; }
+            set {
+                style.display = value
+                    ? DisplayStyle.Flex
+                    : DisplayStyle.None;
+            }
         }
 
-        public void SetVisibility(bool visible)
-        {
-            style.visibility = visible ? Visibility.Visible
-                : Visibility.Hidden;
-        }
+        public bool visible => inner.visible;
         #endregion
     }
 

@@ -23,10 +23,9 @@ namespace ThemeApi
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<IStyle>();
+            UserData.RegisterType<ITransform>();
             UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<StyleLength>();
-            UserData.RegisterType<Button>();
-            UserData.RegisterType<Label>();
             UserData.RegisterType<AudioSource>();
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
