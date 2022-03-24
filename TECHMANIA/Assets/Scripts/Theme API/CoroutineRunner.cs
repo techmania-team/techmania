@@ -7,50 +7,25 @@ namespace ThemeApi
 {
     public class CoroutineRunner : MonoBehaviour
     {
-        private static HashSet<MoonSharp.Interpreter.Coroutine> 
-            luaCoroutines;
+        private static CoroutineRunner instance;
 
-        public static void Prepare()
+        public void Start()
         {
-            luaCoroutines = new 
-                HashSet<MoonSharp.Interpreter.Coroutine>();
+            instance = this;
         }
 
         public static void Add(MoonSharp.Interpreter.Coroutine c)
         {
-            luaCoroutines.Add(c);
+            instance.StartCoroutine(instance.RunLuaCoroutine(c));
         }
 
-        // Update is called once per frame
-        void Update()
+        private IEnumerator RunLuaCoroutine(
+            MoonSharp.Interpreter.Coroutine c)
         {
-            if (luaCoroutines == null) return;
-
-            bool anyCoroutineFinished = false;
-            foreach (var c in luaCoroutines)
+            while (c.State != CoroutineState.Dead)
             {
-                if (c.State == CoroutineState.Dead)
-                {
-                    anyCoroutineFinished = true;
-                }
-                else
-                {
-                    c.Resume();  // Run until the next yield
-                }
-            }
-
-            if (anyCoroutineFinished)
-            {
-                HashSet<MoonSharp.Interpreter.Coroutine> remaining = 
-                    new HashSet<MoonSharp.Interpreter.Coroutine>();
-                foreach (var c in luaCoroutines)
-                {
-                    if (c.State != CoroutineState.Dead)
-                    {
-                        remaining.Add(c);
-                    }
-                }
-                luaCoroutines = remaining;
+                c.Resume();
+                yield return null;
             }
         }
     }
