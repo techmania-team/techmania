@@ -1,0 +1,63 @@
+function WaitForSeconds(seconds)
+    local timer = 0
+    while (timer < seconds) do
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+end
+
+function InitializeWelcomeMat()
+    local mainMenu = root.Q("main-menu")
+    local buttons = mainMenu.Q("buttons")
+    local mat = mainMenu.Q("welcome-mat")
+    mainMenu.display = true
+    mainMenu.visible = true
+    buttons.display = true
+    buttons.visible = false
+    mat.display = true
+    mat.visible = true
+
+    local matStatusSlow = 0
+    local matStatusFast = 1
+    local matStatusHidden = 2
+    local matStatus = matStatusSlow
+
+    function Blink(timer, period)
+        local opacity = math.PingPong(timer, period) / period
+        local smoothOpacity = math.SmoothStep(0, 1, opacity)
+        mat.style.opacity = tm.style.Float(smoothOpacity)
+    end
+    function SlowBlink()
+        local matTimer = 0
+        local period = 1.5
+        while (true) do
+            if (matStatus ~= matStatusSlow) then return end
+            Blink(matTimer, period)
+            matTimer = matTimer + time.deltaTime
+            coroutine.yield()
+        end
+    end
+    function FastBlinkThenShowMenu()
+        local matTimer = 0
+        local period = 0.2
+        while (matTimer < period * 6) do
+            Blink(matTimer, period)
+            matTimer = matTimer + time.deltaTime
+            coroutine.yield()
+        end
+        matStatus = matStatusHidden
+        WaitForSeconds(0.2)
+        mat.display = false
+        buttons.visible = true
+    end
+
+    tm.StartCoroutine(SlowBlink)
+    mat.RegisterCallback(eventType.Click, function ()
+        if (matStatus ~= matStatusSlow) then return end
+        matStatus = matStatusFast
+        audio.Play("Assets/UI/SFX/Game Start.wav", audioChannel.SFX)
+        tm.StartCoroutine(FastBlinkThenShowMenu)
+    end)
+end
+
+InitializeWelcomeMat()

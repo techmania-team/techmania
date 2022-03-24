@@ -13,5 +13,7 @@ namespace ThemeApi
             new StyleLength(new Length(p, LengthUnit.Pixel));
         public StyleLength LengthInPercent(float p) =>
             new StyleLength(new Length(p, LengthUnit.Percent));
+
+        public StyleFloat Float(float f) => new StyleFloat(f);
     }
 }

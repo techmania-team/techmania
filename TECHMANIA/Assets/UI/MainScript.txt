@@ -5,15 +5,11 @@ audio = tm.audio
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(root, audio)
 
+tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
+
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)
 end
-
-welcomeMat = root.Q("welcome-mat")
-welcomeMat.RegisterCallback(eventType.Click, function ()
-    welcomeMat.visible = false
-    root.Q("main-menu").Q("buttons").visible = true
-end)
 
 -- Query example
 -- root.Query().ForEach(function(e)

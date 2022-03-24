@@ -26,6 +26,7 @@ namespace ThemeApi
             UserData.RegisterType<ITransform>();
             UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<StyleLength>();
+            UserData.RegisterType<StyleFloat>();
             UserData.RegisterType<AudioSource>();
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
