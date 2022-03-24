@@ -29,7 +29,11 @@ namespace ThemeApi
         public int childCount => inner.childCount;
         public bool enabledInHierarchy => inner.enabledInHierarchy;
         public bool enabledSelf => inner.enabledSelf;
-        public string name => inner.name;
+        public string name
+        {
+            get { return inner.name; }
+            set { inner.name = value; }
+        }
         public VisualElementWrap parent =>
             new VisualElementWrap(inner.parent);
         // If false, this element will ignore pointer events.
@@ -293,7 +297,11 @@ namespace ThemeApi
             }
         }
 
-        public bool visible => inner.visible;
+        public bool visible
+        {
+            get { return inner.visible; }
+            set { inner.visible = value; }
+        }
         #endregion
     }
 

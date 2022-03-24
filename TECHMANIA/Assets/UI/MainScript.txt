@@ -5,27 +5,14 @@ audio = tm.audio
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(root, audio)
 
-welcomeMat = root.Q("welcome-mat")
-welcomeMat.RegisterCallback(eventType.Click, function ()
-    print("clicked on mat")
-    welcomeMat.SetVisibility(false)
-    root.Q("main-menu").Q("buttons").SetVisibility(true)
-end)
-
-SetProgressBar(root.Q("test-progress-bar"), 10)
-
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)
 end
-root.Q("button-text").RegisterCallback(eventType.Click, function (button)
-    tm.StartCoroutine(function ()
-        local timeElapsed = 0
-        while (timeElapsed < 5) do
-            timeElapsed = timeElapsed + time.deltaTime
-            button.transform.position = Vector3(timeElapsed * 100, 0, 0)
-            coroutine.yield()
-        end
-    end)
+
+welcomeMat = root.Q("welcome-mat")
+welcomeMat.RegisterCallback(eventType.Click, function ()
+    welcomeMat.visible = false
+    root.Q("main-menu").Q("buttons").visible = true
 end)
 
 -- Query example
@@ -51,4 +38,16 @@ end)
 --         print("Current frame: " .. time.frameCount)
 --         coroutine.yield()
 --     end
+-- end)
+
+-- Animation example
+-- root.Q("button-text").RegisterCallback(eventType.Click, function (button)
+--     tm.StartCoroutine(function ()
+--         local timeElapsed = 0
+--         while (timeElapsed < 5) do
+--             timeElapsed = timeElapsed + time.deltaTime
+--             button.transform.position = Vector3(timeElapsed * 100, 0, 0)
+--             coroutine.yield()
+--         end
+--     end)
 -- end)
