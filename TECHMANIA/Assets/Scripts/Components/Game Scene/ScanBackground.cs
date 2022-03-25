@@ -90,6 +90,15 @@ public class ScanBackground : MonoBehaviour
             lanes[i].anchorMax = new Vector2(1f, anchors[i]);
         }
 
+        // Empty touch receivers
+        foreach(EmptyTouchReceiver receiver
+            in GetComponentsInChildren<EmptyTouchReceiver>())
+        {
+            GameSetup.emptyTouchReceiverReference.Add(
+                receiver.gameObject,
+                receiver);
+        }
+
         // Lane dividers
         for (int i = 0; i < laneDividers.Count; i++)
         {
