@@ -582,6 +582,27 @@ public class Game : MonoBehaviour
             initialTime = GameSetup.pattern.PulseToTime(
                 firstScan * PulsesPerScan);
         }
+    }
+
+    private void InitializePatternPostAudio()
+    {
+        GameSetup.noteReference.Clear();
+        GameSetup.repeatHeadReference.Clear();
+        GameSetup.emptyTouchReceiverReference.Clear();
+
+        // Remove all hidden notes with no sound.
+        List<Note> notesToRemove = new List<Note>();
+        foreach (Note n in GameSetup.pattern.notes)
+        {
+            if (n.sound == "" && GameSetup.pattern.IsHiddenNote(n.lane))
+            {
+                notesToRemove.Add(n);
+            }
+        }
+        foreach (Note n in notesToRemove)
+        {
+            GameSetup.pattern.notes.Remove(n);
+        }
 
         // Find last scan. Make sure it ends later than the backing
         // track and BGA, so we don't cut either short.
