@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Panel" src="project://database/Assets/UI/Controls/Panel.uxml?fileID=9197481963319205126&amp;guid=ef0a580985f87cd47b0f5f054f6c9830&amp;type=3#Panel" />
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Slider" src="project://database/Assets/UI/Controls/Slider.uxml?fileID=9197481963319205126&amp;guid=96a6b460681d17a4e8c140fa1a925dd6&amp;type=3#Slider" />
@@ -12,7 +13,7 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
         <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
             <ui:Button text="START" display-tooltip-when-elided="true" class="button-contained" />
@@ -25,6 +26,9 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: flex;">
+        <ui:VisualElement name="content" class="panel-content" />
+    </ui:Instance>
     <ui:VisualElement name="alert-box-container" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
         <ui:VisualElement name="alert-box" class="surface-8dp" style="padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; width: 700px;">
             <ui:Label text="This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. " display-tooltip-when-elided="true" name="alert-text" class="text-body" />

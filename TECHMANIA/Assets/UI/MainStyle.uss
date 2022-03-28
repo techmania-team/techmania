@@ -20,3 +20,15 @@
     -unity-background-scale-mode: stretch-to-fill;
     -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
 }
+
+.panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.panel-content {
+    flex-grow: 1;
+}

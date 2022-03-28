@@ -19,6 +19,8 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+    -unity-background-image-tint-color: var(--primary-color);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .button-text:hover {
@@ -67,6 +69,8 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+    -unity-background-image-tint-color: var(--primary-color);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .button-outlined:hover {
@@ -115,6 +119,8 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 255);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .button-contained:focus {

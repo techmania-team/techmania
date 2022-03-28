@@ -1,0 +1,24 @@
+#top-bar {
+    height: 80px;
+    background-color: var(--elevation-1dp);
+    flex-direction: row;
+}
+
+#top-bar #back-button {
+    background-image: url('project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&guid=0ae2448eb9dfa2047b83216ec12ea8c8&type=3#baseline_arrow_back_white_48dp');
+}
+
+#top-bar .button-in-top-bar {
+    width: 60px;
+    height: 60px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#top-bar #title {
+    -unity-text-align: middle-left;
+    padding-bottom: 4px;
+    margin-left: 10px;
+}

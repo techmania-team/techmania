@@ -21,7 +21,6 @@ namespace ThemeApi
             styleHelper = new StyleHelper();
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
-            CoroutineRunner.Prepare();
         }
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 
