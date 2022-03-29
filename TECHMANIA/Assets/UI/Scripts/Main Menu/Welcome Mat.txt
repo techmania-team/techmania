@@ -1,11 +1,3 @@
-function WaitForSeconds(seconds)
-    local timer = 0
-    while (timer < seconds) do
-        timer = timer + time.deltaTime
-        coroutine.yield()
-    end
-end
-
 function InitializeWelcomeMat()
     local mainMenu = root.Q("main-menu")
     local buttons = mainMenu.Q("buttons")

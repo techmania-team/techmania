@@ -44,6 +44,7 @@ namespace ThemeApi
                 }
             }
             UserData.RegisterType<string>();
+            UserData.RegisterType<float>();
             UserData.RegisterType<Time>();
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
@@ -52,8 +53,9 @@ namespace ThemeApi
             Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
-            // Expose Unity classes
+            // Expose .Net & Unity classes
             session.Globals["string"] = UserData.CreateStatic<string>();
+            session.Globals["float"] = UserData.CreateStatic<float>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =

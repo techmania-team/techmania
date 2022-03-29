@@ -201,7 +201,7 @@ public class L10n
         string s = GetStringFrom(key, instance.current);
         if (s != null) return s;
 
-        Debug.LogError("Key not found: " + key);
+        Debug.LogError("L10n key not found: " + key);
         return "";
     }
 

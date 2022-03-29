@@ -80,15 +80,19 @@ namespace ThemeApi
                     return (inner as Slider).lowValue;
                 if (inner is SliderInt)
                     return (inner as SliderInt).lowValue;
-                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'lowValue' member.");
+                if (inner is Scroller)
+                    return (inner as Scroller).lowValue;
+                throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'lowValue' member.");
             }
             set
             {
                 if (inner is Slider)
                     (inner as Slider).lowValue = value;
-                if (inner is SliderInt)
+                else if (inner is SliderInt)
                     (inner as SliderInt).lowValue = (int)value;
-                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'lowValue' member.");
+                else if (inner is Scroller)
+                    (inner as Scroller).lowValue = value;
+                else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'lowValue' member.");
             }
         }
 
@@ -100,15 +104,63 @@ namespace ThemeApi
                     return (inner as Slider).highValue;
                 if (inner is SliderInt)
                     return (inner as SliderInt).highValue;
-                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'highValue' member.");
+                if (inner is Scroller)
+                    return (inner as Scroller).highValue;
+                throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'highValue' member.");
             }
             set
             {
                 if (inner is Slider)
                     (inner as Slider).highValue = value;
-                if (inner is SliderInt)
+                else if (inner is SliderInt)
                     (inner as SliderInt).highValue = (int)value;
-                throw new System.Exception($"VisualElement {name} is neither a Slider or a SliderInt, and therefore does not have the 'highValue' member.");
+                else if (inner is Scroller)
+                    (inner as Scroller).highValue = value;
+                else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'highValue' member.");
+            }
+        }
+
+        public float value
+        {
+            get
+            {
+                if (inner is Slider)
+                    return (inner as Slider).value;
+                if (inner is SliderInt)
+                    return (inner as SliderInt).value;
+                if (inner is Scroller)
+                    return (inner as Scroller).value;
+                throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'value' member.");
+            }
+            set
+            {
+                if (inner is Slider)
+                    (inner as Slider).value = value;
+                else if (inner is SliderInt)
+                    (inner as SliderInt).value = (int)value;
+                else if (inner is Scroller)
+                    (inner as Scroller).value = value;
+                else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'value' member.");
+            }
+        }
+
+        public VisualElementWrap horizontalScroller
+        {
+            get
+            {
+                CheckType(typeof(ScrollView), "horizontalScroller");
+                return new VisualElementWrap(
+                    (inner as ScrollView).horizontalScroller);
+            }
+        }
+
+        public VisualElementWrap verticalScroller
+        {
+            get
+            {
+                CheckType(typeof(ScrollView), "verticalScroller");
+                return new VisualElementWrap(
+                    (inner as ScrollView).verticalScroller);
             }
         }
         #endregion

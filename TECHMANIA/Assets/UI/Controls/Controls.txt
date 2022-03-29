@@ -1,3 +1,11 @@
+function WaitForSeconds(seconds)
+    local timer = 0
+    while (timer < seconds) do
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+end
+
 function SetProgressBar(progressBar, percent)
     progressBar.Q("filled-portion").style.right = tm.style.LengthInPercent(100 - percent)
 end
@@ -32,6 +40,44 @@ function SetUpAllButtons(root, audio, className)
     end)
 end
 
+function SetUpAllScrollingTexts(root)
+    root.Query(nil, "scrolling-text").ForEach(function (element)
+        tm.StartCoroutine(function ()
+            -- If we need element.horizontalScroller.lowValue/highValue, we have to wait 1 frame
+            -- coroutine.yield()
+            local waitLength = 2
+            local scrollLength = 2
+            local timer = 0
+            while (true) do
+                WaitForSeconds(waitLength)
+                timer = 0
+                while (timer < scrollLength) do
+                    local progress = timer / scrollLength
+                    element.horizontalScroller.value = math.Lerp(
+                        element.horizontalScroller.lowValue,
+                        element.horizontalScroller.highValue,
+                        progress
+                    )
+                    timer = timer + time.deltaTime
+                    coroutine.yield()
+                end
+                WaitForSeconds(waitLength)
+                timer = 0
+                while (timer < scrollLength) do
+                    local progress = timer / scrollLength
+                    element.horizontalScroller.value = math.Lerp(
+                        element.horizontalScroller.lowValue,
+                        element.horizontalScroller.highValue,
+                        1 - progress
+                    )
+                    timer = timer + time.deltaTime
+                    coroutine.yield()
+                end
+            end
+        end)
+    end)
+end
+
 function InitializeControls(root, audio)
     SetUpAllSliders(root)
     SetUpAllToggles(root)
@@ -39,4 +85,5 @@ function InitializeControls(root, audio)
     SetUpAllButtons(root, audio, "button-outlined")
     SetUpAllButtons(root, audio, "button-contained")
     SetUpAllButtons(root, audio, "button-card")
+    SetUpAllScrollingTexts(root)
 end

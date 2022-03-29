@@ -38,7 +38,7 @@
             <ui:VisualElement name="shadow" class="elevation-shadow" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="playground" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: flex-start; display: none; flex-wrap: wrap;">
+    <ui:VisualElement name="playground" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: flex-start; display: flex; flex-wrap: wrap;">
         <ui:Button text="TEXT BUTTON" display-tooltip-when-elided="true" name="button-text" class="button-text" />
         <ui:Button text="TEXT BUTTON" display-tooltip-when-elided="true" name="Button" class="button-outlined" />
         <ui:Button text="TEXT BUTTON" display-tooltip-when-elided="true" name="Button" class="button-contained" />
@@ -56,11 +56,14 @@
             <AttributeOverrides element-name="text-field" text="text field" />
         </ui:Instance>
         <ui:Instance template="Dropdown" name="test-dropdown" style="width: 300px;" />
-        <ui:ScrollView style="width: 300px; height: 300px;">
+        <ui:ScrollView class="scroll-view" style="width: 300px; height: 300px;">
             <ui:Label text="This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. " display-tooltip-when-elided="true" class="text-body" />
         </ui:ScrollView>
         <ui:Button display-tooltip-when-elided="true" name="test-card" class="button-card" style="width: 300px; height: 200px; justify-content: center;">
             <ui:Label text="Card" display-tooltip-when-elided="true" class="text-subtitle" />
         </ui:Button>
+        <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" mode="VerticalAndHorizontal" picking-mode="Ignore" class="scrolling-text" style="width: 200px; flex-direction: column;">
+            <ui:Label text="This is a scrolling text." display-tooltip-when-elided="true" class="text-body" style="width: 100%; -unity-text-align: upper-left;" />
+        </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

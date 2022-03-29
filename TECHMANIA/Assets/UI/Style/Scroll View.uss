@@ -1,22 +1,22 @@
-ScrollView {
+.scroll-view {
 }
 
-ScrollView #unity-low-button {
+.scroll-view #unity-low-button {
     display: none;
 }
 
-ScrollView #unity-high-button {
+.scroll-view #unity-high-button {
     display: none;
 }
 
-ScrollView #unity-slider {
+.scroll-view #unity-slider {
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
 }
 
-ScrollView #unity-tracker {
+.scroll-view #unity-tracker {
     background-color: rgba(0, 0, 0, 0);
     border-left-width: 0;
     border-right-width: 0;
@@ -24,10 +24,13 @@ ScrollView #unity-tracker {
     border-bottom-width: 0;
 }
 
-ScrollView #unity-dragger {
+.scroll-view #unity-dragger {
     background-color: var(--elevation-4dp);
     border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
     border-bottom-width: 0;
+}
+
+.scrolling-text {
 }
