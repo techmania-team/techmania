@@ -43,6 +43,7 @@ namespace ThemeApi
                     continue;
                 }
             }
+            UserData.RegisterType<string>();
             UserData.RegisterType<Time>();
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
@@ -52,6 +53,7 @@ namespace ThemeApi
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
             // Expose Unity classes
+            session.Globals["string"] = UserData.CreateStatic<string>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =

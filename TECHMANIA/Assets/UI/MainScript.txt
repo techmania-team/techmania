@@ -2,6 +2,10 @@ tm = getApi(1)
 root = tm.rootVisualElement
 audio = tm.audio
 
+l10n = tm.l10n
+l10n.Initialize(tm.LoadTextFile("Assets/UI/String Table.csv"))
+l10n.ApplyLocale("zh-Hans")
+
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(root, audio)
 

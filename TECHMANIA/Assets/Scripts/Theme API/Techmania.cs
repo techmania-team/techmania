@@ -12,6 +12,7 @@ namespace ThemeApi
         private static UIDocument uiDocument;
         private static AudioManager audioManager;
         private static StyleHelper styleHelper;
+        private static ThemeL10n themeL10n;
 
         [MoonSharpHidden]
         public static void Prepare()
@@ -19,9 +20,11 @@ namespace ThemeApi
             uiDocument = Object.FindObjectOfType<UIDocument>();
             audioManager = new AudioManager();
             styleHelper = new StyleHelper();
+            themeL10n = new ThemeL10n(uiDocument.rootVisualElement);
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
         }
+
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 
             uiDocument.visualTreeAsset;
@@ -38,6 +41,14 @@ namespace ThemeApi
         #endregion
 
         #region Miscellaneous
+        public static ThemeL10n l10n => themeL10n;
+
+        public string LoadTextFile(string name)
+        {
+            return GlobalResource.GetThemeContent<TextAsset>(
+                name).text;
+        }
+
         public void ExecuteScript(string name)
         {
             string script = GlobalResource

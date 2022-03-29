@@ -14,6 +14,19 @@ using UnityEngine.Events;
 //   Field 1 - key
 //   Same field as the locale in header - string content
 
+// On keys
+//
+// In the system instance, keys can be any string as it's up to
+// LocalizeString to match them.
+//
+// In the theme instance, keys come in 2 types:
+// 1. a series of space-separated element names, including #
+// 2. an arbitrary string that doesn't contain #
+//
+// For type 1, ThemeL10n will look for each element from the tree
+// and replace its text.
+// For type 2, ThemeL10n works the same way as the system instance.
+
 public class Locale
 {
     public string languageName;
@@ -40,14 +53,10 @@ public class L10n
     public static L10n systemInstance;
     public static L10n themeInstance;
 
-    public L10n()
-    {
-    }
-
     // Static fields
     public static event UnityAction LocaleChanged;
     private Dictionary<string, Locale> locales;
-    private Locale current;
+    public Locale current { get; private set; }
     public const string kDefaultLocale = "en";
 
     private static L10n GetInstance(Instance instanceType)
@@ -183,7 +192,7 @@ public class L10n
         Instance instanceType = Instance.System)
     {
         L10n instance = GetInstance(instanceType);
-        if (instance.current == null)
+        if (instance == null || instance.current == null)
         {
             // String table not yet loaded, nothing we can do.
             return "";
