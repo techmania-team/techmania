@@ -53,7 +53,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         catch (Exception e)
         {
             messageDialog.Show(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                     "new_track_error_format",
                     newDir,
                     e.Message));
@@ -69,7 +69,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         }
         catch (Exception e)
         {
-            messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
+            messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                 "new_track_error_format",
                     filename,
                     e.Message));

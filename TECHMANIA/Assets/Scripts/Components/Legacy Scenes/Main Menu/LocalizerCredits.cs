@@ -11,7 +11,7 @@ public class LocalizerCredits : MonoBehaviour
 
         List<string> lines = new List<string>();
         foreach (KeyValuePair<string, List<string>> pair in
-            Locale.GetLanguageNameToLocalizerNames())
+            L10n.GetLanguageNameToLocalizerNames(L10n.Instance.System))
         {
             if (pair.Value.Count == 0) continue;
             lines.Add(string.Join(", ", pair.Value) +

@@ -743,12 +743,12 @@ public class Game : MonoBehaviour
         switch (GameSetup.pattern.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
-                feverInstruction.text = Locale.GetString(
+                feverInstruction.text = L10n.GetString(
                     "game_fever_instruction_touch");
                 break;
             case ControlScheme.Keys:
             case ControlScheme.KM:
-                feverInstruction.text = Locale.GetString(
+                feverInstruction.text = L10n.GetString(
                     "game_fever_instruction_keys_km");
                 break;
         }
@@ -1849,7 +1849,7 @@ public class Game : MonoBehaviour
             feverTimer = null;
             feverState = FeverState.Idle;
             int feverBonus = score.FeverOff();
-            feverBonusText.text = Locale.GetStringAndFormat(
+            feverBonusText.text = L10n.GetStringAndFormat(
                 "game_fever_bonus_text", feverBonus);
             feverBonusAnimator.SetTrigger("Show");
         }

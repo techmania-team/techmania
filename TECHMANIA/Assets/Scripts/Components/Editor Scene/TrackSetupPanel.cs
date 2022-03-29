@@ -103,7 +103,7 @@ public class TrackSetupPanel : MonoBehaviour
         SFB.ExtensionFilter[] extensionFilters =
             new SFB.ExtensionFilter[2];
         extensionFilters[0] = new SFB.ExtensionFilter(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_resource_tab_import_dialog_supported_formats"),
             new string[] {
                 "wav",
@@ -114,11 +114,11 @@ public class TrackSetupPanel : MonoBehaviour
                 "wmv"
             });
         extensionFilters[1] = new SFB.ExtensionFilter(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_resource_tab_import_dialog_all_files"),
             new string[] { "*" });
         string[] sources = SFB.StandaloneFileBrowser.OpenFilePanel(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_resource_tab_import_dialog_title"),
             "",
             extensionFilters, multiselect: true);
@@ -148,7 +148,7 @@ public class TrackSetupPanel : MonoBehaviour
                 if (i == 10)
                 {
                     fileList += "\n";
-                    fileList += Locale.GetStringAndFormat(
+                    fileList += L10n.GetStringAndFormat(
                         "track_setup_resource_tab_overwrite_omitted_files",
                         filesToBeOverwritten.Count - 10);
                     break;
@@ -160,12 +160,12 @@ public class TrackSetupPanel : MonoBehaviour
                 }
             }
             confirmDialog.Show(
-                Locale.GetStringAndFormat(
+                L10n.GetStringAndFormat(
                     "track_setup_resource_tab_overwrite_warning",
                     fileList),
-                Locale.GetString(
+                L10n.GetString(
                     "track_setup_resource_tab_overwrite_confirm"),
-                Locale.GetString(
+                L10n.GetString(
                     "track_setup_resource_tab_overwrite_cancel"),
                 () =>
                 {
@@ -189,7 +189,7 @@ public class TrackSetupPanel : MonoBehaviour
             catch (Exception e)
             {
                 messageDialog.Show(
-                    Locale.GetStringAndFormatIncludingPaths(
+                    L10n.GetStringAndFormatIncludingPaths(
                         "track_setup_resource_tab_import_error_format",
                         pair.Item1,
                         pair.Item2,
@@ -318,12 +318,12 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDeleteTrackButtonClick()
     {
         confirmDialog.Show(
-            Locale.GetStringAndFormatIncludingPaths(
+            L10n.GetStringAndFormatIncludingPaths(
                 "track_setup_metadata_tab_delete_track_confirmation",
                 EditorContext.trackFolder),
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_metadata_tab_delete_track_confirm"),
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_metadata_tab_delete_track_cancel"),
             () =>
             {
@@ -416,13 +416,13 @@ public class TrackSetupPanel : MonoBehaviour
         patternAuthor.SetTextWithoutNotify(m.author);
         controlScheme.options.Clear();
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_patterns_tab_control_scheme_touch")));
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_patterns_tab_control_scheme_keys")));
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            Locale.GetString(
+            L10n.GetString(
                 "track_setup_patterns_tab_control_scheme_km")));
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
         controlScheme.RefreshShownValue();

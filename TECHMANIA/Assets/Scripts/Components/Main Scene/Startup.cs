@@ -40,8 +40,8 @@ public class Startup : MonoBehaviour
         LoadRuleset();
         Paths.ApplyCustomDataLocation();
 
-        Locale.Initialize(stringTable);
-        Locale.SetLocale(Options.instance.locale);
+        L10n.Initialize(stringTable.text, L10n.Instance.System);
+        L10n.SetLocale(Options.instance.locale, L10n.Instance.System);
 
         SpriteSheet.PrepareEmptySpriteSheet();
         Records.RefreshInstance();

@@ -13,20 +13,20 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
+    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
         <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
-            <ui:Button text="START" display-tooltip-when-elided="true" class="button-contained" />
-            <ui:Button text="EDITOR" display-tooltip-when-elided="true" class="button-outlined" />
-            <ui:Button text="OPTIONS" display-tooltip-when-elided="true" class="button-outlined" />
-            <ui:Button text="INFORMATION" display-tooltip-when-elided="true" class="button-outlined" />
-            <ui:Button text="QUIT" display-tooltip-when-elided="true" class="button-outlined" />
+            <ui:Button text="START" display-tooltip-when-elided="true" name="start-button" class="button-contained" />
+            <ui:Button text="EDITOR" display-tooltip-when-elided="true" name="editor-button" class="button-outlined" />
+            <ui:Button text="OPTIONS" display-tooltip-when-elided="true" name="options-button" class="button-outlined" />
+            <ui:Button text="INFORMATION" display-tooltip-when-elided="true" name="information-button" class="button-outlined" />
+            <ui:Button text="QUIT" display-tooltip-when-elided="true" name="quit-button" class="button-outlined" />
         </ui:VisualElement>
         <ui:VisualElement name="welcome-mat" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; display: flex;">
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <ui:VisualElement name="content" class="panel-content" />
     </ui:Instance>
     <ui:VisualElement name="alert-box-container" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">

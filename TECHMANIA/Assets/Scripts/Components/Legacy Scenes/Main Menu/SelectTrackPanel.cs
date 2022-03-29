@@ -286,7 +286,7 @@ public class SelectTrackPanel : MonoBehaviour
                         => "select_track_upgrade_error_format",
                     _ => ""
                 };
-                string message = Locale.
+                string message = L10n.
                     GetStringAndFormatIncludingPaths(
                         key,
                         error.trackFile,
@@ -364,7 +364,7 @@ public class SelectTrackPanel : MonoBehaviour
         if (cardToTrack.Count < tracks.Count)
         {
             trackStatusText.gameObject.SetActive(true);
-            trackStatusText.text = Locale.GetStringAndFormat(
+            trackStatusText.text = L10n.GetStringAndFormat(
                 "select_track_some_tracks_hidden_text",
                 tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
@@ -373,7 +373,7 @@ public class SelectTrackPanel : MonoBehaviour
             cardToTrack.Count + cardToError.Count == 0)
         {
             trackStatusText.gameObject.SetActive(true);
-            trackStatusText.text = Locale.GetString(
+            trackStatusText.text = L10n.GetString(
                 "select_track_no_track_text");
         }
         else
@@ -398,7 +398,7 @@ public class SelectTrackPanel : MonoBehaviour
                 }
                 if (anyUpgradeError) break;
             }
-            messageDialog.Show(Locale.GetString(
+            messageDialog.Show(L10n.GetString(
                 anyUpgradeError ?
                 "select_track_upgrade_complete_with_error_message" :
                 "select_track_upgrade_complete_message"));
@@ -510,10 +510,10 @@ public class SelectTrackPanel : MonoBehaviour
         if (!GlobalResource.anyOutdatedTrack) return;
 
         confirmDialog.Show(
-            Locale.GetString(
+            L10n.GetString(
                 "select_track_upgrade_version_confirmation"),
-            Locale.GetString("select_track_upgrade_version_confirm"),
-            Locale.GetString("select_track_upgrade_version_cancel"),
+            L10n.GetString("select_track_upgrade_version_confirm"),
+            L10n.GetString("select_track_upgrade_version_cancel"),
             () =>
             {
                 GlobalResourceLoader.ClearCachedTrackList();

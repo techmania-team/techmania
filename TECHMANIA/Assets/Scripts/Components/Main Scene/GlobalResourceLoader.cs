@@ -73,7 +73,7 @@ public class GlobalResourceLoader : MonoBehaviour
         catch (Exception ex)
         {
             completeCallback?.Invoke(Status.Error(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_note_skin_error_format",
                 ex.Message))); 
             return;
@@ -102,7 +102,7 @@ public class GlobalResourceLoader : MonoBehaviour
         catch (Exception ex)
         {
             completeCallback?.Invoke(Status.Error(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_vfx_skin_error_format",
                 ex.Message)));
             return;
@@ -131,7 +131,7 @@ public class GlobalResourceLoader : MonoBehaviour
         catch (Exception ex)
         {
             completeCallback?.Invoke(Status.Error(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_combo_skin_error_format",
                 ex.Message)));
             return;
@@ -178,7 +178,7 @@ public class GlobalResourceLoader : MonoBehaviour
         catch (Exception ex)
         {
             completeCallback?.Invoke(Status.Error(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_game_ui_skin_error_format",
                 ex.Message)));
             return;
@@ -687,12 +687,12 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         if (!File.Exists(themePath))
         {
-            string errorMessage = Locale.GetStringAndFormat(
+            string errorMessage = L10n.GetStringAndFormat(
                 "resource_loader_theme_not_found",
                 Options.instance.theme);
             if (Options.instance.theme != Options.kDefaultTheme)
             {
-                errorMessage += "\n" + Locale.GetString(
+                errorMessage += "\n" + L10n.GetString(
                     "resource_loader_revert_default_theme");
             }
             completeCallback?.Invoke(Status.Error(errorMessage));
@@ -720,12 +720,12 @@ public class GlobalResourceLoader : MonoBehaviour
         AssetBundle bundle = bundleRequest.assetBundle;
         Action reportFailedToLoadError = () =>
         {
-            string errorMessage = Locale.GetStringAndFormat(
+            string errorMessage = L10n.GetStringAndFormat(
                 "resource_loader_theme_failed_to_load",
                 Options.instance.theme);
             if (Options.instance.theme != Options.kDefaultTheme)
             {
-                errorMessage += "\n" + Locale.GetString(
+                errorMessage += "\n" + L10n.GetString(
                     "resource_loader_revert_default_theme");
             }
             Options.RestoreVSync();

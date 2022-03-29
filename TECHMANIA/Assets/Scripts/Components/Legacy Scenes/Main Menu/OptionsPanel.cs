@@ -131,7 +131,7 @@ public class OptionsPanel : MonoBehaviour
 
         languageDropdown.ClearOptions();
         foreach (KeyValuePair<string, string> pair in
-            Locale.GetLocaleToLanguageName())
+            L10n.GetLocaleToLanguageName(L10n.Instance.System))
         {
             languageDropdown.options.Add(new TMP_Dropdown.OptionData(
                 pair.Value));
@@ -249,12 +249,13 @@ public class OptionsPanel : MonoBehaviour
     public void OnLanguageChanged(int value)
     {
         foreach (KeyValuePair<string, string> pair in
-            Locale.GetLocaleToLanguageName())
+            L10n.GetLocaleToLanguageName(L10n.Instance.System))
         {
             if (pair.Value == languageDropdown.options[value].text)
             {
                 Options.instance.locale = pair.Key;
-                Locale.SetLocale(Options.instance.locale);
+                L10n.SetLocale(
+                    Options.instance.locale, L10n.Instance.System);
                 break;
             }
         }
@@ -292,7 +293,7 @@ public class OptionsPanel : MonoBehaviour
             }
             catch (System.IO.FileNotFoundException)
             {
-                messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
+                messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_not_found_error_format",
                     Paths.GetRulesetFilePath()));
                 Options.instance.ruleset = Options.Ruleset.Standard;
@@ -300,7 +301,7 @@ public class OptionsPanel : MonoBehaviour
             }
             catch (System.Exception ex)
             {
-                messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
+                messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_load_error_format",
                     ex.Message));
                 Options.instance.ruleset = Options.Ruleset.Standard;

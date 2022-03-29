@@ -54,7 +54,7 @@ public class TouchscreenTestPanel : MonoBehaviour
                                 t.position);
                         indicator.GetComponentInChildren
                             <TextMeshProUGUI>()
-                            .text = Locale.GetStringAndFormat(
+                            .text = L10n.GetStringAndFormat(
                                 "touchscreen_test_finger_indicator",
                                 t.fingerId);
                         fingerIdToIndicator.Add(t.fingerId, indicator);

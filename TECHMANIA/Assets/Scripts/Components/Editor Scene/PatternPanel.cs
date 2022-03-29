@@ -1475,7 +1475,7 @@ public class PatternPanel : MonoBehaviour
         string issue = EditorContext.Pattern.Inspect(notesWithIssue);
         if (issue == null)
         {
-            snackbar.Show(Locale.GetString(
+            snackbar.Show(L10n.GetString(
                 "pattern_inspection_no_issue"));
         }
         else
@@ -3573,7 +3573,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (error != null)
         {
-            messageDialog.Show(Locale.GetStringAndFormatIncludingPaths(
+            messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                 "pattern_panel_resource_loading_error_format",
                 error));
         }

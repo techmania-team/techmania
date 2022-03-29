@@ -42,7 +42,7 @@ public class ResultsPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        title.text = Locale.GetString(Game.score.stageFailed ?
+        title.text = L10n.GetString(Game.score.stageFailed ?
             "result_panel_stage_failed_title" :
             "result_panel_stage_clear_title");
         GameSetup.patternBeforeApplyingModifier
@@ -133,11 +133,11 @@ public class ResultsPanel : MonoBehaviour
         switch (Options.instance.ruleset)
         {
             case Options.Ruleset.Standard:
-                ruleset.text = Locale.GetString(
+                ruleset.text = L10n.GetString(
                     "options_ruleset_standard");
                 break;
             case Options.Ruleset.Legacy:
-                ruleset.text = Locale.GetString(
+                ruleset.text = L10n.GetString(
                     "options_ruleset_legacy");
                 if (GameSetup.pattern.legacyRulesetOverride.HasAny())
                 {
@@ -146,7 +146,7 @@ public class ResultsPanel : MonoBehaviour
                 }
                 break;
             case Options.Ruleset.Custom:
-                ruleset.text = Locale.GetString(
+                ruleset.text = L10n.GetString(
                     "options_ruleset_custom");
                 break;
         }

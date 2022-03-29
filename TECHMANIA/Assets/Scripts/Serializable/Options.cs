@@ -131,7 +131,7 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        locale = Locale.kDefaultLocale;
+        locale = L10n.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
         showJudgementTally = false;
@@ -551,58 +551,58 @@ public class Modifiers
     {
         if (noteOpacity != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 noteOpacityDisplayKeys[(int)noteOpacity]));
         }
         if (scanlineOpacity != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
         }
         if (scanDirection != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 scanDirectionDisplayKeys[(int)scanDirection]));
         }
         if (notePosition != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 notePositionDisplayKeys[(int)notePosition]));
         }
         if (scanPosition != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 scanPositionDisplayKeys[(int)scanPosition]));
         }
         if (fever != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 feverDisplayKeys[(int)fever]));
         }
         if (keysound != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 keysoundDisplayKeys[(int)keysound]));
         }
         if (assistTick != 0)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 assistTickDisplayKeys[(int)assistTick]));
         }
 
         if (mode != 0)
         {
-            specialSegments.Add(Locale.GetString(
+            specialSegments.Add(L10n.GetString(
                 modeDisplayKeys[(int)mode]));
         }
         if (controlOverride != 0)
         {
-            specialSegments.Add(Locale.GetString(
+            specialSegments.Add(L10n.GetString(
                 controlOverrideDisplayKeys[(int)controlOverride]));
         }
         if (scrollSpeed != 0)
         {
-            specialSegments.Add(Locale.GetString(
+            specialSegments.Add(L10n.GetString(
                 scrollSpeedDisplayKeys[(int)scrollSpeed]));
         }
     }
@@ -837,7 +837,7 @@ public class OptionsV1 : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        locale = Locale.kDefaultLocale;
+        locale = L10n.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
         showJudgementTally = false;

@@ -9,18 +9,18 @@ public class LocalizeString : MonoBehaviour
 
     private void OnEnable()
     {
-        Locale.LocaleChanged += Localize;
+        L10n.LocaleChanged += Localize;
         Localize();
     }
 
     private void OnDisable()
     {
-        Locale.LocaleChanged -= Localize;
+        L10n.LocaleChanged -= Localize;
     }
 
     private void Localize()
     {
         if (key == "") return;
-        GetComponent<TextMeshProUGUI>().text = Locale.GetString(key);
+        GetComponent<TextMeshProUGUI>().text = L10n.GetString(key);
     }
 }

@@ -246,7 +246,7 @@ public class ResourceLoader : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = Locale.GetStringAndFormatIncludingPaths(
+            error = L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_error_format",
                 fullPath,
                 request.error);
@@ -257,7 +257,7 @@ public class ResourceLoader : MonoBehaviour
 
         if (clip == null)
         {
-            error = Locale.GetStringAndFormatIncludingPaths(
+            error = L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_error_format",
                 fullPath,
                 request.error);
@@ -266,7 +266,7 @@ public class ResourceLoader : MonoBehaviour
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = Locale.GetStringAndFormatIncludingPaths(
+            error = L10n.GetStringAndFormatIncludingPaths(
                 "resource_loader_unsupported_format_error_format",
                 fullPath);
             return;
@@ -308,7 +308,7 @@ public class ResourceLoader : MonoBehaviour
         UnityAction reportResourceLoaderError = () =>
         {
             loadImageCompleteCallback?.Invoke(
-                Status.Error(Locale.GetStringAndFormatIncludingPaths(
+                Status.Error(L10n.GetStringAndFormatIncludingPaths(
                     "resource_loader_error_format",
                     fullPath, request.error)));
         };
@@ -329,7 +329,7 @@ public class ResourceLoader : MonoBehaviour
         {
             loadImageCompleteCallback?.Invoke(
                 Status.Error(
-                Locale.GetStringAndFormatIncludingPaths(
+                L10n.GetStringAndFormatIncludingPaths(
                     "resource_loader_unsupported_format_error_format",
                     fullPath)));
             yield break;

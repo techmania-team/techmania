@@ -13,11 +13,11 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
         if (EditorContext.Dirty)
         {
             confirmDialog.Show(
-                Locale.GetString(
+                L10n.GetString(
                     "track_setup_discard_changes_confirmation"),
-                Locale.GetString(
+                L10n.GetString(
                     "track_setup_discard_changes_confirm"),
-                Locale.GetString(
+                L10n.GetString(
                     "track_setup_discard_changes_cancel"),
                 () =>
                 {

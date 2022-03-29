@@ -179,14 +179,14 @@ public class ModifierSidesheet : MonoBehaviour
             regularSegments, specialSegments);
         if (noVideo)
         {
-            regularSegments.Add(Locale.GetString(
+            regularSegments.Add(L10n.GetString(
                 "modifier_sidesheet_no_video_label"));
         }
 
         List<string> allSegments = new List<string>();
         if (regularSegments.Count + specialSegments.Count == 0)
         {
-            allSegments.Add(Locale.GetString(
+            allSegments.Add(L10n.GetString(
                 "select_pattern_modifier_none"));
         }
         for (int i = 0; i < regularSegments.Count; i++)

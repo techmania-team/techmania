@@ -46,7 +46,7 @@ public class LoadScreen : MonoBehaviour
             };
 
         // Step 1: load skins.
-        progressLine1.text = Locale.GetStringAndFormat(
+        progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_skins", 1, 3);
         GetComponent<GlobalResourceLoader>().LoadAllSkins(
             progressCallback, completeCallback);
@@ -55,7 +55,7 @@ public class LoadScreen : MonoBehaviour
             !messageDialog.gameObject.activeSelf);
 
         // Step 2: load track list.
-        progressLine1.text = Locale.GetStringAndFormat(
+        progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_track_list", 2, 3);
         loaded = false;
         GetComponent<GlobalResourceLoader>().LoadTrackList(
@@ -80,7 +80,7 @@ public class LoadScreen : MonoBehaviour
                     QuitGame();
                 });
             };
-        progressLine1.text = Locale.GetStringAndFormat(
+        progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_theme", 3, 3);
         loaded = false;
         GetComponent<GlobalResourceLoader>().LoadTheme(
@@ -95,7 +95,7 @@ public class LoadScreen : MonoBehaviour
             <VisualTreeAsset>(mainTreePath);
         if (mainTree == null)
         {
-            messageDialog.Show($"{Locale.GetString("theme_error_critical_file_missing")}\n\n{mainTreePath}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+            messageDialog.Show($"{L10n.GetString("theme_error_critical_file_missing")}\n\n{mainTreePath}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
             yield break;
         }
         string mainScriptPath = "assets/ui/mainscript.txt";
@@ -103,7 +103,7 @@ public class LoadScreen : MonoBehaviour
             <TextAsset>(mainScriptPath);
         if (mainScript == null)
         {
-            messageDialog.Show($"{Locale.GetString("theme_error_critical_file_missing")}\n\n{mainScriptPath}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+            messageDialog.Show($"{L10n.GetString("theme_error_critical_file_missing")}\n\n{mainScriptPath}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
             yield break;
         }
 
@@ -118,7 +118,7 @@ public class LoadScreen : MonoBehaviour
         }
         catch (ThemeApi.ApiNotSupportedException)
         {
-            messageDialog.Show($"{Locale.GetString("theme_error_api_not_supported")}\n\n{Locale.GetString("theme_error_instruction")}", () => QuitGame());
+            messageDialog.Show($"{L10n.GetString("theme_error_api_not_supported")}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
         }
     }
 
@@ -135,7 +135,7 @@ public class LoadScreen : MonoBehaviour
         revertButtonContainer.SetActive(true);
         for (int i = 5; i >= 1; i--)
         {
-            revertMessage.text = Locale.GetStringAndFormat(
+            revertMessage.text = L10n.GetStringAndFormat(
                 "load_screen_revert_default_theme_label", i);
             yield return new WaitForSeconds(1f);
         }

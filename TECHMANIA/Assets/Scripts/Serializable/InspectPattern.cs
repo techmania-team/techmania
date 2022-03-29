@@ -90,7 +90,7 @@ public partial class Pattern
             chainHeadsAndNodes[0].type == NoteType.ChainNode)
         {
             notesWithIssue.Add(chainHeadsAndNodes[0]);
-            return Locale.GetString(
+            return L10n.GetString(
                 "pattern_inspection_chain_node_with_no_head");
         }
         for (int i = 0; i < chainHeadsAndNodes.Count; i++)
@@ -100,7 +100,7 @@ public partial class Pattern
                 chainHeadsAndNodes[i + 1].type == NoteType.ChainHead))
             {
                 notesWithIssue.Add(chainHeadsAndNodes[i]);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_chain_head_with_no_node");
             }
             if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
@@ -108,7 +108,7 @@ public partial class Pattern
                     chainHeadsAndNodes[i].lane) != 1)
             {
                 notesWithIssue.Add(chainHeadsAndNodes[i]);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_chain_node_not_in_adjacent_lane");
             }
             if (chainHeadsAndNodes[i].type == NoteType.ChainNode &&
@@ -116,7 +116,7 @@ public partial class Pattern
                 chainHeadsAndNodes[i].GetScanNumber(bps))
             {
                 notesWithIssue.Add(chainHeadsAndNodes[i]);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_chain_node_crosses_scans");
             }
         }
@@ -133,7 +133,7 @@ public partial class Pattern
                     Mathf.Abs(p.lane) > Mathf.Epsilon)
                 {
                     notesWithIssue.Add(n);
-                    return Locale.GetString(
+                    return L10n.GetString(
                         "pattern_inspection_drag_leaves_lane_in_keys");
                 }
                 float lane = p.lane + n.lane;
@@ -141,7 +141,7 @@ public partial class Pattern
                     lane >= patternMetadata.playableLanes + 0.5f)
                 {
                     notesWithIssue.Add(n);
-                    return Locale.GetString(
+                    return L10n.GetString(
                         "pattern_inspection_drag_leaves_playable_lanes");
                 }
             }
@@ -154,7 +154,7 @@ public partial class Pattern
             if (startScan != endScan)
             {
                 notesWithIssue.Add(n);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_drag_crosses_scans");
             }
         }
@@ -166,7 +166,7 @@ public partial class Pattern
             if (n.duration >= pulsesPerScan * 2)
             {
                 notesWithIssue.Add(n);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_hold_longer_than_two_scans");
             }
         }
@@ -179,14 +179,14 @@ public partial class Pattern
                 s[0].type == NoteType.RepeatHold)
             {
                 notesWithIssue.Add(s[0]);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_repeat_note_with_no_head");
             }
             Note head = s[0];
             if (s.Count == 1)
             {
                 notesWithIssue.Add(head);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_repeat_head_with_no_repeat");
             }
             for (int i = 1; i < s.Count; i++)
@@ -200,7 +200,7 @@ public partial class Pattern
                 if (endPulse - head.pulse >= pulsesPerScan * 2)
                 {
                     notesWithIssue.Add(current);
-                    return Locale.GetString(
+                    return L10n.GetString(
                         "pattern_inspection_repeat_path_longer_than_two_scans");
                 }
 
@@ -209,7 +209,7 @@ public partial class Pattern
                 {
                     notesWithIssue.Add(prev);
                     notesWithIssue.Add(current);
-                    return Locale.GetString(
+                    return L10n.GetString(
                         "pattern_inspection_repeat_path_covers_notes");
                 }
             }
@@ -232,7 +232,7 @@ public partial class Pattern
             {
                 notesWithIssue.Add(mouseNotes[i - 1]);
                 notesWithIssue.Add(mouseNotes[i]);
-                return Locale.GetString(
+                return L10n.GetString(
                     "pattern_inspection_mouse_notes_at_same_pulse_in_km");
             }
 
@@ -245,7 +245,7 @@ public partial class Pattern
                         (d.pulse + d.Duration()))
                 {
                     notesWithIssue.Add(mouseNotes[i]);
-                    return Locale.GetString(
+                    return L10n.GetString(
                         "pattern_inspection_mouse_notes_during_drag_in_km");
                 }
             }
@@ -275,19 +275,19 @@ public partial class Pattern
         // Boundary check.
         if (pulse < 0)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_before_scan_0");
             return false;
         }
         if (lane < 0)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_above_topmost_lane");
             return false;
         }
         if (lane >= totalLanes)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_below_bottommost_lane");
             return false;
         }
@@ -297,7 +297,7 @@ public partial class Pattern
         if (noteAtSamePulseAndLane != null &&
             !ignoredExistingNotes.Contains(noteAtSamePulseAndLane))
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_on_top_of_existing_note");
             return false;
         }
@@ -315,7 +315,7 @@ public partial class Pattern
                 if (noteAtPulse.type == NoteType.ChainHead ||
                     noteAtPulse.type == NoteType.ChainNode)
                 {
-                    reason = Locale.GetString(
+                    reason = L10n.GetString(
                         "pattern_panel_snackbar_chain_note_at_same_pulse");
                     return false;
                 }
@@ -337,7 +337,7 @@ public partial class Pattern
             HoldNote holdNote = holdNoteBeforePivot as HoldNote;
             if (holdNote.pulse + holdNote.duration >= pulse)
             {
-                reason = Locale.GetString(
+                reason = L10n.GetString(
                     "pattern_panel_snackbar_covered_by_hold_note");
                 return false;
             }
@@ -366,7 +366,7 @@ public partial class Pattern
         if (HoldNoteCoversAnotherNote(pulse, lane, duration,
             ignoredExistingNotes))
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_hold_note_covers_other_notes");
             return false;
         }
@@ -380,7 +380,7 @@ public partial class Pattern
     {
         if (newDuration <= 0)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_hold_note_zero_length");
             return false;
         }
@@ -388,7 +388,7 @@ public partial class Pattern
             holdNote.pulse, holdNote.lane,
             newDuration, ignoredExistingNotes: null))
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_hold_note_covers_other_notes");
             return false;
         }
@@ -405,7 +405,7 @@ public partial class Pattern
                 Mathf.Epsilon;
         }) != null)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_anchor_too_close_to_existing");
             return false;
         }
@@ -418,13 +418,13 @@ public partial class Pattern
     {
         if (anchorIndex == 0)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_cannot_delete_first_anchor");
             return false;
         }
         if (dragNote.nodes.Count == 2)
         {
-            reason = Locale.GetString(
+            reason = L10n.GetString(
                 "pattern_panel_snackbar_at_least_two_anchors");
             return false;
         }
@@ -440,7 +440,7 @@ public partial class Pattern
         {
             if (points[i + 1].pulse < points[i].pulse)
             {
-                reason = Locale.GetString(
+                reason = L10n.GetString(
                     "pattern_panel_snackbar_drag_flows_left");
                 return false;
             }

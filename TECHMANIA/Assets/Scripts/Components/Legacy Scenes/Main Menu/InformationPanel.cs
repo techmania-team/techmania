@@ -17,7 +17,7 @@ public class InformationPanel : MonoBehaviour
         tracksSkinsLocation.text = Locale.GetString(
             "information_panel_tracks_skins_location_android");
 #else
-        tracksSkinsLocation.text = Locale.GetString(
+        tracksSkinsLocation.text = L10n.GetString(
             "information_panel_tracks_skins_location_pc");
 #endif
     }

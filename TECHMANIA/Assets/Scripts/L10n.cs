@@ -16,47 +16,79 @@ using UnityEngine.Events;
 
 public class Locale
 {
-    // Instance fields
-    private string languageName;
-    private List<string> localizers;
-    private Dictionary<string, string> strings;
+    public string languageName;
+    public List<string> localizers;
+    public Dictionary<string, string> strings;
+
     public Locale()
     {
         localizers = new List<string>();
         strings = new Dictionary<string, string>();
     }
+}
+
+// This class loads string tables and serves strings based on
+// the current locale.
+// There are 2 instances: one for the system, one for the theme.
+public class L10n
+{
+    public enum Instance
+    {
+        System,
+        Theme
+    }
+    public static L10n systemInstance;
+    public static L10n themeInstance;
+
+    public L10n()
+    {
+    }
 
     // Static fields
     public static event UnityAction LocaleChanged;
-    private static Dictionary<string, Locale> locales;
-    private static Locale current;
-    private static Locale fallback;
+    private Dictionary<string, Locale> locales;
+    private Locale current;
     public const string kDefaultLocale = "en";
 
-    public static void Initialize(TextAsset stringTable)
+    private static L10n GetInstance(Instance instanceType)
     {
-        NReco.Csv.CsvReader csvReader = new NReco.Csv.CsvReader(
-            new StringReader(stringTable.text));
-        locales = new Dictionary<string, Locale>();
+        return instanceType switch
+        {
+            Instance.System => systemInstance,
+            Instance.Theme => themeInstance,
+            _ => throw new System.Exception("Unsupported L10n instance: " + instanceType)
+        };
+    }
+
+    public static void Initialize(
+        string stringTable, Instance instanceType)
+    {
+        L10n instance = null;
+        switch (instanceType)
+        {
+            case Instance.System:
+                systemInstance = new L10n();
+                instance = systemInstance;
+                break;
+            case Instance.Theme:
+                themeInstance = new L10n();
+                instance = themeInstance;
+                break;
+        }
+        instance.locales = new Dictionary<string, Locale>();
+        // instance.locals as a index-able list.
         List<Locale> localeList = new List<Locale>();
 
+        NReco.Csv.CsvReader csvReader = new NReco.Csv.CsvReader(
+            new StringReader(stringTable));
         // Header
         csvReader.Read();
         for (int i = 2; i < csvReader.FieldsCount; i++)
         {
             string localeName = csvReader[i];
             Locale l = new Locale();
-            locales.Add(localeName, l);
+            instance.locales.Add(localeName, l);
             localeList.Add(l);
-
-            if (localeName == kDefaultLocale)
-            {
-                fallback = l;
-            }
-        }
-        if (fallback == null)
-        {
-            throw new System.Exception("Default locale not found.");
         }
 
         // Language names
@@ -99,21 +131,26 @@ public class Locale
         Debug.Log($"Loaded {stringCount} strings in {localeList.Count} locales.");
     }
 
-    public static void SetLocale(string locale)
+    // This does not affect options.
+    public static void SetLocale(string locale, Instance instanceType)
     {
-        if (!locales.ContainsKey(locale))
+        L10n instance = GetInstance(instanceType);
+        if (!instance.locales.ContainsKey(locale))
         {
             throw new System.Exception("Locale not found: " + locale);
         }
-        current = locales[locale];
+        instance.current = instance.locales[locale];
         Debug.Log($"Setting locale to {locale}.");
         LocaleChanged?.Invoke();
     }
     
-    public static Dictionary<string, string> GetLocaleToLanguageName()
+    public static Dictionary<string, string> GetLocaleToLanguageName(
+        Instance instanceType)
     {
-        Dictionary<string, string> d = new Dictionary<string, string>();
-        foreach (KeyValuePair<string, Locale> pair in locales)
+        Dictionary<string, string> d =
+            new Dictionary<string, string>();
+        foreach (KeyValuePair<string, Locale> pair in
+            GetInstance(instanceType).locales)
         {
             d.Add(pair.Key, pair.Value.languageName);
         }
@@ -121,11 +158,12 @@ public class Locale
     }
 
     public static Dictionary<string, List<string>>
-        GetLanguageNameToLocalizerNames()
+        GetLanguageNameToLocalizerNames(Instance instanceType)
     {
         Dictionary<string, List<string>> d =
             new Dictionary<string, List<string>>();
-        foreach (KeyValuePair<string, Locale> pair in locales)
+        foreach (KeyValuePair<string, Locale> pair in
+            GetInstance(instanceType).locales)
         {
             if (pair.Key == kDefaultLocale) continue;
             d.Add(pair.Value.languageName, pair.Value.localizers);
@@ -141,24 +179,21 @@ public class Locale
         return locale.strings[key];
     }
 
-    public static string GetString(string key)
+    public static string GetString(string key,
+        Instance instanceType = Instance.System)
     {
-        if (current == null)
+        L10n instance = GetInstance(instanceType);
+        if (instance.current == null)
         {
             // String table not yet loaded, nothing we can do.
             return "";
         }
 
-        string s = GetStringFrom(key, current);
+        string s = GetStringFrom(key, instance.current);
         if (s != null) return s;
 
-        s = GetStringFrom(key, fallback);
-        if (s == null)
-        {
-            Debug.LogError("Key not found: " + key);
-            s = "";
-        }
-        return s;
+        Debug.LogError("Key not found: " + key);
+        return "";
     }
 
     public static string GetStringAndFormat(string formatKey,

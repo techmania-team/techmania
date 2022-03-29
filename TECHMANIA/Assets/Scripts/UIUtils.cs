@@ -9,7 +9,7 @@ public class UIUtils
 {
     public static string NoneOptionInDropdowns()
     {
-        return Locale.GetString("none_option_in_dropdowns");
+        return L10n.GetString("none_option_in_dropdowns");
     }
 
     #region ClampInputField
@@ -280,7 +280,7 @@ public class UIUtils
         foreach (string key in optionKeys)
         {
             dropdown.options.Add(new TMP_Dropdown.OptionData(
-                Locale.GetString(key)));
+                L10n.GetString(key)));
         }
     }
 

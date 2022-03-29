@@ -418,7 +418,7 @@ public class PatternMetadata
     {
         guid = Guid.NewGuid().ToString();
 #if UNITY_2021
-        patternName = Locale.GetString(
+        patternName = L10n.GetString(
             "track_setup_patterns_tab_new_pattern_name");
 #else
         patternName = "New pattern";

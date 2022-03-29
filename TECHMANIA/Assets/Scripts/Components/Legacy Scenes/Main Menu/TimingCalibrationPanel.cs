@@ -295,13 +295,13 @@ public class TimingCalibrationPanel : MonoBehaviour
         if (clampedTime < correctTime)
         {
             earlyLateColor = ColorUtility.ToHtmlStringRGB(earlyColor);
-            earlyLateIndicator = Locale.GetString(
+            earlyLateIndicator = L10n.GetString(
                 "timing_calibration_early_indicator");
         }
         else
         {
             earlyLateColor = ColorUtility.ToHtmlStringRGB(lateColor);
-            earlyLateIndicator = Locale.GetString(
+            earlyLateIndicator = L10n.GetString(
                 "timing_calibration_late_indicator");
         }
         historyLine = $"{deviceAcronym} {timeDifferenceInMs}ms <color=#{earlyLateColor}>{earlyLateIndicator}</color>";
