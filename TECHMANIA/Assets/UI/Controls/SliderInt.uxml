@@ -4,7 +4,7 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <ui:Instance template="Progress Bar" name="Progress Bar">
         <AttributeOverrides element-name="container" picking-mode="Ignore" />
-        <ui:SliderInt picking-mode="Ignore" value="42" high-value="100" name="slider" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:SliderInt picking-mode="Ignore" value="42" high-value="100" name="slider" class="slider" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
             <ui:VisualElement name="overlay-track" picking-mode="Ignore" class="overlay-track">
                 <ui:VisualElement name="overlay-center" picking-mode="Ignore" class="center">
                     <ui:VisualElement name="overlay" picking-mode="Ignore" class="overlay" />

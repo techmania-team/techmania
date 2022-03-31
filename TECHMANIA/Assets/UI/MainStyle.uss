@@ -32,3 +32,44 @@
 .panel-content {
     flex-grow: 1;
 }
+
+.options-header {
+    height: 80px;
+    -unity-text-align: middle-left;
+}
+
+.options-item {
+    height: 80px;
+    background-color: var(--elevation-1dp);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.options-divider {
+    height: 2px;
+    background-color: var(--elevation-8dp);
+}
+
+#options-panel .input-field {
+    width: 400px;
+}
+
+#options-panel #mini-label-container {
+    width: 400px;
+    display: none;
+}
+
+#options-panel #slider {
+    width: 340px;
+    right: -20px;
+    -unity-text-align: upper-center;
+}
+
+#options-panel #value-display {
+    width: 80px;
+    right: -20px;
+    -unity-text-align: upper-center;
+}
