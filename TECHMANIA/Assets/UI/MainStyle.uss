@@ -57,8 +57,11 @@
     width: 400px;
 }
 
+#options-panel .button-outlined {
+    width: 200px;
+}
+
 #options-panel #mini-label-container {
-    width: 400px;
     display: none;
 }
 
@@ -68,7 +71,7 @@
     -unity-text-align: upper-center;
 }
 
-#options-panel #value-display {
+#options-panel .volume-display {
     width: 80px;
     right: -20px;
     -unity-text-align: upper-center;
