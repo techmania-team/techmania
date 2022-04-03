@@ -52,25 +52,25 @@
                 <ui:Label text="Audio" display-tooltip-when-elided="true" name="audio-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="master" class="options-item">
                     <ui:Label text="Master" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="music" class="options-item">
                     <ui:Label text="Music" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="keysounds" class="options-item">
                     <ui:Label text="Keysounds" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="sound-effects" class="options-item">
                     <ui:Label text="Sound effects" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />

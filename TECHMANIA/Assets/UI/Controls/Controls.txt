@@ -12,11 +12,14 @@ end
 
 function SetUpAllSliders(root)
     root.Query(nil, "slider").ForEach(function (element)
-        element.RegisterCallback(eventType.ChangeFloat, function (slider, event)
-            local percent = (event.newValue - slider.lowValue) * 100 / (slider.highValue - slider.lowValue)
+        function UpdateSliderAppearance(slider)
+            local percent = (slider.value - slider.lowValue) * 100 / (slider.highValue - slider.lowValue)
             SetProgressBar(element.parent, percent)
             element.Q("overlay-center").style.left = tm.style.LengthInPercent(percent)
-        end)
+        end
+        element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
+        element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
+        UpdateSliderAppearance(element)
     end)
 end
 
@@ -29,7 +32,7 @@ function SetUpAllToggles(root)
     end)
 end
 
-function SetUpAllButtons(root, audio, className)
+function SetUpButtonSounds(root, audio, className)
     root.Query(nil, className).ForEach(function (element)
         element.RegisterCallback(eventType.Click, function ()
             audio.Play("Assets/UI/SFX/Click.wav", audioChannel.SFX)
@@ -81,9 +84,10 @@ end
 function InitializeControls(root, audio)
     SetUpAllSliders(root)
     SetUpAllToggles(root)
-    SetUpAllButtons(root, audio, "button-text")
-    SetUpAllButtons(root, audio, "button-outlined")
-    SetUpAllButtons(root, audio, "button-contained")
-    SetUpAllButtons(root, audio, "button-card")
+    SetUpButtonSounds(root, audio, "button-text")
+    SetUpButtonSounds(root, audio, "button-outlined")
+    SetUpButtonSounds(root, audio, "button-contained")
+    SetUpButtonSounds(root, audio, "button-card")
+    SetUpButtonSounds(root, audio, "toggle-track")
     SetUpAllScrollingTexts(root)
 end
