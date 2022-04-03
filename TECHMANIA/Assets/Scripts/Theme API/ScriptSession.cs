@@ -60,11 +60,6 @@ namespace ThemeApi
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =
                 UserData.CreateStatic<Vector3>();
-            // Expose enums
-            session.Globals["audioChannel"] = 
-                UserData.CreateStatic<AudioManager.Channel>();
-            session.Globals["eventType"] =
-                UserData.CreateStatic<VisualElementWrap.EventType>();
         }
 
         public static void Execute(string script)

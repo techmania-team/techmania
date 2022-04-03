@@ -44,7 +44,7 @@ function InitializeWelcomeMat()
     end
 
     tm.StartCoroutine(SlowBlink)
-    mat.RegisterCallback(eventType.Click, function ()
+    mat.RegisterCallback("Click", function ()
         if (matStatus ~= matStatusSlow) then return end
         matStatus = matStatusFast
         audio.Play("Assets/UI/SFX/Game Start.wav", audioChannel.SFX)

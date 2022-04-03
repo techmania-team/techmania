@@ -25,7 +25,7 @@ end
 -- Audio example
 -- root.Q("test-button").OnClick(function(button)
 --     print("button clicked: " .. button.name)
---     audio.Play("Assets/UI/SFX/Click.wav", audio.sfxChannel)
+--     audio.Play("Assets/UI/SFX/Click.wav", "SFX")
 -- end)
 
 -- Vector3 example

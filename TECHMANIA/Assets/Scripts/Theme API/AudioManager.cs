@@ -27,7 +27,7 @@ namespace ThemeApi
         // channel: one of Channel enums
         // volumePercent: [0, 100]
         // panPercent: [-100, 100]
-        public AudioSource Play(string name, Channel channel,
+        public AudioSource Play(string name, string channel,
             int volumePercent = 100, int panPercent = 0)
         {
             AudioClip clip = GlobalResource.GetThemeContent
@@ -37,7 +37,7 @@ namespace ThemeApi
                 throw new System.Exception($"Audio clip {name} is not found.");
             }
 
-            switch (channel)
+            switch (System.Enum.Parse<Channel>(channel))
             {
                 case Channel.Music:
                     return manager.PlayBackingTrack(clip,
