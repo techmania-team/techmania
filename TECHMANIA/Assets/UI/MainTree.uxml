@@ -30,7 +30,7 @@
     <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <ui:VisualElement name="content" class="panel-content" />
     </ui:Instance>
-    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="height: 100%; width: 800px;">

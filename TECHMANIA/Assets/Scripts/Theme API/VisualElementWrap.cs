@@ -9,7 +9,7 @@ namespace ThemeApi
 {
     // VisualElement and related classes are wrapped in these API
     // class because:
-    // - Lua doesn't support generics or extension methods
+    // - Lua doesn't support generics
     // - Lua functions aren't automatically converted to Actions
     //
     // Note that it's possible to create multiple wraps on the same

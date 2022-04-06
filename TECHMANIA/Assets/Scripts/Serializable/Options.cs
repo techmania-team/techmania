@@ -10,6 +10,7 @@ using UnityEngine.Audio;
 
 [Serializable]
 [FormatVersion(OptionsV1.kVersion, typeof(OptionsV1), isLatest: false)]
+[FormatVersion(OptionsV2.kVersion, typeof(OptionsV2), isLatest: false)]
 [FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
 public class OptionsBase : SerializableClass<OptionsBase> {}
 
@@ -20,12 +21,13 @@ public class OptionsBase : SerializableClass<OptionsBase> {}
 // Updates in version 2:
 // - Now defines volumes in integer percents, so there's less
 //   float fuckery.
+//
+// Updates in version 3:
+// - Most appearance options are moved to theme-specific options.
 [Serializable]
 public class Options : OptionsBase
 {
-    public const string kVersion = "2";
-
-    public const string kDefaultTheme = "Default";
+    public const string kVersion = "3";
 
     // Graphics
 
@@ -45,32 +47,14 @@ public class Options : OptionsBase
 
     // Appearance
 
-    public enum BeatMarkerVisibility
-    {
-        Hidden,
-        ShowBeatMarkers,
-        ShowHalfBeatMarkers
-    }
-    public enum BackgroundScalingMode
-    {
-        FillEntireScreen,
-        // Fill the area under the top bar.
-        FillGameArea
-    }
-
     public string locale;
-    public bool showLoadingBar;
-    public bool showFps;
-    public bool showJudgementTally;
-    public bool showLaneDividers;
-    public BeatMarkerVisibility beatMarkers;
-    public BackgroundScalingMode backgroundScalingMode;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
     public string gameUiSkin;
     public bool reloadSkinsWhenLoadingPattern;
     public string theme;
+    public const string kDefaultTheme = "Default";
 
     // Timing
 
@@ -91,7 +75,6 @@ public class Options : OptionsBase
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
-    public bool pauseWhenGameLosesFocus;
 
     // Editor options
 
@@ -101,15 +84,41 @@ public class Options : OptionsBase
 
     public Modifiers modifiers;
 
-    // Track list options.
-
-    public TrackFilter trackFilter;
-
     // Per-track options.
     // This should be a dictionary, but dictionaries are not
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
     public List<PerTrackOptions> perTrackOptions;
+
+    // Theme-specific
+
+    private Dictionary<string, Dictionary<string, string>>
+        themeOptionsDict;
+    public List<ThemeOptionsAsList> themeOptions;  // For serialization
+
+    // Pre-version 3
+
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
+
+    public bool showLoadingBar;
+    public bool showFps;
+    public bool showJudgementTally;
+    public bool showLaneDividers;
+    public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
+    public bool pauseWhenGameLosesFocus;
+    public TrackFilter trackFilter;
 
     public Options()
     {
@@ -166,6 +175,42 @@ public class Options : OptionsBase
     protected override void PrepareToSerialize()
     {
         RemoveDefaultPerTrackOptions();
+
+        // Theme options
+        themeOptions = new List<ThemeOptionsAsList>();
+        foreach (KeyValuePair<string, Dictionary<string, string>> pair
+            in themeOptionsDict)
+        {
+            ThemeOptionsAsList list = new ThemeOptionsAsList();
+            list.themeName = pair.Key;
+            foreach (KeyValuePair<string, string> optionPair in
+                pair.Value)
+            {
+                list.pairs.Add(new ThemeOptionsAsList.KeyValuePair()
+                {
+                    key = optionPair.Key,
+                    value = optionPair.Value
+                });
+            }
+        }
+    }
+
+    protected override void InitAfterDeserialize()
+    {
+        // Theme options
+        themeOptionsDict = new Dictionary<string,
+            Dictionary<string, string>>();
+        foreach (ThemeOptionsAsList list in themeOptions)
+        {
+            Dictionary<string, string> optionDict = new
+                Dictionary<string, string>();
+            foreach (ThemeOptionsAsList.KeyValuePair pair in 
+                list.pairs)
+            {
+                optionDict.Add(pair.key, pair.value);
+            }
+            themeOptionsDict.Add(list.themeName, optionDict);
+        }
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -272,9 +317,9 @@ public class Options : OptionsBase
     {
         instance = backupInstance;
     }
-#endregion
+    #endregion
 
-#region Per-track options
+    #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
         foreach (PerTrackOptions options in perTrackOptions)
@@ -302,7 +347,7 @@ public class Options : OptionsBase
         }
         perTrackOptions = remainingOptions;
     }
-#endregion
+    #endregion
 }
 
 [Serializable]
@@ -757,6 +802,163 @@ public class TrackFilter
 }
 
 [Serializable]
+public class ThemeOptionsAsList
+{
+    public string themeName;
+
+    public class KeyValuePair
+    {
+        public string key;
+        public string value;
+    }
+    public List<KeyValuePair> pairs;
+}
+
+[Serializable]
+public class OptionsV2 : OptionsBase
+{
+    public const string kVersion = "2";
+
+    public const string kDefaultTheme = "Default";
+
+    // Graphics
+
+    public int width;
+    public int height;
+    public int refreshRate;
+    public FullScreenMode fullScreenMode;
+    public bool vSync;
+
+    // Audio
+
+    public int masterVolumePercent;
+    public int musicVolumePercent;
+    public int keysoundVolumePercent;
+    public int sfxVolumePercent;
+    public int audioBufferSize;
+
+    // Appearance
+
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
+
+    public string locale;
+    public bool showLoadingBar;
+    public bool showFps;
+    public bool showJudgementTally;
+    public bool showLaneDividers;
+    public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
+    public string noteSkin;
+    public string vfxSkin;
+    public string comboSkin;
+    public string gameUiSkin;
+    public bool reloadSkinsWhenLoadingPattern;
+    public string theme;
+
+    // Timing
+
+    public int touchOffsetMs;
+    public int touchLatencyMs;
+    public int keyboardMouseOffsetMs;
+    public int keyboardMouseLatencyMs;
+
+    // Miscellaneous
+
+    public enum Ruleset
+    {
+        Standard,
+        Legacy,
+        Custom
+    }
+    public Ruleset ruleset;
+    public bool customDataLocation;
+    public string tracksFolderLocation;
+    public string skinsFolderLocation;
+    public bool pauseWhenGameLosesFocus;
+
+    // Editor options
+
+    public EditorOptions editorOptions;
+
+    // Modifiers
+
+    public Modifiers modifiers;
+
+    // Track list options.
+
+    public TrackFilter trackFilter;
+
+    // Per-track options.
+    // This should be a dictionary, but dictionaries are not
+    // directly serializable, and we don't expect more than a
+    // few hundred elements anyway.
+    public List<PerTrackOptions> perTrackOptions;
+
+    public OptionsV2()
+    {
+        version = kVersion;
+
+        width = 0;
+        height = 0;
+        refreshRate = 0;
+        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        vSync = false;
+
+        masterVolumePercent = 100;
+        musicVolumePercent = 80;
+        keysoundVolumePercent = 100;
+        sfxVolumePercent = 100;
+        // Cannot call GetDefaultAudioBufferSize() here, because
+        // somehow Unity calls this constructor during serialization,
+        // and calling AudioSettings.GetConfiguration() at that time
+        // causes an exception.
+        audioBufferSize = 512;
+
+        locale = L10n.kDefaultLocale;
+        showLoadingBar = true;
+        showFps = false;
+        showJudgementTally = false;
+        showLaneDividers = false;
+        beatMarkers = BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = BackgroundScalingMode
+            .FillEntireScreen;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        reloadSkinsWhenLoadingPattern = false;
+        theme = kDefaultTheme;
+
+        touchOffsetMs = 0;
+        touchLatencyMs = 0;
+        keyboardMouseOffsetMs = 0;
+        keyboardMouseLatencyMs = 0;
+
+        ruleset = Ruleset.Standard;
+        customDataLocation = false;
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        pauseWhenGameLosesFocus = true;
+
+        editorOptions = new EditorOptions();
+        modifiers = new Modifiers();
+        perTrackOptions = new List<PerTrackOptions>();
+        trackFilter = new TrackFilter();
+    }
+}
+
+[Serializable]
 public class OptionsV1 : OptionsBase
 {
     public const string kVersion = "1";
@@ -778,14 +980,26 @@ public class OptionsV1 : OptionsBase
     public int audioBufferSize;
 
     // Appearance
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
 
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public bool showJudgementTally;
     public bool showLaneDividers;
-    public Options.BeatMarkerVisibility beatMarkers;
-    public Options.BackgroundScalingMode backgroundScalingMode;
+    public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -842,8 +1056,8 @@ public class OptionsV1 : OptionsBase
         showFps = false;
         showJudgementTally = false;
         showLaneDividers = false;
-        beatMarkers = Options.BeatMarkerVisibility.Hidden;
-        backgroundScalingMode = Options.BackgroundScalingMode
+        beatMarkers = BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = BackgroundScalingMode
             .FillEntireScreen;
         noteSkin = "Default";
         vfxSkin = "Default";
@@ -864,7 +1078,7 @@ public class OptionsV1 : OptionsBase
 
     protected override OptionsBase Upgrade()
     {
-        Options upgraded = new Options()
+        OptionsV2 upgraded = new OptionsV2()
         {
             width = width,
             height = height,
@@ -887,8 +1101,9 @@ public class OptionsV1 : OptionsBase
             showFps = showFps,
             showJudgementTally = showJudgementTally,
             showLaneDividers = showLaneDividers,
-            beatMarkers = beatMarkers,
-            backgroundScalingMode = backgroundScalingMode,
+            beatMarkers = (OptionsV2.BeatMarkerVisibility)beatMarkers,
+            backgroundScalingMode = (OptionsV2.BackgroundScalingMode)
+                backgroundScalingMode,
             noteSkin = noteSkin,
             vfxSkin = vfxSkin,
             comboSkin = comboSkin,
