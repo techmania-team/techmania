@@ -96,29 +96,31 @@ public class Options : OptionsBase
         themeOptionsDict;
     public List<ThemeOptionsAsList> themeOptions;  // For serialization
 
-    // Pre-version 3
-
-    public enum BeatMarkerVisibility
-    {
-        Hidden,
-        ShowBeatMarkers,
-        ShowHalfBeatMarkers
-    }
-    public enum BackgroundScalingMode
-    {
-        FillEntireScreen,
-        // Fill the area under the top bar.
-        FillGameArea
-    }
-
-    public bool showLoadingBar;
-    public bool showFps;
-    public bool showJudgementTally;
-    public bool showLaneDividers;
-    public BeatMarkerVisibility beatMarkers;
-    public BackgroundScalingMode backgroundScalingMode;
-    public bool pauseWhenGameLosesFocus;
-    public TrackFilter trackFilter;
+    /* Default theme options
+     * 
+     * Key                          Value
+     * ---------------------------------------------------------
+     * showLoadingBar               0/1
+     * showFps                      0/1
+     * showJudgementTally           0/1
+     * showLaneDividers             0/1
+     * beatMarkers                  0 - Hidden
+     *                              1 - Show beat markers
+     *                              2 - Show half beat markers
+     * backgroundScalingMode        0 - Fill entire screen
+     *                              1 - Fill game area
+     * pauseWhenGameLosesFocus      0/1
+     * trackFilter.showTracksInAllFolders
+     *                              0/1
+     * trackFilter.sortBasis        0 - title
+     *                              1 - artist
+     *                              2 - genre
+     *                              3 - touch level
+     *                              4 - keys level
+     *                              5 - km level
+     * trackFilter.sortOrder        0 - ascending
+     *                              1 - descending
+     */
 
     public Options()
     {
@@ -141,13 +143,6 @@ public class Options : OptionsBase
         audioBufferSize = 512;
 
         locale = L10n.kDefaultLocale;
-        showLoadingBar = true;
-        showFps = false;
-        showJudgementTally = false;
-        showLaneDividers = false;
-        beatMarkers = BeatMarkerVisibility.Hidden;
-        backgroundScalingMode = BackgroundScalingMode
-            .FillEntireScreen;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
@@ -164,12 +159,26 @@ public class Options : OptionsBase
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
-        pauseWhenGameLosesFocus = true;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
-        trackFilter = new TrackFilter();
+
+        Dictionary<string, string> defaultThemeOptions = new 
+            Dictionary<string, string>();
+        defaultThemeOptions.Add("showLoadingBar", "1");
+        defaultThemeOptions.Add("showFps", "0");
+        defaultThemeOptions.Add("showJudgementTally", "0");
+        defaultThemeOptions.Add("showLaneDividers", "0");
+        defaultThemeOptions.Add("beatMarkers", "0");
+        defaultThemeOptions.Add("backgroundScalingMode", "0");
+        defaultThemeOptions.Add("pauseWhenGameLosesFocus", "1");
+        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", "0");
+        defaultThemeOptions.Add("trackFilter.sortBasis", "0");
+        defaultThemeOptions.Add("trackFilter.sortOrder", "0");
+        themeOptionsDict = new Dictionary<string,
+            Dictionary<string, string>>();
+        themeOptionsDict.Add(kDefaultTheme, defaultThemeOptions);
     }
 
     protected override void PrepareToSerialize()
@@ -777,7 +786,11 @@ public class TrackFilter
 
     public static TrackFilter instance
     {
-        get { return Options.instance.trackFilter; }
+        get 
+        {
+            // return Options.instance.trackFilter; 
+            return null;
+        }
     }
 
     public static readonly string[] sortBasisDisplayKeys =

@@ -142,14 +142,14 @@ public class OptionsPanel : MonoBehaviour
                 languageDropdown.RefreshShownValue();
             }
         }
-        showLoadingBarToggle.SetIsOnWithoutNotify(
-            Options.instance.showLoadingBar);
-        showFpsToggle.SetIsOnWithoutNotify(
-            Options.instance.showFps);
-        showJudgementTallyToggle.SetIsOnWithoutNotify(
-            Options.instance.showJudgementTally);
-        showLaneDividersToggle.SetIsOnWithoutNotify(
-            Options.instance.showLaneDividers);
+        //showLoadingBarToggle.SetIsOnWithoutNotify(
+        //    Options.instance.showLoadingBar);
+        //showFpsToggle.SetIsOnWithoutNotify(
+        //    Options.instance.showFps);
+        //showJudgementTallyToggle.SetIsOnWithoutNotify(
+        //    Options.instance.showJudgementTally);
+        //showLaneDividersToggle.SetIsOnWithoutNotify(
+        //    Options.instance.showLaneDividers);
 
         // Miscellaneous
 
@@ -162,8 +162,8 @@ public class OptionsPanel : MonoBehaviour
         skinsFolderDisplay.SetUp(Options.instance
             .skinsFolderLocation);
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
-        pauseWhenGameLosesFocusToggle.SetIsOnWithoutNotify(
-            Options.instance.pauseWhenGameLosesFocus);
+        //pauseWhenGameLosesFocusToggle.SetIsOnWithoutNotify(
+        //    Options.instance.pauseWhenGameLosesFocus);
     }
 
     // The portion of MemoryToUI that should respond to
@@ -185,16 +185,16 @@ public class OptionsPanel : MonoBehaviour
             "options_beat_markers_hidden",
             "options_beat_markers_show_beat_markers",
             "options_beat_markers_show_half_beat_markers");
-        beatMarkersDropdown.SetValueWithoutNotify(
-           (int)Options.instance.beatMarkers);
+        //beatMarkersDropdown.SetValueWithoutNotify(
+        //   (int)Options.instance.beatMarkers);
         beatMarkersDropdown.RefreshShownValue();
 
         UIUtils.InitializeDropdownWithLocalizedOptions(
             backgroundScalingDropdown,
             "options_bg_scaling_fill_entire_screen",
             "options_bg_scaling_fill_game_area");
-        backgroundScalingDropdown.SetValueWithoutNotify(
-            (int)Options.instance.backgroundScalingMode);
+        //backgroundScalingDropdown.SetValueWithoutNotify(
+        //    (int)Options.instance.backgroundScalingMode);
         backgroundScalingDropdown.RefreshShownValue();
 
         UIUtils.InitializeDropdownWithLocalizedOptions(
@@ -265,17 +265,17 @@ public class OptionsPanel : MonoBehaviour
 
     public void OnAppearanceOptionsChanged()
     {
-        Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
-        Options.instance.showFps = showFpsToggle.isOn;
-        Options.instance.showJudgementTally =
-            showJudgementTallyToggle.isOn;
-        Options.instance.showLaneDividers =
-            showLaneDividersToggle.isOn;
-        Options.instance.beatMarkers = (Options.BeatMarkerVisibility)
-            beatMarkersDropdown.value;
-        Options.instance.backgroundScalingMode =
-            (Options.BackgroundScalingMode)
-            backgroundScalingDropdown.value;
+        //Options.instance.showLoadingBar = showLoadingBarToggle.isOn;
+        //Options.instance.showFps = showFpsToggle.isOn;
+        //Options.instance.showJudgementTally =
+        //    showJudgementTallyToggle.isOn;
+        //Options.instance.showLaneDividers =
+        //    showLaneDividersToggle.isOn;
+        //Options.instance.beatMarkers = (Options.BeatMarkerVisibility)
+        //    beatMarkersDropdown.value;
+        //Options.instance.backgroundScalingMode =
+        //    (Options.BackgroundScalingMode)
+        //    backgroundScalingDropdown.value;
     }
     #endregion
 
@@ -403,8 +403,8 @@ public class OptionsPanel : MonoBehaviour
 
     public void OnPauseWhenGameLosesFocusChanged()
     {
-        Options.instance.pauseWhenGameLosesFocus =
-            pauseWhenGameLosesFocusToggle.isOn;
+        //Options.instance.pauseWhenGameLosesFocus =
+        //    pauseWhenGameLosesFocusToggle.isOn;
     }    
     #endregion
 }

@@ -256,7 +256,8 @@ public class Game : MonoBehaviour
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
         loadingBar.GetComponent<CanvasGroup>().alpha =
-            Options.instance.showLoadingBar ? 1f : 0f;
+            // Options.instance.showLoadingBar ? 1f : 0f;
+            1f;
         loadingProgress.SetValue(0f);
         fpsCounter.SetActive(false);
         judgementTally.gameObject.SetActive(false);
@@ -318,8 +319,9 @@ public class Game : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus && !IsPaused() && !loading && !inEditor &&
-            Options.instance.pauseWhenGameLosesFocus)
+        if (!focus && !IsPaused() && !loading && !inEditor
+            // && Options.instance.pauseWhenGameLosesFocus
+            )
         {
             OnPauseButtonClickOrTouch(playSound: false);
         }
@@ -438,30 +440,30 @@ public class Game : MonoBehaviour
         // Loading complete.
         loading = false;
         topBar.SetActive(true);
-        if (Options.instance.backgroundScalingMode == 
-            Options.BackgroundScalingMode.FillGameArea)
-        {
-            float topBarHeight = topBar.GetComponent<RectTransform>()
-                .rect.height;
-            backgroundContainer.anchoredPosition = new Vector2(
-                0f, -0.5f * topBarHeight);
-            backgroundContainer.sizeDelta = new Vector2(
-                0f, -topBarHeight);
-        }
+        //if (Options.instance.backgroundScalingMode == 
+        //    Options.BackgroundScalingMode.FillGameArea)
+        //{
+        //    float topBarHeight = topBar.GetComponent<RectTransform>()
+        //        .rect.height;
+        //    backgroundContainer.anchoredPosition = new Vector2(
+        //        0f, -0.5f * topBarHeight);
+        //    backgroundContainer.sizeDelta = new Vector2(
+        //        0f, -topBarHeight);
+        //}
         noFailIndicator.SetActive(
             Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
-        if (Options.instance.showFps)
-        {
-            fpsCounter.SetActive(true);
-        }
-        if (Options.instance.showJudgementTally &&
-            Modifiers.instance.mode != Modifiers.Mode.Practice)
-        {
-            judgementTally.gameObject.SetActive(true);
-            judgementTally.Refresh(score);
-        }
+        //if (Options.instance.showFps)
+        //{
+        //    fpsCounter.SetActive(true);
+        //}
+        //if (Options.instance.showJudgementTally &&
+        //    Modifiers.instance.mode != Modifiers.Mode.Practice)
+        //{
+        //    judgementTally.gameObject.SetActive(true);
+        //    judgementTally.Refresh(score);
+        //}
         SetBrightness();
         topScanBackground.Initialize(
             Modifiers.instance.GetTopScanDirection(), 

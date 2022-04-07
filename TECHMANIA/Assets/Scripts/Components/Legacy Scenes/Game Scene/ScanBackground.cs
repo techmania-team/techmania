@@ -93,43 +93,43 @@ public class ScanBackground : MonoBehaviour
         // Lane dividers
         for (int i = 0; i < laneDividers.Count; i++)
         {
-            if (!Options.instance.showLaneDividers)
+            // if (!Options.instance.showLaneDividers)
             {
                 laneDividers[i].SetActive(false);
                 continue;
             }
-            laneDividers[i].SetActive(i + 1 < Game.playableLanes);
+            // laneDividers[i].SetActive(i + 1 < Game.playableLanes);
         }
 
         // Beat markers
         int bps = GameSetup.pattern.patternMetadata.bps;
-        switch (Options.instance.beatMarkers)
-        {
-            case Options.BeatMarkerVisibility.Hidden:
-                break;
-            case Options.BeatMarkerVisibility.ShowBeatMarkers:
-                for (int i = 0; i <= bps; i++)
-                {
-                    SpawnMarker(beatMarkerTemplate,
-                        (float)i / bps,
-                        scanDirection);
-                }
-                break;
-            case Options.BeatMarkerVisibility.ShowHalfBeatMarkers:
-                for (int i = 0; i <= bps; i++)
-                {
-                    SpawnMarker(beatMarkerTemplate,
-                        (float)i / bps,
-                        scanDirection);
-                    if (i < bps)
-                    {
-                        SpawnMarker(halfBeatMarkerTemplate,
-                            (i + 0.5f) / bps,
-                            scanDirection);
-                    }
-                }
-                break;
-        }
+        //switch (Options.instance.beatMarkers)
+        //{
+        //    case Options.BeatMarkerVisibility.Hidden:
+        //        break;
+        //    case Options.BeatMarkerVisibility.ShowBeatMarkers:
+        //        for (int i = 0; i <= bps; i++)
+        //        {
+        //            SpawnMarker(beatMarkerTemplate,
+        //                (float)i / bps,
+        //                scanDirection);
+        //        }
+        //        break;
+        //    case Options.BeatMarkerVisibility.ShowHalfBeatMarkers:
+        //        for (int i = 0; i <= bps; i++)
+        //        {
+        //            SpawnMarker(beatMarkerTemplate,
+        //                (float)i / bps,
+        //                scanDirection);
+        //            if (i < bps)
+        //            {
+        //                SpawnMarker(halfBeatMarkerTemplate,
+        //                    (i + 0.5f) / bps,
+        //                    scanDirection);
+        //            }
+        //        }
+        //        break;
+        //}
     }
 
     private void Update()
