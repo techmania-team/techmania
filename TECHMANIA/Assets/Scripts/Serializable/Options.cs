@@ -92,7 +92,8 @@ public class Options : OptionsBase
 
     // Theme-specific
 
-    private Dictionary<string, Dictionary<string, string>>
+    [NonSerialized]
+    public Dictionary<string, Dictionary<string, string>>
         themeOptionsDict;
     public List<ThemeOptionsAsList> themeOptions;  // For serialization
 
@@ -100,18 +101,18 @@ public class Options : OptionsBase
      * 
      * Key                          Value
      * ---------------------------------------------------------
-     * showLoadingBar               0/1
-     * showFps                      0/1
-     * showJudgementTally           0/1
-     * showLaneDividers             0/1
+     * showLoadingBar               True/False
+     * showFps                      True/False
+     * showJudgementTally           True/False
+     * showLaneDividers             True/False
      * beatMarkers                  0 - Hidden
      *                              1 - Show beat markers
      *                              2 - Show half beat markers
      * backgroundScalingMode        0 - Fill entire screen
      *                              1 - Fill game area
-     * pauseWhenGameLosesFocus      0/1
+     * pauseWhenGameLosesFocus      True/False
      * trackFilter.showTracksInAllFolders
-     *                              0/1
+     *                              True/False
      * trackFilter.sortBasis        0 - title
      *                              1 - artist
      *                              2 - genre
@@ -166,16 +167,21 @@ public class Options : OptionsBase
 
         Dictionary<string, string> defaultThemeOptions = new 
             Dictionary<string, string>();
-        defaultThemeOptions.Add("showLoadingBar", "1");
-        defaultThemeOptions.Add("showFps", "0");
-        defaultThemeOptions.Add("showJudgementTally", "0");
-        defaultThemeOptions.Add("showLaneDividers", "0");
-        defaultThemeOptions.Add("beatMarkers", "0");
-        defaultThemeOptions.Add("backgroundScalingMode", "0");
-        defaultThemeOptions.Add("pauseWhenGameLosesFocus", "1");
-        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", "0");
-        defaultThemeOptions.Add("trackFilter.sortBasis", "0");
-        defaultThemeOptions.Add("trackFilter.sortOrder", "0");
+        defaultThemeOptions.Add("showLoadingBar", true.ToString());
+        defaultThemeOptions.Add("showFps", false.ToString());
+        defaultThemeOptions.Add("showJudgementTally", false.ToString());
+        defaultThemeOptions.Add("showLaneDividers", false.ToString());
+        defaultThemeOptions.Add("beatMarkers", false.ToString());
+        defaultThemeOptions.Add("backgroundScalingMode",
+            false.ToString());
+        defaultThemeOptions.Add("pauseWhenGameLosesFocus",
+            true.ToString());
+        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", 
+            false.ToString());
+        defaultThemeOptions.Add("trackFilter.sortBasis",
+            false.ToString());
+        defaultThemeOptions.Add("trackFilter.sortOrder", 
+            false.ToString());
         themeOptionsDict = new Dictionary<string,
             Dictionary<string, string>>();
         themeOptionsDict.Add(kDefaultTheme, defaultThemeOptions);
@@ -190,16 +196,13 @@ public class Options : OptionsBase
         foreach (KeyValuePair<string, Dictionary<string, string>> pair
             in themeOptionsDict)
         {
-            ThemeOptionsAsList list = new ThemeOptionsAsList();
-            list.themeName = pair.Key;
+            ThemeOptionsAsList list = new ThemeOptionsAsList(
+                themeName: pair.Key);
             foreach (KeyValuePair<string, string> optionPair in
                 pair.Value)
             {
-                list.pairs.Add(new ThemeOptionsAsList.KeyValuePair()
-                {
-                    key = optionPair.Key,
-                    value = optionPair.Value
-                });
+                list.pairs.Add(new ThemeOptionsAsList.KVPair(
+                    optionPair.Key, optionPair.Value));
             }
         }
     }
@@ -213,7 +216,7 @@ public class Options : OptionsBase
         {
             Dictionary<string, string> optionDict = new
                 Dictionary<string, string>();
-            foreach (ThemeOptionsAsList.KeyValuePair pair in 
+            foreach (ThemeOptionsAsList.KVPair pair in 
                 list.pairs)
             {
                 optionDict.Add(pair.key, pair.value);
@@ -817,14 +820,30 @@ public class TrackFilter
 [Serializable]
 public class ThemeOptionsAsList
 {
-    public string themeName;
+    public ThemeOptionsAsList(string themeName)
+    {
+        this.themeName = themeName;
+        pairs = new List<KVPair>();
+    }
 
-    public class KeyValuePair
+    public string themeName;
+    [Serializable]
+    public class KVPair
     {
         public string key;
         public string value;
+        public KVPair(string key, string value)
+        {
+            this.key = key;
+            this.value = value;
+        }
     }
-    public List<KeyValuePair> pairs;
+    public List<KVPair> pairs;
+
+    public void Add(string key, string value)
+    {
+        pairs.Add(new KVPair(key, value));
+    }
 }
 
 [Serializable]
@@ -968,6 +987,79 @@ public class OptionsV2 : OptionsBase
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
         trackFilter = new TrackFilter();
+    }
+
+    protected override OptionsBase Upgrade()
+    {
+        Options upgraded = new Options()
+        {
+            width = width,
+            height = height,
+            refreshRate = refreshRate,
+            fullScreenMode = fullScreenMode,
+            vSync = vSync,
+
+            masterVolumePercent = masterVolumePercent,
+            musicVolumePercent = musicVolumePercent,
+            keysoundVolumePercent = keysoundVolumePercent,
+            sfxVolumePercent = sfxVolumePercent,
+            audioBufferSize = audioBufferSize,
+
+            locale = locale,
+            noteSkin = noteSkin,
+            vfxSkin = vfxSkin,
+            comboSkin = comboSkin,
+            gameUiSkin = gameUiSkin,
+            reloadSkinsWhenLoadingPattern =
+                reloadSkinsWhenLoadingPattern,
+            theme = theme,
+
+            touchOffsetMs = touchOffsetMs,
+            touchLatencyMs = touchLatencyMs,
+            keyboardMouseOffsetMs = keyboardMouseOffsetMs,
+            keyboardMouseLatencyMs = keyboardMouseLatencyMs,
+
+            ruleset = (Options.Ruleset)ruleset,
+            customDataLocation = customDataLocation,
+            tracksFolderLocation = tracksFolderLocation,
+            skinsFolderLocation = skinsFolderLocation,
+
+            editorOptions = editorOptions.Clone(),
+            modifiers = modifiers.Clone(),
+            perTrackOptions = new List<PerTrackOptions>(),
+
+            themeOptions = new List<ThemeOptionsAsList>(),
+        };
+        foreach (PerTrackOptions o in perTrackOptions)
+        {
+            upgraded.perTrackOptions.Add(o.Clone());
+        }
+        ThemeOptionsAsList defaultThemeOptions =
+            new ThemeOptionsAsList(Options.kDefaultTheme);
+        defaultThemeOptions.Add("showLoadingBar", 
+            showLoadingBar.ToString());
+        defaultThemeOptions.Add("showFps", showFps.ToString());
+        defaultThemeOptions.Add("showJudgementTally", 
+            showJudgementTally.ToString());
+        defaultThemeOptions.Add("showLaneDividers", 
+            showLaneDividers.ToString());
+        defaultThemeOptions.Add("beatMarkers",
+            ((int)beatMarkers).ToString());
+        defaultThemeOptions.Add("backgroundScalingMode",
+            ((int)backgroundScalingMode).ToString());
+        defaultThemeOptions.Add("pauseWhenGameLosesFocus", 
+            pauseWhenGameLosesFocus.ToString());
+        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", 
+            trackFilter.showTracksInAllFolders.ToString());
+        defaultThemeOptions.Add("trackFilter.sortBasis",
+            ((int)trackFilter.sortBasis).ToString());
+        defaultThemeOptions.Add("trackFilter.sortOrder",
+            ((int)trackFilter.sortOrder).ToString());
+        upgraded.themeOptions.Add(defaultThemeOptions);
+
+        Debug.Log("Upgraded options to version 3. JSON:\n" + JsonUtility.ToJson(upgraded, prettyPrint: true));
+
+        return upgraded;
     }
 }
 
