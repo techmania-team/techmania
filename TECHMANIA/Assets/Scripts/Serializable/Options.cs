@@ -845,7 +845,6 @@ public class PerTrackOptions
     }
 }
 
-[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class TrackFilter
 {
@@ -880,7 +879,7 @@ public class TrackFilter
     {
         get 
         {
-            // return Options.instance.trackFilter; 
+            // return Options.instance.trackFilter;
             return null;
         }
     }

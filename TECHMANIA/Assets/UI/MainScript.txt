@@ -4,12 +4,13 @@ audio = tm.audio
 
 l10n = tm.l10n
 l10n.Initialize(tm.LoadTextFile("Assets/UI/String Table.csv"))
-l10n.ApplyLocale("zh-Hans")
+l10n.ApplyLocale(tm.options.locale)
 
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(root, audio)
 
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
+
 
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)
