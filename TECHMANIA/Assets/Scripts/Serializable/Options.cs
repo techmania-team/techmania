@@ -97,6 +97,18 @@ public class Options : OptionsBase
         themeOptionsDict;
     public List<ThemeOptionsAsList> themeOptions;  // For serialization
 
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
     /* Default theme options
      * 
      * Key                          Value
@@ -105,22 +117,22 @@ public class Options : OptionsBase
      * showFps                      True/False
      * showJudgementTally           True/False
      * showLaneDividers             True/False
-     * beatMarkers                  0 - Hidden
-     *                              1 - Show beat markers
-     *                              2 - Show half beat markers
-     * backgroundScalingMode        0 - Fill entire screen
-     *                              1 - Fill game area
+     * beatMarkers                  Hidden
+     *                              ShowBeatMarkers
+     *                              ShowHalfBeatMarkers
+     * backgroundScalingMode        FillEntireScreen
+     *                              FillGameArea
      * pauseWhenGameLosesFocus      True/False
      * trackFilter.showTracksInAllFolders
      *                              True/False
-     * trackFilter.sortBasis        0 - title
-     *                              1 - artist
-     *                              2 - genre
-     *                              3 - touch level
-     *                              4 - keys level
-     *                              5 - km level
-     * trackFilter.sortOrder        0 - ascending
-     *                              1 - descending
+     * trackFilter.sortBasis        Title
+     *                              Artist
+     *                              Genre
+     *                              TouchLevel
+     *                              KeysLevel
+     *                              KMLevel
+     * trackFilter.sortOrder        Ascending
+     *                              Descending
      */
 
     public Options()
@@ -171,17 +183,18 @@ public class Options : OptionsBase
         defaultThemeOptions.Add("showFps", false.ToString());
         defaultThemeOptions.Add("showJudgementTally", false.ToString());
         defaultThemeOptions.Add("showLaneDividers", false.ToString());
-        defaultThemeOptions.Add("beatMarkers", false.ToString());
+        defaultThemeOptions.Add("beatMarkers", 
+            BeatMarkerVisibility.Hidden.ToString());
         defaultThemeOptions.Add("backgroundScalingMode",
-            false.ToString());
+            BackgroundScalingMode.FillEntireScreen.ToString());
         defaultThemeOptions.Add("pauseWhenGameLosesFocus",
             true.ToString());
         defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", 
             false.ToString());
         defaultThemeOptions.Add("trackFilter.sortBasis",
-            false.ToString());
+            TrackFilter.SortBasis.Title.ToString());
         defaultThemeOptions.Add("trackFilter.sortOrder", 
-            false.ToString());
+            TrackFilter.SortOrder.Ascending.ToString());
         themeOptionsDict = new Dictionary<string,
             Dictionary<string, string>>();
         themeOptionsDict.Add(kDefaultTheme, defaultThemeOptions);
@@ -230,6 +243,7 @@ public class Options : OptionsBase
         return AudioSettings.GetConfiguration().dspBufferSize;
     }
 
+    #region Offset & latency
     public int GetOffsetForControlScheme(ControlScheme scheme)
     {
         switch (scheme)
@@ -251,6 +265,7 @@ public class Options : OptionsBase
                 return keyboardMouseLatencyMs;
         }
     }
+    #endregion
 
     #region Graphics
     public void ApplyGraphicSettings()
@@ -1030,10 +1045,12 @@ public class OptionsV2 : OptionsBase
 
             themeOptions = new List<ThemeOptionsAsList>(),
         };
+
         foreach (PerTrackOptions o in perTrackOptions)
         {
             upgraded.perTrackOptions.Add(o.Clone());
         }
+
         ThemeOptionsAsList defaultThemeOptions =
             new ThemeOptionsAsList(Options.kDefaultTheme);
         defaultThemeOptions.Add("showLoadingBar", 
@@ -1044,20 +1061,18 @@ public class OptionsV2 : OptionsBase
         defaultThemeOptions.Add("showLaneDividers", 
             showLaneDividers.ToString());
         defaultThemeOptions.Add("beatMarkers",
-            ((int)beatMarkers).ToString());
+            beatMarkers.ToString());
         defaultThemeOptions.Add("backgroundScalingMode",
-            ((int)backgroundScalingMode).ToString());
+            backgroundScalingMode.ToString());
         defaultThemeOptions.Add("pauseWhenGameLosesFocus", 
             pauseWhenGameLosesFocus.ToString());
         defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", 
             trackFilter.showTracksInAllFolders.ToString());
         defaultThemeOptions.Add("trackFilter.sortBasis",
-            ((int)trackFilter.sortBasis).ToString());
+            trackFilter.sortBasis.ToString());
         defaultThemeOptions.Add("trackFilter.sortOrder",
-            ((int)trackFilter.sortOrder).ToString());
+            trackFilter.sortOrder.ToString());
         upgraded.themeOptions.Add(defaultThemeOptions);
-
-        Debug.Log("Upgraded options to version 3. JSON:\n" + JsonUtility.ToJson(upgraded, prettyPrint: true));
 
         return upgraded;
     }
