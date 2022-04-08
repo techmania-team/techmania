@@ -24,7 +24,9 @@ public class DiscordController
     public static void Start ()
     {
         if (discord != null || !SupportedOnCurrentPlatform()) return;
-        discord = new Discord.Discord(802017593086836767, (UInt64)Discord.CreateFlags.Default);
+        try {
+            discord = new Discord.Discord(802017593086836767, (UInt64)Discord.CreateFlags.NoRequireDiscord);
+        } catch {}
     }
     
     public static void RunCallbacks ()
