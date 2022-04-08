@@ -77,35 +77,35 @@ public class ModifierSidesheet : MonoBehaviour
         // Modifiers
         
         noteOpacity.SetValueWithoutNotify(
-            (int)Modifiers.instance.noteOpacity);
+            (int)Modifiers.instance.noteOpacityEnum);
         noteOpacity.RefreshShownValue();
         
         scanlineOpacity.SetValueWithoutNotify(
-            (int)Modifiers.instance.scanlineOpacity);
+            (int)Modifiers.instance.scanlineOpacityEnum);
         scanlineOpacity.RefreshShownValue();
         
         scanDirection.SetValueWithoutNotify(
-            (int)Modifiers.instance.scanDirection);
+            (int)Modifiers.instance.scanDirectionEnum);
         scanDirection.RefreshShownValue();
         
         notePosition.SetValueWithoutNotify(
-            (int)Modifiers.instance.notePosition);
+            (int)Modifiers.instance.notePositionEnum);
         notePosition.RefreshShownValue();
         
         scanPosition.SetValueWithoutNotify(
-             (int)Modifiers.instance.scanPosition);
+             (int)Modifiers.instance.scanPositionEnum);
         scanPosition.RefreshShownValue();
         
         fever.SetValueWithoutNotify(
-            (int)Modifiers.instance.fever);
+            (int)Modifiers.instance.feverEnum);
         fever.RefreshShownValue();
         
         keysound.SetValueWithoutNotify(
-            (int)Modifiers.instance.keysound);
+            (int)Modifiers.instance.keysoundEnum);
         keysound.RefreshShownValue();
 
         assistTick.SetValueWithoutNotify(
-            (int)Modifiers.instance.assistTick);
+            (int)Modifiers.instance.assistTickEnum);
         assistTick.RefreshShownValue();
 
         // Appearance
@@ -118,15 +118,15 @@ public class ModifierSidesheet : MonoBehaviour
         // Special modifiers
 
         mode.SetValueWithoutNotify(
-            (int)Modifiers.instance.mode);
+            (int)Modifiers.instance.modeEnum);
         mode.RefreshShownValue();
         
         controlOverride.SetValueWithoutNotify(
-            (int)Modifiers.instance.controlOverride);
+            (int)Modifiers.instance.controlOverrideEnum);
         controlOverride.RefreshShownValue();
         
         scrollSpeed.SetValueWithoutNotify(
-            (int)Modifiers.instance.scrollSpeed);
+            (int)Modifiers.instance.scrollSpeedEnum);
         scrollSpeed.RefreshShownValue();
     }
 
@@ -134,21 +134,21 @@ public class ModifierSidesheet : MonoBehaviour
     {
         // Modifiers
 
-        Modifiers.instance.noteOpacity =
+        Modifiers.instance.noteOpacityEnum =
             (Modifiers.NoteOpacity)noteOpacity.value;
-        Modifiers.instance.scanlineOpacity = 
+        Modifiers.instance.scanlineOpacityEnum = 
             (Modifiers.ScanlineOpacity)scanlineOpacity.value;
-        Modifiers.instance.scanDirection =
+        Modifiers.instance.scanDirectionEnum =
             (Modifiers.ScanDirection)scanDirection.value;
-        Modifiers.instance.notePosition =
+        Modifiers.instance.notePositionEnum =
             (Modifiers.NotePosition)notePosition.value;
-        Modifiers.instance.scanPosition =
+        Modifiers.instance.scanPositionEnum =
             (Modifiers.ScanPosition)scanPosition.value;
-        Modifiers.instance.fever =
+        Modifiers.instance.feverEnum =
             (Modifiers.Fever)fever.value;
-        Modifiers.instance.keysound =
+        Modifiers.instance.keysoundEnum =
             (Modifiers.Keysound)keysound.value;
-        Modifiers.instance.assistTick =
+        Modifiers.instance.assistTickEnum =
             (Modifiers.AssistTick)assistTick.value;
 
         // Appearance
@@ -160,11 +160,11 @@ public class ModifierSidesheet : MonoBehaviour
 
         // Special modifiers
 
-        Modifiers.instance.mode =
+        Modifiers.instance.modeEnum =
             (Modifiers.Mode)mode.value;
-        Modifiers.instance.controlOverride =
+        Modifiers.instance.controlOverrideEnum =
             (Modifiers.ControlOverride)controlOverride.value;
-        Modifiers.instance.scrollSpeed =
+        Modifiers.instance.scrollSpeedEnum =
             (Modifiers.ScrollSpeed)scrollSpeed.value;
 
         ModifierChanged?.Invoke();

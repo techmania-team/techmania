@@ -10,7 +10,7 @@ public class Startup : MonoBehaviour
 
     private static void LoadRuleset()
     {
-        if (Options.instance.ruleset != Options.Ruleset.Custom)
+        if (Options.instance.rulesetEnum != Options.Ruleset.Custom)
         {
             return;
         }
@@ -23,7 +23,7 @@ public class Startup : MonoBehaviour
         {
             Debug.LogError("An error occurred when loading custom ruleset, reverting to standard ruleset: " + ex.ToString());
             // Silently ignore errors.
-            Options.instance.ruleset = Options.Ruleset.Standard;
+            Options.instance.rulesetEnum = Options.Ruleset.Standard;
         }
     }
 

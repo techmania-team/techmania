@@ -169,7 +169,7 @@ public class Ruleset : RulesetBase
         }
 
         List<int> overrideList = null;
-        if (Options.instance.ruleset == Options.Ruleset.Legacy &&
+        if (Options.instance.rulesetEnum == Options.Ruleset.Legacy &&
             GameSetup.pattern.legacyRulesetOverride != null)
         {
             LegacyRulesetOverride o =
@@ -326,7 +326,7 @@ public class Ruleset : RulesetBase
 
     private static Ruleset GetInstance()
     {
-        switch (Options.instance.ruleset)
+        switch (Options.instance.rulesetEnum)
         {
             case Options.Ruleset.Standard:
                 return standard;

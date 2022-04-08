@@ -212,13 +212,13 @@ public class SelectPatternPanel : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) ||
             Input.GetKey(KeyCode.RightControl))
         {
-            Modifiers.instance.mode = Modifiers.Mode.NoFail;
+            Modifiers.instance.modeEnum = Modifiers.Mode.NoFail;
             OnModifierChanged();
         }
         if (Input.GetKey(KeyCode.LeftShift) ||
             Input.GetKey(KeyCode.RightShift))
         {
-            Modifiers.instance.mode = Modifiers.Mode.AutoPlay;
+            Modifiers.instance.modeEnum = Modifiers.Mode.AutoPlay;
             OnModifierChanged();
         }
 

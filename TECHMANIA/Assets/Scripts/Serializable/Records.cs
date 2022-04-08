@@ -91,13 +91,13 @@ public class Records : RecordsBase
     // Requires fingerprints to have been calculated.
     public Record GetRecord(Pattern p)
     {
-        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        if (Options.instance.rulesetEnum == Options.Ruleset.Custom)
         {
             return null;
         }
         p.CheckFingerprintCalculated();
         Dictionary<string, Record> dict = recordDict[
-            Options.instance.ruleset];
+            Options.instance.rulesetEnum];
         if (!dict.ContainsKey(p.patternMetadata.guid))
         {
             return null;
@@ -173,7 +173,7 @@ public class Records : RecordsBase
                 {
                     guid = p.patternMetadata.guid,
                     fingerprint = p.fingerprint,
-                    ruleset = Options.instance.ruleset,
+                    ruleset = Options.instance.rulesetEnum,
                     score = totalScore,
                     medal = s.Medal(),
                     gameVersion = Application.version
@@ -198,7 +198,7 @@ public class Records : RecordsBase
         {
             guid = p.patternMetadata.guid,
             fingerprint = p.fingerprint,
-            ruleset = Options.instance.ruleset,
+            ruleset = Options.instance.rulesetEnum,
             score = totalScore,
             medal = s.Medal(),
             gameVersion = Application.version

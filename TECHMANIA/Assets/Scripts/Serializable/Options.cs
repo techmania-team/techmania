@@ -24,6 +24,7 @@ public class OptionsBase : SerializableClass<OptionsBase> {}
 //
 // Updates in version 3:
 // - Most appearance options are moved to theme-specific options.
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Options : OptionsBase
 {
@@ -34,7 +35,12 @@ public class Options : OptionsBase
     public int width; 
     public int height;
     public int refreshRate;
-    public FullScreenMode fullScreenMode;
+    public FullScreenMode fullScreenModeEnum;
+    public string fullScreenMode
+    {
+        get { return fullScreenModeEnum.ToString(); }
+        set { fullScreenModeEnum = Enum.Parse<FullScreenMode>(value); }
+    }
     public bool vSync;
 
     // Audio
@@ -71,7 +77,12 @@ public class Options : OptionsBase
         Legacy,
         Custom
     }
-    public Ruleset ruleset;
+    public Ruleset rulesetEnum;
+    public string ruleset
+    {
+        get { return rulesetEnum.ToString(); }
+        set { rulesetEnum = Enum.Parse<Ruleset>(value); }
+    }
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
@@ -92,9 +103,11 @@ public class Options : OptionsBase
 
     // Theme-specific
 
+    [MoonSharp.Interpreter.MoonSharpHidden]
     [NonSerialized]
     public Dictionary<string, Dictionary<string, string>>
         themeOptionsDict;
+    [MoonSharp.Interpreter.MoonSharpHidden]
     public List<ThemeOptionsAsList> themeOptions;  // For serialization
 
     public enum BeatMarkerVisibility
@@ -142,7 +155,7 @@ public class Options : OptionsBase
         width = 0;
         height = 0;
         refreshRate = 0;
-        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        fullScreenModeEnum = FullScreenMode.ExclusiveFullScreen;
         vSync = false;
 
         masterVolumePercent = 100;
@@ -168,7 +181,7 @@ public class Options : OptionsBase
         keyboardMouseOffsetMs = 0;
         keyboardMouseLatencyMs = 0;
 
-        ruleset = Ruleset.Standard;
+        rulesetEnum = Ruleset.Standard;
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
@@ -279,7 +292,7 @@ public class Options : OptionsBase
             Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 0;
 #else
-        Screen.SetResolution(width, height, fullScreenMode, 
+        Screen.SetResolution(width, height, fullScreenModeEnum, 
             refreshRate);
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
@@ -377,6 +390,7 @@ public class Options : OptionsBase
     #endregion
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class EditorOptions
 {
@@ -444,6 +458,7 @@ public class EditorOptions
 }
 
 // All enums reserve the first option as the "normal" one.
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Modifiers
 {
@@ -462,7 +477,12 @@ public class Modifiers
         FadeIn,
         FadeIn2
     }
-    public NoteOpacity noteOpacity;
+    public NoteOpacity noteOpacityEnum;
+    public string noteOpacity
+    {
+        get { return noteOpacityEnum.ToString(); }
+        set { noteOpacityEnum = Enum.Parse<NoteOpacity>(value); }
+    }
     public static readonly string[] noteOpacityDisplayKeys =
     {
         "modifier_normal",
@@ -479,7 +499,13 @@ public class Modifiers
         Blink2,
         Blind
     }
-    public ScanlineOpacity scanlineOpacity;
+    public ScanlineOpacity scanlineOpacityEnum;
+    public string scanlineOpacity
+    {
+        get { return scanlineOpacityEnum.ToString(); }
+        set { scanlineOpacityEnum =
+                Enum.Parse<ScanlineOpacity>(value); }
+    }
     public static readonly string[] scanlineOpacityDisplayKeys =
     {
         "modifier_normal",
@@ -495,7 +521,12 @@ public class Modifiers
         LR,
         LL
     }
-    public ScanDirection scanDirection;
+    public ScanDirection scanDirectionEnum;
+    public string scanDirection
+    {
+        get { return scanDirectionEnum.ToString(); }
+        set { scanDirectionEnum = Enum.Parse<ScanDirection>(value); }
+    }
     public static readonly string[] scanDirectionDisplayKeys =
     {
         "modifier_normal",
@@ -509,7 +540,12 @@ public class Modifiers
         Normal,
         Mirror
     }
-    public NotePosition notePosition;
+    public NotePosition notePositionEnum;
+    public string notePosition
+    {
+        get { return notePositionEnum.ToString(); }
+        set { notePositionEnum = Enum.Parse<NotePosition>(value); }
+    }
     public static readonly string[] notePositionDisplayKeys =
     {
         "modifier_normal",
@@ -521,7 +557,12 @@ public class Modifiers
         Normal,
         Swap
     }
-    public ScanPosition scanPosition;
+    public ScanPosition scanPositionEnum;
+    public string scanPosition
+    {
+        get { return scanPositionEnum.ToString(); }
+        set { scanPositionEnum = Enum.Parse<ScanPosition>(value); }
+    }
     public static readonly string[] scanPositionDisplayKeys =
     {
         "modifier_normal",
@@ -534,7 +575,12 @@ public class Modifiers
         FeverOff,
         AutoFever
     }
-    public Fever fever;
+    public Fever feverEnum;
+    public string fever
+    {
+        get { return feverEnum.ToString(); }
+        set { feverEnum = Enum.Parse<Fever>(value); }
+    }
     public static readonly string[] feverDisplayKeys =
     {
         "modifier_normal",
@@ -547,7 +593,12 @@ public class Modifiers
         Normal,
         AutoKeysound
     }
-    public Keysound keysound;
+    public Keysound keysoundEnum;
+    public string keysound
+    {
+        get { return keysoundEnum.ToString(); }
+        set { keysoundEnum = Enum.Parse<Keysound>(value); }
+    }
     public static readonly string[] keysoundDisplayKeys =
     {
         "modifier_normal",
@@ -560,7 +611,12 @@ public class Modifiers
         AssistTick,
         AutoAssistTick
     }
-    public AssistTick assistTick;
+    public AssistTick assistTickEnum;
+    public string assistTick
+    {
+        get { return assistTick.ToString(); }
+        set { assistTickEnum = Enum.Parse<AssistTick>(value); }
+    }
     public static readonly string[] assistTickDisplayKeys =
     {
         "modifier_none",
@@ -577,7 +633,12 @@ public class Modifiers
         AutoPlay,
         Practice
     }
-    public Mode mode;
+    public Mode modeEnum;
+    public string mode
+    {
+        get { return modeEnum.ToString(); }
+        set { modeEnum = Enum.Parse<Mode>(value); }
+    }
     public static readonly string[] modeDisplayKeys =
     {
         "modifier_normal",
@@ -593,7 +654,13 @@ public class Modifiers
         OverrideToKeys,
         OverrideToKM
     }
-    public ControlOverride controlOverride;
+    public ControlOverride controlOverrideEnum;
+    public string controlOverride
+    {
+        get { return controlOverrideEnum.ToString(); }
+        set { controlOverrideEnum =
+                Enum.Parse<ControlOverride>(value); }
+    }
     public static readonly string[] controlOverrideDisplayKeys =
     {
         "modifier_none",
@@ -607,7 +674,12 @@ public class Modifiers
         Normal,
         HalfSpeed
     }
-    public ScrollSpeed scrollSpeed;
+    public ScrollSpeed scrollSpeedEnum;
+    public string scrollSpeed
+    {
+        get { return scrollSpeedEnum.ToString(); }
+        set { scrollSpeedEnum = Enum.Parse<ScrollSpeed>(value); }
+    }
     public static readonly string[] scrollSpeedDisplayKeys =
     {
         "modifier_normal",
@@ -621,67 +693,67 @@ public class Modifiers
     public void ToDisplaySegments(List<string> regularSegments,
         List<string> specialSegments)
     {
-        if (noteOpacity != 0)
+        if (noteOpacityEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                noteOpacityDisplayKeys[(int)noteOpacity]));
+                noteOpacityDisplayKeys[(int)noteOpacityEnum]));
         }
-        if (scanlineOpacity != 0)
+        if (scanlineOpacityEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
+                scanlineOpacityDisplayKeys[(int)scanlineOpacityEnum]));
         }
-        if (scanDirection != 0)
+        if (scanDirectionEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanDirectionDisplayKeys[(int)scanDirection]));
+                scanDirectionDisplayKeys[(int)scanDirectionEnum]));
         }
-        if (notePosition != 0)
+        if (notePositionEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                notePositionDisplayKeys[(int)notePosition]));
+                notePositionDisplayKeys[(int)notePositionEnum]));
         }
-        if (scanPosition != 0)
+        if (scanPositionEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanPositionDisplayKeys[(int)scanPosition]));
+                scanPositionDisplayKeys[(int)scanPositionEnum]));
         }
-        if (fever != 0)
+        if (feverEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                feverDisplayKeys[(int)fever]));
+                feverDisplayKeys[(int)feverEnum]));
         }
-        if (keysound != 0)
+        if (keysoundEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                keysoundDisplayKeys[(int)keysound]));
+                keysoundDisplayKeys[(int)keysoundEnum]));
         }
-        if (assistTick != 0)
+        if (assistTickEnum != 0)
         {
             regularSegments.Add(L10n.GetString(
-                assistTickDisplayKeys[(int)assistTick]));
+                assistTickDisplayKeys[(int)assistTickEnum]));
         }
 
-        if (mode != 0)
+        if (modeEnum != 0)
         {
             specialSegments.Add(L10n.GetString(
-                modeDisplayKeys[(int)mode]));
+                modeDisplayKeys[(int)modeEnum]));
         }
-        if (controlOverride != 0)
+        if (controlOverrideEnum != 0)
         {
             specialSegments.Add(L10n.GetString(
-                controlOverrideDisplayKeys[(int)controlOverride]));
+                controlOverrideDisplayKeys[(int)controlOverrideEnum]));
         }
-        if (scrollSpeed != 0)
+        if (scrollSpeedEnum != 0)
         {
             specialSegments.Add(L10n.GetString(
-                scrollSpeedDisplayKeys[(int)scrollSpeed]));
+                scrollSpeedDisplayKeys[(int)scrollSpeedEnum]));
         }
     }
 
     public Scan.Direction GetTopScanDirection()
     {
-        switch (scanDirection)
+        switch (scanDirectionEnum)
         {
             case ScanDirection.Normal:
             case ScanDirection.RR:
@@ -696,7 +768,7 @@ public class Modifiers
 
     public Scan.Direction GetBottomScanDirection()
     {
-        switch (scanDirection)
+        switch (scanDirectionEnum)
         {
             case ScanDirection.Normal:
             case ScanDirection.LL:
@@ -712,7 +784,7 @@ public class Modifiers
     public Scan.Position GetScanPosition(int scanNumber)
     {
         bool isBottomScan = scanNumber % 2 == 0;
-        if (scanPosition == ScanPosition.Swap)
+        if (scanPositionEnum == ScanPosition.Swap)
         {
             isBottomScan = !isBottomScan;
         }
@@ -722,9 +794,9 @@ public class Modifiers
 
     public bool HasAnySpecialModifier()
     {
-        if (mode != Mode.Normal) return true;
-        if (controlOverride != ControlOverride.None) return true;
-        if (scrollSpeed != ScrollSpeed.Normal) return true;
+        if (modeEnum != Mode.Normal) return true;
+        if (controlOverrideEnum != ControlOverride.None) return true;
+        if (scrollSpeedEnum != ScrollSpeed.Normal) return true;
         return false;
     }
 
@@ -732,21 +804,22 @@ public class Modifiers
     {
         return new Modifiers()
         {
-            noteOpacity = noteOpacity,
-            scanlineOpacity = scanlineOpacity,
-            scanDirection = scanDirection,
-            notePosition = notePosition,
-            scanPosition = scanPosition,
-            fever = fever,
-            keysound = keysound,
-            assistTick = assistTick,
-            mode = mode,
-            controlOverride = controlOverride,
-            scrollSpeed = scrollSpeed
+            noteOpacityEnum = noteOpacityEnum,
+            scanlineOpacityEnum = scanlineOpacityEnum,
+            scanDirectionEnum = scanDirectionEnum,
+            notePositionEnum = notePositionEnum,
+            scanPositionEnum = scanPositionEnum,
+            feverEnum = feverEnum,
+            keysoundEnum = keysoundEnum,
+            assistTickEnum = assistTickEnum,
+            modeEnum = modeEnum,
+            controlOverrideEnum = controlOverrideEnum,
+            scrollSpeedEnum = scrollSpeedEnum
         };
     }
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class PerTrackOptions
 {
@@ -772,6 +845,7 @@ public class PerTrackOptions
     }
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class TrackFilter
 {
@@ -832,6 +906,7 @@ public class TrackFilter
     }
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class ThemeOptionsAsList
 {
@@ -1011,7 +1086,7 @@ public class OptionsV2 : OptionsBase
             width = width,
             height = height,
             refreshRate = refreshRate,
-            fullScreenMode = fullScreenMode,
+            fullScreenModeEnum = fullScreenMode,
             vSync = vSync,
 
             masterVolumePercent = masterVolumePercent,
@@ -1034,7 +1109,7 @@ public class OptionsV2 : OptionsBase
             keyboardMouseOffsetMs = keyboardMouseOffsetMs,
             keyboardMouseLatencyMs = keyboardMouseLatencyMs,
 
-            ruleset = (Options.Ruleset)ruleset,
+            rulesetEnum = (Options.Ruleset)ruleset,
             customDataLocation = customDataLocation,
             tracksFolderLocation = tracksFolderLocation,
             skinsFolderLocation = skinsFolderLocation,

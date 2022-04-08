@@ -45,7 +45,7 @@ public class Scanline : MonoBehaviour
             Game.FloatScan));
 
         float alpha;
-        switch (Modifiers.instance.scanlineOpacity)
+        switch (Modifiers.instance.scanlineOpacityEnum)
         {
             case Modifiers.ScanlineOpacity.Normal:
                 alpha = 1f;
@@ -55,7 +55,7 @@ public class Scanline : MonoBehaviour
                 break;
             default:
                 float scan = Game.FloatPulse / Game.PulsesPerScan;
-                if (Modifiers.instance.scanlineOpacity ==
+                if (Modifiers.instance.scanlineOpacityEnum ==
                     Modifiers.ScanlineOpacity.Blink)
                 {
                     // 4 periods per scan.

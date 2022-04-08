@@ -264,7 +264,7 @@ public partial class Pattern
     {
         List<float> timeWindows = Ruleset.instance.timeWindows;
         if (calculateTimeWindows &&
-            Options.instance.ruleset == Options.Ruleset.Legacy &&
+            Options.instance.rulesetEnum == Options.Ruleset.Legacy &&
             GameSetup.pattern.legacyRulesetOverride != null &&
             GameSetup.pattern.legacyRulesetOverride
                 .timeWindows.Count > 0)
@@ -626,7 +626,7 @@ public partial class Pattern
         Pattern p = CloneWithDifferentGuid();
         int playableLanes = patternMetadata.playableLanes;
 
-        if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
+        if (modifiers.notePositionEnum == Modifiers.NotePosition.Mirror)
         {
             foreach (Note n in p.notes)
             {
@@ -646,7 +646,7 @@ public partial class Pattern
             }
         }
 
-        if (modifiers.keysound == Modifiers.Keysound.AutoKeysound)
+        if (modifiers.keysoundEnum == Modifiers.Keysound.AutoKeysound)
         {
             List<Note> addedNotes = new List<Note>();
             foreach (Note n in p.notes)
@@ -664,7 +664,7 @@ public partial class Pattern
             }
         }
 
-        if (modifiers.assistTick == 
+        if (modifiers.assistTickEnum == 
             Modifiers.AssistTick.AutoAssistTick)
         {
             List<AssistTickNote> addedNotes =
@@ -685,7 +685,7 @@ public partial class Pattern
             }
         }
 
-        switch (modifiers.controlOverride)
+        switch (modifiers.controlOverrideEnum)
         {
             case Modifiers.ControlOverride.None:
                 break;
@@ -700,7 +700,7 @@ public partial class Pattern
                 break;
         }
 
-        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
+        if (modifiers.scrollSpeedEnum == Modifiers.ScrollSpeed.HalfSpeed)
         {
             p.patternMetadata.bps *= 2;
         }

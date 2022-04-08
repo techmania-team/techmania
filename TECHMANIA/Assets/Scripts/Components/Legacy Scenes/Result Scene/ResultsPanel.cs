@@ -112,7 +112,7 @@ public class ResultsPanel : MonoBehaviour
         }
 
         Score scoreForRecord = Game.score;
-        if (Options.instance.ruleset == Options.Ruleset.Custom ||
+        if (Options.instance.rulesetEnum == Options.Ruleset.Custom ||
             Modifiers.instance.HasAnySpecialModifier() ||
             Game.score.stageFailed)
         {
@@ -130,7 +130,7 @@ public class ResultsPanel : MonoBehaviour
 
         // Ruleset
         legacyRulesetOverrideIndicator.SetActive(false);
-        switch (Options.instance.ruleset)
+        switch (Options.instance.rulesetEnum)
         {
             case Options.Ruleset.Standard:
                 ruleset.text = L10n.GetString(

@@ -167,7 +167,6 @@ namespace ThemeApi
 
         #region Events
         // https://docs.unity3d.com/2021.2/Documentation/Manual/UIE-Events-Reference.html
-        // Exposed as the "eventType" global table
         public enum EventType
         {
             // Capture events: omitted

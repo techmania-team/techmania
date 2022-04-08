@@ -85,9 +85,9 @@ public class NoteAppearance : MonoBehaviour
     public void Initialize()
     {
         alphaUpperBound = 1f;
-        if (Modifiers.instance.noteOpacity ==
+        if (Modifiers.instance.noteOpacityEnum ==
             Modifiers.NoteOpacity.FadeIn ||
-            Modifiers.instance.noteOpacity ==
+            Modifiers.instance.noteOpacityEnum ==
             Modifiers.NoteOpacity.FadeIn2)
         {
             alphaUpperBound = 0f;
@@ -165,7 +165,7 @@ public class NoteAppearance : MonoBehaviour
         {
             case Visibility.Visible: alpha = 1f; break;
             case Visibility.Transparent:
-                if (Modifiers.instance.noteOpacity ==
+                if (Modifiers.instance.noteOpacityEnum ==
                     Modifiers.NoteOpacity.Normal)
                 {
                     alpha = 0.6f;
@@ -302,14 +302,14 @@ public class NoteAppearance : MonoBehaviour
 
     private void UpdateAlphaUpperBound()
     {
-        if (Modifiers.instance.noteOpacity
+        if (Modifiers.instance.noteOpacityEnum
             == Modifiers.NoteOpacity.Normal) return;
 
         float correctScan = 
             (float)GetComponent<NoteObject>().note.pulse
             / Game.PulsesPerScan;
         float currentScan = Game.FloatPulse / Game.PulsesPerScan;
-        switch (Modifiers.instance.noteOpacity)
+        switch (Modifiers.instance.noteOpacityEnum)
         {
             case Modifiers.NoteOpacity.FadeOut:
                 alphaUpperBound = Mathf.InverseLerp(
@@ -350,7 +350,7 @@ public class NoteAppearance : MonoBehaviour
         UpdateSprites();
         TypeSpecificUpdate();
         if ((state == State.Prepare || state == State.Active) &&
-            Modifiers.instance.noteOpacity
+            Modifiers.instance.noteOpacityEnum
             != Modifiers.NoteOpacity.Normal)
         {
             UpdateAlphaUpperBound();

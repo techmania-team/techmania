@@ -177,7 +177,7 @@ public class OptionsPanel : MonoBehaviour
             "options_fullscreen_mode_maximized_window",
             "options_fullscreen_mode_windowed");
         fullscreenDropdown.SetValueWithoutNotify(
-            (int)Options.instance.fullScreenMode);
+            (int)Options.instance.fullScreenModeEnum);
         fullscreenDropdown.RefreshShownValue();
 
         UIUtils.InitializeDropdownWithLocalizedOptions(
@@ -203,7 +203,7 @@ public class OptionsPanel : MonoBehaviour
             "options_ruleset_legacy",
             "options_ruleset_custom");
         rulesetDropdown.SetValueWithoutNotify(
-            (int)Options.instance.ruleset);
+            (int)Options.instance.rulesetEnum);
         rulesetDropdown.RefreshShownValue();
     }
 
@@ -226,7 +226,7 @@ public class OptionsPanel : MonoBehaviour
         Options.instance.refreshRate =
             resolutions[resolutionIndex].refreshRate;
 
-        Options.instance.fullScreenMode =
+        Options.instance.fullScreenModeEnum =
             (FullScreenMode)fullscreenDropdown.value;
         Options.instance.vSync = vSyncToggle.isOn;
 
@@ -282,9 +282,9 @@ public class OptionsPanel : MonoBehaviour
     #region Miscellaneous
     public void OnRulesetChanged()
     {
-        Options.instance.ruleset = (Options.Ruleset)
+        Options.instance.rulesetEnum = (Options.Ruleset)
             rulesetDropdown.value;
-        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        if (Options.instance.rulesetEnum == Options.Ruleset.Custom)
         {
             // Attempt to load custom ruleset.
             try
@@ -296,7 +296,7 @@ public class OptionsPanel : MonoBehaviour
                 messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_not_found_error_format",
                     Paths.GetRulesetFilePath()));
-                Options.instance.ruleset = Options.Ruleset.Standard;
+                Options.instance.rulesetEnum = Options.Ruleset.Standard;
                 MemoryToUI();
             }
             catch (System.Exception ex)
@@ -304,7 +304,7 @@ public class OptionsPanel : MonoBehaviour
                 messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                     "custom_ruleset_load_error_format",
                     ex.Message));
-                Options.instance.ruleset = Options.Ruleset.Standard;
+                Options.instance.rulesetEnum = Options.Ruleset.Standard;
                 MemoryToUI();
             }
         }
