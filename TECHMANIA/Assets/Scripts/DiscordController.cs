@@ -10,7 +10,8 @@ public enum DiscordActivityType
     EditorTrack,
     EditorPattern,
     EditorSave,
-    Game
+    Game,
+    Empty
 }
 
 public class DiscordController
@@ -23,7 +24,7 @@ public class DiscordController
 
     public static void Start ()
     {
-        if (discord != null || !SupportedOnCurrentPlatform()) return;
+        if (discord != null || !SupportedOnCurrentPlatform() || !Options.instance.discordRichPresence) return;
         try {
             discord = new Discord.Discord(802017593086836767, (UInt64)Discord.CreateFlags.NoRequireDiscord);
         } catch {}
@@ -102,7 +103,10 @@ public class DiscordController
     public static void Dispose ()
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
-        discord.Dispose();
+        try {
+            discord.Dispose();
+            discord = null;
+        } catch {}
     }
 
     public static bool SupportedOnCurrentPlatform ()
