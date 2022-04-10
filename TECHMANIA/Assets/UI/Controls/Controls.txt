@@ -7,15 +7,18 @@ function WaitForSeconds(seconds)
 end
 
 function SetProgressBar(progressBar, percent)
-    progressBar.Q("filled-portion").style.right = tm.style.LengthInPercent(100 - percent)
+    progressBar.Q("filled-portion").style.right =
+        tm.style.LengthInPercent(100 - percent)
 end
 
-function SetUpAllSliders(root)
-    root.Query(nil, "slider").ForEach(function (element)
+function SetUpAllSliders(tm)
+    tm.root.Query(nil, "slider").ForEach(function (element)
         function UpdateSliderAppearance(slider)
-            local percent = (slider.value - slider.lowValue) * 100 / (slider.highValue - slider.lowValue)
+            local percent = (slider.value - slider.lowValue) * 100 / 
+                (slider.highValue - slider.lowValue)
             SetProgressBar(element.parent, percent)
-            element.Q("overlay-center").style.left = tm.style.LengthInPercent(percent)
+            element.Q("overlay-center").style.left =
+                tm.style.LengthInPercent(percent)
         end
         element.RegisterCallback("ChangeFloat", UpdateSliderAppearance)
         element.RegisterCallback("ChangeInt", UpdateSliderAppearance)
@@ -23,8 +26,8 @@ function SetUpAllSliders(root)
     end)
 end
 
-function SetUpAllToggles(root)
-    root.Query(nil, "toggle-track").ForEach(function (element)
+function SetUpAllToggles(tm)
+    tm.root.Query(nil, "toggle-track").ForEach(function (element)
         element.RegisterCallback("Click", function (track)
             track.ToggleInClassList("toggle-track-on")
             track.ToggleInClassList("toggle-track-off")
@@ -32,21 +35,22 @@ function SetUpAllToggles(root)
     end)
 end
 
-function SetUpButtonSounds(root, audio, className)
-    root.Query(nil, className).ForEach(function (element)
+function SetUpButtonSounds(tm, className)
+    tm.root.Query(nil, className).ForEach(function (element)
         element.RegisterCallback("Click", function ()
-            audio.Play("Assets/UI/SFX/Click.wav", "SFX")
+            tm.audio.Play("Assets/UI/SFX/Click.wav", "SFX")
         end)
         element.RegisterCallback("PointerOver", function ()
-            audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+            tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
         end)
     end)
 end
 
-function SetUpAllScrollingTexts(root)
-    root.Query(nil, "scrolling-text").ForEach(function (element)
+function SetUpAllScrollingTexts(tm)
+    tm.root.Query(nil, "scrolling-text").ForEach(function (element)
         tm.StartCoroutine(function ()
-            -- If we need element.horizontalScroller.lowValue/highValue, we have to wait 1 frame
+            -- If we need element.horizontalScroller.lowValue/highValue,
+            -- we have to wait 1 frame
             -- coroutine.yield()
             local waitLength = 2
             local scrollLength = 2
@@ -81,13 +85,58 @@ function SetUpAllScrollingTexts(root)
     end)
 end
 
-function InitializeControls(root, audio)
-    SetUpAllSliders(root)
-    SetUpAllToggles(root)
-    SetUpButtonSounds(root, audio, "button-text")
-    SetUpButtonSounds(root, audio, "button-outlined")
-    SetUpButtonSounds(root, audio, "button-contained")
-    SetUpButtonSounds(root, audio, "button-card")
-    SetUpButtonSounds(root, audio, "toggle-track")
-    SetUpAllScrollingTexts(root)
+function InitializeControls(tm)
+    SetUpAllSliders(tm)
+    SetUpAllToggles(tm)
+    SetUpButtonSounds(tm, "button-text")
+    SetUpButtonSounds(tm, "button-outlined")
+    SetUpButtonSounds(tm, "button-contained")
+    SetUpButtonSounds(tm, "button-card")
+    SetUpButtonSounds(tm, "toggle-track")
+    SetUpAllScrollingTexts(tm)
+end
+
+function TransitionPanelCoroutine(from, to, direction)
+    local transitionTime = 0.2
+    local transitionLength = 100 * direction
+    function DampedLerp(a, b, t)
+        return math.Lerp(a, b, math.Pow(t, 0.6))
+    end
+
+    local timer = 0
+    from.display = true
+    from.style.opacity = tm.style.Float(1)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(0, transitionLength, progress)
+        from.style.opacity = tm.style.Float(1 - progress)
+        from.style.translate = tm.style.TranslateInPixel(x, 0)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+    from.display = false
+
+    timer = 0
+    to.style.opacity = tm.style.Float(0)
+    to.display = true
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(-transitionLength, 0, progress)
+        to.style.opacity = tm.style.Float(progress)
+        to.style.translate = tm.style.TranslateInPixel(x, 0)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+end
+
+function TransitionPanelFromLeft(from, to)
+    tm.StartCoroutine(function()
+        TransitionPanelCoroutine(from, to, 1)
+    end)
+end
+
+function TransitionPanelFromRight(from, to)
+    tm.StartCoroutine(function()
+        TransitionPanelCoroutine(from, to, -1)
+    end)
 end

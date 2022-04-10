@@ -1,5 +1,5 @@
-function InitializeWelcomeMat()
-    local mainMenu = root.Q("main-menu")
+function InitializeWelcomeMat(tm)
+    local mainMenu = tm.root.Q("main-menu")
     local buttons = mainMenu.Q("buttons")
     local mat = mainMenu.Q("welcome-mat")
     mainMenu.display = true
@@ -47,9 +47,9 @@ function InitializeWelcomeMat()
     mat.RegisterCallback("Click", function ()
         if (matStatus ~= matStatusSlow) then return end
         matStatus = matStatusFast
-        audio.Play("Assets/UI/SFX/Game Start.wav", "SFX")
+        tm.audio.Play("Assets/UI/SFX/Game Start.wav", "SFX")
         tm.StartCoroutine(FastBlinkThenShowMenu)
     end)
 end
 
-InitializeWelcomeMat()
+InitializeWelcomeMat(tm)

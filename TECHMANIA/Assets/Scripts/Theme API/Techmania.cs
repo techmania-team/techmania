@@ -28,7 +28,7 @@ namespace ThemeApi
         #region UIDocument exposure
         public VisualTreeAsset visualTreeAsset => 
             uiDocument.visualTreeAsset;
-        public VisualElementWrap rootVisualElement =>
+        public VisualElementWrap root =>
             new VisualElementWrap(uiDocument.rootVisualElement);
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;

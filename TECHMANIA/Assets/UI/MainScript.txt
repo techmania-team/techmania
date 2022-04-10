@@ -1,16 +1,19 @@
 tm = getApi(1)
-root = tm.rootVisualElement
-audio = tm.audio
 
 l10n = tm.l10n
 l10n.Initialize(tm.LoadTextFile("Assets/UI/String Table.csv"))
 l10n.ApplyLocale(tm.options.locale)
 
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
-InitializeControls(root, audio)
+InitializeControls(tm)
 
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
-
+tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
+    TransitionPanelFromRight(
+        tm.root.Q("main-menu"),
+        tm.root.Q("options-panel")
+    )
+end)
 
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)
