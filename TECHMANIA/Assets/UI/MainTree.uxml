@@ -37,12 +37,12 @@
                 <ui:Label text="Graphics" display-tooltip-when-elided="true" name="graphics-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="resolution" class="options-item">
                     <ui:Label text="Resolution" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="fullscreen-mode" class="options-item">
                     <ui:Label text="Fullscreen mode" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="vsync" class="options-item">
@@ -76,7 +76,7 @@
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="audio-buffer-size" class="options-item">
                     <ui:Label text="Audio buffer size" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="audio-buffer-size-explanation" class="options-item" style="height: auto; padding-bottom: 10px;">
                     <ui:Label text="Lower value reduces audio latency, but may cause audio issues such as stuttering." display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1; margin-left: 335px; margin-right: 0; white-space: normal;" />
@@ -84,7 +84,7 @@
                 <ui:Label text="Appearance" display-tooltip-when-elided="true" name="appearance-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="language" class="options-item">
                     <ui:Label text="Language" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="skins" class="options-item">
@@ -114,17 +114,17 @@
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="beat-markers" class="options-item">
                     <ui:Label text="Beat markers" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="background-scaling" class="options-item">
                     <ui:Label text="Background scaling" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:Label text="Miscellaneous" display-tooltip-when-elided="true" name="miscellaneous-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="ruleset" class="options-item">
                     <ui:Label text="Ruleset" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Instance template="Dropdown" name="dropdown" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="custom-data-location" class="options-item">

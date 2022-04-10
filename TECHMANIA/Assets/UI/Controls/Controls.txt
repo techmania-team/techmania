@@ -35,15 +35,25 @@ function SetUpAllToggles(tm)
     end)
 end
 
-function SetUpButtonSounds(tm, className)
+function SetUpClickSound(tm, className)
     tm.root.Query(nil, className).ForEach(function (element)
         element.RegisterCallback("Click", function ()
             tm.audio.Play("Assets/UI/SFX/Click.wav", "SFX")
         end)
+    end)
+end
+
+function SetUpPointerOverSound(tm, className)
+    tm.root.Query(nil, className).ForEach(function (element)
         element.RegisterCallback("PointerOver", function ()
             tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
         end)
     end)
+end
+
+function SetUpButtonSounds(tm, className)
+    SetUpClickSound(tm, className)
+    SetUpPointerOverSound(tm, className)
 end
 
 function SetUpAllScrollingTexts(tm)
@@ -93,6 +103,8 @@ function InitializeControls(tm)
     SetUpButtonSounds(tm, "button-contained")
     SetUpButtonSounds(tm, "button-card")
     SetUpButtonSounds(tm, "toggle-track")
+    SetUpButtonSounds(tm, "input-field")
+    SetUpPointerOverSound(tm, "slider")
     SetUpAllScrollingTexts(tm)
 end
 

@@ -57,7 +57,7 @@ namespace ThemeApi
         public ITransform transform => inner.transform;
         #endregion
 
-        #region Subclass-specific properties
+        #region Subclass-specific
         public void CheckType(System.Type type, string targetMember)
         {
             if (!type.IsAssignableFrom(inner.GetType()))
@@ -163,6 +163,54 @@ namespace ThemeApi
                     (inner as ScrollView).verticalScroller);
             }
         }
+
+        public List<string> choices
+        {
+            get
+            {
+                CheckType(typeof(DropdownField), "choices");
+                return (inner as DropdownField).choices;
+            }
+            set
+            {
+                CheckType(typeof(DropdownField), "choices");
+                (inner as DropdownField).choices = value;
+            }
+        }
+
+        public int index
+        {
+            get
+            {
+                CheckType(typeof(DropdownField), "index");
+                return (inner as DropdownField).index;
+            }
+            set
+            {
+                CheckType(typeof(DropdownField), "index");
+                (inner as DropdownField).index = value;
+            }
+        }
+
+        public string stringValue
+        {
+            get
+            {
+                CheckType(typeof(DropdownField), "stringValue");
+                return (inner as DropdownField).value;
+            }
+            set
+            {
+                CheckType(typeof(DropdownField), "stringValue");
+                (inner as DropdownField).value = value;
+            }
+        }
+
+        public void SetValueWithoutNotify(string newValue)
+        {
+            CheckType(typeof(DropdownField), "newValue");
+            (inner as DropdownField).SetValueWithoutNotify(newValue);
+        }
         #endregion
 
         #region Events
@@ -175,6 +223,7 @@ namespace ThemeApi
             ChangeBool,
             ChangeInt,
             ChangeFloat,
+            ChangeString,
 
             // Command events: omitted
 
@@ -235,6 +284,7 @@ namespace ThemeApi
                 EventType.ChangeBool => typeof(ChangeEvent<bool>),
                 EventType.ChangeInt => typeof(ChangeEvent<int>),
                 EventType.ChangeFloat => typeof(ChangeEvent<float>),
+                EventType.ChangeString => typeof(ChangeEvent<string>),
                 EventType.PointerOver => typeof(PointerOverEvent),
                 EventType.Click => typeof(ClickEvent),
                 EventType.FrameUpdate => typeof(FrameUpdateEvent),

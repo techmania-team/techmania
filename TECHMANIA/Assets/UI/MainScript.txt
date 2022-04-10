@@ -15,6 +15,10 @@ tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
     )
 end)
 
+resolutionDropdown = tm.root.Q("options-panel").Q("resolution").Q("dropdown")
+resolutionDropdown.choices = {"foo", "bar"}
+resolutionDropdown.SetValueWithoutNotify("bar")
+
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)
 end
