@@ -35,7 +35,7 @@ public class DiscordController
         if (discord == null || !SupportedOnCurrentPlatform()) return;
         try {
             discord.RunCallbacks();
-        } catch (Discord.ResultException e) {
+        } catch {
             Dispose();
         }
     }
