@@ -33,7 +33,11 @@ public class DiscordController
     public static void RunCallbacks ()
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
-        discord.RunCallbacks();
+        try {
+            discord.RunCallbacks();
+        } catch (Discord.ResultException e) {
+            Dispose();
+        }
     }
 
     public static void SetActivity (DiscordActivityType type)
