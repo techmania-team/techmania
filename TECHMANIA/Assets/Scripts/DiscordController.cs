@@ -103,10 +103,8 @@ public class DiscordController
     public static void Dispose ()
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
-        try {
-            discord.Dispose();
-            discord = null;
-        } catch {}
+        discord.Dispose();
+        discord = null;
     }
 
     public static bool SupportedOnCurrentPlatform ()
