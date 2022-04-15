@@ -57,13 +57,18 @@ namespace ThemeApi
             ScriptSession.Execute(script);
         }
 
-        public void StartCoroutine(DynValue function)
+        public int StartCoroutine(DynValue function)
         {
             function.CheckType("Techmania.StartCoroutine", 
                 DataType.Function);
-            CoroutineRunner.Add(
+            return CoroutineRunner.Start(
                 ScriptSession.session.CreateCoroutine(function)
                 .Coroutine);
+        }
+
+        public void StopCoroutine(int id)
+        {
+            CoroutineRunner.Stop(id);
         }
         #endregion
     }

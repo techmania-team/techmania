@@ -9,10 +9,7 @@ function InitializeWelcomeMat(tm)
     mat.display = true
     mat.visible = true
 
-    local matStatusSlow = 0
-    local matStatusFast = 1
-    local matStatusHidden = 2
-    local matStatus = matStatusSlow
+    local slowBlinking = true
 
     function Blink(timer, period)
         local opacity = math.PingPong(timer, period) / period
@@ -23,7 +20,6 @@ function InitializeWelcomeMat(tm)
         local matTimer = 0
         local period = 1.5
         while (true) do
-            if (matStatus ~= matStatusSlow) then return end
             Blink(matTimer, period)
             matTimer = matTimer + time.deltaTime
             coroutine.yield()
@@ -37,16 +33,16 @@ function InitializeWelcomeMat(tm)
             matTimer = matTimer + time.deltaTime
             coroutine.yield()
         end
-        matStatus = matStatusHidden
         WaitForSeconds(0.2)
         mat.display = false
         buttons.visible = true
     end
 
-    tm.StartCoroutine(SlowBlink)
+    local slowBlinkCoroutine = tm.StartCoroutine(SlowBlink)
     mat.RegisterCallback("Click", function ()
-        if (matStatus ~= matStatusSlow) then return end
-        matStatus = matStatusFast
+        if (not slowBlinking) then return end
+        slowBlinking = false
+        tm.StopCoroutine(slowBlinkCoroutine)
         tm.audio.Play("Assets/UI/SFX/Game Start.wav", "SFX")
         tm.StartCoroutine(FastBlinkThenShowMenu)
     end)

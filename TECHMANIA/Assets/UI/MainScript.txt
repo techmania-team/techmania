@@ -14,6 +14,12 @@ tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
         tm.root.Q("options-panel")
     )
 end)
+tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
+    TransitionPanelFromLeft(
+        tm.root.Q("options-panel"),
+        tm.root.Q("main-menu")
+    )
+end)
 
 resolutionDropdown = tm.root.Q("options-panel").Q("resolution").Q("dropdown")
 resolutionDropdown.choices = {"foo", "bar"}
