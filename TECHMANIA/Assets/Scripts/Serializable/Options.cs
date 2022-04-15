@@ -89,6 +89,7 @@ public class Options : OptionsBase
     public string tracksFolderLocation;
     public string skinsFolderLocation;
     public bool pauseWhenGameLosesFocus;
+    public bool discordRichPresence;
 
     // Editor options
 
@@ -152,6 +153,7 @@ public class Options : OptionsBase
         tracksFolderLocation = "";
         skinsFolderLocation = "";
         pauseWhenGameLosesFocus = true;
+        discordRichPresence = true;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
