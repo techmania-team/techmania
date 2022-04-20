@@ -1,8 +1,40 @@
+function ShowOptionsPanel(tm)
+    local panel = tm.root.Q("options-panel")
+
+    local resolutionDropdown = panel.Q("resolution").Q("dropdown")
+    local resolutionOptions = {}
+    local currentResolution = nil
+    for i, resolution in ipairs(screen.resolutions) do
+        table.insert(resolutionOptions, resolution.ToString())
+        if (resolution.width == tm.options.width and
+            resolution.height == tm.options.height and
+            resolution.refreshRate == tm.options.refreshRate) then
+            currentResolution = resolution.ToString()
+        end
+    end
+    resolutionDropdown.choices = resolutionOptions
+    if (currentResolution == nil) then
+        currentResolution = resolutionOptions[table.getn(resolutionOptions)]
+    end
+    resolutionDropdown.SetValueWithoutNotify(currentResolution)
+end
+
 function InitializeOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
 
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
-    for _, resolution in ipairs(screen.resolutions) do
-        print(resolution.ToString())
-    end
+    resolutionDropdown.RegisterCallback("ChangeString", function(element, event)
+        for i, resolution in ipairs(screen.resolutions) do
+            if (resolution.ToString() == event.newValue) then
+                tm.options.width = resolution.width
+                tm.options.height = resolution.height
+                tm.options.refreshRate = resolution.refreshRate
+                break
+            end
+        end
+        tm.options.ApplyGraphicSettings()
+        tm.options.SaveToFile()
+    end)
 end
+
+InitializeOptionsPanel(tm)

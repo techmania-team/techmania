@@ -15,7 +15,7 @@ tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
         tm.root.Q("main-menu"),
         tm.root.Q("options-panel")
     )
-    InitializeOptionsPanel(tm)
+    ShowOptionsPanel(tm)
 end)
 tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
     TransitionPanelFromLeft(

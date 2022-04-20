@@ -12,7 +12,13 @@ using UnityEngine.Audio;
 [FormatVersion(OptionsV1.kVersion, typeof(OptionsV1), isLatest: false)]
 [FormatVersion(OptionsV2.kVersion, typeof(OptionsV2), isLatest: false)]
 [FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
-public class OptionsBase : SerializableClass<OptionsBase> {}
+public class OptionsBase : SerializableClass<OptionsBase>
+{
+    public void SaveToFile()
+    {
+        SaveToFile(Paths.GetOptionsFilePath());
+    }
+}
 
 // Deserialization will call the constructor, so we can set whatever
 // weird default values in the constructor, and they will naturally
