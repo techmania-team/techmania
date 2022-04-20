@@ -33,7 +33,6 @@ function InitializeOptionsPanel(tm)
             end
         end
         tm.options.ApplyGraphicSettings()
-        tm.options.SaveToFile()
     end)
 end
 

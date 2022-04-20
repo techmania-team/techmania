@@ -22,6 +22,7 @@ tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
         tm.root.Q("options-panel"),
         tm.root.Q("main-menu")
     )
+    tm.options.SaveToFile()
 end)
 
 resolutionDropdown = tm.root.Q("options-panel").Q("resolution").Q("dropdown")

@@ -110,11 +110,7 @@ public class Options : OptionsBase
     // Theme-specific
 
     [MoonSharp.Interpreter.MoonSharpHidden]
-    [NonSerialized]
-    public Dictionary<string, Dictionary<string, string>>
-        themeOptionsDict;
-    [MoonSharp.Interpreter.MoonSharpHidden]
-    public List<ThemeOptionsAsList> themeOptions;  // For serialization
+    public List<ThemeOptions> themeOptions;
 
     public enum BeatMarkerVisibility
     {
@@ -196,8 +192,8 @@ public class Options : OptionsBase
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
 
-        Dictionary<string, string> defaultThemeOptions = new 
-            Dictionary<string, string>();
+        ThemeOptions defaultThemeOptions = new ThemeOptions(
+            kDefaultTheme);
         defaultThemeOptions.Add("showLoadingBar", true.ToString());
         defaultThemeOptions.Add("showFps", false.ToString());
         defaultThemeOptions.Add("showJudgementTally", false.ToString());
@@ -214,47 +210,13 @@ public class Options : OptionsBase
             TrackFilter.SortBasis.Title.ToString());
         defaultThemeOptions.Add("trackFilter.sortOrder", 
             TrackFilter.SortOrder.Ascending.ToString());
-        themeOptionsDict = new Dictionary<string,
-            Dictionary<string, string>>();
-        themeOptionsDict.Add(kDefaultTheme, defaultThemeOptions);
+        themeOptions = new List<ThemeOptions>();
+        themeOptions.Add(defaultThemeOptions);
     }
 
     protected override void PrepareToSerialize()
     {
         RemoveDefaultPerTrackOptions();
-
-        // Theme options
-        themeOptions = new List<ThemeOptionsAsList>();
-        foreach (KeyValuePair<string, Dictionary<string, string>> pair
-            in themeOptionsDict)
-        {
-            ThemeOptionsAsList list = new ThemeOptionsAsList(
-                themeName: pair.Key);
-            foreach (KeyValuePair<string, string> optionPair in
-                pair.Value)
-            {
-                list.pairs.Add(new ThemeOptionsAsList.KVPair(
-                    optionPair.Key, optionPair.Value));
-            }
-        }
-    }
-
-    protected override void InitAfterDeserialize()
-    {
-        // Theme options
-        themeOptionsDict = new Dictionary<string,
-            Dictionary<string, string>>();
-        foreach (ThemeOptionsAsList list in themeOptions)
-        {
-            Dictionary<string, string> optionDict = new
-                Dictionary<string, string>();
-            foreach (ThemeOptionsAsList.KVPair pair in 
-                list.pairs)
-            {
-                optionDict.Add(pair.key, pair.value);
-            }
-            themeOptionsDict.Add(list.themeName, optionDict);
-        }
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -913,9 +875,9 @@ public class TrackFilter
 
 [MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
-public class ThemeOptionsAsList
+public class ThemeOptions
 {
-    public ThemeOptionsAsList(string themeName)
+    public ThemeOptions(string themeName)
     {
         this.themeName = themeName;
         pairs = new List<KVPair>();
@@ -1123,7 +1085,7 @@ public class OptionsV2 : OptionsBase
             modifiers = modifiers.Clone(),
             perTrackOptions = new List<PerTrackOptions>(),
 
-            themeOptions = new List<ThemeOptionsAsList>(),
+            themeOptions = new List<ThemeOptions>(),
         };
 
         foreach (PerTrackOptions o in perTrackOptions)
@@ -1131,8 +1093,8 @@ public class OptionsV2 : OptionsBase
             upgraded.perTrackOptions.Add(o.Clone());
         }
 
-        ThemeOptionsAsList defaultThemeOptions =
-            new ThemeOptionsAsList(Options.kDefaultTheme);
+        ThemeOptions defaultThemeOptions =
+            new ThemeOptions(Options.kDefaultTheme);
         defaultThemeOptions.Add("showLoadingBar", 
             showLoadingBar.ToString());
         defaultThemeOptions.Add("showFps", showFps.ToString());
