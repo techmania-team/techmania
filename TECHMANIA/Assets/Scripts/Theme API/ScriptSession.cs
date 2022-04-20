@@ -47,6 +47,8 @@ namespace ThemeApi
             UserData.RegisterType<string>();
             UserData.RegisterType<float>();
             UserData.RegisterType<Time>();
+            UserData.RegisterType<Screen>();
+            UserData.RegisterType<Resolution>();
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
             UserData.RegisterAssembly();
@@ -58,6 +60,7 @@ namespace ThemeApi
             session.Globals["string"] = UserData.CreateStatic<string>();
             session.Globals["float"] = UserData.CreateStatic<float>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
+            session.Globals["screen"] = UserData.CreateStatic<Screen>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =
                 UserData.CreateStatic<Vector3>();

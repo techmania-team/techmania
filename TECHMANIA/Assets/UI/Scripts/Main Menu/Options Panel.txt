@@ -1,0 +1,8 @@
+function InitializeOptionsPanel(tm)
+    local panel = tm.root.Q("options-panel")
+
+    local resolutionDropdown = panel.Q("resolution").Q("dropdown")
+    for _, resolution in ipairs(screen.resolutions) do
+        print(resolution.ToString())
+    end
+end

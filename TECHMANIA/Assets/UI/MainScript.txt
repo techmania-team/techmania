@@ -8,11 +8,14 @@ tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(tm)
 
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
+tm.root.Q("options-panel").display = false
 tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
     TransitionPanelFromRight(
         tm.root.Q("main-menu"),
         tm.root.Q("options-panel")
     )
+    InitializeOptionsPanel(tm)
 end)
 tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
     TransitionPanelFromLeft(
