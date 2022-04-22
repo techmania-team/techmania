@@ -9,7 +9,6 @@ InitializeControls(tm)
 
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
-tm.root.Q("options-panel").display = false
 tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
     TransitionPanelFromRight(
         tm.root.Q("main-menu"),
@@ -24,10 +23,6 @@ tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
     )
     tm.options.SaveToFile()
 end)
-
-resolutionDropdown = tm.root.Q("options-panel").Q("resolution").Q("dropdown")
-resolutionDropdown.choices = {"foo", "bar"}
-resolutionDropdown.SetValueWithoutNotify("bar")
 
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)

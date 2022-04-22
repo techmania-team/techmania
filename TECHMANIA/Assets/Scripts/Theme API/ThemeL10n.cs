@@ -34,6 +34,17 @@ namespace ThemeApi
                 {
                     string nameWithoutPound = name.TrimStart('#');
                     element = element.Q(nameWithoutPound);
+                    if (element == null)
+                    {
+                        Debug.LogError($"Element at l10n key '{s.Key}' is not found; unable to apply l10n value.");
+                        break;
+                    }
+                }
+                if (element == null) continue;
+                if (!(element is TextElement))
+                {
+                    Debug.LogError($"Element at l10n key '{s.Key}' is not a TextElement; unable to apply l10n value.");
+                    continue;
                 }
                 (element as TextElement).text = s.Value;
             }

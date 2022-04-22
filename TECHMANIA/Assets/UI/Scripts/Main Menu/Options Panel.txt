@@ -21,6 +21,7 @@ end
 
 function InitializeOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
+    panel.display = false
 
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
     resolutionDropdown.RegisterCallback("ChangeString", function(element, event)

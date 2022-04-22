@@ -273,58 +273,6 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 ,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드 + 마우스
 ,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
 ,,,,,,
-,options_panel_title,Options,设置,設定,オプション,설정
-,options_graphics_header,Graphics,图像,影像,グラフィック,그래픽
-,options_resolution_label,Resolution,分辨率,解析度,解像度,화면 해상도
-,options_fullscreen_mode_label,Fullscreen mode,全屏模式,顯示模式,画面モード,출력 방식
-,options_fullscreen_mode_exclusive_fullscreen,Exclusive fullscreen,独占全屏,全螢幕,フルスクリーン,전체화면
-,options_fullscreen_mode_fullscreen_window,Borderless window,全屏窗口,無邊框視窗,ボーダーレス,윈도우(전체화면)
-,options_fullscreen_mode_maximized_window,Maximized window,最大化窗口,最大化視窗,ウィンドウ（最大）,윈도우(최대화)
-,options_fullscreen_mode_windowed,Windowed,窗口化,視窗化,ウィンドウ,윈도우
-,options_vsync_label,VSync,垂直同步,垂直同步,VSync,수직 동기화
-,options_audio_header,Audio,音频,音效,オーディオ,오디오
-,options_master_volume_label,Master,主音量,主音量,マスター,마스터 볼륨
-,options_music_volume_label,Music,音乐音量,音樂音量,音楽,반주음
-,options_keysounds_volume_label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
-,options_sfx_volume_label,Sound effects,音效音量,音效音量,効果音,효과음
-,options_audio_buffer_size_label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
-,options_audio_buffer_size_explanation,"Lower value reduces audio latency,
-but may cause audio issues such as stuttering.","数值越小，音频延迟越低，
-但也越可能出现卡壳等问题。","數值越小，音效延遲越低，
-但也越可能出現問題。","バッファを減らせば遅延が小さくなりますが、
-ノイズ、音ズレなどが発生することがあります。","버퍼 크기가 작을수록 오디오 지연이 감소하지만,
-노이즈, 싱크 밀림 등의 문제가 발생할 수 있습니다."
-,options_appearance_header,Appearance,界面,介面,表示,화면
-,options_language_label,Language,语言,語言,言語,언어
-,options_select_skins_label,Skins,皮肤,造型,スキン,스킨
-,options_select_skins_button,SELECT,选择,選擇,選択,선택
-,options_show_loading_bar_label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
-,options_show_fps_label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
-,options_show_judgement_tally_label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
-,options_show_lane_dividers_label,Show lane dividers,显示轨道分界线,顯示軌道分界線,レーン区切り線を表示,트랙 구분선 표시
-,options_beat_markers_label,Beat markers,节拍辅助线,節拍輔助線,ビート区切り線,박자 구분선
-,options_beat_markers_hidden,Hidden,隐藏,隱藏,隠す,숨김
-,options_beat_markers_show_beat_markers,Show beat markers,显示节拍辅助线,顯示節拍輔助線,1泊毎に表示,1박마다 표시
-,options_beat_markers_show_half_beat_markers,Show half beat markers,显示半节拍辅助线,顯示半拍輔助線,半拍毎に表示,반 박마다 표시
-,options_bg_scaling_label,Background scaling,背景缩放方式,背景縮放方式,BGAのスケーリング,BGA 맞춤
-,options_bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,覆蓋整個螢幕,画面に合わせる,전체 화면
-,options_bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
-,options_miscellaneous_header,Miscellaneous,其他,其他,その他,기타
-,options_ruleset_label,Ruleset,规则,規則,ルールセット,규칙
-,options_ruleset_standard,Standard,标准,標準,スタンダード,표준
-,options_ruleset_legacy,Legacy,经典,經典,レガシー,레거시
-,options_ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
-,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일을 {0}에서 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
-,options_custom_data_location_label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
-,options_custom_data_location_browse_button,Browse,浏览,瀏覽,参照…,찾아보기
-,options_tracks_folder_label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
-,options_skins_folder_label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
-,options_touchscreen_test_label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
-,options_touchscreen_test_button,START,开始,開始,開始,시작
-,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
-,options_offset_latency_button,CALIBRATE,校对,校正,調整,보정하기
-,options_pause_when_game_loses_focus,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-,,,,,,
 ,touchscreen_test_panel_title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
 ,touchscreen_test_finger_indicator,Finger #{0},触点 #{0},手指 #{0},タップ #{0},터치 #{0}

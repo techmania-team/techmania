@@ -89,7 +89,7 @@
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="skins" class="options-item">
                     <ui:Label text="Skins" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Button text="SELECT" display-tooltip-when-elided="true" class="button-outlined" />
+                    <ui:Button text="SELECT" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="show-loading-bar" class="options-item">
@@ -107,7 +107,7 @@
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
-                <ui:VisualElement name="show-land-dividers" class="options-item">
+                <ui:VisualElement name="show-lane-dividers" class="options-item">
                     <ui:Label text="Show lane dividers" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
@@ -136,25 +136,25 @@
                         <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1;" />
                         <ui:Label text="C:\fooooooooooooooooooooooooooooooooooooooooooooooooooo" display-tooltip-when-elided="true" name="location-display" class="text-caption" style="overflow: hidden;" />
                     </ui:VisualElement>
-                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" class="button-outlined" />
+                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="skins-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels">
                         <ui:Label text="Skins folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1;" />
                         <ui:Label text="C:\baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" display-tooltip-when-elided="true" name="location-display" class="text-caption" style="overflow: hidden;" />
                     </ui:VisualElement>
-                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" class="button-outlined" />
+                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="touchscreen-test" class="options-item">
                     <ui:Label text="Touchscreen test" display-tooltip-when-elided="true" name="label" class="text-body" />
-                    <ui:Button text="START" display-tooltip-when-elided="true" class="button-outlined" />
+                    <ui:Button text="START" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="offset-latency" class="options-item">
                     <ui:Label text="Offset &amp; latency" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
                     <ui:Label text="10/20/30/40 ms" display-tooltip-when-elided="true" name="value-display" class="text-body" style="white-space: nowrap; margin-right: 30px;" />
-                    <ui:Button text="CALIBRATE" display-tooltip-when-elided="true" class="button-outlined" />
+                    <ui:Button text="CALIBRATE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="pause-when-lose-focus" class="options-item">
