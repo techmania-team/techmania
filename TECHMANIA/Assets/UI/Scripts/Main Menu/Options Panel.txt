@@ -13,6 +13,9 @@ function ShowOptionsPanel(tm)
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
     fullScreenDropdown.SetValueWithoutNotify(fullScreenDisplayString[tm.options.fullScreenMode])
+
+    local vSyncToggle = panel.Q("vsync").Q("track")
+    SetToggleIsOn(vSyncToggle, tm.options.vSync)
 end
 
 function InitializeOptionsPanel(tm)
@@ -56,6 +59,12 @@ function InitializeOptionsPanel(tm)
                 break
             end
         end
+        tm.options.ApplyGraphicSettings()
+    end)
+
+    local vSyncToggle = panel.Q("vsync").Q("track")
+    vSyncToggle.RegisterCallback("Click", function()
+        tm.options.vSync = not tm.options.vSync
         tm.options.ApplyGraphicSettings()
     end)
 end

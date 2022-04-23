@@ -35,6 +35,15 @@ function SetUpAllToggles(tm)
     end)
 end
 
+function IsToggleOn(trackElement)
+    return trackElement.ClassListContains("toggle-track-on")
+end
+
+function SetToggleIsOn(trackElement, on)
+    trackElement.EnableInClassList("toggle-track-on", on)
+    trackElement.EnableInClassList("toggle-track-off", not on)
+end
+
 function SetUpClickSound(tm, className)
     tm.root.Query(nil, className).ForEach(function (element)
         local sfxName = "Assets/UI/SFX/Click.wav"
