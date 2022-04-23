@@ -1,22 +1,18 @@
+-- key: enum, value: display string
+fullScreenDisplayString = {}
+
 function ShowOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
 
+    local currentResolution = resolution.__new()
+    currentResolution.width = tm.options.width
+    currentResolution.height = tm.options.height
+    currentResolution.refreshRate = tm.options.refreshRate
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
-    local resolutionOptions = {}
-    local currentResolution = nil
-    for i, resolution in ipairs(screen.resolutions) do
-        table.insert(resolutionOptions, resolution.ToString())
-        if (resolution.width == tm.options.width and
-            resolution.height == tm.options.height and
-            resolution.refreshRate == tm.options.refreshRate) then
-            currentResolution = resolution.ToString()
-        end
-    end
-    resolutionDropdown.choices = resolutionOptions
-    if (currentResolution == nil) then
-        currentResolution = resolutionOptions[table.getn(resolutionOptions)]
-    end
-    resolutionDropdown.SetValueWithoutNotify(currentResolution)
+    resolutionDropdown.SetValueWithoutNotify(currentResolution.ToString())
+
+    local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+    fullScreenDropdown.SetValueWithoutNotify(fullScreenDisplayString[tm.options.fullScreenMode])
 end
 
 function InitializeOptionsPanel(tm)
@@ -24,12 +20,39 @@ function InitializeOptionsPanel(tm)
     panel.display = false
 
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
+    local resolutionChoices = {}
+    for i, resolution in ipairs(screen.resolutions) do
+        table.insert(resolutionChoices, resolution.ToString())
+    end
+    resolutionDropdown.choices = resolutionChoices
     resolutionDropdown.RegisterCallback("ChangeString", function(element, event)
-        for i, resolution in ipairs(screen.resolutions) do
+        for _, resolution in ipairs(screen.resolutions) do
             if (resolution.ToString() == event.newValue) then
                 tm.options.width = resolution.width
                 tm.options.height = resolution.height
                 tm.options.refreshRate = resolution.refreshRate
+                break
+            end
+        end
+        tm.options.ApplyGraphicSettings()
+    end)
+
+    local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+    fullScreenDisplayString = {
+        ExclusiveFullScreen = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
+        FullScreenWindow = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
+        MaximizedWindow = tm.l10n.GetString("fullscreen_mode_maximized_window"),
+        Windowed = tm.l10n.GetString("fullscreen_mode_windowed")
+    }
+    local fullScreenChoices = {}
+    for enum, display in pairs(fullScreenDisplayString) do
+        table.insert(fullScreenChoices, display)
+    end
+    fullScreenDropdown.choices = fullScreenChoices
+    fullScreenDropdown.RegisterCallback("ChangeString", function(element, event)
+        for enum, display in pairs(fullScreenDisplayString) do
+            if (display == event.newValue) then
+                tm.options.fullScreenMode = enum
                 break
             end
         end

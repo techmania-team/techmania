@@ -61,6 +61,8 @@ namespace ThemeApi
             session.Globals["float"] = UserData.CreateStatic<float>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
             session.Globals["screen"] = UserData.CreateStatic<Screen>();
+            session.Globals["resolution"] = 
+                UserData.CreateStatic<Resolution>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =
                 UserData.CreateStatic<Vector3>();
