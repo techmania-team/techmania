@@ -10,11 +10,14 @@ namespace ThemeApi
     public class AudioManager
     {
         private AudioSourceManager manager;
+        [MoonSharpHidden]
+        public AudioMixer mixer { get; private set; }
 
         [MoonSharpHidden]
         public AudioManager()
         {
             manager = Object.FindObjectOfType<AudioSourceManager>();
+            mixer = manager.audioMixer;
         }
 
         public enum Channel

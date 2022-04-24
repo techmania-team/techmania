@@ -10,7 +10,8 @@ namespace ThemeApi
     public class Techmania
     {
         private static UIDocument uiDocument;
-        private static AudioManager audioManager;
+        [MoonSharpHidden]
+        public static AudioManager audioManager { get; private set; }
         private static StyleHelper styleHelper;
         private static ThemeL10n themeL10n;
 

@@ -41,10 +41,37 @@ function ShowOptionsPanel(tm)
 
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
+
+    local languageDropdown = panel.Q("language").Q("dropdown")
+    local locale = tm.l10n.GetAllLocales()[tm.options.locale]
+    languageDropdown.SetValueWithoutNotify(locale.languageName)
 end
 
 function InitializeOptionsPanel(tm)
+    function InitializeLocalizedDropdowns(panel)
+        local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+        fullScreenDisplayString = {
+            ExclusiveFullScreen = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
+            FullScreenWindow = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
+            MaximizedWindow = tm.l10n.GetString("fullscreen_mode_maximized_window"),
+            Windowed = tm.l10n.GetString("fullscreen_mode_windowed")
+        }
+        local fullScreenChoices = {}
+        for enum, display in pairs(fullScreenDisplayString) do
+            table.insert(fullScreenChoices, display)
+        end
+        fullScreenDropdown.choices = fullScreenChoices
+
+        local languageDropdown = panel.Q("language").Q("dropdown")
+        local languageChoices = {}
+        for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
+            table.insert(languageChoices, locale.languageName)
+        end
+        languageDropdown.choices = languageChoices
+    end
+
     local panel = tm.root.Q("options-panel")
+    InitializeLocalizedDropdowns(panel)
     panel.display = false
 
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
@@ -66,17 +93,6 @@ function InitializeOptionsPanel(tm)
     end)
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
-    fullScreenDisplayString = {
-        ExclusiveFullScreen = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
-        FullScreenWindow = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
-        MaximizedWindow = tm.l10n.GetString("fullscreen_mode_maximized_window"),
-        Windowed = tm.l10n.GetString("fullscreen_mode_windowed")
-    }
-    local fullScreenChoices = {}
-    for enum, display in pairs(fullScreenDisplayString) do
-        table.insert(fullScreenChoices, display)
-    end
-    fullScreenDropdown.choices = fullScreenChoices
     fullScreenDropdown.RegisterCallback("ChangeString", function(element, event)
         for enum, display in pairs(fullScreenDisplayString) do
             if (display == event.newValue) then
@@ -131,6 +147,19 @@ function InitializeOptionsPanel(tm)
     audioBufferDropdown.RegisterCallback("ChangeString", function(element, event)
         tm.options.audioBufferSize = int.Parse(event.newValue)
         tm.options.ApplyAudioBufferSize()
+    end)
+
+    local languageDropdown = panel.Q("language").Q("dropdown")
+    languageDropdown.RegisterCallback("ChangeString", function(element, event)
+        for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
+            if (locale.languageName == event.newValue) then
+                tm.options.locale = localeName
+                tm.l10n.ApplyLocale(localeName)
+                InitializeLocalizedDropdowns(panel)
+                ShowOptionsPanel(tm)
+                break
+            end
+        end
     end)
 end
 

@@ -54,5 +54,10 @@ namespace ThemeApi
         {
             return L10n.GetString(key, L10n.Instance.Theme);
         }
+
+        public Dictionary<string, Locale> GetAllLocales()
+        {
+            return L10n.themeInstance.locales;
+        }
     }
 }

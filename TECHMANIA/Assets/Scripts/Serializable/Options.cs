@@ -281,8 +281,7 @@ public class Options : OptionsBase
     #region Audio
     public void ApplyVolumeSettings()
     {
-        AudioMixer mixer = UnityEngine.Object
-            .FindObjectOfType<AudioSourceManager>().audioMixer;
+        AudioMixer mixer = ThemeApi.Techmania.audioManager.mixer;
         mixer.SetFloat("MasterVolume", VolumeValueToDb(
             masterVolumePercent));
         mixer.SetFloat("MusicVolume", VolumeValueToDb(

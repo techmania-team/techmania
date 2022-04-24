@@ -27,6 +27,7 @@ using UnityEngine.Events;
 // and replace its text.
 // For type 2, ThemeL10n works the same way as the system instance.
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 public class Locale
 {
     public string languageName;
@@ -55,7 +56,7 @@ public class L10n
 
     // Static fields
     public static event UnityAction LocaleChanged;
-    private Dictionary<string, Locale> locales;
+    public Dictionary<string, Locale> locales;
     public Locale current { get; private set; }
     public const string kDefaultLocale = "en";
 
