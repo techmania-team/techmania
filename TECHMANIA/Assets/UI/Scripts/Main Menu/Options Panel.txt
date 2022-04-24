@@ -1,5 +1,7 @@
 -- key: enum, value: display string
 fullScreenDisplayString = {}
+beatMarkersDisplayString = {}
+bgScalingDisplayString = {}
 
 function UpdateVolumeDisplay(panel)
     function UpdateOneVolumeDisplay(container)
@@ -56,29 +58,44 @@ function ShowOptionsPanel(tm)
     ShowThemeOptionToggle("show-fps", "showFps")
     ShowThemeOptionToggle("show-judgement-tally", "showJudgementTally")
     ShowThemeOptionToggle("show-lane-dividers", "showLaneDividers")
+
+    local beatMarkersDropdown = panel.Q("beat-markers").Q("dropdown")
+    beatMarkersDropdown.SetValueWithoutNotify(beatMarkersDisplayString[themeOptions.Get("beatMarkers")])
+    local bgScalingDropdown = panel.Q("background-scaling").Q("dropdown")
+    bgScalingDropdown.SetValueWithoutNotify(bgScalingDisplayString[themeOptions.Get("backgroundScalingMode")])
 end
 
 function InitializeOptionsPanel(tm)
     function InitializeLocalizedDropdowns(panel)
-        local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+        function InitializeOneLocalizedDropdown(containerName, stringTable)
+            local dropdown = panel.Q(containerName).Q("dropdown")
+            local choices = {}
+            for enum, display in pairs(stringTable) do
+                table.insert(choices, display)
+            end
+            dropdown.choices = choices
+        end
+
         fullScreenDisplayString = {
             ExclusiveFullScreen = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
             FullScreenWindow = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
             MaximizedWindow = tm.l10n.GetString("fullscreen_mode_maximized_window"),
             Windowed = tm.l10n.GetString("fullscreen_mode_windowed")
         }
-        local fullScreenChoices = {}
-        for enum, display in pairs(fullScreenDisplayString) do
-            table.insert(fullScreenChoices, display)
-        end
-        fullScreenDropdown.choices = fullScreenChoices
+        InitializeOneLocalizedDropdown("fullscreen-mode", fullScreenDisplayString)
+        
+        beatMarkersDisplayString = {
+            Hidden = tm.l10n.GetString("beat_markers_hidden"),
+            ShowBeatMarkers = tm.l10n.GetString("beat_markers_show_beat_markers"),
+            ShowHalfBeatMarkers = tm.l10n.GetString("beat_markers_show_half_beat_markers")
+        }
+        InitializeOneLocalizedDropdown("beat-markers", beatMarkersDisplayString)
 
-        local languageDropdown = panel.Q("language").Q("dropdown")
-        local languageChoices = {}
-        for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
-            table.insert(languageChoices, locale.languageName)
-        end
-        languageDropdown.choices = languageChoices
+        bgScalingDisplayString = {
+            FillEntireScreen = tm.l10n.GetString("bg_scaling_fill_entire_screen"),
+            FillGameArea = tm.l10n.GetString("bg_scaling_fill_game_area")
+        }
+        InitializeOneLocalizedDropdown("background-scaling", bgScalingDisplayString)
     end
 
     local panel = tm.root.Q("options-panel")
@@ -163,6 +180,11 @@ function InitializeOptionsPanel(tm)
     end)
 
     local languageDropdown = panel.Q("language").Q("dropdown")
+    local languageChoices = {}
+        for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
+            table.insert(languageChoices, locale.languageName)
+        end
+    languageDropdown.choices = languageChoices
     languageDropdown.RegisterCallback("ChangeString", function(element, event)
         for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
             if (locale.languageName == event.newValue) then
@@ -197,6 +219,23 @@ function InitializeOptionsPanel(tm)
     InitializeThemeOptionToggle("show-fps", "showFps", "False")
     InitializeThemeOptionToggle("show-judgement-tally", "showJudgementTally", "False")
     InitializeThemeOptionToggle("show-lane-dividers", "showLaneDividers", "False")
+
+    function InitializeThemeOptionDropdown(containerName, key, defaultValue, stringTable)
+        local dropdown = panel.Q(containerName).Q("dropdown")
+        if (not themeOptions.Has(key)) then
+            themeOptions.Add(key, defaultValue)
+        end
+        dropdown.RegisterCallback("ChangeString", function(element, event)
+            for enum, display in pairs(stringTable) do
+                if (display == event.newValue) then
+                    themeOptions.Set(key, enum)
+                    return
+                end
+            end
+        end)
+    end
+    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "Hidden", beatMarkersDisplayString)
+    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", "FillEntireScreen", bgScalingDisplayString)
 end
 
 InitializeOptionsPanel(tm)
