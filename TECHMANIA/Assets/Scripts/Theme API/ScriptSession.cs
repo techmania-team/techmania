@@ -45,6 +45,7 @@ namespace ThemeApi
                 }
             }
             UserData.RegisterType<string>();
+            UserData.RegisterType<int>();
             UserData.RegisterType<float>();
             UserData.RegisterType<Time>();
             UserData.RegisterType<Screen>();
@@ -58,6 +59,7 @@ namespace ThemeApi
             session.Globals["getApi"] = (Func<int, object>)GetApi;
             // Expose .Net & Unity classes
             session.Globals["string"] = UserData.CreateStatic<string>();
+            session.Globals["int"] = UserData.CreateStatic<int>();
             session.Globals["float"] = UserData.CreateStatic<float>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
             session.Globals["screen"] = UserData.CreateStatic<Screen>();

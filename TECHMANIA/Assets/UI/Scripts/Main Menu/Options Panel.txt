@@ -38,6 +38,9 @@ function ShowOptionsPanel(tm)
     SetSliderValueWithoutNotify(keysoundsSlider, tm.options.keysoundVolumePercent)
     SetSliderValueWithoutNotify(sfxSlider, tm.options.sfxVolumePercent)
     UpdateVolumeDisplay(panel)
+
+    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
+    audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
 end
 
 function InitializeOptionsPanel(tm)
@@ -121,6 +124,13 @@ function InitializeOptionsPanel(tm)
         tm.options.sfxVolumePercent = event.newValue
         tm.options.ApplyVolumeSettings()
         UpdateVolumeDisplay(panel)
+    end)
+
+    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
+    audioBufferDropdown.choices = {"128", "256", "512", "1024"}
+    audioBufferDropdown.RegisterCallback("ChangeString", function(element, event)
+        tm.options.audioBufferSize = int.Parse(event.newValue)
+        tm.options.ApplyAudioBufferSize()
     end)
 end
 
