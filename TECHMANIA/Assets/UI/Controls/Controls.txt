@@ -11,19 +11,25 @@ function SetProgressBar(progressBar, percent)
         tm.style.LengthInPercent(100 - percent)
 end
 
+function UpdateSliderAppearance(slider)
+    local percent = (slider.value - slider.lowValue) * 100 / 
+        (slider.highValue - slider.lowValue)
+    SetProgressBar(slider.parent, percent)
+    slider.Q("overlay-center").style.left =
+        tm.style.LengthInPercent(percent)
+end
+
 function SetUpAllSliders(tm)
     tm.root.Query(nil, "slider").ForEach(function (element)
-        function UpdateSliderAppearance(slider)
-            local percent = (slider.value - slider.lowValue) * 100 / 
-                (slider.highValue - slider.lowValue)
-            SetProgressBar(element.parent, percent)
-            element.Q("overlay-center").style.left =
-                tm.style.LengthInPercent(percent)
-        end
         element.RegisterCallback("ChangeFloat", UpdateSliderAppearance)
         element.RegisterCallback("ChangeInt", UpdateSliderAppearance)
         UpdateSliderAppearance(element)
     end)
+end
+
+function SetSliderValueWithoutNotify(slider, value)
+    slider.SetValueWithoutNotify(value)
+    UpdateSliderAppearance(slider)
 end
 
 function SetUpAllToggles(tm)

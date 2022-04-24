@@ -279,6 +279,20 @@ public class Options : OptionsBase
     #endregion
 
     #region Audio
+    public void ApplyVolumeSettings()
+    {
+        AudioMixer mixer = UnityEngine.Object
+            .FindObjectOfType<AudioSourceManager>().audioMixer;
+        mixer.SetFloat("MasterVolume", VolumeValueToDb(
+            masterVolumePercent));
+        mixer.SetFloat("MusicVolume", VolumeValueToDb(
+            musicVolumePercent));
+        mixer.SetFloat("KeysoundVolume", VolumeValueToDb(
+            keysoundVolumePercent));
+        mixer.SetFloat("SfxVolume", VolumeValueToDb(
+            sfxVolumePercent));
+    }
+
     // This resets the audio mixer, AND it only happens in
     // the standalone player. What the heck? Anyway always reset
     // the audio mixer after calling this.

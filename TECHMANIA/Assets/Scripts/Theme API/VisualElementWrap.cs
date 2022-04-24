@@ -70,7 +70,11 @@ namespace ThemeApi
         public bool IsButton() { return inner is Button; }
         public bool IsToggle() { return inner is Toggle; }
 
-        public string text => (inner as TextElement).text;
+        public string text
+        {
+            get { return (inner as TextElement).text; }
+            set { (inner as TextElement).text = value; }
+        }
 
         public float lowValue
         {
@@ -210,6 +214,17 @@ namespace ThemeApi
         {
             CheckType(typeof(DropdownField), "newValue");
             (inner as DropdownField).SetValueWithoutNotify(newValue);
+        }
+
+        public void SetValueWithoutNotify(float newValue)
+        {
+            if (inner is Slider)
+                (inner as Slider).value = newValue;
+            else if (inner is SliderInt)
+                (inner as SliderInt).value = (int)newValue;
+            else if (inner is Scroller)
+                (inner as Scroller).value = newValue;
+            else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'SetValueWithoutNotify' member.");
         }
         #endregion
 

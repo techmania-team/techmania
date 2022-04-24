@@ -1,6 +1,18 @@
 -- key: enum, value: display string
 fullScreenDisplayString = {}
 
+function UpdateVolumeDisplay(panel)
+    function UpdateOneVolumeDisplay(container)
+        local slider = container.Q("slider")
+        local display = container.Q("value-display")
+        display.text = tostring(slider.value)
+    end
+    UpdateOneVolumeDisplay(panel.Q("master"))
+    UpdateOneVolumeDisplay(panel.Q("music"))
+    UpdateOneVolumeDisplay(panel.Q("keysounds"))
+    UpdateOneVolumeDisplay(panel.Q("sound-effects"))
+end
+
 function ShowOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
 
@@ -16,6 +28,16 @@ function ShowOptionsPanel(tm)
 
     local vSyncToggle = panel.Q("vsync").Q("track")
     SetToggleIsOn(vSyncToggle, tm.options.vSync)
+
+    local masterSlider = panel.Q("master").Q("slider")
+    local musicSlider = panel.Q("music").Q("slider")
+    local keysoundsSlider = panel.Q("keysounds").Q("slider")
+    local sfxSlider = panel.Q("sound-effects").Q("slider")
+    SetSliderValueWithoutNotify(masterSlider, tm.options.masterVolumePercent)
+    SetSliderValueWithoutNotify(musicSlider, tm.options.musicVolumePercent)
+    SetSliderValueWithoutNotify(keysoundsSlider, tm.options.keysoundVolumePercent)
+    SetSliderValueWithoutNotify(sfxSlider, tm.options.sfxVolumePercent)
+    UpdateVolumeDisplay(panel)
 end
 
 function InitializeOptionsPanel(tm)
@@ -66,6 +88,39 @@ function InitializeOptionsPanel(tm)
     vSyncToggle.RegisterCallback("Click", function()
         tm.options.vSync = not tm.options.vSync
         tm.options.ApplyGraphicSettings()
+    end)
+
+    local masterSlider = panel.Q("master").Q("slider")
+    local musicSlider = panel.Q("music").Q("slider")
+    local keysoundsSlider = panel.Q("keysounds").Q("slider")
+    local sfxSlider = panel.Q("sound-effects").Q("slider")
+    masterSlider.lowValue = 0
+    masterSlider.highValue = 100
+    masterSlider.RegisterCallback("ChangeInt", function(element, event)
+        tm.options.masterVolumePercent = event.newValue
+        tm.options.ApplyVolumeSettings()
+        UpdateVolumeDisplay(panel)
+    end)
+    musicSlider.lowValue = 0
+    musicSlider.highValue = 100
+    musicSlider.RegisterCallback("ChangeInt", function(element, event)
+        tm.options.musicVolumePercent = event.newValue
+        tm.options.ApplyVolumeSettings()
+        UpdateVolumeDisplay(panel)
+    end)
+    keysoundsSlider.lowValue = 0
+    keysoundsSlider.highValue = 100
+    keysoundsSlider.RegisterCallback("ChangeInt", function(element, event)
+        tm.options.keysoundVolumePercent = event.newValue
+        tm.options.ApplyVolumeSettings()
+        UpdateVolumeDisplay(panel)
+    end)
+    sfxSlider.lowValue = 0
+    sfxSlider.highValue = 100
+    sfxSlider.RegisterCallback("ChangeInt", function(element, event)
+        tm.options.sfxVolumePercent = event.newValue
+        tm.options.ApplyVolumeSettings()
+        UpdateVolumeDisplay(panel)
     end)
 end
 

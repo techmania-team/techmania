@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
+using UnityEngine.Audio;
 
 namespace ThemeApi
 {
@@ -9,6 +10,7 @@ namespace ThemeApi
     public class AudioManager
     {
         private AudioSourceManager manager;
+
         [MoonSharpHidden]
         public AudioManager()
         {
