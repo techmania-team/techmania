@@ -112,18 +112,6 @@ public class Options : OptionsBase
     [MoonSharp.Interpreter.MoonSharpHidden]
     public List<ThemeOptions> themeOptions;
 
-    public enum BeatMarkerVisibility
-    {
-        Hidden,
-        ShowBeatMarkers,
-        ShowHalfBeatMarkers
-    }
-    public enum BackgroundScalingMode
-    {
-        FillEntireScreen,
-        // Fill the area under the top bar.
-        FillGameArea
-    }
     /* Default theme options
      * 
      * Key                          Value
@@ -198,10 +186,9 @@ public class Options : OptionsBase
         defaultThemeOptions.Add("showFps", false.ToString());
         defaultThemeOptions.Add("showJudgementTally", false.ToString());
         defaultThemeOptions.Add("showLaneDividers", false.ToString());
-        defaultThemeOptions.Add("beatMarkers", 
-            BeatMarkerVisibility.Hidden.ToString());
-        defaultThemeOptions.Add("backgroundScalingMode",
-            BackgroundScalingMode.FillEntireScreen.ToString());
+        defaultThemeOptions.Add("beatMarkers", "Hidden");
+        defaultThemeOptions.Add("backgroundScalingMode", 
+            "FillEntireScreen");
         defaultThemeOptions.Add("pauseWhenGameLosesFocus",
             true.ToString());
         defaultThemeOptions.Add("trackFilter.showTracksInAllFolders", 
@@ -367,6 +354,24 @@ public class Options : OptionsBase
             remainingOptions.Add(p);
         }
         perTrackOptions = remainingOptions;
+    }
+    #endregion
+
+    #region Per-theme options
+    public ThemeOptions GetThemeOptions(string themeName)
+    {
+        foreach (ThemeOptions o in themeOptions)
+        {
+            if (o.themeName == themeName) return o;
+        }
+        ThemeOptions newOptions = new ThemeOptions(themeName);
+        themeOptions.Add(newOptions);
+        return newOptions;
+    }
+
+    public ThemeOptions GetThemeOptions()
+    {
+        return GetThemeOptions(theme);
     }
     #endregion
 }
@@ -912,6 +917,43 @@ public class ThemeOptions
 
     public void Add(string key, string value)
     {
+        pairs.Add(new KVPair(key, value));
+    }
+
+    public bool Has(string key)
+    {
+        foreach (KVPair pair in pairs)
+        {
+            if (pair.key == key)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public string Get(string key)
+    {
+        foreach (KVPair pair in pairs)
+        {
+            if (pair.key == key)
+            {
+                return pair.value;
+            }
+        }
+        return null;
+    }
+
+    public void Set(string key, string value)
+    {
+        foreach (KVPair pair in pairs)
+        {
+            if (pair.key == key)
+            {
+                pair.value = value;
+                return;
+            }
+        }
         pairs.Add(new KVPair(key, value));
     }
 }
