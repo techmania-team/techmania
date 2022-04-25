@@ -7,6 +7,7 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 using FantomLib;
 using UnityEngine.Networking;
+using AndroidNativeIO.Utils;
 
 public class OptionsPanel : MonoBehaviour
 {
@@ -379,7 +380,7 @@ public class OptionsPanel : MonoBehaviour
     public void OnTracksFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
+        StorageUtils.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "");
 #else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
@@ -395,7 +396,7 @@ public class OptionsPanel : MonoBehaviour
     public void OnSkinsFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidSkinsFolderSelected", "", true);
+        StorageUtils.OpenStorageFolder(gameObject.name, "OnAndroidSkinsFolderSelected", "");
 #else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
@@ -410,20 +411,14 @@ public class OptionsPanel : MonoBehaviour
 
     private void OnAndroidTracksFolderSelected(string result)
     {
-        if (result[0] == '{')
-        {
-            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-            OnTracksFolderSelected(info.path);
-        }
+        Debug.Log("OnAndroidTracksFolderSelected: " + result);
+        OnTracksFolderSelected(result);
     }
 
     private void OnAndroidSkinsFolderSelected(string result)
     {
-        if (result[0] == '{')
-        {
-            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-            OnSkinsFolderSelected(info.path);
-        }
+        Debug.Log("OnAndroidSkinsFolderSelected: " + result);
+        OnSkinsFolderSelected(result);
     }
 
     private void OnTracksFolderSelected(string fullPath)

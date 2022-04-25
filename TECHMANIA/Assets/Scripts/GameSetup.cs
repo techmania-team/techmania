@@ -13,6 +13,9 @@ public class GameSetup
     {
         get
         {
+            if (trackPath.StartsWith(UniversalIO.ANDROID_CONTENT_URI)) {
+                return trackPath.Replace("%2Ftrack.tech", "");
+            }
             // FileInfo.DirectoryName turns "jar:file:///" into
             // "/jar:file:/", so we need to correct it.
             return new FileInfo(trackPath).DirectoryName.Replace(
