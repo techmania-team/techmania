@@ -60,6 +60,10 @@ public static class UniversalIO
 
     public static string DirectoryGetName(string path)
     {
+        if (path.StartsWith(ANDROID_CONTENT_URI))
+        {
+            return AndroidNativeIO.IO.Directory.GetName(path);
+        }
         return new DirectoryInfo(path).Name;
     }
 

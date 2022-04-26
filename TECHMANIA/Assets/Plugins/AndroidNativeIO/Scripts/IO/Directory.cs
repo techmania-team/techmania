@@ -70,5 +70,14 @@ namespace AndroidNativeIO.IO
             }
 
         }
+
+        public static string GetName(string path)
+        {
+            return GetCurrentClass().CallStatic<string>(
+                "getName",
+                Global.GetContext(),
+                path
+            );
+        }
     }
 }

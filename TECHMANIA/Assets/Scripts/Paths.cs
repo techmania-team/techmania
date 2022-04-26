@@ -336,6 +336,13 @@ public static class Paths
 
     public static string HidePlatformInternalPath(string fullPath)
     {
+#if UNITY_ANDROID
+        if (fullPath.StartsWith(UniversalIO.ANDROID_CONTENT_URI))
+        {
+            return UniversalIO.GetRealPathFromUri(fullPath)
+                .Replace(UniversalIO.GetRealPathFromUri(Paths.GetTrackRootFolder()), "Tracks");
+        }
+#endif
 #if UNITY_ANDROID || UNITY_IOS
         return fullPath
             .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
