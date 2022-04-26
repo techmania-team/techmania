@@ -181,11 +181,21 @@ public class OptionsPanel : MonoBehaviour
         customDataLocation.SetIsOnWithoutNotify(
             Options.instance.customDataLocation);
         tracksFolder.SetActive(Options.instance.customDataLocation);
+#if UNITY_ANDROID
+        tracksFolderDisplay.SetUp(UniversalIO.GetRealPathFromUri(Options.instance
+            .tracksFolderLocation));
+#else
         tracksFolderDisplay.SetUp(Options.instance
             .tracksFolderLocation);
+#endif
         skinsFolder.SetActive(Options.instance.customDataLocation);
+#if UNITY_ANDROID
+        skinsFolderDisplay.SetUp(UniversalIO.GetRealPathFromUri(Options.instance
+            .skinsFolderLocation));
+#else
         skinsFolderDisplay.SetUp(Options.instance
             .skinsFolderLocation);
+#endif
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
         pauseWhenGameLosesFocusToggle.SetIsOnWithoutNotify(
             Options.instance.pauseWhenGameLosesFocus);
