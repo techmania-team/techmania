@@ -205,28 +205,26 @@ public class SelectTrackPanel : MonoBehaviour
 
             // Launch background worker to rebuild track list.
 
-            //trackListBuilder = new BackgroundWorker();
-            //trackListBuilder.DoWork += TrackListBuilderDoWork;
-            //trackListBuilder.RunWorkerCompleted +=
-            //    TrackListBuilderCompleted;
+            trackListBuilder = new BackgroundWorker();
+            trackListBuilder.DoWork += TrackListBuilderDoWork;
+            trackListBuilder.RunWorkerCompleted +=
+                TrackListBuilderCompleted;
 
             builderDone = false;
             builderProgress = "";
             Options.TemporarilyDisableVSync();
-            //trackListBuilder.RunWorkerAsync(
-            //    new BackgroundWorkerArgument()
-            //    {
-            //        upgradeVersion = upgradeVersion
-            //    });
-            //do
-            //{
-            //    trackListBuildingProgress.text =
-            //        builderProgress;
-            //    yield return null;
-            //} while (!builderDone);
+            trackListBuilder.RunWorkerAsync(
+                new BackgroundWorkerArgument()
+                {
+                    upgradeVersion = upgradeVersion
+                });
+            do
+            {
+                trackListBuildingProgress.text =
+                    builderProgress;
+                yield return null;
+            } while (!builderDone);
 
-
-            BuildTrackListFor(Paths.GetTrackRootFolder(), upgradeVersion);
             Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
@@ -611,6 +609,11 @@ public class SelectTrackPanel : MonoBehaviour
     private void BuildTrackListFor(string folder,
         bool upgradeVersion)
     {
+
+#if UNITY_ANDROID
+        // Because this is the backgound thread
+        AndroidJNI.AttachCurrentThread();
+#endif
         subfolderList.Add(folder, new List<Subfolder>());
         trackList.Add(folder, new List<TrackInFolder>());
         errorTrackList.Add(folder, new List<ErrorInTrack>());
