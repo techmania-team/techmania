@@ -292,8 +292,7 @@ public class GlobalResourceLoader : MonoBehaviour
             {
                 if (userState.Error != null)
                 {
-                    builderStatus = Status.Error(
-                        userState.Error.Message);
+                    builderStatus = Status.Error(userState.Error);
                 }
                 else
                 {

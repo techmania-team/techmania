@@ -2,6 +2,7 @@
 fullScreenDisplayString = {}
 beatMarkersDisplayString = {}
 bgScalingDisplayString = {}
+rulesetDisplayString = {}
 
 function UpdateVolumeDisplay(panel)
     function UpdateOneVolumeDisplay(container)
@@ -63,6 +64,9 @@ function ShowOptionsPanel(tm)
     beatMarkersDropdown.SetValueWithoutNotify(beatMarkersDisplayString[themeOptions.Get("beatMarkers")])
     local bgScalingDropdown = panel.Q("background-scaling").Q("dropdown")
     bgScalingDropdown.SetValueWithoutNotify(bgScalingDisplayString[themeOptions.Get("backgroundScalingMode")])
+
+    local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
+    rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.options.ruleset])
 end
 
 function InitializeOptionsPanel(tm)
@@ -96,6 +100,13 @@ function InitializeOptionsPanel(tm)
             FillGameArea = tm.l10n.GetString("bg_scaling_fill_game_area")
         }
         InitializeOneLocalizedDropdown("background-scaling", bgScalingDisplayString)
+
+        rulesetDisplayString = {
+            Standard = tm.l10n.GetString("ruleset_standard"),
+            Legacy = tm.l10n.GetString("ruleset_legacy"),
+            Custom = tm.l10n.GetString("ruleset_custom")
+        }
+        InitializeOneLocalizedDropdown("ruleset", rulesetDisplayString)
     end
 
     local panel = tm.root.Q("options-panel")
@@ -236,6 +247,24 @@ function InitializeOptionsPanel(tm)
     end
     InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "Hidden", beatMarkersDisplayString)
     InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", "FillEntireScreen", bgScalingDisplayString)
+
+    local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
+    rulesetDropdown.RegisterCallback("ChangeString", function(element, event)
+        for enum, display in pairs(rulesetDisplayString) do
+            if (display == event.newValue) then
+                tm.options.ruleset = enum
+                break
+            end
+        end
+        if (tm.options.ruleset == "Custom") then
+            local status = tm.ruleset.LoadCustomRuleset()
+            if (not status.ok) then
+                -- TODO: show error
+                tm.options.ruleset = "Standard"
+                rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])
+            end
+        end
+    end)
 end
 
 InitializeOptionsPanel(tm)

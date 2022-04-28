@@ -13,6 +13,7 @@ public class RulesetBase : SerializableClass<RulesetBase> {}
 
 // Updates in version 2:
 // - Allows defining HP delta by each judgement.
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Ruleset : RulesetBase
 {
@@ -322,6 +323,9 @@ public class Ruleset : RulesetBase
         };
     }
 
+    // Beware: if options specify custom ruleset but custom
+    // ruleset is not loaded yet, this will return a default-
+    // constructed instance, just so Lua can call LoadCustomRuleset().
     public static Ruleset instance => GetInstance();
 
     private static Ruleset GetInstance()
@@ -333,15 +337,31 @@ public class Ruleset : RulesetBase
             case Options.Ruleset.Legacy:
                 return legacy;
             case Options.Ruleset.Custom:
-                return custom;
+                if (custom == null)
+                {
+                    return new Ruleset();
+                }
+                else
+                {
+                    return custom;
+                }
+            default:
+                throw new Exception("Unknown ruleset: " +
+                    Options.instance.rulesetEnum);
         }
-        return null;
     }
 
-    // May throw exceptions.
-    public static void LoadCustomRuleset()
+    public static Status LoadCustomRuleset()
     {
-        custom = LoadFromFile(Paths.GetRulesetFilePath()) as Ruleset;
+        try
+        {
+            custom = LoadFromFile(Paths.GetRulesetFilePath()) as Ruleset;
+            return Status.OKStatus();
+        }
+        catch (Exception ex)
+        {
+            return Status.Error(ex);
+        }
     }
     #endregion
 }

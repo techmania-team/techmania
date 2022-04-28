@@ -44,6 +44,7 @@ namespace ThemeApi
         #region Miscellaneous
         public static ThemeL10n l10n => themeL10n;
         public static Options options => Options.instance;
+        public static Ruleset ruleset => Ruleset.instance;
 
         public string LoadTextFile(string name)
         {
