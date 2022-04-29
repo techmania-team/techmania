@@ -9,7 +9,10 @@ using System;
 using UnityEngine.Android;
 #endif
 
-public static class Paths
+// This should be a static class, but isn't, so that it can be
+// exposed via tm.paths.
+[MoonSharp.Interpreter.MoonSharpUserData]
+public class Paths
 {
     public const string kTrackFilename = "track.tech";
     public const string kSkinFilename = "skin.json";
@@ -391,6 +394,11 @@ public static class Paths
             .Replace("\\", "/")
 #endif
             ;
+    }
+
+    public static string EscapeBackslash(string path)
+    {
+        return path.Replace("\\", "\\\\");
     }
     #endregion
 

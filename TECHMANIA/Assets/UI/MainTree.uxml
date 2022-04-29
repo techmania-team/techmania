@@ -166,7 +166,7 @@
     </ui:Instance>
     <ui:VisualElement name="alert-box-background" class="dialog-background" style="display: flex;">
         <ui:VisualElement name="alert-box" class="surface-8dp dialog">
-            <ui:Label text="This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. " display-tooltip-when-elided="true" name="alert-text" picking-mode="Ignore" class="text-body" />
+            <ui:Label text="123123123&#10;123123123&#10;123123123&#10;123123123" display-tooltip-when-elided="true" name="alert-text" picking-mode="Ignore" class="text-body" />
             <ui:VisualElement name="button-container" picking-mode="Ignore" class="dialog-button-container">
                 <ui:Button text="CONFIRM" display-tooltip-when-elided="true" name="confirm-button" class="button-text" />
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="dialog-button-divider" />
