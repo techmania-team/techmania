@@ -1,0 +1,91 @@
+alertBoxConfirmCallback = nil
+alertBoxCancelCallback = nil
+
+function FadeInAlertBoxCoroutine(bg)
+    local transitionTime = 0.2
+    local transitionLength = 100
+    function DampedLerp(a, b, t)
+        return math.Lerp(a, b, math.Pow(t, 0.6))
+    end
+
+    local timer = 0
+    local box = bg.Q("alert-box")
+    bg.display = true
+    box.style.opacity = tm.style.Float(0)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local y = DampedLerp(-transitionLength, 0, progress)
+        box.style.opacity = tm.style.Float(progress)
+        box.style.translate = tm.style.TranslateInPixel(0, y)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+    box.style.opacity = tm.style.Float(1)
+end
+
+function FadeOutAlertBoxCoroutine(bg)
+    local transitionTime = 0.2
+    local transitionLength = 100
+    function DampedLerp(a, b, t)
+        return math.Lerp(a, b, math.Pow(t, 0.6))
+    end
+
+    local timer = 0
+    local box = bg.Q("alert-box")
+    box.style.opacity = tm.style.Float(1)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local y = DampedLerp(0, -transitionLength, progress)
+        box.style.opacity = tm.style.Float(1 - progress)
+        box.style.translate = tm.style.TranslateInPixel(0, y)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+    bg.display = false
+end
+
+function Alert(message, confirmText, callback)
+    local bg = tm.root.Q("alert-box-background")
+    bg.Q("alert-text").text = message
+    bg.Q("confirm-button").text = confirmText
+    bg.Q("cancel-button").display = false
+    alertBoxConfirmCallback = callback
+    alertBoxCancelCallback = callback
+    tm.StartCoroutine(function()
+        FadeInAlertBoxCoroutine(bg)
+    end)
+end
+
+function InitializeAlertBox(tm)
+    local bg = tm.root.Q("alert-box-background")
+    bg.display = false
+    bg.Q("confirm-button").RegisterCallback("Click", function()
+        tm.StartCoroutine(function()
+            FadeOutAlertBoxCoroutine(bg)
+        end)
+        if (alertBoxConfirmCallback != nil) then
+            alertBoxConfirmCallback()
+        end
+    end)
+
+    function OnCancel()
+        tm.StartCoroutine(function()
+            FadeOutAlertBoxCoroutine(bg)
+        end)
+        if (alertBoxCancelCallback != nil) then
+            alertBoxCancelCallback()
+        end
+    end
+    bg.Q("cancel-button").RegisterCallback("Click", OnCancel)
+    bg.RegisterCallback("Click", OnCancel)
+    bg.RegisterCallback("Click", function(element, event)
+        tm.audio.Play("Assets/UI/SFX/Back.wav", "SFX")
+    end)
+
+    bg.Q("alert-box").RegisterCallback("Click", function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+end
+
+InitializeAlertBox(tm)

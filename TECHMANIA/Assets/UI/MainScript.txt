@@ -7,6 +7,7 @@ l10n.ApplyLocale(tm.options.locale)
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
 InitializeControls(tm)
 
+tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
 tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()

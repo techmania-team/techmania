@@ -164,13 +164,15 @@
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:VisualElement name="alert-box-container" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
-        <ui:VisualElement name="alert-box" class="surface-8dp" style="padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; width: 700px;">
-            <ui:Label text="This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. " display-tooltip-when-elided="true" name="alert-text" class="text-body" />
-            <ui:VisualElement name="button-container" style="height: 100px; flex-direction: column-reverse; align-items: flex-end;">
-                <ui:Button text="CONFIRM" display-tooltip-when-elided="true" class="button-text" />
+    <ui:VisualElement name="alert-box-background" class="dialog-background" style="display: flex;">
+        <ui:VisualElement name="alert-box" class="surface-8dp dialog">
+            <ui:Label text="This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. This is an alert. " display-tooltip-when-elided="true" name="alert-text" picking-mode="Ignore" class="text-body" />
+            <ui:VisualElement name="button-container" picking-mode="Ignore" class="dialog-button-container">
+                <ui:Button text="CONFIRM" display-tooltip-when-elided="true" name="confirm-button" class="button-text" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="dialog-button-divider" />
+                <ui:Button text="CANCEL" display-tooltip-when-elided="true" name="cancel-button" class="button-text" />
             </ui:VisualElement>
-            <ui:VisualElement name="shadow" class="elevation-shadow" />
+            <ui:VisualElement name="shadow" picking-mode="Ignore" class="elevation-shadow" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="playground" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: flex-start; display: none; flex-wrap: wrap;">

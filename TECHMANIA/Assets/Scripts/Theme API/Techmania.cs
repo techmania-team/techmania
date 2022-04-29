@@ -73,5 +73,19 @@ namespace ThemeApi
             CoroutineRunner.Stop(id);
         }
         #endregion
+
+        public void LogEvent(EventBase e)
+        {
+            string log = "bubbles: " + e.bubbles +
+                "\ncurrentTarget: " + (e.currentTarget as VisualElement).name +
+                "\ndispatch: " + e.dispatch +
+                "\nisDefaultPrevented: " + e.isDefaultPrevented +
+                "\nisImmediatePropagationStopped: " + e.isImmediatePropagationStopped +
+                "\nisPropagationStopped: " + e.isPropagationStopped +
+                "\npropagationPhase: " + e.propagationPhase +
+                "\ntarget: " + (e.target as VisualElement).name +
+                "\ntricklesDown: " + e.tricklesDown;
+            Debug.Log(log);
+        }
     }
 }

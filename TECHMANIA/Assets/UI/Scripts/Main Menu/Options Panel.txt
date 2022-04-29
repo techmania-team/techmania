@@ -259,7 +259,7 @@ function InitializeOptionsPanel(tm)
         if (tm.options.ruleset == "Custom") then
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.ok) then
-                -- TODO: show error
+                Alert("error!", "OK")
                 tm.options.ruleset = "Standard"
                 rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])
             end

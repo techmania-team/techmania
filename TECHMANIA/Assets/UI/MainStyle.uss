@@ -76,3 +76,32 @@
     right: -20px;
     -unity-text-align: upper-center;
 }
+
+.dialog-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog {
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 50px;
+    padding-bottom: 35px;
+    width: 700px;
+}
+
+.dialog-button-container {
+    height: 95px;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+}
+
+.dialog-button-divider {
+    width: 20px;
+    height: 100%;
+}

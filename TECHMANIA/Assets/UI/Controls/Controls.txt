@@ -53,7 +53,8 @@ end
 function SetUpClickSound(tm, className)
     tm.root.Query(nil, className).ForEach(function (element)
         local sfxName = "Assets/UI/SFX/Click.wav"
-        if (element.name == "back-button") then
+        if (element.name == "back-button" or
+            element.name == "cancel-button") then
             sfxName = "Assets/UI/SFX/Back.wav"
         end
         element.RegisterCallback("Click", function ()
