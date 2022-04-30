@@ -94,6 +94,15 @@ function ShowOptionsPanel(tm)
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
     UpdateCustomDataLocationDisplay(tm, panel)
+
+    local offsetLatencyDisplay = panel.Q("offset-latency").Q("value-display")
+    offsetLatencyDisplay.text =
+        tm.options.touchOffsetMs .. "/" ..
+        tm.options.touchLatencyMs .. "/" ..
+        tm.options.keyboardMouseOffsetMs .. "/" ..
+        tm.options.keyboardMouseLatencyMs .. " ms"
+
+    ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 end
 
 function InitializeOptionsPanel(tm)
@@ -318,6 +327,8 @@ function InitializeOptionsPanel(tm)
             UpdateCustomDataLocationDisplay(tm, panel)
         end
     end)
+
+    InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus", "True")
 end
 
 InitializeOptionsPanel(tm)
