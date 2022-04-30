@@ -131,7 +131,7 @@
                     <ui:Label text="Custom data location" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="track-folder-location" class="options-item" style="padding-left: 100px;">
+                <ui:VisualElement name="tracks-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels">
                         <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1;" />
                         <ui:Label text="C:\fooooooooooooooooooooooooooooooooooooooooooooooooooo" display-tooltip-when-elided="true" name="location-display" class="text-caption" style="overflow: hidden;" />
@@ -164,7 +164,7 @@
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:VisualElement name="alert-box-background" class="dialog-background" style="display: flex;">
+    <ui:VisualElement name="alert-box-background" class="dialog-background" style="display: none;">
         <ui:VisualElement name="alert-box" class="surface-8dp dialog">
             <ui:Label text="123123123&#10;123123123&#10;123123123&#10;123123123" display-tooltip-when-elided="true" name="alert-text" picking-mode="Ignore" class="text-body" />
             <ui:VisualElement name="button-container" picking-mode="Ignore" class="dialog-button-container">

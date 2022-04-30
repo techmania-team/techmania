@@ -37,16 +37,40 @@ namespace ThemeApi
         public StyleHelper style => styleHelper;
         #endregion
 
-        #region Audio and video
-        public AudioManager audio => audioManager;
-        #endregion
-
-        #region Miscellaneous
+        #region Data classes
         public static ThemeL10n l10n => themeL10n;
         public static Options options => Options.instance;
         public static Ruleset ruleset => Ruleset.instance;
         public static Paths paths => new Paths();
+        #endregion
 
+        #region Audio and video
+        public AudioManager audio => audioManager;
+        #endregion
+
+        #region System dialogs
+        // Returns the selected dialog if any; null if the user
+        // cancels the dialog.
+        public string OpenSelectFolderDialog(
+            string title, string currentDirectory)
+        {
+#if UNITY_ANDROID
+            AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
+#else
+            string[] folders = SFB.StandaloneFileBrowser
+                .OpenFolderPanel(title,
+                currentDirectory,
+                multiselect: false);
+            if (folders.Length == 1)
+            {
+                return folders[0];
+            }
+            else return null;
+#endif
+        }
+        #endregion
+
+        #region Miscellaneous
         public string LoadTextFile(string name)
         {
             return GlobalResource.GetThemeContent<TextAsset>(

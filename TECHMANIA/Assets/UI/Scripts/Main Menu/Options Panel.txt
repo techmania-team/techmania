@@ -16,6 +16,29 @@ function UpdateVolumeDisplay(panel)
     UpdateOneVolumeDisplay(panel.Q("sound-effects"))
 end
 
+function UpdateCustomDataLocationDisplay(tm, panel)
+    -- TODO: set up scrolling text
+    local tracksContainer = panel.Q("tracks-folder-location")
+    local skinsContainer = panel.Q("skins-folder-location")
+    if (tm.options.customDataLocation) then
+        if (tm.options.tracksFolderLocation == nil or
+            tm.options.tracksFolderLocation == "") then
+            tm.options.tracksFolderLocation = tm.paths.GetTrackRootFolder()
+        end
+        if (tm.options.skinsFolderLocation == nil or
+            tm.options.skinsFolderLocation == "") then
+            tm.options.skinsFolderLocation = tm.paths.GetSkinFolder()
+        end
+        tracksContainer.display = true
+        tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
+        skinsContainer.display = true
+        skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+    else
+        tracksContainer.display = false
+        skinsContainer.display = false
+    end
+end
+
 function ShowOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
 
@@ -67,6 +90,10 @@ function ShowOptionsPanel(tm)
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.options.ruleset])
+
+    local customLocationToggle = panel.Q("custom-data-location").Q("track")
+    SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
+    UpdateCustomDataLocationDisplay(tm, panel)
 end
 
 function InitializeOptionsPanel(tm)
@@ -266,6 +293,29 @@ function InitializeOptionsPanel(tm)
                 tm.options.ruleset = "Standard"
                 rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])
             end
+        end
+    end)
+
+    local customLocationToggle = panel.Q("custom-data-location").Q("track")
+    customLocationToggle.RegisterCallback("Click", function()
+        tm.options.customDataLocation = not tm.options.customDataLocation
+        UpdateCustomDataLocationDisplay(tm, panel)
+    end)
+
+    local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
+    tracksFolderButton.RegisterCallback("Click", function()
+        local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
+        if (newFolder != nil) then
+            tm.options.tracksFolderLocation = newFolder;
+            UpdateCustomDataLocationDisplay(tm, panel)
+        end
+    end)
+    local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
+    skinsFolderButton.RegisterCallback("Click", function()
+        local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
+        if (newFolder != nil) then
+            tm.options.skinsFolderLocation = newFolder;
+            UpdateCustomDataLocationDisplay(tm, panel)
         end
     end)
 end
