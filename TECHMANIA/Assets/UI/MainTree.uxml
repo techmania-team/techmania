@@ -132,16 +132,20 @@
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
                 <ui:VisualElement name="tracks-folder-location" class="options-item" style="padding-left: 100px;">
-                    <ui:VisualElement name="labels">
-                        <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1;" />
-                        <ui:Label text="C:\fooooooooooooooooooooooooooooooooooooooooooooooooooo" display-tooltip-when-elided="true" name="location-display" class="text-caption" style="overflow: hidden;" />
+                    <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
+                        <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
+                        </ui:ScrollView>
                     </ui:VisualElement>
                     <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
                 <ui:VisualElement name="skins-folder-location" class="options-item" style="padding-left: 100px;">
-                    <ui:VisualElement name="labels">
-                        <ui:Label text="Skins folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1;" />
-                        <ui:Label text="C:\baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" display-tooltip-when-elided="true" name="location-display" class="text-caption" style="overflow: hidden;" />
+                    <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
+                        <ui:Label text="Skins folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
+                        </ui:ScrollView>
                     </ui:VisualElement>
                     <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
@@ -161,9 +165,6 @@
                     <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="test-scrolling-text" picking-mode="Ignore" class="scrolling-text-container" style="display: none;">
-                    <ui:Label text="This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. " display-tooltip-when-elided="true" picking-mode="Ignore" class="text-body" style="-unity-text-align: upper-center;" />
-                </ui:ScrollView>
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>

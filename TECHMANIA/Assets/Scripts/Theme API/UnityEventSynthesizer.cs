@@ -48,32 +48,32 @@ namespace ThemeApi
             return eventListeners[typeof(EventType)].Count > 0;
         }
 
-        private static void RunCallbacks(EventBase eventObject)
-        {
-            foreach (VisualElement e in
-                eventListeners[eventObject.GetType()])
-            {
-                if (!e.enabledInHierarchy) continue;
-                eventObject.target = e;
-                e.SendEvent(eventObject);
-            }
-        }
-
         void Update()
         {
             if (!HasListeners<FrameUpdateEvent>()) return;
-            using (FrameUpdateEvent e = FrameUpdateEvent.GetPooled())
-                RunCallbacks(e);
+            foreach (VisualElement element in
+                eventListeners[typeof(FrameUpdateEvent)])
+            {
+                using (FrameUpdateEvent e = FrameUpdateEvent.GetPooled())
+                {
+                    e.target = element;
+                    element.SendEvent(e);
+                }
+            }
         }
 
         private void OnApplicationFocus(bool focus)
         {
             if (!HasListeners<ApplicationFocusEvent>()) return;
-            using (ApplicationFocusEvent e = 
-                ApplicationFocusEvent.GetPooled())
+            foreach (VisualElement element in
+                eventListeners[typeof(ApplicationFocusEvent)])
             {
-                e.focus = focus;
-                RunCallbacks(e);
+                using (ApplicationFocusEvent e =
+                    ApplicationFocusEvent.GetPooled())
+                {
+                    e.target = element;
+                    element.SendEvent(e);
+                }
             }
         }
         #endregion
