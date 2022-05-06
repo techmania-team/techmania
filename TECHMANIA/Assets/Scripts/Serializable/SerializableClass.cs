@@ -127,7 +127,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public void SaveToFile(string path)
     {
-        System.IO.File.WriteAllText(path, Serialize(
+        UniversalIO.WriteAllText(path, Serialize(
             optimizeForSaving: true));
     }
 

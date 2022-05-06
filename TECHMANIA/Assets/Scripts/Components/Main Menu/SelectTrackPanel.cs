@@ -76,7 +76,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     public static void ReloadOneTrack(string trackFolder)
     {
-        string parent = UniversalIO.PathGetDirectoryName(trackFolder);
+        string parent = UniversalIO.PathGetDirectoryName(trackFolder, true);
         foreach (TrackInFolder t in trackList[parent])
         {
             if (t.folder == trackFolder)
@@ -917,7 +917,8 @@ public class SelectTrackPanel : MonoBehaviour
                     currentLocation, entry.Name);
                 Debug.Log($"Extracting {entry.Name} in {zipFilename} to: {extractedFilename}");
 
-                UniversalIO.DirectoryCreateDirectory(UniversalIO.PathGetDirectoryName(
+                // Doesn't use in Android, so use C# System.IO
+                System.IO.Directory.CreateDirectory(UniversalIO.PathGetDirectoryName(
                     extractedFilename));
                 using var inputStream = zipFile.GetInputStream(entry);
                 using System.IO.FileStream outputStream = UniversalIO.FileCreate(

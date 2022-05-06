@@ -19,6 +19,16 @@ namespace AndroidNativeIO.IO
             return cachedClass;
         }
 
+        public static bool CreateDirectory(string parentPath, string childFolderName)
+        {
+            return GetCurrentClass().CallStatic<bool>(
+                "createDirectory",
+                Global.GetContext(),
+                parentPath,
+                childFolderName
+            );
+        }
+
         public static bool Exists(string path)
         {
             return GetCurrentClass().CallStatic<bool>(

@@ -35,5 +35,15 @@ namespace AndroidNativeIO.IO
                 path
             );
         }
+
+        public static string WriteAllText(string path, string content)
+        {
+            return GetCurrentClass().CallStatic<string>(
+                "writeAllText",
+                Global.GetContext(),
+                path,
+                content
+            );
+        }
     }
 }

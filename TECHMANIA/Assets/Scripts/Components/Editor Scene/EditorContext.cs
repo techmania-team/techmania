@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -76,13 +75,10 @@ public class EditorContext : MonoBehaviour
     public static Track track;
     // Full path of the track.tech file.
     public static string trackPath;
-    public static string trackFolder
-    {
-        get
-        {
-            return Path.GetDirectoryName(trackPath);
-        }
-    }
+    // Because getting parent folder on Android not always
+    // gives the same string, and this string is use for
+    // keys, it can't use PathGetDirectoryName from trackPath
+    public static string trackFolder;
 
     public static int patternIndex;
     public static Pattern Pattern

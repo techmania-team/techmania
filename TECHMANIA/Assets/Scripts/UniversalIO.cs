@@ -21,9 +21,23 @@ public static class UniversalIO
     }
 
     #region Directory
-    public static DirectoryInfo DirectoryCreateDirectory(string path)
+    public static void DirectoryCreateDirectory(string parentPath, string childFolderName)
     {
-        return Directory.CreateDirectory(path);
+        if (parentPath.StartsWith(ANDROID_CONTENT_URI))
+        {
+            if (!AndroidNativeIO.IO.Directory.CreateDirectory(parentPath, childFolderName))
+            {
+                throw new IOException("Failed to create directory (Android Native IO)");
+            }
+        } else
+        {
+            Directory.CreateDirectory(PathCombine(parentPath, childFolderName));
+        }
+    }
+
+    public static void DirectoryCreateDirectoryCSharp(string path)
+    {
+            Directory.CreateDirectory(path);
     }
 
     public static IEnumerable<string> DirectoryEnumerateFiles(string path, string searchPattern)
@@ -136,12 +150,28 @@ public static class UniversalIO
         }
     }
 
+    public static void WriteAllText(string path, string content)
+    {
+        if (path.StartsWith(ANDROID_CONTENT_URI))
+        {
+            AndroidNativeIO.IO.File.WriteAllText(path, content);
+        } else
+        {
+            File.WriteAllText(path, content);
+        }
+    }
+
     #endregion
 
     #region Path
 
-    public static string PathGetDirectoryName(string path)
+    public static string PathGetDirectoryName(string path, bool returnToTreeUri = true)
     {
+
+        if (path.StartsWith(ANDROID_CONTENT_URI))
+        {
+            return AndroidNativeIO.IO.Path.GetDirectoryName(path, returnToTreeUri);
+        }
         return Path.GetDirectoryName(path);
     }
 

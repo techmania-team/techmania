@@ -27,5 +27,15 @@ namespace AndroidNativeIO.IO
                 path2
             );
         }
+
+        public static string GetDirectoryName(string path, bool returnToTreeUri)
+        {
+            return GetCurrentClass().CallStatic<string>(
+                "getDirectoryName",
+                Global.GetContext(),
+                path,
+                returnToTreeUri
+            );
+        }
     }
 }

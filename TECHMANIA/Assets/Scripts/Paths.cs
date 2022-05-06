@@ -77,21 +77,21 @@ public static class Paths
         // Track root folder
         trackRootFolder = UniversalIO.PathCombine(workingDirectory,
             kTrackFolderName);
-        UniversalIO.DirectoryCreateDirectory(trackRootFolder);
+        UniversalIO.DirectoryCreateDirectoryCSharp(trackRootFolder);
         streamingTrackRootFolder = UniversalIO.PathCombine(
             streamingAssetsFolder, kTrackFolderName);
 
         // Skin folder
         skinFolder = UniversalIO.PathCombine(workingDirectory,
             kSkinFolderName);
-        UniversalIO.DirectoryCreateDirectory(skinFolder);
+        UniversalIO.DirectoryCreateDirectoryCSharp(skinFolder);
         streamingSkinFolder = UniversalIO.PathCombine(
             streamingAssetsFolder, kSkinFolderName);
 
-        UniversalIO.DirectoryCreateDirectory(GetNoteSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectory(GetVfxSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectory(GetComboSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectory(GetGameUiSkinRootFolder());
+        UniversalIO.DirectoryCreateDirectoryCSharp(GetNoteSkinRootFolder());
+        UniversalIO.DirectoryCreateDirectoryCSharp(GetVfxSkinRootFolder());
+        UniversalIO.DirectoryCreateDirectoryCSharp(GetComboSkinRootFolder());
+        UniversalIO.DirectoryCreateDirectoryCSharp(GetGameUiSkinRootFolder());
 
         // Data folder
 #if UNITY_ANDROID || UNITY_IOS
@@ -104,7 +104,7 @@ public static class Paths
             System.Environment.SpecialFolder.MyDocuments),
             "TECHMANIA");
 #endif
-        UniversalIO.DirectoryCreateDirectory(dataFolder);
+        UniversalIO.DirectoryCreateDirectoryCSharp(dataFolder);
     }
 
     public static void ApplyCustomDataLocation()
