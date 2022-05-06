@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -38,9 +37,9 @@ public class SelectTrackPanel : MonoBehaviour
     protected static int selectedCardIndex;
     protected static bool anyOutdatedTrack;
     // Cached, keyed by track folder's parent folder.
-    protected static Dictionary<string, List<Subfolder>> 
+    protected static Dictionary<string, List<Subfolder>>
         subfolderList;
-    protected static Dictionary<string, List<TrackInFolder>> 
+    protected static Dictionary<string, List<TrackInFolder>>
         trackList;
     protected static Dictionary<string, List<ErrorInTrack>>
         errorTrackList;
@@ -68,7 +67,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     public static void RemoveOneTrack(string trackFolder)
     {
-        string parent = Path.GetDirectoryName(trackFolder);
+        string parent = UniversalIO.PathGetDirectoryName(trackFolder);
         trackList[parent].RemoveAll((TrackInFolder t) =>
         {
             return t.folder == trackFolder;
@@ -77,12 +76,12 @@ public class SelectTrackPanel : MonoBehaviour
 
     public static void ReloadOneTrack(string trackFolder)
     {
-        string parent = Path.GetDirectoryName(trackFolder);
+        string parent = UniversalIO.PathGetDirectoryName(trackFolder, true);
         foreach (TrackInFolder t in trackList[parent])
         {
             if (t.folder == trackFolder)
             {
-                string trackPath = Path.Combine(
+                string trackPath = UniversalIO.PathCombine(
                     trackFolder, Paths.kTrackFilename);
                 t.track = Track.LoadFromFile(trackPath) as Track;
                 t.track = MinimizeTrack(t.track);
@@ -129,7 +128,7 @@ public class SelectTrackPanel : MonoBehaviour
     protected void OnEnable()
     {
         StartCoroutine(Refresh());
-        TrackFilterSidesheet.trackFilterChanged += 
+        TrackFilterSidesheet.trackFilterChanged +=
             OnTrackFilterChanged;
 
         DiscordController.SetActivity(DiscordActivityType.SelectingTrack);
@@ -205,24 +204,27 @@ public class SelectTrackPanel : MonoBehaviour
             trackStatusText.gameObject.SetActive(false);
 
             // Launch background worker to rebuild track list.
+
             trackListBuilder = new BackgroundWorker();
             trackListBuilder.DoWork += TrackListBuilderDoWork;
             trackListBuilder.RunWorkerCompleted +=
                 TrackListBuilderCompleted;
+
             builderDone = false;
             builderProgress = "";
             Options.TemporarilyDisableVSync();
             trackListBuilder.RunWorkerAsync(
                 new BackgroundWorkerArgument()
-            {
-                upgradeVersion = upgradeVersion
-            });
+                {
+                    upgradeVersion = upgradeVersion
+                });
             do
             {
                 trackListBuildingProgress.text =
                     builderProgress;
                 yield return null;
             } while (!builderDone);
+
             Options.RestoreVSync();
 
             trackListBuildingProgress.gameObject.SetActive(false);
@@ -274,7 +276,7 @@ public class SelectTrackPanel : MonoBehaviour
                 subfolderGrid.transform);
             card.name = "Subfolder Card";
             card.GetComponent<SubfolderCard>().Initialize(
-                new DirectoryInfo(subfolder.path).Name,
+                UniversalIO.DirectoryGetName(subfolder.path),
                 subfolder.eyecatchFullPath);
             card.SetActive(true);
             subfolderGridEmpty = false;
@@ -376,7 +378,7 @@ public class SelectTrackPanel : MonoBehaviour
                 GameObject template = error.type switch
                 {
                     ErrorInTrack.Type.Load => errorCardTemplate,
-                    ErrorInTrack.Type.Upgrade => 
+                    ErrorInTrack.Type.Upgrade =>
                         upgradeErrorCardTemplate,
                     _ => null
                 };
@@ -449,7 +451,7 @@ public class SelectTrackPanel : MonoBehaviour
                 tracks.Count - cardToTrack.Count,
                 trackFilterSidesheet.searchKeyword);
         }
-        else if (cardToSubfolder.Count + 
+        else if (cardToSubfolder.Count +
             cardToTrack.Count + cardToError.Count == 0)
         {
             trackStatusText.gameObject.SetActive(true);
@@ -607,11 +609,16 @@ public class SelectTrackPanel : MonoBehaviour
     private void BuildTrackListFor(string folder,
         bool upgradeVersion)
     {
+
+#if UNITY_ANDROID
+        // Because this is the backgound thread
+        AndroidJNI.AttachCurrentThread();
+#endif
         subfolderList.Add(folder, new List<Subfolder>());
         trackList.Add(folder, new List<TrackInFolder>());
         errorTrackList.Add(folder, new List<ErrorInTrack>());
 
-        foreach (string file in Directory.EnumerateFiles(
+        foreach (string file in UniversalIO.DirectoryEnumerateFiles(
             folder, "*.zip"))
         {
             // Attempt to extract this archive.
@@ -628,7 +635,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
 
-        foreach (string dir in Directory.EnumerateDirectories(
+        foreach (string dir in UniversalIO.DirectoryEnumerateDirectories(
             folder))
         {
             if (upgradeVersion)
@@ -645,9 +652,9 @@ public class SelectTrackPanel : MonoBehaviour
             }
 
             // Is there a track?
-            string possibleTrackFile = Path.Combine(
+            string possibleTrackFile = UniversalIO.PathCombine(
                 dir, Paths.kTrackFilename);
-            if (!File.Exists(possibleTrackFile))
+            if (!UniversalIO.FileExists(possibleTrackFile))
             {
                 Subfolder subfolder = new Subfolder()
                 {
@@ -655,16 +662,22 @@ public class SelectTrackPanel : MonoBehaviour
                 };
 
                 // Look for eyecatch, if any.
-                string pngEyecatch = Path.Combine(dir,
+                string pngEyecatch = UniversalIO.PathCombine(dir,
                     Paths.kSubfolderEyecatchPngFilename);
-                if (File.Exists(pngEyecatch))
+                if (UniversalIO.FileExists(pngEyecatch))
                 {
+#if UNITY_ANDROID
+                    pngEyecatch = UniversalIO.GetRealPathFromUri(pngEyecatch);
+#endif
                     subfolder.eyecatchFullPath = pngEyecatch;
                 }
-                string jpgEyecatch = Path.Combine(dir,
+                string jpgEyecatch = UniversalIO.PathCombine(dir,
                     Paths.kSubfolderEyecatchJpgFilename);
-                if (File.Exists(jpgEyecatch))
+                if (UniversalIO.FileExists(jpgEyecatch))
                 {
+#if UNITY_ANDROID
+                    jpgEyecatch = UniversalIO.GetRealPathFromUri(jpgEyecatch);
+#endif
                     subfolder.eyecatchFullPath = jpgEyecatch;
                 }
 
@@ -674,8 +687,8 @@ public class SelectTrackPanel : MonoBehaviour
                 {
                     subfolderList[Paths.GetTrackRootFolder()]
                         .Add(subfolder);
-                } 
-                else 
+                }
+                else
                 {
                     subfolderList[folder].Add(subfolder);
                 }
@@ -749,14 +762,14 @@ public class SelectTrackPanel : MonoBehaviour
         {
             return;
         }
-        
+
         // Get all track.tech files.
         string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
             Paths.RelativePathInStreamingAssets(
                 Paths.GetStreamingTrackRootFolder()
             ),
             Paths.kTrackFilename,
-            SearchOption.AllDirectories
+            System.IO.SearchOption.AllDirectories
         );
 
         // Get all directories above them.
@@ -765,11 +778,11 @@ public class SelectTrackPanel : MonoBehaviour
             // Get absolute track.tech file path.
             string absoluteTrackFile = Paths.AbsolutePathInStreamingAssets(relativeTrackFile);
             // Get relative directory path.
-            string relativeTrackFolder = Path.GetDirectoryName(relativeTrackFile);
+            string relativeTrackFolder = UniversalIO.PathGetDirectoryName(relativeTrackFile);
             // Get absolute directory path.
             string absoluteTrackFolder = Paths.AbsolutePathInStreamingAssets(relativeTrackFolder);
 
-            string processingRelativeFolder = Path.GetDirectoryName(relativeTrackFolder);
+            string processingRelativeFolder = UniversalIO.PathGetDirectoryName(relativeTrackFolder);
             string processingAbsoluteFolder = Paths.AbsolutePathInStreamingAssets(processingRelativeFolder);
 
             if (processingAbsoluteFolder == Paths.GetStreamingTrackRootFolder())
@@ -814,7 +827,7 @@ public class SelectTrackPanel : MonoBehaviour
             // Process path folders one by one.
             while (processingAbsoluteFolder != Paths.GetStreamingTrackRootFolder())
             {
-                string processingRelativeParentFolder = Path.GetDirectoryName(processingRelativeFolder);
+                string processingRelativeParentFolder = UniversalIO.PathGetDirectoryName(processingRelativeFolder);
                 string processingAbsoluteParentFolder = Paths.AbsolutePathInStreamingAssets(processingRelativeParentFolder);
                 string dirKey = processingAbsoluteParentFolder;
 
@@ -837,7 +850,7 @@ public class SelectTrackPanel : MonoBehaviour
                     {
                         path = processingAbsoluteFolder
                     };
-                    string pngEyecatch = Path.Combine(
+                    string pngEyecatch = UniversalIO.PathCombine(
                         processingRelativeFolder,
                         Paths.kSubfolderEyecatchPngFilename);
                     if (BetterStreamingAssets.FileExists(
@@ -847,7 +860,7 @@ public class SelectTrackPanel : MonoBehaviour
                             AbsolutePathInStreamingAssets(
                             pngEyecatch);
                     }
-                    string jpgEyecatch = Path.Combine(
+                    string jpgEyecatch = UniversalIO.PathCombine(
                         processingRelativeFolder,
                         Paths.kSubfolderEyecatchJpgFilename);
                     if (BetterStreamingAssets.FileExists(
@@ -864,7 +877,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
         }
     }
-    private void TrackListBuilderCompleted(object sender, 
+    private void TrackListBuilderCompleted(object sender,
         RunWorkerCompletedEventArgs e)
     {
         builderDone = true;
@@ -878,7 +891,7 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log("Extracting: " + zipFilename);
 
-        using (FileStream fileStream = File.OpenRead(zipFilename))
+        using (System.IO.FileStream fileStream = UniversalIO.FileOpenRead(zipFilename))
         using (ICSharpCode.SharpZipLib.Zip.ZipFile zipFile = new
             ICSharpCode.SharpZipLib.Zip.ZipFile(fileStream))
         {
@@ -888,7 +901,7 @@ public class SelectTrackPanel : MonoBehaviour
                 zipFile)
             {
                 if (string.IsNullOrEmpty(
-                    Path.GetDirectoryName(entry.Name)))
+                    UniversalIO.PathGetDirectoryName(entry.Name)))
                 {
                     Debug.Log($"Ignoring due to not being in a folder: {entry.Name} in {zipFilename}");
                     continue;
@@ -900,14 +913,15 @@ public class SelectTrackPanel : MonoBehaviour
                     continue;
                 }
 
-                string extractedFilename = Path.Combine(
+                string extractedFilename = UniversalIO.PathCombine(
                     currentLocation, entry.Name);
                 Debug.Log($"Extracting {entry.Name} in {zipFilename} to: {extractedFilename}");
 
-                Directory.CreateDirectory(Path.GetDirectoryName(
+                // Doesn't use in Android, so use C# System.IO
+                System.IO.Directory.CreateDirectory(UniversalIO.PathGetDirectoryName(
                     extractedFilename));
                 using var inputStream = zipFile.GetInputStream(entry);
-                using FileStream outputStream = File.Create(
+                using System.IO.FileStream outputStream = UniversalIO.FileCreate(
                     extractedFilename);
                 ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
                     inputStream, outputStream, buffer);
@@ -915,7 +929,7 @@ public class SelectTrackPanel : MonoBehaviour
         }
 
         Debug.Log($"Extract successful. Deleting: {zipFilename}");
-        File.Delete(zipFilename);
+        UniversalIO.FileDelete(zipFilename);
     }
     #endregion
 
@@ -946,7 +960,7 @@ public class SelectTrackPanel : MonoBehaviour
     {
         Debug.Log(currentLocation);
 
-        currentLocation = Path.GetDirectoryName(currentLocation);
+        currentLocation = UniversalIO.PathGetDirectoryName(currentLocation);
         if (currentLocation.Equals(
             Paths.GetStreamingTrackRootFolder()))
             currentLocation = Paths.GetTrackRootFolder();
@@ -969,7 +983,7 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected virtual void OnTrackCardClick(GameObject o)
     {
-        GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
+        GameSetup.trackPath = UniversalIO.PathCombine(cardToTrack[o].folder,
             Paths.kTrackFilename);
         GameSetup.trackOptions = Options.instance
             .GetPerTrackOptions(

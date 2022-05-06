@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -84,7 +83,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string noteSkinFolder = Paths.GetNoteSkinFolder(
             Options.instance.noteSkin);
-        string noteSkinFilename = Path.Combine(
+        string noteSkinFilename = UniversalIO.PathCombine(
             noteSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -114,7 +113,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string vfxSkinFolder = Paths.GetVfxSkinFolder(
             Options.instance.vfxSkin);
-        string vfxSkinFilename = Path.Combine(
+        string vfxSkinFilename = UniversalIO.PathCombine(
             vfxSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -144,7 +143,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string comboSkinFolder = Paths.GetComboSkinFolder(
             Options.instance.comboSkin);
-        string comboSkinFilename = Path.Combine(
+        string comboSkinFilename = UniversalIO.PathCombine(
             comboSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -191,7 +190,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
             Options.instance.gameUiSkin);
-        string gameUiSkinFilename = Path.Combine(
+        string gameUiSkinFilename = UniversalIO.PathCombine(
             gameUiSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -234,7 +233,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 continue;
             }
 
-            string filename = Path.Combine(skinFolder,
+            string filename = UniversalIO.PathCombine(skinFolder,
                 spriteSheetReferences[i].filename);
             bool loaded = false;
             bool error = false;

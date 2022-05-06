@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -100,7 +99,7 @@ public class ResourceLoader : MonoBehaviour
         {
             if (n.sound != null && n.sound != "")
             {
-                filenames.Add(Path.Combine(trackFolder, n.sound));
+                filenames.Add(UniversalIO.PathCombine(trackFolder, n.sound));
             }
         }
         ResourceLoader instance = GetInstance();
@@ -139,11 +138,16 @@ public class ResourceLoader : MonoBehaviour
                     yield break;
                 }
 
+                string filePath = file;
+#if UNITY_ANDROID
+                filePath = UniversalIO.GetRealPathFromUri(filePath);
+#endif
+
                 // Somehow passing in AudioType.UNKNOWN will make it
                 // magically work for every format.
                 UnityWebRequest request =
                     UnityWebRequestMultimedia.GetAudioClip(
-                        Paths.FullPathToUri(file), AudioType.UNKNOWN);
+                        Paths.FullPathToUri(filePath), AudioType.UNKNOWN);
                 yield return request.SendWebRequest();
 
                 AudioClip clip;
@@ -186,9 +190,13 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadAudio(string fullPath,
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
+        string path = fullPath;
+#if UNITY_ANDROID
+        path = UniversalIO.GetRealPathFromUri(path);
+#endif
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadAudio(
-            fullPath, loadAudioCompleteCallback));
+            path, loadAudioCompleteCallback));
     }
 
     private IEnumerator InnerLoadAudio(string fullPath,
@@ -234,7 +242,12 @@ public class ResourceLoader : MonoBehaviour
         {
             return false;
         }
-        FileInfo fileInfo = new FileInfo(fullPath);
+        if (fullPath.StartsWith(UniversalIO.ANDROID_CONTENT_URI))
+        {
+            return false;
+        }
+
+        System.IO.FileInfo fileInfo = new System.IO.FileInfo(fullPath);
         return fileInfo.Length == 0;
     }
 
@@ -278,9 +291,13 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadImage(string fullPath,
         UnityAction<Texture2D, string> loadImageCompleteCallback)
     {
+        string path = fullPath;
+#if UNITY_ANDROID
+        path = UniversalIO.GetRealPathFromUri(path);
+#endif
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadImage(
-            fullPath, loadImageCompleteCallback));
+            path, loadImageCompleteCallback));
     }
 
     public static Sprite CreateSpriteFromTexture(Texture2D texture)

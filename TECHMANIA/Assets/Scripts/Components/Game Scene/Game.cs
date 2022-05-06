@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;  // For stopwatch
-using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -368,8 +367,11 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backImage != null &&
             GameSetup.pattern.patternMetadata.backImage != "")
         {
-            string fullPath = Path.Combine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.backImage);
+#if UNITY_ANDROID
+            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+#endif
             backgroundImageLoaded = false;
             ResourceLoader.LoadImage(fullPath,
                 OnImageLoadComplete);
@@ -413,8 +415,11 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
         {
-            string fullPath = Path.Combine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.backingTrack);
+#if UNITY_ANDROID
+            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+#endif
             backingTrackLoaded = false;
             ResourceLoader.LoadAudio(fullPath,
                 OnBackingTrackLoadComplete);
@@ -438,8 +443,11 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
-            string fullPath = Path.Combine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.bga);
+#if UNITY_ANDROID
+            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+#endif
             videoPlayer.url = fullPath;
             videoPlayer.errorReceived += VideoPlayerErrorReceived;
             videoPlayer.Prepare();

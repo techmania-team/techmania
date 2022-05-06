@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +9,22 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
     protected override bool ShowNewTrackCard()
     {
+#if UNITY_ANDROID
+        // Creating new file doesn't work with this 
+        if (Options.instance.customDataLocation)
+        {
+            return false;
+        }
+#endif
         return true;
     }
 
     protected override void OnTrackCardClick(GameObject o)
     {
         EditorContext.Reset();
-        EditorContext.trackPath = Path.Combine(cardToTrack[o].folder,
+        EditorContext.trackPath = UniversalIO.PathCombine(cardToTrack[o].folder,
             Paths.kTrackFilename);
+        EditorContext.trackFolder = cardToTrack[o].folder;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
             TransitionToPanel.Direction.Right);
     }
@@ -44,11 +48,11 @@ public class EditorSelectTrackPanel : SelectTrackPanel
             .RemoveCharsNotAllowedOnFileSystem(artist);
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        string newDir = Path.Combine(currentLocation,
-            $"{filteredArtist} - {filteredTitle} - {timestamp}");
+        string newDirName = $"{filteredArtist} - {filteredTitle} - {timestamp}";
+        string newDir = UniversalIO.PathCombine(currentLocation, newDirName);
         try
         {
-            Directory.CreateDirectory(newDir);
+            UniversalIO.DirectoryCreateDirectoryCSharp(newDirName);
         }
         catch (Exception e)
         {
@@ -62,7 +66,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
         // Create empty track.
         Track track = new Track(title, artist);
-        string filename = Path.Combine(newDir, Paths.kTrackFilename);
+        string filename = UniversalIO.PathCombine(newDir, Paths.kTrackFilename);
         try
         {
             track.SaveToFile(filename);
@@ -85,6 +89,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
         EditorContext.Reset();
         EditorContext.trackPath = filename;
+        EditorContext.trackFolder = newDir;
         EditorContext.track = track;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
             TransitionToPanel.Direction.Right);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -48,8 +47,11 @@ public class PreviewTrackPlayer : MonoBehaviour
         // We could use ResourceLoader.LoadAudio, but this creates
         // problems when the user stops preview track playback
         // before the loading completes.
-        string filename = Path.Combine(trackFolder, 
+        string filename = UniversalIO.PathCombine(trackFolder, 
             previewTrackFilename);
+#if UNITY_ANDROID
+        filename = UniversalIO.GetRealPathFromUri(filename);
+#endif
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(
             Paths.FullPathToUri(filename), AudioType.UNKNOWN);
