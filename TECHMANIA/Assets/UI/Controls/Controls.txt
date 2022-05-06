@@ -77,40 +77,18 @@ function SetUpButtonSounds(tm, className)
 end
 
 function SetUpAllScrollingTexts(tm)
-    tm.root.Query(nil, "scrolling-text").ForEach(function (element)
-        tm.StartCoroutine(function ()
-            -- If we need element.horizontalScroller.lowValue/highValue,
-            -- we have to wait 1 frame
-            -- coroutine.yield()
-            local waitLength = 2
-            local scrollLength = 2
-            local timer = 0
-            while (true) do
-                WaitForSeconds(waitLength)
-                timer = 0
-                while (timer < scrollLength) do
-                    local progress = timer / scrollLength
-                    element.horizontalScroller.value = math.Lerp(
-                        element.horizontalScroller.lowValue,
-                        element.horizontalScroller.highValue,
-                        progress
-                    )
-                    timer = timer + time.deltaTime
-                    coroutine.yield()
-                end
-                WaitForSeconds(waitLength)
-                timer = 0
-                while (timer < scrollLength) do
-                    local progress = timer / scrollLength
-                    element.horizontalScroller.value = math.Lerp(
-                        element.horizontalScroller.lowValue,
-                        element.horizontalScroller.highValue,
-                        1 - progress
-                    )
-                    timer = timer + time.deltaTime
-                    coroutine.yield()
-                end
+    tm.root.Query(nil, "scrolling-text-container").ForEach(function (container)
+        container.RegisterCallback("FrameUpdate", function(element)
+            local low = element.horizontalScroller.lowValue
+            local high = element.horizontalScroller.highValue
+            if (float.IsNaN(high) or high <= low) then
+                return
             end
+            local scrollDuration = 4
+            local pingPongTime = math.PingPong(time.time, scrollDuration)
+            -- InverseLerp's output is clamped between 0 and 1.
+            local value = math.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+            element.horizontalScroller.value = math.Lerp(low, high, value)
         end)
     end)
 end

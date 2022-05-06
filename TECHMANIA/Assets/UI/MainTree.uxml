@@ -161,6 +161,9 @@
                     <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
+                <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="test-scrolling-text" picking-mode="Ignore" class="scrolling-text-container" style="display: none;">
+                    <ui:Label text="This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. " display-tooltip-when-elided="true" picking-mode="Ignore" class="text-body" style="-unity-text-align: upper-center;" />
+                </ui:ScrollView>
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
