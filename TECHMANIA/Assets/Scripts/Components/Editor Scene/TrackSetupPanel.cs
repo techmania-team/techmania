@@ -50,6 +50,8 @@ public class TrackSetupPanel : MonoBehaviour
         EditorContext.ClearUndoRedoStack();
         RefreshFilenameCaches();
         Refresh();
+
+        DiscordController.SetActivity(DiscordActivityType.EditorTrack);
     }
 
     private void OnDisable()

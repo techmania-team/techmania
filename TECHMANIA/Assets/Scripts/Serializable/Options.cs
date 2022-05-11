@@ -92,6 +92,7 @@ public class Options : OptionsBase
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
+    public bool discordRichPresence;
 
     // Editor options
 
@@ -175,6 +176,7 @@ public class Options : OptionsBase
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
+        discordRichPresence = true;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();

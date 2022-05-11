@@ -40,6 +40,7 @@ public class OptionsPanel : MonoBehaviour
     public ScrollingText skinsFolderDisplay;
     public TextMeshProUGUI latencyDisplay;
     public Toggle pauseWhenGameLosesFocusToggle;
+    public Toggle discordRichPresenceToggle;
 
     // Make a backup of all available resolutions at startup, because
     // Screen.resolutions may change at runtime. I have no idea why.
@@ -88,6 +89,8 @@ public class OptionsPanel : MonoBehaviour
     {
         LoadOrCreateOptions();
         MemoryToUI();
+
+        DiscordController.SetActivity(DiscordActivityType.Options);
     }
 
     private void OnDisable()
@@ -164,6 +167,8 @@ public class OptionsPanel : MonoBehaviour
         latencyDisplay.text = $"{Options.instance.touchOffsetMs}/{Options.instance.touchLatencyMs}/{Options.instance.keyboardMouseOffsetMs}/{Options.instance.keyboardMouseLatencyMs} ms";
         //pauseWhenGameLosesFocusToggle.SetIsOnWithoutNotify(
         //    Options.instance.pauseWhenGameLosesFocus);
+        discordRichPresenceToggle.SetIsOnWithoutNotify(
+            Options.instance.discordRichPresence);
     }
 
     // The portion of MemoryToUI that should respond to
@@ -405,6 +410,24 @@ public class OptionsPanel : MonoBehaviour
     {
         //Options.instance.pauseWhenGameLosesFocus =
         //    pauseWhenGameLosesFocusToggle.isOn;
-    }    
+    }
+
+    public void OnDiscordRichPresenceChanged()
+    {
+        Options.instance.discordRichPresence =
+            discordRichPresenceToggle.isOn;
+        if (Options.instance.discordRichPresence) {
+            DiscordController.Start();
+            DiscordController.SetActivity(DiscordActivityType.Options);
+        } else {
+            DiscordController.Dispose();
+        }
+    }
+
+    public void OnDiscordRichPresenceReconnectButtonClick()
+    {
+        DiscordController.Start();
+        DiscordController.SetActivity(DiscordActivityType.Options);
+    } 
     #endregion
 }
