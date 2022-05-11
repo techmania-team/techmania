@@ -30,7 +30,7 @@
     <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <ui:VisualElement name="content" class="panel-content" />
     </ui:Instance>
-    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="height: 100%; width: 800px;">
@@ -165,6 +165,50 @@
                     <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:Instance template="Panel" name="information-panel" class="panel">
+        <AttributeOverrides element-name="title" text="Information" />
+        <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
+            <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="width: 1000px; height: 100%;">
+                <ui:Label tabindex="-1" text="Getting started" display-tooltip-when-elided="true" name="getting-started-header" class="text-headline-6 information-item" />
+                <ui:Label tabindex="-1" text="Download tracks and skins from the official website, then extract them into the &quot;Tracks&quot; and &quot;Skins&quot; folders." display-tooltip-when-elided="true" name="getting-started-instruction" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="On PC, these folders are next to TECHMANIA.exe." display-tooltip-when-elided="true" name="folder-location" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="Enable Guided Access from your device&apos;s accessibility settings to avoid returning to the Home Screen when swiping." display-tooltip-when-elided="true" name="ios-guided-access" class="text-body information-item" />
+                <ui:VisualElement name="divider" class="divider" />
+                <ui:Label tabindex="-1" text="Links" display-tooltip-when-elided="true" name="links-header" class="text-headline-6 information-item" />
+                <ui:VisualElement name="links-container" class="information-item" style="flex-direction: row; justify-content: flex-start; flex-wrap: wrap;">
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="website-button" class="button-outlined">
+                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" />
+                    </ui:Button>
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="discord-button" class="button-outlined">
+                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" />
+                    </ui:Button>
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="github-button" class="button-outlined">
+                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
+                        <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" />
+                    </ui:Button>
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="documentation-button" class="button-outlined">
+                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" />
+                    </ui:Button>
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="youtube-button" class="button-outlined">
+                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement name="divider" class="divider" />
+                <ui:Label tabindex="-1" text="Health &amp; safety information" display-tooltip-when-elided="true" name="health-safety-header" class="text-headline-6 information-item" />
+                <ui:Label tabindex="-1" text="When playing with a touchscreen, please do not strike it violently. Doing so may cause damage to the touchscreen and/or yourself.&#10;&#10;Flashing lights may trigger seizures, even in people who never experienced it before. If you feel uncomfortable, stop playing and take a break." display-tooltip-when-elided="true" name="health-safety-text" class="text-body information-item" />
+                <ui:VisualElement name="divider" class="divider" />
+                <ui:Label tabindex="-1" text="Credits" display-tooltip-when-elided="true" name="credits-header" class="text-headline-6 information-item" />
+                <ui:Label tabindex="-1" text="Program" display-tooltip-when-elided="true" name="program-subheader" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="DJ Hitori, Kento" display-tooltip-when-elided="true" name="program-text" class="text-body information-item" style="margin-left: 50px;" />
+                <ui:Label tabindex="-1" text="Localizer" display-tooltip-when-elided="true" name="localization-subheader" class="text-body information-item" />
+                <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="localization-text" class="text-body information-item" style="margin-left: 50px;" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>

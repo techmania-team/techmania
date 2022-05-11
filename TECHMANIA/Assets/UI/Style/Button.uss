@@ -21,6 +21,9 @@
     margin-bottom: 0;
     -unity-background-image-tint-color: var(--primary-color);
     -unity-background-scale-mode: scale-to-fit;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-text:hover {
@@ -71,6 +74,9 @@
     margin-bottom: 0;
     -unity-background-image-tint-color: var(--primary-color);
     -unity-background-scale-mode: scale-to-fit;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-outlined:hover {
@@ -119,8 +125,11 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
-    -unity-background-image-tint-color: rgba(0, 0, 0, 255);
+    -unity-background-image-tint-color: rgb(0, 0, 0);
     -unity-background-scale-mode: scale-to-fit;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-contained:focus {
@@ -173,4 +182,21 @@
 .button-card:disabled {
     background-color: rgba(0, 0, 0, 0);
     color: var(--disabled-text-color);
+}
+
+Button VisualElement {
+    width: 28px;
+    height: 28px;
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+Button Label {
+    margin-left: 10px;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
