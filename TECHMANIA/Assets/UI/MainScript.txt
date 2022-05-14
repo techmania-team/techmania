@@ -24,6 +24,19 @@ tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
     )
     tm.options.SaveToFile()
 end)
+tm.root.Q("main-menu").Q("information-button").RegisterCallback("Click", function()
+    print("Information button clicked")
+    TransitionPanelFromRight(
+        tm.root.Q("main-menu"),
+        tm.root.Q("information-panel")
+    )
+end)
+tm.root.Q("information-panel").Q("back-button").RegisterCallback("Click", function()
+    TransitionPanelFromLeft(
+        tm.root.Q("information-panel"),
+        tm.root.Q("main-menu")
+    )
+end)
 
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)

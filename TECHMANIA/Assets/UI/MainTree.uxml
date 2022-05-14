@@ -174,7 +174,9 @@
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="width: 1000px; height: 100%;">
                 <ui:Label tabindex="-1" text="Getting started" display-tooltip-when-elided="true" name="getting-started-header" class="text-headline-6 information-item" />
                 <ui:Label tabindex="-1" text="Download tracks and skins from the official website, then extract them into the &quot;Tracks&quot; and &quot;Skins&quot; folders." display-tooltip-when-elided="true" name="getting-started-instruction" class="text-body information-item" />
-                <ui:Label tabindex="-1" text="On PC, these folders are next to TECHMANIA.exe." display-tooltip-when-elided="true" name="folder-location" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="On PC, these folders are next to TECHMANIA.exe." display-tooltip-when-elided="true" name="folder-location-pc" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer." display-tooltip-when-elided="true" name="folder-location-ios" class="text-body information-item" />
+                <ui:Label tabindex="-1" text="On Android, you can find these folders in /storage/Android/data/com.TECHMANIA." display-tooltip-when-elided="true" name="folder-location-android" class="text-body information-item" />
                 <ui:Label tabindex="-1" text="Enable Guided Access from your device&apos;s accessibility settings to avoid returning to the Home Screen when swiping." display-tooltip-when-elided="true" name="ios-guided-access" class="text-body information-item" />
                 <ui:VisualElement name="divider" class="divider" />
                 <ui:Label tabindex="-1" text="Links" display-tooltip-when-elided="true" name="links-header" class="text-headline-6 information-item" />
