@@ -1,0 +1,6 @@
+function InitializeInformationPanel(tm)
+    local panel = tm.root.Q("information-panel")
+    panel.display = false
+end
+
+InitializeInformationPanel(tm)

@@ -10,6 +10,7 @@ InitializeControls(tm)
 tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Information Panel.txt")
 tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
     TransitionPanelFromRight(
         tm.root.Q("main-menu"),
@@ -25,7 +26,6 @@ tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
     tm.options.SaveToFile()
 end)
 tm.root.Q("main-menu").Q("information-button").RegisterCallback("Click", function()
-    print("Information button clicked")
     TransitionPanelFromRight(
         tm.root.Q("main-menu"),
         tm.root.Q("information-panel")

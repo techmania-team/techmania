@@ -36,7 +36,7 @@ public class BuildAssetBundleWindow : EditorWindow
 
     private static void BuildAssetBundle(BuildTarget target)
     {
-        Debug.Log("Building asset bundle...");
+        Debug.Log($"Building asset bundle for {target} ...");
         Directory.CreateDirectory(Paths.kAssetBundleFolder);
         AssetBundleManifest manifest = 
             BuildPipeline.BuildAssetBundles(
