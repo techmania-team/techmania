@@ -1,6 +1,23 @@
 function InitializeInformationPanel(tm)
     local panel = tm.root.Q("information-panel")
     panel.display = false
+
+    local platform = tm.GetPlatform()
+    panel.Q("folder-location-pc").display = (platform == "Windows")
+    panel.Q("folder-location-ios").display = (platform == "iOS")
+    panel.Q("folder-location-android").display = (platform == "Android")
+    panel.Q("ios-guided-access").display = (platform == "iOS")
+
+    function RegisterLinkButton(name, url)
+        panel.Q(name).RegisterCallback("Click", function()
+            tm.OpenURL(url)
+        end)
+    end
+    RegisterLinkButton("website-button", "https://techmania-team.herokuapp.com/")
+    RegisterLinkButton("discord-button", "https://discord.gg/K4Nf7AnAZt")
+    RegisterLinkButton("github-button", "https://github.com/techmania-team/techmania")
+    RegisterLinkButton("documentation-button", "https://techmania-team.github.io/techmania-docs/")
+    RegisterLinkButton("youtube-button", "https://www.youtube.com/channel/UCoHxk7shdAKf7W3yqUJlDaA")
 end
 
 InitializeInformationPanel(tm)

@@ -182,24 +182,24 @@
                 <ui:Label tabindex="-1" text="Links" display-tooltip-when-elided="true" name="links-header" class="text-headline-6 information-item" />
                 <ui:VisualElement name="links-container" class="information-item" style="flex-direction: row; justify-content: flex-start; flex-wrap: wrap;">
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="website-button" class="button-outlined">
-                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="discord-button" class="button-outlined">
-                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="github-button" class="button-outlined">
-                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
-                        <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
+                        <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="documentation-button" class="button-outlined">
-                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="youtube-button" class="button-outlined">
-                        <ui:VisualElement name="icon" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
                     </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="divider" />

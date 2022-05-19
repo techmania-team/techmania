@@ -97,7 +97,31 @@ namespace ThemeApi
         {
             CoroutineRunner.Stop(id);
         }
-        #endregion
+
+        // Returns one of "Windows", "Linux", "macOS", "Android"
+        // "iOS", and "Unknown".
+        public string GetPlatform()
+        {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            return "Windows";
+#elif UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
+            return "Linux";
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+            return "macOS";
+#elif UNITY_ANDROID
+            return "Android";
+#elif UNITY_IOS
+            return "iOS";
+#else
+            return "Unknown";
+#endif
+        }
+
+        public void OpenURL(string url)
+        {
+            Application.OpenURL(url);
+        }
+#endregion
 
         public void LogEvent(EventBase e)
         {
