@@ -6,7 +6,7 @@
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Slider" src="project://database/Assets/UI/Controls/Slider.uxml?fileID=9197481963319205126&amp;guid=96a6b460681d17a4e8c140fa1a925dd6&amp;type=3#Slider" />
     <ui:Template name="Text Field" src="project://database/Assets/UI/Controls/Text%20Field.uxml?fileID=9197481963319205126&amp;guid=6f6445efae019ec4098632163cf1fd2e&amp;type=3#Text Field" />
-    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables[UNSUPPORTED_IN_UI_BUILDER]" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
     <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
@@ -14,7 +14,7 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
+    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
         <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
             <ui:Button text="START" display-tooltip-when-elided="true" name="start-button" class="button-contained" />
@@ -168,7 +168,7 @@
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="information-panel" class="panel">
+    <ui:Instance template="Panel" name="information-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Information" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="width: 1000px; height: 100%;">
@@ -182,24 +182,24 @@
                 <ui:Label tabindex="-1" text="Links" display-tooltip-when-elided="true" name="links-header" class="text-headline-6 information-item" />
                 <ui:VisualElement name="links-container" class="information-item" style="flex-direction: row; justify-content: flex-start; flex-wrap: wrap;">
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="website-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="discord-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="github-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
-                        <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
+                        <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="documentation-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="youtube-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
-                        <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
+                        <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="divider" />
@@ -211,6 +211,7 @@
                 <ui:Label tabindex="-1" text="DJ Hitori, Kento" display-tooltip-when-elided="true" name="program-text" class="text-body information-item" style="margin-left: 50px;" />
                 <ui:Label tabindex="-1" text="Localizer" display-tooltip-when-elided="true" name="localization-subheader" class="text-body information-item" />
                 <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="localization-text" class="text-body information-item" style="margin-left: 50px;" />
+                <ui:VisualElement name="divider" class="divider" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>

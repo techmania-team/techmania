@@ -200,13 +200,13 @@
     color: var(--disabled-text-color);
 }
 
-Button VisualElement {
+Button .icon-in-button {
     width: 28px;
     height: 28px;
     -unity-background-image-tint-color: var(--primary-color);
 }
 
-Button Label {
+Button .text-in-button {
     margin-left: 10px;
     margin-right: 0;
     margin-top: 0;

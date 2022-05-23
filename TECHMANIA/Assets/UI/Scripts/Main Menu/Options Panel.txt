@@ -17,7 +17,6 @@ function UpdateVolumeDisplay(panel)
 end
 
 function UpdateCustomDataLocationDisplay(tm, panel)
-    -- TODO: set up scrolling text
     local tracksContainer = panel.Q("tracks-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
     if (tm.options.customDataLocation) then
