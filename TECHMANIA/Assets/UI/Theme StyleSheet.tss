@@ -1,0 +1,92 @@
+@import url("unity-theme://default");
+
+.unity-base-dropdown__container-outer {
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.unity-base-dropdown__container-inner {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: rgb(35, 35, 35);
+}
+
+.unity-base-dropdown__item {
+    background-color: rgba(0, 0, 0, 0);
+    height: 50px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.unity-base-dropdown__item:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}
+
+.unity-base-dropdown__item:checked {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.unity-base-dropdown__checkmark {
+    display: none;
+}
+
+.unity-base-dropdown__label {
+    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 22px;
+    letter-spacing: 0.9px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.unity-base-dropdown__item:hover .unity-base-dropdown__label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.unity-base-dropdown__container-inner #unity-low-button {
+    display: none;
+}
+
+.unity-base-dropdown__container-inner #unity-high-button {
+    display: none;
+}
+
+.unity-base-dropdown__container-inner #unity-slider {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.unity-base-dropdown__container-inner #unity-tracker {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.unity-base-dropdown__container-inner #unity-dragger {
+    background-color: rgba(255, 255, 255, 0.09);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}

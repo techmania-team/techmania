@@ -35,6 +35,13 @@ namespace ThemeApi
             uiDocument.panelSettings;
 
         public StyleHelper style => styleHelper;
+
+        public void SetThemeStyleSheet(string name)
+        {
+            ThemeStyleSheet sheet = GlobalResource.GetThemeContent
+                <ThemeStyleSheet>(name);
+            panelSettings.themeStyleSheet = sheet;
+        }
         #endregion
 
         #region Data classes

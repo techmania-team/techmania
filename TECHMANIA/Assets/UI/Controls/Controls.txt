@@ -94,6 +94,8 @@ function SetUpAllScrollingTexts(tm)
 end
 
 function InitializeControls(tm)
+    -- To apply themes to dropdowns
+    tm.SetThemeStyleSheet("Assets/UI/Theme StyleSheet.tss")
     SetUpAllSliders(tm)
     SetUpAllToggles(tm)
     SetUpButtonSounds(tm, "button-text")
