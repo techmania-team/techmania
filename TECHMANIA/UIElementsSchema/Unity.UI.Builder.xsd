@@ -607,6 +607,30 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="BuilderAttributesTestElement" substitutionGroup="engine:VisualElement" xmlns:q29="Unity.UI.Builder" type="q29:BuilderAttributesTestElementType" />
+  <xs:complexType name="AngleStyleFieldType">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="engine:VisualElementType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="engine:VisualElement" />
+        </xs:sequence>
+        <xs:attribute default="" name="name" type="xs:string" use="optional" />
+        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
+        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
+        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
+        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
+        <xs:attribute default="true" name="focusable" type="xs:boolean" use="optional" />
+        <xs:attribute default="" name="class" type="xs:string" use="optional" />
+        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
+        <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:attribute default="" name="binding-path" type="xs:string" use="optional" />
+        <xs:attribute default="" name="label" type="xs:string" use="optional" />
+        <xs:attribute default="true" name="show-options" type="xs:boolean" use="optional" />
+        <xs:anyAttribute processContents="lax" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AngleStyleField" substitutionGroup="engine:VisualElement" xmlns:q30="Unity.UI.Builder" type="q30:AngleStyleFieldType" />
   <xs:complexType name="DimensionStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -625,11 +649,12 @@
         <xs:attribute default="" name="style" type="xs:string" use="optional" />
         <xs:attribute default="" name="binding-path" type="xs:string" use="optional" />
         <xs:attribute default="" name="label" type="xs:string" use="optional" />
+        <xs:attribute default="true" name="show-options" type="xs:boolean" use="optional" />
         <xs:anyAttribute processContents="lax" />
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="DimensionStyleField" substitutionGroup="engine:VisualElement" xmlns:q30="Unity.UI.Builder" type="q30:DimensionStyleFieldType" />
+  <xs:element name="DimensionStyleField" substitutionGroup="engine:VisualElement" xmlns:q31="Unity.UI.Builder" type="q31:DimensionStyleFieldType" />
   <xs:complexType name="ImageStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -652,7 +677,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="ImageStyleField" substitutionGroup="engine:VisualElement" xmlns:q31="Unity.UI.Builder" type="q31:ImageStyleFieldType" />
+  <xs:element name="ImageStyleField" substitutionGroup="engine:VisualElement" xmlns:q32="Unity.UI.Builder" type="q32:ImageStyleFieldType" />
   <xs:complexType name="IntegerStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -671,11 +696,12 @@
         <xs:attribute default="" name="style" type="xs:string" use="optional" />
         <xs:attribute default="" name="binding-path" type="xs:string" use="optional" />
         <xs:attribute default="" name="label" type="xs:string" use="optional" />
+        <xs:attribute default="true" name="show-options" type="xs:boolean" use="optional" />
         <xs:anyAttribute processContents="lax" />
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="IntegerStyleField" substitutionGroup="engine:VisualElement" xmlns:q32="Unity.UI.Builder" type="q32:IntegerStyleFieldType" />
+  <xs:element name="IntegerStyleField" substitutionGroup="engine:VisualElement" xmlns:q33="Unity.UI.Builder" type="q33:IntegerStyleFieldType" />
   <xs:complexType name="NumericStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -694,11 +720,12 @@
         <xs:attribute default="" name="style" type="xs:string" use="optional" />
         <xs:attribute default="" name="binding-path" type="xs:string" use="optional" />
         <xs:attribute default="" name="label" type="xs:string" use="optional" />
+        <xs:attribute default="true" name="show-options" type="xs:boolean" use="optional" />
         <xs:anyAttribute processContents="lax" />
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="NumericStyleField" substitutionGroup="engine:VisualElement" xmlns:q33="Unity.UI.Builder" type="q33:NumericStyleFieldType" />
+  <xs:element name="NumericStyleField" substitutionGroup="engine:VisualElement" xmlns:q34="Unity.UI.Builder" type="q34:NumericStyleFieldType" />
   <xs:complexType name="RotateStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -721,7 +748,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="RotateStyleField" substitutionGroup="engine:VisualElement" xmlns:q34="Unity.UI.Builder" type="q34:RotateStyleFieldType" />
+  <xs:element name="RotateStyleField" substitutionGroup="engine:VisualElement" xmlns:q35="Unity.UI.Builder" type="q35:RotateStyleFieldType" />
   <xs:complexType name="ScaleStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -744,7 +771,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="ScaleStyleField" substitutionGroup="engine:VisualElement" xmlns:q35="Unity.UI.Builder" type="q35:ScaleStyleFieldType" />
+  <xs:element name="ScaleStyleField" substitutionGroup="engine:VisualElement" xmlns:q36="Unity.UI.Builder" type="q36:ScaleStyleFieldType" />
   <xs:complexType name="TextShadowStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -767,7 +794,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TextShadowStyleField" substitutionGroup="engine:VisualElement" xmlns:q36="Unity.UI.Builder" type="q36:TextShadowStyleFieldType" />
+  <xs:element name="TextShadowStyleField" substitutionGroup="engine:VisualElement" xmlns:q37="Unity.UI.Builder" type="q37:TextShadowStyleFieldType" />
   <xs:complexType name="TransformOriginSelectorType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -788,7 +815,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TransformOriginSelector" substitutionGroup="engine:VisualElement" xmlns:q37="Unity.UI.Builder" type="q37:TransformOriginSelectorType" />
+  <xs:element name="TransformOriginSelector" substitutionGroup="engine:VisualElement" xmlns:q38="Unity.UI.Builder" type="q38:TransformOriginSelectorType" />
   <xs:complexType name="TransformOriginStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -811,7 +838,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TransformOriginStyleField" substitutionGroup="engine:VisualElement" xmlns:q38="Unity.UI.Builder" type="q38:TransformOriginStyleFieldType" />
+  <xs:element name="TransformOriginStyleField" substitutionGroup="engine:VisualElement" xmlns:q39="Unity.UI.Builder" type="q39:TransformOriginStyleFieldType" />
   <xs:complexType name="TranslateStyleFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -834,7 +861,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TranslateStyleField" substitutionGroup="engine:VisualElement" xmlns:q39="Unity.UI.Builder" type="q39:TranslateStyleFieldType" />
+  <xs:element name="TranslateStyleField" substitutionGroup="engine:VisualElement" xmlns:q40="Unity.UI.Builder" type="q40:TranslateStyleFieldType" />
   <xs:complexType name="TextAlignStripType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -857,7 +884,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TextAlignStrip" substitutionGroup="engine:VisualElement" xmlns:q40="Unity.UI.Builder" type="q40:TextAlignStripType" />
+  <xs:element name="TextAlignStrip" substitutionGroup="engine:VisualElement" xmlns:q41="Unity.UI.Builder" type="q41:TextAlignStripType" />
   <xs:complexType name="ToggleButtonStripType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -880,7 +907,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="ToggleButtonStrip" substitutionGroup="engine:VisualElement" xmlns:q41="Unity.UI.Builder" type="q41:ToggleButtonStripType" />
+  <xs:element name="ToggleButtonStrip" substitutionGroup="engine:VisualElement" xmlns:q42="Unity.UI.Builder" type="q42:ToggleButtonStripType" />
   <xs:complexType name="TransitionsListViewType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -901,34 +928,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TransitionsListView" substitutionGroup="engine:VisualElement" xmlns:q42="Unity.UI.Builder" type="q42:TransitionsListViewType" />
-  <xs:simpleType name="TwoPaneSplitView_orientation_Type">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="Horizontal" />
-      <xs:enumeration value="Vertical" />
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:complexType name="TwoPaneSplitViewType">
-    <xs:complexContent mixed="false">
-      <xs:restriction base="engine:VisualElementType">
-        <xs:attribute default="" name="name" type="xs:string" use="optional" />
-        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
-        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
-        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
-        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
-        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
-        <xs:attribute default="false" name="focusable" type="xs:boolean" use="optional" />
-        <xs:attribute default="" name="class" type="xs:string" use="optional" />
-        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
-        <xs:attribute default="" name="style" type="xs:string" use="optional" />
-        <xs:attribute default="0" name="fixed-pane-index" type="xs:int" use="optional" />
-        <xs:attribute default="100" name="fixed-pane-initial-dimension" type="xs:int" use="optional" />
-        <xs:attribute default="Horizontal" name="orientation" xmlns:q43="Unity.UI.Builder" type="q43:TwoPaneSplitView_orientation_Type" use="optional" />
-        <xs:anyAttribute processContents="lax" />
-      </xs:restriction>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="TwoPaneSplitView" substitutionGroup="engine:VisualElement" xmlns:q44="Unity.UI.Builder" type="q44:TwoPaneSplitViewType" />
+  <xs:element name="TransitionsListView" substitutionGroup="engine:VisualElement" xmlns:q43="Unity.UI.Builder" type="q43:TransitionsListViewType" />
   <xs:complexType name="UnityUIBuilderSelectionMarkerType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -949,5 +949,5 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="UnityUIBuilderSelectionMarker" substitutionGroup="engine:VisualElement" xmlns:q45="Unity.UI.Builder" type="q45:UnityUIBuilderSelectionMarkerType" />
+  <xs:element name="UnityUIBuilderSelectionMarker" substitutionGroup="engine:VisualElement" xmlns:q44="Unity.UI.Builder" type="q44:UnityUIBuilderSelectionMarkerType" />
 </xs:schema>

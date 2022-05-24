@@ -110,6 +110,8 @@ public class LoadScreen : MonoBehaviour
         uiDocument.visualTreeAsset = GlobalResource
             .themeContent[mainTreePath] as VisualTreeAsset;
         GetComponentInParent<Canvas>().gameObject.SetActive(false);
+        UnityEngine.EventSystems.EventSystem.current.gameObject
+            .SetActive(false);
 
         ThemeApi.ScriptSession.Prepare();
         try

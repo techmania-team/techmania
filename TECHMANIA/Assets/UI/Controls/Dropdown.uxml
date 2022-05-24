@@ -4,7 +4,7 @@
     <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
     <ui:DropdownField index="-1" choices="Option A, Option B, Option C" name="dropdown" class="input-field">
         <ui:VisualElement name="mini-label-container" picking-mode="Ignore">
-            <ui:VisualElement name="mini-label-background" />
+            <ui:VisualElement name="mini-label-background" picking-mode="Ignore" />
             <ui:Label text="Label" display-tooltip-when-elided="true" name="mini-label" picking-mode="Ignore" class="text-caption" />
         </ui:VisualElement>
     </ui:DropdownField>
