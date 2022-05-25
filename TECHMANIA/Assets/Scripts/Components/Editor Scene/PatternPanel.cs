@@ -785,7 +785,7 @@ public class PatternPanel : MonoBehaviour
 
         float difference = currentMagnitude - prevMagnitude;
 
-        AdjustZoom(zoom + (int) Math.Round(difference * 0.01f));
+        AdjustZoom(zoom + (int) Math.Round(difference * 0.02f));
     }
     private void MoveScanlineToTouch(Vector2 position)
     {
