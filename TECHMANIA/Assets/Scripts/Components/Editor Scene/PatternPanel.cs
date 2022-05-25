@@ -341,6 +341,28 @@ public class PatternPanel : MonoBehaviour
         }
 
         HandleKeyboardShortcuts();
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            bool touchInWorkspace = RectTransformUtility
+                .RectangleContainsScreenPoint(
+                    workspaceScrollRect.GetComponent<RectTransform>(),
+                    touch.position);
+            bool touchInHeader = RectTransformUtility
+                .RectangleContainsScreenPoint(
+                    headerScrollRect.GetComponent<RectTransform>(), 
+                    touch.position);
+
+            if (Input.touchCount == 1)
+            {
+                if (touchInHeader && !isPlaying)
+                {
+                    MoveScanlineToTouch(touch.position);
+                }
+            }
+        }
     }
     #endregion
 
@@ -589,14 +611,7 @@ public class PatternPanel : MonoBehaviour
             header, Input.mousePosition,
             cam: null, out pointInHeader);
 
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float cursorScan = pointInHeader.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = SnapPulse(cursorPulse);
-
-        scanline.floatPulse = snappedCursorPulse;
-        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        RefreshPlaybackBar();
+        MoveScanline(pointInHeader);
     }
 
     private void HandleKeyboardShortcuts()
@@ -721,6 +736,18 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
+    #region Touch
+    private void MoveScanlineToTouch(Vector2 position)
+    {
+        Vector2 pointInHeader;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            header, position,
+            cam: null, out pointInHeader);
+
+        MoveScanline(pointInHeader);
+    }
+    #endregion
+    
     #region Events From Workspace and NoteObjects
     public void OnWorkspaceScrollRectValueChanged()
     {
@@ -1542,6 +1569,18 @@ public class PatternPanel : MonoBehaviour
     public void OnRadarButtonClick()
     {
         radarDialog.Show();
+    }
+
+    private void MoveScanline (Vector2 pointInHeader)
+    {
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float cursorScan = pointInHeader.x / ScanWidth;
+        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        int snappedCursorPulse = SnapPulse(cursorPulse);
+
+        scanline.floatPulse = snappedCursorPulse;
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
+        RefreshPlaybackBar();
     }
     #endregion
 
