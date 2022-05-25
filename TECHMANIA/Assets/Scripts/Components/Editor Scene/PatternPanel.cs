@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,6 +63,8 @@ public class PatternPanel : MonoBehaviour
 
     [Header("UI")]
     public MaterialToggleButton rectangleToolButton;
+    public MaterialToggleButton rectangleAppendButton;
+    public MaterialToggleButton rectangleSubtractButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -122,9 +124,18 @@ public class PatternPanel : MonoBehaviour
     public enum Tool
     {
         Rectangle,
+        RectangleAppend,
+        RectangleSubtract,
         Note
     }
+    public enum RectangleMode
+    {
+        Normal,
+        Append,
+        Subtract
+    }
     public static Tool tool { get; private set; }
+    public static RectangleMode rectangleMode { get; private set; }
     #endregion
 
     #region Vertical Spacing
@@ -508,15 +519,9 @@ public class PatternPanel : MonoBehaviour
         if (mouseInWorkspaceOrHeader && ctrl)
         {
             // Adjust zoom.
-            zoom += Mathf.FloorToInt(y * 5f);
-            zoom = Mathf.Clamp(zoom, 10, 500);
-            float horizontal = workspaceScrollRect
-                .horizontalNormalizedPosition;
-            ResizeWorkspace();
-            RepositionNeeded?.Invoke();
-            AdjustAllPathsAndTrails();
-            workspaceScrollRect.horizontalNormalizedPosition =
-                horizontal;
+            int value = zoom + Mathf.FloorToInt(y * 5f);
+            value = Mathf.Clamp(value, 10, 500);
+            AdjustZoom(value);
         }
         else if (alt)
         {
@@ -1059,6 +1064,14 @@ public class PatternPanel : MonoBehaviour
                 // Toggle o in current selection.
                 ToggleSelection(clickedNote);
             }
+            else if (rectangleMode == RectangleMode.Append)
+            {
+                selectedNotes.Add(clickedNote);
+            }
+            else if (rectangleMode == RectangleMode.Subtract)
+            {
+                selectedNotes.Remove(clickedNote);
+            }
             else  // !ctrl
             {
                 if (selectedNotes.Count > 1)
@@ -1253,6 +1266,24 @@ public class PatternPanel : MonoBehaviour
         UpdateToolAndNoteTypeButtons();
     }
 
+    public void OnRectangleAppendButtonClick()
+    {
+        if (tool == Tool.Rectangle)
+        {
+            rectangleMode = rectangleMode == RectangleMode.Append ? RectangleMode.Normal : RectangleMode.Append;
+            UpdateToolAndNoteTypeButtons();
+        }
+    }
+
+    public void OnRectangleSubtractButtonClick()
+    {
+        if (tool == Tool.Rectangle)
+        {
+            rectangleMode = rectangleMode == RectangleMode.Subtract ? RectangleMode.Normal : RectangleMode.Subtract;
+            UpdateToolAndNoteTypeButtons();
+        }
+    }
+
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         ChangeNoteType(clickedButton.type);
@@ -1372,7 +1403,18 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
-        rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
+        if (tool == Tool.Rectangle)
+        {
+            rectangleToolButton.SetIsOn(true);
+            rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
+            rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
+        }
+        else
+        {
+            rectangleToolButton.SetIsOn(false);
+            rectangleAppendButton.SetIsOn(false);
+            rectangleSubtractButton.SetIsOn(false);
+        }
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
@@ -2163,8 +2205,8 @@ public class PatternPanel : MonoBehaviour
             pulse: pointLeft.x / PulseWidth,
             lane: -pointLeft.y / LaneHeight);
         draggedDragNode.controlRight = new FloatPoint(
-           pulse: pointRight.x / PulseWidth,
-           lane: -pointRight.y / LaneHeight);
+            pulse: pointRight.x / PulseWidth,
+            lane: -pointRight.y / LaneHeight);
 
         NoteInEditor noteInEditor = draggedAnchor
             .GetComponentInParent<NoteInEditor>();
@@ -3355,7 +3397,7 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightShift);
         bool alt = Input.GetKey(KeyCode.LeftAlt) ||
             Input.GetKey(KeyCode.RightAlt);
-        if (shift)
+        if (shift || rectangleMode == RectangleMode.Append)
         {
             // Append rectangle to selection.
             foreach (Note n in notesInRectangle)
@@ -3363,7 +3405,7 @@ public class PatternPanel : MonoBehaviour
                 selectedNotes.Add(n);
             }
         }
-        else if (alt)
+        else if (alt || rectangleMode == RectangleMode.Subtract)
         {
             // Subtract rectangle from selection.
             foreach (Note n in notesInRectangle)
@@ -3542,6 +3584,28 @@ public class PatternPanel : MonoBehaviour
 
         selectedNotes.Clear();
         SelectionChanged?.Invoke(selectedNotes);
+    }
+    #endregion
+
+    #region Zoom
+    public void ZoomIn ()
+    {
+        AdjustZoom(zoom + 10);
+    }
+    public void ZoomOut ()
+    {
+        AdjustZoom(zoom - 10);
+    }
+    private void AdjustZoom (int value)
+    {
+        zoom = value;
+        float horizontal = workspaceScrollRect
+            .horizontalNormalizedPosition;
+        ResizeWorkspace();
+        RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
+        workspaceScrollRect.horizontalNormalizedPosition =
+            horizontal;
     }
     #endregion
 
