@@ -156,10 +156,6 @@ public class LoadScreen : MonoBehaviour
 
     private void QuitGame()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        ThemeApi.Techmania.Quit();
     }
 }

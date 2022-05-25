@@ -37,6 +37,9 @@ tm.root.Q("information-panel").Q("back-button").RegisterCallback("Click", functi
         tm.root.Q("main-menu")
     )
 end)
+tm.root.Q("main-menu").Q("quit-button").RegisterCallback("Click", function()
+    tm.Quit()
+end)
 
 function Vector3(x, y, z)
     return vector3.__new(x, y, z)

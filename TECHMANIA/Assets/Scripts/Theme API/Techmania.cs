@@ -128,7 +128,16 @@ namespace ThemeApi
         {
             Application.OpenURL(url);
         }
-#endregion
+
+        public static void Quit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+        #endregion
 
         public void LogEvent(EventBase e)
         {
