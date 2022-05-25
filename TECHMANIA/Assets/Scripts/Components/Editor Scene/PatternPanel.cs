@@ -65,6 +65,7 @@ public class PatternPanel : MonoBehaviour
     public MaterialToggleButton rectangleToolButton;
     public MaterialToggleButton rectangleAppendButton;
     public MaterialToggleButton rectangleSubtractButton;
+    public MaterialToggleButton handButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -126,7 +127,8 @@ public class PatternPanel : MonoBehaviour
         Rectangle,
         RectangleAppend,
         RectangleSubtract,
-        Note
+        Note,
+        Hand
     }
     public enum RectangleMode
     {
@@ -355,14 +357,18 @@ public class PatternPanel : MonoBehaviour
                     headerScrollRect.GetComponent<RectTransform>(), 
                     touch.position);
 
-            if (Input.touchCount == 1)
+            if (Input.touchCount == 1 && !isPlaying)
             {
-                if (touchInHeader && !isPlaying)
+                if (touchInHeader)
                 {
                     MoveScanlineToTouch(touch.position);
                 }
+                else if (touchInWorkspace && tool == Tool.Hand && touch.phase == TouchPhase.Moved)
+                {
+                    DragWorkSpace(touch.deltaPosition);
+                }
             }
-            if (Input.touchCount == 2)
+            else if (Input.touchCount == 2)
             {
                 HandleTouchResize();
             }
@@ -738,6 +744,31 @@ public class PatternPanel : MonoBehaviour
                 maxPulse));
         }
     }
+    private void DragWorkSpace (Vector2 deltaPosition)
+    {
+        float outOfViewWidth = WorkspaceContentWidth -
+            workspaceViewport.rect.width;
+        float outOfViewHeight = WorkspaceContentHeight -
+            workspaceViewport.rect.height;
+        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
+        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
+
+        float horizontal =
+            workspaceScrollRect.horizontalNormalizedPosition *
+            outOfViewWidth;
+        horizontal -= deltaPosition.x / rootCanvas.localScale.x;
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(horizontal / outOfViewWidth);
+
+        float vertical =
+            workspaceScrollRect.verticalNormalizedPosition *
+            outOfViewHeight;
+        vertical -= deltaPosition.y / rootCanvas.localScale.x;
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(vertical / outOfViewHeight);
+
+        SynchronizeScrollRects();
+    }
     #endregion
 
     #region Touch
@@ -1011,34 +1042,8 @@ public class PatternPanel : MonoBehaviour
 
         if (p.button == PointerEventData.InputButton.Middle)
         {
-            OnMiddleMouseButtonDrag(p.delta);
+            DragWorkSpace(p.delta);
         }
-    }
-
-    private void OnMiddleMouseButtonDrag(Vector2 unscaledDelta)
-    {
-        float outOfViewWidth = WorkspaceContentWidth -
-            workspaceViewport.rect.width;
-        float outOfViewHeight = WorkspaceContentHeight -
-            workspaceViewport.rect.height;
-        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
-        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
-
-        float horizontal =
-            workspaceScrollRect.horizontalNormalizedPosition *
-            outOfViewWidth;
-        horizontal -= unscaledDelta.x / rootCanvas.localScale.x;
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(horizontal / outOfViewWidth);
-
-        float vertical =
-            workspaceScrollRect.verticalNormalizedPosition *
-            outOfViewHeight;
-        vertical -= unscaledDelta.y / rootCanvas.localScale.x;
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(vertical / outOfViewHeight);
-
-        SynchronizeScrollRects();
     }
 
     public void OnNoteContainerEndDrag(BaseEventData eventData)
@@ -1330,6 +1335,12 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    public void OnHandButtonClick ()
+    {
+        tool = Tool.Hand;
+        UpdateToolAndNoteTypeButtons();
+    }
+
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         ChangeNoteType(clickedButton.type);
@@ -1454,12 +1465,14 @@ public class PatternPanel : MonoBehaviour
             rectangleToolButton.SetIsOn(true);
             rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
             rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
+            handButton.SetIsOn(false);
         }
         else
         {
             rectangleToolButton.SetIsOn(false);
             rectangleAppendButton.SetIsOn(false);
             rectangleSubtractButton.SetIsOn(false);
+            handButton.SetIsOn(tool == Tool.Hand);
         }
         foreach (NoteTypeButton b in noteTypeButtons)
         {
