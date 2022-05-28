@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,6 +67,7 @@ public class PatternPanel : MonoBehaviour
     public MaterialToggleButton rectangleSubtractButton;
     public MaterialToggleButton deleteButton;
     public MaterialToggleButton handButton;
+    public MaterialToggleButton anchorButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -130,7 +131,8 @@ public class PatternPanel : MonoBehaviour
         RectangleSubtract,
         Note,
         Hand,
-        Delete
+        Delete,
+        Anchor
     }
     public enum RectangleMode
     {
@@ -1357,6 +1359,12 @@ public class PatternPanel : MonoBehaviour
         UpdateToolAndNoteTypeButtons();
     }
 
+    public void OnAnchorButtonClick()
+    {
+        tool = Tool.Anchor;
+        UpdateToolAndNoteTypeButtons();
+    }
+
     public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
     {
         ChangeNoteType(clickedButton.type);
@@ -1482,6 +1490,7 @@ public class PatternPanel : MonoBehaviour
             rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
             rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
             handButton.SetIsOn(false);
+            anchorButton.SetIsOn(false);
         }
         else
         {
@@ -1490,6 +1499,7 @@ public class PatternPanel : MonoBehaviour
             rectangleSubtractButton.SetIsOn(false);
             handButton.SetIsOn(tool == Tool.Hand);
             deleteButton.SetIsOn(tool == Tool.Delete);
+            anchorButton.SetIsOn(tool == Tool.Anchor);
         }
         foreach (NoteTypeButton b in noteTypeButtons)
         {
@@ -2232,7 +2242,7 @@ public class PatternPanel : MonoBehaviour
         ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
             || Input.GetKey(KeyCode.RightControl);
         dragCurveIsBSpline = dragNote.curveType == CurveType.BSpline;
-        if (ctrlHeldOnAnchorBeginDrag && !dragCurveIsBSpline)
+        if ((ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor) && !dragCurveIsBSpline)
         {
             // Reset control points.
             mousePositionRelativeToDraggedAnchor = new Vector2();
@@ -2321,7 +2331,7 @@ public class PatternPanel : MonoBehaviour
         Vector2 delta = eventData.delta;
         delta /= rootCanvas.localScale.x;
 
-        if (ctrlHeldOnAnchorBeginDrag)
+        if (ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor)
         {
             if (!dragCurveIsBSpline)
             {
@@ -2395,8 +2405,9 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
-            eventData.button != PointerEventData.InputButton.Right)
+        if (tool != Tool.Anchor && 
+            (tool == Tool.Rectangle ||
+            eventData.button != PointerEventData.InputButton.Right))
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
