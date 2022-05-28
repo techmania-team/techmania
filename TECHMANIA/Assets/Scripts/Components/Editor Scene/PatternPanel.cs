@@ -65,6 +65,7 @@ public class PatternPanel : MonoBehaviour
     public MaterialToggleButton rectangleToolButton;
     public MaterialToggleButton rectangleAppendButton;
     public MaterialToggleButton rectangleSubtractButton;
+    public MaterialToggleButton deleteButton;
     public MaterialToggleButton handButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
@@ -128,7 +129,8 @@ public class PatternPanel : MonoBehaviour
         RectangleAppend,
         RectangleSubtract,
         Note,
-        Hand
+        Hand,
+        Delete
     }
     public enum RectangleMode
     {
@@ -1123,6 +1125,10 @@ public class PatternPanel : MonoBehaviour
             {
                 selectedNotes.Remove(clickedNote);
             }
+            else if (tool == Tool.Delete)
+            {
+                OnNoteObjectRightClick(o);
+            }
             else  // !ctrl
             {
                 if (selectedNotes.Count > 1)
@@ -1335,6 +1341,16 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    public void OnDeleteButtonClick ()
+    {
+        tool = Tool.Delete;
+        if (selectedNotes.Count > 0)
+        {
+            DeleteSelection();
+        }
+        UpdateToolAndNoteTypeButtons();
+    }
+
     public void OnHandButtonClick ()
     {
         tool = Tool.Hand;
@@ -1473,6 +1489,7 @@ public class PatternPanel : MonoBehaviour
             rectangleAppendButton.SetIsOn(false);
             rectangleSubtractButton.SetIsOn(false);
             handButton.SetIsOn(tool == Tool.Hand);
+            deleteButton.SetIsOn(tool == Tool.Delete);
         }
         foreach (NoteTypeButton b in noteTypeButtons)
         {
