@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -361,16 +361,9 @@ public class PatternPanel : MonoBehaviour
                     headerScrollRect.GetComponent<RectTransform>(), 
                     touch.position);
 
-            if (Input.touchCount == 1 && !isPlaying)
+            if (Input.touchCount == 1 && touchInHeader && !isPlaying)
             {
-                if (touchInHeader)
-                {
-                    MoveScanlineToTouch(touch.position);
-                }
-                else if (touchInWorkspace && tool == Tool.Hand && touch.phase == TouchPhase.Moved)
-                {
-                    DragWorkSpace(touch.deltaPosition);
-                }
+                MoveScanlineToTouch(touch.position);
             }
             else if (Input.touchCount == 2)
             {
@@ -1044,7 +1037,7 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        if (p.button == PointerEventData.InputButton.Middle)
+        if (p.button == PointerEventData.InputButton.Middle || tool == Tool.Hand)
         {
             DragWorkSpace(p.delta);
         }
