@@ -1482,19 +1482,17 @@ public class PatternPanel : MonoBehaviour
             rectangleToolButton.SetIsOn(true);
             rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
             rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
-            handButton.SetIsOn(false);
-            deleteButton.SetIsOn(false);
-            anchorButton.SetIsOn(false);
         }
         else
         {
+            rectangleMode = RectangleMode.Normal;
             rectangleToolButton.SetIsOn(false);
             rectangleAppendButton.SetIsOn(false);
             rectangleSubtractButton.SetIsOn(false);
-            handButton.SetIsOn(tool == Tool.Hand);
-            deleteButton.SetIsOn(tool == Tool.Delete);
-            anchorButton.SetIsOn(tool == Tool.Anchor);
         }
+        handButton.SetIsOn(tool == Tool.Hand);
+        deleteButton.SetIsOn(tool == Tool.Delete);
+        anchorButton.SetIsOn(tool == Tool.Anchor);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
