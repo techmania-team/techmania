@@ -1490,6 +1490,7 @@ public class PatternPanel : MonoBehaviour
             rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
             rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
             handButton.SetIsOn(false);
+            deleteButton.SetIsOn(false);
             anchorButton.SetIsOn(false);
         }
         else
