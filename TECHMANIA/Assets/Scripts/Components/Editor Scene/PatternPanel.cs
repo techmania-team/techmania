@@ -127,8 +127,6 @@ public class PatternPanel : MonoBehaviour
     public enum Tool
     {
         Rectangle,
-        RectangleAppend,
-        RectangleSubtract,
         Note,
         Hand,
         Delete,
