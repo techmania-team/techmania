@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -547,7 +547,6 @@ public class PatternPanel : MonoBehaviour
         {
             // Adjust zoom.
             int value = zoom + Mathf.FloorToInt(y * 5f);
-            value = Mathf.Clamp(value, 10, 500);
             AdjustZoom(value);
         }
         else if (alt)
@@ -3673,7 +3672,7 @@ public class PatternPanel : MonoBehaviour
     }
     private void AdjustZoom (int value)
     {
-        zoom = value;
+        zoom = Mathf.Clamp(value, 10, 500);
         float horizontal = workspaceScrollRect
             .horizontalNormalizedPosition;
         ResizeWorkspace();
