@@ -341,7 +341,7 @@ public class PatternPanel : MonoBehaviour
             mouseInHeader &&
             !isPlaying)
         {
-            MoveScanlineToMouse();
+            MoveScanlineToPointer(Input.mousePosition);
         }
 
         HandleKeyboardShortcuts();
@@ -361,7 +361,7 @@ public class PatternPanel : MonoBehaviour
 
             if (Input.touchCount == 1 && touchInHeader && !isPlaying)
             {
-                MoveScanlineToTouch(touch.position);
+                MoveScanlineToPointer(touch.position);
             }
             else if (Input.touchCount == 2)
             {
@@ -609,16 +609,6 @@ public class PatternPanel : MonoBehaviour
         SnapNoteCursor(Input.mousePosition);
     }
 
-    private void MoveScanlineToMouse()
-    {
-        Vector2 pointInHeader;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            header, Input.mousePosition,
-            cam: null, out pointInHeader);
-
-        MoveScanline(pointInHeader);
-    }
-
     private void HandleKeyboardShortcuts()
     {
         if (Input.GetKey(KeyCode.LeftControl) ||
@@ -781,15 +771,6 @@ public class PatternPanel : MonoBehaviour
         float difference = currentMagnitude - prevMagnitude;
 
         AdjustZoom(zoom + (int) Math.Round(difference * 0.02f));
-    }
-    private void MoveScanlineToTouch(Vector2 position)
-    {
-        Vector2 pointInHeader;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            header, position,
-            cam: null, out pointInHeader);
-
-        MoveScanline(pointInHeader);
     }
     #endregion
     
@@ -1620,8 +1601,13 @@ public class PatternPanel : MonoBehaviour
         radarDialog.Show();
     }
 
-    private void MoveScanline (Vector2 pointInHeader)
+    private void MoveScanlineToPointer (Vector2 position)
     {
+        Vector2 pointInHeader;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            header, position,
+            cam: null, out pointInHeader);
+
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInHeader.x / ScanWidth;
         float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
