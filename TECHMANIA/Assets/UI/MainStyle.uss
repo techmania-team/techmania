@@ -33,6 +33,33 @@
     flex-grow: 1;
 }
 
+.top-bar-buttons-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    flex-direction: row-reverse;
+}
+
+.top-bar-buttons-container .button-in-top-bar {
+    margin-left: 0;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 60px;
+    height: 60px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.top-bar-buttons-container .icon-in-button {
+    width: 36px;
+    height: 36px;
+}
+
 .options-header {
     height: 80px;
     -unity-text-align: middle-left;

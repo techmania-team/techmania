@@ -11,10 +11,10 @@ public class InformationPanel : MonoBehaviour
     private void OnEnable()
     {
 #if UNITY_IOS
-        tracksSkinsLocation.text = Locale.GetString(
+        tracksSkinsLocation.text = L10n.GetString(
             "information_panel_tracks_skins_location_ios");
 #elif UNITY_ANDROID
-        tracksSkinsLocation.text = Locale.GetString(
+        tracksSkinsLocation.text = L10n.GetString(
             "information_panel_tracks_skins_location_android");
 #else
         tracksSkinsLocation.text = L10n.GetString(
