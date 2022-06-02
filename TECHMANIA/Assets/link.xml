@@ -1,0 +1,6 @@
+<!--Tell IL2CPP to preserve metadata of the following classes.-->
+<linker>
+  <assembly fullname="MoonSharp.Interpreter">
+    <type fullname="MoonSharp.*" preserve="all" />
+  </assembly>
+</linker>
