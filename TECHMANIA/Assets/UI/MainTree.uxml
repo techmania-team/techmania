@@ -14,7 +14,7 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" picking-mode="Ignore" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
+    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
         <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
             <ui:Button text="START" display-tooltip-when-elided="true" name="start-button" class="button-contained" />
@@ -27,9 +27,9 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Select Track" />
-        <ui:VisualElement name="top-bar-buttons" class="top-bar-buttons-container" style="align-items: center;">
+        <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-text button-in-top-bar" style="background-image: none;">
                 <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&apos;);" />
             </ui:Button>

@@ -128,10 +128,10 @@ public class MainMenuPanel : MonoBehaviour
             GoToEditor();
             return;
         }
-        confirmDialog.Show(Locale.GetString(
+        confirmDialog.Show(L10n.GetString(
             "main_menu_editor_on_mobile_confirmation"),
-            Locale.GetString("main_menu_editor_on_mobile_confirm"),
-            Locale.GetString("main_menu_editor_on_mobile_cancel"),
+            L10n.GetString("main_menu_editor_on_mobile_confirm"),
+            L10n.GetString("main_menu_editor_on_mobile_cancel"),
             () =>
             {
                 seenEditorOnMobileWarning = true;

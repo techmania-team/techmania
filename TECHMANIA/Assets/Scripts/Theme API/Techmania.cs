@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
+using FantomLib;
 
 namespace ThemeApi
 {
@@ -62,7 +63,8 @@ namespace ThemeApi
             string title, string currentDirectory)
         {
 #if UNITY_ANDROID
-            AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
+            AndroidPlugin.OpenStorageFolder(null, "OnAndroidTracksFolderSelected", "", true);
+            return null;
 #else
             string[] folders = SFB.StandaloneFileBrowser
                 .OpenFolderPanel(title,

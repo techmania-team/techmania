@@ -12,7 +12,7 @@ public class BuildPostProcessor
 #if UNITY_IOS
         if (buildTarget == BuildTarget.iOS)
         {
-            string plistPath = path + "/Info.plist";
+            string plistPath = pathToBuiltProject + "/Info.plist";
             UnityEditor.iOS.Xcode.PlistDocument plist =
                 new UnityEditor.iOS.Xcode.PlistDocument();
             plist.ReadFromFile(plistPath);
