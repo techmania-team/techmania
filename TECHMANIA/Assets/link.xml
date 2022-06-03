@@ -1,6 +1,40 @@
-<!--Tell IL2CPP to preserve metadata of the following classes.-->
+<!--
+Tell IL2CPP to preserve metadata of the following classes.
+Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
+-->
 <linker>
   <assembly fullname="MoonSharp.Interpreter">
     <type fullname="MoonSharp.*" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.Time" preserve="all" />
+    <type fullname="UnityEngine.Screen" preserve="all" />
+    <type fullname="UnityEngine.Resolution" preserve="all" />
+    <type fullname="UnityEngine.Mathf" preserve="all" />
+    <type fullname="UnityEngine.Vector3" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.UIElementsModule">
+    <type fullname="UnityEngine.UIElements.VisualTreeAsset" preserve="all" />
+    <type fullname="UnityEngine.UIElements.VisualElement" preserve="all" />
+    <type fullname="UnityEngine.UIElements.PanelSetting" preserve="all" />
+    <type fullname="UnityEngine.UIElements.UQueryState`1" preserve="all" />
+    <type fullname="UnityEngine.UIElements.IStyle" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ITransform" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleSheet" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleLength" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleTranslate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleFloat" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ChangeEvent`1" preserve="all" />
+    <type fullname="UnityEngine.UIElements.PointerOverEvent" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ClickEvent" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.AudioModule">
+    <type fullname="UnityEngine.AudioSource" preserve="all" />
+  </assembly>
+  <assembly fullname="mscorlib">
+    <type fullname="System.String" preserve="all" />
+    <type fullname="System.Boolean" preserve="all" />
+    <type fullname="System.Int32" preserve="all" />
+    <type fullname="System.Single" preserve="all" />
   </assembly>
 </linker>

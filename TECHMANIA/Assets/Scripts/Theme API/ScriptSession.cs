@@ -13,6 +13,13 @@ namespace ThemeApi
 
         public static void Prepare()
         {
+            // ==================== IMPORTANT =======================
+            // IL2CPP builder may strip methods not called by any C#
+            // code, causing them to be unavailable to Lua. To prevent
+            // that, make sure to include in Assets/link.xml all Unity
+            // and .Net classes exposed to Lua.
+            // ==================== IMPORTANT =======================
+
             // Set up sandbox
             session = new Script(CoreModules.Preset_SoftSandbox);
             // Redirect print
