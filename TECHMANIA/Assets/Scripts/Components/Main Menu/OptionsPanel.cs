@@ -232,6 +232,8 @@ public class OptionsPanel : MonoBehaviour
         rulesetDropdown.SetValueWithoutNotify(
             (int)Options.instance.ruleset);
         rulesetDropdown.RefreshShownValue();
+
+        DiscordController.SetActivity(DiscordActivityType.Options);
     }
 
     #region Graphics
