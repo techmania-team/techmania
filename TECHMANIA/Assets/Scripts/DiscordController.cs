@@ -17,25 +17,33 @@ public enum DiscordActivityType
 public class DiscordController
 {
     private static Discord.Discord discord;
-    public static Int64 timeStart;
+    private static DateTimeOffset timeStart;
     private static string details = "";
     private static string state = "";
     private static DiscordActivityType lastActivityType;
 
     public static void Start ()
     {
-        if (discord != null || !SupportedOnCurrentPlatform() || !Options.instance.discordRichPresence) return;
-        try {
-            discord = new Discord.Discord(802017593086836767, (UInt64)Discord.CreateFlags.NoRequireDiscord);
-        } catch {}
+        if (discord != null ||
+            !SupportedOnCurrentPlatform() ||
+            !Options.instance.discordRichPresence) return;
+        try
+        {
+            discord = new Discord.Discord(802017593086836767,
+                (UInt64)Discord.CreateFlags.NoRequireDiscord);
+        }
+        catch {}
     }
     
     public static void RunCallbacks ()
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
-        try {
+        try
+        {
             discord.RunCallbacks();
-        } catch {
+        }
+        catch
+        {
             Dispose();
         }
     }
@@ -43,6 +51,7 @@ public class DiscordController
     public static void SetActivity (DiscordActivityType type)
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
+
         bool shouldSetTimestamp = false;
         switch (type)
         {
@@ -67,14 +76,29 @@ public class DiscordController
                 state = "Selecting Pattern";
                 break;
             case DiscordActivityType.EditorTrack:
-                if (lastActivityType != DiscordActivityType.EditorTrack) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                if (lastActivityType
+                    != DiscordActivityType.EditorTrack)
+                {
+                    timeStart = DateTimeOffset.UtcNow;
+                }
                 details = EditorContext.track.trackMetadata.title;
                 state = "Editing Track";
                 shouldSetTimestamp = true;
                 break;
             case DiscordActivityType.EditorPattern:
-                if (lastActivityType != DiscordActivityType.EditorPattern) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                state = String.Format("Editing {0}L {1} - {2}", EditorContext.Pattern.patternMetadata.playableLanes, GetModeName(EditorContext.Pattern.patternMetadata.controlScheme), EditorContext.Pattern.patternMetadata.patternName);
+                if (lastActivityType !=
+                    DiscordActivityType.EditorPattern)
+                {
+                    timeStart = DateTimeOffset.UtcNow;
+                }
+                {
+                    PatternMetadata metadata = EditorContext.Pattern
+                        .patternMetadata;
+                    state = String.Format("Editing {0}L {1} - {2}",
+                        metadata.playableLanes,
+                        GetModeName(metadata.controlScheme),
+                        metadata.patternName);
+                }
                 shouldSetTimestamp = true;
                 break;
             case DiscordActivityType.EditorSave:
@@ -82,9 +106,19 @@ public class DiscordController
                 shouldSetTimestamp = true;
                 break;
             case DiscordActivityType.Game:
-                if (lastActivityType != DiscordActivityType.Game) timeStart = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                details = GameSetup.track.trackMetadata.title;
-                state = String.Format("{0}L {1} - {2}", GameSetup.pattern.patternMetadata.playableLanes, GetModeName(GameSetup.pattern.patternMetadata.controlScheme), GameSetup.pattern.patternMetadata.patternName);
+                if (lastActivityType != DiscordActivityType.Game)
+                {
+                    timeStart = DateTimeOffset.UtcNow;
+                }
+                {
+                    PatternMetadata metadata = GameSetup.pattern
+                        .patternMetadata;
+                    details = GameSetup.track.trackMetadata.title;
+                    state = String.Format("{0}L {1} - {2}", 
+                        metadata.playableLanes,
+                        GetModeName(metadata.controlScheme),
+                        metadata.patternName);
+                }
                 shouldSetTimestamp = true;
                 break;
         }
@@ -93,15 +127,17 @@ public class DiscordController
         {
             Details = details,
             State = state,
-            Assets = {
+            Assets =
+            {
                 LargeImage = "techmania"
             }
         };
         if (shouldSetTimestamp)
         {
-            activity.Timestamps.Start = DiscordController.timeStart;
+            activity.Timestamps.Start = timeStart.ToUnixTimeSeconds();
         }
-        discord.GetActivityManager().UpdateActivity(activity, (res) => {});
+        discord.GetActivityManager().UpdateActivity(
+            activity, (result) => {});
     }
 
     public static void Dispose ()

@@ -262,7 +262,8 @@ public class PatternPanel : MonoBehaviour
             RefreshPlaybackBar();
         }
 
-        DiscordController.SetActivity(DiscordActivityType.EditorPattern);
+        DiscordController.SetActivity(
+            DiscordActivityType.EditorPattern);
     }
 
     private void OnDisable()
