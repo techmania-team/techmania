@@ -65,8 +65,7 @@ public class PatternPanel : MonoBehaviour
     public MaterialToggleButton rectangleToolButton;
     public MaterialToggleButton rectangleAppendButton;
     public MaterialToggleButton rectangleSubtractButton;
-    public MaterialToggleButton deleteButton;
-    public MaterialToggleButton handButton;
+    public MaterialToggleButton panButton;
     public MaterialToggleButton anchorButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
@@ -126,20 +125,14 @@ public class PatternPanel : MonoBehaviour
 
     public enum Tool
     {
-        Rectangle,
+        Pan,
         Note,
-        Hand,
-        Delete,
+        Rectangle,
+        RectangleAppend,
+        RectangleSubtract,
         Anchor
     }
-    public enum RectangleMode
-    {
-        Normal,
-        Append,
-        Subtract
-    }
     public static Tool tool { get; private set; }
-    public static RectangleMode rectangleMode { get; private set; }
     #endregion
 
     #region Vertical Spacing
@@ -1016,7 +1009,7 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        if (p.button == PointerEventData.InputButton.Middle || tool == Tool.Hand)
+        if (p.button == PointerEventData.InputButton.Middle || tool == Tool.Pan)
         {
             DragWorkSpace(p.delta);
         }
@@ -1091,17 +1084,13 @@ public class PatternPanel : MonoBehaviour
                 // Toggle o in current selection.
                 ToggleSelection(clickedNote);
             }
-            else if (rectangleMode == RectangleMode.Append)
+            else if (tool == Tool.RectangleAppend)
             {
                 selectedNotes.Add(clickedNote);
             }
-            else if (rectangleMode == RectangleMode.Subtract)
+            else if (tool == Tool.RectangleSubtract)
             {
                 selectedNotes.Remove(clickedNote);
-            }
-            else if (tool == Tool.Delete)
-            {
-                OnNoteObjectRightClick(o);
             }
             else  // !ctrl
             {
@@ -1299,35 +1288,27 @@ public class PatternPanel : MonoBehaviour
 
     public void OnRectangleAppendButtonClick()
     {
-        if (tool == Tool.Rectangle)
-        {
-            rectangleMode = rectangleMode == RectangleMode.Append ? RectangleMode.Normal : RectangleMode.Append;
-            UpdateToolAndNoteTypeButtons();
-        }
+        tool = Tool.RectangleAppend;
+        UpdateToolAndNoteTypeButtons();
     }
 
     public void OnRectangleSubtractButtonClick()
     {
-        if (tool == Tool.Rectangle)
-        {
-            rectangleMode = rectangleMode == RectangleMode.Subtract ? RectangleMode.Normal : RectangleMode.Subtract;
-            UpdateToolAndNoteTypeButtons();
-        }
+        tool = Tool.RectangleSubtract;
+        UpdateToolAndNoteTypeButtons();
     }
 
     public void OnDeleteButtonClick ()
     {
-        tool = Tool.Delete;
         if (selectedNotes.Count > 0)
         {
             DeleteSelection();
         }
-        UpdateToolAndNoteTypeButtons();
     }
 
     public void OnHandButtonClick ()
     {
-        tool = Tool.Hand;
+        tool = Tool.Pan;
         UpdateToolAndNoteTypeButtons();
     }
 
@@ -1456,21 +1437,10 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
-        if (tool == Tool.Rectangle)
-        {
-            rectangleToolButton.SetIsOn(true);
-            rectangleAppendButton.SetIsOn(rectangleMode == RectangleMode.Append);
-            rectangleSubtractButton.SetIsOn(rectangleMode == RectangleMode.Subtract);
-        }
-        else
-        {
-            rectangleMode = RectangleMode.Normal;
-            rectangleToolButton.SetIsOn(false);
-            rectangleAppendButton.SetIsOn(false);
-            rectangleSubtractButton.SetIsOn(false);
-        }
-        handButton.SetIsOn(tool == Tool.Hand);
-        deleteButton.SetIsOn(tool == Tool.Delete);
+        rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
+        rectangleAppendButton.SetIsOn(tool == Tool.RectangleAppend);
+        rectangleSubtractButton.SetIsOn(tool == Tool.RectangleSubtract);
+        panButton.SetIsOn(tool == Tool.Pan);
         anchorButton.SetIsOn(tool == Tool.Anchor);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
@@ -3472,7 +3442,7 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightShift);
         bool alt = Input.GetKey(KeyCode.LeftAlt) ||
             Input.GetKey(KeyCode.RightAlt);
-        if (shift || rectangleMode == RectangleMode.Append)
+        if (shift || tool == Tool.RectangleAppend)
         {
             // Append rectangle to selection.
             foreach (Note n in notesInRectangle)
@@ -3480,7 +3450,7 @@ public class PatternPanel : MonoBehaviour
                 selectedNotes.Add(n);
             }
         }
-        else if (alt || rectangleMode == RectangleMode.Subtract)
+        else if (alt || tool == Tool.RectangleSubtract)
         {
             // Subtract rectangle from selection.
             foreach (Note n in notesInRectangle)
