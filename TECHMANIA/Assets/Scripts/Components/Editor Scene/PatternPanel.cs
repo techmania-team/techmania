@@ -1306,7 +1306,7 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    public void OnHandButtonClick ()
+    public void OnPanButtonClick ()
     {
         tool = Tool.Pan;
         UpdateToolAndNoteTypeButtons();
