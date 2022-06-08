@@ -62,10 +62,11 @@ public class PatternPanel : MonoBehaviour
     public GameObject optionsTab;
 
     [Header("UI")]
+    public MaterialToggleButton panButton;
+    public MaterialToggleButton noteToolButton;
     public MaterialToggleButton rectangleToolButton;
     public MaterialToggleButton rectangleAppendButton;
     public MaterialToggleButton rectangleSubtractButton;
-    public MaterialToggleButton panButton;
     public MaterialToggleButton anchorButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
@@ -898,7 +899,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Special case: if rectangle tool, deselect all.
-        if (tool == Tool.Rectangle)
+        if (UsingRectangleTool())
         {
             selectedNotes.Clear();
             SelectionChanged?.Invoke(selectedNotes);
@@ -966,7 +967,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerEventData =
             eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             pointerEventData.button == 
                 PointerEventData.InputButton.Left)
         {
@@ -993,7 +994,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             p.button ==
                 PointerEventData.InputButton.Left)
         {
@@ -1020,7 +1021,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerEventData =
             eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             pointerEventData.button ==
                 PointerEventData.InputButton.Left)
         {
@@ -1280,36 +1281,35 @@ public class PatternPanel : MonoBehaviour
             VisibleLanes.ToString());
     }
 
+    private void ChangeTool(Tool newTool)
+    {
+        tool = newTool;
+        UpdateToolAndNoteTypeButtons();
+    }
+
+    public void OnPanToolButtonClick()
+    {
+        ChangeTool(Tool.Pan);
+    }
+
+    public void OnNoteToolButtonClick()
+    {
+        ChangeTool(Tool.Note);
+    }
+
     public void OnRectangleToolButtonClick()
     {
-        tool = Tool.Rectangle;
-        UpdateToolAndNoteTypeButtons();
+        ChangeTool(Tool.Rectangle);
     }
 
     public void OnRectangleAppendButtonClick()
     {
-        tool = Tool.RectangleAppend;
-        UpdateToolAndNoteTypeButtons();
+        ChangeTool(Tool.RectangleAppend);
     }
 
     public void OnRectangleSubtractButtonClick()
     {
-        tool = Tool.RectangleSubtract;
-        UpdateToolAndNoteTypeButtons();
-    }
-
-    public void OnDeleteButtonClick ()
-    {
-        if (selectedNotes.Count > 0)
-        {
-            DeleteSelection();
-        }
-    }
-
-    public void OnPanButtonClick ()
-    {
-        tool = Tool.Pan;
-        UpdateToolAndNoteTypeButtons();
+        ChangeTool(Tool.RectangleSubtract);
     }
 
     public void OnAnchorButtonClick()
@@ -1437,10 +1437,11 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
+        panButton.SetIsOn(tool == Tool.Pan);
+        noteToolButton.SetIsOn(tool == Tool.Note);
         rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
         rectangleAppendButton.SetIsOn(tool == Tool.RectangleAppend);
         rectangleSubtractButton.SetIsOn(tool == Tool.RectangleSubtract);
-        panButton.SetIsOn(tool == Tool.Pan);
         anchorButton.SetIsOn(tool == Tool.Anchor);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
@@ -1595,7 +1596,7 @@ public class PatternPanel : MonoBehaviour
         GameObject o)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1609,7 +1610,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1623,7 +1624,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1916,7 +1917,7 @@ public class PatternPanel : MonoBehaviour
         PointerEventData eventData, GameObject noteObject)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1958,7 +1959,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1984,7 +1985,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2063,7 +2064,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorReceiverClick(PointerEventData eventData,
         GameObject note)
     {
-        if (tool == Tool.Rectangle)
+        if (UsingRectangleTool())
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
@@ -2127,7 +2128,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorClick(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Right)
         {
             // Event passes through.
@@ -2166,7 +2167,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorBeginDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2266,7 +2267,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2301,7 +2302,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2352,7 +2353,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (isPlaying) return;
         if (tool != Tool.Anchor && 
-            (tool == Tool.Rectangle ||
+            (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Right))
         {
             // Event passes through.
@@ -2387,7 +2388,7 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2408,7 +2409,7 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2470,7 +2471,7 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -3343,6 +3344,13 @@ public class PatternPanel : MonoBehaviour
     private Vector2 rectangleStart;
     private Vector2 rectangleEnd;
     private bool movingNotesWhenRectangleToolActive;
+
+    private bool UsingRectangleTool()
+    {
+        return tool == Tool.Rectangle ||
+            tool == Tool.RectangleAppend ||
+            tool == Tool.RectangleSubtract;
+    }
 
     private void OnBeginDragWhenRectangleToolActive()
     {
