@@ -58,7 +58,6 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
-    public TMP_Dropdown visibleLanesDropdown;
     public GameObject optionsTab;
 
     [Header("UI")]
@@ -205,7 +204,6 @@ public class PatternPanel : MonoBehaviour
         noteType = NoteType.Basic;
         UpdateToolAndNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
-        UpdateVisibleLaneDisplay();
         keysoundSheet.Initialize();
 
         // Playback
@@ -1262,23 +1260,6 @@ public class PatternPanel : MonoBehaviour
 
             DestroyAndRespawnAllMarkers();
         });
-    }
-
-    public void OnVisibleLaneNumberChanged(int newValue)
-    {
-        Options.instance.editorOptions.visibleLanes = int.Parse(
-            visibleLanesDropdown.options
-            [newValue].text);
-
-        ResizeWorkspace();
-        RepositionNeeded?.Invoke();
-        AdjustAllPathsAndTrails();
-    }
-
-    private void UpdateVisibleLaneDisplay()
-    {
-        UIUtils.MemoryToDropdown(visibleLanesDropdown,
-            VisibleLanes.ToString());
     }
 
     private void ChangeTool(Tool newTool)
@@ -3641,14 +3622,38 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Zoom
-    public void ZoomIn ()
+    public void VerticalZoomIn()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes - 2);
+    }
+
+    public void VerticalZoomOut()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes + 2);
+    }
+
+    private void SetVisibleLaneNumber(int newValue)
+    {
+        Options.instance.editorOptions.visibleLanes =
+            Mathf.Clamp(newValue, 8, 16);
+
+        ResizeWorkspace();
+        RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
+    }
+
+    public void HorizontalZoomIn ()
     {
         AdjustZoom(zoom + 10);
     }
-    public void ZoomOut ()
+
+    public void HorizontalZoomOut ()
     {
         AdjustZoom(zoom - 10);
     }
+
     private void AdjustZoom (int value)
     {
         zoom = Mathf.Clamp(value, 10, 500);
