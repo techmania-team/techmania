@@ -2045,7 +2045,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorReceiverClick(PointerEventData eventData,
         GameObject note)
     {
-        if (UsingRectangleTool())
+        if (tool != Tool.Note)
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
@@ -2109,7 +2109,14 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorClick(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (UsingRectangleTool() ||
+        if (eventData.dragging) return;
+        if (UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (tool != Tool.Anchor &&
             eventData.button != PointerEventData.InputButton.Right)
         {
             // Event passes through.
@@ -2117,6 +2124,7 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
+        // Attempt to delete anchor.
         GameObject anchor = eventData.pointerDrag;
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
@@ -2170,7 +2178,8 @@ public class PatternPanel : MonoBehaviour
         ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
             || Input.GetKey(KeyCode.RightControl);
         dragCurveIsBSpline = dragNote.curveType == CurveType.BSpline;
-        if ((ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor) && !dragCurveIsBSpline)
+        if ((ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor)
+            && !dragCurveIsBSpline)
         {
             // Reset control points.
             mousePositionRelativeToDraggedAnchor = new Vector2();
@@ -2333,15 +2342,22 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool != Tool.Anchor && 
-            (UsingRectangleTool() ||
-            eventData.button != PointerEventData.InputButton.Right))
+        if (eventData.dragging) return;
+        if (UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (tool != Tool.Anchor &&
+            eventData.button != PointerEventData.InputButton.Right)
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
             return;
         }
 
+        // Delete control point.
         GameObject controlPoint = eventData.pointerPress;
         int anchorIndex = controlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
