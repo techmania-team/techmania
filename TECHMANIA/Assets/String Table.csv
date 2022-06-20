@@ -316,21 +316,21 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,options_offset_latency_button,CALIBRATE,校对,校正,調整,보정하기
 ,options_pause_when_game_loses_focus,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-Added in 1.1.,options_discord_header,Discord Rich Presence,Discord Rich Presence,,,
-Added in 1.1.,options_discord_rich_presence,Enable,启用,,,
-Added in 1.1.,options_discord_rich_presence_reconnect_label,Reconnect to Discord,重新连接至Discord,,,
-Added in 1.1.,options_discord_rich_presence_reconnect_button,Reconnect,连接,,,
+Added in 1.1.,options_discord_header,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,,Discord 상태 메시지
+Added in 1.1.,options_discord_rich_presence,Enable,启用,開啟,,상태 메시지 사용
+Added in 1.1.,options_discord_rich_presence_reconnect_label,Reconnect to Discord,重新连接至Discord,重新連接至 Discord,,Discord에 다시 연결하기
+Added in 1.1.,options_discord_rich_presence_reconnect_button,Reconnect,连接,連接,,다시 연결
 ,,,,,,
-Added in 1.1.,discord_state_main_menu,Main Menu,主菜单,,,
-Added in 1.1.,discord_state_options,Options,设置,,,
-Added in 1.1.,discord_state_information,Information,须知,,,
-Added in 1.1.,discord_state_selecting_track,Selecting Track,正在选择曲目,,,
-Added in 1.1.,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,,,
+Added in 1.1.,discord_state_main_menu,Main Menu,主菜单,主選單,,메인 메뉴
+Added in 1.1.,discord_state_options,Options,设置,設定,,설정 변경 중
+Added in 1.1.,discord_state_information,Information,须知,須知,,정보
+Added in 1.1.,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,,음악 선택 중
+Added in 1.1.,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,,패턴 선택 중
 "Added in 1.1.
-{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},,,
-Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,,,
+{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},,{1} 모드 / {0}라인 {2}
+Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,,패턴 편집 중
 "Added in 1.1.
-{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},,,
+{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},,{1} 모드 / {0}라인 {2} 편집 중
 ,,,,,,
 ,touchscreen_test_panel_title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
@@ -740,23 +740,23 @@ Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로
 ,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,播放後歸位掃描線,プレイバックの停止後スキャンラインを戻させる,타임라인 되돌리기
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
-,pattern_panel_options_tools_label,Tools,工具,,,
-,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
+Added in 1.1.,pattern_panel_options_tools_label,Tools,工具,,,
+Added in 1.1.,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
 On PC, you can also pan by holding and dragging the middle mouse button, without using this tool.","移动：在工作区中拖拽，从而查看谱面的不同部分。
 在PC上，不需选择此工具，按住并拖拽鼠标中键即可滚动工作区。",,,
-,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
+Added in 1.1.,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
 On PC, you can use the number keys 1-9 to switch between note types.","音符：添加并编辑音符。这是编辑器默认的工具。
 在PC上，可以按数字键1-9来快速选择音符类型。",,,
-,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
+Added in 1.1.,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
 On PC, you can select this tool by pressing the ` key; you can also move selected notes by holding Ctrl.","选框：绘制矩形从而选中其中的所有音符。
 在PC上，可以按`键来选择此工具。使用此工具时，可以按住Ctrl键来移动所有选中的音符。",,,
-,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
+Added in 1.1.,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
 On PC, you can also append by holding Shift when using the Rectangle tool.","追加选框：在已经选中的音符的基础上，额外选中绘制的矩形中的音符。
 在PC上，可以在使用选框工具时按住Shift来进行追加选择。",,,
-,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
+Added in 1.1.,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
 On PC, you can also subtract by holding Alt when using the Rectangle tool.","取消选框：取消选中绘制的矩形中的音符。
 在PC上，可以在使用选框工具时按住Alt来取消选择。",,,
-,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
+Added in 1.1.,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
 With this tool active, click on anchors and control points to delete them; drag from an anchor to reset control points on it.","锚点：修改对拖拽音符的锚点与控制点的操作方式。
 使用此工具时，点击锚点与控制点可以将其删除；在锚点上拖拽可以重置其控制点。",,,
 ,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
