@@ -740,6 +740,25 @@ Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로
 ,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,播放後歸位掃描線,プレイバックの停止後スキャンラインを戻させる,타임라인 되돌리기
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
+,pattern_panel_options_tools_label,Tools,工具,,,
+,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
+On PC, you can also pan by holding and dragging the middle mouse button, without using this tool.","移动：在工作区中拖拽，从而查看谱面的不同部分。
+在PC上，不需选择此工具，按住并拖拽鼠标中键即可滚动工作区。",,,
+,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
+On PC, you can use the number keys 1-9 to switch between note types.","音符：添加并编辑音符。这是编辑器默认的工具。
+在PC上，可以按数字键1-9来快速选择音符类型。",,,
+,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
+On PC, you can select this tool by pressing the ` key; you can also move selected notes by holding Ctrl.","选框：绘制矩形从而选中其中的所有音符。
+在PC上，可以按`键来选择此工具。使用此工具时，可以按住Ctrl键来移动所有选中的音符。",,,
+,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
+On PC, you can also append by holding Shift when using the Rectangle tool.","追加选框：在已经选中的音符的基础上，额外选中绘制的矩形中的音符。
+在PC上，可以在使用选框工具时按住Shift来进行追加选择。",,,
+,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
+On PC, you can also subtract by holding Alt when using the Rectangle tool.","取消选框：取消选中绘制的矩形中的音符。
+在PC上，可以在使用选框工具时按住Alt来取消选择。",,,
+,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
+With this tool active, click on anchors and control points to delete them; drag from an anchor to reset control points on it.","锚点：修改对拖拽音符的锚点与控制点的操作方式。
+使用此工具时，点击锚点与控制点可以将其删除；在锚点上拖拽可以重置其控制点。",,,
 ,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
 ,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
 Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
@@ -842,8 +861,8 @@ Home / End <indent=35%>타임라인을 패턴의 처음/끝으로 이동</indent
 Page Up / Down <indent=35%>타임라인을 한 마디 앞/뒤로 이동</indent>
 
 여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
-,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
-,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
+Deleted in 1.1.,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
+Deleted in 1.1.,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
 Hold Shift to append to the current selection.
 Hold Alt to subtract from the current selection.
 Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
