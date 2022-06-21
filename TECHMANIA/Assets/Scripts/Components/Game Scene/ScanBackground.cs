@@ -94,7 +94,7 @@ public class ScanBackground : MonoBehaviour
         foreach(EmptyTouchReceiver receiver
             in GetComponentsInChildren<EmptyTouchReceiver>())
         {
-            GameSetup.emptyTouchReceiverReference.Add(
+            Game.gameObjectToEmptyTouchReceiver.Add(
                 receiver.gameObject,
                 receiver);
         }

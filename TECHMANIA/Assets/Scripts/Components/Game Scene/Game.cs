@@ -238,6 +238,14 @@ public class Game : MonoBehaviour
     private const string kNoteHitboxTag = "NoteHitbox";
     private const string kLaneHitboxTag = "LaneHitbox";
 
+    // Component caching.
+    public static Dictionary<GameObject, EmptyTouchReceiver>
+        gameObjectToEmptyTouchReceiver;
+    public static Dictionary<GameObject, NoteObject>
+        hitboxToNoteObject;
+    public static Dictionary<NoteObject, RepeatHeadAppearanceBase>
+        noteObjectToRepeatHead;
+
     #region Monobehavior messages
     // Start is called before the first frame update
     private void OnEnable()
@@ -582,19 +590,22 @@ public class Game : MonoBehaviour
             initialTime = GameSetup.pattern.PulseToTime(
                 firstScan * PulsesPerScan);
         }
-    }
 
-    private void InitializePatternPostAudio()
-    {
-        GameSetup.noteReference.Clear();
-        GameSetup.repeatHeadReference.Clear();
-        GameSetup.emptyTouchReceiverReference.Clear();
+        // Reset component caches. They will be filled as we spawn
+        // scans and note objects.
+        hitboxToNoteObject = new Dictionary<
+            GameObject, NoteObject>();
+        noteObjectToRepeatHead = new Dictionary<
+            NoteObject, RepeatHeadAppearanceBase>();
+        gameObjectToEmptyTouchReceiver = new Dictionary<
+            GameObject, EmptyTouchReceiver>();
 
         // Remove all hidden notes with no sound.
         List<Note> notesToRemove = new List<Note>();
         foreach (Note n in GameSetup.pattern.notes)
         {
-            if (n.sound == "" && GameSetup.pattern.IsHiddenNote(n.lane))
+            if (n.sound == "" && GameSetup.pattern.IsHiddenNote(
+                n.lane))
             {
                 notesToRemove.Add(n);
             }
@@ -1090,10 +1101,12 @@ public class Game : MonoBehaviour
         keysoundsLoaded = true;
     }
 
-    private void VideoPlayerErrorReceived(VideoPlayer player, string error)
+    private void VideoPlayerErrorReceived(
+        VideoPlayer player, string error)
     {
         videoPlayer.errorReceived -= VideoPlayerErrorReceived;
-        ReportFatalError(error);  // VideoPlayer's error message includes URL
+        // VideoPlayer's error message includes URL
+        ReportFatalError(error);
     }
 
     private void PrepareVideoPlayer()
@@ -1179,7 +1192,7 @@ public class Game : MonoBehaviour
             return new Vector2(-100f, -100f);
         }
         Scan s = scanObjects[Scan];
-        float x = s.Scanline.transform.position.x;
+        float x = s.scanline.transform.position.x;
         ScanBackground scanBackground =
             Modifiers.instance.GetScanPosition(Scan) switch
             {
@@ -1972,13 +1985,13 @@ public class Game : MonoBehaviour
             GameObject o = r.gameObject;
             if (o.CompareTag(kNoteHitboxTag))
             {
-                NoteObject n = GameSetup.noteReference[o];
+                NoteObject n = hitboxToNoteObject[o];
                 NoteObject noteToCheck = n;
                 if (n.note.type == NoteType.RepeatHead ||
                     n.note.type == NoteType.RepeatHeadHold)
                 {
                     noteToCheck =
-                        GameSetup.repeatHeadReference[n]
+                        noteObjectToRepeatHead[n]
                         .GetFirstUnresolvedRepeatNote();
                 }
 
@@ -2027,7 +2040,7 @@ public class Game : MonoBehaviour
             }
             if (o.CompareTag(kLaneHitboxTag))
             {
-                hitEmptyReceiver = o.GetComponent<EmptyTouchReceiver>();
+                hitEmptyReceiver = gameObjectToEmptyTouchReceiver[o];
             }
         }
 
@@ -2051,7 +2064,7 @@ public class Game : MonoBehaviour
             GameObject o = r.gameObject;
             if (o.CompareTag(kLaneHitboxTag))
             {
-                return GameSetup.emptyTouchReceiverReference[o].lane;
+                return gameObjectToEmptyTouchReceiver[o].lane;
             }
         }
 
@@ -2066,13 +2079,13 @@ public class Game : MonoBehaviour
             GameObject o = r.gameObject;
             if (!o.CompareTag(kNoteHitboxTag)) continue;
 
-            NoteObject n = GameSetup.noteReference[o];
+            NoteObject n = hitboxToNoteObject[o];
             NoteObject noteToCheck = n;
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
                 noteToCheck =
-                    GameSetup.repeatHeadReference[n]
+                    noteObjectToRepeatHead[n]
                     .GetFirstUnresolvedRepeatNote();
             }
             if (ongoingNoteIsHitOnThisFrame.ContainsKey(noteToCheck))

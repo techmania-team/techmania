@@ -24,15 +24,4 @@ public class GameSetup
     public static Pattern pattern;
     public static Pattern patternBeforeApplyingModifier;
     public static int beginningScanInEditorPreview;
-
-    public static Dictionary<GameObject, EmptyTouchReceiver> emptyTouchReceiverReference;
-    public static Dictionary<GameObject, NoteObject> noteReference;
-    public static Dictionary<NoteObject, RepeatHeadAppearanceBase> repeatHeadReference;
-
-    static GameSetup()
-    {
-        noteReference = new Dictionary<GameObject, NoteObject>();
-        repeatHeadReference = new Dictionary<NoteObject, RepeatHeadAppearanceBase>();
-        emptyTouchReceiverReference = new Dictionary<GameObject, EmptyTouchReceiver>();
-    }
 }
