@@ -316,21 +316,21 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,options_offset_latency_label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,options_offset_latency_button,CALIBRATE,校对,校正,調整,보정하기
 ,options_pause_when_game_loses_focus,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-Added in 1.1.,options_discord_header,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,,Discord 상태 메시지
-Added in 1.1.,options_discord_rich_presence,Enable,启用,開啟,,상태 메시지 사용
-Added in 1.1.,options_discord_rich_presence_reconnect_label,Reconnect to Discord,重新连接至Discord,重新連接至 Discord,,Discord에 다시 연결하기
-Added in 1.1.,options_discord_rich_presence_reconnect_button,Reconnect,连接,連接,,다시 연결
+Added in 1.1.,options_discord_header,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord 상태 메시지
+Added in 1.1.,options_discord_rich_presence,Enable,启用,開啟,オン,상태 메시지 사용
+Added in 1.1.,options_discord_rich_presence_reconnect_label,Reconnect to Discord,重新连接至Discord,重新連接至 Discord,Discordに再接続する,Discord에 다시 연결하기
+Added in 1.1.,options_discord_rich_presence_reconnect_button,Reconnect,连接,連接,再接続,다시 연결
 ,,,,,,
-Added in 1.1.,discord_state_main_menu,Main Menu,主菜单,主選單,,메인 메뉴
-Added in 1.1.,discord_state_options,Options,设置,設定,,설정 변경 중
-Added in 1.1.,discord_state_information,Information,须知,須知,,정보
-Added in 1.1.,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,,음악 선택 중
-Added in 1.1.,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,,패턴 선택 중
+Added in 1.1.,discord_state_main_menu,Main Menu,主菜单,主選單,メインメニュー,메인 메뉴
+Added in 1.1.,discord_state_options,Options,设置,設定,オプション,설정 변경 중
+Added in 1.1.,discord_state_information,Information,须知,須知,情報,정보
+Added in 1.1.,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,トラック選択,음악 선택 중
+Added in 1.1.,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,パターン選択,패턴 선택 중
 "Added in 1.1.
-{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},,{1} 모드 / {0}라인 {2}
-Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,,패턴 편집 중
+{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
+Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
 "Added in 1.1.
-{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},,{1} 모드 / {0}라인 {2} 편집 중
+{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중
 ,,,,,,
 ,touchscreen_test_panel_title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,touchscreen_test_panel_instruction,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
@@ -563,7 +563,7 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 両方を0に設定してください。","패턴 선택 화면에서 미리듣기 음악이 시작 시점부터
 종료 시점까지 반복해서 재생됩니다. (단위 : 초)
 
-미리듣기 음악 전체를 재생하려면 두 값을 모두 
+미리듣기 음악 전체를 재생하려면 두 값을 모두
 0으로 설정하십시오."
 ,track_setup_metadata_tab_delete_track_button,Delete track,删除曲目,刪除歌曲,トラック削除,곡 삭제
 ,track_setup_metadata_tab_delete_track_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구 삭제합니다. 계속하시겠습니까?
@@ -640,10 +640,10 @@ seconds after the backing track starts.","将背景音乐的这一时间点（�
 ,pattern_panel_timing_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,與 BPM 不同，BPS 不能在譜面中途變化。,"BPMとは別に、BPSはパターンの
 再生中に変更できません。","한 스크롤 영역 안에 들어갈 박자 수를 지정합니다.
 BPS는 패턴 중간에 변경할 수 없습니다."
-Added in 1.1.,pattern_panel_note_tab_tools_header,Tools,工具,,,
-Added in 1.1.,pattern_panel_note_tab_note_types_header,Note types,音符种类,,,
-Added in 1.1,pattern_panel_edit_tab_edit_header,Edit,编辑,,,
-Added in 1.1.,pattern_panel_edit_tab_analyze_header,Analyze,分析,,,
+Added in 1.1.,pattern_panel_note_tab_tools_header,Tools,工具,工具,ツール,도구
+Added in 1.1.,pattern_panel_note_tab_note_types_header,Note types,音符种类,音符種類,ノートタイプ,노트 형식
+Added in 1.1,pattern_panel_edit_tab_edit_header,Edit,编辑,編輯,編集,편집
+Added in 1.1.,pattern_panel_edit_tab_analyze_header,Analyze,分析,分析,分析,패턴 분석
 ,pattern_panel_note_tab_beat_snap_divisor_label,Beat snap divisor,节拍划分数,節拍劃分數,ノートスナップ値,박자 스냅 고정
 ,pattern_panel_note_tab_beat_snap_divisor_help,"Divide each beat into this many portions
 when snapping notes.","对齐音符时把每一拍
@@ -653,7 +653,7 @@ when snapping notes.","对齐音符时把每一拍
 ,pattern_panel_note_tab_visible_lanes_label,Visible lanes,可见轨道数,可見音軌數,表示レーン数,표시 트랙 수
 ,pattern_panel_note_tab_visible_lanes_help,Adjust vertical zoom.,调整每个轨道的高度。,調整每個軌道的高度,"表示レーン数だけレーンが見えるよう、
 縦方向ズームを調整します。","지정한 수만큼의 트랙이 한 화면에 들어오도록
-세로 크기를 조정합니다."
+세로 폭을 조정합니다."
 ,pattern_panel_utilities_tab_inspect_button,Inspect,检查,檢查,検証,오류 검사
 ,pattern_panel_utilities_tab_radar_button,Radar,雷达,雷達,分析,패턴 분석
 ,pattern_panel_workspace_legend_scan_beat,Scan-Beat,扫描数-拍数,掃描數-拍數,スキャン-拍,마디-박자
@@ -688,7 +688,7 @@ when snapping notes.","对齐音符时把每一拍
 instead of the next scan's beginning.","把这个音符绘制到前一扫描的末尾，
 而不是下一个扫描的起点。","把這個音符渲染到前一掃描的結尾，
 而不是下一個掃描的起點。","スキャンの最初ではなく、
-以前のスキャンの最後にノートを配置します。","이 노트를 마디의 시작 지점이 아닌 
+以前のスキャンの最後にノートを配置します。","이 노트를 마디의 시작 지점이 아닌
 이전 마디의 끝 지점에 배치합니다."
 ,pattern_panel_note_details_bspline_label,B-spline,B-样条,B-樣條,B-スプライン,B 스플라인
 ,pattern_panel_note_details_bspline_help,"Draw this drag note as a B-spline instead of a Bézier Curve.
@@ -716,7 +716,7 @@ CtrlまたはShiftを長押ししながら
 複数のノート音を選択できます。
 複数選択したノート音は
 順番に指定されます。","이 사운드를 다음에 생성하는 노트에 연주음으로 지정합니다.
-Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로 사용할 수 있습니다."
+Ctrl 또는 Shift 키를 누른 채로 여러 사운드를 선택하여 순서대로 사용할 수 있습니다."
 ,,,,,,
 ,pattern_panel_options_appearance_header,Appearance,界面,介面,表示,표시
 ,pattern_panel_options_show_keysounds_on_notes,Show keysounds on notes,在音符上显示按键音,在音符上顯示按鍵音。,ノートに指定したノート音名を表示,노트에 연주음 이름 표시
@@ -740,25 +740,45 @@ Ctrl 또는 Shift를 누른 채로 여러 사운드를 선택하여 순서대로
 ,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,播放後歸位掃描線,プレイバックの停止後スキャンラインを戻させる,타임라인 되돌리기
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
-Added in 1.1.,pattern_panel_options_tools_label,Tools,工具,,,
+Added in 1.1.,pattern_panel_options_tools_label,Tools,工具,工具,ツール,도구
 Added in 1.1.,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
 On PC, you can also pan by holding and dragging the middle mouse button, without using this tool.","移动：在工作区中拖拽，从而查看谱面的不同部分。
-在PC上，不需选择此工具，按住并拖拽鼠标中键即可滚动工作区。",,,
+在PC上，不需选择此工具，按住并拖拽鼠标中键即可滚动工作区。","移動：在工作區中拖曳以查看譜面的不同部分。
+PC不須選擇此工具，按住滑鼠中鍵拖曳即可。","パン：ドラッグしてパターンビューを移動します。
+PCではこのツールを使わず、マウスのホイールボタンを押したままドラックして移動することができます。","이동: 드래그하여 패턴 뷰 위치를 이동합니다.
+PC에서는 이 도구를 사용하지 않고 마우스 휠 버튼을 누른 채 드래그하는 것으로 패턴 뷰를 이동할 수 있습니다."
 Added in 1.1.,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
 On PC, you can use the number keys 1-9 to switch between note types.","音符：添加并编辑音符。这是编辑器默认的工具。
-在PC上，可以按数字键1-9来快速选择音符类型。",,,
+在PC上，可以按数字键1-9来快速选择音符类型。","音符：新增並編輯音符。這是編輯器的預設工具。
+PC可以按數字鍵1-9快速選擇音符類型。","ノート：ノートを配置するか編集します。これはデフォルトのツールです。
+PCでは、1‐9の数字キーでノートのタイプを変更することができます。","노트: 노트를 추가하거나 편집합니다.
+PC에서는 1부터 9까지의 숫자 키를 이용하여 노트의 모양을 바꿀 수 있습니다."
 Added in 1.1.,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
 On PC, you can select this tool by pressing the ` key; you can also move selected notes by holding Ctrl.","选框：绘制矩形从而选中其中的所有音符。
-在PC上，可以按`键来选择此工具。使用此工具时，可以按住Ctrl键来移动所有选中的音符。",,,
+在PC上，可以按`键来选择此工具。使用此工具时，可以按住Ctrl键来移动所有选中的音符。","矩形選取：繪製矩形以選中範圍內的所有音符。
+PC可以按`鍵使用此工具。使用時能按住Ctrl鍵移動所有選中的音符。","選択：ドラッグした長方形エリア内のノートを全部選択します。
+PCでは、`キーでこのツールを選択することができます。
+選択したノートをCtrlキーを押しながら移動することもできます。","선택: 지정한 사각형 영역 안의 노트를 모두 선택합니다.
+PC에서는 ` 키를 이용하여 이 도구를 활성화할 수 있으며, Ctrl 키를 누른 채로 선택한 노트를 이동할 수 있습니다."
 Added in 1.1.,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
 On PC, you can also append by holding Shift when using the Rectangle tool.","追加选框：在已经选中的音符的基础上，额外选中绘制的矩形中的音符。
-在PC上，可以在使用选框工具时按住Shift来进行追加选择。",,,
+在PC上，可以在使用选框工具时按住Shift来进行追加选择。","增加選取：增加選取範圍內的音符。
+PC可以在使用選取工具時按住Shif新增選取音符。","追加選択：1個以上のノートが選択された場合、ドラッグした長方形エリア内のノートを追加選択します。
+PCでは、Shiftキーを押しながら選択ツールを使うことでノートを追加選択することができます。","추가 선택: 하나 이상의 노트가 선택된 상태에서, 지정한 사각형 안의 노트를 추가로 선택합니다.
+PC에서는 선택 도구 사용 중 Shift 키를 누른 상태에서 노트를 추가 선택할 수 있습니다."
 Added in 1.1.,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
 On PC, you can also subtract by holding Alt when using the Rectangle tool.","取消选框：取消选中绘制的矩形中的音符。
-在PC上，可以在使用选框工具时按住Alt来取消选择。",,,
+在PC上，可以在使用选框工具时按住Alt来取消选择。","取消選取：取消選取範圍內的音符。
+PC可以在使用選取工具時按住住Alt取消選取。","選択解除：ドラッグした長方形エリア内のノートを選択解除します。
+PCでは、Altキーを押しながら選択ツールを使うことでノートを選択解除することができます。","선택 해제: 지정한 사각형 영역 안의 노트를 선택 해제합니다.
+PC에서는 선택 도구 사용 중 Alt 키를 누른 상태에서 노트 선택을 해제할 수 있습니다."
 Added in 1.1.,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
 With this tool active, click on anchors and control points to delete them; drag from an anchor to reset control points on it.","锚点：修改对拖拽音符的锚点与控制点的操作方式。
-使用此工具时，点击锚点与控制点可以将其删除；在锚点上拖拽可以重置其控制点。",,,
+使用此工具时，点击锚点与控制点可以将其删除；在锚点上拖拽可以重置其控制点。","錨點：修改對拖拽音符的錨點與控制點的操作方式。
+使用此工具時，點擊錨點與控制點可以將其刪除；在錨點上拖拽可以重置其控制點。 ","アンカー：ドラッグノートのアンカーとコントロールポイントの操作を切り替えます。
+このツールが有効の場合、アンカーとコントロールポイントをクリックして削除したり、アンカーをドラッグしてコントロールポイントをリセっとすることができます。
+","앵커: 드래그 노트의 고정점과 컨트롤 포인트의 조정 방식을 변경합니다.
+고정점과 컨트롤 포인트를 클릭하여 삭제하거나, 고정점 위치에서 드래그하여 컨트롤 포인트를 초기화합니다."
 ,pattern_panel_options_shortcuts_label,Shortcuts,快捷键,快捷鍵,ショートカット,단축키
 ,pattern_panel_options_shortcuts_help,"Ctrl+S <indent=25%>Save</indent>
 Ctrl+Z/Y <indent=25%>Undo / Redo</indent>
@@ -861,23 +881,6 @@ Home / End <indent=35%>타임라인을 패턴의 처음/끝으로 이동</indent
 Page Up / Down <indent=35%>타임라인을 한 마디 앞/뒤로 이동</indent>
 
 여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
-Deleted in 1.1.,pattern_panel_options_rectangle_tool_label,Rectangle tool,选框工具,框選工具,選択ツール,선택 툴
-Deleted in 1.1.,pattern_panel_options_rectangle_tool_help,"Click and drag to draw a rectangle and select all notes within it.
-Hold Shift to append to the current selection.
-Hold Alt to subtract from the current selection.
-Hold Ctrl to move all selected notes. You can do this from anywhere in the workspace.","用鼠标左键绘制矩形从而选中矩形内的所有音符。
-按住Shift可以额外选中矩形内的音符。
-按住Alt可以取消选中矩形内的音符。
-按住Ctrl可以移动所有选中的音符，即使鼠标指针不在某个音符上也可以进行此操作。","用滑鼠左鍵畫出矩形選擇內部所有音符。
-按住 Shift 可以額外選取音符。
-按住 Alt 可以取消選取選中的音符。
-按住 Ctrl 可以移動所有選中的音符，即使滑鼠游標不在某個音符上也能進行此操作。","選択ツールでドラッグして長方形範囲内の全てのノートを選択することができます。
-Shiftを長押ししながら選択すると選択済みのノートと一緒に選択されます。
-Altを長押ししながら選択すると選択済みのノートを選択解除します。
-Ctrlを長押ししながら選択したノートを移します。この機能は編集画面のどこにでも使用することができます。","선택 툴로 직사각형을 그려 해당 범위 안에 있는 모든 노트들을 선택할 수 있습니다.
-노트를 선택한 후 다른 노트를 추가로 선택하려면 Shift를 누른 채로 선택하십시오.
-선택된 상태인 노트의 선택을 해제하려면 Alt를 누른 채로 선택하십시오.
-Ctrl를 누른 채로 선택한 노트를 옮길 수 있습니다. 해당 기능은 작업 영역 어디에서나 사용 가능합니다."
 ,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
 ,pattern_panel_options_drag_control_help,"Drag notes are Bézier curves or B-splines controlled by anchors and control points.
 Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
