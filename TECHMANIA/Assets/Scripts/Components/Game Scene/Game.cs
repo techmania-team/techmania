@@ -235,6 +235,17 @@ public class Game : MonoBehaviour
     private Dictionary<NoteObject, bool> ongoingNoteIsHitOnThisFrame;
     private Dictionary<NoteObject, float> ongoingNoteLastInput;
 
+    private const string kNoteHitboxTag = "NoteHitbox";
+    private const string kLaneHitboxTag = "LaneHitbox";
+
+    // Component caching.
+    public static Dictionary<GameObject, EmptyTouchReceiver>
+        gameObjectToEmptyTouchReceiver;
+    public static Dictionary<GameObject, NoteObject>
+        hitboxToNoteObject;
+    public static Dictionary<NoteObject, RepeatHeadAppearanceBase>
+        noteObjectToRepeatHead;
+
     #region Monobehavior messages
     // Start is called before the first frame update
     private void OnEnable()
@@ -578,6 +589,30 @@ public class Game : MonoBehaviour
             firstScan--;
             initialTime = GameSetup.pattern.PulseToTime(
                 firstScan * PulsesPerScan);
+        }
+
+        // Reset component caches. They will be filled as we spawn
+        // scans and note objects.
+        hitboxToNoteObject = new Dictionary<
+            GameObject, NoteObject>();
+        noteObjectToRepeatHead = new Dictionary<
+            NoteObject, RepeatHeadAppearanceBase>();
+        gameObjectToEmptyTouchReceiver = new Dictionary<
+            GameObject, EmptyTouchReceiver>();
+
+        // Remove all hidden notes with no sound.
+        List<Note> notesToRemove = new List<Note>();
+        foreach (Note n in GameSetup.pattern.notes)
+        {
+            if (n.sound == "" && GameSetup.pattern.IsHiddenNote(
+                n.lane))
+            {
+                notesToRemove.Add(n);
+            }
+        }
+        foreach (Note n in notesToRemove)
+        {
+            GameSetup.pattern.notes.Remove(n);
         }
 
         // Find last scan. Make sure it ends later than the backing
@@ -1066,10 +1101,12 @@ public class Game : MonoBehaviour
         keysoundsLoaded = true;
     }
 
-    private void VideoPlayerErrorReceived(VideoPlayer player, string error)
+    private void VideoPlayerErrorReceived(
+        VideoPlayer player, string error)
     {
         videoPlayer.errorReceived -= VideoPlayerErrorReceived;
-        ReportFatalError(error);  // VideoPlayer's error message includes URL
+        // VideoPlayer's error message includes URL
+        ReportFatalError(error);
     }
 
     private void PrepareVideoPlayer()
@@ -1155,8 +1192,7 @@ public class Game : MonoBehaviour
             return new Vector2(-100f, -100f);
         }
         Scan s = scanObjects[Scan];
-        float x = s.GetComponentInChildren<Scanline>()
-            .transform.position.x;
+        float x = s.scanline.transform.position.x;
         ScanBackground scanBackground =
             Modifiers.instance.GetScanPosition(Scan) switch
             {
@@ -1946,18 +1982,16 @@ public class Game : MonoBehaviour
 
         foreach (RaycastResult r in results)
         {
-            NoteHitbox touchReceiver = r.gameObject
-                .GetComponent<NoteHitbox>();
-            if (touchReceiver != null)
+            GameObject o = r.gameObject;
+            if (o.CompareTag(kNoteHitboxTag))
             {
-                NoteObject n = touchReceiver
-                    .GetComponentInParent<NoteObject>();
+                NoteObject n = hitboxToNoteObject[o];
                 NoteObject noteToCheck = n;
                 if (n.note.type == NoteType.RepeatHead ||
                     n.note.type == NoteType.RepeatHeadHold)
                 {
-                    noteToCheck = n
-                        .GetComponent<RepeatHeadAppearanceBase>()
+                    noteToCheck =
+                        noteObjectToRepeatHead[n]
                         .GetFirstUnresolvedRepeatNote();
                 }
 
@@ -2004,12 +2038,9 @@ public class Game : MonoBehaviour
                     break;
                 }
             }
-
-            EmptyTouchReceiver emptyReceiver = r.gameObject
-                .GetComponent<EmptyTouchReceiver>();
-            if (emptyReceiver != null)
+            if (o.CompareTag(kLaneHitboxTag))
             {
-                hitEmptyReceiver = emptyReceiver;
+                hitEmptyReceiver = gameObjectToEmptyTouchReceiver[o];
             }
         }
 
@@ -2030,11 +2061,10 @@ public class Game : MonoBehaviour
     {
         foreach (RaycastResult r in results)
         {
-            EmptyTouchReceiver receiver = r.gameObject
-                .GetComponent<EmptyTouchReceiver>();
-            if (receiver != null)
+            GameObject o = r.gameObject;
+            if (o.CompareTag(kLaneHitboxTag))
             {
-                return receiver.lane;
+                return gameObjectToEmptyTouchReceiver[o].lane;
             }
         }
 
@@ -2046,15 +2076,16 @@ public class Game : MonoBehaviour
         List<RaycastResult> results = Raycast(screenPosition);
         foreach (RaycastResult r in results)
         {
-            NoteObject n = r.gameObject
-                .GetComponentInParent<NoteObject>();
-            if (n == null) continue;
+            GameObject o = r.gameObject;
+            if (!o.CompareTag(kNoteHitboxTag)) continue;
+
+            NoteObject n = hitboxToNoteObject[o];
             NoteObject noteToCheck = n;
             if (n.note.type == NoteType.RepeatHead ||
                 n.note.type == NoteType.RepeatHeadHold)
             {
-                noteToCheck = n
-                    .GetComponent<RepeatHeadAppearanceBase>()
+                noteToCheck =
+                    noteObjectToRepeatHead[n]
                     .GetFirstUnresolvedRepeatNote();
             }
             if (ongoingNoteIsHitOnThisFrame.ContainsKey(noteToCheck))

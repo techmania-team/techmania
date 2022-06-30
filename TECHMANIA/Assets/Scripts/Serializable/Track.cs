@@ -56,7 +56,7 @@ public enum CurveType
 public class TimeEvent
 {
     public int pulse;
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -84,14 +84,14 @@ public class TimeStop : TimeEvent
 {
     public int duration;  // In beats
 
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
     public float endTime;
 
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -245,14 +245,14 @@ public partial class Pattern
     public List<BpmEvent> bpmEvents;
     public List<TimeStop> timeStops;
 
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
     public SortedSet<Note> notes;
 
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -287,7 +287,7 @@ public partial class Pattern
 
     public Pattern CloneWithDifferentGuid()
     {
-#if UNITY_2020
+#if UNITY_2021
         PackAllNotes();
         string json = UnityEngine.JsonUtility.ToJson(
             this, prettyPrint: false);
@@ -394,7 +394,7 @@ public class PatternMetadata
     public PatternMetadata()
     {
         guid = Guid.NewGuid().ToString();
-#if UNITY_2020
+#if UNITY_2021
         patternName = Locale.GetString(
             "track_setup_patterns_tab_new_pattern_name");
 #else

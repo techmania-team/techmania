@@ -34,24 +34,7 @@ public class SelectSkinPanel : MonoBehaviour
         string currentSkinName)
     {
         dropdown.options.Clear();
-        int value = 0, index = 0;
-        bool foundOption = false;
-
-        System.Action<string> addToDropdown = (string skinName) =>
-        {
-            bool exists = dropdown.options.Exists(
-                o => o.text == skinName);
-            if (exists) return;
-
-            if (skinName == currentSkinName)
-            {
-                value = index;
-                foundOption = true;
-            }
-            index++;
-            dropdown.options.Add(new TMP_Dropdown.OptionData(
-                skinName));
-        };
+        HashSet<string> skinNames = new HashSet<string>();
 
         // Enumerate skins in the skin folder.
         try
@@ -61,7 +44,7 @@ public class SelectSkinPanel : MonoBehaviour
             {
                 // folder does not end in directory separator.
                 string skinName = Path.GetFileName(folder);
-                addToDropdown(skinName);
+                skinNames.Add(skinName);
             }
         }
         catch (DirectoryNotFoundException)
@@ -83,23 +66,37 @@ public class SelectSkinPanel : MonoBehaviour
                 string folder = Path.GetDirectoryName(
                     relativeFilename);
                 string skinName = Path.GetFileName(folder);
-                addToDropdown(skinName);
+                skinNames.Add(skinName);
             }
         }
 
-        if (dropdown.options.Count == 0)
+        if (skinNames.Count == 0)
         {
-            dropdown.options.Add(new TMP_Dropdown.OptionData(
-                UIUtils.NoneOptionInDropdowns()));
+            skinNames.Add(UIUtils.NoneOptionInDropdowns());
         }
-        if (!foundOption)
+
+        // Prepare the dropdown, and also find the index of the
+        // current skin.
+        int? currentSkinValue = null;
+        int index = 0;
+        foreach (string name in skinNames)
+        {
+            dropdown.options.Add(new TMP_Dropdown.OptionData(name));
+            if (name == currentSkinName)
+            {
+                currentSkinValue = index;
+            }
+            index++;
+        }
+
+        if (currentSkinValue == null)
         {
             // This causes a reload
             dropdown.value = 0;
         }
         else
         {
-            dropdown.SetValueWithoutNotify(value);
+            dropdown.SetValueWithoutNotify(currentSkinValue.Value);
         }
 
         dropdown.RefreshShownValue();

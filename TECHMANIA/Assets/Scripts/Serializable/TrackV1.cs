@@ -162,7 +162,7 @@ public class PatternV1
 
     public PatternV1 CloneWithDifferentGuid()
     {
-#if UNITY_2020
+#if UNITY_2021
         string json = UnityEngine.JsonUtility.ToJson(
             this, prettyPrint: false);
         PatternV1 clone = UnityEngine.JsonUtility
@@ -499,7 +499,7 @@ public class NoteV1
     public int lane;
     public int pulse;
     public NoteType type;
-#if UNITY_2020
+#if UNITY_2021
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
