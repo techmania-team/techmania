@@ -37,7 +37,7 @@ public class Scan : MonoBehaviour
     private List<NoteAppearance> noteAppearances;
     private List<HoldExtension> holdExtensions;
     private List<RepeatPathExtension> repeatPathExtensions;
-    private Scanline scanline;
+    public Scanline scanline { get; private set; }
 
     public static void InjectLaneHeight(float height)
     {
@@ -102,9 +102,22 @@ public class Scan : MonoBehaviour
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
         NoteAppearance appearance = o.GetComponent<NoteAppearance>();
+        NoteHitbox hitbox = o.GetComponentInChildren<NoteHitbox>();
         appearance.SetScanAndScanlineRef(this, scanline);
         appearance.Initialize();
         noteAppearances.Add(appearance);
+        if (hitbox != null)
+        {
+            Game.hitboxToNoteObject.Add(
+                hitbox.gameObject, noteObject);
+            if (n.type == NoteType.RepeatHead ||
+                n.type == NoteType.RepeatHeadHold)
+            {
+                Game.noteObjectToRepeatHead.Add(
+                    noteObject,
+                    appearance as RepeatHeadAppearanceBase);
+            }
+        }
 
         switch (n.type)
         {

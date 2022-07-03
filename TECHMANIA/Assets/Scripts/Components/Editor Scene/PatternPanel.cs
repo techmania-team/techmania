@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,11 +58,15 @@ public class PatternPanel : MonoBehaviour
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
-    public TMP_Dropdown visibleLanesDropdown;
     public GameObject optionsTab;
 
     [Header("UI")]
+    public MaterialToggleButton panButton;
+    public MaterialToggleButton noteToolButton;
     public MaterialToggleButton rectangleToolButton;
+    public MaterialToggleButton rectangleAppendButton;
+    public MaterialToggleButton rectangleSubtractButton;
+    public MaterialToggleButton anchorButton;
     public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
@@ -121,8 +125,12 @@ public class PatternPanel : MonoBehaviour
 
     public enum Tool
     {
+        Pan,
+        Note,
         Rectangle,
-        Note
+        RectangleAppend,
+        RectangleSubtract,
+        Anchor
     }
     public static Tool tool { get; private set; }
     #endregion
@@ -196,7 +204,6 @@ public class PatternPanel : MonoBehaviour
         noteType = NoteType.Basic;
         UpdateToolAndNoteTypeButtons();
         UpdateBeatSnapDivisorDisplay();
-        UpdateVisibleLaneDisplay();
         keysoundSheet.Initialize();
 
         // Playback
@@ -247,7 +254,8 @@ public class PatternPanel : MonoBehaviour
             RefreshPlaybackBar();
         }
 
-        DiscordController.SetActivity(DiscordActivityType.EditorPattern);
+        DiscordController.SetActivity(
+            DiscordActivityType.EditorPattern);
     }
 
     private void OnDisable()
@@ -326,10 +334,33 @@ public class PatternPanel : MonoBehaviour
             mouseInHeader &&
             !isPlaying)
         {
-            MoveScanlineToMouse();
+            MoveScanlineToPointer(Input.mousePosition);
         }
 
         HandleKeyboardShortcuts();
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            bool touchInWorkspace = RectTransformUtility
+                .RectangleContainsScreenPoint(
+                    workspaceScrollRect.GetComponent<RectTransform>(),
+                    touch.position);
+            bool touchInHeader = RectTransformUtility
+                .RectangleContainsScreenPoint(
+                    headerScrollRect.GetComponent<RectTransform>(), 
+                    touch.position);
+
+            if (Input.touchCount == 1 && touchInHeader && !isPlaying)
+            {
+                MoveScanlineToPointer(touch.position);
+            }
+            else if (Input.touchCount == 2)
+            {
+                HandleTouchResize();
+            }
+        }
     }
     #endregion
 
@@ -508,15 +539,8 @@ public class PatternPanel : MonoBehaviour
         if (mouseInWorkspaceOrHeader && ctrl)
         {
             // Adjust zoom.
-            zoom += Mathf.FloorToInt(y * 5f);
-            zoom = Mathf.Clamp(zoom, 10, 500);
-            float horizontal = workspaceScrollRect
-                .horizontalNormalizedPosition;
-            ResizeWorkspace();
-            RepositionNeeded?.Invoke();
-            AdjustAllPathsAndTrails();
-            workspaceScrollRect.horizontalNormalizedPosition =
-                horizontal;
+            int value = zoom + Mathf.FloorToInt(y * 5f);
+            AdjustZoom(value);
         }
         else if (alt)
         {
@@ -575,23 +599,6 @@ public class PatternPanel : MonoBehaviour
     private void SnapNoteCursor()
     {
         SnapNoteCursor(Input.mousePosition);
-    }
-
-    private void MoveScanlineToMouse()
-    {
-        Vector2 pointInHeader;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            header, Input.mousePosition,
-            cam: null, out pointInHeader);
-
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float cursorScan = pointInHeader.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = SnapPulse(cursorPulse);
-
-        scanline.floatPulse = snappedCursorPulse;
-        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        RefreshPlaybackBar();
     }
 
     private void HandleKeyboardShortcuts()
@@ -714,8 +721,51 @@ public class PatternPanel : MonoBehaviour
                 maxPulse));
         }
     }
+    private void DragWorkSpace (Vector2 deltaPosition)
+    {
+        float outOfViewWidth = WorkspaceContentWidth -
+            workspaceViewport.rect.width;
+        float outOfViewHeight = WorkspaceContentHeight -
+            workspaceViewport.rect.height;
+        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
+        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
+
+        float horizontal =
+            workspaceScrollRect.horizontalNormalizedPosition *
+            outOfViewWidth;
+        horizontal -= deltaPosition.x / rootCanvas.localScale.x;
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(horizontal / outOfViewWidth);
+
+        float vertical =
+            workspaceScrollRect.verticalNormalizedPosition *
+            outOfViewHeight;
+        vertical -= deltaPosition.y / rootCanvas.localScale.x;
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(vertical / outOfViewHeight);
+
+        SynchronizeScrollRects();
+    }
     #endregion
 
+    #region Touch
+    private void HandleTouchResize ()
+    {
+        Touch touchZero = Input.GetTouch(0);
+        Touch touchOne = Input.GetTouch(1);
+
+        Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+        Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+        float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+        float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
+
+        float difference = currentMagnitude - prevMagnitude;
+
+        AdjustZoom(zoom + (int) Math.Round(difference * 0.02f));
+    }
+    #endregion
+    
     #region Events From Workspace and NoteObjects
     public void OnWorkspaceScrollRectValueChanged()
     {
@@ -847,7 +897,7 @@ public class PatternPanel : MonoBehaviour
         }
 
         // Special case: if rectangle tool, deselect all.
-        if (tool == Tool.Rectangle)
+        if (UsingRectangleTool())
         {
             selectedNotes.Clear();
             SelectionChanged?.Invoke(selectedNotes);
@@ -915,7 +965,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerEventData =
             eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             pointerEventData.button == 
                 PointerEventData.InputButton.Left)
         {
@@ -942,7 +992,7 @@ public class PatternPanel : MonoBehaviour
     {
         if (!(eventData is PointerEventData)) return;
         PointerEventData p = eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             p.button ==
                 PointerEventData.InputButton.Left)
         {
@@ -958,36 +1008,10 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        if (p.button == PointerEventData.InputButton.Middle)
+        if (p.button == PointerEventData.InputButton.Middle || tool == Tool.Pan)
         {
-            OnMiddleMouseButtonDrag(p.delta);
+            DragWorkSpace(p.delta);
         }
-    }
-
-    private void OnMiddleMouseButtonDrag(Vector2 unscaledDelta)
-    {
-        float outOfViewWidth = WorkspaceContentWidth -
-            workspaceViewport.rect.width;
-        float outOfViewHeight = WorkspaceContentHeight -
-            workspaceViewport.rect.height;
-        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
-        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
-
-        float horizontal =
-            workspaceScrollRect.horizontalNormalizedPosition *
-            outOfViewWidth;
-        horizontal -= unscaledDelta.x / rootCanvas.localScale.x;
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(horizontal / outOfViewWidth);
-
-        float vertical =
-            workspaceScrollRect.verticalNormalizedPosition *
-            outOfViewHeight;
-        vertical -= unscaledDelta.y / rootCanvas.localScale.x;
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(vertical / outOfViewHeight);
-
-        SynchronizeScrollRects();
     }
 
     public void OnNoteContainerEndDrag(BaseEventData eventData)
@@ -995,7 +1019,7 @@ public class PatternPanel : MonoBehaviour
         if (!(eventData is PointerEventData)) return;
         PointerEventData pointerEventData =
             eventData as PointerEventData;
-        if (tool == Tool.Rectangle &&
+        if (UsingRectangleTool() &&
             pointerEventData.button ==
                 PointerEventData.InputButton.Left)
         {
@@ -1058,6 +1082,14 @@ public class PatternPanel : MonoBehaviour
             {
                 // Toggle o in current selection.
                 ToggleSelection(clickedNote);
+            }
+            else if (tool == Tool.RectangleAppend)
+            {
+                selectedNotes.Add(clickedNote);
+            }
+            else if (tool == Tool.RectangleSubtract)
+            {
+                selectedNotes.Remove(clickedNote);
             }
             else  // !ctrl
             {
@@ -1230,26 +1262,40 @@ public class PatternPanel : MonoBehaviour
         });
     }
 
-    public void OnVisibleLaneNumberChanged(int newValue)
+    private void ChangeTool(Tool newTool)
     {
-        Options.instance.editorOptions.visibleLanes = int.Parse(
-            visibleLanesDropdown.options
-            [newValue].text);
-
-        ResizeWorkspace();
-        RepositionNeeded?.Invoke();
-        AdjustAllPathsAndTrails();
+        tool = newTool;
+        UpdateToolAndNoteTypeButtons();
     }
 
-    private void UpdateVisibleLaneDisplay()
+    public void OnPanToolButtonClick()
     {
-        UIUtils.MemoryToDropdown(visibleLanesDropdown,
-            VisibleLanes.ToString());
+        ChangeTool(Tool.Pan);
+    }
+
+    public void OnNoteToolButtonClick()
+    {
+        ChangeTool(Tool.Note);
     }
 
     public void OnRectangleToolButtonClick()
     {
-        tool = Tool.Rectangle;
+        ChangeTool(Tool.Rectangle);
+    }
+
+    public void OnRectangleAppendButtonClick()
+    {
+        ChangeTool(Tool.RectangleAppend);
+    }
+
+    public void OnRectangleSubtractButtonClick()
+    {
+        ChangeTool(Tool.RectangleSubtract);
+    }
+
+    public void OnAnchorButtonClick()
+    {
+        tool = Tool.Anchor;
         UpdateToolAndNoteTypeButtons();
     }
 
@@ -1372,7 +1418,12 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
+        panButton.SetIsOn(tool == Tool.Pan);
+        noteToolButton.SetIsOn(tool == Tool.Note);
         rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
+        rectangleAppendButton.SetIsOn(tool == Tool.RectangleAppend);
+        rectangleSubtractButton.SetIsOn(tool == Tool.RectangleSubtract);
+        anchorButton.SetIsOn(tool == Tool.Anchor);
         foreach (NoteTypeButton b in noteTypeButtons)
         {
             b.GetComponent<MaterialToggleButton>().SetIsOn(
@@ -1501,6 +1552,23 @@ public class PatternPanel : MonoBehaviour
     {
         radarDialog.Show();
     }
+
+    private void MoveScanlineToPointer (Vector2 position)
+    {
+        Vector2 pointInHeader;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            header, position,
+            cam: null, out pointInHeader);
+
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+        float cursorScan = pointInHeader.x / ScanWidth;
+        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
+        int snappedCursorPulse = SnapPulse(cursorPulse);
+
+        scanline.floatPulse = snappedCursorPulse;
+        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
+        RefreshPlaybackBar();
+    }
     #endregion
 
     #region Dragging And Dropping Notes
@@ -1509,7 +1577,7 @@ public class PatternPanel : MonoBehaviour
         GameObject o)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1523,7 +1591,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1537,7 +1605,7 @@ public class PatternPanel : MonoBehaviour
     private void OnNoteObjectEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1830,7 +1898,7 @@ public class PatternPanel : MonoBehaviour
         PointerEventData eventData, GameObject noteObject)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1872,7 +1940,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1898,7 +1966,7 @@ public class PatternPanel : MonoBehaviour
     private void OnDurationHandleEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -1977,7 +2045,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorReceiverClick(PointerEventData eventData,
         GameObject note)
     {
-        if (tool == Tool.Rectangle)
+        if (tool != Tool.Note)
         {
             // Event passes through.
             OnNoteContainerClick(eventData);
@@ -2041,7 +2109,14 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorClick(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (eventData.dragging) return;
+        if (UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (tool != Tool.Anchor &&
             eventData.button != PointerEventData.InputButton.Right)
         {
             // Event passes through.
@@ -2049,6 +2124,7 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
+        // Attempt to delete anchor.
         GameObject anchor = eventData.pointerDrag;
         int anchorIndex = anchor
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
@@ -2080,7 +2156,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorBeginDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2102,7 +2178,8 @@ public class PatternPanel : MonoBehaviour
         ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
             || Input.GetKey(KeyCode.RightControl);
         dragCurveIsBSpline = dragNote.curveType == CurveType.BSpline;
-        if (ctrlHeldOnAnchorBeginDrag && !dragCurveIsBSpline)
+        if ((ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor)
+            && !dragCurveIsBSpline)
         {
             // Reset control points.
             mousePositionRelativeToDraggedAnchor = new Vector2();
@@ -2163,8 +2240,8 @@ public class PatternPanel : MonoBehaviour
             pulse: pointLeft.x / PulseWidth,
             lane: -pointLeft.y / LaneHeight);
         draggedDragNode.controlRight = new FloatPoint(
-           pulse: pointRight.x / PulseWidth,
-           lane: -pointRight.y / LaneHeight);
+            pulse: pointRight.x / PulseWidth,
+            lane: -pointRight.y / LaneHeight);
 
         NoteInEditor noteInEditor = draggedAnchor
             .GetComponentInParent<NoteInEditor>();
@@ -2180,7 +2257,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2191,7 +2268,7 @@ public class PatternPanel : MonoBehaviour
         Vector2 delta = eventData.delta;
         delta /= rootCanvas.localScale.x;
 
-        if (ctrlHeldOnAnchorBeginDrag)
+        if (ctrlHeldOnAnchorBeginDrag || tool == Tool.Anchor)
         {
             if (!dragCurveIsBSpline)
             {
@@ -2215,7 +2292,7 @@ public class PatternPanel : MonoBehaviour
     private void OnAnchorEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2265,7 +2342,14 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (eventData.dragging) return;
+        if (UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (tool != Tool.Anchor &&
             eventData.button != PointerEventData.InputButton.Right)
         {
             // Event passes through.
@@ -2273,6 +2357,7 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
+        // Delete control point.
         GameObject controlPoint = eventData.pointerPress;
         int anchorIndex = controlPoint
             .GetComponentInParent<DragNoteAnchor>().anchorIndex;
@@ -2300,7 +2385,7 @@ public class PatternPanel : MonoBehaviour
         int controlPointIndex)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2321,7 +2406,7 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -2383,7 +2468,7 @@ public class PatternPanel : MonoBehaviour
     private void OnControlPointEndDrag(PointerEventData eventData)
     {
         if (isPlaying) return;
-        if (tool == Tool.Rectangle ||
+        if (UsingRectangleTool() ||
             eventData.button != PointerEventData.InputButton.Left)
         {
             // Event passes through.
@@ -3257,6 +3342,13 @@ public class PatternPanel : MonoBehaviour
     private Vector2 rectangleEnd;
     private bool movingNotesWhenRectangleToolActive;
 
+    private bool UsingRectangleTool()
+    {
+        return tool == Tool.Rectangle ||
+            tool == Tool.RectangleAppend ||
+            tool == Tool.RectangleSubtract;
+    }
+
     private void OnBeginDragWhenRectangleToolActive()
     {
         movingNotesWhenRectangleToolActive =
@@ -3355,7 +3447,7 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightShift);
         bool alt = Input.GetKey(KeyCode.LeftAlt) ||
             Input.GetKey(KeyCode.RightAlt);
-        if (shift)
+        if (shift || tool == Tool.RectangleAppend)
         {
             // Append rectangle to selection.
             foreach (Note n in notesInRectangle)
@@ -3363,7 +3455,7 @@ public class PatternPanel : MonoBehaviour
                 selectedNotes.Add(n);
             }
         }
-        else if (alt)
+        else if (alt || tool == Tool.RectangleSubtract)
         {
             // Subtract rectangle from selection.
             foreach (Note n in notesInRectangle)
@@ -3542,6 +3634,52 @@ public class PatternPanel : MonoBehaviour
 
         selectedNotes.Clear();
         SelectionChanged?.Invoke(selectedNotes);
+    }
+    #endregion
+
+    #region Zoom
+    public void VerticalZoomIn()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes - 2);
+    }
+
+    public void VerticalZoomOut()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes + 2);
+    }
+
+    private void SetVisibleLaneNumber(int newValue)
+    {
+        Options.instance.editorOptions.visibleLanes =
+            Mathf.Clamp(newValue, 8, 16);
+
+        ResizeWorkspace();
+        RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
+    }
+
+    public void HorizontalZoomIn ()
+    {
+        AdjustZoom(zoom + 10);
+    }
+
+    public void HorizontalZoomOut ()
+    {
+        AdjustZoom(zoom - 10);
+    }
+
+    private void AdjustZoom (int value)
+    {
+        zoom = Mathf.Clamp(value, 10, 500);
+        float horizontal = workspaceScrollRect
+            .horizontalNormalizedPosition;
+        ResizeWorkspace();
+        RepositionNeeded?.Invoke();
+        AdjustAllPathsAndTrails();
+        workspaceScrollRect.horizontalNormalizedPosition =
+            horizontal;
     }
     #endregion
 

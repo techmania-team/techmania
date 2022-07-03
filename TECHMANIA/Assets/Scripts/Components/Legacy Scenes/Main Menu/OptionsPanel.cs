@@ -210,6 +210,8 @@ public class OptionsPanel : MonoBehaviour
         rulesetDropdown.SetValueWithoutNotify(
             (int)Options.instance.rulesetEnum);
         rulesetDropdown.RefreshShownValue();
+
+        DiscordController.SetActivity(DiscordActivityType.Options);
     }
 
     #region Graphics
@@ -416,10 +418,13 @@ public class OptionsPanel : MonoBehaviour
     {
         Options.instance.discordRichPresence =
             discordRichPresenceToggle.isOn;
-        if (Options.instance.discordRichPresence) {
+        if (Options.instance.discordRichPresence)
+        {
             DiscordController.Start();
             DiscordController.SetActivity(DiscordActivityType.Options);
-        } else {
+        }
+        else
+        {
             DiscordController.Dispose();
         }
     }
