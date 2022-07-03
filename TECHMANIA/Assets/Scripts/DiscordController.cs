@@ -56,25 +56,25 @@ public class DiscordController
         switch (type)
         {
             case DiscordActivityType.MainMenu:
-                details = Locale.GetString("discord_state_main_menu");
+                details = L10n.GetString("discord_state_main_menu");
                 state = "";
                 break;
             case DiscordActivityType.Options:
-                details = Locale.GetString("discord_state_options");
+                details = L10n.GetString("discord_state_options");
                 state = "";
                 break;
             case DiscordActivityType.Information:
-                details = Locale.GetString("discord_state_information");
+                details = L10n.GetString("discord_state_information");
                 state = "";
                 break;
             case DiscordActivityType.SelectingTrack:
-                details = Locale.GetString(
+                details = L10n.GetString(
                     "discord_state_selecting_track");
                 state = "";
                 break;
             case DiscordActivityType.SelectingPattern:
                 details = GameSetup.track.trackMetadata.title;
-                state = Locale.GetString(
+                state = L10n.GetString(
                     "discord_state_selecting_pattern");
                 break;
             case DiscordActivityType.EditorTrack:
@@ -84,7 +84,7 @@ public class DiscordController
                     timeStart = DateTimeOffset.UtcNow;
                 }
                 details = EditorContext.track.trackMetadata.title;
-                state = Locale.GetString("discord_state_editing_track");
+                state = L10n.GetString("discord_state_editing_track");
                 shouldSetTimestamp = true;
                 break;
             case DiscordActivityType.EditorPattern:
@@ -96,7 +96,7 @@ public class DiscordController
                 {
                     PatternMetadata metadata = EditorContext.Pattern
                         .patternMetadata;
-                    state = Locale.GetStringAndFormat(
+                    state = L10n.GetStringAndFormat(
                         "discord_state_editing_pattern",
                         metadata.playableLanes,
                         GetModeName(metadata.controlScheme),
@@ -117,7 +117,7 @@ public class DiscordController
                     PatternMetadata metadata = GameSetup.pattern
                         .patternMetadata;
                     details = GameSetup.track.trackMetadata.title;
-                    state = Locale.GetStringAndFormat(
+                    state = L10n.GetStringAndFormat(
                         "discord_state_playing_pattern",
                         metadata.playableLanes,
                         GetModeName(metadata.controlScheme),
@@ -165,13 +165,13 @@ public class DiscordController
         switch (controlScheme)
         {
             case ControlScheme.Touch:
-                return Locale.GetString(
+                return L10n.GetString(
                     "track_setup_patterns_tab_control_scheme_touch");
             case ControlScheme.Keys:
-                return Locale.GetString(
+                return L10n.GetString(
                     "track_setup_patterns_tab_control_scheme_keys");
             case ControlScheme.KM:
-                return Locale.GetString(
+                return L10n.GetString(
                     "track_setup_patterns_tab_control_scheme_km");
             default:
                 return "";
