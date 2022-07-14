@@ -9,6 +9,7 @@ InitializeControls(tm)
 
 tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Select Track Panel.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Information Panel.txt")
 tm.root.Q("main-menu").Q("start-button").RegisterCallback("Click", function()
@@ -16,6 +17,7 @@ tm.root.Q("main-menu").Q("start-button").RegisterCallback("Click", function()
         tm.root.Q("main-menu"),
         tm.root.Q("select-track-panel")
     )
+    ShowSelectTrackPanel(tm)
 end)
 tm.root.Q("select-track-panel").Q("back-button").RegisterCallback("Click", function()
     TransitionPanelFromLeft(

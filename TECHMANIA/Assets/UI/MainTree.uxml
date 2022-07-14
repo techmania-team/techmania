@@ -14,7 +14,7 @@
     <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" picking-mode="Ignore" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
+    <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
         <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
             <ui:Button text="START" display-tooltip-when-elided="true" name="start-button" class="button-contained" />
@@ -27,35 +27,35 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Select Track" />
         <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-text button-in-top-bar" style="background-image: none;">
-                <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&apos;);" />
             </ui:Button>
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="filter-button" class="button-text button-in-top-bar" style="background-image: none;">
-                <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_filter_alt_white_48dp.png?fileID=2800000&amp;guid=16904f37be0e99045ac8cffe57232e98&amp;type=3#baseline_filter_alt_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_filter_alt_white_48dp.png?fileID=2800000&amp;guid=16904f37be0e99045ac8cffe57232e98&amp;type=3#baseline_filter_alt_white_48dp&apos;);" />
             </ui:Button>
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="upgrade-button" class="button-text button-in-top-bar" style="background-image: none;">
-                <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_report_white_48dp.png?fileID=2800000&amp;guid=6b0e8b7fb1f94db4392186af9cc57c18&amp;type=3#baseline_report_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_report_white_48dp.png?fileID=2800000&amp;guid=6b0e8b7fb1f94db4392186af9cc57c18&amp;type=3#baseline_report_white_48dp&apos;);" />
             </ui:Button>
         </ui:VisualElement>
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="layout-wrap" style="width: 1250px; height: 100%;">
                 <ui:VisualElement name="location-bar" style="height: 100px; position: absolute; left: 0; right: 0; flex-direction: row; align-items: center; justify-content: space-between;">
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="up-button" class="button-outlined" style="width: 60px; height: 60px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
-                        <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;); width: 36px; height: 36px; rotate: 90deg;" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;); width: 36px; height: 36px; rotate: 90deg;" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="open-button" class="button-outlined" style="width: 60px; height: 60px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
-                        <ui:VisualElement name="icon" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&apos;); width: 36px; height: 36px;" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&apos;); width: 36px; height: 36px;" />
                     </ui:Button>
                     <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
                 </ui:VisualElement>
                 <ui:ScrollView name="ScrollView" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
                     <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-template" class="button-card">
-                            <ui:VisualElement name="eyecatch">
-                                <ui:VisualElement name="default-eyecatch" />
+                            <ui:VisualElement name="eyecatch" picking-mode="Ignore">
+                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" />
                             </ui:VisualElement>
                             <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
                                 <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
@@ -64,8 +64,8 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="track-container" style="flex-direction: row; flex-wrap: wrap;">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="track-template" class="button-card">
-                            <ui:VisualElement name="eyecatch">
-                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" class="text-body" />
+                            <ui:VisualElement name="eyecatch" picking-mode="Ignore">
+                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                             </ui:VisualElement>
                             <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
                                 <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-center;" />
@@ -75,7 +75,7 @@
                             </ui:ScrollView>
                         </ui:Button>
                     </ui:VisualElement>
-                    <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" class="text-body" style="margin-top: 10px;" />
+                    <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="track-status" class="text-body" style="margin-top: 20px;" />
                 </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>

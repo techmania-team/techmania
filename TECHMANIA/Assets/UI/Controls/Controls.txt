@@ -65,8 +65,12 @@ end
 
 function SetUpPointerOverSound(tm, className)
     tm.root.Query(nil, className).ForEach(function (element)
-        element.RegisterCallback("PointerOver", function ()
-            tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+        element.RegisterCallback("PointerOver", function (element, event)
+            print("event target: " .. event.target.name)
+            print("element name: " .. element.name);
+            -- if (event.target == element.inner) then
+                tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+            -- end
         end)
     end)
 end
@@ -78,6 +82,9 @@ end
 
 function SetUpAllScrollingTexts(tm)
     tm.root.Query(nil, "scrolling-text-container").ForEach(function (container)
+        container.Q("unity-content-and-vertical-scroll-container").pickable = false
+        container.Q("unity-content-viewport").pickable = false
+        container.Q("unity-content-container").pickable = false
         container.RegisterCallback("FrameUpdate", function(element)
             local low = element.horizontalScroller.lowValue
             local high = element.horizontalScroller.highValue
