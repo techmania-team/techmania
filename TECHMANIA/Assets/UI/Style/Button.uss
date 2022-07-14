@@ -152,6 +152,31 @@
 }
 
 .button-card {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-card #highlight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     background-color: rgba(0, 0, 0, 0);
     border-left-width: 2px;
     border-right-width: 2px;
@@ -161,41 +186,33 @@
     border-right-color: rgba(0, 0, 0, 0);
     border-top-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.button-card:hover {
+.button-card:hover #highlight {
     background-color: var(--primary-color-4-percent);
     color: var(--primary-color);
     transition-property: background-color;
     transition-duration: 0.1s;
 }
 
-.button-card:active {
+.button-card:active #highlight {
     background-color: var(--primary-color-12-percent);
     color: var(--primary-color);
     transition-duration: 0s;
 }
 
-.button-card:focus {
+.button-card:focus #highlight {
     border-left-color: var(--primary-color);
     border-right-color: var(--primary-color);
     border-top-color: var(--primary-color);
     border-bottom-color: var(--primary-color);
 }
 
-.button-card:disabled {
+.button-card:disabled #highlight {
     background-color: rgba(0, 0, 0, 0);
     color: var(--disabled-text-color);
 }

@@ -27,7 +27,7 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none; top: 0; right: 0; left: 0; bottom: 1px;">
         <AttributeOverrides element-name="title" text="Select Track" />
         <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-text button-in-top-bar" style="background-image: none;">
@@ -54,6 +54,7 @@
                 <ui:ScrollView name="ScrollView" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
                     <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-template" class="button-card">
+                            <ui:VisualElement name="highlight" picking-mode="Ignore" />
                             <ui:VisualElement name="eyecatch" picking-mode="Ignore">
                                 <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" />
                             </ui:VisualElement>
@@ -64,6 +65,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="track-container" style="flex-direction: row; flex-wrap: wrap;">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="track-template" class="button-card">
+                            <ui:VisualElement name="highlight" picking-mode="Ignore" style="display: flex;" />
                             <ui:VisualElement name="eyecatch" picking-mode="Ignore">
                                 <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                             </ui:VisualElement>
@@ -299,8 +301,10 @@
         <ui:ScrollView class="scroll-view" style="width: 300px; height: 300px;">
             <ui:Label text="This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. This is a lengthy paragraph. " display-tooltip-when-elided="true" class="text-body" />
         </ui:ScrollView>
-        <ui:Button display-tooltip-when-elided="true" name="test-card" class="button-card" style="width: 300px; height: 200px; justify-content: center;">
-            <ui:Label text="Card" display-tooltip-when-elided="true" class="text-subtitle" />
+        <ui:Button display-tooltip-when-elided="true" name="test-card" class="button-card" style="width: 300px; height: 200px;">
+            <ui:VisualElement name="highlight" picking-mode="Ignore">
+                <ui:Label text="Card" display-tooltip-when-elided="true" class="text-subtitle" />
+            </ui:VisualElement>
         </ui:Button>
         <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" mode="VerticalAndHorizontal" picking-mode="Ignore" class="scrolling-text" style="width: 200px; flex-direction: column;">
             <ui:Label text="This is a scrolling text." display-tooltip-when-elided="true" class="text-body" style="width: 100%; -unity-text-align: upper-left; position: absolute;" />
