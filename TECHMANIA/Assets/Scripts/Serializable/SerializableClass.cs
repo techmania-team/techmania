@@ -127,14 +127,14 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public void SaveToFile(string path)
     {
-        UniversalIO.WriteAllText(path, Serialize(
+        UniversalIO.File.WriteAllText(path, Serialize(
             optimizeForSaving: true));
     }
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
 #if UNITY_2020
-        string fileContent = UniversalIO.ReadAllText(path);
+        string fileContent = UniversalIO.File.ReadAllText(path);
         return Deserialize(fileContent, out upgraded);
 #else
         upgraded = false;

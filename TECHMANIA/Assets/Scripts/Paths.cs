@@ -64,8 +64,8 @@ public static class Paths
         // Does not end with separator
         string current = UniversalIO.DirectoryGetCurrentDirectory();
 #endif
-        string buildsFolder = UniversalIO.PathCombine(current, "Builds");
-        if (UniversalIO.FileExists(buildsFolder))
+        string buildsFolder = UniversalIO.Path.Combine(current, "Builds");
+        if (UniversalIO.File.Exists(buildsFolder))
         {
             workingDirectory = buildsFolder;
         }
@@ -75,36 +75,45 @@ public static class Paths
         }
 
         // Track root folder
-        trackRootFolder = UniversalIO.PathCombine(workingDirectory,
+        trackRootFolder = UniversalIO.Path.Combine(workingDirectory,
             kTrackFolderName);
-        UniversalIO.DirectoryCreateDirectoryCSharp(trackRootFolder);
-        streamingTrackRootFolder = UniversalIO.PathCombine(
+        UniversalIO.Directory.CreateDirectory(workingDirectory,
+            kTrackFolderName);
+
+        streamingTrackRootFolder = UniversalIO.Path.Combine(
             streamingAssetsFolder, kTrackFolderName);
 
         // Skin folder
-        skinFolder = UniversalIO.PathCombine(workingDirectory,
+        skinFolder = UniversalIO.Path.Combine(workingDirectory,
             kSkinFolderName);
-        UniversalIO.DirectoryCreateDirectoryCSharp(skinFolder);
-        streamingSkinFolder = UniversalIO.PathCombine(
+        UniversalIO.Directory.CreateDirectory(workingDirectory,
+            kSkinFolderName);
+
+        streamingSkinFolder = UniversalIO.Path.Combine(
             streamingAssetsFolder, kSkinFolderName);
 
-        UniversalIO.DirectoryCreateDirectoryCSharp(GetNoteSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectoryCSharp(GetVfxSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectoryCSharp(GetComboSkinRootFolder());
-        UniversalIO.DirectoryCreateDirectoryCSharp(GetGameUiSkinRootFolder());
+        UniversalIO.Directory.CreateDirectory(GetSkinFolder(), kNoteSkinFolderName);
+        UniversalIO.Directory.CreateDirectory(GetSkinFolder(), kVfxSkinFolderName);
+        UniversalIO.Directory.CreateDirectory(GetSkinFolder(), kComboSkinFolderName);
+        UniversalIO.Directory.CreateDirectory(GetSkinFolder(), kGameUiFolderName);
 
         // Data folder
 #if UNITY_ANDROID || UNITY_IOS
-        dataFolder = UniversalIO.PathCombine(
+        dataFolder = UniversalIO.Path.Combine(
             Application.persistentDataPath,
             "TECHMANIA");
+        UniversalIO.Directory.CreateDirectory(Application.persistentDataPath,
+            "TECHMANIA");
 #else
-        dataFolder = UniversalIO.PathCombine(
+        dataFolder = UniversalIO.Path.Combine(
+            System.Environment.GetFolderPath(
+            System.Environment.SpecialFolder.MyDocuments),
+            "TECHMANIA");
+        UniversalIO.Directory.CreateDirectory(
             System.Environment.GetFolderPath(
             System.Environment.SpecialFolder.MyDocuments),
             "TECHMANIA");
 #endif
-        UniversalIO.DirectoryCreateDirectoryCSharp(dataFolder);
     }
 
     public static void ApplyCustomDataLocation()
@@ -126,9 +135,9 @@ public static class Paths
         }
         else
         {
-            trackRootFolder = UniversalIO.PathCombine(workingDirectory,
+            trackRootFolder = UniversalIO.Path.Combine(workingDirectory,
                 kTrackFolderName);
-            skinFolder = UniversalIO.PathCombine(workingDirectory,
+            skinFolder = UniversalIO.Path.Combine(workingDirectory,
                 kSkinFolderName);
         }
     }
@@ -157,11 +166,11 @@ public static class Paths
 
     public static string GetNoteSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetSkinFolder(), kNoteSkinFolderName);
+        return UniversalIO.Path.Combine(GetSkinFolder(), kNoteSkinFolderName);
     }
     public static string GetStreamingNoteSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetStreamingSkinFolder(),
+        return UniversalIO.Path.Combine(GetStreamingSkinFolder(),
             kNoteSkinFolderName);
     }
     public static string GetNoteSkinFolder(string name)
@@ -169,81 +178,80 @@ public static class Paths
         // If there's a name collision between a skin in the
         // working directory and streaming assets, prioritize the
         // former. This is the same behavior as SelectSkinPanel.
-        string temp = UniversalIO.PathCombine(GetNoteSkinRootFolder(), name);
+        string temp = UniversalIO.Path.Combine(GetNoteSkinRootFolder(), name);
 
-        bool isExist = UniversalIO.FileExists(temp);
-        Debug.Log("Folder: " + temp + " is " + (!isExist ? "not " : "") + "exist");
+        bool isExist = UniversalIO.File.Exists(temp);
         return isExist ?
             temp :
-            UniversalIO.PathCombine(GetStreamingNoteSkinRootFolder(), name);
+            UniversalIO.Path.Combine(GetStreamingNoteSkinRootFolder(), name);
     }
 
     public static string GetVfxSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetSkinFolder(), kVfxSkinFolderName);
+        return UniversalIO.Path.Combine(GetSkinFolder(), kVfxSkinFolderName);
     }
     public static string GetStreamingVfxSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetStreamingSkinFolder(),
+        return UniversalIO.Path.Combine(GetStreamingSkinFolder(),
             kVfxSkinFolderName);
     }
     public static string GetVfxSkinFolder(string name)
     {
-        string temp = UniversalIO.PathCombine(GetVfxSkinRootFolder(), name);
-        return UniversalIO.FileExists(temp) ?
+        string temp = UniversalIO.Path.Combine(GetVfxSkinRootFolder(), name);
+        return UniversalIO.File.Exists(temp) ?
             temp :
-            UniversalIO.PathCombine(GetStreamingVfxSkinRootFolder(), name);
+            UniversalIO.Path.Combine(GetStreamingVfxSkinRootFolder(), name);
     }
 
     public static string GetComboSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetSkinFolder(), kComboSkinFolderName);
+        return UniversalIO.Path.Combine(GetSkinFolder(), kComboSkinFolderName);
     }
     public static string GetStreamingComboSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetStreamingSkinFolder(),
+        return UniversalIO.Path.Combine(GetStreamingSkinFolder(),
             kComboSkinFolderName);
     }
     public static string GetComboSkinFolder(string name)
     {
-        string temp = UniversalIO.PathCombine(GetComboSkinRootFolder(), name);
-        return UniversalIO.FileExists(temp) ?
+        string temp = UniversalIO.Path.Combine(GetComboSkinRootFolder(), name);
+        return UniversalIO.File.Exists(temp) ?
             temp :
-            UniversalIO.PathCombine(GetStreamingComboSkinRootFolder(), name);
+            UniversalIO.Path.Combine(GetStreamingComboSkinRootFolder(), name);
     }
 
     public static string GetGameUiSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetSkinFolder(), kGameUiFolderName);
+        return UniversalIO.Path.Combine(GetSkinFolder(), kGameUiFolderName);
     }
     public static string GetStreamingGameUiSkinRootFolder()
     {
-        return UniversalIO.PathCombine(GetStreamingSkinFolder(),
+        return UniversalIO.Path.Combine(GetStreamingSkinFolder(),
             kGameUiFolderName);
     }
     public static string GetGameUiSkinFolder(string name)
     {
-        string temp = UniversalIO.PathCombine(GetGameUiSkinRootFolder(), name);
-        return UniversalIO.FileExists(temp) ?
+        string temp = UniversalIO.Path.Combine(GetGameUiSkinRootFolder(), name);
+        return UniversalIO.File.Exists(temp) ?
             temp :
-            UniversalIO.PathCombine(GetStreamingGameUiSkinRootFolder(), name);
+            UniversalIO.Path.Combine(GetStreamingGameUiSkinRootFolder(), name);
     }
     #endregion
 
     #region Things in document folder
     public static string GetOptionsFilePath()
     {
-        return UniversalIO.PathCombine(dataFolder, "options.json");
+        return UniversalIO.Path.Combine(dataFolder, "options.json");
     }
 
     public static string GetRulesetFilePath()
     {
-        return UniversalIO.PathCombine(dataFolder, "ruleset.json");
+        return UniversalIO.Path.Combine(dataFolder, "ruleset.json");
     }
 
     public static string GetRecordsFilePath()
     {
-        return UniversalIO.PathCombine(dataFolder, "records.json");
+        return UniversalIO.Path.Combine(dataFolder, "records.json");
     }
     #endregion
 
@@ -255,7 +263,7 @@ public static class Paths
         foreach (string pattern in patterns)
         {
             foreach (string file in
-                UniversalIO.DirectoryEnumerateFiles(folder, pattern, System.IO.SearchOption.AllDirectories))
+                UniversalIO.Directory.EnumerateFiles(folder, pattern, System.IO.SearchOption.AllDirectories))
             {
                 files.Add(file);
             }
@@ -339,8 +347,8 @@ public static class Paths
 #if UNITY_ANDROID
         if (fullPath.StartsWith(UniversalIO.ANDROID_CONTENT_URI))
         {
-            return UniversalIO.GetRealPathFromUri(fullPath)
-                .Replace(UniversalIO.GetRealPathFromUri(Paths.GetTrackRootFolder()), "Tracks");
+            return UniversalIO.GetAndroidRealPath(fullPath)
+                .Replace(UniversalIO.GetAndroidRealPath(Paths.GetTrackRootFolder()), "Tracks");
         }
 #endif
 #if UNITY_ANDROID || UNITY_IOS
@@ -391,7 +399,7 @@ public static class Paths
         // any previous path components are ignored, and the
         // returned string begins with that rooted path component.
         relativePath = relativePath.TrimStart('/', '\\');
-        string absolutePath = UniversalIO.PathCombine(streamingAssetsFolder,
+        string absolutePath = UniversalIO.Path.Combine(streamingAssetsFolder,
             relativePath);
 #if UNITY_WSA || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         absolutePath = absolutePath.Replace('/', '\\');

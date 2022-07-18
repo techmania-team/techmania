@@ -83,7 +83,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string noteSkinFolder = Paths.GetNoteSkinFolder(
             Options.instance.noteSkin);
-        string noteSkinFilename = UniversalIO.PathCombine(
+        string noteSkinFilename = UniversalIO.Path.Combine(
             noteSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -113,7 +113,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string vfxSkinFolder = Paths.GetVfxSkinFolder(
             Options.instance.vfxSkin);
-        string vfxSkinFilename = UniversalIO.PathCombine(
+        string vfxSkinFilename = UniversalIO.Path.Combine(
             vfxSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -143,7 +143,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string comboSkinFolder = Paths.GetComboSkinFolder(
             Options.instance.comboSkin);
-        string comboSkinFilename = UniversalIO.PathCombine(
+        string comboSkinFilename = UniversalIO.Path.Combine(
             comboSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -190,7 +190,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
             Options.instance.gameUiSkin);
-        string gameUiSkinFilename = UniversalIO.PathCombine(
+        string gameUiSkinFilename = UniversalIO.Path.Combine(
             gameUiSkinFolder, Paths.kSkinFilename);
         try
         {
@@ -233,7 +233,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 continue;
             }
 
-            string filename = UniversalIO.PathCombine(skinFolder,
+            string filename = UniversalIO.Path.Combine(skinFolder,
                 spriteSheetReferences[i].filename);
             bool loaded = false;
             bool error = false;

@@ -99,7 +99,7 @@ public class ResourceLoader : MonoBehaviour
         {
             if (n.sound != null && n.sound != "")
             {
-                filenames.Add(UniversalIO.PathCombine(trackFolder, n.sound));
+                filenames.Add(UniversalIO.Path.Combine(trackFolder, n.sound));
             }
         }
         ResourceLoader instance = GetInstance();
@@ -140,7 +140,7 @@ public class ResourceLoader : MonoBehaviour
 
                 string filePath = file;
 #if UNITY_ANDROID
-                filePath = UniversalIO.GetRealPathFromUri(filePath);
+                filePath = UniversalIO.GetAndroidRealPath(filePath);
 #endif
 
                 // Somehow passing in AudioType.UNKNOWN will make it
@@ -192,7 +192,7 @@ public class ResourceLoader : MonoBehaviour
     {
         string path = fullPath;
 #if UNITY_ANDROID
-        path = UniversalIO.GetRealPathFromUri(path);
+        path = UniversalIO.GetAndroidRealPath(path);
 #endif
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadAudio(
@@ -293,7 +293,7 @@ public class ResourceLoader : MonoBehaviour
     {
         string path = fullPath;
 #if UNITY_ANDROID
-        path = UniversalIO.GetRealPathFromUri(path);
+        path = UniversalIO.GetAndroidRealPath(path);
 #endif
         ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadImage(

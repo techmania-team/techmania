@@ -47,10 +47,10 @@ public class PreviewTrackPlayer : MonoBehaviour
         // We could use ResourceLoader.LoadAudio, but this creates
         // problems when the user stops preview track playback
         // before the loading completes.
-        string filename = UniversalIO.PathCombine(trackFolder, 
+        string filename = UniversalIO.Path.Combine(trackFolder, 
             previewTrackFilename);
 #if UNITY_ANDROID
-        filename = UniversalIO.GetRealPathFromUri(filename);
+        filename = UniversalIO.GetAndroidRealPath(filename);
 #endif
         UnityWebRequest request = 
             UnityWebRequestMultimedia.GetAudioClip(

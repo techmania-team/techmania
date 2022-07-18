@@ -21,7 +21,7 @@ public class EyecatchSelfLoader : MonoBehaviour
         if (t.eyecatchImage != null &&
             t.eyecatchImage != "")
         {
-            string fullPath = UniversalIO.PathCombine(folder, t.eyecatchImage);
+            string fullPath = UniversalIO.Path.Combine(folder, t.eyecatchImage);
             ResourceLoader.LoadImage(fullPath, OnLoadImageComplete);
         }
         else

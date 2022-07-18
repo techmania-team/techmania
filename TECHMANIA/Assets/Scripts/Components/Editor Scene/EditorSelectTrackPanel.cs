@@ -22,7 +22,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
     protected override void OnTrackCardClick(GameObject o)
     {
         EditorContext.Reset();
-        EditorContext.trackPath = UniversalIO.PathCombine(cardToTrack[o].folder,
+        EditorContext.trackPath = UniversalIO.Path.Combine(cardToTrack[o].folder,
             Paths.kTrackFilename);
         EditorContext.trackFolder = cardToTrack[o].folder;
         PanelTransitioner.TransitionTo(trackSetupPanel, 
@@ -49,10 +49,10 @@ public class EditorSelectTrackPanel : SelectTrackPanel
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
         string newDirName = $"{filteredArtist} - {filteredTitle} - {timestamp}";
-        string newDir = UniversalIO.PathCombine(currentLocation, newDirName);
+        string newDir = UniversalIO.Path.Combine(currentLocation, newDirName);
         try
         {
-            UniversalIO.DirectoryCreateDirectoryCSharp(newDirName);
+            UniversalIO.Directory.CreateDirectory(currentLocation, newDirName);
         }
         catch (Exception e)
         {
@@ -66,7 +66,7 @@ public class EditorSelectTrackPanel : SelectTrackPanel
 
         // Create empty track.
         Track track = new Track(title, artist);
-        string filename = UniversalIO.PathCombine(newDir, Paths.kTrackFilename);
+        string filename = UniversalIO.Path.Combine(newDir, Paths.kTrackFilename);
         try
         {
             track.SaveToFile(filename);

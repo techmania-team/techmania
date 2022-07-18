@@ -182,7 +182,7 @@ public class OptionsPanel : MonoBehaviour
             Options.instance.customDataLocation);
         tracksFolder.SetActive(Options.instance.customDataLocation);
 #if UNITY_ANDROID
-        tracksFolderDisplay.SetUp(UniversalIO.GetRealPathFromUri(Options.instance
+        tracksFolderDisplay.SetUp(UniversalIO.GetAndroidRealPath(Options.instance
             .tracksFolderLocation));
 #else
         tracksFolderDisplay.SetUp(Options.instance
@@ -190,7 +190,7 @@ public class OptionsPanel : MonoBehaviour
 #endif
         skinsFolder.SetActive(Options.instance.customDataLocation);
 #if UNITY_ANDROID
-        skinsFolderDisplay.SetUp(UniversalIO.GetRealPathFromUri(Options.instance
+        skinsFolderDisplay.SetUp(UniversalIO.GetAndroidRealPath(Options.instance
             .skinsFolderLocation));
 #else
         skinsFolderDisplay.SetUp(Options.instance
@@ -420,13 +420,11 @@ public class OptionsPanel : MonoBehaviour
 
     private void OnAndroidTracksFolderSelected(string result)
     {
-        Debug.Log("OnAndroidTracksFolderSelected: " + result);
         OnTracksFolderSelected(result);
     }
 
     private void OnAndroidSkinsFolderSelected(string result)
     {
-        Debug.Log("OnAndroidSkinsFolderSelected: " + result);
         OnSkinsFolderSelected(result);
     }
 

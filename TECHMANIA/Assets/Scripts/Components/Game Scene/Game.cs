@@ -367,10 +367,10 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backImage != null &&
             GameSetup.pattern.patternMetadata.backImage != "")
         {
-            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.Path.Combine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.backImage);
 #if UNITY_ANDROID
-            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+            fullPath = UniversalIO.GetAndroidRealPath(fullPath);
 #endif
             backgroundImageLoaded = false;
             ResourceLoader.LoadImage(fullPath,
@@ -415,10 +415,10 @@ public class Game : MonoBehaviour
         if (GameSetup.pattern.patternMetadata.backingTrack != null &&
             GameSetup.pattern.patternMetadata.backingTrack != "")
         {
-            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.Path.Combine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.backingTrack);
 #if UNITY_ANDROID
-            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+            fullPath = UniversalIO.GetAndroidRealPath(fullPath);
 #endif
             backingTrackLoaded = false;
             ResourceLoader.LoadAudio(fullPath,
@@ -443,10 +443,10 @@ public class Game : MonoBehaviour
             GameSetup.pattern.patternMetadata.bga != null &&
             GameSetup.pattern.patternMetadata.bga != "")
         {
-            string fullPath = UniversalIO.PathCombine(GameSetup.trackFolder,
+            string fullPath = UniversalIO.Path.Combine(GameSetup.trackFolder,
                 GameSetup.pattern.patternMetadata.bga);
 #if UNITY_ANDROID
-            fullPath = UniversalIO.GetRealPathFromUri(fullPath);
+            fullPath = UniversalIO.GetAndroidRealPath(fullPath);
 #endif
             videoPlayer.url = fullPath;
             videoPlayer.errorReceived += VideoPlayerErrorReceived;

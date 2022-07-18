@@ -1,19 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 
-// Generalized IO that works on both a file system and
-// streaming assets.
+// Generalized IO that works on PC, Android and iOS.
+// Also supports streaming assets on iOS.
 public static class UniversalIO
 {
+    // Paths returned by the Android file picker will be in this scheme.
+    // We can call GetRealPathFromUri to translate it to a file system path and do regular I/O, but there are limitations:
+    // * Android 12 doesn't allow direct reading of these files, unless it's a media file
+    // * Enumerating directories won't show non-media files at all
+    // Therefore, unless reading a media file, all I/O should go through methods in this class.
     public const string ANDROID_CONTENT_URI = "content://";
 
-    public static string GetRealPathFromUri(string path)
+    public static bool IsAndroidContentURI(string path)
     {
+        return path.StartsWith(ANDROID_CONTENT_URI);
+    }
 
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+    // This method will decode the content uri back to linux file path, but the limitations still apply.
+    // Only use this for display on the UI or reading media file.
+    public static string GetAndroidRealPath(string path)
+    {
+        if (IsAndroidContentURI(path))
         {
             return AndroidNativeIO.Utils.StorageUtils.GetRealPathFromUri(path);
         }
@@ -21,167 +31,166 @@ public static class UniversalIO
     }
 
     #region Directory
-    public static void DirectoryCreateDirectory(string parentPath, string childFolderName)
+    public static class Directory
     {
-        if (parentPath.StartsWith(ANDROID_CONTENT_URI))
+        public static void CreateDirectory(string parentPath, string childFolderName)
         {
-            if (!AndroidNativeIO.IO.Directory.CreateDirectory(parentPath, childFolderName))
+            if (IsAndroidContentURI(parentPath))
             {
-                throw new IOException("Failed to create directory (Android Native IO)");
+                if (!AndroidNativeIO.IO.Directory.CreateDirectory(parentPath, childFolderName))
+                {
+                    throw new IOException("Failed to create directory (Android Native IO)");
+                }
             }
-        } else
-        {
-            Directory.CreateDirectory(PathCombine(parentPath, childFolderName));
+            else
+            {
+                System.IO.Directory.CreateDirectory(Path.Combine(parentPath, childFolderName));
+            }
         }
-    }
 
-    public static void DirectoryCreateDirectoryCSharp(string path)
-    {
-            Directory.CreateDirectory(path);
-    }
 
-    public static IEnumerable<string> DirectoryEnumerateFiles(string path, string searchPattern)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static IEnumerable<string> EnumerateFiles(string path, string searchPattern)
         {
-            return AndroidNativeIO.IO.Directory.EnumerateFiles(path, searchPattern);
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Directory.EnumerateFiles(path, searchPattern);
+            }
+            return System.IO.Directory.EnumerateFiles(path, searchPattern);
         }
-        return Directory.EnumerateFiles(path, searchPattern);
-    }
 
-    public static IEnumerable<string> DirectoryEnumerateFiles(string path, string searchPattern, SearchOption searchOption)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption)
         {
-            return AndroidNativeIO.IO.Directory.EnumerateFiles(path, searchPattern);
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Directory.EnumerateFiles(path, searchPattern);
+            }
+            return System.IO.Directory.EnumerateFiles(path, searchPattern, searchOption);
         }
-        return Directory.EnumerateFiles(path, searchPattern, searchOption);
-    }
 
-    public static IEnumerable<string> DirectoryEnumerateDirectories(string path)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static IEnumerable<string> EnumerateDirectories(string path)
         {
-            return AndroidNativeIO.IO.Directory.EnumerateDirectories(path);
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Directory.EnumerateDirectories(path);
+            }
+            return System.IO.Directory.EnumerateDirectories(path);
         }
-        return Directory.EnumerateDirectories(path);
-    }
 
-    public static string DirectoryGetCurrentDirectory()
-    {
-        return Directory.GetCurrentDirectory();
-    }
+        public static string GetName(string path)
+        {
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Directory.GetName(path);
+            }
+            return new DirectoryInfo(path).Name;
+        }
 
-    public static string DirectoryGetName(string path)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static bool Exists(string path)
         {
-            return AndroidNativeIO.IO.Directory.GetName(path);
-        }
-        return new DirectoryInfo(path).Name;
-    }
-
-    public static bool DirectoryExists(string path)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
-        {
-            return AndroidNativeIO.IO.Directory.Exists(path);
-        }
-        if (Paths.IsInStreamingAssets(path))
-        {
-            return BetterStreamingAssets.DirectoryExists(
-                Paths.RelativePathInStreamingAssets(path));
-        }
-        else
-        {
-            return Directory.Exists(path);
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Directory.Exists(path);
+            }
+            if (Paths.IsInStreamingAssets(path))
+            {
+                return BetterStreamingAssets.DirectoryExists(
+                    Paths.RelativePathInStreamingAssets(path));
+            }
+            else
+            {
+                return System.IO.Directory.Exists(path);
+            }
         }
     }
     #endregion
 
 
     #region File
-    public static FileStream FileCreate(string path)
+    public static class File
     {
-        return File.Create(path);
-    }
+        public static bool Exists(string path)
+        {
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.File.Exists(path);
+            }
+            if (Paths.IsInStreamingAssets(path))
+            {
+                return BetterStreamingAssets.FileExists(
+                    Paths.RelativePathInStreamingAssets(path));
+            }
+            else
+            {
+                return System.IO.File.Exists(path);
+            }
+        }
 
-    public static void FileDelete(string path)
-    {
-        File.Delete(path);
-    }
+        public static string ReadAllText(string path)
+        {
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.File.ReadAllText(path);
+            }
+            if (Paths.IsInStreamingAssets(path))
+            {
+                return BetterStreamingAssets.ReadAllText(
+                    Paths.RelativePathInStreamingAssets(path));
+            }
+            else
+            {
+                return System.IO.File.ReadAllText(path);
+            }
+        }
 
-    public static bool FileExists(string path)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static void WriteAllText(string path, string content)
         {
-            return AndroidNativeIO.IO.File.Exists(path);
+            if (IsAndroidContentURI(path))
+            {
+                AndroidNativeIO.IO.File.WriteAllText(path, content);
+            }
+            else
+            {
+                System.IO.File.WriteAllText(path, content);
+            }
         }
-        if (Paths.IsInStreamingAssets(path))
+        public static FileStream Create(string path)
         {
-            return BetterStreamingAssets.FileExists(
-                Paths.RelativePathInStreamingAssets(path));
+            return System.IO.File.Create(path);
         }
-        else
-        {
-            return File.Exists(path);
-        }
-    }
 
-    public static FileStream FileOpenRead(string path)
-    {
-        return File.OpenRead(path);
-    }
+        public static void Delete(string path)
+        {
+            System.IO.File.Delete(path);
+        }
 
-    public static string ReadAllText(string path)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static FileStream OpenRead(string path)
         {
-            return AndroidNativeIO.IO.File.ReadAllText(path);
-        }
-        if (Paths.IsInStreamingAssets(path))
-        {
-            return BetterStreamingAssets.ReadAllText(
-                Paths.RelativePathInStreamingAssets(path));
-        }
-        else
-        {
-            return File.ReadAllText(path);
-        }
-    }
-
-    public static void WriteAllText(string path, string content)
-    {
-        if (path.StartsWith(ANDROID_CONTENT_URI))
-        {
-            AndroidNativeIO.IO.File.WriteAllText(path, content);
-        } else
-        {
-            File.WriteAllText(path, content);
+            return System.IO.File.OpenRead(path);
         }
     }
-
     #endregion
 
     #region Path
-
-    public static string PathGetDirectoryName(string path, bool returnToTreeUri = true)
+    public static class Path
     {
-
-        if (path.StartsWith(ANDROID_CONTENT_URI))
+        public static string GetDirectoryName(string path, bool returnToTreeUri = true)
         {
-            return AndroidNativeIO.IO.Path.GetDirectoryName(path, returnToTreeUri);
-        }
-        return Path.GetDirectoryName(path);
-    }
 
-    public static string PathCombine(params string[] path)
-    {
-        if (path[0].StartsWith(ANDROID_CONTENT_URI))
-        {
-            return AndroidNativeIO.IO.Path.Combine(path[0], path[1]);
+            if (IsAndroidContentURI(path))
+            {
+                return AndroidNativeIO.IO.Path.GetDirectoryName(path, returnToTreeUri);
+            }
+            return System.IO.Path.GetDirectoryName(path);
         }
-        return Path.Combine(path);
+
+        public static string Combine(string parent, string name)
+        {
+            if (IsAndroidContentURI(parent))
+            {
+                return AndroidNativeIO.IO.Path.Combine(parent, name);
+            }
+            return System.IO.Path.Combine(parent, name);
+        }
     }
 
     #endregion
