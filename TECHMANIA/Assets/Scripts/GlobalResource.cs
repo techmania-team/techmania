@@ -62,7 +62,7 @@ public class GlobalResource
         }
     }
 
-    public static List<TrackInFolder> GetTracks(string parent)
+    public static List<TrackInFolder> GetTracksInFolder(string parent)
     {
         if (trackList.ContainsKey(parent))
         {

@@ -423,6 +423,24 @@ namespace ThemeApi
             set { inner.visible = value; }
         }
         #endregion
+
+        #region DOM
+        public VisualElementWrap InstantiateTemplate(string name)
+        {
+            VisualTreeAsset treeAsset = GlobalResource
+                .GetThemeContent<VisualTreeAsset>(name);
+            if (treeAsset == null)
+            {
+                throw new System.Exception(
+                    "Visual tree asset not found: " + name);
+            }
+
+            TemplateContainer templateContainer =
+                treeAsset.Instantiate();
+            inner.Add(templateContainer);
+            return new VisualElementWrap(templateContainer);
+        }
+        #endregion
     }
 
     [MoonSharpUserData]

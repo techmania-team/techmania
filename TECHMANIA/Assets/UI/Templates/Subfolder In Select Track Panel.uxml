@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-template" class="button-card">
+        <ui:VisualElement name="highlight" picking-mode="Ignore" />
+        <ui:VisualElement name="eyecatch" picking-mode="Ignore">
+            <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
+        </ui:ScrollView>
+    </ui:Button>
+</ui:UXML>

@@ -1,5 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Panel" src="project://database/Assets/UI/Controls/Panel.uxml?fileID=9197481963319205126&amp;guid=ef0a580985f87cd47b0f5f054f6c9830&amp;type=3#Panel" />
+    <ui:Template name="Subfolder In Select Track" src="project://database/Assets/UI/Templates/Subfolder%20In%20Select%20Track%20Panel.uxml?fileID=9197481963319205126&amp;guid=4bb02d2027594954ebaf6f1e56bf0d3c&amp;type=3#Subfolder In Select Track Panel" />
+    <ui:Template name="Track In Select Track Panel" src="project://database/Assets/UI/Templates/Track%20In%20Select%20Track%20Panel.uxml?fileID=9197481963319205126&amp;guid=8b54f445fc976704bb9b4d596fa81ab6&amp;type=3#Track In Select Track Panel" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
@@ -53,29 +55,10 @@
                 </ui:VisualElement>
                 <ui:ScrollView name="ScrollView" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
                     <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
-                        <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-template" class="button-card">
-                            <ui:VisualElement name="highlight" picking-mode="Ignore" />
-                            <ui:VisualElement name="eyecatch" picking-mode="Ignore">
-                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" />
-                            </ui:VisualElement>
-                            <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
-                                <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
-                            </ui:ScrollView>
-                        </ui:Button>
+                        <ui:Instance template="Subfolder In Select Track" name="Subfolder In Select Track" />
                     </ui:VisualElement>
                     <ui:VisualElement name="track-container" style="flex-direction: row; flex-wrap: wrap;">
-                        <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="track-template" class="button-card">
-                            <ui:VisualElement name="highlight" picking-mode="Ignore" style="display: flex;" />
-                            <ui:VisualElement name="eyecatch" picking-mode="Ignore">
-                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
-                            </ui:VisualElement>
-                            <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
-                                <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-center;" />
-                            </ui:ScrollView>
-                            <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
-                                <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-subtitle" style="-unity-text-align: upper-center;" />
-                            </ui:ScrollView>
-                        </ui:Button>
+                        <ui:Instance template="Track In Select Track Panel" name="Track In Select Track Panel" />
                     </ui:VisualElement>
                     <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="track-status" class="text-body" style="margin-top: 20px;" />
                 </ui:ScrollView>

@@ -1,8 +1,11 @@
 function ShowSelectTrackPanel(tm)
-    res = tm.resources
-    tracks = res.GetTracks(tm.paths.GetTrackRootFolder())
-    for _, track in ipairs(tracks) do
-        print(track.minimizedTrack.trackMetadata.title)
+    local res = tm.resources
+    local tracksInFolder = res.GetTracksInFolder(tm.paths.GetTrackRootFolder())
+    local trackContainer = tm.root.Q("select-track-panel").Q("track-container")
+    for _, trackInFolder in ipairs(tracksInFolder) do
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track In Select Track Panel.uxml");
+        card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
+        card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
     end
 end
 

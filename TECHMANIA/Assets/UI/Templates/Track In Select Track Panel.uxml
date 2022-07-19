@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="track-template" class="button-card">
+        <ui:VisualElement name="highlight" picking-mode="Ignore" style="display: flex;" />
+        <ui:VisualElement name="eyecatch" picking-mode="Ignore">
+            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
+        </ui:VisualElement>
+        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-center;" />
+        </ui:ScrollView>
+        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-center;" />
+        </ui:ScrollView>
+    </ui:Button>
+</ui:UXML>
