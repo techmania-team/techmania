@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
-public static class GlobalResource
+[MoonSharpUserData]
+public class GlobalResource
 {
     #region Skins
     public static NoteSkin noteSkin;
@@ -12,11 +14,13 @@ public static class GlobalResource
     #endregion
 
     #region Track list
+    [MoonSharpUserData]
     public class TrackSubfolder
     {
         public string path;
         public string eyecatchFullPath;
     }
+    [MoonSharpUserData]
     public class TrackInFolder
     {
         // The folder that track.tech is in.
@@ -24,6 +28,7 @@ public static class GlobalResource
         // Minimized to save RAM.
         public Track minimizedTrack;
     }
+    [MoonSharpUserData]
     public class TrackWithError
     {
         public enum Type
@@ -43,6 +48,45 @@ public static class GlobalResource
         trackList;
     public static Dictionary<string, List<TrackWithError>>
         trackWithErrorList;
+
+    #region Lua accessor
+    public static List<TrackSubfolder> GetSubfolders(string parent)
+    {
+        if (trackSubfolderList.ContainsKey(parent))
+        {
+            return trackSubfolderList[parent];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static List<TrackInFolder> GetTracks(string parent)
+    {
+        if (trackList.ContainsKey(parent))
+        {
+            return trackList[parent];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static List<TrackWithError> GetTracksWithError(
+        string parent)
+    {
+        if (trackWithErrorList.ContainsKey(parent))
+        {
+            return trackWithErrorList[parent];
+        }
+        else
+        {
+            return null;
+        }
+    }
+    #endregion
 
     public static bool anyOutdatedTrack;
     #endregion

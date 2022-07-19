@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -66,6 +67,7 @@ public class TimeEvent
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class BpmEvent : TimeEvent
 {
     public double bpm;
@@ -81,6 +83,7 @@ public class BpmEvent : TimeEvent
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class TimeStop : TimeEvent
 {
     public int duration;  // In beats
@@ -114,6 +117,7 @@ public class TimeStop : TimeEvent
 
 #region Track
 [Serializable]
+[MoonSharpUserData]
 public partial class Track : TrackBase
 {
     public const string kVersion = "3";
@@ -207,6 +211,7 @@ public partial class Track : TrackBase
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class TrackMetadata
 {
     public string guid;
@@ -261,6 +266,7 @@ public class TrackMetadata
 
 #region Pattern
 [Serializable]
+[MoonSharpUserData]
 public partial class Pattern
 {
     public PatternMetadata patternMetadata;
@@ -374,6 +380,7 @@ public partial class Pattern
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class PatternMetadata
 {
     public string guid;
@@ -461,6 +468,7 @@ public class PatternMetadata
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class LegacyRulesetOverride
 {
     // Empty list means no override.
@@ -512,6 +520,7 @@ public class LegacyRulesetOverride
 #endregion
 
 #region Notes
+[MoonSharpUserData]
 public class Note
 {
     // Calculated at unpack time:
@@ -662,6 +671,7 @@ public class Note
     }
 }
 
+[MoonSharpUserData]
 public class HoldNote : Note
 {
     // Calculated at unpack time:
@@ -724,6 +734,7 @@ public class HoldNote : Note
     }
 }
 
+[MoonSharpUserData]
 public class DragNote : Note
 {
     public CurveType curveType;
@@ -928,6 +939,7 @@ public class DragNote : Note
 
 // Used to play auto assist ticks. Inaccessible to players
 // and pattern authors.
+[MoonSharpUserData]
 public class AssistTickNote : Note { }
 
 public class NoteComparer : IComparer<Note>
@@ -949,6 +961,7 @@ public class NoteComparer : IComparer<Note>
 // to complete.
 
 [Serializable]
+[MoonSharpUserData]
 public class IntPoint
 {
     public int lane;
@@ -972,6 +985,7 @@ public class IntPoint
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class FloatPoint
 {
     public float lane;
@@ -1010,6 +1024,7 @@ public class FloatPoint
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class DragNode
 {
     // Relative to DragNote
@@ -1083,6 +1098,7 @@ public class DragNode
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class PackedDragNote
 {
     public string packedNote;

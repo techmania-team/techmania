@@ -1,4 +1,9 @@
 function ShowSelectTrackPanel(tm)
+    res = tm.resources
+    tracks = res.GetTracks(tm.paths.GetTrackRootFolder())
+    for _, track in ipairs(tracks) do
+        print(track.minimizedTrack.trackMetadata.title)
+    end
 end
 
 function InitializeSelectTrackPanel(tm)

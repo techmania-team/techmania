@@ -15,6 +15,7 @@ namespace ThemeApi
         public static AudioManager audioManager { get; private set; }
         private static StyleHelper styleHelper;
         private static ThemeL10n themeL10n;
+        private static GlobalResource resInstance;
 
         [MoonSharpHidden]
         public static void Prepare()
@@ -23,6 +24,7 @@ namespace ThemeApi
             audioManager = new AudioManager();
             styleHelper = new StyleHelper();
             themeL10n = new ThemeL10n(uiDocument.rootVisualElement);
+            resInstance = new GlobalResource();
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
         }
@@ -49,6 +51,7 @@ namespace ThemeApi
         public static ThemeL10n l10n => themeL10n;
         public static Options options => Options.instance;
         public static Ruleset ruleset => Ruleset.instance;
+        public static GlobalResource resources => resInstance;
         public static Paths paths => new Paths();
         #endregion
 
