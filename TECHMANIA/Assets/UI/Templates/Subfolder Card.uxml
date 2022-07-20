@@ -1,5 +1,5 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-template" class="button-card">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="subfolder-card" class="button-card">
         <ui:VisualElement name="highlight" picking-mode="Ignore" />
         <ui:VisualElement name="eyecatch" picking-mode="Ignore">
             <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" />

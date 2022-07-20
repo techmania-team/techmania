@@ -1,11 +1,18 @@
 function ShowSelectTrackPanel(tm)
+    local trackContainer = tm.root.Q("select-track-panel").Q("track-container")
+    for _, child in ipairs(trackContainer.Children()) do
+        child.RemoveFromHierarchy()
+    end
+
     local res = tm.resources
     local tracksInFolder = res.GetTracksInFolder(tm.paths.GetTrackRootFolder())
-    local trackContainer = tm.root.Q("select-track-panel").Q("track-container")
     for _, trackInFolder in ipairs(tracksInFolder) do
-        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track In Select Track Panel.uxml");
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        SetUpButtonSounds(tm, card)
         card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
         card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
+        SetUpScrollingText(tm, card.Q("name-container"))
+        SetUpScrollingText(tm, card.Q("artist-container"))
     end
 end
 

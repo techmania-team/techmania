@@ -26,7 +26,6 @@ namespace ThemeApi
         }
 
         #region Properties
-        public int childCount => inner.childCount;
         public bool enabledInHierarchy => inner.enabledInHierarchy;
         public bool enabledSelf => inner.enabledSelf;
         public string name
@@ -34,8 +33,7 @@ namespace ThemeApi
             get { return inner.name; }
             set { inner.name = value; }
         }
-        public VisualElementWrap parent =>
-            new VisualElementWrap(inner.parent);
+        
         // If false, this element will ignore pointer events.
         public bool pickable
         {
@@ -425,6 +423,22 @@ namespace ThemeApi
         #endregion
 
         #region DOM
+
+        public int childCount => inner.childCount;
+        public VisualElementWrap parent =>
+            new VisualElementWrap(inner.parent);
+
+        public IEnumerable<VisualElementWrap> Children()
+        {
+            List<VisualElementWrap> children = new 
+                List<VisualElementWrap>();
+            foreach (VisualElement child in inner.Children())
+            {
+                children.Add(new VisualElementWrap(child));
+            }
+            return children;
+        }
+
         public VisualElementWrap InstantiateTemplate(string name)
         {
             VisualTreeAsset treeAsset = GlobalResource
@@ -439,6 +453,12 @@ namespace ThemeApi
                 treeAsset.Instantiate();
             inner.Add(templateContainer);
             return new VisualElementWrap(templateContainer);
+        }
+
+        public void RemoveFromHierarchy()
+        {
+            CallbackRegistry.RemoveAllCallbackOn(inner);
+            inner.RemoveFromHierarchy();
         }
         #endregion
     }

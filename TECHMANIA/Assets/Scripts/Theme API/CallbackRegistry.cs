@@ -20,7 +20,6 @@ namespace ThemeApi
         // type Void.
         private static Dictionary<
             Tuple<VisualElement, Type>,
-            // Tuple content is callback and data.
             HashSet<Tuple<DynValue, DynValue>>>
             callbacks;
 
@@ -86,6 +85,23 @@ namespace ThemeApi
                 }
             }
             callbacks[key] = remainingCallbacks;
+        }
+
+        // Does not unregister the callbacks on VisualElement.
+        public static void RemoveAllCallbackOn(
+            VisualElement element)
+        {
+            Dictionary<Tuple<VisualElement, Type>,
+                HashSet<Tuple<DynValue, DynValue>>>
+                remainingCallbacks = new Dictionary<
+                    Tuple<VisualElement, Type>, 
+                    HashSet<Tuple<DynValue, DynValue>>>();
+            foreach (var pair in callbacks)
+            {
+                if (pair.Key.Item1 == element) continue;
+                remainingCallbacks.Add(pair.Key, pair.Value);
+            }
+            callbacks = remainingCallbacks;
         }
     }
 }

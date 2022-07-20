@@ -50,49 +50,61 @@ function SetToggleIsOn(trackElement, on)
     trackElement.EnableInClassList("toggle-track-off", not on)
 end
 
-function SetUpClickSound(tm, className)
+function SetUpClickSound(tm, element)
+    local sfxName = "Assets/UI/SFX/Click.wav"
+    if (element.name == "back-button" or
+        element.name == "cancel-button") then
+        sfxName = "Assets/UI/SFX/Back.wav"
+    end
+    element.RegisterCallback("Click", function ()
+        tm.audio.Play(sfxName, "SFX")
+    end)
+end
+
+function SetUpPointerOverSound(tm, element)
+    element.RegisterCallback("PointerOver", function ()
+        tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+    end)
+end
+
+function SetUpButtonSounds(tm, element)
+    SetUpClickSound(tm, element)
+    SetUpPointerOverSound(tm, element)
+end
+
+function SetUpButtonSoundsForClass(tm, className)
     tm.root.Query(nil, className).ForEach(function (element)
-        local sfxName = "Assets/UI/SFX/Click.wav"
-        if (element.name == "back-button" or
-            element.name == "cancel-button") then
-            sfxName = "Assets/UI/SFX/Back.wav"
+        SetUpButtonSounds(tm, element)
+    end)
+end
+
+function SetUpSliderSounds(tm)
+    tm.root.Query(nil, "slider").ForEach(function (element)
+        SetUpPointerOverSound(tm, element)
+    end)
+end
+
+function SetUpScrollingText(tm, scrollingTextContainer)
+    scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
+    scrollingTextContainer.Q("unity-content-viewport").pickable = false
+    scrollingTextContainer.Q("unity-content-container").pickable = false
+    scrollingTextContainer.RegisterCallback("FrameUpdate", function(element)
+        local low = element.horizontalScroller.lowValue
+        local high = element.horizontalScroller.highValue
+        if (float.IsNaN(high) or high <= low) then
+            return
         end
-        element.RegisterCallback("Click", function ()
-            tm.audio.Play(sfxName, "SFX")
-        end)
+        local scrollDuration = 4
+        local pingPongTime = math.PingPong(time.time, scrollDuration)
+        -- InverseLerp's output is clamped between 0 and 1.
+        local value = math.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+        element.horizontalScroller.value = math.Lerp(low, high, value)
     end)
-end
-
-function SetUpPointerOverSound(tm, className)
-    tm.root.Query(nil, className).ForEach(function (element)
-        element.RegisterCallback("PointerOver", function ()
-            tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
-        end)
-    end)
-end
-
-function SetUpButtonSounds(tm, className)
-    SetUpClickSound(tm, className)
-    SetUpPointerOverSound(tm, className)
 end
 
 function SetUpAllScrollingTexts(tm)
     tm.root.Query(nil, "scrolling-text-container").ForEach(function (container)
-        container.Q("unity-content-and-vertical-scroll-container").pickable = false
-        container.Q("unity-content-viewport").pickable = false
-        container.Q("unity-content-container").pickable = false
-        container.RegisterCallback("FrameUpdate", function(element)
-            local low = element.horizontalScroller.lowValue
-            local high = element.horizontalScroller.highValue
-            if (float.IsNaN(high) or high <= low) then
-                return
-            end
-            local scrollDuration = 4
-            local pingPongTime = math.PingPong(time.time, scrollDuration)
-            -- InverseLerp's output is clamped between 0 and 1.
-            local value = math.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
-            element.horizontalScroller.value = math.Lerp(low, high, value)
-        end)
+        SetUpScrollingText(tm, container)
     end)
 end
 
@@ -101,13 +113,13 @@ function InitializeControls(tm)
     tm.SetThemeStyleSheet("Assets/UI/Theme StyleSheet.tss")
     SetUpAllSliders(tm)
     SetUpAllToggles(tm)
-    SetUpButtonSounds(tm, "button-text")
-    SetUpButtonSounds(tm, "button-outlined")
-    SetUpButtonSounds(tm, "button-contained")
-    SetUpButtonSounds(tm, "button-card")
-    SetUpButtonSounds(tm, "toggle-track")
-    SetUpButtonSounds(tm, "input-field")
-    SetUpPointerOverSound(tm, "slider")
+    SetUpButtonSoundsForClass(tm, "button-text")
+    SetUpButtonSoundsForClass(tm, "button-outlined")
+    SetUpButtonSoundsForClass(tm, "button-contained")
+    SetUpButtonSoundsForClass(tm, "button-card")
+    SetUpButtonSoundsForClass(tm, "toggle-track")
+    SetUpButtonSoundsForClass(tm, "input-field")
+    SetUpSliderSounds(tm)
     SetUpAllScrollingTexts(tm)
 end
 
