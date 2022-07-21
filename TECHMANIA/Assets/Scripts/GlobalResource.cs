@@ -17,7 +17,8 @@ public class GlobalResource
     [MoonSharpUserData]
     public class TrackSubfolder
     {
-        public string path;
+        public string name;
+        public string fullPath;
         public string eyecatchFullPath;
     }
     [MoonSharpUserData]

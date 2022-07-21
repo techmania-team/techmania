@@ -173,7 +173,7 @@ public class SelectTrackPanel : MonoBehaviour
                 {
                     // Don't show streaming assets in editor.
                     if (ShowNewTrackCard() &&
-                        s.path.Contains(
+                        s.fullPath.Contains(
                             Paths.GetStreamingTrackRootFolder())
                     ) continue;
                     subfolders.Add(s);
@@ -181,7 +181,7 @@ public class SelectTrackPanel : MonoBehaviour
             }
             subfolders.Sort((GlobalResource.TrackSubfolder s1, GlobalResource.TrackSubfolder s2) =>
             {
-                return string.Compare(s1.path, s2.path);
+                return string.Compare(s1.fullPath, s2.fullPath);
             });
         }
 
@@ -196,13 +196,13 @@ public class SelectTrackPanel : MonoBehaviour
                 subfolderGrid.transform);
             card.name = "Subfolder Card";
             card.GetComponent<SubfolderCard>().Initialize(
-                new DirectoryInfo(subfolder.path).Name,
+                subfolder.name,
                 subfolder.eyecatchFullPath);
             card.SetActive(true);
             subfolderGridEmpty = false;
 
             // Record mapping.
-            cardToSubfolder.Add(card, subfolder.path);
+            cardToSubfolder.Add(card, subfolder.fullPath);
             AddToCardList(card);
 
             // Bind click event.

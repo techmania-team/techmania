@@ -372,7 +372,8 @@ public class GlobalResourceLoader : MonoBehaviour
                 GlobalResource.TrackSubfolder subfolder =
                     new GlobalResource.TrackSubfolder()
                 {
-                    path = dir
+                    name = Path.GetFileName(dir),
+                    fullPath = dir
                 };
 
                 // Look for eyecatch, if any.
@@ -579,13 +580,15 @@ public class GlobalResourceLoader : MonoBehaviour
                     .Exists(
                     (GlobalResource.TrackSubfolder s) =>
                     {
-                        return s.path == processingAbsoluteFolder;
+                        return s.fullPath == processingAbsoluteFolder;
                     }))
                 {
                     GlobalResource.TrackSubfolder s = new 
                         GlobalResource.TrackSubfolder()
                     {
-                        path = processingAbsoluteFolder
+                        name = Path.GetFileName(
+                            processingAbsoluteFolder),
+                        fullPath = processingAbsoluteFolder
                     };
                     string pngEyecatch = Path.Combine(
                         processingRelativeFolder,
