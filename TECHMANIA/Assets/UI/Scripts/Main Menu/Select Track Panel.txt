@@ -1,5 +1,9 @@
-function ShowSelectTrackPanel(tm)
+selectTrackPanelLocation = ""
+
+function ShowTracksAtCurrentLocation(tm)
     local panel = tm.root.Q("select-track-panel")
+
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
 
     local subfolderContainer = panel.Q("subfolder-container")
     for _, child in ipairs(subfolderContainer.Children()) do
@@ -11,25 +15,24 @@ function ShowSelectTrackPanel(tm)
         child.RemoveFromHierarchy()
     end
 
-    local currentFolder = tm.paths.GetTrackRootFolder()
-
-    local subfolders = tm.resources.GetSubfolders(currentFolder)
+    local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
     for _, subfolder in ipairs(subfolders) do
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
         SetUpButtonSounds(tm, card)
-        card.Q("name").text = subfolder.name
+        card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
         SetUpScrollingText(tm, card.Q("name-container"))
         card.RegisterCallback("Click", function(_, _, subfolder)
-            print(subfolder.fullPath)
+            selectTrackPanelLocation = subfolder.fullPath
+            ShowTracksAtCurrentLocation(tm)
         end, subfolder)
     end
 
-    local tracksInFolder = tm.resources.GetTracksInFolder(currentFolder)
+    local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
         SetUpButtonSounds(tm, card)
-        card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
-        card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
+        card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
+        card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
         SetUpScrollingText(tm, card.Q("name-container"))
         SetUpScrollingText(tm, card.Q("artist-container"))
         card.RegisterCallback("Click", function(_, _, trackInFolder)
@@ -38,7 +41,12 @@ function ShowSelectTrackPanel(tm)
     end
 end
 
+function ShowSelectTrackPanel(tm)
+    ShowTracksAtCurrentLocation(tm)
+end
+
 function InitializeSelectTrackPanel(tm)
+    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
 end
 
 InitializeSelectTrackPanel(tm)

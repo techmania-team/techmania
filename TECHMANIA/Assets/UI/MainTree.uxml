@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Panel" src="project://database/Assets/UI/Controls/Panel.uxml?fileID=9197481963319205126&amp;guid=ef0a580985f87cd47b0f5f054f6c9830&amp;type=3#Panel" />
-    <ui:Template name="Subfolder In Select Track" src="project://database/Assets/UI/Templates/Subfolder%20In%20Select%20Track%20Panel.uxml?fileID=9197481963319205126&amp;guid=4bb02d2027594954ebaf6f1e56bf0d3c&amp;type=3#Subfolder In Select Track Panel" />
-    <ui:Template name="Track In Select Track Panel" src="project://database/Assets/UI/Templates/Track%20In%20Select%20Track%20Panel.uxml?fileID=9197481963319205126&amp;guid=8b54f445fc976704bb9b4d596fa81ab6&amp;type=3#Track In Select Track Panel" />
+    <ui:Template name="Subfolder In Select Track" src="project://database/Assets/UI/Templates/Subfolder%20Card.uxml?fileID=9197481963319205126&amp;guid=4bb02d2027594954ebaf6f1e56bf0d3c&amp;type=3#Subfolder Card" />
+    <ui:Template name="Track In Select Track Panel" src="project://database/Assets/UI/Templates/Track%20Card.uxml?fileID=9197481963319205126&amp;guid=8b54f445fc976704bb9b4d596fa81ab6&amp;type=3#Track Card" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
@@ -51,7 +51,7 @@
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="open-button" class="button-outlined" style="width: 60px; height: 60px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
                         <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&apos;); width: 36px; height: 36px;" />
                     </ui:Button>
-                    <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
+                    <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" name="location-display" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
                 </ui:VisualElement>
                 <ui:ScrollView name="ScrollView" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
                     <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
