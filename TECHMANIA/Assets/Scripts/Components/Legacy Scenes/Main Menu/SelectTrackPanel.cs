@@ -531,8 +531,6 @@ public class SelectTrackPanel : MonoBehaviour
 
     public void OnGoUpButtonClick()
     {
-        Debug.Log(currentLocation);
-
         currentLocation = Path.GetDirectoryName(currentLocation);
         if (currentLocation.Equals(
             Paths.GetStreamingTrackRootFolder()))

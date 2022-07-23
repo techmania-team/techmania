@@ -400,6 +400,16 @@ public class Paths
     {
         return path.Replace("\\", "\\\\");
     }
+
+    // Similar to Path.GetDirectoryName but allows going up
+    // from streaming assets to track root folder.
+    public static string GoUpFrom(string path)
+    {
+        if (path == GetTrackRootFolder()) return GetTrackRootFolder();
+        string up = Path.GetDirectoryName(path);
+        if (up == GetTrackRootFolder()) return GetTrackRootFolder();
+        return up;
+    }
     #endregion
 
     #region Streaming assets

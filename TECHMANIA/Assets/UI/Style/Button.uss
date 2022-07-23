@@ -223,6 +223,10 @@ Button .icon-in-button {
     -unity-background-image-tint-color: var(--primary-color);
 }
 
+Button:disabled .icon-in-button {
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
 Button .text-in-button {
     margin-left: 10px;
     margin-right: 0;

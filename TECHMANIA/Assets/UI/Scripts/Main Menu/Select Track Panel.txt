@@ -4,6 +4,7 @@ function ShowTracksAtCurrentLocation(tm)
     local panel = tm.root.Q("select-track-panel")
 
     panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
+    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
 
     local subfolderContainer = panel.Q("subfolder-container")
     for _, child in ipairs(subfolderContainer.Children()) do
@@ -47,6 +48,16 @@ end
 
 function InitializeSelectTrackPanel(tm)
     selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
+
+    local panel = tm.root.Q("select-track-panel")
+    panel.Q("up-button").RegisterCallback("Click", function()
+        selectTrackPanelLocation = tm.paths.GoUpFrom(selectTrackPanelLocation)
+        ShowTracksAtCurrentLocation(tm)
+    end)
+
+    panel.Q("open-button").RegisterCallback("Click", function()
+        tm.OpenURL(selectTrackPanelLocation)
+    end)
 end
 
 InitializeSelectTrackPanel(tm)

@@ -62,8 +62,10 @@ function SetUpClickSound(tm, element)
 end
 
 function SetUpPointerOverSound(tm, element)
-    element.RegisterCallback("PointerOver", function ()
-        tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+    element.RegisterCallback("PointerOver", function (element)
+        if (element.enabledInHierarchy) then
+            tm.audio.Play("Assets/UI/SFX/Select.wav", "SFX")
+        end
     end)
 end
 

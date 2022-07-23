@@ -15,6 +15,8 @@ public class GlobalResource
 
     #region Track list
     [MoonSharpUserData]
+    // Note: subfolders in streaming assets are seen as
+    // subfolders for Paths.GetTrackRootFolder().
     public class TrackSubfolder
     {
         public string name;
