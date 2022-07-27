@@ -56,15 +56,12 @@ public class PreviewTrackPlayer : MonoBehaviour
         yield return request.SendWebRequest();
 
         AudioClip clip;
-        string error;
+        Status status;
         ResourceLoader.GetAudioClipFromWebRequest(
-            request, out clip, out error);
-        if (clip == null)
+            request, out clip, out status);
+        if (!status.Ok())
         {
-            // When called from SelectPatternDialog, messageDialog
-            // is intentionally set to null because we don't support
-            // showing 2 dialogs at the same time.
-            messageDialog?.Show(error);
+            messageDialog?.Show(status.errorMessage);
             yield break;
         }
 

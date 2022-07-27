@@ -529,11 +529,11 @@ public class Game : MonoBehaviour
     }
 
     private void OnBackingTrackLoadComplete(
-        AudioClip clip, string error)
+        Status status, AudioClip clip)
     {
-        if (error != null)
+        if (!status.Ok())
         {
-            ReportFatalError(error);
+            ReportFatalError(status.errorMessage);
             return;
         }
 
@@ -1077,11 +1077,11 @@ public class Game : MonoBehaviour
         loadingProgress.SetValue(progress);
     }
 
-    private void OnKeysoundLoadComplete(string error)
+    private void OnKeysoundLoadComplete(Status status)
     {
-        if (error != null)
+        if (!status.Ok())
         {
-            ReportFatalError(error);
+            ReportFatalError(status.errorMessage);
             return;
         }
 

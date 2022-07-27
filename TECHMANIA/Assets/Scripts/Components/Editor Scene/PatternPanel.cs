@@ -3709,17 +3709,17 @@ public class PatternPanel : MonoBehaviour
     // so we can stop a preview before starting the next one.
     private AudioSource keysoundPreviewSource;
 
-    private void OnResourceLoadComplete(string error)
+    private void OnResourceLoadComplete(Status status)
     {
-        if (error != null)
+        if (!status.Ok())
         {
             messageDialog.Show(L10n.GetStringAndFormatIncludingPaths(
                 "pattern_panel_resource_loading_error_format",
-                error));
+                status.errorMessage));
         }
         audioLoaded = true;
         playButton.GetComponent<Button>().interactable =
-            error == null;
+            status.Ok();
         UpdatePlaybackUI();
     }
 

@@ -59,7 +59,7 @@ public class ResourceLoader : MonoBehaviour
 
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
-        UnityAction<string> cacheAudioCompleteCallback)
+        UnityAction<Status> cacheAudioCompleteCallback)
     {
         if (trackFolder != cachedFolder)
         {
@@ -82,7 +82,7 @@ public class ResourceLoader : MonoBehaviour
     // Cache all keysounds of the given pattern.
     public static void CacheAllKeysounds(string trackFolder,
         Pattern pattern,
-        UnityAction<string> cacheAudioCompleteCallback,
+        UnityAction<Status> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
         if (trackFolder != cachedFolder)
@@ -113,14 +113,15 @@ public class ResourceLoader : MonoBehaviour
     private IEnumerator InnerCacheAudioResources(
         string trackFolder,
         ICollection<string> filenameWithFolder,
-        UnityAction<string> cacheAudioCompleteCallback,
+        UnityAction<Status> cacheAudioCompleteCallback,
         UnityAction<float> progressCallback)
     {
         Options.TemporarilyDisableVSync();
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            string fileRelativePath = Paths.RelativePath(trackFolder, file);
+            string fileRelativePath = Paths.RelativePath(
+                trackFolder, file);
             if (!audioClips.ContainsKey(fileRelativePath))
             {
                 // Handle empty files.
@@ -135,7 +136,8 @@ public class ResourceLoader : MonoBehaviour
                 }
                 catch (Exception ex)
                 {
-                    cacheAudioCompleteCallback?.Invoke(ex.Message);
+                    cacheAudioCompleteCallback?.Invoke(
+                        Status.FromException(ex));
                     yield break;
                 }
 
@@ -147,12 +149,12 @@ public class ResourceLoader : MonoBehaviour
                 yield return request.SendWebRequest();
 
                 AudioClip clip;
-                string error;
+                Status status;
                 GetAudioClipFromWebRequest(request,
-                    out clip, out error);
-                if (clip == null)
+                    out clip, out status);
+                if (!status.Ok())
                 {
-                    cacheAudioCompleteCallback?.Invoke(error);
+                    cacheAudioCompleteCallback?.Invoke(status);
                     yield break;
                 }
                 audioClips.Add(fileRelativePath, clip);
@@ -165,11 +167,12 @@ public class ResourceLoader : MonoBehaviour
         }
 
         yield return null;  // Wait 1 more frame just in case
-        cacheAudioCompleteCallback?.Invoke(null);
+        cacheAudioCompleteCallback?.Invoke(Status.OKStatus());
         Options.RestoreVSync();
     }
 
-    public static AudioClip GetCachedClip(string filenameWithoutFolder)
+    public static AudioClip GetCachedClip(
+        string filenameWithoutFolder)
     {
         if (audioClips.ContainsKey(filenameWithoutFolder))
         {
@@ -183,15 +186,18 @@ public class ResourceLoader : MonoBehaviour
     #endregion
 
     #region Audio
+    public delegate void AudioLoadCompleteCallback(
+        Status status, AudioClip clip = null);
+
     public static void LoadAudio(string fullPath,
-        UnityAction<AudioClip, string> loadAudioCompleteCallback)
+        AudioLoadCompleteCallback loadAudioCompleteCallback)
     {
         instance.StartCoroutine(instance.InnerLoadAudio(
             fullPath, loadAudioCompleteCallback));
     }
 
     private IEnumerator InnerLoadAudio(string fullPath,
-        UnityAction<AudioClip, string> loadAudioCompleteCallback)
+        AudioLoadCompleteCallback loadAudioCompleteCallback)
     {
         // Handle empty files.
         try
@@ -199,13 +205,15 @@ public class ResourceLoader : MonoBehaviour
             if (IsEmptyFile(fullPath))
             {
                 Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
-                loadAudioCompleteCallback?.Invoke(emptyClip, null);
+                loadAudioCompleteCallback?.Invoke(
+                    Status.OKStatus(), emptyClip);
                 yield break;
             }
         }
         catch (Exception ex)
         {
-            loadAudioCompleteCallback?.Invoke(null, ex.Message);
+            loadAudioCompleteCallback?.Invoke(
+                Status.FromException(ex), null);
             yield break;
         }
 
@@ -215,13 +223,13 @@ public class ResourceLoader : MonoBehaviour
         yield return request.SendWebRequest();
 
         AudioClip clip;
-        string error;
-        GetAudioClipFromWebRequest(request, out clip, out error);
+        Status status;
+        GetAudioClipFromWebRequest(request, out clip, out status);
         if (clip != null)
         {
             Debug.Log("Loaded: " + fullPath);
         }
-        loadAudioCompleteCallback?.Invoke(clip, error);
+        loadAudioCompleteCallback?.Invoke(status, clip);
     }
 
     private static bool IsEmptyFile(string fullPath)
@@ -239,37 +247,32 @@ public class ResourceLoader : MonoBehaviour
 
     public static void GetAudioClipFromWebRequest(
         UnityWebRequest request,
-        out AudioClip clip, out string error)
+        out AudioClip clip, out Status status)
     {
         string fullPath = request.uri.LocalPath;
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_error_format",
-                fullPath,
-                request.error);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
         clip = DownloadHandlerAudioClip.GetContent(request);
-        error = null;
 
         if (clip == null)
         {
-            error = L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_error_format",
-                fullPath,
-                request.error);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_unsupported_format_error_format",
-                fullPath);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
+        status = Status.OKStatus();
     }
     #endregion
 
@@ -323,7 +326,7 @@ public class ResourceLoader : MonoBehaviour
         {
             loadImageCompleteCallback?.Invoke(
                 Status.Error(Status.Code.OtherError,
-                message: null, fullPath));
+                request.error, fullPath));
             yield break;
         }
 
