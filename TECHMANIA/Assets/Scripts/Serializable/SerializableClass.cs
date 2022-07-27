@@ -65,6 +65,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 #endif
     }
 
+    // Throws FormatException or ArgumentException on failure.
     public static T Deserialize(string json, out bool upgraded)
     {
 #if UNITY_2022
@@ -92,11 +93,11 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         }
         if (subclassType == null)
         {
-            throw new Exception($"Unknown version: {version}");
+            throw new FormatException($"Unknown version: {version}");
         }
         if (latestVersion == null)
         {
-            throw new Exception($"Latest version not defined.");
+            throw new FormatException($"Latest version not defined.");
         }
 
         // Deserialize, upgrade if necessary, initialize if necessary.

@@ -395,7 +395,7 @@ public class Game : MonoBehaviour
             GlobalResourceLoader.CompleteCallback loadSkinCallback =
                 (status) =>
             {
-                if (!status.ok)
+                if (!status.Ok())
                 {
                     ReportFatalError(status.errorMessage);
                 }
@@ -512,7 +512,7 @@ public class Game : MonoBehaviour
     private void OnImageLoadComplete(Status status,
         Texture2D texture)
     {
-        if (!status.ok)
+        if (!status.Ok())
         {
             backgroundImage.color = Color.clear;
             ReportFatalError(status.errorMessage);

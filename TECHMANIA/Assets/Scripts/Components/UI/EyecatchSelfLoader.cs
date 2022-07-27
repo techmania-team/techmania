@@ -47,7 +47,7 @@ public class EyecatchSelfLoader : MonoBehaviour
         Texture2D texture)
     {
         if (!gameObject.activeInHierarchy) return;
-        if (!status.ok)
+        if (!status.Ok())
         {
             NoImage();
             return;

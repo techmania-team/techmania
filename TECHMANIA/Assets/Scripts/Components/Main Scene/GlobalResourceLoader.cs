@@ -33,7 +33,7 @@ public class GlobalResourceLoader : MonoBehaviour
         CompleteCallback localCompleteCallback = (status) =>
         {
             oneSkinLoaded = true;
-            if (!status.ok)
+            if (!status.Ok())
             {
                 lastError = status;
             }
@@ -72,10 +72,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Status.Error(
-                L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_note_skin_error_format",
-                ex.Message))); 
+            completeCallback?.Invoke(Status.FromException(
+                ex, noteSkinFilename));
             return;
         }
 
@@ -101,10 +99,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Status.Error(
-                L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_vfx_skin_error_format",
-                ex.Message)));
+            completeCallback?.Invoke(Status.FromException(
+                ex, vfxSkinFilename));
             return;
         }
 
@@ -130,16 +126,14 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Status.Error(
-                L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_combo_skin_error_format",
-                ex.Message)));
+            completeCallback?.Invoke(Status.FromException(
+                ex, comboSkinFilename));
             return;
         }
 
         CompleteCallback localCallback = (status) =>
         {
-            if (!status.ok)
+            if (!status.Ok())
             {
                 completeCallback(status);
                 return;
@@ -177,10 +171,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            completeCallback?.Invoke(Status.Error(
-                L10n.GetStringAndFormatIncludingPaths(
-                "resource_loader_game_ui_skin_error_format",
-                ex.Message)));
+            completeCallback?.Invoke(Status.FromException(
+                ex, gameUiSkinFilename));
             return;
         }
 
@@ -216,8 +208,8 @@ public class GlobalResourceLoader : MonoBehaviour
                 (status, texture) =>
                 {
                     loaded = true;
-                    error = !status.ok;
-                    if (status.ok)
+                    error = !status.Ok();
+                    if (status.Ok())
                     {
                         spriteSheetReferences[i].texture = texture;
                     }
@@ -290,14 +282,12 @@ public class GlobalResourceLoader : MonoBehaviour
         trackListBuilder.RunWorkerCompleted +=
             (object _, RunWorkerCompletedEventArgs userState) =>
             {
-                if (userState.Error != null)
-                {
-                    builderStatus = Status.Error(userState.Error);
-                }
-                else
+                if (userState.Error == null)
                 {
                     builderStatus = Status.OKStatus();
+                    return;
                 }
+                builderStatus = Status.FromException(userState.Error);
             };
 
         trackListBuilder.RunWorkerAsync(
@@ -689,15 +679,8 @@ public class GlobalResourceLoader : MonoBehaviour
         }
         if (!File.Exists(themePath))
         {
-            string errorMessage = L10n.GetStringAndFormat(
-                "resource_loader_theme_not_found",
-                Options.instance.theme);
-            if (Options.instance.theme != Options.kDefaultTheme)
-            {
-                errorMessage += "\n" + L10n.GetString(
-                    "resource_loader_revert_default_theme");
-            }
-            completeCallback?.Invoke(Status.Error(errorMessage));
+            completeCallback?.Invoke(
+                Status.Error(Status.Code.NotFound));
         }
         else
         {
@@ -722,16 +705,9 @@ public class GlobalResourceLoader : MonoBehaviour
         AssetBundle bundle = bundleRequest.assetBundle;
         Action reportFailedToLoadError = () =>
         {
-            string errorMessage = L10n.GetStringAndFormat(
-                "resource_loader_theme_failed_to_load",
-                Options.instance.theme);
-            if (Options.instance.theme != Options.kDefaultTheme)
-            {
-                errorMessage += "\n" + L10n.GetString(
-                    "resource_loader_revert_default_theme");
-            }
             Options.RestoreVSync();
-            completeCallback?.Invoke(Status.Error(errorMessage));
+            completeCallback?.Invoke(Status.Error(
+                Status.Code.OtherError));
         };
         if (bundle == null)
         {

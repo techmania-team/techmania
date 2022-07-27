@@ -8,11 +8,13 @@ using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
+    public static ResourceLoader instance { get; private set; }
+
     public AudioClip emptyClip;
 
-    private static ResourceLoader GetInstance()
+    public void Start()
     {
-        return FindObjectOfType<ResourceLoader>();
+        instance = this;
     }
 
     #region Audio Caching
@@ -70,7 +72,6 @@ public class ResourceLoader : MonoBehaviour
             forceReload = false;
         }
 
-        ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
             trackFolder,
             Paths.GetAllAudioFiles(trackFolder),
@@ -103,7 +104,6 @@ public class ResourceLoader : MonoBehaviour
                 filenames.Add(Path.Combine(trackFolder, n.sound));
             }
         }
-        ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerCacheAudioResources(
             trackFolder,
             filenames, cacheAudioCompleteCallback,
@@ -186,7 +186,6 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadAudio(string fullPath,
         UnityAction<AudioClip, string> loadAudioCompleteCallback)
     {
-        ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadAudio(
             fullPath, loadAudioCompleteCallback));
     }
@@ -281,7 +280,6 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadImage(string fullPath,
         ImageLoadCompleteCallback completeCallback)
     {
-        ResourceLoader instance = GetInstance();
         instance.StartCoroutine(instance.InnerLoadImage(
             fullPath, completeCallback));
     }
@@ -305,33 +303,27 @@ public class ResourceLoader : MonoBehaviour
             Paths.FullPathToUri(fullPath), nonReadable: true);
         yield return request.SendWebRequest();
 
-        UnityAction reportResourceLoaderError = () =>
-        {
-            loadImageCompleteCallback?.Invoke(
-                Status.Error(L10n.GetStringAndFormatIncludingPaths(
-                    "resource_loader_error_format",
-                    fullPath, request.error)));
-        };
-
         if (request.result != UnityWebRequest.Result.Success)
         {
-            reportResourceLoaderError();
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Status.Code.OtherError,
+                request.error, fullPath));
             yield break;
         }
         Texture texture = DownloadHandlerTexture.GetContent(request);
         if (texture == null)
         {
-            reportResourceLoaderError();
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Status.Code.OtherError,
+                request.error, fullPath));
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
             loadImageCompleteCallback?.Invoke(
-                Status.Error(
-                L10n.GetStringAndFormatIncludingPaths(
-                    "resource_loader_unsupported_format_error_format",
-                    fullPath)));
+                Status.Error(Status.Code.OtherError,
+                message: null, fullPath));
             yield break;
         }
 

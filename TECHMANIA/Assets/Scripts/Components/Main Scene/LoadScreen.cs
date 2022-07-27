@@ -38,7 +38,7 @@ public class LoadScreen : MonoBehaviour
         GlobalResourceLoader.CompleteCallback completeCallback =
             (status) =>
             {
-                if (!status.ok)
+                if (!status.Ok())
                 {
                     messageDialog.Show(status.errorMessage);
                 }
@@ -70,12 +70,22 @@ public class LoadScreen : MonoBehaviour
             (status) =>
             {
                 loaded = true;
-                if (status.ok) return;
+                if (status.Ok()) return;
+
+                string errorMessage = L10n.GetStringAndFormat(
+                    "resource_loader_theme_failed_to_load",
+                    Options.instance.theme);
+                if (Options.instance.theme != Options.kDefaultTheme)
+                {
+                    errorMessage += "\n" + L10n.GetString(
+                        "resource_loader_revert_default_theme");
+                }
 
                 Options.instance.theme = Options.kDefaultTheme;
                 Options.instance.SaveToFile(
                     Paths.GetOptionsFilePath());
-                messageDialog.Show(status.errorMessage, () =>
+
+                messageDialog.Show(errorMessage, () =>
                 {
                     QuitGame();
                 });

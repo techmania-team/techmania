@@ -420,6 +420,12 @@ namespace ThemeApi
             get { return inner.visible; }
             set { inner.visible = value; }
         }
+
+        public Texture2D backgroundImage
+        {
+            get { return style.backgroundImage.value.texture; }
+            set { style.backgroundImage = new StyleBackground(value); }
+        }
         #endregion
 
         #region DOM

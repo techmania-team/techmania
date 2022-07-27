@@ -355,12 +355,13 @@ public class Ruleset : RulesetBase
     {
         try
         {
-            custom = LoadFromFile(Paths.GetRulesetFilePath()) as Ruleset;
+            custom = LoadFromFile(Paths.GetRulesetFilePath())
+                as Ruleset;
             return Status.OKStatus();
         }
         catch (Exception ex)
         {
-            return Status.Error(ex);
+            return Status.FromException(ex, Paths.GetRulesetFilePath());
         }
     }
     #endregion

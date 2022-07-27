@@ -249,7 +249,7 @@ public class SelectSkinPanel : MonoBehaviour
 
     public void OnSkinLoaded(Status status)
     {
-        if (!status.ok)
+        if (!status.Ok())
         {
             messageDialog.Show(status.errorMessage);
         }
