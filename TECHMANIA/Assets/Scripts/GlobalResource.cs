@@ -28,7 +28,7 @@ public class GlobalResource
     {
         // The folder that track.tech is in.
         public string folder;
-        // Minimized to save RAM.
+        // Minimized to save RAM; does not contain notes or time events.
         public Track minimizedTrack;
     }
     [MoonSharpUserData]

@@ -8,13 +8,17 @@ using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
-    public static ResourceLoader instance { get; private set; }
+    private static ResourceLoader instance;
 
     public AudioClip emptyClip;
 
-    public void Start()
+    private static ResourceLoader GetInstance()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = FindObjectOfType<ResourceLoader>();
+        }
+        return instance;
     }
 
     #region Audio Caching
@@ -72,11 +76,12 @@ public class ResourceLoader : MonoBehaviour
             forceReload = false;
         }
 
-        instance.StartCoroutine(instance.InnerCacheAudioResources(
-            trackFolder,
-            Paths.GetAllAudioFiles(trackFolder),
-            cacheAudioCompleteCallback,
-            progressCallback: null));
+        GetInstance().StartCoroutine(
+            GetInstance().InnerCacheAudioResources(
+                trackFolder,
+                Paths.GetAllAudioFiles(trackFolder),
+                cacheAudioCompleteCallback,
+                progressCallback: null));
     }
 
     // Cache all keysounds of the given pattern.
@@ -104,10 +109,11 @@ public class ResourceLoader : MonoBehaviour
                 filenames.Add(Path.Combine(trackFolder, n.sound));
             }
         }
-        instance.StartCoroutine(instance.InnerCacheAudioResources(
-            trackFolder,
-            filenames, cacheAudioCompleteCallback,
-            progressCallback));
+        GetInstance().StartCoroutine(
+            GetInstance().InnerCacheAudioResources(
+                trackFolder,
+                filenames, cacheAudioCompleteCallback,
+                progressCallback));
     }
 
     private IEnumerator InnerCacheAudioResources(
@@ -192,7 +198,7 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadAudio(string fullPath,
         AudioLoadCompleteCallback loadAudioCompleteCallback)
     {
-        instance.StartCoroutine(instance.InnerLoadAudio(
+        GetInstance().StartCoroutine(GetInstance().InnerLoadAudio(
             fullPath, loadAudioCompleteCallback));
     }
 
@@ -283,7 +289,7 @@ public class ResourceLoader : MonoBehaviour
     public static void LoadImage(string fullPath,
         ImageLoadCompleteCallback completeCallback)
     {
-        instance.StartCoroutine(instance.InnerLoadImage(
+        GetInstance().StartCoroutine(GetInstance().InnerLoadImage(
             fullPath, completeCallback));
     }
 

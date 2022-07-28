@@ -52,6 +52,7 @@ namespace ThemeApi
         public static Options options => Options.instance;
         public static Ruleset ruleset => Ruleset.instance;
         public static GlobalResource resources => resInstance;
+        public static IO io => new IO();
         public static Paths paths => new Paths();
         #endregion
 

@@ -60,6 +60,7 @@ namespace ThemeApi
             UserData.RegisterType<Resolution>();
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
+            UserData.RegisterType<Texture2D>();
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();
@@ -71,7 +72,8 @@ namespace ThemeApi
             session.Globals["int"] = UserData.CreateStatic<int>();
             session.Globals["float"] = UserData.CreateStatic<float>();
             session.Globals["time"] = UserData.CreateStatic<Time>();
-            session.Globals["screen"] = UserData.CreateStatic<Screen>();
+            session.Globals["screen"] = UserData.CreateStatic
+                <Screen>();
             session.Globals["resolution"] = 
                 UserData.CreateStatic<Resolution>();
             session.Globals["math"] = UserData.CreateStatic<Mathf>();

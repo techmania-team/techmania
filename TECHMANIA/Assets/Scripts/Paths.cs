@@ -410,6 +410,11 @@ public class Paths
         if (up == GetTrackRootFolder()) return GetTrackRootFolder();
         return up;
     }
+
+    public static string Combine(string path1, string path2)
+    {
+        return System.IO.Path.Combine(path1, path2);
+    }
     #endregion
 
     #region Streaming assets

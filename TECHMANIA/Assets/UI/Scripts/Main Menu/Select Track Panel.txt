@@ -16,9 +16,23 @@ function ShowTracksAtCurrentLocation(tm)
         child.RemoveFromHierarchy()
     end
 
+    function HandleEyecatch(card, status, texture)
+        if (status.Ok()) then
+            card.Q("eyecatch").backgroundImage = texture
+            card.Q("default-eyecatch").visible = false
+        else
+            card.Q("default-eyecatch").visible = true
+        end
+    end
+
     local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
     for _, subfolder in ipairs(subfolders) do
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
+        if (subfolder.eyecatchFullPath != nil) then
+            tm.io.LoadTexture(subfolder.eyecatchFullPath, function(status, texture)
+                HandleEyecatch(card, status, texture)
+            end)
+        end
         SetUpButtonSounds(tm, card)
         card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
         SetUpScrollingText(tm, card.Q("name-container"))
@@ -31,6 +45,10 @@ function ShowTracksAtCurrentLocation(tm)
     local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+        tm.io.LoadTexture(eyecatchPath, function(status, texture)
+            HandleEyecatch(card, status, texture)
+        end)
         SetUpButtonSounds(tm, card)
         card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
         card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)

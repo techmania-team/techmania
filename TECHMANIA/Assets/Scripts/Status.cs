@@ -42,9 +42,9 @@ public class Status
         string path = null)
     {
         UnityEngine.Debug.LogError($"An error occurred.\n" +
-            "Code: {code}\n" +
-            "Message: {message}\n" +
-            "Path: {path}");
+            $"Code: {code}\n" +
+            $"Message: {message}\n" +
+            $"Path: {path}");
         return new Status()
         {
             codeEnum = code,
