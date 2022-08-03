@@ -135,7 +135,6 @@ GameObject:
   - component: {fileID: 175751011}
   - component: {fileID: 175751010}
   - component: {fileID: 175751009}
-  - component: {fileID: 175751013}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -228,21 +227,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &175751013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 175751008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d001b931c3c436d4788fff4181444368, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
-  audioSourceManager: {fileID: 1505072944}
-  loadScreen: {fileID: 1622777474285759389}
 --- !u!1 &226332757
 GameObject:
   m_ObjectHideFlags: 0
@@ -1383,6 +1367,9 @@ GameObject:
   - component: {fileID: 1144905151}
   - component: {fileID: 1144905150}
   - component: {fileID: 1144905149}
+  - component: {fileID: 1144905154}
+  - component: {fileID: 1144905153}
+  - component: {fileID: 1144905152}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1456,6 +1443,46 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1144905152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144905148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2063efa1a996969458a72b8587ce8ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  emptyClip: {fileID: 8300000, guid: 23ca776a5bff1de40a7de131d17856ab, type: 3}
+--- !u!114 &1144905153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144905148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c87d8964c2fc734d835474c832dcf2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1144905154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144905148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d001b931c3c436d4788fff4181444368, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
+  audioSourceManager: {fileID: 1505072944}
+  loadScreen: {fileID: 1622777474285759389}
 --- !u!1001 &1505072943
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1606,7 +1633,6 @@ GameObject:
   - component: {fileID: 1527373380}
   - component: {fileID: 1527373382}
   - component: {fileID: 1527373383}
-  - component: {fileID: 1527373384}
   m_Layer: 5
   m_Name: Main UIDocument
   m_TagString: Untagged
@@ -1669,19 +1695,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0437482bb0138c94b8abe36633de57be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1527373384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527373379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2063efa1a996969458a72b8587ce8ab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  emptyClip: {fileID: 8300000, guid: 23ca776a5bff1de40a7de131d17856ab, type: 3}
 --- !u!1001 &1733758706
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1860,7 +1873,6 @@ GameObject:
   - component: {fileID: 1622777474285759386}
   - component: {fileID: 1622777474285759380}
   - component: {fileID: 1622777474285759389}
-  - component: {fileID: 1622777474285759391}
   m_Layer: 5
   m_Name: Load Screen
   m_TagString: Untagged
@@ -1910,15 +1922,3 @@ MonoBehaviour:
   revertMessage: {fileID: 2087462596}
   messageDialog: {fileID: 411146263}
   uiDocument: {fileID: 1527373380}
---- !u!114 &1622777474285759391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1622777474285759385}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c87d8964c2fc734d835474c832dcf2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -48,7 +48,7 @@ public class LoadScreen : MonoBehaviour
         // Step 1: load skins.
         progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_skins", 1, 3);
-        GetComponent<GlobalResourceLoader>().LoadAllSkins(
+        GlobalResourceLoader.GetInstance().LoadAllSkins(
             progressCallback, completeCallback);
         yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>
@@ -58,7 +58,7 @@ public class LoadScreen : MonoBehaviour
         progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_track_list", 2, 3);
         loaded = false;
-        GetComponent<GlobalResourceLoader>().LoadTrackList(
+        GlobalResourceLoader.GetInstance().LoadTrackList(
             progressCallback, completeCallback);
         yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>
@@ -93,7 +93,7 @@ public class LoadScreen : MonoBehaviour
         progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_theme", 3, 3);
         loaded = false;
-        GetComponent<GlobalResourceLoader>().LoadTheme(
+        GlobalResourceLoader.GetInstance().LoadTheme(
             progressCallback, themeCompleteCallback);
         yield return new WaitUntil(() => loaded);
         yield return new WaitUntil(() =>

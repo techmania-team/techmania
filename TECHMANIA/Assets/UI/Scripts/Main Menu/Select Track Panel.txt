@@ -1,10 +1,7 @@
 selectTrackPanelLocation = ""
 
-function ShowTracksAtCurrentLocation(tm)
+function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
-
-    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
-    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
 
     local subfolderContainer = panel.Q("subfolder-container")
     for _, child in ipairs(subfolderContainer.Children()) do
@@ -15,6 +12,17 @@ function ShowTracksAtCurrentLocation(tm)
     for _, child in ipairs(trackContainer.Children()) do
         child.RemoveFromHierarchy()
     end
+end
+
+function ShowTracksAtCurrentLocation(tm)
+    local panel = tm.root.Q("select-track-panel")
+
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
+    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
+
+    local subfolderContainer = panel.Q("subfolder-container")
+    local trackContainer = panel.Q("track-container")
+    ClearAllTrackCards(tm)
 
     function HandleEyecatch(card, status, texture)
         if (status.Ok()) then
@@ -59,6 +67,8 @@ function ShowTracksAtCurrentLocation(tm)
             print(trackInFolder.minimizedTrack.trackMetadata.title)
         end, trackInFolder)
     end
+
+    panel.Q("track-status").text = ""
 end
 
 function ShowSelectTrackPanel(tm)
@@ -69,6 +79,18 @@ function InitializeSelectTrackPanel(tm)
     selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
 
     local panel = tm.root.Q("select-track-panel")
+    panel.Q("refresh-button").RegisterCallback("Click", function()
+        ClearAllTrackCards(tm)
+        panel.Q("back-button").SetEnabled(false)
+        tm.io.ReloadTrackList(function(currentlyLoadingFile)
+            panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
+        end,
+        function(reloadStatus)
+            panel.Q("back-button").SetEnabled(true)
+            ShowTracksAtCurrentLocation(tm)
+        end)
+    end)
+
     panel.Q("up-button").RegisterCallback("Click", function()
         selectTrackPanelLocation = tm.paths.GoUpFrom(selectTrackPanelLocation)
         ShowTracksAtCurrentLocation(tm)

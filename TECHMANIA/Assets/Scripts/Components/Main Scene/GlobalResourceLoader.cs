@@ -10,6 +10,17 @@ using UnityEngine.Events;
 // coroutines.
 public class GlobalResourceLoader : MonoBehaviour
 {
+    private static GlobalResourceLoader instance;
+
+    public static GlobalResourceLoader GetInstance()
+    {
+        if (instance == null)
+        {
+            instance = FindObjectOfType<GlobalResourceLoader>();
+        }
+        return instance;
+    }
+
     public delegate void ProgressCallback(
         string currentlyLoadingFile);
     public delegate void CompleteCallback(

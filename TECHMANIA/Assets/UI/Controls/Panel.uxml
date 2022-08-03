@@ -5,7 +5,7 @@
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
     <ui:VisualElement name="top-bar" picking-mode="Ignore" class="top-bar">
         <ui:Button display-tooltip-when-elided="true" name="back-button" class="button-text button-in-top-bar">
-            <ui:VisualElement name="icon" picking-mode="Ignore" />
+            <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-in-button" />
         </ui:Button>
         <ui:Label text="Title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-4" />
     </ui:VisualElement>
