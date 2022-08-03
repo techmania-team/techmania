@@ -45,6 +45,7 @@ function ShowTracksAtCurrentLocation(tm)
     local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
         local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
         tm.io.LoadTexture(eyecatchPath, function(status, texture)
             HandleEyecatch(card, status, texture)
