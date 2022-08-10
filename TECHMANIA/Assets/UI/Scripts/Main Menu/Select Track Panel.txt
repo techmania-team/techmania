@@ -34,8 +34,11 @@ function ShowTracksAtCurrentLocation(tm)
         end
     end
 
+    local anythingInFolder = false
+
     local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
     for _, subfolder in ipairs(subfolders) do
+        anythingInFolder = true
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
         if (subfolder.eyecatchFullPath != nil) then
             tm.io.LoadTexture(subfolder.eyecatchFullPath, function(status, texture)
@@ -53,6 +56,7 @@ function ShowTracksAtCurrentLocation(tm)
 
     local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
+        anythingInFolder = true
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
         card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
         card.Q("error-icon").visible = false
@@ -72,6 +76,7 @@ function ShowTracksAtCurrentLocation(tm)
 
     local tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
     for _, trackWithError in ipairs(tracksWithError) do
+        anythingInFolder = true
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
         card.Q("eyecatch").visible = false
         card.Q("default-eyecatch").visible = false
@@ -97,7 +102,11 @@ function ShowTracksAtCurrentLocation(tm)
         end, errorMessage)
     end
 
-    panel.Q("track-status").text = ""
+    if (anythingInFolder) then
+        panel.Q("track-status").text = ""
+    else
+        panel.Q("track-status").text = tm.l10n.GetString("select_track_no_track_text")
+    end
 end
 
 function ShowSelectTrackPanel(tm)
