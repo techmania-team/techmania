@@ -39,9 +39,9 @@ public class GlobalResource
             Load,
             Upgrade
         }
-        public Type type;
-        public string trackFile;
-        public string message;
+        public Type typeEnum;
+        public string type => typeEnum.ToString();
+        public Status status;
     }
 
     // Cached, keyed by track folder's parent folder.

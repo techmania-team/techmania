@@ -73,7 +73,7 @@ public class Status
         }
 
         Status status = Error(code, ex.Message, path);
-        UnityEngine.Debug.LogError("Stack trace:\n" + ex.StackTrace);
+        UnityEngine.Debug.LogError("Stack trace of previous error:\n" + ex.StackTrace);
         return status;
     }
 }

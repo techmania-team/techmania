@@ -54,6 +54,7 @@ function ShowTracksAtCurrentLocation(tm)
     for _, trackInFolder in ipairs(tracksInFolder) do
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
         card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+        card.Q("error-icon").visible = false
         local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
         tm.io.LoadTexture(eyecatchPath, function(status, texture)
             HandleEyecatch(card, status, texture)
@@ -66,6 +67,33 @@ function ShowTracksAtCurrentLocation(tm)
         card.RegisterCallback("Click", function(_, _, trackInFolder)
             print(trackInFolder.minimizedTrack.trackMetadata.title)
         end, trackInFolder)
+    end
+
+    local tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
+    for _, trackWithError in ipairs(tracksWithError) do
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = true
+        SetUpButtonSounds(tm, card)
+        local errorMessage = ""
+        if (trackWithError.type == "Load") then
+            card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
+            errorMessage = string.Format(tm.l10n.GetString("select_track_error_format"),
+                tm.paths.EscapeBackslash(trackWithError.status.filePath),
+                trackWithError.status.errorMessage)
+        elseif (trackWithError.type == "Upgrade") then
+            card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
+            errorMessage = string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+                tm.paths.EscapeBackslash(trackWithError.status.filePath),
+                trackWithError.status.errorMessage)
+        end
+        card.Q("artist").text = tm.l10n.GetString("select_track_error_card_artist")
+        SetUpScrollingText(tm, card.Q("name-container"))
+        SetUpScrollingText(tm, card.Q("artist-container"))
+        card.RegisterCallback("Click", function(_, _, errorMessage)
+            Alert(errorMessage, tm.l10n.GetString("message_dialog_ok_button"))
+        end, errorMessage)
     end
 
     panel.Q("track-status").text = ""

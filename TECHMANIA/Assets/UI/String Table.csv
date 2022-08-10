@@ -4,6 +4,8 @@ Used in option menu.",language_name,English,简体中文,繁體中文,日本語,
 "The list of localizer names, seperated by commas.
 Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sinby","Dino.B, Sinby, BrainInAVet, namusang"
 ,,,,,,
+,message_dialog_ok_button,OK,确定,確定,OK,확인
+,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button,START,开始,開始,スタート,게임 시작
 ,#main-menu #editor-button,EDITOR,编辑,編輯,エディタ,편집기
@@ -13,6 +15,34 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,,,,,,
 ,#select-track-panel #top-bar #title,Select Track,选择曲目,選擇歌曲,トラック選択,Select Track
 ,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
+"When there's an error with a track,
+the select track panel will create an ""error card"" for it,
+with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入歌曲,トラックを読み込めません。,음악을 불러올 수 없습니다.
+,select_track_upgrade_error_card_title,Could not upgrade track,无法升级曲目,無法升級歌曲,更新できません,업그레이드할 수 없음
+,select_track_error_card_artist,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
+"{0} is track.tech's full path;
+{1} is the error message.",select_track_error_format,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}","載入 {0} 時發生錯誤：
+
+{1}","{0} の読み込み中にエラーが発生しました：
+
+{1}","{0}을(를) 불러오는 중 오류가 발생했습니다.
+
+{1}"
+,select_track_upgrade_error_format,"An error occurred when upgrading {0}:
+
+{1}","升级{0}时发生错误：
+
+{1}","升級 {0} 時發生錯誤：
+
+{1}","{0}の更新中にエラーが発生しました：
+
+{1}","{0}을/를 업그레이드하는 중 오류가 발생했습니다.
+
+{1}"
 ,,,,,,
 ,#options-panel #title,Options,设置,設定,オプション,설정
 ,#options-panel #graphics-header,Graphics,图像,影像,グラフィック,그래픽

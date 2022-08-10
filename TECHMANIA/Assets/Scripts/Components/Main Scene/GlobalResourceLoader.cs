@@ -423,11 +423,11 @@ public class GlobalResourceLoader : MonoBehaviour
             {
                 GlobalResource.trackWithErrorList[folder].Add(
                     new GlobalResource.TrackWithError()
-                {
-                    type = GlobalResource.TrackWithError.Type.Load,
-                    trackFile = possibleTrackFile,
-                    message = ex.Message
-                });
+                    {
+                        typeEnum = GlobalResource.TrackWithError.Type.Load,
+                        status = Status.FromException(
+                            ex, possibleTrackFile)
+                    });
                 continue;
             }
             if (upgradedWhenLoading)
@@ -444,10 +444,10 @@ public class GlobalResourceLoader : MonoBehaviour
                         GlobalResource.trackWithErrorList[folder]
                             .Add(new GlobalResource.TrackWithError()
                         {
-                            type = GlobalResource.TrackWithError
+                            typeEnum = GlobalResource.TrackWithError
                                 .Type.Upgrade,
-                            trackFile = possibleTrackFile,
-                            message = ex.Message
+                            status = Status.FromException(
+                                ex, possibleTrackFile)
                         });
                         continue;
                     }
@@ -549,9 +549,9 @@ public class GlobalResourceLoader : MonoBehaviour
                     processingAbsoluteFolder].Add(
                     new GlobalResource.TrackWithError()
                 {
-                    type = GlobalResource.TrackWithError.Type.Load,
-                    trackFile = absoluteTrackFile,
-                    message = ex.Message
+                    typeEnum = GlobalResource.TrackWithError.Type.Load,
+                    status = Status.FromException(
+                            ex, absoluteTrackFile)
                 });
             }
 

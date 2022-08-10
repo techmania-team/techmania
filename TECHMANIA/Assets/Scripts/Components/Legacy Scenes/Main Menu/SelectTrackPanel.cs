@@ -280,7 +280,7 @@ public class SelectTrackPanel : MonoBehaviour
                 GlobalResource.trackWithErrorList[currentLocation])
             {
                 GameObject card = null;
-                string key = error.type switch
+                string key = error.typeEnum switch
                 {
                     GlobalResource.TrackWithError.Type.Load
                         => "select_track_error_format",
@@ -291,11 +291,11 @@ public class SelectTrackPanel : MonoBehaviour
                 string message = L10n.
                     GetStringAndFormatIncludingPaths(
                         key,
-                        error.trackFile,
-                        error.message);
+                        error.status.filePath,
+                        error.status.errorMessage);
 
                 // Instantiate card.
-                GameObject template = error.type switch
+                GameObject template = error.typeEnum switch
                 {
                     GlobalResource.TrackWithError.Type.Load => errorCardTemplate,
                     GlobalResource.TrackWithError.Type.Upgrade => 
@@ -392,7 +392,7 @@ public class SelectTrackPanel : MonoBehaviour
             {
                 foreach (GlobalResource.TrackWithError e in list)
                 {
-                    if (e.type == GlobalResource.TrackWithError.Type.Upgrade)
+                    if (e.typeEnum == GlobalResource.TrackWithError.Type.Upgrade)
                     {
                         anyUpgradeError = true;
                         break;

@@ -59,19 +59,6 @@ function Vector3(x, y, z)
     return vector3.__new(x, y, z)
 end
 
--- Query example
--- root.Query().ForEach(function(e)
---     if (e.IsTextElement()) then
---         print(e.text)
---     end
--- end)
-
--- Audio example
--- root.Q("test-button").OnClick(function(button)
---     print("button clicked: " .. button.name)
---     audio.Play("Assets/UI/SFX/Click.wav", "SFX")
--- end)
-
 -- Vector3 example
 -- v = Vector3(1, 2, 3)
 -- print(v.y)

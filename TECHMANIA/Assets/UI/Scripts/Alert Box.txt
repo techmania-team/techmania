@@ -56,6 +56,19 @@ function Alert(message, confirmText, callback)
     end)
 end
 
+function Confirm(message, confirmText, cancelText, confirmCallback)
+    local bg = tm.root.Q("alert-box-background")
+    bg.Q("alert-text").text = message
+    bg.Q("confirm-button").text = confirmText
+    bg.Q("cancel-button").display = true
+    bg.Q("cancel-button").text = cancelText
+    alertBoxConfirmCallback = callback
+    alertBoxCancelCallback = nil
+    tm.StartCoroutine(function()
+        FadeInAlertBoxCoroutine(bg)
+    end)
+end
+
 function InitializeAlertBox(tm)
     local bg = tm.root.Q("alert-box-background")
     bg.display = false
