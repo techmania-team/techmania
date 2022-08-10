@@ -90,6 +90,8 @@ public class Options : OptionsBase
         set { rulesetEnum = Enum.Parse<Ruleset>(value); }
     }
     public bool customDataLocation;
+    // Remember to call Paths.ApplyCustomDataLocation after modifying
+    // these paths.
     public string tracksFolderLocation;
     public string skinsFolderLocation;
     public bool discordRichPresence;

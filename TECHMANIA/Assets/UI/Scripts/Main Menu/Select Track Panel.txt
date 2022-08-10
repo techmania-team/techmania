@@ -1,4 +1,5 @@
 selectTrackPanelLocation = ""
+trackListNeedsRefresh = false
 
 function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
@@ -100,8 +101,28 @@ function ShowTracksAtCurrentLocation(tm)
 end
 
 function ShowSelectTrackPanel(tm)
+    if (trackListNeedsRefresh) then
+        RefreshTrackList(tm)
+        return
+    end
     ShowTracksAtCurrentLocation(tm)
     tm.root.Q("select-track-panel").Q("upgrade-button").display = tm.resources.anyOutdatedTrack
+end
+
+function RefreshTrackList(tm)
+    ClearAllTrackCards(tm)
+    local panel = tm.root.Q("select-track-panel")
+    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
+    trackListNeedsRefresh = false
+    panel.Q("back-button").SetEnabled(false)
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
+    tm.io.ReloadTrackList(function(currentlyLoadingFile)
+        panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
+    end,
+    function(reloadStatus)
+        panel.Q("back-button").SetEnabled(true)
+        ShowSelectTrackPanel(tm)
+    end)
 end
 
 function InitializeSelectTrackPanel(tm)
@@ -109,15 +130,7 @@ function InitializeSelectTrackPanel(tm)
 
     local panel = tm.root.Q("select-track-panel")
     panel.Q("refresh-button").RegisterCallback("Click", function()
-        ClearAllTrackCards(tm)
-        panel.Q("back-button").SetEnabled(false)
-        tm.io.ReloadTrackList(function(currentlyLoadingFile)
-            panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
-        end,
-        function(reloadStatus)
-            panel.Q("back-button").SetEnabled(true)
-            ShowSelectTrackPanel(tm)
-        end)
+        RefreshTrackList(tm)
     end)
 
     panel.Q("upgrade-button").RegisterCallback("Click", function()

@@ -315,6 +315,8 @@ function InitializeOptionsPanel(tm)
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
         if (newFolder != nil) then
             tm.options.tracksFolderLocation = newFolder;
+            tm.paths.ApplyCustomDataLocation()
+            trackListNeedsRefresh = true
             UpdateCustomDataLocationDisplay(tm, panel)
         end
     end)
@@ -323,6 +325,7 @@ function InitializeOptionsPanel(tm)
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
+            tm.paths.ApplyCustomDataLocation()
             UpdateCustomDataLocationDisplay(tm, panel)
         end
     end)
