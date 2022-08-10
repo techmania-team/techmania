@@ -435,6 +435,8 @@ public class GlobalResourceLoader : MonoBehaviour
                 // If upgrading, write the track back to disk.
                 if (upgradeVersion)
                 {
+                    Debug.Log(possibleTrackFile +
+                        " is being upgraded.");
                     try
                     {
                         track.SaveToFile(possibleTrackFile);
@@ -454,6 +456,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(possibleTrackFile + " is outdated.");
                     GlobalResource.anyOutdatedTrack = true;
                 }
             }

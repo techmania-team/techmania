@@ -79,20 +79,20 @@ function ShowTracksAtCurrentLocation(tm)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
             card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
-            errorMessage = string.Format(tm.l10n.GetString("select_track_error_format"),
-                tm.paths.EscapeBackslash(trackWithError.status.filePath),
-                trackWithError.status.errorMessage)
+            errorMessage = tm.paths.EscapeBackslash(string.Format(tm.l10n.GetString("select_track_error_format"),
+                trackWithError.status.filePath,
+                trackWithError.status.errorMessage))
         elseif (trackWithError.type == "Upgrade") then
             card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
-            errorMessage = string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
-                tm.paths.EscapeBackslash(trackWithError.status.filePath),
-                trackWithError.status.errorMessage)
+            errorMessage = tm.paths.EscapeBackslash(string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+                trackWithError.status.filePath,
+                trackWithError.status.errorMessage))
         end
         card.Q("artist").text = tm.l10n.GetString("select_track_error_card_artist")
         SetUpScrollingText(tm, card.Q("name-container"))
         SetUpScrollingText(tm, card.Q("artist-container"))
         card.RegisterCallback("Click", function(_, _, errorMessage)
-            Alert(errorMessage, tm.l10n.GetString("message_dialog_ok_button"))
+            Alert(errorMessage)
         end, errorMessage)
     end
 
@@ -101,6 +101,7 @@ end
 
 function ShowSelectTrackPanel(tm)
     ShowTracksAtCurrentLocation(tm)
+    tm.root.Q("select-track-panel").Q("upgrade-button").display = tm.resources.anyOutdatedTrack
 end
 
 function InitializeSelectTrackPanel(tm)
@@ -115,8 +116,32 @@ function InitializeSelectTrackPanel(tm)
         end,
         function(reloadStatus)
             panel.Q("back-button").SetEnabled(true)
-            ShowTracksAtCurrentLocation(tm)
+            ShowSelectTrackPanel(tm)
         end)
+    end)
+
+    panel.Q("upgrade-button").RegisterCallback("Click", function()
+        Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
+            tm.l10n.GetString("select_track_upgrade_version_confirm"),
+            tm.l10n.GetString("select_track_upgrade_version_cancel"),
+            function()
+                ClearAllTrackCards(tm)
+                panel.Q("back-button").SetEnabled(false)
+                tm.io.UpgradeAllTracks(function(currentlyLoadingFile)
+                    panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
+                end,
+                function(reloadStatus)
+                    panel.Q("back-button").SetEnabled(true)
+                    ShowSelectTrackPanel(tm)
+                    if (reloadStatus.Ok()) then
+                        Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
+                    else
+                        Alert(tm.paths.EscapeBackslash(string.Format(
+                            tm.l10n.GetString("select_track_upgrade_process_error_format"),
+                            reloadStatus.errorMessage)))
+                    end
+                end)
+            end)
     end)
 
     panel.Q("up-button").RegisterCallback("Click", function()

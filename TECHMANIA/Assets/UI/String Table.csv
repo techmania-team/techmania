@@ -4,7 +4,7 @@ Used in option menu.",language_name,English,简体中文,繁體中文,日本語,
 "The list of localizer names, seperated by commas.
 Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sinby","Dino.B, Sinby, BrainInAVet, namusang"
 ,,,,,,
-,message_dialog_ok_button,OK,确定,確定,OK,확인
+,alert_ok,OK,确定,確定,OK,확인
 ,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button,START,开始,開始,スタート,게임 시작
@@ -43,6 +43,33 @@ with the title and artist as listed here.",select_track_error_card_title,Could n
 {1}","{0}을/를 업그레이드하는 중 오류가 발생했습니다.
 
 {1}"
+,select_track_upgrade_version_confirmation,"Some tracks are created with older versions of TECHMANIA. They will still work, but it will take longer for the select track screen to scan them.
+
+Would you like to upgrade all tracks to the current version?
+
+It is recommended that you backup your tracks before upgrading.","有一部分曲目是使用旧版本的TECHMANIA制作。你仍然可以游玩这些曲目，但是扫描这些曲目将需要更长时间。
+
+是否将所有曲目升级至当前版本？
+
+建议在备份所有曲目后再开始升级。","有一部分的歌曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些歌曲，但是掃描這些歌曲將需要更長時間。
+
+是否將所有歌曲升級至目前版本？
+
+建議備份所有歌曲後再開始升級。","旧バージョンのTECHMANIAで作成されたトラックがあります。プレイはできますが、トラック選択画面のロードに遅延が発生する可能性があります。
+
+全てのトラックを更新しますか？
+
+更新する前にトラックのバックアップを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
+
+모든 패턴을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 패턴 백업을 권장합니다."
+,select_track_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
+,select_track_upgrade_version_cancel,CANCEL,取消,取消,キャンセル,취소
+,select_track_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
+Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred when upgrading tracks:
+
+{0}","升级曲目时发生错误：
+
+{0}",,,
 ,,,,,,
 ,#options-panel #title,Options,设置,設定,オプション,설정
 ,#options-panel #graphics-header,Graphics,图像,影像,グラフィック,그래픽
@@ -96,8 +123,6 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,#options-panel #offset-latency #label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,#options-panel #offset-latency #button,CALIBRATE,校对,校正,調整,보정하기
 ,#options-panel #pause-when-lose-focus #label,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-,,,,,,
-,alert_ok,OK,确定,確定,OK,확인
 ,,,,,,
 ,#information-panel #title,Information,须知,須知,情報,안내
 ,#information-panel #getting-started-header,Getting started,入门,開始,はじめに,게임 시작하기
