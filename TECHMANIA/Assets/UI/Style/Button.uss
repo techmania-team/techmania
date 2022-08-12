@@ -55,6 +55,67 @@
     color: var(--disabled-text-color);
 }
 
+.button-icon {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    height: 60px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 60px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.button-icon:hover {
+    background-color: var(--primary-color-4-percent);
+    color: var(--primary-color);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}
+
+.button-icon:active {
+    background-color: var(--primary-color-12-percent);
+    transition-duration: 0s;
+}
+
+.button-icon:focus {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.button-icon:disabled {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.button-icon .icon {
+    width: 36px;
+    height: 36px;
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+.button-icon:disabled .icon {
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
 .button-outlined {
     background-color: rgba(0, 0, 0, 0);
     border-left-width: 2px;
@@ -110,6 +171,66 @@
 .button-outlined:disabled {
     background-color: rgba(0, 0, 0, 0);
     color: var(--disabled-text-color);
+}
+
+.button-icon-outlined {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(255, 255, 255, 0.12);
+    border-right-color: rgba(255, 255, 255, 0.12);
+    border-top-color: rgba(255, 255, 255, 0.12);
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+    height: 60px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    width: 60px;
+}
+
+.button-icon-outlined:hover {
+    background-color: var(--primary-color-4-percent);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}
+
+.button-icon-outlined:active {
+    background-color: var(--primary-color-12-percent);
+    transition-duration: 0s;
+}
+
+.button-icon-outlined:focus {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.button-icon-outlined:disabled {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.button-icon-outlined .icon {
+    width: 36px;
+    height: 36px;
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+.button-icon-outlined:disabled .icon {
+    -unity-background-image-tint-color: var(--disabled-text-color);
 }
 
 .button-contained {
@@ -217,14 +338,10 @@
     color: var(--disabled-text-color);
 }
 
-Button .icon-in-button {
+Button .icon-before-text {
     width: 28px;
     height: 28px;
     -unity-background-image-tint-color: var(--primary-color);
-}
-
-Button:disabled .icon-in-button {
-    -unity-background-image-tint-color: var(--disabled-text-color);
 }
 
 Button .text-in-button {
@@ -236,4 +353,8 @@ Button .text-in-button {
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+Button:disabled .icon {
+    -unity-background-image-tint-color: var(--disabled-text-color);
 }

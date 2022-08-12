@@ -2,6 +2,10 @@
     background-color: var(--surface-color);
 }
 
+.surface-4dp {
+    background-color: var(--4dp-on-surface);
+}
+
 .surface-8dp {
     background-color: rgb(47, 47, 47);
 }
@@ -12,7 +16,7 @@
     top: -128px;
     right: -128px;
     bottom: -128px;
-    background-image: url('project://database/Assets/Sprites/Shadow.png?fileID=2800000&guid=cddfafa72e29a454ca60dce1e625edd2&type=3#Shadow');
+    background-image: url('project://database/Assets/UI/Images/Shadow.png?fileID=2800000&guid=384e19277f16d9646b840c9e2ccb15ac&type=3#Shadow');
     -unity-slice-left: 128;
     -unity-slice-top: 128;
     -unity-slice-right: 128;
@@ -47,17 +51,6 @@
     margin-right: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
-    width: 60px;
-    height: 60px;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.top-bar-buttons-container .icon-in-button {
-    width: 36px;
-    height: 36px;
 }
 
 .options-header {
@@ -156,4 +149,54 @@
     width: 300px;
     margin-right: 20px;
     margin-bottom: 20px;
+}
+
+.sidesheet-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sidesheet {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 600px;
+}
+
+.sidesheet #shadow {
+    position: absolute;
+    left: -128px;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    background-image: url('project://database/Assets/UI/Images/ShadowSide.png?fileID=2800000&guid=6099628bb55e579449505a7779474164&type=3#ShadowSide');
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+}
+
+.sidesheet #content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sidesheet #content .item {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 20px;
+}
+
+.sidesheet #close-button {
+    position: absolute;
+    right: 40px;
+    top: 20px;
+}
+
+.sidesheet .space {
+    height: 20px;
 }
