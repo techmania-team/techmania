@@ -1,0 +1,26 @@
+#radio-button {
+    height: 50px;
+    flex-direction: row;
+}
+
+#radio-button #outer-circle-wrap {
+    width: 70px;
+    align-items: center;
+    justify-content: center;
+}
+
+#radio-button #outer-circle {
+    width: 30px;
+    height: 30px;
+    background-image: url('project://database/Assets/UI/Images/Cursor.png?fileID=2800000&guid=4864df7efb3ef95438ee7e6ee1185dfc&type=3#Cursor');
+    -unity-background-image-tint-color: var(--primary-color);
+    align-items: center;
+    justify-content: center;
+}
+
+#radio-button #inner-circle {
+    width: 15px;
+    height: 15px;
+    background-image: url('project://database/Assets/UI/Images/Circle.png?fileID=2800000&guid=c3d944fd43f3eca4d870b01aeb06fb49&type=3#Circle');
+    -unity-background-image-tint-color: var(--primary-color);
+}

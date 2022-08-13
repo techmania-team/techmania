@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
+    <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
+    <Style src="project://database/Assets/UI/Controls/Radio%20Button.uss?fileID=7433441132597879392&amp;guid=a3ad9216fc04d6647a8d38e6647abd80&amp;type=3#Radio Button" />
+    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="radio-button" class="button-card">
+        <ui:VisualElement name="outer-circle-wrap" picking-mode="Ignore">
+            <ui:VisualElement name="outer-circle" picking-mode="Ignore">
+                <ui:VisualElement name="inner-circle" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-body" />
+        <ui:VisualElement name="highlight" picking-mode="Ignore" />
+    </ui:Button>
+</ui:UXML>
