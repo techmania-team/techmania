@@ -142,6 +142,10 @@ function InitializeSelectTrackPanel(tm)
         RefreshTrackList(tm)
     end)
 
+    panel.Q("filter-button").RegisterCallback("Click", function()
+        
+    end)
+
     panel.Q("upgrade-button").RegisterCallback("Click", function()
         Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
             tm.l10n.GetString("select_track_upgrade_version_confirm"),

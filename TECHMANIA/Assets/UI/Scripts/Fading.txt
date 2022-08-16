@@ -1,0 +1,38 @@
+function DampedLerp(a, b, t)
+    return math.Lerp(a, b, math.Pow(t, 0.6))
+end
+
+function FadeInCoroutine(tm, element, translateX, translateY)
+    local transitionTime = 0.2
+    local timer = 0
+    element.style.opacity = tm.style.Float(0)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(translateX, 0, progress)
+        local y = DampedLerp(translateY, 0, progress)
+        element.style.opacity = tm.style.Float(progress)
+        element.style.translate = tm.style.TranslateInPixel(x, y)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+    element.style.opacity = tm.style.Float(1)
+end
+
+function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
+    local transitionTime = 0.2
+    local timer = 0
+    element.style.opacity = tm.style.Float(1)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(0, translateX, progress)
+        local y = DampedLerp(0, translateY, progress)
+        element.style.opacity = tm.style.Float(1 - progress)
+        element.style.translate = tm.style.TranslateInPixel(x, y)
+        timer = timer + time.deltaTime
+        coroutine.yield()
+    end
+    element.style.opacity = tm.style.Float(0)
+    if (finishCallback != nil) then
+        finishCallback()
+    end
+end

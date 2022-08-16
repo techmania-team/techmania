@@ -1,47 +1,19 @@
 alertBoxConfirmCallback = nil
 alertBoxCancelCallback = nil
 
-function FadeInAlertBoxCoroutine(bg)
-    local transitionTime = 0.2
-    local transitionLength = 100
-    function DampedLerp(a, b, t)
-        return math.Lerp(a, b, math.Pow(t, 0.6))
-    end
-
-    local timer = 0
-    local box = bg.Q("alert-box")
+function FadeInAlertBox(bg)
     bg.display = true
-    box.style.opacity = tm.style.Float(0)
-    while (timer < transitionTime) do
-        local progress = timer / transitionTime
-        local y = DampedLerp(-transitionLength, 0, progress)
-        box.style.opacity = tm.style.Float(progress)
-        box.style.translate = tm.style.TranslateInPixel(0, y)
-        timer = timer + time.deltaTime
-        coroutine.yield()
-    end
-    box.style.opacity = tm.style.Float(1)
+    tm.StartCoroutine(function()
+        FadeInCoroutine(tm, bg.Q("alert-box"), 0, -100)
+    end)
 end
 
-function FadeOutAlertBoxCoroutine(bg)
-    local transitionTime = 0.2
-    local transitionLength = 100
-    function DampedLerp(a, b, t)
-        return math.Lerp(a, b, math.Pow(t, 0.6))
-    end
-
-    local timer = 0
-    local box = bg.Q("alert-box")
-    box.style.opacity = tm.style.Float(1)
-    while (timer < transitionTime) do
-        local progress = timer / transitionTime
-        local y = DampedLerp(0, -transitionLength, progress)
-        box.style.opacity = tm.style.Float(1 - progress)
-        box.style.translate = tm.style.TranslateInPixel(0, y)
-        timer = timer + time.deltaTime
-        coroutine.yield()
-    end
-    bg.display = false
+function FadeOutAlertBox(bg)
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(tm, bg.Q("alert-box"), 0, -100, function()
+            bg.display = false
+        end)
+    end)
 end
 
 function Alert(message, confirmText, callback)
@@ -54,9 +26,7 @@ function Alert(message, confirmText, callback)
     bg.Q("cancel-button").display = false
     alertBoxConfirmCallback = callback
     alertBoxCancelCallback = callback
-    tm.StartCoroutine(function()
-        FadeInAlertBoxCoroutine(bg)
-    end)
+    FadeInAlertBox(bg)
 end
 
 function Confirm(message, confirmText, cancelText, confirmCallback)
@@ -67,27 +37,21 @@ function Confirm(message, confirmText, cancelText, confirmCallback)
     bg.Q("cancel-button").text = cancelText
     alertBoxConfirmCallback = confirmCallback
     alertBoxCancelCallback = nil
-    tm.StartCoroutine(function()
-        FadeInAlertBoxCoroutine(bg)
-    end)
+    FadeInAlertBox(bg)
 end
 
 function InitializeAlertBox(tm)
     local bg = tm.root.Q("alert-box-background")
     bg.display = false
     bg.Q("confirm-button").RegisterCallback("Click", function()
-        tm.StartCoroutine(function()
-            FadeOutAlertBoxCoroutine(bg)
-        end)
+        FadeOutAlertBox(bg)
         if (alertBoxConfirmCallback != nil) then
             alertBoxConfirmCallback()
         end
     end)
 
     function OnCancel()
-        tm.StartCoroutine(function()
-            FadeOutAlertBoxCoroutine(bg)
-        end)
+        FadeOutAlertBox(bg)
         if (alertBoxCancelCallback != nil) then
             alertBoxCancelCallback()
         end

@@ -30,7 +30,7 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: flex; top: 0; right: 0; left: 0; bottom: 1px;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none; top: 0; right: 0; left: 0; bottom: 1px;">
         <AttributeOverrides element-name="title" text="Select Track" />
         <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-in-top-bar button-icon" style="background-image: none;">
@@ -64,7 +64,7 @@
                     <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="track-status" class="text-body" style="margin-top: 20px;" />
                 </ui:ScrollView>
             </ui:VisualElement>
-            <ui:VisualElement name="filter-sidesheet-background" class="sidesheet-background" style="display: flex;">
+            <ui:VisualElement name="filter-sidesheet-background" class="sidesheet-background" style="display: none;">
                 <ui:VisualElement name="filter-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp">
                     <ui:VisualElement name="shadow" picking-mode="Ignore" />
                     <ui:ScrollView name="content" class="scroll-view">
