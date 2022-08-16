@@ -134,6 +134,21 @@ function RefreshTrackList(tm)
     end)
 end
 
+function FadeInFilterSidesheet(tm, bg)
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(tm, bg.Q("filter-sidesheet"), 100, 0)
+    end)
+end
+
+function FadeOutFilterSidesheet(tm, bg)
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(tm, bg.Q("filter-sidesheet"), 100, 0, function()
+            bg.display = false
+        end)
+    end)
+end
+
 function InitializeSelectTrackPanel(tm)
     selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
 
@@ -142,8 +157,14 @@ function InitializeSelectTrackPanel(tm)
         RefreshTrackList(tm)
     end)
 
+    local sidesheetBg = panel.Q("filter-sidesheet-background")
+    sidesheetBg.display = false
     panel.Q("filter-button").RegisterCallback("Click", function()
-        
+        if (sidesheetBg.display) then
+            FadeOutFilterSidesheet(tm, sidesheetBg)
+        else
+            FadeInFilterSidesheet(tm, sidesheetBg)
+        end
     end)
 
     panel.Q("upgrade-button").RegisterCallback("Click", function()
@@ -180,4 +201,22 @@ function InitializeSelectTrackPanel(tm)
     end)
 end
 
+function InitializeTrackFilterSidesheet(tm)
+    local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
+    bg.RegisterCallback("Click", function()
+        tm.audio.Play("Assets/UI/SFX/Back.wav", "SFX")
+        FadeOutFilterSidesheet(tm, bg)
+    end)
+
+    bg.Q("filter-sidesheet").RegisterCallback("Click", function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback("Click", function()
+        FadeOutFilterSidesheet(tm, bg)
+    end)
+end
+
 InitializeSelectTrackPanel(tm)
+InitializeTrackFilterSidesheet(tm)

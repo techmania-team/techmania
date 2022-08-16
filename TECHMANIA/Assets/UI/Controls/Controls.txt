@@ -158,6 +158,7 @@ function TransitionPanelCoroutine(from, to, direction)
         timer = timer + time.deltaTime
         coroutine.yield()
     end
+    to.style.opacity = tm.style.Float(1)
 end
 
 function TransitionPanelFromLeft(from, to)
