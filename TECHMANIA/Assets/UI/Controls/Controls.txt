@@ -159,6 +159,7 @@ function TransitionPanelCoroutine(from, to, direction)
         coroutine.yield()
     end
     to.style.opacity = tm.style.Float(1)
+    to.style.translate = tm.style.TranslateInPixel(0, 0)
 end
 
 function TransitionPanelFromLeft(from, to)
