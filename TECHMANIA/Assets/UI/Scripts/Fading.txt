@@ -1,5 +1,5 @@
 function DampedLerp(a, b, t)
-    return math.Lerp(a, b, math.Pow(t, 0.6))
+    return mathf.Lerp(a, b, mathf.Pow(t, 0.6))
 end
 
 function FadeInCoroutine(tm, element, translateX, translateY)

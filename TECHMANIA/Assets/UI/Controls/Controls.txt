@@ -97,10 +97,10 @@ function SetUpScrollingText(tm, scrollingTextContainer)
             return
         end
         local scrollDuration = 4
-        local pingPongTime = math.PingPong(time.time, scrollDuration)
+        local pingPongTime = mathf.PingPong(time.time, scrollDuration)
         -- InverseLerp's output is clamped between 0 and 1.
-        local value = math.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
-        element.horizontalScroller.value = math.Lerp(low, high, value)
+        local value = mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+        element.horizontalScroller.value = mathf.Lerp(low, high, value)
     end)
 end
 
@@ -131,7 +131,7 @@ function TransitionPanelCoroutine(from, to, direction)
     local transitionTime = 0.2
     local transitionLength = 100 * direction
     function DampedLerp(a, b, t)
-        return math.Lerp(a, b, math.Pow(t, 0.6))
+        return mathf.Lerp(a, b, mathf.Pow(t, 0.6))
     end
 
     local timer = 0

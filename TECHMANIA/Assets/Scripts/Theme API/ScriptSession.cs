@@ -51,7 +51,6 @@ namespace ThemeApi
                     continue;
                 }
             }
-            UserData.RegisterType<string>();
             UserData.RegisterType<bool>();
             UserData.RegisterType<int>();
             UserData.RegisterType<float>();
@@ -67,7 +66,7 @@ namespace ThemeApi
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
             // Expose .Net & Unity classes
-            session.Globals["string"] = UserData.CreateStatic<string>();
+            session.Globals["netString"] = UserData.CreateStatic<StringWrap>();
             session.Globals["bool"] = UserData.CreateStatic<bool>();
             session.Globals["int"] = UserData.CreateStatic<int>();
             session.Globals["float"] = UserData.CreateStatic<float>();
@@ -76,7 +75,7 @@ namespace ThemeApi
                 <Screen>();
             session.Globals["resolution"] = 
                 UserData.CreateStatic<Resolution>();
-            session.Globals["math"] = UserData.CreateStatic<Mathf>();
+            session.Globals["mathf"] = UserData.CreateStatic<Mathf>();
             session.Globals["vector3"] =
                 UserData.CreateStatic<Vector3>();
         }

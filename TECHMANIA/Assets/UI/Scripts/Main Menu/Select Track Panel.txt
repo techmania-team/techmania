@@ -37,6 +37,9 @@ function ShowTracksAtCurrentLocation(tm)
     local anythingInFolder = false
 
     local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
+    table.sort(subfolders, function(s1, s2)
+        return s1.name < s2.name
+    end)
     for _, subfolder in ipairs(subfolders) do
         anythingInFolder = true
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
@@ -85,12 +88,12 @@ function ShowTracksAtCurrentLocation(tm)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
             card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
-            errorMessage = tm.paths.EscapeBackslash(string.Format(tm.l10n.GetString("select_track_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(netString.Format(tm.l10n.GetString("select_track_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         elseif (trackWithError.type == "Upgrade") then
             card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
-            errorMessage = tm.paths.EscapeBackslash(string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(netString.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         end
@@ -183,7 +186,7 @@ function InitializeSelectTrackPanel(tm)
                     if (reloadStatus.Ok()) then
                         Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
                     else
-                        Alert(tm.paths.EscapeBackslash(string.Format(
+                        Alert(tm.paths.EscapeBackslash(netString.Format(
                             tm.l10n.GetString("select_track_upgrade_process_error_format"),
                             reloadStatus.errorMessage)))
                     end
@@ -215,6 +218,15 @@ function InitializeTrackFilterSidesheet(tm)
 
     bg.Q("close-button").RegisterCallback("Click", function()
         FadeOutFilterSidesheet(tm, bg)
+    end)
+
+    bg.Q("keyword-field").Q("text-field").RegisterCallback("ChangeString", function(element, event)
+        local keywords = netString.Split(netString.Trim(event.newValue))
+        for _, keyword in ipairs(keywords) do
+            if (netString.Length(keyword) > 0) then
+                print(keyword)
+            end
+        end
     end)
 end
 

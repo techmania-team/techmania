@@ -296,7 +296,7 @@ function InitializeOptionsPanel(tm)
             if (not status.ok) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
                 local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
-                local error = string.Format(errorFormat, path)
+                local error = netString.Format(errorFormat, path)
                 Alert(error)
                 tm.options.ruleset = "Standard"
                 rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])
