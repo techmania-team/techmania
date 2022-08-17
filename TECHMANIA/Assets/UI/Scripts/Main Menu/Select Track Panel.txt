@@ -1,5 +1,7 @@
 selectTrackPanelLocation = ""
 trackListNeedsRefresh = false
+trackListFilterKeywords = {}
+trackListFilterKeywordsPreSplit = ""
 
 function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
@@ -35,6 +37,7 @@ function ShowTracksAtCurrentLocation(tm)
     end
 
     local anythingInFolder = false
+    local hiddenTracks = 0
 
     local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
     table.sort(subfolders, function(s1, s2)
@@ -57,24 +60,48 @@ function ShowTracksAtCurrentLocation(tm)
         end, subfolder)
     end
 
+    function TrackContainsAnyFilterKeyword(metadata)
+        if (#trackListFilterKeywords == 0) then
+            return true
+        end
+
+        local title = netString.ToLower(metadata.title)
+        local artist = netString.ToLower(metadata.artist)
+        local genre = netString.ToLower(metadata.genre)
+        for _, keyword in ipairs(trackListFilterKeywords) do
+            if (netString.Contains(title, keyword) or
+                netString.Contains(artist, keyword) or
+                netString.Contains(genre, keyword)) then
+                return true
+            end
+        end
+
+        return false
+    end
+
     local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
         anythingInFolder = true
-        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
-        card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
-        card.Q("error-icon").visible = false
-        local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
-        tm.io.LoadTexture(eyecatchPath, function(status, texture)
-            HandleEyecatch(card, status, texture)
-        end)
-        SetUpButtonSounds(tm, card)
-        card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
-        card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
-        SetUpScrollingText(tm, card.Q("name-container"))
-        SetUpScrollingText(tm, card.Q("artist-container"))
-        card.RegisterCallback("Click", function(_, _, trackInFolder)
-            print(trackInFolder.minimizedTrack.trackMetadata.title)
-        end, trackInFolder)
+
+        if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
+            local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+            card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+            card.Q("error-icon").visible = false
+            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            tm.io.LoadTexture(eyecatchPath, function(status, texture)
+                HandleEyecatch(card, status, texture)
+            end)
+            SetUpButtonSounds(tm, card)
+            card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
+            card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
+            SetUpScrollingText(tm, card.Q("name-container"))
+            SetUpScrollingText(tm, card.Q("artist-container"))
+            card.RegisterCallback("Click", function(_, _, trackInFolder)
+                print(trackInFolder.minimizedTrack.trackMetadata.title)
+            end, trackInFolder)
+        else
+            hiddenTracks = hiddenTracks + 1
+        end
     end
 
     local tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
@@ -105,10 +132,15 @@ function ShowTracksAtCurrentLocation(tm)
         end, errorMessage)
     end
 
-    if (anythingInFolder) then
-        panel.Q("track-status").text = ""
-    else
+    if (hiddenTracks > 0) then
+        panel.Q("track-status").text = netString.Format(
+            tm.l10n.GetString("select_track_some_tracks_hidden_text"),
+            hiddenTracks,
+            trackListFilterKeywordsPreSplit)
+    elseif (not anythingInFolder) then
         panel.Q("track-status").text = tm.l10n.GetString("select_track_no_track_text")
+    else
+        panel.Q("track-status").text = ""
     end
 end
 
@@ -221,12 +253,15 @@ function InitializeTrackFilterSidesheet(tm)
     end)
 
     bg.Q("keyword-field").Q("text-field").RegisterCallback("ChangeString", function(element, event)
-        local keywords = netString.Split(netString.Trim(event.newValue))
+        trackListFilterKeywordsPreSplit = netString.Trim(event.newValue)
+        local keywords = netString.Split(trackListFilterKeywordsPreSplit, ' ')
+        trackListFilterKeywords = {}
         for _, keyword in ipairs(keywords) do
             if (netString.Length(keyword) > 0) then
-                print(keyword)
+                table.insert(trackListFilterKeywords, netString.ToLower(keyword))
             end
         end
+        ShowTracksAtCurrentLocation(tm)
     end)
 end
 

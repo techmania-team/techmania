@@ -27,9 +27,27 @@ namespace ThemeApi
             return s.EndsWith(value);
         }
 
-        public static string Format(string format, Object[] args)
+        public static string Format(string format, string arg)
         {
-            return string.Format(format, args);
+            return string.Format(format, arg);
+        }
+
+        public static string Format(string format, string arg1,
+            string arg2)
+        {
+            return string.Format(format, arg1, arg2);
+        }
+
+        public static string Format(string format, string arg1,
+            string arg2, string arg3)
+        {
+            return string.Format(format, arg1, arg2, arg3);
+        }
+
+        public static string Format(string format, string arg1,
+            string arg2, string arg3, string arg4)
+        {
+            return string.Format(format, arg1, arg2, arg4);
         }
 
         public static int IndexOf(string s, string value)

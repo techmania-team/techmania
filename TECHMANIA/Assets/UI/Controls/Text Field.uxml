@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/Controls/Input%20Field.uss?fileID=7433441132597879392&amp;guid=70472956b6bcd7844b39a64400687152&amp;type=3#Input Field" />
     <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
-    <ui:TextField picking-mode="Ignore" value="filler text" text="filler text" name="text-field" class="input-field">
+    <ui:TextField picking-mode="Ignore" name="text-field" class="input-field">
         <ui:VisualElement name="mini-label-container" picking-mode="Ignore">
             <ui:VisualElement name="mini-label-background" />
             <ui:Label text="Label" display-tooltip-when-elided="true" name="mini-label" picking-mode="Ignore" class="text-caption" />

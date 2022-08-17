@@ -74,6 +74,7 @@
                         <ui:Label tabindex="-1" text="Search" display-tooltip-when-elided="true" name="search-header" picking-mode="Ignore" class="item text-headline-4" />
                         <ui:Instance template="Text Field" name="keyword-field" class="item">
                             <AttributeOverrides element-name="mini-label" text="Keyword" />
+                            <AttributeOverrides element-name="text-field" />
                         </ui:Instance>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
                         <ui:Label tabindex="-1" text="Options" display-tooltip-when-elided="true" name="options-header" picking-mode="Ignore" class="item text-headline-4" />
