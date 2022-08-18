@@ -94,6 +94,7 @@ namespace ThemeApi
         {
             string script = GlobalResource
                 .GetThemeContent<TextAsset>(name).text;
+            Debug.Log("Executing: " + name);
             ScriptSession.Execute(script);
         }
 

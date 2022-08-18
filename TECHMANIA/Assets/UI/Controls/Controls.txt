@@ -173,3 +173,9 @@ function TransitionPanelFromRight(from, to)
         TransitionPanelCoroutine(from, to, -1)
     end)
 end
+
+function SetRadioButton(onButton, buttonsInGroup)
+    for _, radio in ipairs(buttonsInGroup) do
+        radio.Q("inner-circle").visible = (radio == onButton)
+    end
+end

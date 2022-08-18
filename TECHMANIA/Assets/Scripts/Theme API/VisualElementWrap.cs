@@ -198,13 +198,19 @@ namespace ThemeApi
         {
             get
             {
-                CheckType(typeof(DropdownField), "stringValue");
-                return (inner as DropdownField).value;
+                if (inner is DropdownField)
+                    return (inner as DropdownField).value;
+                if (inner is TextField)
+                    return (inner as TextField).value;
+                throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
             }
             set
             {
-                CheckType(typeof(DropdownField), "stringValue");
-                (inner as DropdownField).value = value;
+                if (inner is DropdownField)
+                    (inner as DropdownField).value = value;
+                else if (inner is TextField)
+                    (inner as TextField).value = value;
+                else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
             }
         }
 

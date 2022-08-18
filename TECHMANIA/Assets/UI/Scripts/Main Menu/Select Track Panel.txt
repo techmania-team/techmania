@@ -2,6 +2,7 @@ selectTrackPanelLocation = ""
 trackListNeedsRefresh = false
 trackListFilterKeywords = {}
 trackListFilterKeywordsPreSplit = ""
+showTracksInAllFolders = false
 
 function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
@@ -19,6 +20,10 @@ end
 
 function ShowTracksAtCurrentLocation(tm)
     local panel = tm.root.Q("select-track-panel")
+
+    if (showTracksInAllFolders) then
+        selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
+    end
 
     panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
     panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
@@ -39,7 +44,30 @@ function ShowTracksAtCurrentLocation(tm)
     local anythingInFolder = false
     local hiddenTracks = 0
 
-    local subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
+    -- Prepare the subfolder list, track list and error list.
+    local subfolders = {}
+    local tracksInFolder = {}
+    local tracksWithError = {}
+    if (showTracksInAllFolders) then
+        function SearchAndProcessFolder(folder)
+            for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
+                table.insert(tracksInFolder, trackInFolder)
+            end
+            for _, trackWithError in ipairs(tm.resources.GetTracksWithError(folder)) do
+                table.insert(tracksWithError, trackWithError)
+            end
+            for _, subfolder in ipairs(tm.resources.GetSubfolders(folder)) do
+                SearchAndProcessFolder(subfolder.fullPath)
+            end
+        end
+        SearchAndProcessFolder(selectTrackPanelLocation)
+    else
+        subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
+        tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
+        tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
+    end
+
+    -- Render lists as cards.
     table.sort(subfolders, function(s1, s2)
         return s1.name < s2.name
     end)
@@ -79,7 +107,6 @@ function ShowTracksAtCurrentLocation(tm)
         return false
     end
 
-    local tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
     for _, trackInFolder in ipairs(tracksInFolder) do
         anythingInFolder = true
 
@@ -104,7 +131,6 @@ function ShowTracksAtCurrentLocation(tm)
         end
     end
 
-    local tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
     for _, trackWithError in ipairs(tracksWithError) do
         anythingInFolder = true
         local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
@@ -169,6 +195,12 @@ function RefreshTrackList(tm)
     end)
 end
 
+function ShowFilterSidesheet(tm)
+    local sheet = tm.root.Q("select-track-panel").Q("filter-sidesheet")
+    sheet.Q("keyword-field").Q("text-field").stringValue = trackListFilterKeywordsPreSplit
+    SetToggleIsOn(sheet.Q("all-folders").Q("track"), showTracksInAllFolders)
+end
+
 function FadeInFilterSidesheet(tm, bg)
     bg.display = true
     tm.StartCoroutine(function()
@@ -198,6 +230,7 @@ function InitializeSelectTrackPanel(tm)
         if (sidesheetBg.display) then
             FadeOutFilterSidesheet(tm, sidesheetBg)
         else
+            ShowFilterSidesheet(tm)
             FadeInFilterSidesheet(tm, sidesheetBg)
         end
     end)
@@ -262,6 +295,20 @@ function InitializeTrackFilterSidesheet(tm)
             end
         end
         ShowTracksAtCurrentLocation(tm)
+    end)
+
+    bg.Q("all-folders").Q("track").RegisterCallback("Click", function()
+        showTracksInAllFolders = not showTracksInAllFolders
+        ShowTracksAtCurrentLocation(tm)
+    end)
+
+    local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
+    ascendingRadioButton.RegisterCallback("Click", function()
+        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    end)
+    descendingRadioButton.RegisterCallback("Click", function()
+        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
     end)
 end
 
