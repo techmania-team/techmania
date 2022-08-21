@@ -3,6 +3,11 @@ trackListNeedsRefresh = false
 trackListFilterKeywords = {}
 trackListFilterKeywordsPreSplit = ""
 showTracksInAllFolders = false
+-- Possible values: Title, Artist, Genre, Touch, Keys, KM
+trackListSortBasis = "Title"
+-- key: enum, value: display string
+trackListSortBasisDisplayString = {}
+trackListSortAscending = true
 
 function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
@@ -15,6 +20,55 @@ function ClearAllTrackCards(tm)
     local trackContainer = panel.Q("track-container")
     for _, child in ipairs(trackContainer.Children()) do
         child.RemoveFromHierarchy()
+    end
+end
+
+function CompareTracks(t1, t2)
+    local basis1, basis2
+
+    function FindBasisPatternLevel(track, controlScheme)
+        -- When ascending, this looks for the lowest level.
+        -- When descending, this looks for the highest level.
+
+        local basis
+        -- Tracks without any pattern in the specified scheme are sorted last.
+        if (trackListSortAscending) then
+            basis = 65536
+        else
+            basis = -65536
+        end
+
+        for _, pattern in ipairs(track.patterns) do
+            if (pattern.patternMetadata.controlSchemeString == controlScheme) then
+                local level = pattern.patternMetadata.level
+                if ((trackListSortAscending and level < basis) or
+                    (not trackListSortAscending and level > basis)) then
+                    basis = level
+                end
+            end
+        end
+
+        return basis
+    end
+
+    if (trackListSortBasis == "Title") then
+        basis1 = t1.trackMetadata.title
+        basis2 = t2.trackMetadata.title
+    elseif (trackListSortBasis == "Artist") then
+        basis1 = t1.trackMetadata.artist
+        basis2 = t2.trackMetadata.artist
+    elseif (trackListSortBasis == "Genre") then
+        basis1 = t1.trackMetadata.genre
+        basis2 = t2.trackMetadata.genre
+    else
+        basis1 = FindBasisPatternLevel(t1, trackListSortBasis)
+        basis2 = FindBasisPatternLevel(t2, trackListSortBasis)
+    end
+
+    if (trackListSortAscending) then
+        return basis1 < basis2
+    else
+        return basis1 > basis2
     end
 end
 
@@ -107,6 +161,9 @@ function ShowTracksAtCurrentLocation(tm)
         return false
     end
 
+    table.sort(tracksInFolder, function(trackInFolder1, trackInFolder2)
+        return CompareTracks(trackInFolder1.minimizedTrack, trackInFolder2.minimizedTrack)
+    end)
     for _, trackInFolder in ipairs(tracksInFolder) do
         anythingInFolder = true
 
@@ -197,8 +254,13 @@ end
 
 function ShowFilterSidesheet(tm)
     local sheet = tm.root.Q("select-track-panel").Q("filter-sidesheet")
+
     sheet.Q("keyword-field").Q("text-field").stringValue = trackListFilterKeywordsPreSplit
+
     SetToggleIsOn(sheet.Q("all-folders").Q("track"), showTracksInAllFolders)
+
+    local sortBasisDropdown = sheet.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.SetValueWithoutNotify(trackListSortBasisDisplayString[trackListSortBasis])
 end
 
 function FadeInFilterSidesheet(tm, bg)
@@ -299,6 +361,25 @@ function InitializeTrackFilterSidesheet(tm)
 
     bg.Q("all-folders").Q("track").RegisterCallback("Click", function()
         showTracksInAllFolders = not showTracksInAllFolders
+        ShowTracksAtCurrentLocation(tm)
+    end)
+
+    trackListSortBasisDisplayString = {
+        Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
+        Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
+        Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
+        Touch = tm.l10n.GetString("track_filter_sidesheet_sort_basis_touch_level"),
+        Keys = tm.l10n.GetString("track_filter_sidesheet_sort_basis_keys_level"),
+        KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
+    }
+    local sortBasisChoices = {}
+    for _, display in pairs(trackListSortBasisDisplayString) do
+        table.insert(sortBasisChoices, display)
+    end
+    local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.choices = sortBasisChoices
+    sortBasisDropdown.RegisterCallback("ChangeString", function(element, event)
+        trackListSortBasis = KeyFromValue(trackListSortBasisDisplayString, event.newValue)
         ShowTracksAtCurrentLocation(tm)
     end)
 

@@ -393,6 +393,16 @@ public class PatternMetadata
     public int playableLanes;
     public string author;
 
+    // The naming of this enum-string pair is inconsistent with
+    // Options due to our unwillingness to introduce a format upgrade.
+    // With 2.0, Options upgraded from 2 to 3 so we had a chance to
+    // rename fields.
+    public string controlSchemeString
+    {
+        get { return controlScheme.ToString(); }
+        set { controlScheme = Enum.Parse<ControlScheme>(value); }
+    }
+
     // Background AV.
 
     // The backing track played in game.
