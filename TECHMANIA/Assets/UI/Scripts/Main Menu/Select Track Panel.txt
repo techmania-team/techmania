@@ -261,6 +261,14 @@ function ShowFilterSidesheet(tm)
 
     local sortBasisDropdown = sheet.Q("sort-by").Q("dropdown")
     sortBasisDropdown.SetValueWithoutNotify(trackListSortBasisDisplayString[trackListSortBasis])
+
+    local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
+    if (trackListSortAscending) then
+        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    else
+        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    end
 end
 
 function FadeInFilterSidesheet(tm, bg)
@@ -387,9 +395,13 @@ function InitializeTrackFilterSidesheet(tm)
     local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
     ascendingRadioButton.RegisterCallback("Click", function()
         SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        trackListSortAscending = true
+        ShowTracksAtCurrentLocation(tm)
     end)
     descendingRadioButton.RegisterCallback("Click", function()
         SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        trackListSortAscending = false
+        ShowTracksAtCurrentLocation(tm)
     end)
 end
 
