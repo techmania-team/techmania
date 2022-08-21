@@ -170,12 +170,7 @@ function InitializeOptionsPanel(tm)
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
     fullScreenDropdown.RegisterCallback("ChangeString", function(element, event)
-        for enum, display in pairs(fullScreenDisplayString) do
-            if (display == event.newValue) then
-                tm.options.fullScreenMode = enum
-                break
-            end
-        end
+        tm.options.fullScreenMode = KeyFromValue(fullScreenDisplayString, event.newValue)
         tm.options.ApplyGraphicSettings()
     end)
 
@@ -232,15 +227,10 @@ function InitializeOptionsPanel(tm)
         end
     languageDropdown.choices = languageChoices
     languageDropdown.RegisterCallback("ChangeString", function(element, event)
-        for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
-            if (locale.languageName == event.newValue) then
-                tm.options.locale = localeName
-                tm.l10n.ApplyLocale(localeName)
-                InitializeLocalizedDropdowns(panel)
-                ShowOptionsPanel(tm)
-                break
-            end
-        end
+        tm.options.locale = KeyFromValue(tm.l10n.GetAllLocales(), event.newValue)
+        tm.l10n.ApplyLocale()
+        InitializeLocalizedDropdowns(panel)
+        ShowOptionsPanel(tm)
     end)
 
     local skinsButton = panel.Q("skins").Q("button")
@@ -272,12 +262,8 @@ function InitializeOptionsPanel(tm)
             themeOptions.Add(key, defaultValue)
         end
         dropdown.RegisterCallback("ChangeString", function(element, event)
-            for enum, display in pairs(stringTable) do
-                if (display == event.newValue) then
-                    themeOptions.Set(key, enum)
-                    return
-                end
-            end
+            enum = KeyFromValue(stringTable, event.newValue)
+            themeOptions.Set(key, enum)
         end)
     end
     InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "Hidden", beatMarkersDisplayString)
@@ -285,12 +271,7 @@ function InitializeOptionsPanel(tm)
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback("ChangeString", function(element, event)
-        for enum, display in pairs(rulesetDisplayString) do
-            if (display == event.newValue) then
-                tm.options.ruleset = enum
-                break
-            end
-        end
+        tm.options.ruleset = KeyFromValue(rulesetDisplayString, event.newValue)
         if (tm.options.ruleset == "Custom") then
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.ok) then

@@ -21,9 +21,10 @@ namespace ThemeApi
             L10n.Initialize(stringTable, L10n.Instance.Theme);
         }
 
-        public void ApplyLocale(string locale)
+        public void ApplyLocale()
         {
-            L10n.SetLocale(locale, L10n.Instance.Theme);
+            L10n.SetLocale(Options.instance.locale,
+                L10n.Instance.Theme);
             foreach (KeyValuePair<string, string> s in
                 L10n.themeInstance.current.strings)
             {
