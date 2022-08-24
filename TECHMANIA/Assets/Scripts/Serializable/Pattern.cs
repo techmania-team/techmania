@@ -8,7 +8,6 @@ using System.Text;
 // A subset of Pattern meant to calculate fingerprint.
 public class MinimizedPattern
 {
-    
     public ControlScheme controlScheme;
     public int playableLanes;
     public double initBpm;

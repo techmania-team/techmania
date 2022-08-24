@@ -30,7 +30,7 @@
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none; top: 0; right: 0; left: 0; bottom: 1px;">
+    <ui:Instance template="Panel" name="select-track-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Select Track" />
         <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-in-top-bar button-icon" style="background-image: none;">
@@ -74,7 +74,6 @@
                         <ui:Label tabindex="-1" text="Search" display-tooltip-when-elided="true" name="search-header" picking-mode="Ignore" class="item text-headline-4" />
                         <ui:Instance template="Text Field" name="keyword-field" class="item">
                             <AttributeOverrides element-name="mini-label" text="Keyword" />
-                            <AttributeOverrides element-name="text-field" />
                         </ui:Instance>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
                         <ui:Label tabindex="-1" text="Options" display-tooltip-when-elided="true" name="options-header" picking-mode="Ignore" class="item text-headline-4" />
@@ -93,6 +92,36 @@
                             </ui:Instance>
                         </ui:VisualElement>
                     </ui:ScrollView>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: flex;">
+        <AttributeOverrides element-name="title" text="Select Pattern" />
+        <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
+            <ui:VisualElement name="wrap" style="height: 100%; width: 1100px; justify-content: center;">
+                <ui:VisualElement name="track-details" class="elevation-1dp" style="height: 250px;" />
+                <ui:VisualElement name="wrap" style="height: 645px; margin-top: 20px; flex-direction: row;">
+                    <ui:VisualElement name="pattern-list" class="elevation-1dp" style="width: 520px;" />
+                    <ui:VisualElement name="wrap" style="flex-grow: 1; margin-left: 20px;">
+                        <ui:VisualElement name="wrap" style="height: 120px; flex-direction: row;">
+                            <ui:VisualElement name="bpm" class="elevation-1dp" style="width: 180px;" />
+                            <ui:VisualElement name="length" class="elevation-1dp" style="width: 170px; margin-left: 20px;" />
+                            <ui:VisualElement name="notes" class="elevation-1dp" style="flex-grow: 1; margin-left: 20px;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="wrap" style="margin-top: 20px; height: 290px; flex-direction: row;">
+                            <ui:VisualElement name="radar" class="elevation-1dp" style="width: 300px;" />
+                            <ui:VisualElement name="wrap" style="flex-grow: 1; margin-left: 20px;">
+                                <ui:VisualElement name="author" class="elevation-1dp" style="height: 120px;" />
+                                <ui:VisualElement name="record" class="elevation-1dp" style="flex-grow: 1; margin-top: 20px;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="modifier-display" class="elevation-1dp" style="margin-top: 20px; height: 120px;" />
+                        <ui:VisualElement name="buttons" style="margin-top: 20px; flex-grow: 1; flex-direction: row;">
+                            <ui:Button tabindex="-1" text="MODIFIERS" display-tooltip-when-elided="true" name="modifiers-button" class="button-outlined" style="width: 300px;" />
+                            <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained" style="margin-left: 20px; flex-grow: 1;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
