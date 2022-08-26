@@ -176,6 +176,7 @@ end
 
 function SetRadioButton(onButton, buttonsInGroup)
     for _, radio in ipairs(buttonsInGroup) do
-        radio.Q("inner-circle").visible = (radio == onButton)
+        radio.Q("on-icon").display = (radio == onButton)
+        radio.Q("off-icon").display = not (radio == onButton)
     end
 end
