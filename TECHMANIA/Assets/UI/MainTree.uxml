@@ -9,6 +9,7 @@
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Slider" src="project://database/Assets/UI/Controls/Slider.uxml?fileID=9197481963319205126&amp;guid=96a6b460681d17a4e8c140fa1a925dd6&amp;type=3#Slider" />
+    <ui:Template name="Pattern Radio Button" src="project://database/Assets/UI/Templates/Pattern%20Radio%20Button.uxml?fileID=9197481963319205126&amp;guid=29b3b5dc949e23049bf37ef58e03044b&amp;type=3#Pattern Radio Button" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables[UNSUPPORTED_IN_UI_BUILDER]" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
@@ -96,7 +97,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: none;">
+    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: flex;">
         <AttributeOverrides element-name="title" text="Select Pattern" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" style="height: 100%; width: 1100px; justify-content: center;">
@@ -119,9 +120,9 @@
                 <ui:VisualElement name="wrap" style="height: 645px; margin-top: 20px; flex-direction: row;">
                     <ui:VisualElement name="pattern-list" class="elevation-1dp" style="width: 520px;">
                         <ui:ScrollView class="scroll-view">
-                            <ui:Instance template="Radio Button" name="Radio Button" />
-                            <ui:Instance template="Radio Button" name="Radio Button" />
-                            <ui:Instance template="Radio Button" name="Radio Button" />
+                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
+                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
+                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
                         </ui:ScrollView>
                         <ui:Label tabindex="-1" text="This track does not contain any pattern." display-tooltip-when-elided="true" name="no-pattern-text" class="text-body" style="position: absolute; left: 0; right: 0; top: 150px; -unity-text-align: upper-center; display: none;" />
                     </ui:VisualElement>
