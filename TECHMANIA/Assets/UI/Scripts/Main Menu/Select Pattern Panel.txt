@@ -35,7 +35,22 @@ function ShowSelectPatternPanel(tm)
         radioButton.Q("pattern-name").text = metadata.patternName
         SetUpScrollingText(tm, radioButton.Q("pattern-name-container"))
 
-        -- TODO: read record, show medal
+        local record = tm.records.GetRecord(pattern)
+        local medal = ""
+        if (record != nil) then
+            medal = record.GetMedal()
+        end
+        if (medal == "AbsolutePerfect" or
+            medal == "PerfectPlay") then
+            radioButton.Q("perfect-play-icon").display = true
+            radioButton.Q("all-combo-icon").display = false
+        elseif (medal == "AllCombo") then
+            radioButton.Q("perfect-play-icon").display = false
+            radioButton.Q("all-combo-icon").display = true
+        else
+            radioButton.Q("perfect-play-icon").display = false
+            radioButton.Q("all-combo-icon").display = false
+        end
 
         radioButton.RegisterCallback("Click", function()
             SetRadioButton(radioButton, allPatternRadioButtons)

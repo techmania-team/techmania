@@ -3,20 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
 [Serializable]
 [FormatVersion(Records.kVersion, typeof(Records), isLatest: true)]
 public class RecordsBase : SerializableClass<RecordsBase> { }
 
 [Serializable]
+[MoonSharpUserData]
 public class Record
 {
+    // All fields are read-only for Lua.
+    [MoonSharpHidden]
     public string guid;  // For pattern
+    [MoonSharpHidden]
     public string fingerprint;  // SHA256
+    [MoonSharpHidden]
     public Options.Ruleset ruleset;
+    [MoonSharpHidden]
     public int score;
+    [MoonSharpHidden]
     public PerformanceMedal medal;
+    [MoonSharpHidden]
     public string gameVersion;
+
+    #region Lua accessors
+    public string GetGuid() => guid;
+    public string GetFingerprint() => fingerprint;
+    public string GetRuleset() => ruleset.ToString();
+    public int GetScore() => score;
+    public string GetMedal() => medal.ToString();
+    public string GetGameVersion() => gameVersion;
+    #endregion
 
     public override string ToString()
     {
@@ -63,6 +81,7 @@ public class Record
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class Records : RecordsBase
 {
     public const string kVersion = "1";
@@ -88,16 +107,14 @@ public class Records : RecordsBase
             new Dictionary<string, Record>();
     }
 
-    // Requires fingerprints to have been calculated.
-    public Record GetRecord(Pattern p)
+    // Returns null if a record doesn't exist.
+    private Record GetRecord(Pattern p, Options.Ruleset ruleset)
     {
-        if (Options.instance.rulesetEnum == Options.Ruleset.Custom)
+        if (ruleset == Options.Ruleset.Custom)
         {
             return null;
         }
-        p.CheckFingerprintCalculated();
-        Dictionary<string, Record> dict = recordDict[
-            Options.instance.rulesetEnum];
+        Dictionary<string, Record> dict = recordDict[ruleset];
         if (!dict.ContainsKey(p.patternMetadata.guid))
         {
             return null;
@@ -121,11 +138,30 @@ public class Records : RecordsBase
                 break;
         }
 
-        if (checkFingerprint && r.fingerprint != p.fingerprint)
+        if (!checkFingerprint)
+        {
+            return r;
+        }
+        if (string.IsNullOrEmpty(p.fingerprint))
+        {
+            p.CalculateFingerprint();
+        }
+        if (r.fingerprint != p.fingerprint)
         {
             return null;
         }
         return r;
+    }
+
+    public Record GetRecord(Pattern p, string ruleset)
+    {
+        return GetRecord(p, Enum.Parse<Options.Ruleset>(ruleset));
+    }
+
+    // Requires fingerprints to have been calculated.
+    public Record GetRecord(Pattern p)
+    {
+        return GetRecord(p, Options.instance.rulesetEnum);
     }
 
     // If the score is invalid for any reason (modifiers,
@@ -186,24 +222,6 @@ public class Records : RecordsBase
             recordDict[updatedRecord.ruleset][updatedRecord.guid]
                 = updatedRecord;
         }
-    }
-
-    // Requires fingerprints to have been calculated.
-    public void SetRecord(Pattern p, Score s)
-    {
-        p.CheckFingerprintCalculated();
-        int totalScore = s.CurrentScore() +
-            s.totalFeverBonus + s.comboBonus;
-        Record r = new Record()
-        {
-            guid = p.patternMetadata.guid,
-            fingerprint = p.fingerprint,
-            ruleset = Options.instance.rulesetEnum,
-            score = totalScore,
-            medal = s.Medal(),
-            gameVersion = Application.version
-        };
-        recordDict[r.ruleset][r.guid] = r;
     }
 
     protected override void PrepareToSerialize()
