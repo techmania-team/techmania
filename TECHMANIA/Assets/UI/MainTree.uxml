@@ -6,11 +6,10 @@
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
     <ui:Template name="Radio Button" src="project://database/Assets/UI/Controls/Radio%20Button.uxml?fileID=9197481963319205126&amp;guid=afc8cda1eb6d97b44b97389cd11ad332&amp;type=3#Radio Button" />
-    <ui:Template name="Pattern Radio Button" src="project://database/Assets/UI/Templates/Pattern%20Radio%20Button.uxml?fileID=9197481963319205126&amp;guid=29b3b5dc949e23049bf37ef58e03044b&amp;type=3#Pattern Radio Button" />
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Slider" src="project://database/Assets/UI/Controls/Slider.uxml?fileID=9197481963319205126&amp;guid=96a6b460681d17a4e8c140fa1a925dd6&amp;type=3#Slider" />
-    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables[UNSUPPORTED_IN_UI_BUILDER]" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
     <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
@@ -97,7 +96,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Select Pattern" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 100%; width: 1100px; justify-content: center;">
@@ -109,21 +108,17 @@
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
                             <ui:Label text="Genre" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-controller" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
-                            <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-headline-4" style="-unity-text-align: upper-left;" />
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                            <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-controller" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
                             <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 645px; margin-top: 20px; flex-direction: row;">
                     <ui:VisualElement name="pattern-list" picking-mode="Ignore" class="elevation-1dp" style="width: 520px;">
-                        <ui:ScrollView class="scroll-view">
-                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
-                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
-                            <ui:Instance template="Pattern Radio Button" name="Pattern Radio Button" />
-                        </ui:ScrollView>
+                        <ui:ScrollView name="list" class="scroll-view" />
                         <ui:Label tabindex="-1" text="This track does not contain any pattern." display-tooltip-when-elided="true" name="no-pattern-text" picking-mode="Ignore" class="text-body" style="position: absolute; left: 0; right: 0; top: 150px; -unity-text-align: upper-center; display: none;" />
                     </ui:VisualElement>
                     <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; margin-left: 20px;">

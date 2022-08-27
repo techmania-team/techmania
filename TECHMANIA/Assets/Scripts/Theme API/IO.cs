@@ -19,6 +19,11 @@ namespace ThemeApi
                 });
         }
 
+        public static Track LoadFullTrack(string path)
+        {
+            return Track.LoadFromFile(path) as Track;
+        }
+
         // progressCallback parameter: string (the track currently
         // being loaded)
         // completeCallback parameter: Status

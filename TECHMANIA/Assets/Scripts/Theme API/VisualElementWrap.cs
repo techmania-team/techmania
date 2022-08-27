@@ -22,6 +22,10 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualElementWrap(VisualElement e)
         {
+            if (e == null)
+            {
+                Debug.LogWarning("Creating VisualElementWrap around null.");
+            }
             inner = e;
         }
 

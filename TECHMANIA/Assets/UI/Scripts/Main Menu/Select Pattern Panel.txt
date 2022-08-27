@@ -1,0 +1,51 @@
+selectedTrackFolder = ""
+selectedFullTrack = nil
+allPatternRadioButtons = {}
+
+function ShowSelectPatternPanel(tm)
+    local panel = tm.root.Q("select-pattern-panel")
+    local track = selectedFullTrack
+
+    local eyecatchPath = tm.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
+    LoadAndShowEyecatch(tm, eyecatchPath, panel.Q("eyecatch"))
+    panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
+    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
+    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
+
+    panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
+    local patternListContainer = panel.Q("pattern-list").Q("unity-content-container")
+    for _, child in ipairs(patternListContainer.Children()) do
+        child.RemoveFromHierarchy()
+    end
+    allPatternRadioButtons = {}
+    for _, pattern in ipairs(track.patterns) do
+        local radioButton = patternListContainer.InstantiateTemplate("Assets/UI/Templates/Pattern Radio Button.uxml").Q("radio-button")
+        table.insert(allPatternRadioButtons, radioButton)
+        SetUpButtonSounds(tm, radioButton)
+
+        local metadata = pattern.patternMetadata
+
+        radioButton.Q("2l-icon").display = metadata.playableLanes == 2
+        radioButton.Q("3l-icon").display = metadata.playableLanes == 3
+        radioButton.Q("4l-icon").display = metadata.playableLanes == 4
+        radioButton.Q("touch-icon").display = metadata.controlSchemeString == "Touch"
+        radioButton.Q("keys-icon").display = metadata.controlSchemeString == "Keys"
+        radioButton.Q("km-icon").display = metadata.controlSchemeString == "KM"
+        radioButton.Q("level").text = metadata.level
+        radioButton.Q("pattern-name").text = metadata.patternName
+        SetUpScrollingText(tm, radioButton.Q("pattern-name-container"))
+
+        -- TODO: read record, show medal
+
+        radioButton.RegisterCallback("Click", function()
+            SetRadioButton(radioButton, allPatternRadioButtons)
+        end)
+    end
+    SetRadioButton(nil, allPatternRadioButtons)
+end
+
+function InitializeSelectPatternPanel(tm)
+
+end
+
+InitializeSelectPatternPanel(tm)

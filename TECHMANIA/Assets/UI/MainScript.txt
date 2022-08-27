@@ -12,50 +12,12 @@ tm.ExecuteScript("Assets/UI/Scripts/Fading.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Select Track Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Select Pattern Panel.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Information Panel.txt")
-tm.root.Q("main-menu").Q("start-button").RegisterCallback("Click", function()
-    TransitionPanelFromRight(
-        tm.root.Q("main-menu"),
-        tm.root.Q("select-track-panel")
-    )
-    ShowSelectTrackPanel(tm)
-end)
-tm.root.Q("select-track-panel").Q("back-button").RegisterCallback("Click", function()
-    TransitionPanelFromLeft(
-        tm.root.Q("select-track-panel"),
-        tm.root.Q("main-menu")
-    )
-end)
-tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
-    TransitionPanelFromRight(
-        tm.root.Q("main-menu"),
-        tm.root.Q("options-panel")
-    )
-    ShowOptionsPanel(tm)
-end)
-tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
-    TransitionPanelFromLeft(
-        tm.root.Q("options-panel"),
-        tm.root.Q("main-menu")
-    )
-    tm.options.SaveToFile()
-end)
-tm.root.Q("main-menu").Q("information-button").RegisterCallback("Click", function()
-    TransitionPanelFromRight(
-        tm.root.Q("main-menu"),
-        tm.root.Q("information-panel")
-    )
-end)
-tm.root.Q("information-panel").Q("back-button").RegisterCallback("Click", function()
-    TransitionPanelFromLeft(
-        tm.root.Q("information-panel"),
-        tm.root.Q("main-menu")
-    )
-end)
-tm.root.Q("main-menu").Q("quit-button").RegisterCallback("Click", function()
-    tm.Quit()
-end)
+
+tm.ExecuteScript("Assets/UI/Scripts/Navigation.txt")
+SetUpNavigation(tm)
 
 -- function Vector3(x, y, z)
 --     return vector3.__new(x, y, z)

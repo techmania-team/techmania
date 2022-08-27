@@ -6,3 +6,14 @@ function KeyFromValue(table, value)
     end
     return nil
 end
+
+function LoadAndShowEyecatch(tm, path, eyecatchElement)
+    tm.io.LoadTexture(path, function(status, texture)
+        if (status.Ok()) then
+            eyecatchElement.backgroundImage = texture
+            eyecatchElement.Q("default-eyecatch").visible = false
+        else
+            eyecatchElement.Q("default-eyecatch").visible = true
+        end
+    end)
+end

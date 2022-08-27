@@ -86,15 +86,6 @@ function ShowTracksAtCurrentLocation(tm)
     local trackContainer = panel.Q("track-container")
     ClearAllTrackCards(tm)
 
-    function HandleEyecatch(card, status, texture)
-        if (status.Ok()) then
-            card.Q("eyecatch").backgroundImage = texture
-            card.Q("default-eyecatch").visible = false
-        else
-            card.Q("default-eyecatch").visible = true
-        end
-    end
-
     local anythingInFolder = false
     local hiddenTracks = 0
 
@@ -129,9 +120,7 @@ function ShowTracksAtCurrentLocation(tm)
         anythingInFolder = true
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
         if (subfolder.eyecatchFullPath != nil) then
-            tm.io.LoadTexture(subfolder.eyecatchFullPath, function(status, texture)
-                HandleEyecatch(card, status, texture)
-            end)
+            LoadAndShowEyecatch(tm, subfolder.eyecatchFullPath, card.Q("eyecatch"))
         end
         SetUpButtonSounds(tm, card)
         card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
@@ -172,16 +161,18 @@ function ShowTracksAtCurrentLocation(tm)
             card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
             card.Q("error-icon").visible = false
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
-            tm.io.LoadTexture(eyecatchPath, function(status, texture)
-                HandleEyecatch(card, status, texture)
-            end)
+            LoadAndShowEyecatch(tm, eyecatchPath, card.Q("eyecatch"))
             SetUpButtonSounds(tm, card)
             card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
             card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
             SetUpScrollingText(tm, card.Q("name-container"))
             SetUpScrollingText(tm, card.Q("artist-container"))
             card.RegisterCallback("Click", function(_, _, trackInFolder)
-                print(trackInFolder.minimizedTrack.trackMetadata.title)
+                -- Load full track and navigate to select pattern panel.
+                selectedTrackFolder = trackInFolder.folder
+                local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
+                selectedFullTrack = tm.io.LoadFullTrack(trackPath)
+                TransitionToSelectPatternPanel(tm)
             end, trackInFolder)
         else
             hiddenTracks = hiddenTracks + 1

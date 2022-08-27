@@ -1,0 +1,60 @@
+function SetUpNavigation(tm)
+    tm.root.Q("main-menu").Q("start-button").RegisterCallback("Click", function()
+        TransitionPanelFromRight(
+            tm.root.Q("main-menu"),
+            tm.root.Q("select-track-panel")
+        )
+        ShowSelectTrackPanel(tm)
+    end)
+    tm.root.Q("select-track-panel").Q("back-button").RegisterCallback("Click", function()
+        TransitionPanelFromLeft(
+            tm.root.Q("select-track-panel"),
+            tm.root.Q("main-menu")
+        )
+    end)
+    -- select track panel --> select pattern panel is registered on track cards,
+    -- handled by Select Track Panel.txt
+    tm.root.Q("select-pattern-panel").Q("back-button").RegisterCallback("Click", function()
+        TransitionPanelFromLeft(
+            tm.root.Q("select-pattern-panel"),
+            tm.root.Q("select-track-panel")
+        )
+    end)
+    tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
+        TransitionPanelFromRight(
+            tm.root.Q("main-menu"),
+            tm.root.Q("options-panel")
+        )
+        ShowOptionsPanel(tm)
+    end)
+    tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
+        TransitionPanelFromLeft(
+            tm.root.Q("options-panel"),
+            tm.root.Q("main-menu")
+        )
+        tm.options.SaveToFile()
+    end)
+    tm.root.Q("main-menu").Q("information-button").RegisterCallback("Click", function()
+        TransitionPanelFromRight(
+            tm.root.Q("main-menu"),
+            tm.root.Q("information-panel")
+        )
+    end)
+    tm.root.Q("information-panel").Q("back-button").RegisterCallback("Click", function()
+        TransitionPanelFromLeft(
+            tm.root.Q("information-panel"),
+            tm.root.Q("main-menu")
+        )
+    end)
+    tm.root.Q("main-menu").Q("quit-button").RegisterCallback("Click", function()
+        tm.Quit()
+    end)
+end
+
+function TransitionToSelectPatternPanel(tm)
+    TransitionPanelFromRight(
+        tm.root.Q("select-track-panel"),
+        tm.root.Q("select-pattern-panel")
+    )
+    ShowSelectPatternPanel(tm)
+end
