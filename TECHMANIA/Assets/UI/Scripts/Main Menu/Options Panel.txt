@@ -288,6 +288,7 @@ function InitializeOptionsPanel(tm)
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     customLocationToggle.RegisterCallback("Click", function()
         tm.options.customDataLocation = not tm.options.customDataLocation
+        trackListNeedsRefresh = true
         UpdateCustomDataLocationDisplay(tm, panel)
     end)
 

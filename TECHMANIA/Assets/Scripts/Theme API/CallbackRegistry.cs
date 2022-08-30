@@ -87,6 +87,16 @@ namespace ThemeApi
             callbacks[key] = remainingCallbacks;
         }
 
+        public static void RemoveAllCallbackOfTypeOn<TEventType>(
+            VisualElement element)
+            where TEventType : EventBase<TEventType>, new()
+        {
+            Tuple<VisualElement, Type> key =
+                new Tuple<VisualElement, Type>(
+                    element, typeof(TEventType));
+            callbacks.Remove(key);  // No exception if key not found
+        }
+
         // Does not unregister the callbacks on VisualElement.
         public static void RemoveAllCallbackOn(
             VisualElement element)

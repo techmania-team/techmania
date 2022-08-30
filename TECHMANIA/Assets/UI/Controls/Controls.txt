@@ -90,7 +90,7 @@ function SetUpScrollingText(tm, scrollingTextContainer)
     scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
     scrollingTextContainer.Q("unity-content-viewport").pickable = false
     scrollingTextContainer.Q("unity-content-container").pickable = false
-    scrollingTextContainer.RegisterCallback("FrameUpdate", function(element)
+    function ContainerUpdate(element)
         local low = element.horizontalScroller.lowValue
         local high = element.horizontalScroller.highValue
         if (float.IsNaN(high) or high <= low) then
@@ -101,11 +101,13 @@ function SetUpScrollingText(tm, scrollingTextContainer)
         -- InverseLerp's output is clamped between 0 and 1.
         local value = mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
         element.horizontalScroller.value = mathf.Lerp(low, high, value)
-    end)
+    end
+    scrollingTextContainer.UnregisterCallback("FrameUpdate", ContainerUpdate)
+    scrollingTextContainer.RegisterCallback("FrameUpdate", ContainerUpdate)
 end
 
 function SetUpAllScrollingTexts(tm)
-    tm.root.Query(nil, "scrolling-text-container").ForEach(function (container)
+    tm.root.Query(nil, "scrolling-text").ForEach(function (container)
         SetUpScrollingText(tm, container)
     end)
 end

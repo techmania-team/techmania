@@ -105,13 +105,13 @@
                         <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                     </ui:VisualElement>
                     <ui:VisualElement name="metadata-wrap" picking-mode="Ignore" style="margin-left: 15px; flex-grow: 1;">
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Genre" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
@@ -125,8 +125,8 @@
                         <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 120px; flex-direction: row;">
                             <ui:VisualElement name="bpm" picking-mode="Ignore" class="elevation-1dp" style="width: 180px;">
                                 <ui:Label tabindex="-1" text="BPM" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
-                                <ui:ScrollView name="content" picking-mode="Ignore" class="scrolling-text card-content">
-                                    <ui:Label tabindex="-1" text="100 - 200" display-tooltip-when-elided="true" class="text-headline-6" />
+                                <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text card-content">
+                                    <ui:Label tabindex="-1" text="100 - 200" display-tooltip-when-elided="true" name="content" class="text-headline-6" />
                                 </ui:ScrollView>
                             </ui:VisualElement>
                             <ui:VisualElement name="length" picking-mode="Ignore" class="elevation-1dp" style="width: 170px; margin-left: 20px;">
@@ -143,7 +143,9 @@
                             <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; margin-left: 20px;">
                                 <ui:VisualElement name="author" picking-mode="Ignore" class="elevation-1dp" style="height: 120px;">
                                     <ui:Label tabindex="-1" text="Author" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
-                                    <ui:Label tabindex="-1" text="Someone" display-tooltip-when-elided="true" name="content" picking-mode="Ignore" class="text-headline-6 card-content" />
+                                    <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text card-content">
+                                        <ui:Label tabindex="-1" text="Author name" display-tooltip-when-elided="true" name="content" class="text-headline-6" />
+                                    </ui:ScrollView>
                                 </ui:VisualElement>
                                 <ui:VisualElement name="record" picking-mode="Ignore" class="elevation-1dp" style="flex-grow: 1; margin-top: 20px;">
                                     <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
@@ -154,8 +156,8 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="modifier-display" picking-mode="Ignore" class="elevation-1dp" style="margin-top: 20px; height: 120px;">
                             <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
-                            <ui:ScrollView name="content" picking-mode="Ignore" class="scrolling-text card-content">
-                                <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" class="text-headline-6" />
+                            <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text card-content">
+                                <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" />
                             </ui:ScrollView>
                         </ui:VisualElement>
                         <ui:VisualElement name="buttons" picking-mode="Ignore" style="margin-top: 20px; flex-grow: 1; flex-direction: row;">
@@ -271,7 +273,7 @@
                 <ui:VisualElement name="tracks-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
                         <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
@@ -280,7 +282,7 @@
                 <ui:VisualElement name="skins-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
                         <ui:Label text="Skins folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text-container" style="display: flex;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
                         </ui:ScrollView>
                     </ui:VisualElement>

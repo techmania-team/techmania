@@ -368,8 +368,6 @@ namespace ThemeApi
                     UnityEventSynthesizer.RemoveListener
                         <ApplicationFocusEvent>(inner);
                     break;
-                default:
-                    throw new System.Exception("Unsupported event type: " + eventType);
             }
             MethodInfo methodInfo = typeof(CallbackRegistry)
                 .GetMethod("RemoveCallback",
@@ -377,6 +375,29 @@ namespace ThemeApi
                 .MakeGenericMethod(genericType);
             methodInfo.Invoke(null, new object[] {
                 inner, callback });
+        }
+
+        public void UnregisterCallback(string eventTypeString)
+        {
+            EventType eventType = System.Enum.Parse<EventType>(
+                eventTypeString);
+            System.Type genericType = EventTypeEnumToType(eventType);
+            switch (eventType)
+            {
+                case EventType.FrameUpdate:
+                    UnityEventSynthesizer.RemoveListener
+                        <FrameUpdateEvent>(inner);
+                    break;
+                case EventType.ApplicationFocus:
+                    UnityEventSynthesizer.RemoveListener
+                        <ApplicationFocusEvent>(inner);
+                    break;
+            }
+            MethodInfo methodInfo = typeof(CallbackRegistry)
+                .GetMethod("RemoveAllCallbackOfTypeOn",
+                BindingFlags.Static | BindingFlags.Public)
+                .MakeGenericMethod(genericType);
+            methodInfo.Invoke(null, new object[] { inner });
         }
         #endregion
 

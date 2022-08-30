@@ -126,17 +126,6 @@
     height: 100%;
 }
 
-.scrolling-text-container {
-}
-
-.scrolling-text-container #unity-content-container {
-    min-width: 100%;
-}
-
-.scrolling-text-container Label {
-    min-width: 100%;
-}
-
 #information-panel .information-item {
     margin-top: 20px;
 }
@@ -211,4 +200,6 @@
     -unity-text-align: middle-center;
     height: 40px;
     margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
