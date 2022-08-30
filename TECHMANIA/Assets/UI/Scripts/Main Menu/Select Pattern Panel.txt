@@ -2,6 +2,28 @@ selectedTrackFolder = ""
 selectedFullTrack = nil
 allPatternRadioButtons = {}
 
+-- pattern may be nil.
+function ShowPatternDetails(panel, pattern)
+    if (pattern == nil) then
+        panel.Q("bpm").Q("content").text = ""
+        panel.Q("length").Q("content").text = ""
+        panel.Q("notes").Q("content").text = ""
+        panel.Q("author").Q("content").text = ""
+        panel.Q("record").Q("content").text = ""
+        return
+    end
+
+    panel.Q("author").Q("content").text = pattern.patternMetadata.author
+    local record = tm.records.GetRecord(pattern)
+    if (record == nil) then
+        panel.Q("record").Q("content").text = "---"
+    else
+        panel.Q("record").Q("content").text = record.GetScore()
+        -- TODO: rank
+        -- TODO: medal
+    end
+end
+
 function ShowSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
     local track = selectedFullTrack
@@ -52,11 +74,15 @@ function ShowSelectPatternPanel(tm)
             radioButton.Q("all-combo-icon").display = false
         end
 
-        radioButton.RegisterCallback("Click", function()
+        radioButton.RegisterCallback("Click", function(_, _, pattern)
             SetRadioButton(radioButton, allPatternRadioButtons)
-        end)
+            ShowPatternDetails(panel, pattern)
+            panel.Q("play-button").SetEnabled(true)
+        end, pattern)
     end
     SetRadioButton(nil, allPatternRadioButtons)
+    ShowPatternDetails(panel, nil)
+    panel.Q("play-button").SetEnabled(false)
 end
 
 function InitializeSelectPatternPanel(tm)
