@@ -13,6 +13,8 @@ function ShowPatternDetails(panel, pattern)
         return
     end
 
+    -- TODO: don't count hidden notes
+    panel.Q("notes").Q("content").text = pattern.notes.Count
     panel.Q("author").Q("content").text = pattern.patternMetadata.author
     local record = tm.records.GetRecord(pattern)
     if (record == nil) then

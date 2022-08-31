@@ -281,16 +281,18 @@ public partial class Pattern
 #endif
     public SortedSet<Note> notes;
 
-#if UNITY_2022
-    [NonSerialized]
-#else
-    [System.Text.Json.Serialization.JsonIgnore]
-#endif
-    public List<TimeEvent> timeEvents;  // bpmEvents + timeStops
+    // = bpmEvents + timeStops
+    // Doesn't need to stay in sync with bpmEvents and timeStops
+    // at all times; PrepareForTimeCalculation will re-populate it.
+    private List<TimeEvent> timeEvents;
 
-    // Only used in serialization and deserialization.
+    // Only used in serialization and deserialization. At other times,
+    // access notes from the notes field.
+    [MoonSharpHidden]
     public List<string> packedNotes;
+    [MoonSharpHidden]
     public List<string> packedHoldNotes;
+    [MoonSharpHidden]
     public List<PackedDragNote> packedDragNotes;
 
     public const int pulsesPerBeat = 240;
@@ -540,7 +542,14 @@ public class Note
     public int lane;
     public string sound;  // Filename with extension, no folder
 
-    // Calculated at runtime:
+    public string typeString
+    {
+        get { return type.ToString(); }
+        set { type = Enum.Parse<NoteType>(value); }
+    }
+
+    // Available only after calling
+    // Pattern.CalculateTimeOfAllNotes:
 
     public float time;
     public Dictionary<Judgement, float> timeWindow;
@@ -748,6 +757,12 @@ public class HoldNote : Note
 public class DragNote : Note
 {
     public CurveType curveType;
+
+    public string curveTypeString
+    {
+        get { return curveType.ToString(); }
+        set { curveType = Enum.Parse<CurveType>(value); }
+    }
 
     // There must be at least 2 nodes, with nodes[0]
     // describing the note head.
@@ -971,7 +986,6 @@ public class NoteComparer : IComparer<Note>
 // to complete.
 
 [Serializable]
-[MoonSharpUserData]
 public class IntPoint
 {
     public int lane;
@@ -1108,7 +1122,6 @@ public class DragNode
 }
 
 [Serializable]
-[MoonSharpUserData]
 public class PackedDragNote
 {
     public string packedNote;

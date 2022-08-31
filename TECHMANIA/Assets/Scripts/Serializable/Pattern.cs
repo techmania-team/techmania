@@ -455,7 +455,6 @@ public partial class Pattern
         public RadarDimension speed;
         public RadarDimension chaos;
         public RadarDimension async;
-        public RadarDimension shift;
         public float suggestedLevel;
         public int suggestedLevelRounded;
     }
@@ -572,22 +571,6 @@ public partial class Pattern
         }
         r.async.normalized = NormalizeRadarValue(r.async.raw,
             0f, 40f);
-
-        // Shift: number of unique time events.
-        int numTimeEvents = 0;
-        for (int i = 0; i < timeEvents.Count; i++)
-        {
-            if (i > 0 &&
-                timeEvents[i].pulse ==
-                    timeEvents[i - 1].pulse &&
-                timeEvents[i].GetType()
-                    == timeEvents[i - 1].GetType())
-            {
-                continue;
-            }
-            numTimeEvents++;
-        }
-        r.shift.raw = numTimeEvents;
 
         // Suggested difficulty. Formulta calculated by
         // linear regression.

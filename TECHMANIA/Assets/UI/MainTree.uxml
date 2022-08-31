@@ -96,7 +96,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: none;">
+    <ui:Instance template="Panel" name="select-pattern-panel" class="panel" style="display: flex;">
         <AttributeOverrides element-name="title" text="Select Pattern" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 100%; width: 1100px; justify-content: center;">

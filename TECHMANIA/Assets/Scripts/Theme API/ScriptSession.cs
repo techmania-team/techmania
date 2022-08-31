@@ -60,6 +60,8 @@ namespace ThemeApi
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
             UserData.RegisterType<Texture2D>();
+            // For Pattern.notes
+            UserData.RegisterType<SortedSet<Note>>();
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();
