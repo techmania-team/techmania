@@ -3,26 +3,84 @@ selectedFullTrack = nil
 allPatternRadioButtons = {}
 
 -- pattern may be nil.
-function ShowPatternDetails(panel, pattern)
+function ShowPatternDetails(tm, panel, pattern)
     if (pattern == nil) then
         panel.Q("bpm").Q("content").text = ""
         panel.Q("length").Q("content").text = ""
         panel.Q("notes").Q("content").text = ""
         panel.Q("author").Q("content").text = ""
         panel.Q("record").Q("content").text = ""
+        panel.Q("record").Q("medal-text").text = ""
         return
     end
 
-    -- TODO: don't count hidden notes
-    panel.Q("notes").Q("content").text = pattern.notes.Count
+    pattern.PrepareForTimeCalculation()
+
+    -- BPM range
+    local minBpm = pattern.patternMetadata.initBpm
+    local maxBpm = minBpm
+    for _, e in ipairs(pattern.bpmEvents) do
+        if (e.bpm < minBpm) then minBpm = e.bpm end
+        if (e.bpm > maxBpm) then maxBpm = e.bpm end
+    end
+    function FormatBpm(bpm)
+        local rounded = mathf.RoundToInt(bpm)
+        if (mathf.Abs(rounded - bpm) < mathf.Epsilon) then
+            return tostring(rounded)
+        else
+            return netString.Format("{0:F2}", bpm)
+        end
+    end
+    if (minBpm < maxBpm) then
+        panel.Q("bpm").Q("content").text = FormatBpm(minBpm) .. " - " .. FormatBpm(maxBpm)
+    else
+        panel.Q("bpm").Q("content").text = FormatBpm(minBpm)
+    end
+    SetUpScrollingText(tm, panel.Q("bpm").Q("container"))
+
+    -- Length
+    local length = 0
+    -- This function returns void and has 2 out parameters
+    _, length, _ = pattern.GetLengthInSecondsAndScans()
+    local minutes = mathf.FloorToInt(length / 60)
+    local seconds = mathf.FloorToInt(length - minutes * 60)
+    if (seconds < 10) then 
+        panel.Q("length").Q("content").text = minutes .. ":0" .. seconds
+    else
+        panel.Q("length").Q("content").text = minutes .. ":" .. seconds
+    end
+
+    -- Note count
+    local noteCount = 0
+    local notes = pattern.NotesAsList()
+    for _, note in ipairs(notes) do
+        if (note.lane < pattern.patternMetadata.playableLanes) then
+            noteCount = noteCount + 1
+        end
+    end
+    panel.Q("notes").Q("content").text = noteCount
+
+    -- Author
     panel.Q("author").Q("content").text = pattern.patternMetadata.author
+
+    -- Record
     local record = tm.records.GetRecord(pattern)
     if (record == nil) then
         panel.Q("record").Q("content").text = "---"
+        panel.Q("record").Q("medal-text").text = ""
     else
-        panel.Q("record").Q("content").text = record.GetScore()
-        -- TODO: rank
-        -- TODO: medal
+        local score = record.GetScore()
+        panel.Q("record").Q("content").text = score .. "   " .. ScoreToRank(score)
+        local medal = record.GetMedal()
+        if (medal == "NoMedal") then
+            panel.Q("record").Q("medal-text").text = ""
+        elseif (medal == "AllCombo") then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("full_combo_medal")
+        elseif (medal == "PerfectPlay") then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("perfect_play_medal")
+        elseif (medal == "AbsolutePerfect") then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("absolute_perfect_medal")
+        end
     end
 end
 
@@ -78,12 +136,12 @@ function ShowSelectPatternPanel(tm)
 
         radioButton.RegisterCallback("Click", function(_, _, pattern)
             SetRadioButton(radioButton, allPatternRadioButtons)
-            ShowPatternDetails(panel, pattern)
+            ShowPatternDetails(tm, panel, pattern)
             panel.Q("play-button").SetEnabled(true)
         end, pattern)
     end
     SetRadioButton(nil, allPatternRadioButtons)
-    ShowPatternDetails(panel, nil)
+    ShowPatternDetails(tm, panel, nil)
     panel.Q("play-button").SetEnabled(false)
 end
 

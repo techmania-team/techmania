@@ -281,6 +281,12 @@ public partial class Pattern
 #endif
     public SortedSet<Note> notes;
 
+    // For enumerating notes from Lua. Slow; don't call too often.
+    public List<Note> NotesAsList()
+    {
+        return new List<Note>(notes);
+    }
+
     // = bpmEvents + timeStops
     // Doesn't need to stay in sync with bpmEvents and timeStops
     // at all times; PrepareForTimeCalculation will re-populate it.
