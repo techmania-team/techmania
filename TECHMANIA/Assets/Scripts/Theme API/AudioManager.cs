@@ -32,7 +32,8 @@ namespace ThemeApi
         // channel: one of Channel enums
         // volumePercent: [0, 100]
         // panPercent: [-100, 100]
-        public AudioSource Play(string name, string channel,
+        public AudioSource PlayFileInTheme(string name, string channel,
+            float startTime = 0f,
             int volumePercent = 100, int panPercent = 0)
         {
             AudioClip clip = GlobalResource.GetThemeContent
@@ -42,19 +43,27 @@ namespace ThemeApi
                 throw new System.Exception($"Audio clip {name} is not found.");
             }
 
+            return PlayClip(clip, channel, startTime,
+                volumePercent, panPercent);
+        }
+
+        public AudioSource PlayClip(AudioClip clip, string channel,
+            float startTime = 0f,
+            int volumePercent = 100, int panPercent = 0)
+        {
             switch (System.Enum.Parse<Channel>(channel))
             {
                 case Channel.Music:
-                    return manager.PlayBackingTrack(clip,
+                    return manager.PlayBackingTrack(clip, startTime,
                         volumePercent, panPercent);
                 case Channel.Keysound:
                     return manager.PlayKeysound(clip,
                         hiddenLane: false,
-                        startTime: 0f, volumePercent, panPercent);
+                        startTime, volumePercent, panPercent);
                 case Channel.HiddenKeysound:
                     return manager.PlayKeysound(clip,
                         hiddenLane: true,
-                        startTime: 0f, volumePercent, panPercent);
+                        startTime, volumePercent, panPercent);
                 case Channel.SFX:
                     return manager.PlaySfx(clip,
                         volumePercent, panPercent);

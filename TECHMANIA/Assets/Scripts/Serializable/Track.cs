@@ -279,6 +279,7 @@ public partial class Pattern
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
+    [MoonSharpHidden]
     public SortedSet<Note> notes;
 
     // For enumerating notes from Lua. Slow; don't call too often.

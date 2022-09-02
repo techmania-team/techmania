@@ -19,6 +19,7 @@ function SetUpNavigation(tm)
             tm.root.Q("select-pattern-panel"),
             tm.root.Q("select-track-panel")
         )
+        StopPreviewTrackPlayback(tm)
     end)
     tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
         TransitionPanelFromRight(

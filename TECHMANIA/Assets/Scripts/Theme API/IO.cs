@@ -19,6 +19,17 @@ namespace ThemeApi
                 });
         }
 
+        // Callback parameter: Status, AudioClip
+        public static void LoadAudio(string path,
+            DynValue callback)
+        {
+            ResourceLoader.LoadAudio(path,
+                (Status status, AudioClip clip) =>
+                {
+                    callback.Function.Call(status, clip);
+                });
+        }
+
         public static Track LoadFullTrack(string path)
         {
             return Track.LoadFromFile(path) as Track;
