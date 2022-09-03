@@ -84,6 +84,22 @@ function ShowPatternDetails(tm, panel, pattern)
             panel.Q("record").Q("medal-text").text = tm.l10n.GetString("absolute_perfect_medal")
         end
     end
+
+    -- Radar
+    local radarElement = panel.Q("radar")
+    radarElement.SetMeshPainterFunction(function(element, painter)
+        painter.SetStrokeColor(1, 1, 1)
+        painter.SetLineWidth(10)
+        painter.SetLineCap("Round")
+        painter.SetLineJoin("Bevel")
+
+        painter.BeginPath()
+        painter.MoveTo(50, 50)
+        painter.LineTo(150, 100)
+        painter.LineTo(50, 150)
+        painter.Stroke()
+    end)
+    radarElement.MarkDirtyRepaint()
 end
 
 function ShowSelectPatternPanel(tm)

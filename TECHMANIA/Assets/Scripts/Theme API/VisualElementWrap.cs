@@ -57,6 +57,10 @@ namespace ThemeApi
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
         public IStyle style => inner.style;
         public ITransform transform => inner.transform;
+
+        public Rect contentRect => inner.contentRect;
+        public Rect localBound => inner.localBound;
+        public Rect worldBound => inner.worldBound;
         #endregion
 
         #region Subclass-specific
@@ -496,6 +500,27 @@ namespace ThemeApi
         {
             CallbackRegistry.RemoveAllCallbackOn(inner);
             inner.RemoveFromHierarchy();
+        }
+        #endregion
+
+        #region Custom mesh
+        // Parameters: VisualElementWrap, PainterWrap
+        // Call VisualElementWrap.contentRect for draw boundaries.
+        // (0, 0) is top left, positions are in pixels.
+        public void SetMeshPainterFunction(DynValue function)
+        {
+            inner.generateVisualContent =
+                (MeshGenerationContext context) =>
+                {
+                    PainterWrap painter = new PainterWrap(
+                        context.painter2D);
+                    function.Function.Call(this, painter);
+                };
+        }
+
+        public void MarkDirtyRepaint()
+        {
+            inner.MarkDirtyRepaint();
         }
         #endregion
     }

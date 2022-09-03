@@ -36,6 +36,8 @@ namespace ThemeApi
             UserData.RegisterType<StyleTranslate>();
             UserData.RegisterType<StyleFloat>();
             UserData.RegisterType<AudioSource>();
+            UserData.RegisterType<AudioClip>();
+            UserData.RegisterType<Texture2D>();
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
             {
@@ -59,8 +61,7 @@ namespace ThemeApi
             UserData.RegisterType<Resolution>();
             UserData.RegisterType<Mathf>();
             UserData.RegisterType<Vector3>();
-            UserData.RegisterType<Texture2D>();
-            UserData.RegisterType<AudioClip>();
+            UserData.RegisterType<Rect>();
             UserData.RegisterAssembly();
             // Preparations
             Techmania.Prepare();
