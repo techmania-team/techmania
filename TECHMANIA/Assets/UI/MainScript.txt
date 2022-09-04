@@ -19,30 +19,23 @@ tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Information Panel.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Navigation.txt")
 SetUpNavigation(tm)
 
+-- Array/table example
+
+-- local testArray = {}
+-- print(testArray[1])  -- Uninitialized values are nil
+-- table.insert(testArray, 123)  -- Key is 1
+-- testArray["foo"] = 456  -- Key is "foo"
+-- print(testArray[1])
+-- print(testArray["foo"])
+-- print(#testArray)  -- 1, as the length operator only counts consecutive integer keys
+-- table.insert(testArray, 789)  -- inserts at length+1, so this key is 2
+-- for key, value in pairs(testArray) do print(key .. " " .. value) end  -- Iterates over all key-value pairs
+-- for index, value in ipairs(testArray) do print(index .. " " .. value) end  -- Iterates integer keys until the first one absent
+
+-- Constructor example
+
 -- function Vector3(x, y, z)
 --     return vector3.__new(x, y, z)
 -- end
-
--- Vector3 example
 -- v = Vector3(1, 2, 3)
 -- print(v.y)
-
--- Coroutine example
--- tm.StartCoroutine(function ()
---     for i = 1, 100 do
---         print("Current frame: " .. time.frameCount)
---         coroutine.yield()
---     end
--- end)
-
--- Animation example
--- root.Q("button-text").RegisterCallback(eventType.Click, function (button)
---     tm.StartCoroutine(function ()
---         local timeElapsed = 0
---         while (timeElapsed < 5) do
---             timeElapsed = timeElapsed + time.deltaTime
---             button.transform.position = Vector3(timeElapsed * 100, 0, 0)
---             coroutine.yield()
---         end
---     end)
--- end)

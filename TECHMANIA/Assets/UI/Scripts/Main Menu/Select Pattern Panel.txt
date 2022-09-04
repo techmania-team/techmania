@@ -16,6 +16,7 @@ function ShowPatternDetails(tm, panel, pattern)
         return
     end
 
+    -- This also enables radar calculation.
     pattern.PrepareForTimeCalculation()
 
     -- BPM range
@@ -86,6 +87,7 @@ function ShowPatternDetails(tm, panel, pattern)
     end
 
     -- Radar
+    local radar = CalculateRadarOfPattern(pattern)
     local radarElement = panel.Q("radar")
     radarElement.SetMeshPainterFunction(function(element, painter)
         painter.SetStrokeColor(1, 1, 1)

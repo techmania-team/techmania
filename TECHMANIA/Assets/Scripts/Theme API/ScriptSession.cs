@@ -22,6 +22,7 @@ namespace ThemeApi
 
             // Set up sandbox
             session = new Script(CoreModules.Preset_SoftSandbox);
+            
             // Redirect print
             session.Options.DebugPrint = (s) => { Debug.Log(s); };
             // Register types

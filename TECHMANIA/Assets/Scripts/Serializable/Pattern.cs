@@ -587,6 +587,12 @@ public partial class Pattern
         return r;
     }
 
+    public void PrintRadar()
+    {
+        Radar r = CalculateRadar();
+        UnityEngine.Debug.Log($"density: {r.density.normalized} peak: {r.peak.normalized} speed: {r.speed.normalized} chaos: {r.chaos.normalized} async: {r.async.normalized}");
+    }
+
     private int NormalizeRadarValue(float raw,
         float min, float max)
     {
