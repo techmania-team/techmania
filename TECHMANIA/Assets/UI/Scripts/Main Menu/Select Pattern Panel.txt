@@ -3,6 +3,7 @@ selectedFullTrack = nil
 allPatternRadioButtons = {}
 previewPlaybackCoroutine = nil
 previewTrackAudioSource = nil
+radarOfSelectedPattern = nil
 
 -- pattern may be nil.
 function ShowPatternDetails(tm, panel, pattern)
@@ -87,21 +88,8 @@ function ShowPatternDetails(tm, panel, pattern)
     end
 
     -- Radar
-    local radar = CalculateRadarOfPattern(pattern)
-    local radarElement = panel.Q("radar")
-    radarElement.SetMeshPainterFunction(function(element, painter)
-        painter.SetStrokeColor(1, 1, 1)
-        painter.SetLineWidth(10)
-        painter.SetLineCap("Round")
-        painter.SetLineJoin("Bevel")
-
-        painter.BeginPath()
-        painter.MoveTo(50, 50)
-        painter.LineTo(150, 100)
-        painter.LineTo(50, 150)
-        painter.Stroke()
-    end)
-    radarElement.MarkDirtyRepaint()
+    radarOfSelectedPattern = CalculateRadarOfPattern(pattern)
+    panel.Q("radar").MarkDirtyRepaint()
 end
 
 function ShowSelectPatternPanel(tm)
@@ -167,7 +155,76 @@ function ShowSelectPatternPanel(tm)
 end
 
 function InitializeSelectPatternPanel(tm)
+    local panel = tm.root.Q("select-pattern-panel")
 
+    panel.Q("radar").SetMeshPainterFunction(function(element, painter)
+        painter.SetLineWidth(2)
+        painter.SetLineCap("Round")
+        painter.SetLineJoin("Miter")
+
+        local majorStrokeAlpha = 0.12
+        local minorStrokeAlpha = 0.05
+
+        local centerX = element.contentRect.width * 0.5
+        local centerY = element.contentRect.height * 0.5
+        local radiusUnit = 13 / 20
+
+        function AngleForVertex(i)
+            return (-90 + 72 * i) * mathf.Deg2Rad
+        end
+
+        -- Draw radii, lines from the center to vertices of the outmost pentagon
+        painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
+        for i = 1, 5 do
+            local angle = AngleForVertex(i)
+            painter.BeginPath()
+            painter.MoveTo(centerX, centerY)
+            painter.LineTo(
+                centerX + radiusUnit * 100 * mathf.Cos(angle),
+                centerY + radiusUnit * 100 * mathf.Sin(angle))
+            painter.ClosePath()
+            painter.Stroke()
+        end
+
+        -- Draw pentagons
+        for pentagon = 1, 5 do
+            local radius = radiusUnit * pentagon * 20
+            if (pentagon == 5) then
+                painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
+            else
+                painter.SetStrokeColor(1, 1, 1, minorStrokeAlpha)
+            end
+            painter.BeginPath()
+            painter.MoveTo(centerX, centerY - radius)
+            for vertex = 1, 4 do
+                local angle = AngleForVertex(vertex)
+                painter.LineTo(
+                    centerX + radius * mathf.Cos(angle),
+                    centerY + radius * mathf.Sin(angle))
+            end
+            painter.ClosePath()
+            painter.Stroke()
+        end
+
+        -- Draw radar
+        if (radarOfSelectedPattern ~= nil) then
+            painter.SetFillColor(165 / 256, 214 / 256, 167 / 256)
+            painter.BeginPath()
+            painter.MoveTo(centerX, centerY - radiusUnit * radarOfSelectedPattern.density)
+            function DrawRadarDimension(vertex, normalized)
+                local angle = AngleForVertex(vertex)
+                painter.LineTo(
+                    centerX + radiusUnit * normalized * mathf.Cos(angle),
+                    centerY + radiusUnit * normalized * mathf.Sin(angle))
+            end
+            DrawRadarDimension(1, radarOfSelectedPattern.peak)
+            DrawRadarDimension(2, radarOfSelectedPattern.speed)
+            DrawRadarDimension(3, radarOfSelectedPattern.chaos)
+            DrawRadarDimension(4, radarOfSelectedPattern.async)
+            painter.ClosePath()
+            painter.Fill()
+        end
+    end)
 end
 
 function StartPreviewTrackPlayback(tm, trackFolder, trackMetadata)

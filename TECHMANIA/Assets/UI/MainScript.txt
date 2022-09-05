@@ -31,6 +31,8 @@ SetUpNavigation(tm)
 -- table.insert(testArray, 789)  -- inserts at length+1, so this key is 2
 -- for key, value in pairs(testArray) do print(key .. " " .. value) end  -- Iterates over all key-value pairs
 -- for index, value in ipairs(testArray) do print(index .. " " .. value) end  -- Iterates integer keys until the first one absent
+-- local arrayLiteral = {1, 2, 3}
+-- local tableLiteral = { a = b, c = d }
 
 -- Constructor example
 
