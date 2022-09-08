@@ -139,7 +139,28 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement name="wrap" picking-mode="Ignore" style="margin-top: 20px; height: 290px; flex-direction: row;">
-                            <ui:VisualElement name="radar" picking-mode="Ignore" class="elevation-1dp" style="width: 300px;" />
+                            <ui:VisualElement name="radar" picking-mode="Ignore" class="elevation-1dp" style="width: 300px;">
+                                <ui:VisualElement name="density" class="radar-display">
+                                    <ui:Label tabindex="-1" text="DENSITY" display-tooltip-when-elided="true" name="name" class="text-overline" />
+                                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="value" class="text-subtitle" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="peak" class="radar-display">
+                                    <ui:Label tabindex="-1" text="PEAK" display-tooltip-when-elided="true" name="name" class="text-overline" />
+                                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="value" class="text-subtitle" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="speed" class="radar-display">
+                                    <ui:Label tabindex="-1" text="SPEED" display-tooltip-when-elided="true" name="name" class="text-overline" />
+                                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="value" class="text-subtitle" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="chaos" class="radar-display">
+                                    <ui:Label tabindex="-1" text="CHAOS" display-tooltip-when-elided="true" name="name" class="text-overline" />
+                                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="value" class="text-subtitle" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="async" class="radar-display">
+                                    <ui:Label tabindex="-1" text="ASYNC" display-tooltip-when-elided="true" name="name" class="text-overline" />
+                                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="value" class="text-subtitle" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
                             <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; margin-left: 20px;">
                                 <ui:VisualElement name="author" picking-mode="Ignore" class="elevation-1dp" style="height: 120px;">
                                     <ui:Label tabindex="-1" text="Author" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />

@@ -129,7 +129,7 @@ function InitializeControls(tm)
     SetUpAllScrollingTexts(tm)
 end
 
-function TransitionPanelCoroutine(from, to, direction)
+function TransitionPanelCoroutine(from, to, direction, toPanelInitializer)
     local transitionTime = 0.2
     local transitionLength = 100 * direction
     function DampedLerp(a, b, t)
@@ -152,6 +152,7 @@ function TransitionPanelCoroutine(from, to, direction)
     timer = 0
     to.style.opacity = tm.style.Float(0)
     to.display = true
+    local initializerCalled = false
     while (timer < transitionTime) do
         local progress = timer / transitionTime
         local x = DampedLerp(-transitionLength, 0, progress)
@@ -159,20 +160,28 @@ function TransitionPanelCoroutine(from, to, direction)
         to.style.translate = tm.style.TranslateInPixel(x, 0)
         timer = timer + time.deltaTime
         coroutine.yield()
+        if (not initializerCalled) then
+            initializerCalled = true
+            if (toPanelInitializer != nil) then toPanelInitializer() end
+        end
     end
     to.style.opacity = tm.style.Float(1)
     to.style.translate = tm.style.TranslateInPixel(0, 0)
 end
 
-function TransitionPanelFromLeft(from, to)
+-- toPanelInitializer will be called 1 frame after the "to"
+-- panel becomes displayed, so all the layout is ready.
+function TransitionPanelFromLeft(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to, 1)
+        TransitionPanelCoroutine(from, to, 1, toPanelInitializer)
     end)
 end
 
-function TransitionPanelFromRight(from, to)
+-- toPanelInitializer will be called 1 frame after the "to"
+-- panel becomes displayed, so all the layout is ready.
+function TransitionPanelFromRight(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to, -1)
+        TransitionPanelCoroutine(from, to, -1, toPanelInitializer)
     end)
 end
 

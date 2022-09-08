@@ -203,3 +203,19 @@
     margin-left: 20px;
     margin-right: 20px;
 }
+
+#select-pattern-panel .radar-display {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+#select-pattern-panel .radar-display #name {
+    height: 50px;
+    -unity-text-align: lower-center;
+}
+
+#select-pattern-panel .radar-display #value {
+    height: 50px;
+    -unity-text-align: upper-center;
+}

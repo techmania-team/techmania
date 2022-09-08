@@ -4,9 +4,23 @@ allPatternRadioButtons = {}
 previewPlaybackCoroutine = nil
 previewTrackAudioSource = nil
 radarOfSelectedPattern = nil
+radarDisplayInitialized = false
+radarRadiusUnit = 13 / 20
 
 -- pattern may be nil.
 function ShowPatternDetails(tm, panel, pattern)
+    function ShowRadar()
+        local radarElement = panel.Q("radar")
+        radarOfSelectedPattern = CalculateRadarOfPattern(pattern)
+        radarElement.MarkDirtyRepaint()
+
+        radarElement.Q("density").Q("value").text = tostring(radarOfSelectedPattern.density)
+        radarElement.Q("peak").Q("value").text = tostring(radarOfSelectedPattern.peak)
+        radarElement.Q("speed").Q("value").text = tostring(radarOfSelectedPattern.speed)
+        radarElement.Q("chaos").Q("value").text = tostring(radarOfSelectedPattern.chaos)
+        radarElement.Q("async").Q("value").text = tostring(radarOfSelectedPattern.async)
+    end
+
     if (pattern == nil) then
         panel.Q("bpm").Q("content").text = ""
         panel.Q("length").Q("content").text = ""
@@ -14,6 +28,7 @@ function ShowPatternDetails(tm, panel, pattern)
         panel.Q("author").Q("content").text = ""
         panel.Q("record").Q("content").text = ""
         panel.Q("record").Q("medal-text").text = ""
+        ShowRadar()
         return
     end
 
@@ -88,8 +103,11 @@ function ShowPatternDetails(tm, panel, pattern)
     end
 
     -- Radar
-    radarOfSelectedPattern = CalculateRadarOfPattern(pattern)
-    panel.Q("radar").MarkDirtyRepaint()
+    ShowRadar()
+end
+
+function RadarAngleForVertex(i)
+    return (-90 + 72 * i) * mathf.Deg2Rad
 end
 
 function ShowSelectPatternPanel(tm)
@@ -152,12 +170,39 @@ function ShowSelectPatternPanel(tm)
     SetRadioButton(nil, allPatternRadioButtons)
     ShowPatternDetails(tm, panel, nil)
     panel.Q("play-button").SetEnabled(false)
+
+    -- The radar displays are tied to the radar element's layout,
+    -- so they are only initialized when this panel appears the first time.
+    if (not radarDisplayInitialized) then
+        radarDisplayInitialized = true
+
+        local radarElement = panel.Q("radar")
+        local radarCenterX = radarElement.contentRect.width * 0.5
+        local radarCenterY = radarElement.contentRect.height * 0.5
+        
+        local radarDisplayWidth = radarElement.Q("density").contentRect.width
+        local radarDisplayHeight = radarElement.Q("density").contentRect.height
+        local radarDisplayDistance = radarRadiusUnit * 100 + 40
+        function PlaceRadarDisplay(element, vertex)
+            element.style.left = tm.style.LengthInPixel(
+                radarCenterX + radarDisplayDistance * mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
+            element.style.top = tm.style.LengthInPixel(
+                radarCenterY + radarDisplayDistance * mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
+        end
+        PlaceRadarDisplay(radarElement.Q("density"), 0)
+        PlaceRadarDisplay(radarElement.Q("peak"), 1)
+        PlaceRadarDisplay(radarElement.Q("speed"), 2)
+        PlaceRadarDisplay(radarElement.Q("chaos"), 3)
+        PlaceRadarDisplay(radarElement.Q("async"), 4)
+    end
 end
 
 function InitializeSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
 
-    panel.Q("radar").SetMeshPainterFunction(function(element, painter)
+    -- Draw radar graph.
+    local radarElement = panel.Q("radar")
+    radarElement.SetMeshPainterFunction(function(element, painter)
         painter.SetLineWidth(2)
         painter.SetLineCap("Round")
         painter.SetLineJoin("Miter")
@@ -165,42 +210,38 @@ function InitializeSelectPatternPanel(tm)
         local majorStrokeAlpha = 0.12
         local minorStrokeAlpha = 0.05
 
-        local centerX = element.contentRect.width * 0.5
-        local centerY = element.contentRect.height * 0.5
-        local radiusUnit = 13 / 20
-
-        function AngleForVertex(i)
-            return (-90 + 72 * i) * mathf.Deg2Rad
-        end
+        local radarElement = panel.Q("radar")
+        local radarCenterX = radarElement.contentRect.width * 0.5
+        local radarCenterY = radarElement.contentRect.height * 0.5
 
         -- Draw radii, lines from the center to vertices of the outmost pentagon
         painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
         for i = 1, 5 do
-            local angle = AngleForVertex(i)
+            local angle = RadarAngleForVertex(i)
             painter.BeginPath()
-            painter.MoveTo(centerX, centerY)
+            painter.MoveTo(radarCenterX, radarCenterY)
             painter.LineTo(
-                centerX + radiusUnit * 100 * mathf.Cos(angle),
-                centerY + radiusUnit * 100 * mathf.Sin(angle))
+                radarCenterX + radarRadiusUnit * 100 * mathf.Cos(angle),
+                radarCenterY + radarRadiusUnit * 100 * mathf.Sin(angle))
             painter.ClosePath()
             painter.Stroke()
         end
 
         -- Draw pentagons
         for pentagon = 1, 5 do
-            local radius = radiusUnit * pentagon * 20
+            local radius = radarRadiusUnit * pentagon * 20
             if (pentagon == 5) then
                 painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
             else
                 painter.SetStrokeColor(1, 1, 1, minorStrokeAlpha)
             end
             painter.BeginPath()
-            painter.MoveTo(centerX, centerY - radius)
+            painter.MoveTo(radarCenterX, radarCenterY - radius)
             for vertex = 1, 4 do
-                local angle = AngleForVertex(vertex)
+                local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(
-                    centerX + radius * mathf.Cos(angle),
-                    centerY + radius * mathf.Sin(angle))
+                    radarCenterX + radius * mathf.Cos(angle),
+                    radarCenterY + radius * mathf.Sin(angle))
             end
             painter.ClosePath()
             painter.Stroke()
@@ -210,12 +251,12 @@ function InitializeSelectPatternPanel(tm)
         if (radarOfSelectedPattern ~= nil) then
             painter.SetFillColor(165 / 256, 214 / 256, 167 / 256)
             painter.BeginPath()
-            painter.MoveTo(centerX, centerY - radiusUnit * radarOfSelectedPattern.density)
+            painter.MoveTo(radarCenterX, radarCenterY - radarRadiusUnit * radarOfSelectedPattern.density)
             function DrawRadarDimension(vertex, normalized)
-                local angle = AngleForVertex(vertex)
+                local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(
-                    centerX + radiusUnit * normalized * mathf.Cos(angle),
-                    centerY + radiusUnit * normalized * mathf.Sin(angle))
+                    radarCenterX + radarRadiusUnit * normalized * mathf.Cos(angle),
+                    radarCenterY + radarRadiusUnit * normalized * mathf.Sin(angle))
             end
             DrawRadarDimension(1, radarOfSelectedPattern.peak)
             DrawRadarDimension(2, radarOfSelectedPattern.speed)

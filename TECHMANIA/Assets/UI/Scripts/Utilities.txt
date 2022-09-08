@@ -41,6 +41,16 @@ end
 -- Returns a table with keys "density", "peak", "speed", "chaos" and "async".
 -- Make sure to call pattern.PrepareForTimeCalculation() before this.
 function CalculateRadarOfPattern(pattern)
+    local radar = {}
+    if (pattern == nil) then
+        radar.density = 0
+        radar.peak = 0
+        radar.speed = 0
+        radar.chaos = 0
+        radar.async = 0
+        return radar
+    end
+
     -- Pre-processing
     local seconds = 0
     local scans = 0
@@ -73,8 +83,7 @@ function CalculateRadarOfPattern(pattern)
             end
         end
     end
-
-    local radar = {}
+    
     function Normalize(raw, min, max)
         local t = mathf.InverseLerp(min, max, raw)
         return mathf.RoundToInt(t * 100)

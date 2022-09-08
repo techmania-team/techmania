@@ -55,7 +55,11 @@ end
 function TransitionToSelectPatternPanel(tm)
     TransitionPanelFromRight(
         tm.root.Q("select-track-panel"),
-        tm.root.Q("select-pattern-panel")
+        tm.root.Q("select-pattern-panel"),
+        function()
+            -- This has to be called 1 frame after select-pattern-panel
+            -- displays so the radar can be initialized properly.
+            ShowSelectPatternPanel(tm)
+        end
     )
-    ShowSelectPatternPanel(tm)
 end
