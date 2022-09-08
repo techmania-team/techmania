@@ -59,7 +59,8 @@ function TransitionToSelectPatternPanel(tm)
         function()
             -- This has to be called 1 frame after select-pattern-panel
             -- displays so the radar can be initialized properly.
-            ShowSelectPatternPanel(tm)
+            InitializeRadar(tm)
         end
     )
+    ShowSelectPatternPanel(tm)
 end
