@@ -65,7 +65,7 @@
                 </ui:ScrollView>
             </ui:VisualElement>
             <ui:VisualElement name="filter-sidesheet-background" class="sidesheet-background" style="display: none;">
-                <ui:VisualElement name="filter-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp">
+                <ui:VisualElement name="filter-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 600px;">
                     <ui:VisualElement name="shadow" picking-mode="Ignore" />
                     <ui:ScrollView name="content" class="scroll-view">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="close-button" class="button-icon">
@@ -186,6 +186,101 @@
                             <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained" style="margin-left: 20px; flex-grow: 1;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="modifier-sidesheet-background" class="sidesheet-background" style="display: none;">
+                <ui:VisualElement name="modifier-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 750px;">
+                    <ui:VisualElement name="shadow" picking-mode="Ignore" />
+                    <ui:ScrollView name="content" class="scroll-view">
+                        <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="close-button" class="button-icon">
+                            <ui:VisualElement name="icon" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&apos;);" />
+                        </ui:Button>
+                        <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="modifiers-header" picking-mode="Ignore" class="item text-headline-4" />
+                        <ui:VisualElement name="note-opacity" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Note opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scanline-opacity" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Scanline opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scan-direction" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Scan direction" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="note-position" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Note position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scan-position" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Scan position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="fever" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Fever" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="keysound" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Keysound" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="assist-tick" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Assist tick" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                        <ui:Label tabindex="-1" text="Appearance" display-tooltip-when-elided="true" name="appearance-header" picking-mode="Ignore" class="item text-headline-4" />
+                        <ui:VisualElement name="skins" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Skins" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Button tabindex="-1" text="SELECT" display-tooltip-when-elided="true" name="select-button" class="button-outlined" style="width: 200px;" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Show judgement tally" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Toggle" name="Toggle" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
+                                <ui:Instance template="SliderInt" name="SliderInt" style="width: 300px;" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="No video" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Toggle" name="Toggle" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                        <ui:VisualElement name="special-modifiers" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Special Modifiers" display-tooltip-when-elided="true" name="special-modifiers" picking-mode="Ignore" class="text-headline-4" />
+                            <ui:Label tabindex="-1" text="Warning: these options will invalidate your score." display-tooltip-when-elided="true" name="warning" class="text-caption text-warning" style="margin-left: 0; margin-right: 0;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="mode" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Mode" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="control-override" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Control override" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="scroll-speed" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Scroll speed" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                    </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

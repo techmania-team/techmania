@@ -194,8 +194,29 @@ function InitializeRadar(tm)
     PlaceRadarDisplay(radarElement.Q("async"), 4)
 end
 
+function FadeInModifierSidesheet(tm, bg)
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(tm, bg.Q("modifier-sidesheet"), 100, 0)
+    end)
+end
+
+function FadeOutModifierSidesheet(tm, bg)
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(tm, bg.Q("modifier-sidesheet"), 100, 0, function()
+            bg.display = false
+        end)
+    end)
+end
+
 function InitializeSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
+
+    local sidesheetBg = panel.Q("modifier-sidesheet-background")
+    sidesheetBg.display = false
+    panel.Q("modifiers-button").RegisterCallback("Click", function()
+        FadeInModifierSidesheet(tm, sidesheetBg)
+    end)
 
     -- Draw radar graph.
     local radarElement = panel.Q("radar")
@@ -265,6 +286,23 @@ function InitializeSelectPatternPanel(tm)
     end)
 end
 
+function InitializeModifierSidesheet(tm)
+    local bg = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet-background")
+    bg.RegisterCallback("Click", function()
+        tm.audio.PlayFileInTheme("Assets/UI/SFX/Back.wav", "SFX")
+        FadeOutModifierSidesheet(tm, bg)
+    end)
+
+    bg.Q("modifier-sidesheet").RegisterCallback("Click", function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback("Click", function()
+        FadeOutModifierSidesheet(tm, bg)
+    end)
+end
+
 function StartPreviewTrackPlayback(tm)
     local trackFolder = selectedTrackFolder
     local trackMetadata = selectedFullTrack.trackMetadata
@@ -282,7 +320,7 @@ function StartPreviewTrackPlayback(tm)
         if (not status.Ok()) then return end
         -- If the user transitioned away while loading the clip, don't play.
         if (not tm.root.Q("select-pattern-panel").display) then return end
-        
+
         local startTime = trackMetadata.previewStartTime
         local endTime = trackMetadata.previewEndTime
         if (startTime < 0) then startTime = 0 end
@@ -341,3 +379,4 @@ function StopPreviewTrackPlayback(tm)
 end
 
 InitializeSelectPatternPanel(tm)
+InitializeModifierSidesheet(tm)

@@ -153,7 +153,6 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 600px;
 }
 
 .sidesheet #shadow {
@@ -218,4 +217,15 @@
 #select-pattern-panel .radar-display #value {
     height: 50px;
     -unity-text-align: upper-center;
+}
+
+#modifier-sidesheet .item #label {
+    align-items: center;
+    height: 60px;
+    -unity-text-align: middle-left;
+    flex-direction: row-reverse;
+}
+
+#modifier-sidesheet .item #Dropdown {
+    width: 350px;
 }
