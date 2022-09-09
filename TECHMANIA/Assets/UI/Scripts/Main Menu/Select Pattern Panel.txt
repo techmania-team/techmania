@@ -112,7 +112,6 @@ end
 function ShowSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
     local track = selectedFullTrack
-    StartPreviewTrackPlayback(tm, selectedTrackFolder, track.trackMetadata)
 
     local eyecatchPath = tm.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(tm, eyecatchPath, panel.Q("eyecatch"))
@@ -266,7 +265,10 @@ function InitializeSelectPatternPanel(tm)
     end)
 end
 
-function StartPreviewTrackPlayback(tm, trackFolder, trackMetadata)
+function StartPreviewTrackPlayback(tm)
+    local trackFolder = selectedTrackFolder
+    local trackMetadata = selectedFullTrack.trackMetadata
+
     if (previewPlaybackCoroutine != nil) then
         tm.StopCoroutine(previewPlaybackCoroutine)
     end
@@ -278,7 +280,9 @@ function StartPreviewTrackPlayback(tm, trackFolder, trackMetadata)
 
     tm.io.LoadAudio(previewPath, function(status, clip)
         if (not status.Ok()) then return end
-        -- TODO: what if the user transitioned away while loading the clip?
+        -- If the user transitioned away while loading the clip, don't play.
+        if (not tm.root.Q("select-pattern-panel").display) then return end
+        
         local startTime = trackMetadata.previewStartTime
         local endTime = trackMetadata.previewEndTime
         if (startTime < 0) then startTime = 0 end

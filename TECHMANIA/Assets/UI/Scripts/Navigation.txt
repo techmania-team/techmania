@@ -60,6 +60,10 @@ function TransitionToSelectPatternPanel(tm)
             -- This has to be called 1 frame after select-pattern-panel
             -- displays so the radar can be initialized properly.
             InitializeRadar(tm)
+            -- This has to be called after select-pattern-panel displays
+            -- so the load audio callback can check whether the panel
+            -- displays to decide whether to play the audio.
+            StartPreviewTrackPlayback(tm)
         end
     )
     ShowSelectPatternPanel(tm)
