@@ -47,6 +47,7 @@ namespace ThemeApi
                     Debug.LogError($"Element at l10n key '{s.Key}' is not a TextElement; unable to apply l10n value.");
                     continue;
                 }
+
                 (element as TextElement).text = s.Value;
             }
         }
