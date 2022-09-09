@@ -222,12 +222,14 @@ function InitializeOptionsPanel(tm)
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local languageChoices = {}
+    local languageChoiceToLocaleName = {}
         for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
             table.insert(languageChoices, locale.languageName)
+            languageChoiceToLocaleName[locale.languageName] = localeName
         end
     languageDropdown.choices = languageChoices
     languageDropdown.RegisterCallback("ChangeString", function(element, event)
-        tm.options.locale = KeyFromValue(tm.l10n.GetAllLocales(), event.newValue)
+        tm.options.locale = languageChoiceToLocaleName[event.newValue]
         tm.l10n.ApplyLocale()
         InitializeLocalizedDropdowns(panel)
         ShowOptionsPanel(tm)
