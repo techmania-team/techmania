@@ -146,6 +146,9 @@ function InitializeOptionsPanel(tm)
 
     local panel = tm.root.Q("options-panel")
     InitializeLocalizedDropdowns(panel)
+    table.insert(callbacksOnLocaleChange, function()
+        InitializeLocalizedDropdowns(panel)
+    end)
     panel.display = false
 
     local themeOptions = tm.options.GetThemeOptions()
@@ -231,7 +234,9 @@ function InitializeOptionsPanel(tm)
     languageDropdown.RegisterCallback("ChangeString", function(element, event)
         tm.options.locale = languageChoiceToLocaleName[event.newValue]
         tm.l10n.ApplyLocale()
-        InitializeLocalizedDropdowns(panel)
+        for _, callback in ipairs(callbacksOnLocaleChange) do
+            callback()
+        end
         ShowOptionsPanel(tm)
     end)
 

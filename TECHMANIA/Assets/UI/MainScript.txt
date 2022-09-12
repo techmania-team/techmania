@@ -1,8 +1,8 @@
 tm = getApi(1)
 
-l10n = tm.l10n
-l10n.Initialize(tm.LoadTextFile("Assets/UI/String Table.csv"))
-l10n.ApplyLocale()
+tm.l10n.Initialize(tm.LoadTextFile("Assets/UI/String Table.csv"))
+tm.l10n.ApplyLocale()
+callbacksOnLocaleChange = {}
 
 tm.ExecuteScript("Assets/UI/Scripts/Utilities.txt")
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")

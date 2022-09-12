@@ -1,10 +1,26 @@
 selectedTrackFolder = ""
 selectedFullTrack = nil
+selectedTrackOptions = nil
 allPatternRadioButtons = {}
 previewPlaybackCoroutine = nil
 previewTrackAudioSource = nil
 radarOfSelectedPattern = nil
 radarRadiusUnit = 13 / 20
+
+-- In each table, key is enum, value is display string
+modifierDisplayString = {
+    noteOpacity = {},
+    scanlineOpacity = {},
+    scanDirection = {},
+    notePosition = {},
+    scanPosition = {},
+    fever = {},
+    keysound = {},
+    assistTick = {},
+    mode = {},
+    controlOverride = {},
+    scrollSpeed = {}
+}
 
 -- pattern may be nil.
 function ShowPatternDetails(tm, panel, pattern)
@@ -113,12 +129,17 @@ function ShowSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
     local track = selectedFullTrack
 
+    -- Load per-track options.
+    selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
+
+    -- Display metadata.
     local eyecatchPath = tm.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(tm, eyecatchPath, panel.Q("eyecatch"))
     panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
     panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
     panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
 
+    -- Display pattern list.
     panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
     local patternListContainer = panel.Q("pattern-list").Q("unity-content-container")
     for _, child in ipairs(patternListContainer.Children()) do
@@ -166,11 +187,14 @@ function ShowSelectPatternPanel(tm)
         end, pattern)
     end
     SetRadioButton(nil, allPatternRadioButtons)
+
+    -- Initialize details when no pattern is selected.
     ShowPatternDetails(tm, panel, nil)
     panel.Q("play-button").SetEnabled(false)
 
     -- The radar displays are tied to the radar element's layout,
-    -- so they are only initialized when this panel appears the first time.
+    -- so they are only initialized when this panel appears the first time,
+    -- in InitializeRadar.
 end
 
 function InitializeRadar(tm)

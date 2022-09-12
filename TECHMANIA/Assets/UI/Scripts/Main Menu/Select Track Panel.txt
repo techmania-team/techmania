@@ -330,6 +330,24 @@ function InitializeSelectTrackPanel(tm)
     end)
 end
 
+function LocalizeDropdownsInTrackFilterSidesheet(tm)
+    local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
+    trackListSortBasisDisplayString = {
+        Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
+        Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
+        Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
+        Touch = tm.l10n.GetString("track_filter_sidesheet_sort_basis_touch_level"),
+        Keys = tm.l10n.GetString("track_filter_sidesheet_sort_basis_keys_level"),
+        KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
+    }
+    local sortBasisChoices = {}
+    for _, display in pairs(trackListSortBasisDisplayString) do
+        table.insert(sortBasisChoices, display)
+    end
+    local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.choices = sortBasisChoices
+end
+
 function InitializeTrackFilterSidesheet(tm)
     local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
     bg.RegisterCallback("Click", function()
@@ -363,20 +381,11 @@ function InitializeTrackFilterSidesheet(tm)
         ShowTracksAtCurrentLocation(tm)
     end)
 
-    trackListSortBasisDisplayString = {
-        Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
-        Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
-        Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
-        Touch = tm.l10n.GetString("track_filter_sidesheet_sort_basis_touch_level"),
-        Keys = tm.l10n.GetString("track_filter_sidesheet_sort_basis_keys_level"),
-        KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
-    }
-    local sortBasisChoices = {}
-    for _, display in pairs(trackListSortBasisDisplayString) do
-        table.insert(sortBasisChoices, display)
-    end
+    LocalizeDropdownsInTrackFilterSidesheet(tm)
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdownsInTrackFilterSidesheet(tm)
+    end)
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
-    sortBasisDropdown.choices = sortBasisChoices
     sortBasisDropdown.RegisterCallback("ChangeString", function(element, event)
         trackListSortBasis = KeyFromValue(trackListSortBasisDisplayString, event.newValue)
         ShowTracksAtCurrentLocation(tm)
