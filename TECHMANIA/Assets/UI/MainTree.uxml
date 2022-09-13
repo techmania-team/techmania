@@ -251,9 +251,7 @@
                         <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
                             <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
                                 <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
-                                <ui:Instance template="SliderInt" name="SliderInt" style="width: 300px;">
-                                    <AttributeOverrides element-name="slider" high-value="10" />
-                                </ui:Instance>
+                                <ui:Instance template="SliderInt" name="SliderInt" style="width: 300px;" />
                             </ui:Label>
                         </ui:VisualElement>
                         <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
@@ -263,7 +261,7 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
                         <ui:VisualElement name="special-modifiers" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Special Modifiers" display-tooltip-when-elided="true" name="special-modifiers" picking-mode="Ignore" class="text-headline-4" />
+                            <ui:Label tabindex="-1" text="Special Modifiers" display-tooltip-when-elided="true" name="header" picking-mode="Ignore" class="text-headline-4" />
                             <ui:Label tabindex="-1" text="Warning: these options will invalidate your score." display-tooltip-when-elided="true" name="warning" class="text-caption text-warning" style="margin-left: 0; margin-right: 0;" />
                         </ui:VisualElement>
                         <ui:VisualElement name="mode" picking-mode="Ignore" class="item">
