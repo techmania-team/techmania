@@ -218,6 +218,39 @@ function InitializeRadar(tm)
     PlaceRadarDisplay(radarElement.Q("async"), 4)
 end
 
+function ShowModifierSideSheet(tm)
+    local sheet = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet")
+
+    function SetDropdownValue(containerName, modifierKey)
+        local display = modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        sheet.Q(containerName).Q("dropdown").SetValueWithoutNotify(display)
+    end
+    SetDropdownValue("note-opacity", "noteOpacity")
+    SetDropdownValue("scanline-opacity", "scanlineOpacity")
+    SetDropdownValue("scan-direction", "scanDirection")
+    SetDropdownValue("note-position", "notePosition")
+    SetDropdownValue("scan-position", "scanPosition")
+    SetDropdownValue("fever", "fever")
+    SetDropdownValue("keysound", "keysound")
+    SetDropdownValue("assist-tick", "assistTick")
+    SetDropdownValue("mode", "mode")
+    SetDropdownValue("control-override", "controlOverride")
+    SetDropdownValue("scroll-speed", "scrollSpeed")
+
+    local themeOptions = tm.options.GetThemeOptions()
+    local showTally = false
+    if (themeOptions.Get("showJudgementTally") == "True") then
+        showTally = true
+    end
+    SetToggleIsOn(sheet.Q("judgement-tally").Q("track"), showTally)
+
+    local bgBrightness = selectedTrackOptions.backgroundBrightness
+    SetSliderValueWithoutNotify(sheet.Q("bg-brightness").Q("slider"), bgBrightness)
+    sheet.Q("bg-brightness").Q("value-display").text = tostring(bgBrightness)
+
+    SetToggleIsOn(sheet.Q("no-video").Q("track"), selectedTrackOptions.noVideo)
+end
+
 function FadeInModifierSidesheet(tm, bg)
     bg.display = true
     tm.StartCoroutine(function()
@@ -239,10 +272,18 @@ function InitializeSelectPatternPanel(tm)
     local sidesheetBg = panel.Q("modifier-sidesheet-background")
     sidesheetBg.display = false
     panel.Q("modifiers-button").RegisterCallback("Click", function()
+        ShowModifierSideSheet(tm)
         FadeInModifierSidesheet(tm, sidesheetBg)
     end)
 
-    -- Draw radar graph.
+    panel.Q("play-button").RegisterCallback("Click", function()
+        -- TODO: populate game setup
+        -- TODO: save options
+        -- TODO: play
+    end)
+
+    -- Set the function to draw radar graph. Actual drawing happens
+    -- when ShowPatternDetails calls ShowRadar.
     local radarElement = panel.Q("radar")
     radarElement.SetMeshPainterFunction(function(element, painter)
         painter.SetLineWidth(2)
@@ -324,6 +365,135 @@ function InitializeModifierSidesheet(tm)
 
     bg.Q("close-button").RegisterCallback("Click", function()
         FadeOutModifierSidesheet(tm, bg)
+    end)
+
+    function LocalizeDropdowns(tm)
+        modifierDisplayString.noteOpacity = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            FadeOut = tm.l10n.GetString("modifier_fade_out"),
+            FadeOut2 = tm.l10n.GetString("modifier_fade_out_2"),
+            FadeIn = tm.l10n.GetString("modifier_fade_in"),
+            FadeIn2 = tm.l10n.GetString("modifier_fade_in_2")
+        }
+        modifierDisplayString.scanlineOpacity = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            Blink = tm.l10n.GetString("modifier_blink"),
+            Blink2 = tm.l10n.GetString("modifier_blink_2"),
+            Blind = tm.l10n.GetString("modifier_blind")
+        }
+        modifierDisplayString.scanDirection = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            RR = tm.l10n.GetString("modifier_right_right"),
+            LR = tm.l10n.GetString("modifier_left_right"),
+            LL = tm.l10n.GetString("modifier_left_left")
+        }
+        modifierDisplayString.notePosition = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            Mirror = tm.l10n.GetString("modifier_mirror")
+        }
+        modifierDisplayString.scanPosition = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            Swap = tm.l10n.GetString("modifier_swap")
+        }
+        modifierDisplayString.fever = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            FeverOff = tm.l10n.GetString("modifier_fever_off"),
+            AutoFever = tm.l10n.GetString("modifier_auto_fever")
+        }
+        modifierDisplayString.keysound = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            AutoKeysound = tm.l10n.GetString("modifier_auto_keysound")
+        }
+        modifierDisplayString.assistTick = {
+            None = tm.l10n.GetString("modifier_none"),
+            AssistTick = tm.l10n.GetString("modifier_assist_tick"),
+            AutoAssistTick = tm.l10n.GetString("modifier_auto_assist_tick")
+        }
+        modifierDisplayString.mode = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            NoFail = tm.l10n.GetString("modifier_no_fail"),
+            AutoPlay = tm.l10n.GetString("modifier_auto_play"),
+            Practice = tm.l10n.GetString("modifier_practice")
+        }
+        modifierDisplayString.controlOverride = {
+            None = tm.l10n.GetString("modifier_none"),
+            OverrideToTouch = tm.l10n.GetString("modifier_override_to_touch"),
+            OverrideToKeys = tm.l10n.GetString("modifier_override_to_keys"),
+            OverrideToKM = tm.l10n.GetString("modifier_override_to_km")
+        }
+        modifierDisplayString.scrollSpeed = {
+            Normal = tm.l10n.GetString("modifier_normal"),
+            HalfSpeed = tm.l10n.GetString("modifier_half_speed")
+        }
+
+        function LocalizeOneDropdown(bg, containerName, displayStringTable)
+            local choices = {}
+            for _, displayString in pairs(displayStringTable) do
+                table.insert(choices, displayString)
+            end
+            bg.Q(containerName).Q("dropdown").choices = choices
+        end
+        LocalizeOneDropdown(bg, "note-opacity", modifierDisplayString.noteOpacity)
+        LocalizeOneDropdown(bg, "scanline-opacity", modifierDisplayString.scanlineOpacity)
+        LocalizeOneDropdown(bg, "scan-direction", modifierDisplayString.scanDirection)
+        LocalizeOneDropdown(bg, "note-position", modifierDisplayString.notePosition)
+        LocalizeOneDropdown(bg, "scan-position", modifierDisplayString.scanPosition)
+        LocalizeOneDropdown(bg, "fever", modifierDisplayString.fever)
+        LocalizeOneDropdown(bg, "keysound", modifierDisplayString.keysound)
+        LocalizeOneDropdown(bg, "assist-tick", modifierDisplayString.assistTick)
+        LocalizeOneDropdown(bg, "mode", modifierDisplayString.mode)
+        LocalizeOneDropdown(bg, "control-override", modifierDisplayString.controlOverride)
+        LocalizeOneDropdown(bg, "scroll-speed", modifierDisplayString.scrollSpeed)
+    end
+    LocalizeDropdowns(tm)
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdowns(tm)
+    end)
+
+    function InitializeDropdown(containerName, modifierKey)
+        -- tm.options.modifiers and modifierDisplayString share the same keys.
+        bg.Q(containerName).Q("dropdown").RegisterCallback("ChangeString", function(element, event)
+            tm.options.modifiers[modifierKey] = KeyFromValue(modifierDisplayString[modifierKey], event.newValue)
+        end)
+    end
+    InitializeDropdown("note-opacity", "noteOpacity")
+    InitializeDropdown("scanline-opacity", "scanlineOpacity")
+    InitializeDropdown("scan-direction", "scanDirection")
+    InitializeDropdown("note-position", "notePosition")
+    InitializeDropdown("scan-position", "scanPosition")
+    InitializeDropdown("fever", "fever")
+    InitializeDropdown("keysound", "keysound")
+    InitializeDropdown("assist-tick", "assistTick")
+    InitializeDropdown("mode", "mode")
+    InitializeDropdown("control-override", "controlOverride")
+    InitializeDropdown("scroll-speed", "scrollSpeed")
+
+    local judgementTallyKey = "showJudgementTally"
+    local themeOptions = tm.options.GetThemeOptions()
+    if (not themeOptions.Has(judgementTallyKey)) then
+        themeOptions.Add(judgementTallyKey, "False")
+    end
+    bg.Q("judgement-tally").Q("track").RegisterCallback("Click", function()
+        local oldValue = themeOptions.Get(judgementTallyKey)
+        if (oldValue == "True") then
+            themeOptions.Set(judgementTallyKey, "False")
+        else
+            themeOptions.Set(judgementTallyKey, "True")
+        end
+    end)
+
+    local brightnessSlider = bg.Q("bg-brightness").Q("slider")
+    brightnessSlider.lowValue = 0
+    brightnessSlider.highValue = 10
+    brightnessSlider.RegisterCallback("ChangeInt", function(element, event)
+        if (selectedTrackOptions == nil) then return end
+        selectedTrackOptions.backgroundBrightness = event.newValue
+        bg.Q("bg-brightness").Q("value-display").text = tostring(event.newValue)
+    end)
+
+    bg.Q("no-video").Q("track").RegisterCallback("Click", function()
+        if (selectedTrackOptions == nil) then return end
+        selectedTrackOptions.noVideo = not selectedTrackOptions.noVideo
     end)
 end
 

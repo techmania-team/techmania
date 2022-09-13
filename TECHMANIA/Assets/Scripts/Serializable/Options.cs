@@ -604,7 +604,7 @@ public class Modifiers
     public AssistTick assistTickEnum;
     public string assistTick
     {
-        get { return assistTick.ToString(); }
+        get { return assistTickEnum.ToString(); }
         set { assistTickEnum = Enum.Parse<AssistTick>(value); }
     }
     public static readonly string[] assistTickDisplayKeys =
