@@ -162,6 +162,36 @@ function ShowCurrentModifiers(tm)
     SetUpScrollingText(tm, container)
 end
 
+function ShowControlSchemeIcons(tm)
+    for index, pattern in ipairs(selectedFullTrack.patterns) do
+        local scheme = pattern.patternMetadata.controlSchemeString
+        local radioButton = allPatternRadioButtons[index]
+
+        local overrideScheme = ""
+        if (tm.options.modifiers.controlOverride == "OverrideToTouch") then
+            overrideScheme = "Touch"
+        elseif (tm.options.modifiers.controlOverride == "OverrideToKeys") then
+            overrideScheme = "Keys"
+        elseif (tm.options.modifiers.controlOverride == "OverrideToKM") then
+            overrideScheme = "KM"
+        end
+
+        local iconContainer = radioButton.Q("scheme-icon-container")
+        if (overrideScheme == scheme) then
+            iconContainer.RemoveFromClassList("scheme-override")
+            iconContainer.AddToClassList("scheme-no-override")
+        else
+            iconContainer.RemoveFromClassList("scheme-no-override")
+            iconContainer.AddToClassList("scheme-override")
+        end
+        scheme = overrideScheme
+
+        radioButton.Q("touch-icon").display = scheme == "Touch"
+        radioButton.Q("keys-icon").display = scheme == "Keys"
+        radioButton.Q("km-icon").display = scheme == "KM"
+    end
+end
+
 function ShowSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
     local track = selectedFullTrack
@@ -193,9 +223,7 @@ function ShowSelectPatternPanel(tm)
         radioButton.Q("2l-icon").display = metadata.playableLanes == 2
         radioButton.Q("3l-icon").display = metadata.playableLanes == 3
         radioButton.Q("4l-icon").display = metadata.playableLanes == 4
-        radioButton.Q("touch-icon").display = metadata.controlSchemeString == "Touch"
-        radioButton.Q("keys-icon").display = metadata.controlSchemeString == "Keys"
-        radioButton.Q("km-icon").display = metadata.controlSchemeString == "KM"
+        -- Control scheme icons are controlled separately in ShowControlSchemeIcons.
         radioButton.Q("level").text = metadata.level
         radioButton.Q("pattern-name").text = metadata.patternName
         SetUpScrollingText(tm, radioButton.Q("pattern-name-container"))
@@ -224,6 +252,7 @@ function ShowSelectPatternPanel(tm)
         end, pattern)
     end
     SetRadioButton(nil, allPatternRadioButtons)
+    ShowControlSchemeIcons(tm)
 
     -- Initialize details when no pattern is selected.
     ShowPatternDetails(tm, panel, nil)
@@ -505,6 +534,9 @@ function InitializeModifierSidesheet(tm)
     InitializeDropdown("assist-tick", "assistTick")
     InitializeDropdown("mode", "mode")
     InitializeDropdown("control-override", "controlOverride")
+    bg.Q("control-override").Q("dropdown").RegisterCallback("ChangeString", function()
+        ShowControlSchemeIcons(tm)
+    end)
     InitializeDropdown("scroll-speed", "scrollSpeed")
 
     local judgementTallyKey = "showJudgementTally"

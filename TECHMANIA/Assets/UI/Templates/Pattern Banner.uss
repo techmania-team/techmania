@@ -31,6 +31,13 @@
     top: 0;
     right: 0;
     bottom: 0;
+}
+
+.scheme-override .icon {
+    -unity-background-image-tint-color: var(--error-color);
+}
+
+.scheme-no-override .icon {
     -unity-background-image-tint-color: var(--medium-emphasis-text-color);
 }
 
