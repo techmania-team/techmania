@@ -125,6 +125,43 @@ function RadarAngleForVertex(i)
     return (-90 + 72 * i) * mathf.Deg2Rad
 end
 
+function ShowCurrentModifiers(tm)
+    local container = tm.root.Q("select-pattern-panel").Q("modifier-display").Q("container")
+    local content = container.Q("content")
+
+    local allSegments = {}
+    function CheckAndAddSegment(modifierKey, isSpecial)
+        if (tm.options.modifiers[modifierKey] == "Normal") then return end
+        if (tm.options.modifiers[modifierKey] == "None") then return end
+        local segment = modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        if (isSpecial) then
+            segment = "<color=#CF6679>" .. segment .. "</color>"
+        end
+        table.insert(allSegments, segment)
+    end
+    CheckAndAddSegment("noteOpacity", false)
+    CheckAndAddSegment("scanlineOpacity", false)
+    CheckAndAddSegment("scanDirection", false)
+    CheckAndAddSegment("notePosition", false)
+    CheckAndAddSegment("scanPosition", false)
+    CheckAndAddSegment("fever", false)
+    CheckAndAddSegment("keysound", false)
+    CheckAndAddSegment("assistTick", false)
+    if (selectedTrackOptions != nil and selectedTrackOptions.noVideo) then
+        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
+    end
+    CheckAndAddSegment("mode", true)
+    CheckAndAddSegment("controlOverride", true)
+    CheckAndAddSegment("scrollSpeed", true)
+
+    if (#allSegments == 0) then
+        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
+    end
+
+    content.text = netString.Join(" / ", allSegments)
+    SetUpScrollingText(tm, container)
+end
+
 function ShowSelectPatternPanel(tm)
     local panel = tm.root.Q("select-pattern-panel")
     local track = selectedFullTrack
@@ -191,6 +228,7 @@ function ShowSelectPatternPanel(tm)
     -- Initialize details when no pattern is selected.
     ShowPatternDetails(tm, panel, nil)
     panel.Q("play-button").SetEnabled(false)
+    ShowCurrentModifiers(tm)
 
     -- The radar displays are tied to the radar element's layout,
     -- so they are only initialized when this panel appears the first time,
@@ -454,6 +492,7 @@ function InitializeModifierSidesheet(tm)
         -- tm.options.modifiers and modifierDisplayString share the same keys.
         bg.Q(containerName).Q("dropdown").RegisterCallback("ChangeString", function(element, event)
             tm.options.modifiers[modifierKey] = KeyFromValue(modifierDisplayString[modifierKey], event.newValue)
+            ShowCurrentModifiers(tm)
         end)
     end
     InitializeDropdown("note-opacity", "noteOpacity")
@@ -491,9 +530,10 @@ function InitializeModifierSidesheet(tm)
         bg.Q("bg-brightness").Q("value-display").text = tostring(event.newValue)
     end)
 
-    bg.Q("no-video").Q("track").RegisterCallback("Click", function()
+    bg.Q("no-video").Q("track").RegisterCallback("Click", function(element, event)
         if (selectedTrackOptions == nil) then return end
         selectedTrackOptions.noVideo = not selectedTrackOptions.noVideo
+        ShowCurrentModifiers(tm)
     end)
 end
 
