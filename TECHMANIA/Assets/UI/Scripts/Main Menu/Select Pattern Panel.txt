@@ -285,9 +285,8 @@ function InitializeRadar(tm)
     PlaceRadarDisplay(radarElement.Q("async"), 4)
 end
 
-function ShowModifierSideSheet(tm)
+function SetDropdownValuesInModifierSidesheet(tm)
     local sheet = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet")
-
     function SetDropdownValue(containerName, modifierKey)
         local display = modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
         sheet.Q(containerName).Q("dropdown").SetValueWithoutNotify(display)
@@ -303,6 +302,11 @@ function ShowModifierSideSheet(tm)
     SetDropdownValue("mode", "mode")
     SetDropdownValue("control-override", "controlOverride")
     SetDropdownValue("scroll-speed", "scrollSpeed")
+end
+
+function ShowModifierSideSheet(tm)
+    local sheet = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet")
+    SetDropdownValuesInModifierSidesheet(tm)
 
     local themeOptions = tm.options.GetThemeOptions()
     local showTally = false
@@ -515,6 +519,8 @@ function InitializeModifierSidesheet(tm)
     LocalizeDropdowns(tm)
     table.insert(callbacksOnLocaleChange, function()
         LocalizeDropdowns(tm)
+        SetDropdownValuesInModifierSidesheet(tm)
+        ShowCurrentModifiers(tm)
     end)
 
     function InitializeDropdown(containerName, modifierKey)

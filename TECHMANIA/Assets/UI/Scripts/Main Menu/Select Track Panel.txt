@@ -243,6 +243,11 @@ function RefreshTrackList(tm)
     end)
 end
 
+function SetDropdownValuesInFilterSidesheet(tm)
+    local sortBasisDropdown = tm.root.Q("select-track-panel").Q("filter-sidesheet").Q("sort-by").Q("dropdown")
+    sortBasisDropdown.SetValueWithoutNotify(trackListSortBasisDisplayString[trackListSortBasis])
+end
+
 function ShowFilterSidesheet(tm)
     local sheet = tm.root.Q("select-track-panel").Q("filter-sidesheet")
 
@@ -250,8 +255,7 @@ function ShowFilterSidesheet(tm)
 
     SetToggleIsOn(sheet.Q("all-folders").Q("track"), showTracksInAllFolders)
 
-    local sortBasisDropdown = sheet.Q("sort-by").Q("dropdown")
-    sortBasisDropdown.SetValueWithoutNotify(trackListSortBasisDisplayString[trackListSortBasis])
+    SetDropdownValuesInFilterSidesheet(tm)
 
     local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
@@ -383,6 +387,7 @@ function InitializeTrackFilterSidesheet(tm)
     LocalizeDropdown(tm)
     table.insert(callbacksOnLocaleChange, function()
         LocalizeDropdown(tm)
+        SetDropdownValuesInFilterSidesheet(tm)
     end)
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
     sortBasisDropdown.RegisterCallback("ChangeString", function(element, event)
