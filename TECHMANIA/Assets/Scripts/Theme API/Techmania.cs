@@ -11,11 +11,13 @@ namespace ThemeApi
     public class Techmania
     {
         private static UIDocument uiDocument;
-        [MoonSharpHidden]
-        public static AudioManager audioManager { get; private set; }
+
+        private static AudioManager audioManager;
         private static StyleHelper styleHelper;
         private static ThemeL10n themeL10n;
         private static GlobalResource resInstance;
+        private static GameSetup gameSetupInstance;
+        private static GameState gameState;
 
         [MoonSharpHidden]
         public static void Prepare()
@@ -25,6 +27,8 @@ namespace ThemeApi
             styleHelper = new StyleHelper();
             themeL10n = new ThemeL10n(uiDocument.rootVisualElement);
             resInstance = new GlobalResource();
+            gameSetupInstance = new GameSetup();
+            gameState = new GameState();
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
         }
@@ -53,12 +57,14 @@ namespace ThemeApi
         public static Ruleset ruleset => Ruleset.instance;
         public static Records records => Records.instance;
         public static GlobalResource resources => resInstance;
+        public static GameSetup gameSetup => gameSetupInstance;
+        public static GameState game => gameState;
         public static IO io => new IO();
         public static Paths paths => new Paths();
         #endregion
 
         #region Audio and video
-        public AudioManager audio => audioManager;
+        public static AudioManager audio => audioManager;
         #endregion
 
         #region System dialogs

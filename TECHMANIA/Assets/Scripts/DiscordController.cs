@@ -73,7 +73,7 @@ public class DiscordController
                 state = "";
                 break;
             case DiscordActivityType.SelectingPattern:
-                details = GameSetup.track.trackMetadata.title;
+                details = InternalGameSetup.track.trackMetadata.title;
                 state = L10n.GetString(
                     "discord_state_selecting_pattern");
                 break;
@@ -114,9 +114,9 @@ public class DiscordController
                     timeStart = DateTimeOffset.UtcNow;
                 }
                 {
-                    PatternMetadata metadata = GameSetup.pattern
+                    PatternMetadata metadata = InternalGameSetup.pattern
                         .patternMetadata;
-                    details = GameSetup.track.trackMetadata.title;
+                    details = InternalGameSetup.track.trackMetadata.title;
                     state = L10n.GetStringAndFormat(
                         "discord_state_playing_pattern",
                         metadata.playableLanes,

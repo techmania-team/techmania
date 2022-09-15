@@ -182,7 +182,7 @@ public class DragNoteAppearance : NoteAppearance,
         float compensatedTime = Game.Time;
         if (!Game.autoPlay)
         {
-            if (GameSetup.pattern.patternMetadata.controlScheme
+            if (InternalGameSetup.pattern.patternMetadata.controlScheme
                 == ControlScheme.Touch)
             {
                 compensatedTime -= Options.instance.touchLatencyMs * 0.001f;
@@ -193,7 +193,7 @@ public class DragNoteAppearance : NoteAppearance,
                     keyboardMouseLatencyMs * 0.001f;
             }
         }
-        float compensatedPulse = GameSetup.pattern.TimeToPulse(
+        float compensatedPulse = InternalGameSetup.pattern.TimeToPulse(
             compensatedTime);
         float compensatedScanlineX = scanRef.FloatPulseToXPosition(
             compensatedPulse) -

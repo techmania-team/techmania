@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 
 // Pass information from MainMenu scene to Game scene.
-public class GameSetup
+public class InternalGameSetup
 {
     public static Track track;
     // Full path to the track.tech file.

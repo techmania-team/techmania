@@ -113,7 +113,7 @@ public class ModifierSidesheet : MonoBehaviour
         //showJudgementTally.SetIsOnWithoutNotify(
         //    Options.instance.showJudgementTally);
         noVideo.SetIsOnWithoutNotify(
-            GameSetup.trackOptions.noVideo);
+            InternalGameSetup.trackOptions.noVideo);
 
         // Special modifiers
 
@@ -155,7 +155,7 @@ public class ModifierSidesheet : MonoBehaviour
 
         //Options.instance.showJudgementTally =
         //    showJudgementTally.isOn;
-        GameSetup.trackOptions.noVideo =
+        InternalGameSetup.trackOptions.noVideo =
             noVideo.isOn;
 
         // Special modifiers

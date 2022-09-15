@@ -40,12 +40,12 @@ public class SelectPatternPanel : MonoBehaviour
     private void OnEnable()
     {
         // Load full track from disk.
-        GameSetup.track = Track.LoadFromFile(GameSetup.trackPath)
+        InternalGameSetup.track = Track.LoadFromFile(InternalGameSetup.trackPath)
             as Track;
 
         // Show track details.
-        Track track = GameSetup.track;
-        eyecatchImage.LoadImage(GameSetup.trackFolder,
+        Track track = InternalGameSetup.track;
+        eyecatchImage.LoadImage(InternalGameSetup.trackFolder,
             track.trackMetadata);
         genreText.text = track.trackMetadata.genre;
         titleText.text = track.trackMetadata.title;
@@ -78,8 +78,8 @@ public class SelectPatternPanel : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(firstObject);
 
         // Play preview.
-        previewPlayer.Play(GameSetup.trackFolder,
-            GameSetup.track.trackMetadata,
+        previewPlayer.Play(InternalGameSetup.trackFolder,
+            InternalGameSetup.track.trackMetadata,
             loop: true);
 
         DiscordController.SetActivity(
@@ -187,7 +187,7 @@ public class SelectPatternPanel : MonoBehaviour
 
     private void OnModifierChanged()
     {
-        bool noVideo = GameSetup.trackOptions.noVideo;
+        bool noVideo = InternalGameSetup.trackOptions.noVideo;
         modifiersText.SetUp(ModifierSidesheet.GetDisplayString(
             noVideo, specialModifierColor));
     }
@@ -205,11 +205,11 @@ public class SelectPatternPanel : MonoBehaviour
         // Game will operate on the clone.
         // The original pattern is kept in memory so its GUID and
         // fingerprint are still available later.
-        GameSetup.patternBeforeApplyingModifier = 
+        InternalGameSetup.patternBeforeApplyingModifier = 
             patternList.GetSelectedPattern();
-        if (GameSetup.patternBeforeApplyingModifier == null)
+        if (InternalGameSetup.patternBeforeApplyingModifier == null)
             return;
-        GameSetup.pattern = GameSetup.patternBeforeApplyingModifier
+        InternalGameSetup.pattern = InternalGameSetup.patternBeforeApplyingModifier
             .ApplyModifiers(Modifiers.instance);
 
         if (Input.GetKey(KeyCode.LeftControl) ||

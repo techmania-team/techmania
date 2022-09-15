@@ -17,19 +17,19 @@ public class BgBrightnessSlider : MonoBehaviour
     private void MemoryToUI()
     {
         slider.SetValueWithoutNotify(
-            GameSetup.trackOptions.backgroundBrightness);
+            InternalGameSetup.trackOptions.backgroundBrightness);
         RefreshBrightnessDisplay();
     }
 
     private void RefreshBrightnessDisplay()
     {
-        display.text = GameSetup.trackOptions
+        display.text = InternalGameSetup.trackOptions
             .backgroundBrightness.ToString();
     }
 
     public void UIToMemory()
     {
-        GameSetup.trackOptions.backgroundBrightness =
+        InternalGameSetup.trackOptions.backgroundBrightness =
             Mathf.FloorToInt(slider.value);
         RefreshBrightnessDisplay();
     }

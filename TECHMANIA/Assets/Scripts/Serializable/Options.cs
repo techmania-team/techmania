@@ -272,7 +272,7 @@ public class Options : OptionsBase
     #region Audio
     public void ApplyVolumeSettings()
     {
-        AudioMixer mixer = ThemeApi.Techmania.audioManager.mixer;
+        AudioMixer mixer = ThemeApi.Techmania.audio.mixer;
         mixer.SetFloat("MasterVolume", VolumeValueToDb(
             masterVolumePercent));
         mixer.SetFloat("MusicVolume", VolumeValueToDb(

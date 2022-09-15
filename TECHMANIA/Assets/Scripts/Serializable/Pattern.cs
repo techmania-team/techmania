@@ -265,11 +265,11 @@ public partial class Pattern
         List<float> timeWindows = Ruleset.instance.timeWindows;
         if (calculateTimeWindows &&
             Options.instance.rulesetEnum == Options.Ruleset.Legacy &&
-            GameSetup.pattern.legacyRulesetOverride != null &&
-            GameSetup.pattern.legacyRulesetOverride
+            InternalGameSetup.pattern.legacyRulesetOverride != null &&
+            InternalGameSetup.pattern.legacyRulesetOverride
                 .timeWindows.Count > 0)
         {
-            timeWindows = GameSetup.pattern.legacyRulesetOverride
+            timeWindows = InternalGameSetup.pattern.legacyRulesetOverride
                 .timeWindows;
         }
 

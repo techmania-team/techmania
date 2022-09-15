@@ -65,7 +65,7 @@ public class ScanBackground : MonoBehaviour
     {
         float marginAbove, marginBelow;
         Ruleset.instance.GetScanMargin(
-            GameSetup.pattern.patternMetadata.playableLanes,
+            InternalGameSetup.pattern.patternMetadata.playableLanes,
             position, out marginAbove, out marginBelow);
 
         // Lanes
@@ -111,7 +111,7 @@ public class ScanBackground : MonoBehaviour
         }
 
         // Beat markers
-        int bps = GameSetup.pattern.patternMetadata.bps;
+        int bps = InternalGameSetup.pattern.patternMetadata.bps;
         //switch (Options.instance.beatMarkers)
         //{
         //    case Options.BeatMarkerVisibility.Hidden:
@@ -143,7 +143,7 @@ public class ScanBackground : MonoBehaviour
 
     private void Update()
     {
-        ControlScheme scheme = GameSetup.pattern.patternMetadata
+        ControlScheme scheme = InternalGameSetup.pattern.patternMetadata
             .controlScheme;
         if (scheme != ControlScheme.Keys) return;
         if (Game.keysForLane == null) return;

@@ -554,9 +554,9 @@ public class SelectTrackPanel : MonoBehaviour
 
     protected virtual void OnTrackCardClick(GameObject o)
     {
-        GameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
+        InternalGameSetup.trackPath = Path.Combine(cardToTrack[o].folder, 
             Paths.kTrackFilename);
-        GameSetup.trackOptions = Options.instance
+        InternalGameSetup.trackOptions = Options.instance
             .GetPerTrackOptions(
             cardToTrack[o].minimizedTrack.trackMetadata.guid);
         PanelTransitioner.TransitionTo(selectPatternPanel,

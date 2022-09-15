@@ -45,16 +45,16 @@ public class ResultsPanel : MonoBehaviour
         title.text = L10n.GetString(Game.score.stageFailed ?
             "result_panel_stage_failed_title" :
             "result_panel_stage_clear_title");
-        GameSetup.patternBeforeApplyingModifier
+        InternalGameSetup.patternBeforeApplyingModifier
             .CalculateFingerprint();
 
         // Track and Pattern
-        TrackMetadata track = GameSetup.track.trackMetadata;
-        eyecatch.LoadImage(GameSetup.trackFolder, track);
+        TrackMetadata track = InternalGameSetup.track.trackMetadata;
+        eyecatch.LoadImage(InternalGameSetup.trackFolder, track);
         trackTitle.text = track.title;
         trackArtist.text = track.artist;
 
-        PatternMetadata pattern = GameSetup
+        PatternMetadata pattern = InternalGameSetup
             .patternBeforeApplyingModifier.patternMetadata;
         patternBanner.Initialize(pattern);
 
@@ -101,7 +101,7 @@ public class ResultsPanel : MonoBehaviour
 
         // My record
         Record record = Records.instance.GetRecord(
-            GameSetup.patternBeforeApplyingModifier);  // May be null
+            InternalGameSetup.patternBeforeApplyingModifier);  // May be null
         if (record == null)
         {
             recordText.text = Record.EmptyRecordString();
@@ -121,7 +121,7 @@ public class ResultsPanel : MonoBehaviour
 
         bool newRecord;
         Records.instance.UpdateRecord(
-            GameSetup.patternBeforeApplyingModifier,
+            InternalGameSetup.patternBeforeApplyingModifier,
             scoreForRecord,
             record,
             out newRecord);
@@ -139,7 +139,7 @@ public class ResultsPanel : MonoBehaviour
             case Options.Ruleset.Legacy:
                 ruleset.text = L10n.GetString(
                     "options_ruleset_legacy");
-                if (GameSetup.pattern.legacyRulesetOverride.HasAny())
+                if (InternalGameSetup.pattern.legacyRulesetOverride.HasAny())
                 {
                     ruleset.text = ruleset.text + "*";
                     legacyRulesetOverrideIndicator.SetActive(true);
