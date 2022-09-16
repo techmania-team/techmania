@@ -67,8 +67,8 @@ namespace ThemeApi
             state = newState;
             if (oldState != newState)
             {
-                Techmania.gameSetup.onStateChange?.Function.Call(
-                    newState.ToString());
+                Techmania.instance.gameSetup.onStateChange?
+                    .Function.Call(newState.ToString());
             }
         }
 

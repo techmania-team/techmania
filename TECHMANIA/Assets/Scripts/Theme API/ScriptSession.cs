@@ -7,7 +7,7 @@ using System;
 
 namespace ThemeApi
 {
-    public class ScriptSession
+    public static class ScriptSession
     {
         public static Script session { get; private set; }
 
@@ -64,8 +64,6 @@ namespace ThemeApi
             UserData.RegisterType<Vector3>();
             UserData.RegisterType<Rect>();
             UserData.RegisterAssembly();
-            // Preparations
-            Techmania.Prepare();
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
             // Expose .Net & Unity classes

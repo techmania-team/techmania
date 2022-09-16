@@ -10,38 +10,40 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class Techmania
     {
-        private static UIDocument uiDocument;
-
-        private static AudioManager audioManager;
-        private static StyleHelper styleHelper;
-        private static ThemeL10n themeL10n;
-        private static GlobalResource resInstance;
-        private static GameSetup gameSetupInstance;
-        private static GameState gameState;
+        [MoonSharpHidden]
+        public static Techmania instance { get; private set; }
 
         [MoonSharpHidden]
-        public static void Prepare()
+        public Techmania()
         {
+            instance = this;
+
             uiDocument = Object.FindObjectOfType<UIDocument>();
-            audioManager = new AudioManager();
-            styleHelper = new StyleHelper();
-            themeL10n = new ThemeL10n(uiDocument.rootVisualElement);
-            resInstance = new GlobalResource();
-            gameSetupInstance = new GameSetup();
-            gameState = new GameState();
+            root = new VisualElementWrap(uiDocument.rootVisualElement);
+            style = new StyleHelper();
+
+            l10n = new ThemeL10n(uiDocument.rootVisualElement);
+            resources = new GlobalResource();
+            gameSetup = new GameSetup();
+            game = new GameState();
+            io = new IO();
+            paths = new Paths();
+
+            audio = new AudioManager();
+
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
         }
 
         #region UIDocument exposure
+        private UIDocument uiDocument;
         public VisualTreeAsset visualTreeAsset => 
             uiDocument.visualTreeAsset;
-        public VisualElementWrap root =>
-            new VisualElementWrap(uiDocument.rootVisualElement);
+        public VisualElementWrap root { get; private set; }
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
 
-        public StyleHelper style => styleHelper;
+        public StyleHelper style { get; private set; }
 
         public void SetThemeStyleSheet(string name)
         {
@@ -52,19 +54,19 @@ namespace ThemeApi
         #endregion
 
         #region Data classes
-        public static ThemeL10n l10n => themeL10n;
-        public static Options options => Options.instance;
-        public static Ruleset ruleset => Ruleset.instance;
-        public static Records records => Records.instance;
-        public static GlobalResource resources => resInstance;
-        public static GameSetup gameSetup => gameSetupInstance;
-        public static GameState game => gameState;
-        public static IO io => new IO();
-        public static Paths paths => new Paths();
+        public Options options => Options.instance;
+        public Ruleset ruleset => Ruleset.instance;
+        public Records records => Records.instance;
+        public ThemeL10n l10n { get; private set; }
+        public GlobalResource resources { get; private set; }
+        public GameSetup gameSetup { get; private set; }
+        public GameState game { get; private set; }
+        public IO io { get; private set; }
+        public Paths paths { get; private set; }
         #endregion
 
         #region Audio and video
-        public static AudioManager audio => audioManager;
+        public AudioManager audio { get; private set; }
         #endregion
 
         #region System dialogs
