@@ -18,6 +18,7 @@ namespace ThemeApi
 
         public VisualElementWrap bgContainer;
         public VisualElementWrap gameContainer;
+        public VisualElementWrap vfxComboContainer;  // Unused
 
         // Callbacks
 

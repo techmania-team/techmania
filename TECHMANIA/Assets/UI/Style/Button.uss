@@ -272,6 +272,47 @@
     border-bottom-color: var(--primary-color-variant);
 }
 
+.button-icon-contained {
+    background-color: var(--primary-color);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    height: 60px;
+    width: 60px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-icon-contained:focus {
+    border-left-color: var(--primary-color-variant);
+    border-right-color: var(--primary-color-variant);
+    border-top-color: var(--primary-color-variant);
+    border-bottom-color: var(--primary-color-variant);
+}
+
+.button-icon-contained .icon {
+    width: 36px;
+    height: 36px;
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+}
+
 .button-card {
     margin-left: 0;
     margin-right: 0;

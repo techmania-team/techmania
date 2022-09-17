@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/Controls/Progress%20Bar.uss?fileID=7433441132597879392&amp;guid=16f70f9d7a557cc48a0eab5d1af537fc&amp;type=3#Progress Bar" />
-    <ui:VisualElement name="container">
-        <ui:VisualElement name="track">
-            <ui:VisualElement name="filled-portion" />
+    <ui:VisualElement name="container" picking-mode="Ignore">
+        <ui:VisualElement name="track" picking-mode="Ignore">
+            <ui:VisualElement name="filled-portion" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

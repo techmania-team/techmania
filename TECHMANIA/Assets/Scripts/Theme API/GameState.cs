@@ -9,10 +9,9 @@ namespace ThemeApi
     {
         public enum State
         {
-            // The only state that allows Lua to change GameSetup.
-            // Theme should fill the fields in GameSetup and begin
-            // loading.
-            Pending,
+            // Waiting for Lua to fill in GameSetup and call
+            // BeginLoading.
+            Idle,
             // Transitions to LoadError or LoadComplete. Fires
             // onLoadProgress with each file loaded; fires
             // onLoadError when load fails.
@@ -30,28 +29,44 @@ namespace ThemeApi
             // Complete with time.
             AllNotesResolved,
             // The game is complete, the score is available.
-            // Transitions to Pending state.
+            // Transitions to Idle state.
             Complete
         }
         public State state { get; private set; }
+        public GameState()
+        {
+            state = State.Idle;
+        }
+
+        private void CheckState(State expectedState, string methodName)
+        {
+            if (state == expectedState) return;
+            throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {state}.");
+        }
 
         public void BeginLoading()
         {
-            // Pending => Loading
+            CheckState(State.Idle, "BeginLoading");
+            // Idle => Loading
+            // Lock down the track and pattern so theme can't change
+            // them later.
         }
 
         public void Begin()
         {
+            CheckState(State.LoadComplete, "Begin");
             // LoadComplete => Ongoing
         }
 
         public void Pause()
         {
+            CheckState(State.Ongoing, "Pause");
             // Ongoing => Paused
         }
 
         public void Unpause()
         {
+            CheckState(State.Paused, "Unpause");
             // Paused => Ongoing
         }
 

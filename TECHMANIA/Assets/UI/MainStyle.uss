@@ -29,6 +29,14 @@
     -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
 }
 
+.red-700 {
+    background-color: rgba(211, 47, 47, 255);
+}
+
+.blue-200 {
+    background-color: rgba(144, 202, 249, 255);
+}
+
 .panel {
     position: absolute;
     left: 0;
@@ -228,4 +236,25 @@
 
 #modifier-sidesheet .item #Dropdown {
     width: 350px;
+}
+
+#game-panel #fever-bar-wrap .text-headline-6 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+}
+
+#game-panel #middle-fever-bar-bg .text-headline-6 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(245, 124, 0);
+    -unity-font-style: bold;
 }
