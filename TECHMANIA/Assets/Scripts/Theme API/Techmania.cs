@@ -93,12 +93,6 @@ namespace ThemeApi
         #endregion
 
         #region Miscellaneous
-        public string LoadTextFile(string name)
-        {
-            return GlobalResource.GetThemeContent<TextAsset>(
-                name).text;
-        }
-
         public void ExecuteScript(string name)
         {
             string script = GlobalResource

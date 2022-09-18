@@ -59,7 +59,7 @@ function InitializeAlertBox(tm)
     bg.Q("cancel-button").RegisterCallback("Click", OnCancel)
     bg.RegisterCallback("Click", OnCancel)
     bg.RegisterCallback("Click", function(element, event)
-        tm.audio.PlayFileInTheme("Assets/UI/SFX/Back.wav", "SFX")
+        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
     end)
 
     bg.Q("alert-box").RegisterCallback("Click", function(element, event)

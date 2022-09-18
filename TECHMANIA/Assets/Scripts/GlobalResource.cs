@@ -107,10 +107,18 @@ public class GlobalResource
     public static T GetThemeContent<T>(string name) where T : Object
     {
         name = name.ToLower();
-        if (!themeContent.ContainsKey(name)) return null;
-        Object content = themeContent[name];
-        if (content.GetType() != typeof(T)) return null;
-        return content as T;
+        if (!themeContent.ContainsKey(name))
+        {
+            Debug.LogError($"The asset {name} does not exist in the current theme.");
+            return null;
+        }
+        Object asset = themeContent[name];
+        if (asset.GetType() != typeof(T))
+        {
+            Debug.LogError($"The asset {name} exists in the current theme, but is not of the expected type. Expected type: {typeof(T).Name}; actual type: {asset.GetType().Name}");
+            return null;
+        }
+        return asset as T;
     }
     #endregion
 }

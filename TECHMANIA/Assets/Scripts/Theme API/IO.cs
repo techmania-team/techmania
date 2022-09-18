@@ -8,8 +8,14 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class IO
     {
+        public static string LoadTextFileFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<TextAsset>(path)?
+                .text;
+        }
+
         // Callback parameter: Status, Texture2D
-        public static void LoadTexture(string path,
+        public static void LoadTextureFromFile(string path,
             DynValue callback)
         {
             ResourceLoader.LoadImage(path,
@@ -19,8 +25,13 @@ namespace ThemeApi
                 });
         }
 
+        public static AudioClip LoadAudioFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<AudioClip>(path);
+        }
+
         // Callback parameter: Status, AudioClip
-        public static void LoadAudio(string path,
+        public static void LoadAudioFromFile(string path,
             DynValue callback)
         {
             ResourceLoader.LoadAudio(path,
