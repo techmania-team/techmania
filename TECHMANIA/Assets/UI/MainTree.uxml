@@ -182,7 +182,7 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="buttons" picking-mode="Ignore" style="margin-top: 20px; flex-grow: 1; flex-direction: row;">
                             <ui:Button tabindex="-1" text="MODIFIERS" display-tooltip-when-elided="true" name="modifiers-button" class="button-outlined" style="width: 300px;" />
-                            <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained" style="margin-left: 20px; flex-grow: 1;" />
+                            <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained special-click-sfx" style="margin-left: 20px; flex-grow: 1;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

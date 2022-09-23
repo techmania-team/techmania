@@ -348,6 +348,7 @@ function InitializeSelectPatternPanel(tm)
     end)
 
     panel.Q("play-button").RegisterCallback("Click", function()
+        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), "SFX")
         -- TODO: populate game setup
         -- TODO: save options
         -- TODO: play

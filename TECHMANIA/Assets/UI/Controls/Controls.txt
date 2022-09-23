@@ -51,6 +51,7 @@ function SetToggleIsOn(trackElement, on)
 end
 
 function SetUpClickSound(tm, element)
+    if (element.ClassListContains("special-click-sfx")) then return end
     local sfxName = "Assets/UI/SFX/Click.wav"
     if (element.name == "back-button" or
         element.name == "cancel-button") then
