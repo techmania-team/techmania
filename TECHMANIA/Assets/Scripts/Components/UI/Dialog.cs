@@ -6,10 +6,7 @@ using UnityEngine.EventSystems;
 
 public class Dialog : MonoBehaviour
 {
-    public GameObject defaultSelected;
-
     private CanvasGroup previousGroup;
-    private GameObject previousSelected;
     private CanvasGroup currentGroup;
     private bool transitioning;
     protected Vector2 restingAnchoredPosition;
@@ -37,8 +34,6 @@ public class Dialog : MonoBehaviour
         {
             previousGroup.interactable = false;
         }
-        previousSelected = 
-            EventSystem.current.currentSelectedGameObject;
 
         currentGroup = GetComponent<CanvasGroup>();
         currentGroup.alpha = 0f;
@@ -74,12 +69,6 @@ public class Dialog : MonoBehaviour
         currentGroup.alpha = 1f;
         rect.anchoredPosition = restingAnchoredPosition;
         transitioning = false;
-
-        if (defaultSelected != null)
-        {
-            EventSystem.current.SetSelectedGameObject(
-                defaultSelected);
-        }
     }
 
     protected virtual Vector2 FadeInStep(float progress)
@@ -109,7 +98,6 @@ public class Dialog : MonoBehaviour
         {
             previousGroup.interactable = true;
         }
-        EventSystem.current.SetSelectedGameObject(previousSelected);
         transitioning = false;
         rect.anchoredPosition = restingAnchoredPosition;
         gameObject.SetActive(false);

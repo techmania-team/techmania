@@ -119,10 +119,6 @@ public class LoadScreen : MonoBehaviour
 
         uiDocument.visualTreeAsset = GlobalResource
             .themeContent[mainTreePath] as VisualTreeAsset;
-        GetComponentInParent<Canvas>().gameObject.SetActive(false);
-        UnityEngine.EventSystems.EventSystem.current.gameObject
-            .SetActive(false);
-
         ThemeApi.ScriptSession.Prepare();
         try
         {
@@ -131,7 +127,12 @@ public class LoadScreen : MonoBehaviour
         catch (ThemeApi.ApiNotSupportedException)
         {
             messageDialog.Show($"{L10n.GetString("theme_error_api_not_supported")}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
+            yield break;
         }
+
+        UnityEngine.EventSystems.EventSystem.current.gameObject
+            .SetActive(false);
+        GetComponentInParent<Canvas>().gameObject.SetActive(false);
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()

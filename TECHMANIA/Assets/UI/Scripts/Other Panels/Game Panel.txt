@@ -1,0 +1,48 @@
+function InitializeGamePanel(tm)
+    local panel = tm.root.Q("game-panel")
+
+    panel.Q("pause-button").RegisterCallback("Click", function()
+    end)
+
+    panel.Q("fever-bar-bg").RegisterCallback("PointerDown", function()
+    end)
+
+    tm.gameSetup.bgContainer = panel.Q("bg-layer")
+    tm.gameSetup.gameContainer = panel.Q("game-layer")
+    tm.gameSetup.vfxComboContainer = nil  -- Unused
+
+    tm.gameSetup.onStateChange = function(newState)
+    end
+
+    tm.gameSetup.onLoadProgress = function(fileJustLoaded, numberFilesLoaded, totalFiles)
+    end
+
+    tm.gameSetup.onLoadError = function(status)
+    end
+
+    tm.gameSetup.onUpdate = function()
+    end
+
+    tm.gameSetup.onNoteResolved = function()
+    end
+
+    tm.gameSetup.onFeverUpdate = function(fever)
+    end
+
+    tm.gameSetup.onFeverEnd = function(feverBonus)
+    end
+end
+
+function GamePanelStartLoading(tm)
+    local panel = tm.root.Q("game-panel")
+
+    panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
+    panel.Q("top-bar").Q("pause-button").display = true
+    panel.Q("top-bar").Q("back-button").display = false
+    panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != "Practice"
+    panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == "Practice"
+    panel.Q("middle-fever-bar-bg").display = false
+    panel.Q("loading-bar-wrap").display = tm.options.GetThemeOptions().Get("showLoadingBar") == "True"
+end
+
+InitializeGamePanel(tm)

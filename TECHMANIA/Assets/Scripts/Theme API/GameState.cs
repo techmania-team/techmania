@@ -51,10 +51,6 @@ namespace ThemeApi
         public void BeginLoading()
         {
             CheckState(State.Idle, "BeginLoading");
-            Debug.Log("BeginLoading called. Track folder: " +
-                Techmania.instance.gameSetup.trackFolder +
-                " pattern GUID: " +
-                Techmania.instance.gameSetup.patternGuid);
             // Idle => Loading
             // Lock down the track and pattern so theme can't change
             // them later.

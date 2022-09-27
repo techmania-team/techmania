@@ -132,7 +132,7 @@ end
 
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
-function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
+function TransitionPanelCoroutine(tm, from, to, length, toPanelInitializer)
     local transitionTime = 0.2
 
     from.display = true
@@ -153,9 +153,9 @@ end
 --
 -- Avoid adding VisualElements inside toPanelInitializer:
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromLeft(from, to, toPanelInitializer)
+function TransitionPanelFromLeft(tm, from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
+        TransitionPanelCoroutine(tm, from, to,
             100,  -- length
             toPanelInitializer)
     end)
@@ -166,17 +166,17 @@ end
 --
 -- Avoid adding VisualElements inside toPanelInitializer:
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromRight(from, to, toPanelInitializer)
+function TransitionPanelFromRight(tm, from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
+        TransitionPanelCoroutine(tm, from, to,
             -100,  -- length
             toPanelInitializer)
     end)
 end
 
-function FadeOutThenInToPanel(from, to)
+function FadeOutThenInToPanel(tm, from, to)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
+        TransitionPanelCoroutine(tm, from, to,
             0  -- length
         )
     end)

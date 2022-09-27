@@ -364,8 +364,7 @@ function InitializeSelectPatternPanel(tm)
 
         -- Begin loading
         tm.game.BeginLoading()
-
-        -- TODO: transition to game panel
+        GamePanelStartLoading(tm)
     end)
 
     -- Set the function to draw radar graph. Actual drawing happens

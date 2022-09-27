@@ -278,7 +278,8 @@ namespace ThemeApi
             GeometryChanged,
 
             // Pointer & mouse events
-            // (mouse fires both, touchscreen only fires pointer)
+            // (mouse fires both, touchscreen only fires
+            // pointer events, so we don't use the mouse events)
             PointerDown,
             PointerUp,
             PointerMove,
@@ -312,6 +313,7 @@ namespace ThemeApi
                 EventType.ChangeInt => typeof(ChangeEvent<int>),
                 EventType.ChangeFloat => typeof(ChangeEvent<float>),
                 EventType.ChangeString => typeof(ChangeEvent<string>),
+                EventType.PointerDown => typeof(PointerDownEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),
                 EventType.Click => typeof(ClickEvent),
                 EventType.FrameUpdate => typeof(FrameUpdateEvent),
