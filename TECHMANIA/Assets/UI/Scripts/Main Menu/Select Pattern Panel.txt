@@ -1,6 +1,7 @@
 selectedTrackFolder = ""
 selectedFullTrack = nil
 selectedTrackOptions = nil
+selectedPattern = nil
 allPatternRadioButtons = {}
 previewPlaybackCoroutine = nil
 previewTrackAudioSource = nil
@@ -23,7 +24,9 @@ modifierDisplayString = {
 }
 
 -- pattern may be nil.
-function ShowPatternDetails(tm, panel, pattern)
+function ShowPatternDetails(tm, panel)
+    local pattern = selectedPattern
+
     function ShowRadar()
         local radarElement = panel.Q("radar")
         radarOfSelectedPattern = CalculateRadarOfPattern(pattern)
@@ -167,7 +170,7 @@ function ShowControlSchemeIcons(tm)
         local scheme = pattern.patternMetadata.controlSchemeString
         local radioButton = allPatternRadioButtons[index]
 
-        local overrideScheme = ""
+        local overrideScheme = scheme
         if (tm.options.modifiers.controlOverride == "OverrideToTouch") then
             overrideScheme = "Touch"
         elseif (tm.options.modifiers.controlOverride == "OverrideToKeys") then
@@ -246,8 +249,9 @@ function ShowSelectPatternPanel(tm)
         end
 
         radioButton.RegisterCallback("Click", function(_, _, pattern)
+            selectedPattern = pattern
             SetRadioButton(radioButton, allPatternRadioButtons)
-            ShowPatternDetails(tm, panel, pattern)
+            ShowPatternDetails(tm, panel)
             panel.Q("play-button").SetEnabled(true)
         end, pattern)
     end
@@ -255,7 +259,8 @@ function ShowSelectPatternPanel(tm)
     ShowControlSchemeIcons(tm)
 
     -- Initialize details when no pattern is selected.
-    ShowPatternDetails(tm, panel, nil)
+    selectedPattern = nil
+    ShowPatternDetails(tm, panel)
     panel.Q("play-button").SetEnabled(false)
     ShowCurrentModifiers(tm)
 
@@ -349,9 +354,18 @@ function InitializeSelectPatternPanel(tm)
 
     panel.Q("play-button").RegisterCallback("Click", function()
         tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), "SFX")
-        -- TODO: populate game setup
-        -- TODO: save options
-        -- TODO: play
+
+        -- Populate game setup
+        tm.gameSetup.trackFolder = selectedTrackFolder
+        tm.gameSetup.patternGuid = selectedPattern.patternMetadata.guid
+
+        -- Save options
+        tm.options.SaveToFile()
+
+        -- Begin loading
+        tm.game.BeginLoading()
+
+        -- TODO: transition to game panel
     end)
 
     -- Set the function to draw radar graph. Actual drawing happens

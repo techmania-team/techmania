@@ -5,6 +5,7 @@ using MoonSharp.Interpreter;
 
 namespace ThemeApi
 {
+    [MoonSharpUserData]
     public class GameState
     {
         public enum State
@@ -32,21 +33,28 @@ namespace ThemeApi
             // Transitions to Idle state.
             Complete
         }
-        public State state { get; private set; }
+        public State stateEnum { get; private set; }
+        public string state => stateEnum.ToString();
+
+        [MoonSharpHidden]
         public GameState()
         {
-            state = State.Idle;
+            stateEnum = State.Idle;
         }
 
         private void CheckState(State expectedState, string methodName)
         {
-            if (state == expectedState) return;
-            throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {state}.");
+            if (stateEnum == expectedState) return;
+            throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {stateEnum}.");
         }
 
         public void BeginLoading()
         {
             CheckState(State.Idle, "BeginLoading");
+            Debug.Log("BeginLoading called. Track folder: " +
+                Techmania.instance.gameSetup.trackFolder +
+                " pattern GUID: " +
+                Techmania.instance.gameSetup.patternGuid);
             // Idle => Loading
             // Lock down the track and pattern so theme can't change
             // them later.
@@ -78,8 +86,8 @@ namespace ThemeApi
         [MoonSharpHidden]
         public void SetState(State newState)
         {
-            State oldState = state;
-            state = newState;
+            State oldState = stateEnum;
+            stateEnum = newState;
             if (oldState != newState)
             {
                 Techmania.instance.gameSetup.onStateChange?
