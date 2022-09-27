@@ -130,44 +130,22 @@ function InitializeControls(tm)
     SetUpAllScrollingTexts(tm)
 end
 
-function TransitionPanelCoroutine(from, to, direction, toPanelInitializer)
+-- The "from" panel's x transitions from 0 to length;
+-- The "to" panel's x transitions from -length to 0.
+function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     local transitionTime = 0.2
-    local transitionLength = 100 * direction
-    function DampedLerp(a, b, t)
-        return mathf.Lerp(a, b, mathf.Pow(t, 0.6))
-    end
 
-    local timer = 0
     from.display = true
-    from.style.opacity = tm.style.Float(1)
-    while (timer < transitionTime) do
-        local progress = timer / transitionTime
-        local x = DampedLerp(0, transitionLength, progress)
-        from.style.opacity = tm.style.Float(1 - progress)
-        from.style.translate = tm.style.TranslateInPixel(x, 0)
-        timer = timer + time.deltaTime
-        coroutine.yield()
-    end
+    to.display = false
+    FadeOutCoroutine(tm, from, length, 0)
     from.display = false
 
-    timer = 0
-    to.style.opacity = tm.style.Float(0)
     to.display = true
-    local initializerCalled = false
-    while (timer < transitionTime) do
-        local progress = timer / transitionTime
-        local x = DampedLerp(-transitionLength, 0, progress)
-        to.style.opacity = tm.style.Float(progress)
-        to.style.translate = tm.style.TranslateInPixel(x, 0)
-        timer = timer + time.deltaTime
-        coroutine.yield()
-        if (not initializerCalled) then
-            initializerCalled = true
-            if (toPanelInitializer != nil) then toPanelInitializer() end
-        end
-    end
-    to.style.opacity = tm.style.Float(1)
-    to.style.translate = tm.style.TranslateInPixel(0, 0)
+    to.style.opacity = tm.style.Float(0)
+    coroutine.yield()
+    if (toPanelInitializer != nil) then toPanelInitializer() end
+
+    FadeInCoroutine(tm, to, -length, 0)
 end
 
 -- toPanelInitializer will be called 1 frame after the "to"
@@ -177,7 +155,9 @@ end
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
 function TransitionPanelFromLeft(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to, 1, toPanelInitializer)
+        TransitionPanelCoroutine(from, to,
+            100,  -- length
+            toPanelInitializer)
     end)
 end
 
@@ -188,7 +168,17 @@ end
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
 function TransitionPanelFromRight(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to, -1, toPanelInitializer)
+        TransitionPanelCoroutine(from, to,
+            -100,  -- length
+            toPanelInitializer)
+    end)
+end
+
+function FadeOutThenInToPanel(from, to)
+    tm.StartCoroutine(function()
+        TransitionPanelCoroutine(from, to,
+            0  -- length
+        )
     end)
 end
 

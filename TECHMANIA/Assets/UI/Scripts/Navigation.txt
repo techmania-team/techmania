@@ -21,6 +21,13 @@ function SetUpNavigation(tm)
         )
         StopPreviewTrackPlayback(tm)
     end)
+    tm.root.Q("select-pattern-panel").Q("play-button").RegisterCallback("Click", function()
+        FadeOutThenInToPanel(
+            tm.root.Q("select-pattern-panel"),
+            tm.root.Q("game-panel")
+        )
+        StopPreviewTrackPlayback(tm)
+    end)
     tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
         TransitionPanelFromRight(
             tm.root.Q("main-menu"),

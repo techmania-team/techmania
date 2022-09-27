@@ -2,10 +2,13 @@ function DampedLerp(a, b, t)
     return mathf.Lerp(a, b, mathf.Pow(t, 0.6))
 end
 
+-- This operates on opacity and translate, but NOT display.
+-- element's translate will animate from (translateX, translateY) to (0, 0).
 function FadeInCoroutine(tm, element, translateX, translateY)
     local transitionTime = 0.2
     local timer = 0
     element.style.opacity = tm.style.Float(0)
+    element.style.translate = tm.style.TranslateInPixel(translateX, translateY)
     while (timer < transitionTime) do
         local progress = timer / transitionTime
         local x = DampedLerp(translateX, 0, progress)
@@ -19,10 +22,13 @@ function FadeInCoroutine(tm, element, translateX, translateY)
     element.style.translate = tm.style.TranslateInPixel(0, 0)
 end
 
+-- This operates on opacity and translate, but NOT display.
+-- element's translate will animate from (0, 0) to (translateX, translateY).
 function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
     local transitionTime = 0.2
     local timer = 0
     element.style.opacity = tm.style.Float(1)
+    element.style.translate = tm.style.TranslateInPixel(0, 0)
     while (timer < transitionTime) do
         local progress = timer / transitionTime
         local x = DampedLerp(0, translateX, progress)
@@ -33,6 +39,7 @@ function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
         coroutine.yield()
     end
     element.style.opacity = tm.style.Float(0)
+    element.style.translate = tm.style.TranslateInPixel(translateX, translateY)
     if (finishCallback != nil) then
         finishCallback()
     end
