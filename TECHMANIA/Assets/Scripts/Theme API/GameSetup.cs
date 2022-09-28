@@ -8,6 +8,12 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class GameSetup
     {
+        [MoonSharpHidden]
+        public GameSetup()
+        {
+            GameController.instance.SetSetupInstance(this);
+        }
+
         // Track and pattern
 
         // The folder that contains the track.tech file.
@@ -43,5 +49,17 @@ namespace ThemeApi
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
+
+        // Internal stuff
+
+        // The folder that contains the track.tech file.
+        [MoonSharpHidden]
+        public string lockedTrackFolder;
+        [MoonSharpHidden]
+        public PerTrackOptions trackOptions;
+        [MoonSharpHidden]
+        public Pattern patternBeforeModifier;
+        [MoonSharpHidden]
+        public Pattern patternAfterModifier;
     }
 }

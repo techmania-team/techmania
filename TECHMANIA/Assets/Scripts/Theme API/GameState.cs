@@ -40,6 +40,7 @@ namespace ThemeApi
         public GameState()
         {
             stateEnum = State.Idle;
+            GameController.instance.SetStateInstance(this);
         }
 
         private void CheckState(State expectedState, string methodName)
@@ -51,9 +52,8 @@ namespace ThemeApi
         public void BeginLoading()
         {
             CheckState(State.Idle, "BeginLoading");
-            // Idle => Loading
-            // Lock down the track and pattern so theme can't change
-            // them later.
+            stateEnum = State.Loading;
+            GameController.instance.BeginLoading();
         }
 
         public void Begin()
