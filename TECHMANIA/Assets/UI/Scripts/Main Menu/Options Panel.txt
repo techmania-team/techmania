@@ -1,8 +1,30 @@
+themeOptions = nil
+
 -- key: enum, value: display string
 fullScreenDisplayString = {}
 beatMarkersDisplayString = {}
 bgScalingDisplayString = {}
 rulesetDisplayString = {}
+
+function InitializeThemeOptions(tm)
+    themeOptions = tm.options.GetThemeOptions()
+
+    function InitializeOneOption(key, defaultValue)
+        if (not themeOptions.Has(key)) then
+            themeOptions.Set(key, defaultValue)
+        end
+    end
+
+    InitializeOneOption("showLoadingBar", "True")
+    InitializeOneOption("showFps", "False")
+    InitializeOneOption("showJudgementTally", "False")
+    InitializeOneOption("showLaneDividers", "False")
+    -- Hidden/ShowBeatMarkers/ShowHalfBeatMarker
+    InitializeOneOption("beatMarkers", "Hidden")
+    -- FillEntireScreen/FillGameArea
+    InitializeOneOption("backgroundScalingMode", "FillEntireScreen")
+    InitializeOneOption("pauseWhenGameLosesFocus", "True")
+end
 
 function UpdateVolumeDisplay(panel)
     function UpdateOneVolumeDisplay(container)
@@ -40,8 +62,6 @@ end
 
 function ShowOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
-
-    local themeOptions = tm.options.GetThemeOptions()
 
     local currentResolution = resolution.__new()
     currentResolution.width = tm.options.width
@@ -151,8 +171,6 @@ function InitializeOptionsPanel(tm)
     end)
     panel.display = false
 
-    local themeOptions = tm.options.GetThemeOptions()
-
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
     local resolutionChoices = {}
     for i, resolution in ipairs(screen.resolutions) do
@@ -244,37 +262,33 @@ function InitializeOptionsPanel(tm)
     skinsButton.RegisterCallback("Click", function()
     end)
 
-    function InitializeThemeOptionToggle(containerName, key, defaultValue)
+    function InitializeThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
-        if (not themeOptions.Has(key)) then
-            themeOptions.Add(key, defaultValue)
-        end
         toggle.RegisterCallback("Click", function()
             local oldValue = themeOptions.Get(key)
+            local newValue = ""
             if (oldValue == "True") then
-                themeOptions.Set(key, "False")
+                newValue = "False"
             else
-                themeOptions.Set(key, "True")
+                newValue = "True"
             end
+            themeOptions.Set(key, newValue)
         end)
     end
-    InitializeThemeOptionToggle("show-loading-bar", "showLoadingBar", "True")
-    InitializeThemeOptionToggle("show-fps", "showFps", "False")
-    InitializeThemeOptionToggle("show-judgement-tally", "showJudgementTally", "False")
-    InitializeThemeOptionToggle("show-lane-dividers", "showLaneDividers", "False")
+    InitializeThemeOptionToggle("show-loading-bar", "showLoadingBar")
+    InitializeThemeOptionToggle("show-fps", "showFps")
+    InitializeThemeOptionToggle("show-judgement-tally", "showJudgementTally")
+    InitializeThemeOptionToggle("show-lane-dividers", "showLaneDividers")
 
-    function InitializeThemeOptionDropdown(containerName, key, defaultValue, stringTable)
+    function InitializeThemeOptionDropdown(containerName, key, stringTable)
         local dropdown = panel.Q(containerName).Q("dropdown")
-        if (not themeOptions.Has(key)) then
-            themeOptions.Add(key, defaultValue)
-        end
         dropdown.RegisterCallback("ChangeString", function(element, event)
             enum = KeyFromValue(stringTable, event.newValue)
             themeOptions.Set(key, enum)
         end)
     end
-    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "Hidden", beatMarkersDisplayString)
-    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", "FillEntireScreen", bgScalingDisplayString)
+    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", beatMarkersDisplayString)
+    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", bgScalingDisplayString)
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback("ChangeString", function(element, event)
@@ -319,7 +333,8 @@ function InitializeOptionsPanel(tm)
         end
     end)
 
-    InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus", "True")
+    InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 end
 
+InitializeThemeOptions(tm)
 InitializeOptionsPanel(tm)

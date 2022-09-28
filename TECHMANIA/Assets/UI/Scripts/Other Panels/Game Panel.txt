@@ -42,7 +42,13 @@ function GamePanelStartLoading(tm)
     panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != "Practice"
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == "Practice"
     panel.Q("middle-fever-bar-bg").display = false
-    panel.Q("loading-bar-wrap").display = tm.options.GetThemeOptions().Get("showLoadingBar") == "True"
+    panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
+
+    -- TODO: respond to showFps option
+    -- TODO: respond to showJudgementTally option
+    -- TODO: respond to showLaneDividers option
+    -- TODO: respond to beatMarkers option
+    -- TODO: respond to backgroundScalingMode option
 end
 
 InitializeGamePanel(tm)
