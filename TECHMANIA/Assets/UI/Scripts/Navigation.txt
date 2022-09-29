@@ -67,7 +67,7 @@ function SetUpNavigation(tm)
     end)
 end
 
-function TransitionToSelectPatternPanel(tm)
+function SelectTrackToSelectPatternPanel(tm)
     TransitionPanelFromRight(
         tm,
         tm.root.Q("select-track-panel"),
@@ -79,6 +79,18 @@ function TransitionToSelectPatternPanel(tm)
             -- This has to be called after select-pattern-panel displays
             -- so the load audio callback can check whether the panel
             -- displays to decide whether to play the audio.
+            StartPreviewTrackPlayback(tm)
+        end
+    )
+    ShowSelectPatternPanel(tm)
+end
+
+function GamePanelToSelectPatternPanel(tm)
+    FadeOutThenInToPanel(
+        tm,
+        tm.root.Q("game-panel"),
+        tm.root.Q("select-pattern-panel"),
+        function()
             StartPreviewTrackPlayback(tm)
         end
     )

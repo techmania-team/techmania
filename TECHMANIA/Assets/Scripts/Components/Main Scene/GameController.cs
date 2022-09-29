@@ -36,8 +36,9 @@ public class GameController : MonoBehaviour
     {
         Action<Status> reportLoadError = (Status status) =>
         {
+            state.SetStateAndTriggerCallback(
+                ThemeApi.GameState.State.LoadError);
             setup.onLoadError.Function.Call(status);
-            state.SetState(ThemeApi.GameState.State.LoadError);
         };
         int filesLoaded = 0;
         int totalFiles = 0;
@@ -198,6 +199,11 @@ public class GameController : MonoBehaviour
                 reportLoadProgress(fileJustLoaded);
             });
         yield return new WaitUntil(() => keysoundsLoaded);
+        if (!keysoundStatus.Ok())
+        {
+            reportLoadError(keysoundStatus);
+            yield break;
+        }
 
         // Step 5: load BGA.
         string bga = setup.patternAfterModifier.patternMetadata.bga;
@@ -208,10 +214,11 @@ public class GameController : MonoBehaviour
         }
         reportLoadProgress(bga);
 
-        // Step 6: initialize pattern.
+        // TODO: Step 6: initialize pattern.
 
         // Load complete; wait on theme to begin game.
-        state.SetState(ThemeApi.GameState.State.LoadComplete);
+        state.SetStateAndTriggerCallback(
+            ThemeApi.GameState.State.LoadComplete);
     }
 
     // Update is called once per frame

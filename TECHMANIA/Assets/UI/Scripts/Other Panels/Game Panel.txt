@@ -21,6 +21,10 @@ function InitializeGamePanel(tm)
     end
 
     tm.gameSetup.onLoadError = function(status)
+        tm.game.Conclude()
+        Alert(status.errorMessage, nil, function()
+            GamePanelToSelectPatternPanel(tm)
+        end)
     end
 
     tm.gameSetup.onUpdate = function()

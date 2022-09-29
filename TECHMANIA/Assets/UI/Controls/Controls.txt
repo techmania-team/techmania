@@ -174,10 +174,11 @@ function TransitionPanelFromRight(tm, from, to, toPanelInitializer)
     end)
 end
 
-function FadeOutThenInToPanel(tm, from, to)
+function FadeOutThenInToPanel(tm, from, to, toPanelInitializer)
     tm.StartCoroutine(function()
         TransitionPanelCoroutine(tm, from, to,
-            0  -- length
+            0,  -- length
+            toPanelInitializer
         )
     end)
 end

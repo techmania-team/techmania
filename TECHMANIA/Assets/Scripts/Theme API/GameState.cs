@@ -77,11 +77,12 @@ namespace ThemeApi
 
         public void Conclude()
         {
-            // Any state => Pending
+            // Any state => Idle
+            stateEnum = State.Idle;
         }
 
         [MoonSharpHidden]
-        public void SetState(State newState)
+        public void SetStateAndTriggerCallback(State newState)
         {
             State oldState = stateEnum;
             stateEnum = newState;
