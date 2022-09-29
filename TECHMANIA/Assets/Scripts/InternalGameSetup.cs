@@ -21,7 +21,7 @@ public class InternalGameSetup
     }
     public static PerTrackOptions trackOptions;
 
-    public static Pattern pattern;
+    public static Pattern patternAfterModifier;
     public static Pattern patternBeforeApplyingModifier;
     public static int beginningScanInEditorPreview;
 }

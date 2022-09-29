@@ -81,14 +81,32 @@ public class ResourceLoader : MonoBehaviour
                 trackFolder,
                 Paths.GetAllAudioFiles(trackFolder),
                 cacheAudioCompleteCallback,
-                progressCallback: null));
+                fileLoadedCallback: null));
     }
 
     // Cache all keysounds of the given pattern.
     public static void CacheAllKeysounds(string trackFolder,
         Pattern pattern,
         UnityAction<Status> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback)
+        UnityAction<string> fileLoadedCallback)
+    {
+        HashSet<string> filenames = new HashSet<string>();
+        foreach (Note n in pattern.notes)
+        {
+            if (n.sound != null && n.sound != "")
+            {
+                filenames.Add(Path.Combine(trackFolder, n.sound));
+            }
+        }
+        CacheAllKeysounds(trackFolder, filenames,
+            cacheAudioCompleteCallback,
+            fileLoadedCallback);
+    }
+
+    public static void CacheAllKeysounds(string trackFolder,
+        HashSet<string> keysoundFullPaths,
+        UnityAction<Status> cacheAudioCompleteCallback,
+        UnityAction<string> fileLoadedCallback)
     {
         if (trackFolder != cachedFolder)
         {
@@ -101,26 +119,19 @@ public class ResourceLoader : MonoBehaviour
             forceReload = false;
         }
 
-        HashSet<string> filenames = new HashSet<string>();
-        foreach (Note n in pattern.notes)
-        {
-            if (n.sound != null && n.sound != "")
-            {
-                filenames.Add(Path.Combine(trackFolder, n.sound));
-            }
-        }
         GetInstance().StartCoroutine(
-            GetInstance().InnerCacheAudioResources(
-                trackFolder,
-                filenames, cacheAudioCompleteCallback,
-                progressCallback));
+           GetInstance().InnerCacheAudioResources(
+               trackFolder,
+               keysoundFullPaths,
+               cacheAudioCompleteCallback,
+               fileLoadedCallback));
     }
 
     private IEnumerator InnerCacheAudioResources(
         string trackFolder,
         ICollection<string> filenameWithFolder,
         UnityAction<Status> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback)
+        UnityAction<string> fileLoadedCallback)
     {
         Options.TemporarilyDisableVSync();
         int numLoaded = 0;
@@ -167,8 +178,7 @@ public class ResourceLoader : MonoBehaviour
             }
             
             numLoaded++;
-            progressCallback?.Invoke((float)numLoaded /
-                filenameWithFolder.Count);
+            fileLoadedCallback?.Invoke(fileRelativePath);
             Debug.Log("Loaded: " + file);
         }
 

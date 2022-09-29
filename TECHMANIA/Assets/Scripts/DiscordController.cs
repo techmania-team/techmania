@@ -114,7 +114,7 @@ public class DiscordController
                     timeStart = DateTimeOffset.UtcNow;
                 }
                 {
-                    PatternMetadata metadata = InternalGameSetup.pattern
+                    PatternMetadata metadata = InternalGameSetup.patternAfterModifier
                         .patternMetadata;
                     details = InternalGameSetup.track.trackMetadata.title;
                     state = L10n.GetStringAndFormat(

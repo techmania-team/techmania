@@ -1512,12 +1512,12 @@ public class PatternPanel : MonoBehaviour
     {
         InternalGameSetup.track = EditorContext.track;
         InternalGameSetup.trackPath = EditorContext.trackPath;
-        InternalGameSetup.pattern = EditorContext.Pattern;
+        InternalGameSetup.patternAfterModifier = EditorContext.Pattern;
         InternalGameSetup.beginningScanInEditorPreview =
             Mathf.FloorToInt(
                 scanline.floatPulse / 
                 Pattern.pulsesPerBeat /
-                InternalGameSetup.pattern.patternMetadata.bps);
+                InternalGameSetup.patternAfterModifier.patternMetadata.bps);
         scanlinePulseBeforePreview = scanline.floatPulse;
         previewButton.GetComponent<TransitionToPanel>().Invoke();
     }

@@ -66,7 +66,7 @@ public class Scan : MonoBehaviour
         screenWidth = rect.width;
         scanHeight = rect.height;
         Ruleset.instance.GetScanMargin(
-            InternalGameSetup.pattern.patternMetadata.playableLanes,
+            InternalGameSetup.patternAfterModifier.patternMetadata.playableLanes,
             position, out marginAbove, out marginBelow);
         laneHeight = scanHeight 
             * (1f - marginAbove - marginBelow) /
@@ -403,7 +403,7 @@ public class Scan : MonoBehaviour
         }
         else
         {
-            int bps = InternalGameSetup.pattern.patternMetadata.bps;
+            int bps = InternalGameSetup.patternAfterModifier.patternMetadata.bps;
             float durationBeats;
             if (bps >= 3)
             {

@@ -144,7 +144,7 @@ public class Game : MonoBehaviour
     public static float feverAmount { get; private set; }
 
     public static int playableLanes => 
-        InternalGameSetup.pattern.patternMetadata.playableLanes;
+        InternalGameSetup.patternAfterModifier.patternMetadata.playableLanes;
     private const int kComboTickInterval = 60;
     // Combo ticks are pulses where each ongoing note increases
     // combo by 1. Ongoing notes add 1 more combo when
@@ -378,11 +378,11 @@ public class Game : MonoBehaviour
 
         // Step 1: load background image, if any. This makes the
         // loading screen not too dull.
-        if (InternalGameSetup.pattern.patternMetadata.backImage != null &&
-            InternalGameSetup.pattern.patternMetadata.backImage != "")
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.backImage != null &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.backImage != "")
         {
             string fullPath = Path.Combine(InternalGameSetup.trackFolder,
-                InternalGameSetup.pattern.patternMetadata.backImage);
+                InternalGameSetup.patternAfterModifier.patternMetadata.backImage);
             backgroundImageLoaded = false;
             ResourceLoader.LoadImage(fullPath,
                 OnImageLoadComplete);
@@ -408,11 +408,11 @@ public class Game : MonoBehaviour
 
         // Step 3: load backing track, if any.
         // This allows calculating the number of scans.
-        if (InternalGameSetup.pattern.patternMetadata.backingTrack != null &&
-            InternalGameSetup.pattern.patternMetadata.backingTrack != "")
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.backingTrack != null &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.backingTrack != "")
         {
             string fullPath = Path.Combine(InternalGameSetup.trackFolder,
-                InternalGameSetup.pattern.patternMetadata.backingTrack);
+                InternalGameSetup.patternAfterModifier.patternMetadata.backingTrack);
             backingTrackLoaded = false;
             ResourceLoader.LoadAudio(fullPath,
                 OnBackingTrackLoadComplete);
@@ -426,18 +426,18 @@ public class Game : MonoBehaviour
         // Step 4: load keysounds, if any.
         keysoundsLoaded = false;
         ResourceLoader.CacheAllKeysounds(InternalGameSetup.trackFolder,
-            InternalGameSetup.pattern,
+            InternalGameSetup.patternAfterModifier,
             OnKeysoundLoadComplete,
             OnKeysoundLoadProgress);
         yield return new WaitUntil(() => keysoundsLoaded);
 
         // Step 5: load BGA, if any.
         if (!InternalGameSetup.trackOptions.noVideo &&
-            InternalGameSetup.pattern.patternMetadata.bga != null &&
-            InternalGameSetup.pattern.patternMetadata.bga != "")
+            InternalGameSetup.patternAfterModifier.patternMetadata.bga != null &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.bga != "")
         {
             string fullPath = Path.Combine(InternalGameSetup.trackFolder,
-                InternalGameSetup.pattern.patternMetadata.bga);
+                InternalGameSetup.patternAfterModifier.patternMetadata.bga);
             videoPlayer.url = fullPath;
             videoPlayer.errorReceived += VideoPlayerErrorReceived;
             videoPlayer.Prepare();
@@ -487,7 +487,7 @@ public class Game : MonoBehaviour
             global::Scan.Position.Bottom);
 
         int offsetMs =
-            InternalGameSetup.pattern.patternMetadata.controlScheme
+            InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme
             == ControlScheme.Touch ?
             Options.instance.touchOffsetMs :
             Options.instance.keyboardMouseOffsetMs;
@@ -544,37 +544,37 @@ public class Game : MonoBehaviour
     private void InitializePattern()
     {
         // Prepare for keyboard input if applicable.
-        if (InternalGameSetup.pattern.patternMetadata
+        if (InternalGameSetup.patternAfterModifier.patternMetadata
             .controlScheme == ControlScheme.Keys ||
-            InternalGameSetup.pattern.patternMetadata
+            InternalGameSetup.patternAfterModifier.patternMetadata
             .controlScheme == ControlScheme.KM)
         {
             InitializeKeysForLane();
         }
 
         // Time calculations.
-        InternalGameSetup.pattern.PrepareForTimeCalculation();
-        InternalGameSetup.pattern.CalculateTimeOfAllNotes(
+        InternalGameSetup.patternAfterModifier.PrepareForTimeCalculation();
+        InternalGameSetup.patternAfterModifier.CalculateTimeOfAllNotes(
             calculateTimeWindows: true);
         firstScan = 0;
         previousComboTick = 0;
 
         // Rewind till 1 scan before the backing track starts.
         PulsesPerScan = Pattern.pulsesPerBeat *
-            InternalGameSetup.pattern.patternMetadata.bps;
+            InternalGameSetup.patternAfterModifier.patternMetadata.bps;
         while (initialTime >= 0f)
         {
             firstScan--;
-            initialTime = InternalGameSetup.pattern.PulseToTime(
+            initialTime = InternalGameSetup.patternAfterModifier.PulseToTime(
                 firstScan * PulsesPerScan);
         }
 
         // Rewind further until 1 scan before the BGA starts.
-        while (initialTime > InternalGameSetup.pattern
+        while (initialTime > InternalGameSetup.patternAfterModifier
             .patternMetadata.bgaOffset)
         {
             firstScan--;
-            initialTime = InternalGameSetup.pattern.PulseToTime(
+            initialTime = InternalGameSetup.patternAfterModifier.PulseToTime(
                 firstScan * PulsesPerScan);
         }
 
@@ -589,9 +589,9 @@ public class Game : MonoBehaviour
 
         // Remove all hidden notes with no sound.
         List<Note> notesToRemove = new List<Note>();
-        foreach (Note n in InternalGameSetup.pattern.notes)
+        foreach (Note n in InternalGameSetup.patternAfterModifier.notes)
         {
-            if (n.sound == "" && InternalGameSetup.pattern.IsHiddenNote(
+            if (n.sound == "" && InternalGameSetup.patternAfterModifier.IsHiddenNote(
                 n.lane))
             {
                 notesToRemove.Add(n);
@@ -599,7 +599,7 @@ public class Game : MonoBehaviour
         }
         foreach (Note n in notesToRemove)
         {
-            InternalGameSetup.pattern.notes.Remove(n);
+            InternalGameSetup.patternAfterModifier.notes.Remove(n);
         }
 
         // Find last scan. Make sure it ends later than the backing
@@ -662,10 +662,10 @@ public class Game : MonoBehaviour
             notesForKeyboardInLane.Add(new NoteList());
             unmanagedRepeatNotes.Add(new List<NoteObject>());
         }
-        foreach (Note n in InternalGameSetup.pattern.notes.Reverse())
+        foreach (Note n in InternalGameSetup.patternAfterModifier.notes.Reverse())
         {
             int scanOfN = n.GetScanNumber(
-                InternalGameSetup.pattern.patternMetadata.bps);
+                InternalGameSetup.patternAfterModifier.patternMetadata.bps);
             bool hidden = n.lane >= playableLanes;
             if (!hidden) numPlayableNotes++;
 
@@ -751,7 +751,7 @@ public class Game : MonoBehaviour
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.
         int lastPulse = (lastScan + 1) *
-            InternalGameSetup.pattern.patternMetadata.bps *
+            InternalGameSetup.patternAfterModifier.patternMetadata.bps *
             Pattern.pulsesPerBeat;
         if (Ruleset.instance.constantFeverCoefficient)
         {
@@ -760,7 +760,7 @@ public class Game : MonoBehaviour
         else
         {
             float trackLength =
-                InternalGameSetup.pattern.PulseToTime(lastPulse);
+                InternalGameSetup.patternAfterModifier.PulseToTime(lastPulse);
             feverCoefficient = trackLength / 12.5f;
         }
         Debug.Log("Fever coefficient is: " + feverCoefficient);
@@ -780,7 +780,7 @@ public class Game : MonoBehaviour
         hp = Ruleset.instance.maxHp;
         feverState = FeverState.Idle;
         feverAmount = 0f;
-        switch (InternalGameSetup.pattern.patternMetadata.controlScheme)
+        switch (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
                 feverInstruction.text = L10n.GetString(
@@ -890,19 +890,19 @@ public class Game : MonoBehaviour
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
                 backingTrackClip.length);
         }
-        bool waitForEndOfBga = InternalGameSetup.pattern.patternMetadata
+        bool waitForEndOfBga = InternalGameSetup.patternAfterModifier.patternMetadata
             .waitForEndOfBga;
-        if (InternalGameSetup.pattern.patternMetadata.playBgaOnLoop)
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.playBgaOnLoop)
         {
             waitForEndOfBga = false;
         }
         if (videoPlayer.url != null && waitForEndOfBga)
         {
             endOfPatternBaseTime = Mathf.Max(endOfPatternBaseTime,
-                (float)InternalGameSetup.pattern.patternMetadata.bgaOffset +
+                (float)InternalGameSetup.patternAfterModifier.patternMetadata.bgaOffset +
                 (float)videoPlayer.length);
         }
-        foreach (Note n in InternalGameSetup.pattern.notes)
+        foreach (Note n in InternalGameSetup.patternAfterModifier.notes)
         {
             float noteStartTime = n.time;
             float duration = 0f;
@@ -919,14 +919,14 @@ public class Game : MonoBehaviour
             {
                 int noteEndPulse = n.pulse + (n as HoldNote).duration;
                 noteEndTime = Mathf.Max(noteEndTime,
-                    InternalGameSetup.pattern.PulseToTime(noteEndPulse)
+                    InternalGameSetup.patternAfterModifier.PulseToTime(noteEndPulse)
                     + offset);
             }
             if (n is DragNote)
             {
                 int noteEndPulse = n.pulse + (n as DragNote).Duration();
                 noteEndTime = Mathf.Max(noteEndTime,
-                    InternalGameSetup.pattern.PulseToTime(noteEndPulse)
+                    InternalGameSetup.patternAfterModifier.PulseToTime(noteEndPulse)
                     + offset);
             }
 
@@ -934,7 +934,7 @@ public class Game : MonoBehaviour
                 noteEndTime);
         }
 
-        float maxPulse = InternalGameSetup.pattern.TimeToPulse(
+        float maxPulse = InternalGameSetup.patternAfterModifier.TimeToPulse(
             endOfPatternBaseTime);
         lastScan = Mathf.FloorToInt(
             maxPulse / PulsesPerScan);
@@ -1005,7 +1005,7 @@ public class Game : MonoBehaviour
         // want to spawn an unnecessary extension, thus the
         // -1.
         int scanOfN = holdNote.GetScanNumber(
-            InternalGameSetup.pattern.patternMetadata.bps);
+            InternalGameSetup.patternAfterModifier.patternMetadata.bps);
         int lastScan = (holdNote.pulse + holdNote.duration - 1)
             / PulsesPerScan;
         for (int crossedScan = scanOfN + 1;
@@ -1030,11 +1030,11 @@ public class Game : MonoBehaviour
         if (notesToManage.Count > 0)
         {
             int headScan = head.note.GetScanNumber(
-                InternalGameSetup.pattern.patternMetadata.bps);
+                InternalGameSetup.patternAfterModifier.patternMetadata.bps);
 
             NoteObject lastRepeatNote = notesToManage[0];
             int lastScan = lastRepeatNote.note.GetScanNumber(
-                InternalGameSetup.pattern.patternMetadata.bps);
+                InternalGameSetup.patternAfterModifier.patternMetadata.bps);
             int lastRepeatNotePulse = lastRepeatNote.note.pulse;
             if (lastRepeatNote.note is HoldNote)
             {
@@ -1072,9 +1072,9 @@ public class Game : MonoBehaviour
     }
     #endregion
 
-    private void OnKeysoundLoadProgress(float progress)
+    private void OnKeysoundLoadProgress(string fileJustLoaded)
     {
-        loadingProgress.SetValue(progress);
+        loadingProgress.SetValue(0);
     }
 
     private void OnKeysoundLoadComplete(Status status)
@@ -1103,7 +1103,7 @@ public class Game : MonoBehaviour
             (int)videoPlayer.height,
             depth: 0);
         videoPlayer.targetTexture = renderTexture;
-        videoPlayer.isLooping = InternalGameSetup.pattern.patternMetadata
+        videoPlayer.isLooping = InternalGameSetup.patternAfterModifier.patternMetadata
             .playBgaOnLoop;
         bga.texture = renderTexture;
         bga.color = Color.white;
@@ -1125,12 +1125,12 @@ public class Game : MonoBehaviour
 
     private static InputDevice DeviceForNote(Note n)
     {
-        if (InternalGameSetup.pattern.patternMetadata.controlScheme
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme
             == ControlScheme.Touch)
         {
             return InputDevice.Touchscreen;
         }
-        if (InternalGameSetup.pattern.patternMetadata.controlScheme
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme
             == ControlScheme.Keys)
         {
             return InputDevice.Keyboard;
@@ -1241,7 +1241,7 @@ public class Game : MonoBehaviour
         float oldTime = Time;
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
-        FloatPulse = InternalGameSetup.pattern.TimeToPulse(Time);
+        FloatPulse = InternalGameSetup.patternAfterModifier.TimeToPulse(Time);
         FloatBeat = FloatPulse / Pattern.pulsesPerBeat;
         FloatScan = FloatPulse / PulsesPerScan;
         int newPulse = Mathf.FloorToInt(FloatPulse);
@@ -1257,11 +1257,11 @@ public class Game : MonoBehaviour
 
         // Play bga if base time hits bgaOffset.
         if (oldBaseTime <
-            InternalGameSetup.pattern.patternMetadata.bgaOffset &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.bgaOffset &&
             BaseTime >=
-            InternalGameSetup.pattern.patternMetadata.bgaOffset &&
-            InternalGameSetup.pattern.patternMetadata.bga != null &&
-            InternalGameSetup.pattern.patternMetadata.bga != "")
+            InternalGameSetup.patternAfterModifier.patternMetadata.bgaOffset &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.bga != null &&
+            InternalGameSetup.patternAfterModifier.patternMetadata.bga != "")
         {
             HideBGACover();
             videoPlayer.Play();
@@ -1413,7 +1413,7 @@ public class Game : MonoBehaviour
         // [1] after all input is handled, any ongoing note not
         // marked on the current frame will be resolved as Misses.
         // [2] takes a lane number in Keys, works on any lane in KM.
-        ControlScheme scheme = InternalGameSetup.pattern.patternMetadata
+        ControlScheme scheme = InternalGameSetup.patternAfterModifier.patternMetadata
             .controlScheme;
         switch (scheme)
         {
@@ -1674,11 +1674,11 @@ public class Game : MonoBehaviour
 
         // Set timer.
         Scan = scan;
-        FloatBeat = Scan * InternalGameSetup.pattern.patternMetadata.bps;
+        FloatBeat = Scan * InternalGameSetup.patternAfterModifier.patternMetadata.bps;
         FloatScan = Scan;
         Pulse = PulsesPerScan * Scan;
         FloatPulse = Pulse;
-        BaseTime = InternalGameSetup.pattern.PulseToTime(Pulse);
+        BaseTime = InternalGameSetup.patternAfterModifier.PulseToTime(Pulse);
         ResetInitialTime();
         previousComboTick = Pulse;
 
@@ -1711,15 +1711,15 @@ public class Game : MonoBehaviour
             audioSourceManager.PlayBackingTrack(backingTrackClip,
                 BaseTime);
         }
-        if (InternalGameSetup.pattern.patternMetadata.bga != null
-            && InternalGameSetup.pattern.patternMetadata.bga != ""
+        if (InternalGameSetup.patternAfterModifier.patternMetadata.bga != null
+            && InternalGameSetup.patternAfterModifier.patternMetadata.bga != ""
             && !InternalGameSetup.trackOptions.noVideo)
         {
-            if (BaseTime >= InternalGameSetup.pattern.patternMetadata
+            if (BaseTime >= InternalGameSetup.patternAfterModifier.patternMetadata
                 .bgaOffset)
             {
                 double videoTime = BaseTime -
-                    InternalGameSetup.pattern.patternMetadata.bgaOffset;
+                    InternalGameSetup.patternAfterModifier.patternMetadata.bgaOffset;
                 videoPlayer.time = videoTime;
                 videoPlayer.Play();
                 HideBGACover();
@@ -1748,7 +1748,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        InternalGameSetup.pattern.IsHiddenNote(n.lane),
+                        InternalGameSetup.patternAfterModifier.IsHiddenNote(n.lane),
                         startTime: BaseTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
@@ -1991,7 +1991,7 @@ public class Game : MonoBehaviour
                 }
 
                 bool ignoreNewlyHitNote = false;
-                if (InternalGameSetup.pattern.patternMetadata.controlScheme
+                if (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme
                     == ControlScheme.KM)
                 {
                     if (n.note.type == NoteType.Hold ||
@@ -2286,7 +2286,7 @@ public class Game : MonoBehaviour
     private void EmptyHit(int lane)
     {
         NoteObject upcomingNote = null;
-        switch (InternalGameSetup.pattern.patternMetadata.controlScheme)
+        switch (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
                 if (noteObjectsInLane[lane].Count > 0)
@@ -2459,7 +2459,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        bool hidden = InternalGameSetup.pattern.IsHiddenNote(n.note.lane);
+        bool hidden = InternalGameSetup.patternAfterModifier.IsHiddenNote(n.note.lane);
         if (Modifiers.instance.assistTickEnum == 
             Modifiers.AssistTick.AssistTick
             && !hidden

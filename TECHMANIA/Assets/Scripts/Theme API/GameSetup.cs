@@ -33,8 +33,14 @@ namespace ThemeApi
 
         // Callbacks during Loading state
 
-        // Parameter: custom class with the file just loaded, number
-        // of files loaded, total number of files.
+        [MoonSharpUserData]
+        public class LoadProgress
+        {
+            public string fileJustLoaded;  // Relative to track folder
+            public int filesLoaded;
+            public int totalFiles;
+        }
+        // Parameter: LoadProgress
         public DynValue onLoadProgress;
         // Parameter: Status
         public DynValue onLoadError;

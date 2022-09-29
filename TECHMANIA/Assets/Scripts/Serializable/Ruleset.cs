@@ -171,10 +171,10 @@ public class Ruleset : RulesetBase
 
         List<int> overrideList = null;
         if (Options.instance.rulesetEnum == Options.Ruleset.Legacy &&
-            InternalGameSetup.pattern.legacyRulesetOverride != null)
+            InternalGameSetup.patternAfterModifier.legacyRulesetOverride != null)
         {
             LegacyRulesetOverride o =
-                InternalGameSetup.pattern.legacyRulesetOverride;
+                InternalGameSetup.patternAfterModifier.legacyRulesetOverride;
             switch (type)
             {
                 case NoteType.Basic:

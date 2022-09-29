@@ -13,9 +13,10 @@ namespace ThemeApi
             // Waiting for Lua to fill in GameSetup and call
             // BeginLoading.
             Idle,
-            // Transitions to LoadError or LoadComplete. Fires
-            // onLoadProgress with each file loaded; fires
-            // onLoadError when load fails.
+            // Transitions to LoadError or LoadComplete.
+            // With each file loaded, fires onLoadProgress.
+            // When loading fails, fires both onStateChange and
+            // onLoadError; onLoadError will contain a Status.
             Loading,
             LoadError,
             // Theme can start the game now, which transitions to

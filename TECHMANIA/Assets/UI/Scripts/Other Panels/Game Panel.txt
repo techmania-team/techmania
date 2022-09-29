@@ -12,9 +12,12 @@ function InitializeGamePanel(tm)
     tm.gameSetup.vfxComboContainer = nil  -- Unused
 
     tm.gameSetup.onStateChange = function(newState)
+        print("State changed to: " .. newState)
     end
 
-    tm.gameSetup.onLoadProgress = function(fileJustLoaded, numberFilesLoaded, totalFiles)
+    tm.gameSetup.onLoadProgress = function(progress)
+        local percent = progress.filesLoaded * 100 / progress.totalFiles
+        SetProgressBar(panel.Q("loading-progress"), percent)
     end
 
     tm.gameSetup.onLoadError = function(status)

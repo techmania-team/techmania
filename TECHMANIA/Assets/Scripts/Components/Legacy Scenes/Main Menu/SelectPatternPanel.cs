@@ -209,7 +209,7 @@ public class SelectPatternPanel : MonoBehaviour
             patternList.GetSelectedPattern();
         if (InternalGameSetup.patternBeforeApplyingModifier == null)
             return;
-        InternalGameSetup.pattern = InternalGameSetup.patternBeforeApplyingModifier
+        InternalGameSetup.patternAfterModifier = InternalGameSetup.patternBeforeApplyingModifier
             .ApplyModifiers(Modifiers.instance);
 
         if (Input.GetKey(KeyCode.LeftControl) ||

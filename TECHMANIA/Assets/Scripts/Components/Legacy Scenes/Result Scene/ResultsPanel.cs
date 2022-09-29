@@ -139,7 +139,7 @@ public class ResultsPanel : MonoBehaviour
             case Options.Ruleset.Legacy:
                 ruleset.text = L10n.GetString(
                     "options_ruleset_legacy");
-                if (InternalGameSetup.pattern.legacyRulesetOverride.HasAny())
+                if (InternalGameSetup.patternAfterModifier.legacyRulesetOverride.HasAny())
                 {
                     ruleset.text = ruleset.text + "*";
                     legacyRulesetOverrideIndicator.SetActive(true);

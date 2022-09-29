@@ -35,7 +35,7 @@ public class TouchClickFeedbackManager : MonoBehaviour
             }
             return;
         }
-        switch (InternalGameSetup.pattern.patternMetadata.controlScheme)
+        switch (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme)
         {
             case ControlScheme.Touch:
                 for (int i = 0; i < Input.touchCount; i++)
