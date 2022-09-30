@@ -141,7 +141,7 @@ public class GameController : MonoBehaviour
             VisualElement bg = setup.bgContainer.inner;
             bg.style.backgroundImage = new StyleBackground(texture);
             bg.style.unityBackgroundScaleMode = new 
-                StyleEnum<ScaleMode>(ScaleMode.ScaleToFit);
+                StyleEnum<ScaleMode>(ScaleMode.ScaleAndCrop);
             bg.style.unityBackgroundImageTintColor = Color.white;
         }
         reportLoadProgress(backImage);
@@ -228,6 +228,11 @@ public class GameController : MonoBehaviour
         // Load complete; wait on theme to begin game.
         state.SetStateAndTriggerCallback(
             ThemeApi.GameState.State.LoadComplete);
+    }
+
+    public void Begin()
+    {
+
     }
 
     // Update is called once per frame

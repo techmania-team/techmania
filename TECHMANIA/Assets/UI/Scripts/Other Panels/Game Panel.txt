@@ -13,6 +13,9 @@ function InitializeGamePanel(tm)
 
     tm.gameSetup.onStateChange = function(newState)
         print("State changed to: " .. newState)
+        if (newState == "LoadComplete") then
+            GamePanelBeginGame(tm, panel)
+        end
     end
 
     tm.gameSetup.onLoadProgress = function(progress)
@@ -50,12 +53,24 @@ function GamePanelStartLoading(tm)
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == "Practice"
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
+    panel.InsertChild(0, panel.Q("bg-layer"))
 
     -- TODO: respond to showFps option
     -- TODO: respond to showJudgementTally option
     -- TODO: respond to showLaneDividers option
     -- TODO: respond to beatMarkers option
-    -- TODO: respond to backgroundScalingMode option
+end
+
+function GamePanelBeginGame(tm, panel)
+    if (themeOptions.Get("backgroundScalingMode") == "FillGameArea") then
+        panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
+    end
+
+    panel.Q("top-bar").visible = true
+    panel.Q("middle-fever-bar-bg").display = true
+    panel.Q("loading-bar-wrap").display = false
+
+    tm.game.Begin()
 end
 
 InitializeGamePanel(tm)

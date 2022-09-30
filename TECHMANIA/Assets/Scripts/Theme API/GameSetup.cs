@@ -23,6 +23,8 @@ namespace ThemeApi
         // VisualElements
 
         public VisualElementWrap bgContainer;
+        // Touch feedback uses additive shader and should be
+        // drawn below notes. It is not supported at this time.
         public VisualElementWrap gameContainer;
         public VisualElementWrap vfxComboContainer;  // Unused
 

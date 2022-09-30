@@ -295,7 +295,7 @@
                     <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="width: 60px; height: 60px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;);" />
                 </ui:Button>
             </ui:VisualElement>
-            <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1;">
+            <ui:VisualElement name="top-bar-content" picking-mode="Ignore" style="flex-grow: 1;">
                 <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
                     <ui:VisualElement name="hp-bar-wrap" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; padding-right: 50px; padding-top: 20px; padding-bottom: 20px;">
                         <ui:VisualElement name="hp-bar-bg" picking-mode="Ignore" class="surface" style="flex-grow: 1; flex-direction: row;">
@@ -328,6 +328,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
+            <ui:VisualElement name="markers" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:VisualElement name="info-insert" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="game-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="middle-fever-bar-bg" picking-mode="Ignore" class="surface-8dp" style="height: 8px; align-items: center;">
                 <ui:VisualElement name="middle-fever-bar" picking-mode="Ignore" class="red-700" style="width: 80%; height: 100%;" />

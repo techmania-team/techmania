@@ -60,7 +60,8 @@ namespace ThemeApi
         public void Begin()
         {
             CheckState(State.LoadComplete, "Begin");
-            // LoadComplete => Ongoing
+            stateEnum = State.Ongoing;
+            GameController.instance.Begin();
         }
 
         public void Pause()

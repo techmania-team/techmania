@@ -503,6 +503,36 @@ namespace ThemeApi
             CallbackRegistry.RemoveAllCallbackOn(inner);
             inner.RemoveFromHierarchy();
         }
+
+        public void AddChild(VisualElementWrap child)
+        {
+            inner.Add(child.inner);
+        }
+
+        public void InsertChild(int index, VisualElementWrap child)
+        {
+            inner.Insert(index, child.inner);
+        }
+
+        public void PlaceBehind(VisualElementWrap sibling)
+        {
+            inner.PlaceBehind(sibling.inner);
+        }
+
+        public void PlaceInFront(VisualElementWrap sibling)
+        {
+            inner.PlaceInFront(sibling.inner);
+        }
+
+        public void BringToFront()
+        {
+            inner.BringToFront();
+        }
+
+        public void SendToBack()
+        {
+            inner.SendToBack();
+        }
         #endregion
 
         #region Custom mesh
