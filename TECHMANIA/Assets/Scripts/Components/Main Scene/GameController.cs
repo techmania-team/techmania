@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameController : MonoBehaviour
 {
@@ -92,6 +93,8 @@ public class GameController : MonoBehaviour
             .ApplyModifiers(Modifiers.instance);
 
         // TODO: hide background and VFX from previous game.
+        setup.bgContainer.inner.style.unityBackgroundImageTintColor =
+            Color.clear;
 
         // Step 0: calculate the number of files to load.
         totalFiles =
@@ -134,6 +137,12 @@ public class GameController : MonoBehaviour
                 reportLoadError(status);
                 yield break;
             }
+
+            VisualElement bg = setup.bgContainer.inner;
+            bg.style.backgroundImage = new StyleBackground(texture);
+            bg.style.unityBackgroundScaleMode = new 
+                StyleEnum<ScaleMode>(ScaleMode.ScaleToFit);
+            bg.style.unityBackgroundImageTintColor = Color.white;
         }
         reportLoadProgress(backImage);
 
