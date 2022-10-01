@@ -30,11 +30,11 @@
 }
 
 .red-700 {
-    background-color: rgba(211, 47, 47, 255);
+    background-color: rgb(211, 47, 47);
 }
 
 .blue-200 {
-    background-color: rgba(144, 202, 249, 255);
+    background-color: rgb(144, 202, 249);
 }
 
 .panel {
@@ -116,11 +116,6 @@
 }
 
 .dialog {
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-top: 50px;
-    padding-bottom: 35px;
-    width: 700px;
 }
 
 .dialog-button-container {
@@ -257,4 +252,34 @@
     -unity-text-outline-width: 1px;
     -unity-text-outline-color: rgb(245, 124, 0);
     -unity-font-style: bold;
+}
+
+#game-panel #pause-menu .divider {
+    height: 2px;
+    width: 100%;
+    background-color: var(--elevation-8dp);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+#game-panel #pause-menu .item {
+    width: 100%;
+    height: 60px;
+    padding-left: 20px;
+    flex-direction: row;
+    align-items: center;
+}
+
+#game-panel #pause-menu .item #label {
+    flex-grow: 1;
+    -unity-text-align: upper-left;
+}
+
+#game-panel #pause-menu .item #slider {
+    width: 200px;
+}
+
+#game-panel #pause-menu .item #value-display {
+    width: 80px;
+    -unity-text-align: upper-center;
 }
