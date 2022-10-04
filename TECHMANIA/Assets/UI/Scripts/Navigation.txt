@@ -85,14 +85,11 @@ function SelectTrackToSelectPatternPanel(tm)
     ShowSelectPatternPanel(tm)
 end
 
-function GamePanelToSelectPatternPanel(tm)
+function GamePanelToSelectTrackPanel(tm)
     FadeOutThenInToPanel(
         tm,
         tm.root.Q("game-panel"),
-        tm.root.Q("select-pattern-panel"),
-        function()
-            StartPreviewTrackPlayback(tm)
-        end
+        tm.root.Q("select-track-panel")
     )
-    ShowSelectPatternPanel(tm)
+    ShowSelectTrackPanel(tm)
 end

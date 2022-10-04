@@ -24,7 +24,7 @@ function InitializeGamePanel(tm)
     tm.gameSetup.onLoadError = function(status)
         tm.game.Conclude()
         Alert(status.errorMessage, nil, function()
-            GamePanelToSelectPatternPanel(tm)
+            GamePanelToSelectTrackPanel(tm)
         end)
     end
 
@@ -70,9 +70,13 @@ function InitializePauseMenu(tm)
     end)
 
     menu.Q("restart-button").RegisterCallback("Click", function()
+        tm.game.Conclude()
+        GamePanelStartLoading(tm)
     end)
 
     menu.Q("select-track-button").RegisterCallback("Click", function()
+        tm.game.Conclude()
+        GamePanelToSelectTrackPanel(tm)
     end)
 
     InitializeVolumeSliders(menu)
