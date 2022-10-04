@@ -28,11 +28,6 @@ namespace ThemeApi
         public VisualElementWrap gameContainer;
         public VisualElementWrap vfxComboContainer;  // Unused
 
-        // Callbacks
-
-        // Parameter: new state as string
-        public DynValue onStateChange;
-
         // Callbacks during Loading state
 
         [MoonSharpUserData]
@@ -46,6 +41,8 @@ namespace ThemeApi
         public DynValue onLoadProgress;
         // Parameter: Status
         public DynValue onLoadError;
+        // No parameter.
+        public DynValue onLoadComplete;
 
         // Callbacks during Ongoing state
 
@@ -53,6 +50,8 @@ namespace ThemeApi
         public DynValue onUpdate;
         // No parameter.
         public DynValue onNoteResolved;
+        // No parameter.
+        public DynValue onAllNotesResolved;
         // Parameter: current Fever value from 0 to 1.
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.

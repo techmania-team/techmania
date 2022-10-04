@@ -344,7 +344,7 @@
                 <ui:Instance template="Progress Bar" name="loading-progress" picking-mode="Ignore" style="width: 350px;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="pause-menu-bg" class="dialog-background" style="display: none;">
+        <ui:VisualElement name="pause-menu-bg" class="dialog-background" style="display: flex;">
             <ui:VisualElement name="pause-menu" class="surface-8dp dialog" style="width: 600px; padding-top: 50px; padding-bottom: 50px; padding-left: 50px; padding-right: 50px; align-items: center;">
                 <ui:VisualElement name="shadow" picking-mode="Ignore" class="elevation-shadow" />
                 <ui:Label tabindex="-1" text="Game Paused" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: upper-center;" />

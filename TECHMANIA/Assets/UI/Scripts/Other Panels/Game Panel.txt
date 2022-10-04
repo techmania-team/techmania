@@ -2,6 +2,9 @@ function InitializeGamePanel(tm)
     local panel = tm.root.Q("game-panel")
 
     panel.Q("pause-button").RegisterCallback("Click", function()
+        if (tm.game.state != "Ongoing") then return end
+        tm.game.Pause()
+        FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback("PointerDown", function()
@@ -10,13 +13,6 @@ function InitializeGamePanel(tm)
     tm.gameSetup.bgContainer = panel.Q("bg-layer")
     tm.gameSetup.gameContainer = panel.Q("game-layer")
     tm.gameSetup.vfxComboContainer = nil  -- Unused
-
-    tm.gameSetup.onStateChange = function(newState)
-        print("State changed to: " .. newState)
-        if (newState == "LoadComplete") then
-            GamePanelBeginGame(tm, panel)
-        end
-    end
 
     tm.gameSetup.onLoadProgress = function(progress)
         local percent = progress.filesLoaded * 100 / progress.totalFiles
@@ -30,10 +26,17 @@ function InitializeGamePanel(tm)
         end)
     end
 
+    tm.gameSetup.onLoadComplete = function()
+        GamePanelBeginGame(tm, panel)
+    end
+
     tm.gameSetup.onUpdate = function()
     end
 
     tm.gameSetup.onNoteResolved = function()
+    end
+
+    tm.gameSetup.onAllNotesResolved = function()
     end
 
     tm.gameSetup.onFeverUpdate = function(fever)
@@ -41,6 +44,11 @@ function InitializeGamePanel(tm)
 
     tm.gameSetup.onFeverEnd = function(feverBonus)
     end
+end
+
+function InitializePauseMenu(tm)
+    local bg = tm.root.Q("pause-menu-bg")
+    local menu = bg.Q("pause-menu")
 end
 
 function GamePanelStartLoading(tm)
@@ -54,6 +62,7 @@ function GamePanelStartLoading(tm)
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
+    panel.Q("pause-menu-bg").display = false
 
     -- TODO: respond to showFps option
     -- TODO: respond to showJudgementTally option
@@ -74,3 +83,4 @@ function GamePanelBeginGame(tm, panel)
 end
 
 InitializeGamePanel(tm)
+InitializePauseMenu(tm)

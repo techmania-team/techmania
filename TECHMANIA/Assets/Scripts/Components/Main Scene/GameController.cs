@@ -37,16 +37,15 @@ public class GameController : MonoBehaviour
     {
         Action<Status> reportLoadError = (Status status) =>
         {
-            state.SetStateAndTriggerCallback(
-                ThemeApi.GameState.State.LoadError);
-            setup.onLoadError.Function.Call(status);
+            state.SetState(ThemeApi.GameState.State.LoadError);
+            setup.onLoadError?.Function?.Call(status);
         };
         int filesLoaded = 0;
         int totalFiles = 0;
         Action<string> reportLoadProgress = (string fileJustLoaded) =>
         {
             filesLoaded++;
-            setup.onLoadProgress.Function.Call(
+            setup.onLoadProgress?.Function?.Call(
                 new ThemeApi.GameSetup.LoadProgress()
                 {
                     fileJustLoaded = fileJustLoaded,
@@ -226,11 +225,21 @@ public class GameController : MonoBehaviour
         // TODO: Step 6: initialize pattern.
 
         // Load complete; wait on theme to begin game.
-        state.SetStateAndTriggerCallback(
-            ThemeApi.GameState.State.LoadComplete);
+        state.SetState(ThemeApi.GameState.State.LoadComplete);
+        setup.onLoadComplete?.Function?.Call();
     }
 
     public void Begin()
+    {
+
+    }
+
+    public void Pause()
+    {
+
+    }
+
+    public void Unpause()
     {
 
     }
