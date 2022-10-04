@@ -8,10 +8,13 @@ function FadeInDialog(bg, dialog)
     end)
 end
 
-function FadeOutDialog(bg, dialog)
+function FadeOutDialog(bg, dialog, finishCallback)
     tm.StartCoroutine(function()
         FadeOutCoroutine(tm, dialog, 0, -100, function()
             bg.display = false
+            if (finishCallback != nil) then
+                finishCallback()
+            end
         end)
     end)
 end

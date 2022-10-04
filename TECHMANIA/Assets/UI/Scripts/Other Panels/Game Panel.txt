@@ -3,6 +3,7 @@ function InitializeGamePanel(tm)
 
     panel.Q("pause-button").RegisterCallback("Click", function()
         if (tm.game.state != "Ongoing") then return end
+        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), "SFX")
         tm.game.Pause()
         FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))
     end)
@@ -49,6 +50,23 @@ end
 function InitializePauseMenu(tm)
     local bg = tm.root.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
+
+    menu.RegisterCallback("Click", function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    function OnCancel()
+        FadeOutDialog(bg, menu, function()
+            -- Only unpause after the menu has fully faded out.
+            tm.game.Unpause()
+        end)
+    end
+    menu.Q("resume-button").RegisterCallback("Click", OnCancel)
+    bg.RegisterCallback("Click", OnCancel)
+    bg.RegisterCallback("Click", function(_, _)
+        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+    end)
 end
 
 function GamePanelStartLoading(tm)
