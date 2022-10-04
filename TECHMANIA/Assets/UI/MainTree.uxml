@@ -356,28 +356,28 @@
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="divider" />
                 <ui:VisualElement name="bg-brightness-wrap" picking-mode="Ignore" class="item">
                     <ui:Label tabindex="-1" text="BG brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-container" />
                     <ui:Label tabindex="-1" text="100" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="divider" />
-                <ui:VisualElement name="master-wrap" picking-mode="Ignore" class="item">
+                <ui:VisualElement name="master" picking-mode="Ignore" class="item">
                     <ui:Label tabindex="-1" text="Master" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-container" />
                     <ui:Label tabindex="-1" text="100" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" />
                 </ui:VisualElement>
-                <ui:VisualElement name="music-wrap" picking-mode="Ignore" class="item">
+                <ui:VisualElement name="music" picking-mode="Ignore" class="item">
                     <ui:Label tabindex="-1" text="Music" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-container" />
                     <ui:Label tabindex="-1" text="100" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" />
                 </ui:VisualElement>
-                <ui:VisualElement name="keysounds-wrap" picking-mode="Ignore" class="item">
+                <ui:VisualElement name="keysounds" picking-mode="Ignore" class="item">
                     <ui:Label tabindex="-1" text="Keysounds" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-container" />
                     <ui:Label tabindex="-1" text="100" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" />
                 </ui:VisualElement>
-                <ui:VisualElement name="sfx-wrap" picking-mode="Ignore" class="item">
+                <ui:VisualElement name="sound-effects" picking-mode="Ignore" class="item">
                     <ui:Label tabindex="-1" text="Sound effects" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
-                    <ui:Instance template="SliderInt" name="slider" />
+                    <ui:Instance template="SliderInt" name="slider-container" />
                     <ui:Label tabindex="-1" text="100" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" />
                 </ui:VisualElement>
             </ui:VisualElement>

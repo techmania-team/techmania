@@ -363,7 +363,6 @@ function InitializeSelectPatternPanel(tm)
         tm.options.SaveToFile()
 
         -- Begin loading
-        tm.game.BeginLoading()
         GamePanelStartLoading(tm)
     end)
 

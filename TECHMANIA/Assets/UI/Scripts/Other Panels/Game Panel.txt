@@ -6,6 +6,7 @@ function InitializeGamePanel(tm)
         tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), "SFX")
         tm.game.Pause()
         FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))
+        ShowPauseMenu(panel.Q("pause-menu"))
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback("PointerDown", function()
@@ -67,6 +68,18 @@ function InitializePauseMenu(tm)
     bg.RegisterCallback("Click", function(_, _)
         tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
     end)
+
+    menu.Q("restart-button").RegisterCallback("Click", function()
+    end)
+
+    menu.Q("select-track-button").RegisterCallback("Click", function()
+    end)
+
+    InitializeVolumeSliders(menu)
+end
+
+function ShowPauseMenu(menu)
+    ShowVolumeSliders(menu)
 end
 
 function GamePanelStartLoading(tm)
@@ -86,6 +99,9 @@ function GamePanelStartLoading(tm)
     -- TODO: respond to showJudgementTally option
     -- TODO: respond to showLaneDividers option
     -- TODO: respond to beatMarkers option
+
+    tm.options.TemporarilyDisableVSync()
+    tm.game.BeginLoading()
 end
 
 function GamePanelBeginGame(tm, panel)
@@ -97,6 +113,7 @@ function GamePanelBeginGame(tm, panel)
     panel.Q("middle-fever-bar-bg").display = true
     panel.Q("loading-bar-wrap").display = false
 
+    tm.options.RestoreVSync()
     tm.game.Begin()
 end
 
