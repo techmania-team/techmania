@@ -9,6 +9,9 @@ trackListSortBasis = "Title"
 trackListSortBasisDisplayString = {}
 trackListSortAscending = true
 
+selectedTrackFolder = ""
+selectedFullTrack = nil
+
 function ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
 
@@ -153,6 +156,7 @@ function ShowTracksAtCurrentLocation(tm)
     table.sort(tracksInFolder, function(trackInFolder1, trackInFolder2)
         return CompareTracks(trackInFolder1.minimizedTrack, trackInFolder2.minimizedTrack)
     end)
+    local cardOfPreviouslySelectedTrack = nil
     for _, trackInFolder in ipairs(tracksInFolder) do
         anythingInFolder = true
 
@@ -174,6 +178,12 @@ function ShowTracksAtCurrentLocation(tm)
                 selectedFullTrack = tm.io.LoadFullTrack(trackPath)
                 SelectTrackToSelectPatternPanel(tm)
             end, trackInFolder)
+
+            if (selectedFullTrack != nil and
+                trackInFolder.minimizedTrack.trackMetadata.guid ==
+                selectedFullTrack.trackMetadata.guid) then
+                cardOfPreviouslySelectedTrack = card
+            end
         else
             hiddenTracks = hiddenTracks + 1
         end
@@ -215,6 +225,12 @@ function ShowTracksAtCurrentLocation(tm)
         panel.Q("track-status").text = tm.l10n.GetString("select_track_no_track_text")
     else
         panel.Q("track-status").text = ""
+    end
+
+    if (cardOfPreviouslySelectedTrack != nil) then
+        cardOfPreviouslySelectedTrack.Focus()
+        -- This doesn't work even after delaying one frame. Not sure why.
+        panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedTrack)
     end
 end
 

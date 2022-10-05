@@ -53,7 +53,7 @@
                     </ui:Button>
                     <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" name="location-display" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
                 </ui:VisualElement>
-                <ui:ScrollView name="ScrollView" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
+                <ui:ScrollView name="scroll-view" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
                     <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
                         <ui:Instance template="Subfolder In Select Track" name="Subfolder In Select Track" />
                     </ui:VisualElement>

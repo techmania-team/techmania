@@ -238,6 +238,12 @@ namespace ThemeApi
                 (inner as Scroller).value = newValue;
             else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'SetValueWithoutNotify' member.");
         }
+
+        public void ScrollTo(VisualElementWrap child)
+        {
+            CheckType(typeof(ScrollView), "ScrollTo");
+            (inner as ScrollView).ScrollTo(child.inner);
+        }
         #endregion
 
         #region Events
@@ -424,7 +430,7 @@ namespace ThemeApi
         }
         #endregion
 
-        #region Class manipulation
+        #region USS class manipulation
         public IEnumerable<string> GetClasses()
             => inner.GetClasses();
         public bool ClassListContains(string className)
@@ -555,6 +561,11 @@ namespace ThemeApi
             inner.MarkDirtyRepaint();
         }
         #endregion
+
+        public void Focus()
+        {
+            inner.Focus();
+        }
     }
 
     [MoonSharpUserData]
