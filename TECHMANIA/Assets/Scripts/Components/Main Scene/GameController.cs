@@ -231,7 +231,8 @@ public class GameController : MonoBehaviour
 
     public void Begin()
     {
-
+        SetBgAlpha((float)setup.trackOptions.backgroundBrightness /
+            PerTrackOptions.kMaxBrightness);
     }
 
     public void Pause()
@@ -242,6 +243,12 @@ public class GameController : MonoBehaviour
     public void Unpause()
     {
 
+    }
+
+    private void SetBgAlpha(float a)
+    {
+        setup.bgContainer.style.unityBackgroundImageTintColor =
+            new StyleColor(new Color(1f, 1f, 1f, a));
     }
 
     // Update is called once per frame
