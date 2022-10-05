@@ -79,10 +79,12 @@ function InitializePauseMenu(tm)
         GamePanelToSelectTrackPanel(tm)
     end)
 
+    InitializeBgBrightnessSlider(tm, menu.Q("bg-brightness-wrap"))
     InitializeVolumeSliders(menu)
 end
 
 function ShowPauseMenu(menu)
+    ShowBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
     ShowVolumeSliders(menu)
 end
 

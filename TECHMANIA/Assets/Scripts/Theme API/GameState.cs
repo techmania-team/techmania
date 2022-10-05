@@ -46,6 +46,15 @@ namespace ThemeApi
             throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {stateEnum}.");
         }
 
+        private void CheckState(List<State> states, string methodName)
+        {
+            foreach (State s in states)
+            {
+                if (stateEnum == s) return;
+            }
+            throw new System.Exception($"{methodName} expects one of the following states: {string.Join(',', states)}, but the current states is {stateEnum}.");
+        }
+
         public void BeginLoading()
         {
             CheckState(State.Idle, "BeginLoading");
@@ -78,6 +87,14 @@ namespace ThemeApi
         {
             // Any state => Idle
             stateEnum = State.Idle;
+        }
+
+        public void UpdateBgBrightness()
+        {
+            CheckState(
+                new List<State> { State.Ongoing, State.Paused },
+                "UpdateBgBrightness");
+            GameController.instance.UpdateBgBrightness();
         }
 
         [MoonSharpHidden]

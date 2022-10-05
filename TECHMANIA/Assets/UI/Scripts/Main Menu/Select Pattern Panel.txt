@@ -319,9 +319,7 @@ function ShowModifierSideSheet(tm)
     end
     SetToggleIsOn(sheet.Q("judgement-tally").Q("track"), showTally)
 
-    local bgBrightness = selectedTrackOptions.backgroundBrightness
-    SetSliderValueWithoutNotify(sheet.Q("bg-brightness").Q("slider"), bgBrightness)
-    sheet.Q("bg-brightness").Q("value-display").text = tostring(bgBrightness)
+    ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
 
     SetToggleIsOn(sheet.Q("no-video").Q("track"), selectedTrackOptions.noVideo)
 end
@@ -571,14 +569,7 @@ function InitializeModifierSidesheet(tm)
         end
     end)
 
-    local brightnessSlider = bg.Q("bg-brightness").Q("slider")
-    brightnessSlider.lowValue = 0
-    brightnessSlider.highValue = 10
-    brightnessSlider.RegisterCallback("ChangeInt", function(element, event)
-        if (selectedTrackOptions == nil) then return end
-        selectedTrackOptions.backgroundBrightness = event.newValue
-        bg.Q("bg-brightness").Q("value-display").text = tostring(event.newValue)
-    end)
+    InitializeBgBrightnessSlider(tm, bg.Q("bg-brightness"))
 
     bg.Q("no-video").Q("track").RegisterCallback("Click", function(element, event)
         if (selectedTrackOptions == nil) then return end

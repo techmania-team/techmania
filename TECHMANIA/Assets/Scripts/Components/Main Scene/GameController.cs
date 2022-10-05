@@ -231,8 +231,7 @@ public class GameController : MonoBehaviour
 
     public void Begin()
     {
-        SetBgAlpha((float)setup.trackOptions.backgroundBrightness /
-            PerTrackOptions.kMaxBrightness);
+        UpdateBgBrightness();
     }
 
     public void Pause()
@@ -243,6 +242,17 @@ public class GameController : MonoBehaviour
     public void Unpause()
     {
 
+    }
+
+    public void Conclude()
+    {
+
+    }
+
+    public void UpdateBgBrightness()
+    {
+        SetBgAlpha((float)setup.trackOptions.backgroundBrightness /
+            PerTrackOptions.kMaxBrightness);
     }
 
     private void SetBgAlpha(float a)

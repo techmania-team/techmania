@@ -250,7 +250,7 @@
                         <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
                             <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
                                 <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
-                                <ui:Instance template="SliderInt" name="SliderInt" style="width: 300px;" />
+                                <ui:Instance template="SliderInt" name="slider-container" style="width: 300px;" />
                             </ui:Label>
                         </ui:VisualElement>
                         <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
