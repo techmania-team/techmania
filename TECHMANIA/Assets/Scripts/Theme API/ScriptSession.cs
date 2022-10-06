@@ -117,7 +117,6 @@ namespace ThemeApi
             Table utilTypes = new Table(session);
             utilTypes["style"] = UserData.CreateStatic<StyleHelper>();
             utilTypes["io"] = UserData.CreateStatic<IO>();
-            utilTypes["paths"] = UserData.CreateStatic<Paths>();
             apiTable["util"] = utilTypes;
 
             // Experimental: expose enums

@@ -25,6 +25,7 @@ namespace ThemeApi
             resources = new GlobalResource();
             gameSetup = new GameSetup();
             game = new GameState();
+            paths = new Paths();
 
             audio = new AudioManager();
 
@@ -56,6 +57,7 @@ namespace ThemeApi
         public GlobalResource resources { get; private set; }
         public GameSetup gameSetup { get; private set; }
         public GameState game { get; private set; }
+        public Paths paths { get; private set; }
         #endregion
 
         #region Audio and video

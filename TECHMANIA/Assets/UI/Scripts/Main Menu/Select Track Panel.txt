@@ -79,11 +79,11 @@ function ShowTracksAtCurrentLocation(tm)
     local panel = tm.root.Q("select-track-panel")
 
     if (showTracksInAllFolders) then
-        selectTrackPanelLocation = util.paths.GetTrackRootFolder()
+        selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
     end
 
-    panel.Q("location-display").text = util.paths.EscapeBackslash(selectTrackPanelLocation)
-    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != util.paths.GetTrackRootFolder())
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
+    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
 
     local subfolderContainer = panel.Q("subfolder-container")
     local trackContainer = panel.Q("track-container")
@@ -126,7 +126,7 @@ function ShowTracksAtCurrentLocation(tm)
             LoadAndShowEyecatch(tm, subfolder.eyecatchFullPath, card.Q("eyecatch"))
         end
         SetUpButtonSounds(tm, card)
-        card.Q("name").text = util.paths.EscapeBackslash(subfolder.name)
+        card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
         SetUpScrollingText(tm, card.Q("name-container"))
         card.RegisterCallback("Click", function(_, _, subfolder)
             selectTrackPanelLocation = subfolder.fullPath
@@ -164,17 +164,17 @@ function ShowTracksAtCurrentLocation(tm)
             local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
             card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
             card.Q("error-icon").visible = false
-            local eyecatchPath = util.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
             LoadAndShowEyecatch(tm, eyecatchPath, card.Q("eyecatch"))
             SetUpButtonSounds(tm, card)
-            card.Q("name").text = util.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
-            card.Q("artist").text = util.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
+            card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
+            card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
             SetUpScrollingText(tm, card.Q("name-container"))
             SetUpScrollingText(tm, card.Q("artist-container"))
             card.RegisterCallback("Click", function(_, _, trackInFolder)
                 -- Load full track and navigate to select pattern panel.
                 selectedTrackFolder = trackInFolder.folder
-                local trackPath = util.paths.Combine(trackInFolder.folder, util.paths.kTrackFilename)
+                local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
                 selectedFullTrack = util.io.LoadFullTrack(trackPath)
                 SelectTrackToSelectPatternPanel(tm)
             end, trackInFolder)
@@ -199,12 +199,12 @@ function ShowTracksAtCurrentLocation(tm)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
             card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
-            errorMessage = util.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         elseif (trackWithError.type == "Upgrade") then
             card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
-            errorMessage = util.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         end
@@ -246,12 +246,12 @@ end
 function RefreshTrackList(tm)
     ClearAllTrackCards(tm)
     local panel = tm.root.Q("select-track-panel")
-    selectTrackPanelLocation = util.paths.GetTrackRootFolder()
+    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
     trackListNeedsRefresh = false
     panel.Q("back-button").SetEnabled(false)
-    panel.Q("location-display").text = util.paths.EscapeBackslash(selectTrackPanelLocation)
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
     util.io.ReloadTrackList(function(currentlyLoadingFile)
-        panel.Q("track-status").text = util.paths.EscapeBackslash(currentlyLoadingFile)
+        panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
     end,
     function(reloadStatus)
         panel.Q("back-button").SetEnabled(true)
@@ -298,7 +298,7 @@ function FadeOutFilterSidesheet(tm, bg)
 end
 
 function InitializeSelectTrackPanel(tm)
-    selectTrackPanelLocation = util.paths.GetTrackRootFolder()
+    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
 
     local panel = tm.root.Q("select-track-panel")
     panel.Q("refresh-button").RegisterCallback("Click", function()
@@ -324,7 +324,7 @@ function InitializeSelectTrackPanel(tm)
                 ClearAllTrackCards(tm)
                 panel.Q("back-button").SetEnabled(false)
                 util.io.UpgradeAllTracks(function(currentlyLoadingFile)
-                    panel.Q("track-status").text = util.paths.EscapeBackslash(currentlyLoadingFile)
+                    panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
                 end,
                 function(reloadStatus)
                     panel.Q("back-button").SetEnabled(true)
@@ -332,7 +332,7 @@ function InitializeSelectTrackPanel(tm)
                     if (reloadStatus.Ok()) then
                         Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
                     else
-                        Alert(util.paths.EscapeBackslash(net.string.Format(
+                        Alert(tm.paths.EscapeBackslash(net.string.Format(
                             tm.l10n.GetString("select_track_upgrade_process_error_format"),
                             reloadStatus.errorMessage)))
                     end
@@ -341,7 +341,7 @@ function InitializeSelectTrackPanel(tm)
     end)
 
     panel.Q("up-button").RegisterCallback("Click", function()
-        selectTrackPanelLocation = util.paths.GoUpFrom(selectTrackPanelLocation)
+        selectTrackPanelLocation = tm.paths.GoUpFrom(selectTrackPanelLocation)
         ShowTracksAtCurrentLocation(tm)
     end)
 
