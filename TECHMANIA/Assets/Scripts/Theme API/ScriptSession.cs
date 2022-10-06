@@ -25,6 +25,7 @@ namespace ThemeApi
             
             // Redirect print
             session.Options.DebugPrint = (s) => { Debug.Log(s); };
+
             // Register types
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
@@ -55,8 +56,6 @@ namespace ThemeApi
                 }
             }
             UserData.RegisterType<Rect>();
-            UserData.RegisterType<KeyCode>();
-            UserData.RegisterAssembly();
 
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
@@ -90,8 +89,11 @@ namespace ThemeApi
             session.Globals["unity"] = unityTypes;
 
             Table typeTable = new Table(session);
+            UserData.RegisterType<KeyCode>();
             typeTable["KeyCode"] = UserData.CreateStatic<KeyCode>();
             session.Globals["enums"] = typeTable;
+
+            UserData.RegisterAssembly();
         }
 
         public static void Execute(string script)
