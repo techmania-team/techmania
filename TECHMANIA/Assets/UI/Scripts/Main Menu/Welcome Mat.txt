@@ -14,7 +14,7 @@ function InitializeWelcomeMat(tm)
     function Blink(timer, period)
         local opacity = unity.mathf.PingPong(timer, period) / period
         local smoothOpacity = unity.mathf.SmoothStep(0, 1, opacity)
-        mat.style.opacity = tm.style.Float(smoothOpacity)
+        mat.style.opacity = util.style.Float(smoothOpacity)
     end
     function SlowBlink()
         local matTimer = 0
@@ -43,7 +43,7 @@ function InitializeWelcomeMat(tm)
         if (not slowBlinking) then return end
         slowBlinking = false
         tm.StopCoroutine(slowBlinkCoroutine)
-        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Game Start.wav"), "SFX")
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Game Start.wav"), "SFX")
         tm.StartCoroutine(FastBlinkThenShowMenu)
     end)
 end

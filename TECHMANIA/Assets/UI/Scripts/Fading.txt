@@ -7,19 +7,19 @@ end
 function FadeInCoroutine(tm, element, translateX, translateY)
     local transitionTime = 0.2
     local timer = 0
-    element.style.opacity = tm.style.Float(0)
-    element.style.translate = tm.style.TranslateInPixel(translateX, translateY)
+    element.style.opacity = util.style.Float(0)
+    element.style.translate = util.style.TranslateInPixel(translateX, translateY)
     while (timer < transitionTime) do
         local progress = timer / transitionTime
         local x = DampedLerp(translateX, 0, progress)
         local y = DampedLerp(translateY, 0, progress)
-        element.style.opacity = tm.style.Float(progress)
-        element.style.translate = tm.style.TranslateInPixel(x, y)
+        element.style.opacity = util.style.Float(progress)
+        element.style.translate = util.style.TranslateInPixel(x, y)
         timer = timer + unity.time.deltaTime
         coroutine.yield()
     end
-    element.style.opacity = tm.style.Float(1)
-    element.style.translate = tm.style.TranslateInPixel(0, 0)
+    element.style.opacity = util.style.Float(1)
+    element.style.translate = util.style.TranslateInPixel(0, 0)
 end
 
 -- This operates on opacity and translate, but NOT display.
@@ -27,19 +27,19 @@ end
 function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
     local transitionTime = 0.2
     local timer = 0
-    element.style.opacity = tm.style.Float(1)
-    element.style.translate = tm.style.TranslateInPixel(0, 0)
+    element.style.opacity = util.style.Float(1)
+    element.style.translate = util.style.TranslateInPixel(0, 0)
     while (timer < transitionTime) do
         local progress = timer / transitionTime
         local x = DampedLerp(0, translateX, progress)
         local y = DampedLerp(0, translateY, progress)
-        element.style.opacity = tm.style.Float(1 - progress)
-        element.style.translate = tm.style.TranslateInPixel(x, y)
+        element.style.opacity = util.style.Float(1 - progress)
+        element.style.translate = util.style.TranslateInPixel(x, y)
         timer = timer + unity.time.deltaTime
         coroutine.yield()
     end
-    element.style.opacity = tm.style.Float(0)
-    element.style.translate = tm.style.TranslateInPixel(translateX, translateY)
+    element.style.opacity = util.style.Float(0)
+    element.style.translate = util.style.TranslateInPixel(translateX, translateY)
     if (finishCallback != nil) then
         finishCallback()
     end

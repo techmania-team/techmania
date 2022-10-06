@@ -8,7 +8,7 @@ end
 
 function SetProgressBar(progressBar, percent)
     progressBar.Q("filled-portion").style.right =
-        tm.style.LengthInPercent(100 - percent)
+        util.style.LengthInPercent(100 - percent)
 end
 
 function UpdateSliderAppearance(slider)
@@ -16,7 +16,7 @@ function UpdateSliderAppearance(slider)
         (slider.highValue - slider.lowValue)
     SetProgressBar(slider.parent, percent)
     slider.Q("overlay-center").style.left =
-        tm.style.LengthInPercent(percent)
+        util.style.LengthInPercent(percent)
 end
 
 function SetUpAllSliders(tm)
@@ -58,14 +58,14 @@ function SetUpClickSound(tm, element)
         sfxName = "Assets/UI/SFX/Back.wav"
     end
     element.RegisterCallback("Click", function ()
-        tm.audio.Play(tm.io.LoadAudioFromTheme(sfxName), "SFX")
+        tm.audio.Play(util.io.LoadAudioFromTheme(sfxName), "SFX")
     end)
 end
 
 function SetUpPointerOverSound(tm, element)
     element.RegisterCallback("PointerOver", function (element)
         if (element.enabledInHierarchy) then
-            tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), "SFX")
+            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), "SFX")
         end
     end)
 end
@@ -142,7 +142,7 @@ function TransitionPanelCoroutine(tm, from, to, length, toPanelInitializer)
     from.display = false
 
     to.display = true
-    to.style.opacity = tm.style.Float(0)
+    to.style.opacity = util.style.Float(0)
     coroutine.yield()
     if (toPanelInitializer != nil) then toPanelInitializer() end
 

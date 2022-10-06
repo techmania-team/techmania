@@ -1,6 +1,6 @@
 tm = getApi(1)
 
-tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
+tm.l10n.Initialize(util.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
 

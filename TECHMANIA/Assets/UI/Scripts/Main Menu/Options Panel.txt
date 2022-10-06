@@ -32,16 +32,16 @@ function UpdateCustomDataLocationDisplay(tm, panel)
     if (tm.options.customDataLocation) then
         if (tm.options.tracksFolderLocation == nil or
             tm.options.tracksFolderLocation == "") then
-            tm.options.tracksFolderLocation = tm.paths.GetTrackRootFolder()
+            tm.options.tracksFolderLocation = util.paths.GetTrackRootFolder()
         end
         if (tm.options.skinsFolderLocation == nil or
             tm.options.skinsFolderLocation == "") then
-            tm.options.skinsFolderLocation = tm.paths.GetSkinFolder()
+            tm.options.skinsFolderLocation = util.paths.GetSkinFolder()
         end
         tracksContainer.display = true
-        tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
+        tracksContainer.Q("location-display").text = util.paths.EscapeBackslash(tm.options.tracksFolderLocation)
         skinsContainer.display = true
-        skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+        skinsContainer.Q("location-display").text = util.paths.EscapeBackslash(tm.options.skinsFolderLocation)
     else
         tracksContainer.display = false
         skinsContainer.display = false
@@ -246,7 +246,7 @@ function InitializeOptionsPanel(tm)
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.ok) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
-                local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
+                local path = util.paths.EscapeBackslash(util.paths.GetRulesetFilePath())
                 local error = net.string.Format(errorFormat, path)
                 Alert(error)
                 tm.options.ruleset = "Standard"
@@ -267,7 +267,7 @@ function InitializeOptionsPanel(tm)
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
         if (newFolder != nil) then
             tm.options.tracksFolderLocation = newFolder;
-            tm.paths.ApplyCustomDataLocation()
+            util.paths.ApplyCustomDataLocation()
             trackListNeedsRefresh = true
             UpdateCustomDataLocationDisplay(tm, panel)
         end
@@ -277,7 +277,7 @@ function InitializeOptionsPanel(tm)
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
-            tm.paths.ApplyCustomDataLocation()
+            util.paths.ApplyCustomDataLocation()
             UpdateCustomDataLocationDisplay(tm, panel)
         end
     end)

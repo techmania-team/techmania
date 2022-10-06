@@ -202,11 +202,11 @@ function ShowSelectPatternPanel(tm)
     selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
 
     -- Display metadata.
-    local eyecatchPath = tm.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
+    local eyecatchPath = util.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(tm, eyecatchPath, panel.Q("eyecatch"))
-    panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
-    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
-    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
+    panel.Q("metadata-wrap").Q("genre").text = util.paths.EscapeBackslash(track.trackMetadata.genre)
+    panel.Q("metadata-wrap").Q("title").text = util.paths.EscapeBackslash(track.trackMetadata.title)
+    panel.Q("metadata-wrap").Q("artist").text = util.paths.EscapeBackslash(track.trackMetadata.artist)
 
     -- Display pattern list.
     panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
@@ -277,9 +277,9 @@ function InitializeRadar(tm)
     local radarDisplayHeight = radarElement.Q("density").contentRect.height
     local radarDisplayDistance = radarRadiusUnit * 100 + 40
     function PlaceRadarDisplay(element, vertex)
-        element.style.left = tm.style.LengthInPixel(
+        element.style.left = util.style.LengthInPixel(
             radarCenterX + radarDisplayDistance * unity.mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
-        element.style.top = tm.style.LengthInPixel(
+        element.style.top = util.style.LengthInPixel(
             radarCenterY + radarDisplayDistance * unity.mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
     end
     PlaceRadarDisplay(radarElement.Q("density"), 0)
@@ -350,7 +350,7 @@ function InitializeSelectPatternPanel(tm)
     end)
 
     panel.Q("play-button").RegisterCallback("Click", function()
-        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), "SFX")
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), "SFX")
 
         -- Populate game setup
         tm.gameSetup.trackFolder = selectedTrackFolder
@@ -435,7 +435,7 @@ end
 function InitializeModifierSidesheet(tm)
     local bg = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet-background")
     bg.RegisterCallback("Click", function()
-        tm.audio.Play(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
         FadeOutModifierSidesheet(tm, bg)
     end)
 
@@ -589,9 +589,9 @@ function StartPreviewTrackPlayback(tm)
     if (trackMetadata.previewTrack == nil) then return end
     if (trackMetadata.previewTrack == "") then return end
     if (trackMetadata.previewStartTime > trackMetadata.previewEndTime) then return end
-    local previewPath = tm.paths.Combine(trackFolder, trackMetadata.previewTrack)
+    local previewPath = util.paths.Combine(trackFolder, trackMetadata.previewTrack)
 
-    tm.io.LoadAudioFromFile(previewPath, function(status, clip)
+    util.io.LoadAudioFromFile(previewPath, function(status, clip)
         if (not status.Ok()) then return end
         -- If the user transitioned away while loading the clip, don't play.
         if (not tm.root.Q("select-pattern-panel").display) then return end

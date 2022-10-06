@@ -8,7 +8,7 @@ function KeyFromValue(table, value)
 end
 
 function LoadAndShowEyecatch(tm, path, eyecatchElement)
-    tm.io.LoadTextureFromFile(path, function(status, texture)
+    util.io.LoadTextureFromFile(path, function(status, texture)
         if (status.Ok()) then
             eyecatchElement.backgroundImage = texture
             eyecatchElement.Q("default-eyecatch").visible = false

@@ -20,14 +20,11 @@ namespace ThemeApi
 
             uiDocument = Object.FindObjectOfType<UIDocument>();
             root = new VisualElementWrap(uiDocument.rootVisualElement);
-            style = new StyleHelper();
 
             l10n = new ThemeL10n(uiDocument.rootVisualElement);
             resources = new GlobalResource();
             gameSetup = new GameSetup();
             game = new GameState();
-            io = new IO();
-            paths = new Paths();
 
             audio = new AudioManager();
 
@@ -42,8 +39,6 @@ namespace ThemeApi
         public VisualElementWrap root { get; private set; }
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
-
-        public StyleHelper style { get; private set; }
 
         public void SetThemeStyleSheet(string name)
         {
@@ -61,8 +56,6 @@ namespace ThemeApi
         public GlobalResource resources { get; private set; }
         public GameSetup gameSetup { get; private set; }
         public GameState game { get; private set; }
-        public IO io { get; private set; }
-        public Paths paths { get; private set; }
         #endregion
 
         #region Audio and video

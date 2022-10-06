@@ -56,6 +56,7 @@ namespace ThemeApi
                 }
             }
             UserData.RegisterType<Rect>();
+            UserData.RegisterAssembly();
 
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
@@ -88,12 +89,18 @@ namespace ThemeApi
                 UserData.CreateStatic<Vector3>();
             session.Globals["unity"] = unityTypes;
 
+            // Expose utility classes
+            Table utilTypes = new Table(session);
+            utilTypes["style"] = UserData.CreateStatic<StyleHelper>();
+            utilTypes["io"] = UserData.CreateStatic<IO>();
+            utilTypes["paths"] = UserData.CreateStatic<Paths>();
+            session.Globals["util"] = utilTypes;
+
+            // Experimental: expose enums
             Table typeTable = new Table(session);
             UserData.RegisterType<KeyCode>();
             typeTable["KeyCode"] = UserData.CreateStatic<KeyCode>();
             session.Globals["enums"] = typeTable;
-
-            UserData.RegisterAssembly();
         }
 
         public static void Execute(string script)
