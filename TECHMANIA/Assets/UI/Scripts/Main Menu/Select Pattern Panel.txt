@@ -247,7 +247,7 @@ function ShowSelectPatternPanel(tm)
             radioButton.Q("all-combo-icon").display = false
         end
 
-        radioButton.RegisterCallback("Click", function(_, _, pattern)
+        radioButton.RegisterCallback(eventType.Click, function(_, _, pattern)
             selectedPattern = pattern
             SetRadioButton(radioButton, allPatternRadioButtons)
             ShowPatternDetails(tm, panel)
@@ -344,13 +344,13 @@ function InitializeSelectPatternPanel(tm)
 
     local sidesheetBg = panel.Q("modifier-sidesheet-background")
     sidesheetBg.display = false
-    panel.Q("modifiers-button").RegisterCallback("Click", function()
+    panel.Q("modifiers-button").RegisterCallback(eventType.Click, function()
         ShowModifierSideSheet(tm)
         FadeInModifierSidesheet(tm, sidesheetBg)
     end)
 
-    panel.Q("play-button").RegisterCallback("Click", function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), "SFX")
+    panel.Q("play-button").RegisterCallback(eventType.Click, function()
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), tm.enum.audioChannel.SFX)
 
         -- Populate game setup
         tm.gameSetup.trackFolder = selectedTrackFolder
@@ -434,17 +434,17 @@ end
 
 function InitializeModifierSidesheet(tm)
     local bg = tm.root.Q("select-pattern-panel").Q("modifier-sidesheet-background")
-    bg.RegisterCallback("Click", function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
         FadeOutModifierSidesheet(tm, bg)
     end)
 
-    bg.Q("modifier-sidesheet").RegisterCallback("Click", function(element, event)
+    bg.Q("modifier-sidesheet").RegisterCallback(eventType.Click, function(element, event)
         -- Prevents bg from receiving this event on the bubble up phase
         event.StopPropagation()
     end)
 
-    bg.Q("close-button").RegisterCallback("Click", function()
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
         FadeOutModifierSidesheet(tm, bg)
     end)
 
@@ -535,7 +535,7 @@ function InitializeModifierSidesheet(tm)
 
     function InitializeDropdown(containerName, modifierKey)
         -- tm.options.modifiers and modifierDisplayString share the same keys.
-        bg.Q(containerName).Q("dropdown").RegisterCallback("ChangeString", function(element, event)
+        bg.Q(containerName).Q("dropdown").RegisterCallback(eventType.ChangeString, function(element, event)
             tm.options.modifiers[modifierKey] = KeyFromValue(modifierDisplayString[modifierKey], event.newValue)
             ShowCurrentModifiers(tm)
         end)
@@ -550,7 +550,7 @@ function InitializeModifierSidesheet(tm)
     InitializeDropdown("assist-tick", "assistTick")
     InitializeDropdown("mode", "mode")
     InitializeDropdown("control-override", "controlOverride")
-    bg.Q("control-override").Q("dropdown").RegisterCallback("ChangeString", function()
+    bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()
         ShowControlSchemeIcons(tm)
     end)
     InitializeDropdown("scroll-speed", "scrollSpeed")
@@ -560,7 +560,7 @@ function InitializeModifierSidesheet(tm)
     if (not themeOptions.Has(judgementTallyKey)) then
         themeOptions.Add(judgementTallyKey, "False")
     end
-    bg.Q("judgement-tally").Q("track").RegisterCallback("Click", function()
+    bg.Q("judgement-tally").Q("track").RegisterCallback(eventType.Click, function()
         local oldValue = themeOptions.Get(judgementTallyKey)
         if (oldValue == "True") then
             themeOptions.Set(judgementTallyKey, "False")
@@ -571,7 +571,7 @@ function InitializeModifierSidesheet(tm)
 
     InitializeBgBrightnessSlider(tm, bg.Q("bg-brightness"))
 
-    bg.Q("no-video").Q("track").RegisterCallback("Click", function(element, event)
+    bg.Q("no-video").Q("track").RegisterCallback(eventType.Click, function(element, event)
         if (selectedTrackOptions == nil) then return end
         selectedTrackOptions.noVideo = not selectedTrackOptions.noVideo
         ShowCurrentModifiers(tm)
@@ -609,7 +609,7 @@ function StartPreviewTrackPlayback(tm)
             while (true) do
                 local timer = 0
                 -- Start at volume 0
-                previewTrackAudioSource = tm.audio.Play(clip, "Music", startTime, 0)
+                previewTrackAudioSource = tm.audio.Play(clip, tm.enum.audioChannel.Music, startTime, 0)
                 while (timer < fadeLength) do
                     previewTrackAudioSource.volume = timer / fadeLength
                     timer = timer + unity.time.deltaTime

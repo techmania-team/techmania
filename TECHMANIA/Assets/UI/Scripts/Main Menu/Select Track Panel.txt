@@ -128,7 +128,7 @@ function ShowTracksAtCurrentLocation(tm)
         SetUpButtonSounds(tm, card)
         card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
         SetUpScrollingText(tm, card.Q("name-container"))
-        card.RegisterCallback("Click", function(_, _, subfolder)
+        card.RegisterCallback(eventType.Click, function(_, _, subfolder)
             selectTrackPanelLocation = subfolder.fullPath
             ShowTracksAtCurrentLocation(tm)
         end, subfolder)
@@ -171,7 +171,7 @@ function ShowTracksAtCurrentLocation(tm)
             card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
             SetUpScrollingText(tm, card.Q("name-container"))
             SetUpScrollingText(tm, card.Q("artist-container"))
-            card.RegisterCallback("Click", function(_, _, trackInFolder)
+            card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 -- Load full track and navigate to select pattern panel.
                 selectedTrackFolder = trackInFolder.folder
                 local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
@@ -211,7 +211,7 @@ function ShowTracksAtCurrentLocation(tm)
         card.Q("artist").text = tm.l10n.GetString("select_track_error_card_artist")
         SetUpScrollingText(tm, card.Q("name-container"))
         SetUpScrollingText(tm, card.Q("artist-container"))
-        card.RegisterCallback("Click", function(_, _, errorMessage)
+        card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
             Alert(errorMessage)
         end, errorMessage)
     end
@@ -301,13 +301,13 @@ function InitializeSelectTrackPanel(tm)
     selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
 
     local panel = tm.root.Q("select-track-panel")
-    panel.Q("refresh-button").RegisterCallback("Click", function()
+    panel.Q("refresh-button").RegisterCallback(eventType.Click, function()
         RefreshTrackList(tm)
     end)
 
     local sidesheetBg = panel.Q("filter-sidesheet-background")
     sidesheetBg.display = false
-    panel.Q("filter-button").RegisterCallback("Click", function()
+    panel.Q("filter-button").RegisterCallback(eventType.Click, function()
         if (sidesheetBg.display) then
             FadeOutFilterSidesheet(tm, sidesheetBg)
         else
@@ -316,7 +316,7 @@ function InitializeSelectTrackPanel(tm)
         end
     end)
 
-    panel.Q("upgrade-button").RegisterCallback("Click", function()
+    panel.Q("upgrade-button").RegisterCallback(eventType.Click, function()
         Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
             tm.l10n.GetString("select_track_upgrade_version_confirm"),
             tm.l10n.GetString("select_track_upgrade_version_cancel"),
@@ -340,33 +340,33 @@ function InitializeSelectTrackPanel(tm)
             end)
     end)
 
-    panel.Q("up-button").RegisterCallback("Click", function()
+    panel.Q("up-button").RegisterCallback(eventType.Click, function()
         selectTrackPanelLocation = tm.paths.GoUpFrom(selectTrackPanelLocation)
         ShowTracksAtCurrentLocation(tm)
     end)
 
-    panel.Q("open-button").RegisterCallback("Click", function()
+    panel.Q("open-button").RegisterCallback(eventType.Click, function()
         tm.OpenURL(selectTrackPanelLocation)
     end)
 end
 
 function InitializeTrackFilterSidesheet(tm)
     local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
-    bg.RegisterCallback("Click", function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
         FadeOutFilterSidesheet(tm, bg)
     end)
 
-    bg.Q("filter-sidesheet").RegisterCallback("Click", function(element, event)
+    bg.Q("filter-sidesheet").RegisterCallback(eventType.Click, function(element, event)
         -- Prevents bg from receiving this event on the bubble up phase
         event.StopPropagation()
     end)
 
-    bg.Q("close-button").RegisterCallback("Click", function()
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
         FadeOutFilterSidesheet(tm, bg)
     end)
 
-    bg.Q("keyword-field").Q("text-field").RegisterCallback("ChangeString", function(element, event)
+    bg.Q("keyword-field").Q("text-field").RegisterCallback(eventType.ChangeString, function(element, event)
         trackListFilterKeywordsPreSplit = net.string.Trim(event.newValue)
         local keywords = net.string.Split(trackListFilterKeywordsPreSplit, ' ')
         trackListFilterKeywords = {}
@@ -378,7 +378,7 @@ function InitializeTrackFilterSidesheet(tm)
         ShowTracksAtCurrentLocation(tm)
     end)
 
-    bg.Q("all-folders").Q("track").RegisterCallback("Click", function()
+    bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
         showTracksInAllFolders = not showTracksInAllFolders
         ShowTracksAtCurrentLocation(tm)
     end)
@@ -406,19 +406,19 @@ function InitializeTrackFilterSidesheet(tm)
         SetDropdownValuesInFilterSidesheet(tm)
     end)
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
-    sortBasisDropdown.RegisterCallback("ChangeString", function(element, event)
+    sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         trackListSortBasis = KeyFromValue(trackListSortBasisDisplayString, event.newValue)
         ShowTracksAtCurrentLocation(tm)
     end)
 
     local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
-    ascendingRadioButton.RegisterCallback("Click", function()
+    ascendingRadioButton.RegisterCallback(eventType.Click, function()
         SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         trackListSortAscending = true
         ShowTracksAtCurrentLocation(tm)
     end)
-    descendingRadioButton.RegisterCallback("Click", function()
+    descendingRadioButton.RegisterCallback(eventType.Click, function()
         SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         trackListSortAscending = false
         ShowTracksAtCurrentLocation(tm)

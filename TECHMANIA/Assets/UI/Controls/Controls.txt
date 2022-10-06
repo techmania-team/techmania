@@ -21,8 +21,8 @@ end
 
 function SetUpAllSliders(tm)
     tm.root.Query(nil, "slider").ForEach(function (element)
-        element.RegisterCallback("ChangeFloat", UpdateSliderAppearance)
-        element.RegisterCallback("ChangeInt", UpdateSliderAppearance)
+        element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
+        element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
         UpdateSliderAppearance(element)
     end)
 end
@@ -34,7 +34,7 @@ end
 
 function SetUpAllToggles(tm)
     tm.root.Query(nil, "toggle-track").ForEach(function (element)
-        element.RegisterCallback("Click", function (track)
+        element.RegisterCallback(eventType.Click, function (track)
             track.ToggleInClassList("toggle-track-on")
             track.ToggleInClassList("toggle-track-off")
         end)
@@ -57,15 +57,15 @@ function SetUpClickSound(tm, element)
         element.name == "cancel-button") then
         sfxName = "Assets/UI/SFX/Back.wav"
     end
-    element.RegisterCallback("Click", function ()
-        tm.audio.Play(util.io.LoadAudioFromTheme(sfxName), "SFX")
+    element.RegisterCallback(eventType.Click, function ()
+        tm.audio.Play(util.io.LoadAudioFromTheme(sfxName), tm.enum.audioChannel.SFX)
     end)
 end
 
 function SetUpPointerOverSound(tm, element)
-    element.RegisterCallback("PointerOver", function (element)
+    element.RegisterCallback(eventType.PointerOver, function (element)
         if (element.enabledInHierarchy) then
-            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), "SFX")
+            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), tm.enum.audioChannel.SFX)
         end
     end)
 end
@@ -103,8 +103,8 @@ function SetUpScrollingText(tm, scrollingTextContainer)
         local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
         element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
     end
-    scrollingTextContainer.UnregisterCallback("FrameUpdate", ContainerUpdate)
-    scrollingTextContainer.RegisterCallback("FrameUpdate", ContainerUpdate)
+    scrollingTextContainer.UnregisterCallback(eventType.FrameUpdate, ContainerUpdate)
+    scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
 end
 
 function SetUpAllScrollingTexts(tm)

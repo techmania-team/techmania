@@ -334,13 +334,11 @@ namespace ThemeApi
         // 1. The VisualElementWrap receiving the event
         // 2. The event
         // 3. The data (Void if called without this parameters)
-        public void RegisterCallback(string eventTypeString,
+        public void RegisterCallback(EventType eventType,
             DynValue callback, DynValue data)
         {
             callback.CheckType("VisualElementWrap.RegisterCallback",
                 DataType.Function);
-            EventType eventType = System.Enum.Parse<EventType>(
-                eventTypeString);
             System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
             {
@@ -361,14 +359,12 @@ namespace ThemeApi
                 inner, callback, data });
         }
 
-        public void UnregisterCallback(string eventTypeString,
+        public void UnregisterCallback(EventType eventType,
             DynValue callback)
         {
             callback.CheckType(
                 "VisualElementWrap.UnregisterCallback",
                 DataType.Function);
-            EventType eventType = System.Enum.Parse<EventType>(
-                eventTypeString);
             System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
             {

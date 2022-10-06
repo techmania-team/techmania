@@ -138,7 +138,7 @@ function InitializeVolumeSliders(container)
 
         slider.lowValue = 0
         slider.highValue = 100
-        slider.RegisterCallback("ChangeInt", function(element, event)
+        slider.RegisterCallback(eventType.ChangeInt, function(element, event)
             tm.options[optionKey] = event.newValue
             tm.options.ApplyVolumeSettings()
             valueDisplay.text = tostring(event.newValue)
@@ -170,7 +170,7 @@ function InitializeBgBrightnessSlider(tm, container)
     local slider = container.Q("slider")
     slider.lowValue = 0
     slider.highValue = 10
-    slider.RegisterCallback("ChangeInt", function(element, event)
+    slider.RegisterCallback(eventType.ChangeInt, function(element, event)
         if (selectedTrackOptions == nil) then return end
         selectedTrackOptions.backgroundBrightness = event.newValue
         container.Q("value-display").text = tostring(event.newValue)

@@ -1,5 +1,5 @@
 function SetUpNavigation(tm)
-    tm.root.Q("main-menu").Q("start-button").RegisterCallback("Click", function()
+    tm.root.Q("main-menu").Q("start-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
             tm,
             tm.root.Q("main-menu"),
@@ -7,7 +7,7 @@ function SetUpNavigation(tm)
         )
         ShowSelectTrackPanel(tm)
     end)
-    tm.root.Q("select-track-panel").Q("back-button").RegisterCallback("Click", function()
+    tm.root.Q("select-track-panel").Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
             tm,
             tm.root.Q("select-track-panel"),
@@ -16,7 +16,7 @@ function SetUpNavigation(tm)
     end)
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
-    tm.root.Q("select-pattern-panel").Q("back-button").RegisterCallback("Click", function()
+    tm.root.Q("select-pattern-panel").Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
             tm,
             tm.root.Q("select-pattern-panel"),
@@ -24,7 +24,7 @@ function SetUpNavigation(tm)
         )
         StopPreviewTrackPlayback(tm)
     end)
-    tm.root.Q("select-pattern-panel").Q("play-button").RegisterCallback("Click", function()
+    tm.root.Q("select-pattern-panel").Q("play-button").RegisterCallback(eventType.Click, function()
         FadeOutThenInToPanel(
             tm,
             tm.root.Q("select-pattern-panel"),
@@ -32,7 +32,7 @@ function SetUpNavigation(tm)
         )
         StopPreviewTrackPlayback(tm)
     end)
-    tm.root.Q("main-menu").Q("options-button").RegisterCallback("Click", function()
+    tm.root.Q("main-menu").Q("options-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
             tm,
             tm.root.Q("main-menu"),
@@ -40,7 +40,7 @@ function SetUpNavigation(tm)
         )
         ShowOptionsPanel(tm)
     end)
-    tm.root.Q("options-panel").Q("back-button").RegisterCallback("Click", function()
+    tm.root.Q("options-panel").Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
             tm,
             tm.root.Q("options-panel"),
@@ -48,21 +48,21 @@ function SetUpNavigation(tm)
         )
         tm.options.SaveToFile()
     end)
-    tm.root.Q("main-menu").Q("information-button").RegisterCallback("Click", function()
+    tm.root.Q("main-menu").Q("information-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
             tm,
             tm.root.Q("main-menu"),
             tm.root.Q("information-panel")
         )
     end)
-    tm.root.Q("information-panel").Q("back-button").RegisterCallback("Click", function()
+    tm.root.Q("information-panel").Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
             tm,
             tm.root.Q("information-panel"),
             tm.root.Q("main-menu")
         )
     end)
-    tm.root.Q("main-menu").Q("quit-button").RegisterCallback("Click", function()
+    tm.root.Q("main-menu").Q("quit-button").RegisterCallback(eventType.Click, function()
         tm.Quit()
     end)
 end

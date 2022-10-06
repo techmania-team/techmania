@@ -31,7 +31,7 @@ namespace ThemeApi
         // channel: one of Channel enums
         // volumePercent: [0, 100]
         // panPercent: [-100, 100]
-        public AudioSource Play(AudioClip clip, string channel,
+        public AudioSource Play(AudioClip clip, Channel channel,
             float startTime = 0f,
             int volumePercent = 100, int panPercent = 0)
         {
@@ -40,7 +40,7 @@ namespace ThemeApi
                 Debug.LogError("Attempting to play a null audio clip.");
                 return null;
             }
-            switch (System.Enum.Parse<Channel>(channel))
+            switch (channel)
             {
                 case Channel.Music:
                     return manager.PlayBackingTrack(clip, startTime,

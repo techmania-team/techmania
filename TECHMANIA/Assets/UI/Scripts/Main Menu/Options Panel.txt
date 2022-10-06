@@ -157,7 +157,7 @@ function InitializeOptionsPanel(tm)
         table.insert(resolutionChoices, resolution.ToString())
     end
     resolutionDropdown.choices = resolutionChoices
-    resolutionDropdown.RegisterCallback("ChangeString", function(element, event)
+    resolutionDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         for _, resolution in ipairs(unity.screen.resolutions) do
             if (resolution.ToString() == event.newValue) then
                 tm.options.width = resolution.width
@@ -170,13 +170,13 @@ function InitializeOptionsPanel(tm)
     end)
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
-    fullScreenDropdown.RegisterCallback("ChangeString", function(element, event)
+    fullScreenDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.fullScreenMode = KeyFromValue(fullScreenDisplayString, event.newValue)
         tm.options.ApplyGraphicSettings()
     end)
 
     local vSyncToggle = panel.Q("vsync").Q("track")
-    vSyncToggle.RegisterCallback("Click", function()
+    vSyncToggle.RegisterCallback(eventType.Click, function()
         tm.options.vSync = not tm.options.vSync
         tm.options.ApplyGraphicSettings()
     end)
@@ -185,7 +185,7 @@ function InitializeOptionsPanel(tm)
 
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.choices = {"128", "256", "512", "1024"}
-    audioBufferDropdown.RegisterCallback("ChangeString", function(element, event)
+    audioBufferDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.audioBufferSize = net.int.Parse(event.newValue)
         tm.options.ApplyAudioBufferSize()
     end)
@@ -198,7 +198,7 @@ function InitializeOptionsPanel(tm)
             languageChoiceToLocaleName[locale.languageName] = localeName
         end
     languageDropdown.choices = languageChoices
-    languageDropdown.RegisterCallback("ChangeString", function(element, event)
+    languageDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.locale = languageChoiceToLocaleName[event.newValue]
         tm.l10n.ApplyLocale()
         for _, callback in ipairs(callbacksOnLocaleChange) do
@@ -208,12 +208,12 @@ function InitializeOptionsPanel(tm)
     end)
 
     local skinsButton = panel.Q("skins").Q("button")
-    skinsButton.RegisterCallback("Click", function()
+    skinsButton.RegisterCallback(eventType.Click, function()
     end)
 
     function InitializeThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
-        toggle.RegisterCallback("Click", function()
+        toggle.RegisterCallback(eventType.Click, function()
             local oldValue = themeOptions.Get(key)
             local newValue = ""
             if (oldValue == "True") then
@@ -231,7 +231,7 @@ function InitializeOptionsPanel(tm)
 
     function InitializeThemeOptionDropdown(containerName, key, stringTable)
         local dropdown = panel.Q(containerName).Q("dropdown")
-        dropdown.RegisterCallback("ChangeString", function(element, event)
+        dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             enum = KeyFromValue(stringTable, event.newValue)
             themeOptions.Set(key, enum)
         end)
@@ -240,7 +240,7 @@ function InitializeOptionsPanel(tm)
     InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", bgScalingDisplayString)
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
-    rulesetDropdown.RegisterCallback("ChangeString", function(element, event)
+    rulesetDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.ruleset = KeyFromValue(rulesetDisplayString, event.newValue)
         if (tm.options.ruleset == "Custom") then
             local status = tm.ruleset.LoadCustomRuleset()
@@ -256,14 +256,14 @@ function InitializeOptionsPanel(tm)
     end)
 
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
-    customLocationToggle.RegisterCallback("Click", function()
+    customLocationToggle.RegisterCallback(eventType.Click, function()
         tm.options.customDataLocation = not tm.options.customDataLocation
         trackListNeedsRefresh = true
         UpdateCustomDataLocationDisplay(tm, panel)
     end)
 
     local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
-    tracksFolderButton.RegisterCallback("Click", function()
+    tracksFolderButton.RegisterCallback(eventType.Click, function()
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
         if (newFolder != nil) then
             tm.options.tracksFolderLocation = newFolder;
@@ -273,7 +273,7 @@ function InitializeOptionsPanel(tm)
         end
     end)
     local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
-    skinsFolderButton.RegisterCallback("Click", function()
+    skinsFolderButton.RegisterCallback(eventType.Click, function()
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;

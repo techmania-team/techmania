@@ -9,7 +9,7 @@ function InitializeInformationPanel(tm)
     panel.Q("ios-guided-access").display = (platform == "iOS")
 
     function RegisterLinkButton(name, url)
-        panel.Q(name).RegisterCallback("Click", function()
+        panel.Q(name).RegisterCallback(eventType.Click, function()
             tm.OpenURL(url)
         end)
     end

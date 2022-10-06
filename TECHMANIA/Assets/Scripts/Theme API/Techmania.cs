@@ -157,5 +157,8 @@ namespace ThemeApi
                 "\ntricklesDown: " + e.tricklesDown;
             Debug.Log(log);
         }
+
+        // For ScriptSession to inject the enum table.
+        public Table @enum;
     }
 }

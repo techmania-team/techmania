@@ -1,15 +1,15 @@
 function InitializeGamePanel(tm)
     local panel = tm.root.Q("game-panel")
 
-    panel.Q("pause-button").RegisterCallback("Click", function()
+    panel.Q("pause-button").RegisterCallback(eventType.Click, function()
         if (tm.game.state != "Ongoing") then return end
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), "SFX")
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
         tm.game.Pause()
         FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))
         ShowPauseMenu(panel.Q("pause-menu"))
     end)
 
-    panel.Q("fever-bar-bg").RegisterCallback("PointerDown", function()
+    panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
     end)
 
     tm.gameSetup.bgContainer = panel.Q("bg-layer")
@@ -52,7 +52,7 @@ function InitializePauseMenu(tm)
     local bg = tm.root.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
 
-    menu.RegisterCallback("Click", function(element, event)
+    menu.RegisterCallback(eventType.Click, function(element, event)
         -- Prevents bg from receiving this event on the bubble up phase
         event.StopPropagation()
     end)
@@ -63,18 +63,18 @@ function InitializePauseMenu(tm)
             tm.game.Unpause()
         end)
     end
-    menu.Q("resume-button").RegisterCallback("Click", OnCancel)
-    bg.RegisterCallback("Click", OnCancel)
-    bg.RegisterCallback("Click", function(_, _)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+    menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, function(_, _)
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
     end)
 
-    menu.Q("restart-button").RegisterCallback("Click", function()
+    menu.Q("restart-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
         GamePanelStartLoading(tm)
     end)
 
-    menu.Q("select-track-button").RegisterCallback("Click", function()
+    menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
         GamePanelToSelectTrackPanel(tm)
     end)

@@ -108,7 +108,7 @@ public class Records : RecordsBase
     }
 
     // Returns null if a record doesn't exist.
-    private Record GetRecord(Pattern p, Options.Ruleset ruleset)
+    public Record GetRecord(Pattern p, Options.Ruleset ruleset)
     {
         if (ruleset == Options.Ruleset.Custom)
         {
@@ -151,11 +151,6 @@ public class Records : RecordsBase
             return null;
         }
         return r;
-    }
-
-    public Record GetRecord(Pattern p, string ruleset)
-    {
-        return GetRecord(p, Enum.Parse<Options.Ruleset>(ruleset));
     }
 
     // Requires fingerprints to have been calculated.

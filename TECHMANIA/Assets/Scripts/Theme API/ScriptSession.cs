@@ -41,6 +41,7 @@ namespace ThemeApi
             UserData.RegisterType<AudioSource>();
             UserData.RegisterType<AudioClip>();
             UserData.RegisterType<Texture2D>();
+            UserData.RegisterType<Rect>();
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
             {
@@ -56,7 +57,6 @@ namespace ThemeApi
                     continue;
                 }
             }
-            UserData.RegisterType<Rect>();
 
             // Expose API
             session.Globals["getApi"] = (Func<int, Table>)GetApi;
@@ -83,7 +83,19 @@ namespace ThemeApi
             Table apiTable = new Table(session);
 
             // Expose Techmania class
-            apiTable["tm"] = UserData.Create(new Techmania());
+            Techmania tm = new Techmania();
+            Table tmEnums = new Table(session);
+            UserData.RegisterType<VisualElementWrap.EventType>();
+            tmEnums["eventType"] = UserData.CreateStatic<
+                VisualElementWrap.EventType>();
+            UserData.RegisterType<Options.Ruleset>();
+            tmEnums["ruleset"] = UserData.CreateStatic<
+                Options.Ruleset>();
+            UserData.RegisterType<AudioManager.Channel>();
+            tmEnums["audioChannel"] = UserData.CreateStatic<
+                AudioManager.Channel>();
+            tm.@enum = tmEnums;
+            apiTable["tm"] = UserData.Create(tm);
 
             // Expose .Net classes
             Table netTypes = new Table(session);

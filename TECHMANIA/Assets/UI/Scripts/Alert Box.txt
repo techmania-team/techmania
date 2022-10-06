@@ -46,7 +46,7 @@ end
 function InitializeAlertBox(tm)
     local bg = tm.root.Q("alert-box-background")
     bg.display = false
-    bg.Q("confirm-button").RegisterCallback("Click", function()
+    bg.Q("confirm-button").RegisterCallback(eventType.Click, function()
         FadeOutDialog(bg, bg.Q("alert-box"))
         if (alertBoxConfirmCallback != nil) then
             alertBoxConfirmCallback()
@@ -59,13 +59,13 @@ function InitializeAlertBox(tm)
             alertBoxCancelCallback()
         end
     end
-    bg.Q("cancel-button").RegisterCallback("Click", OnCancel)
-    bg.RegisterCallback("Click", OnCancel)
-    bg.RegisterCallback("Click", function(element, event)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), "SFX")
+    bg.Q("cancel-button").RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, function(element, event)
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
     end)
 
-    bg.Q("alert-box").RegisterCallback("Click", function(element, event)
+    bg.Q("alert-box").RegisterCallback(eventType.Click, function(element, event)
         -- Prevents bg from receiving this event on the bubble up phase
         event.StopPropagation()
     end)
