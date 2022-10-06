@@ -1,5 +1,5 @@
 function DampedLerp(a, b, t)
-    return mathf.Lerp(a, b, mathf.Pow(t, 0.6))
+    return unity.mathf.Lerp(a, b, unity.mathf.Pow(t, 0.6))
 end
 
 -- This operates on opacity and translate, but NOT display.
@@ -15,7 +15,7 @@ function FadeInCoroutine(tm, element, translateX, translateY)
         local y = DampedLerp(translateY, 0, progress)
         element.style.opacity = tm.style.Float(progress)
         element.style.translate = tm.style.TranslateInPixel(x, y)
-        timer = timer + time.deltaTime
+        timer = timer + unity.time.deltaTime
         coroutine.yield()
     end
     element.style.opacity = tm.style.Float(1)
@@ -35,7 +35,7 @@ function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
         local y = DampedLerp(0, translateY, progress)
         element.style.opacity = tm.style.Float(1 - progress)
         element.style.translate = tm.style.TranslateInPixel(x, y)
-        timer = timer + time.deltaTime
+        timer = timer + unity.time.deltaTime
         coroutine.yield()
     end
     element.style.opacity = tm.style.Float(0)

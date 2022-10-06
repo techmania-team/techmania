@@ -60,11 +60,11 @@ function ShowPatternDetails(tm, panel)
         if (e.bpm > maxBpm) then maxBpm = e.bpm end
     end
     function FormatBpm(bpm)
-        local rounded = mathf.RoundToInt(bpm)
-        if (mathf.Abs(rounded - bpm) < mathf.Epsilon) then
+        local rounded = unity.mathf.RoundToInt(bpm)
+        if (unity.mathf.Abs(rounded - bpm) < unity.mathf.Epsilon) then
             return tostring(rounded)
         else
-            return netString.Format("{0:F2}", bpm)
+            return net.string.Format("{0:F2}", bpm)
         end
     end
     if (minBpm < maxBpm) then
@@ -78,8 +78,8 @@ function ShowPatternDetails(tm, panel)
     local length = 0
     -- This function returns void and has 2 out parameters
     _, length, _ = pattern.GetLengthInSecondsAndScans()
-    local minutes = mathf.FloorToInt(length / 60)
-    local seconds = mathf.FloorToInt(length - minutes * 60)
+    local minutes = unity.mathf.FloorToInt(length / 60)
+    local seconds = unity.mathf.FloorToInt(length - minutes * 60)
     if (seconds < 10) then 
         panel.Q("length").Q("content").text = minutes .. ":0" .. seconds
     else
@@ -124,7 +124,7 @@ function ShowPatternDetails(tm, panel)
 end
 
 function RadarAngleForVertex(i)
-    return (-90 + 72 * i) * mathf.Deg2Rad
+    return (-90 + 72 * i) * unity.mathf.Deg2Rad
 end
 
 function ShowCurrentModifiers(tm)
@@ -160,7 +160,7 @@ function ShowCurrentModifiers(tm)
         table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
     end
 
-    content.text = netString.Join(" / ", allSegments)
+    content.text = net.string.Join(" / ", allSegments)
     SetUpScrollingText(tm, container)
 end
 
@@ -278,9 +278,9 @@ function InitializeRadar(tm)
     local radarDisplayDistance = radarRadiusUnit * 100 + 40
     function PlaceRadarDisplay(element, vertex)
         element.style.left = tm.style.LengthInPixel(
-            radarCenterX + radarDisplayDistance * mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
+            radarCenterX + radarDisplayDistance * unity.mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
         element.style.top = tm.style.LengthInPixel(
-            radarCenterY + radarDisplayDistance * mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
+            radarCenterY + radarDisplayDistance * unity.mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
     end
     PlaceRadarDisplay(radarElement.Q("density"), 0)
     PlaceRadarDisplay(radarElement.Q("peak"), 1)
@@ -385,8 +385,8 @@ function InitializeSelectPatternPanel(tm)
             painter.BeginPath()
             painter.MoveTo(radarCenterX, radarCenterY)
             painter.LineTo(
-                radarCenterX + radarRadiusUnit * 100 * mathf.Cos(angle),
-                radarCenterY + radarRadiusUnit * 100 * mathf.Sin(angle))
+                radarCenterX + radarRadiusUnit * 100 * unity.mathf.Cos(angle),
+                radarCenterY + radarRadiusUnit * 100 * unity.mathf.Sin(angle))
             painter.ClosePath()
             painter.Stroke()
         end
@@ -404,8 +404,8 @@ function InitializeSelectPatternPanel(tm)
             for vertex = 1, 4 do
                 local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(
-                    radarCenterX + radius * mathf.Cos(angle),
-                    radarCenterY + radius * mathf.Sin(angle))
+                    radarCenterX + radius * unity.mathf.Cos(angle),
+                    radarCenterY + radius * unity.mathf.Sin(angle))
             end
             painter.ClosePath()
             painter.Stroke()
@@ -419,8 +419,8 @@ function InitializeSelectPatternPanel(tm)
             function DrawRadarDimension(vertex, normalized)
                 local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(
-                    radarCenterX + radarRadiusUnit * normalized * mathf.Cos(angle),
-                    radarCenterY + radarRadiusUnit * normalized * mathf.Sin(angle))
+                    radarCenterX + radarRadiusUnit * normalized * unity.mathf.Cos(angle),
+                    radarCenterY + radarRadiusUnit * normalized * unity.mathf.Sin(angle))
             end
             DrawRadarDimension(1, radarOfSelectedPattern.peak)
             DrawRadarDimension(2, radarOfSelectedPattern.speed)
@@ -612,19 +612,19 @@ function StartPreviewTrackPlayback(tm)
                 previewTrackAudioSource = tm.audio.Play(clip, "Music", startTime, 0)
                 while (timer < fadeLength) do
                     previewTrackAudioSource.volume = timer / fadeLength
-                    timer = timer + time.deltaTime
+                    timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
                 previewTrackAudioSource.volume = 1
                 timer = 0
                 while (timer < previewLength - fadeLength * 2) do
-                    timer = timer + time.deltaTime
+                    timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
                 timer = 0
                 while (timer < fadeLength) do
                     previewTrackAudioSource.volume = 1 - timer / fadeLength
-                    timer = timer + time.deltaTime
+                    timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
             end
@@ -645,7 +645,7 @@ function StopPreviewTrackPlayback(tm)
             local fadeLength = 0.2
             while (timer < fadeLength) do
                 previewTrackAudioSource.volume = 1 - timer / fadeLength
-                timer = timer + time.deltaTime
+                timer = timer + unity.time.deltaTime
                 coroutine.yield()
             end
             previewTrackAudioSource.Stop()

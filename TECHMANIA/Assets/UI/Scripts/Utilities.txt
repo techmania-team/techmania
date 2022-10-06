@@ -85,8 +85,8 @@ function CalculateRadarOfPattern(pattern)
     end
     
     function Normalize(raw, min, max)
-        local t = mathf.InverseLerp(min, max, raw)
-        return mathf.RoundToInt(t * 100)
+        local t = unity.mathf.InverseLerp(min, max, raw)
+        return unity.mathf.RoundToInt(t * 100)
     end
 
     -- Density: average number of notes per second.

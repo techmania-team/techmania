@@ -54,31 +54,44 @@ namespace ThemeApi
                     continue;
                 }
             }
-            UserData.RegisterType<bool>();
-            UserData.RegisterType<int>();
-            UserData.RegisterType<float>();
-            UserData.RegisterType<Time>();
-            UserData.RegisterType<Screen>();
-            UserData.RegisterType<Resolution>();
-            UserData.RegisterType<Mathf>();
-            UserData.RegisterType<Vector3>();
             UserData.RegisterType<Rect>();
+            UserData.RegisterType<KeyCode>();
             UserData.RegisterAssembly();
+
             // Expose API
             session.Globals["getApi"] = (Func<int, object>)GetApi;
-            // Expose .Net & Unity classes
-            session.Globals["netString"] = UserData.CreateStatic<StringWrap>();
-            session.Globals["bool"] = UserData.CreateStatic<bool>();
-            session.Globals["int"] = UserData.CreateStatic<int>();
-            session.Globals["float"] = UserData.CreateStatic<float>();
-            session.Globals["time"] = UserData.CreateStatic<Time>();
-            session.Globals["screen"] = UserData.CreateStatic
+
+            // Expose .Net classes
+            Table netTypes = new Table(session);
+            UserData.RegisterType<bool>();
+            netTypes["bool"] = UserData.CreateStatic<bool>();
+            UserData.RegisterType<int>();
+            netTypes["int"] = UserData.CreateStatic<int>();
+            UserData.RegisterType<float>();
+            netTypes["float"] = UserData.CreateStatic<float>();
+            netTypes["string"] = UserData.CreateStatic<StringWrap>();
+            session.Globals["net"] = netTypes;
+
+            // Expose Unity classes
+            Table unityTypes = new Table(session);
+            UserData.RegisterType<Time>();
+            unityTypes["time"] = UserData.CreateStatic<Time>();
+            UserData.RegisterType<Screen>();
+            unityTypes["screen"] = UserData.CreateStatic
                 <Screen>();
-            session.Globals["resolution"] = 
+            UserData.RegisterType<Resolution>();
+            unityTypes["resolution"] =
                 UserData.CreateStatic<Resolution>();
-            session.Globals["mathf"] = UserData.CreateStatic<Mathf>();
-            session.Globals["vector3"] =
+            UserData.RegisterType<Mathf>();
+            unityTypes["mathf"] = UserData.CreateStatic<Mathf>();
+            UserData.RegisterType<Vector3>();
+            unityTypes["vector3"] =
                 UserData.CreateStatic<Vector3>();
+            session.Globals["unity"] = unityTypes;
+
+            Table typeTable = new Table(session);
+            typeTable["KeyCode"] = UserData.CreateStatic<KeyCode>();
+            session.Globals["enums"] = typeTable;
         }
 
         public static void Execute(string script)

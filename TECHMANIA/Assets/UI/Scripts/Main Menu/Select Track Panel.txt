@@ -139,13 +139,13 @@ function ShowTracksAtCurrentLocation(tm)
             return true
         end
 
-        local title = netString.ToLower(metadata.title)
-        local artist = netString.ToLower(metadata.artist)
-        local genre = netString.ToLower(metadata.genre)
+        local title = net.string.ToLower(metadata.title)
+        local artist = net.string.ToLower(metadata.artist)
+        local genre = net.string.ToLower(metadata.genre)
         for _, keyword in ipairs(trackListFilterKeywords) do
-            if (netString.Contains(title, keyword) or
-                netString.Contains(artist, keyword) or
-                netString.Contains(genre, keyword)) then
+            if (net.string.Contains(title, keyword) or
+                net.string.Contains(artist, keyword) or
+                net.string.Contains(genre, keyword)) then
                 return true
             end
         end
@@ -199,12 +199,12 @@ function ShowTracksAtCurrentLocation(tm)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
             card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
-            errorMessage = tm.paths.EscapeBackslash(netString.Format(tm.l10n.GetString("select_track_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         elseif (trackWithError.type == "Upgrade") then
             card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
-            errorMessage = tm.paths.EscapeBackslash(netString.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
                 trackWithError.status.filePath,
                 trackWithError.status.errorMessage))
         end
@@ -217,7 +217,7 @@ function ShowTracksAtCurrentLocation(tm)
     end
 
     if (hiddenTracks > 0) then
-        panel.Q("track-status").text = netString.Format(
+        panel.Q("track-status").text = net.string.Format(
             tm.l10n.GetString("select_track_some_tracks_hidden_text"),
             hiddenTracks,
             trackListFilterKeywordsPreSplit)
@@ -332,7 +332,7 @@ function InitializeSelectTrackPanel(tm)
                     if (reloadStatus.Ok()) then
                         Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
                     else
-                        Alert(tm.paths.EscapeBackslash(netString.Format(
+                        Alert(tm.paths.EscapeBackslash(net.string.Format(
                             tm.l10n.GetString("select_track_upgrade_process_error_format"),
                             reloadStatus.errorMessage)))
                     end
@@ -367,12 +367,12 @@ function InitializeTrackFilterSidesheet(tm)
     end)
 
     bg.Q("keyword-field").Q("text-field").RegisterCallback("ChangeString", function(element, event)
-        trackListFilterKeywordsPreSplit = netString.Trim(event.newValue)
-        local keywords = netString.Split(trackListFilterKeywordsPreSplit, ' ')
+        trackListFilterKeywordsPreSplit = net.string.Trim(event.newValue)
+        local keywords = net.string.Split(trackListFilterKeywordsPreSplit, ' ')
         trackListFilterKeywords = {}
         for _, keyword in ipairs(keywords) do
-            if (netString.Length(keyword) > 0) then
-                table.insert(trackListFilterKeywords, netString.ToLower(keyword))
+            if (net.string.Length(keyword) > 0) then
+                table.insert(trackListFilterKeywords, net.string.ToLower(keyword))
             end
         end
         ShowTracksAtCurrentLocation(tm)

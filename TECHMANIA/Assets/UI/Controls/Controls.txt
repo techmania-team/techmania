@@ -1,7 +1,7 @@
 function WaitForSeconds(seconds)
     local timer = 0
     while (timer < seconds) do
-        timer = timer + time.deltaTime
+        timer = timer + unity.time.deltaTime
         coroutine.yield()
     end
 end
@@ -94,14 +94,14 @@ function SetUpScrollingText(tm, scrollingTextContainer)
     function ContainerUpdate(element)
         local low = element.horizontalScroller.lowValue
         local high = element.horizontalScroller.highValue
-        if (float.IsNaN(high) or high <= low) then
+        if (net.float.IsNaN(high) or high <= low) then
             return
         end
         local scrollDuration = 4
-        local pingPongTime = mathf.PingPong(time.time, scrollDuration)
+        local pingPongTime = unity.mathf.PingPong(unity.time.time, scrollDuration)
         -- InverseLerp's output is clamped between 0 and 1.
-        local value = mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
-        element.horizontalScroller.value = mathf.Lerp(low, high, value)
+        local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+        element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
     end
     scrollingTextContainer.UnregisterCallback("FrameUpdate", ContainerUpdate)
     scrollingTextContainer.RegisterCallback("FrameUpdate", ContainerUpdate)

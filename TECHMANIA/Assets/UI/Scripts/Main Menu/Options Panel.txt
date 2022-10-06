@@ -51,7 +51,7 @@ end
 function ShowOptionsPanel(tm)
     local panel = tm.root.Q("options-panel")
 
-    local currentResolution = resolution.__new()
+    local currentResolution = unity.resolution.__new()
     currentResolution.width = tm.options.width
     currentResolution.height = tm.options.height
     currentResolution.refreshRate = tm.options.refreshRate
@@ -75,7 +75,7 @@ function ShowOptionsPanel(tm)
 
     function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
-        SetToggleIsOn(toggle, bool.Parse(themeOptions.Get(key)))
+        SetToggleIsOn(toggle, net.bool.Parse(themeOptions.Get(key)))
     end
     ShowThemeOptionToggle("show-loading-bar", "showLoadingBar")
     ShowThemeOptionToggle("show-fps", "showFps")
@@ -153,12 +153,12 @@ function InitializeOptionsPanel(tm)
 
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
     local resolutionChoices = {}
-    for i, resolution in ipairs(screen.resolutions) do
+    for i, resolution in ipairs(unity.screen.resolutions) do
         table.insert(resolutionChoices, resolution.ToString())
     end
     resolutionDropdown.choices = resolutionChoices
     resolutionDropdown.RegisterCallback("ChangeString", function(element, event)
-        for _, resolution in ipairs(screen.resolutions) do
+        for _, resolution in ipairs(unity.screen.resolutions) do
             if (resolution.ToString() == event.newValue) then
                 tm.options.width = resolution.width
                 tm.options.height = resolution.height
@@ -186,7 +186,7 @@ function InitializeOptionsPanel(tm)
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.choices = {"128", "256", "512", "1024"}
     audioBufferDropdown.RegisterCallback("ChangeString", function(element, event)
-        tm.options.audioBufferSize = int.Parse(event.newValue)
+        tm.options.audioBufferSize = net.int.Parse(event.newValue)
         tm.options.ApplyAudioBufferSize()
     end)
 
@@ -247,7 +247,7 @@ function InitializeOptionsPanel(tm)
             if (not status.ok) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
                 local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
-                local error = netString.Format(errorFormat, path)
+                local error = net.string.Format(errorFormat, path)
                 Alert(error)
                 tm.options.ruleset = "Standard"
                 rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])

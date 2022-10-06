@@ -12,8 +12,8 @@ function InitializeWelcomeMat(tm)
     local slowBlinking = true
 
     function Blink(timer, period)
-        local opacity = mathf.PingPong(timer, period) / period
-        local smoothOpacity = mathf.SmoothStep(0, 1, opacity)
+        local opacity = unity.mathf.PingPong(timer, period) / period
+        local smoothOpacity = unity.mathf.SmoothStep(0, 1, opacity)
         mat.style.opacity = tm.style.Float(smoothOpacity)
     end
     function SlowBlink()
@@ -21,7 +21,7 @@ function InitializeWelcomeMat(tm)
         local period = 1.5
         while (true) do
             Blink(matTimer, period)
-            matTimer = matTimer + time.deltaTime
+            matTimer = matTimer + unity.time.deltaTime
             coroutine.yield()
         end
     end
@@ -30,7 +30,7 @@ function InitializeWelcomeMat(tm)
         local period = 0.2
         while (matTimer < period * 6) do
             Blink(matTimer, period)
-            matTimer = matTimer + time.deltaTime
+            matTimer = matTimer + unity.time.deltaTime
             coroutine.yield()
         end
         WaitForSeconds(0.2)
