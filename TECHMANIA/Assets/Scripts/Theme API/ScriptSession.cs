@@ -27,6 +27,7 @@ namespace ThemeApi
             session.Options.DebugPrint = (s) => { Debug.Log(s); };
 
             // Register types
+            UserData.RegisterAssembly();
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
             UserData.RegisterType<PanelSettings>();
@@ -56,10 +57,33 @@ namespace ThemeApi
                 }
             }
             UserData.RegisterType<Rect>();
-            UserData.RegisterAssembly();
 
             // Expose API
-            session.Globals["getApi"] = (Func<int, object>)GetApi;
+            session.Globals["getApi"] = (Func<int, Table>)GetApi;
+        }
+
+        public static void Execute(string script)
+        {
+            session.DoString(script);
+        }
+
+        public static Table GetApi(int version)
+        {
+            switch (version)
+            {
+                case 1:
+                    return GetApiVersion1();
+                default:
+                    throw new ApiNotSupportedException();
+            }
+        }
+
+        private static Table GetApiVersion1()
+        {
+            Table apiTable = new Table(session);
+
+            // Expose Techmania class
+            apiTable["tm"] = UserData.Create(new Techmania());
 
             // Expose .Net classes
             Table netTypes = new Table(session);
@@ -70,7 +94,7 @@ namespace ThemeApi
             UserData.RegisterType<float>();
             netTypes["float"] = UserData.CreateStatic<float>();
             netTypes["string"] = UserData.CreateStatic<StringWrap>();
-            session.Globals["net"] = netTypes;
+            apiTable["net"] = netTypes;
 
             // Expose Unity classes
             Table unityTypes = new Table(session);
@@ -87,36 +111,22 @@ namespace ThemeApi
             UserData.RegisterType<Vector3>();
             unityTypes["vector3"] =
                 UserData.CreateStatic<Vector3>();
-            session.Globals["unity"] = unityTypes;
+            apiTable["unity"] = unityTypes;
 
             // Expose utility classes
             Table utilTypes = new Table(session);
             utilTypes["style"] = UserData.CreateStatic<StyleHelper>();
             utilTypes["io"] = UserData.CreateStatic<IO>();
             utilTypes["paths"] = UserData.CreateStatic<Paths>();
-            session.Globals["util"] = utilTypes;
+            apiTable["util"] = utilTypes;
 
             // Experimental: expose enums
             Table typeTable = new Table(session);
             UserData.RegisterType<KeyCode>();
             typeTable["KeyCode"] = UserData.CreateStatic<KeyCode>();
-            session.Globals["enums"] = typeTable;
-        }
+            apiTable["enums"] = typeTable;
 
-        public static void Execute(string script)
-        {
-            session.DoString(script);
-        }
-
-        public static object GetApi(int version)
-        {
-            switch (version)
-            {
-                case 1:
-                    return new Techmania();
-                default:
-                    throw new ApiNotSupportedException();
-            }
+            return apiTable;
         }
     }
 

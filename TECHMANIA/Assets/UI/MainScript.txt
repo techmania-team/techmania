@@ -1,4 +1,8 @@
-tm = getApi(1)
+api = getApi(1)
+tm = api.tm
+net = api.net
+unity = api.unity
+util = api.util
 
 tm.l10n.Initialize(util.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
 tm.l10n.ApplyLocale()
