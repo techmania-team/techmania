@@ -367,9 +367,9 @@ function InitializeSelectPatternPanel(tm)
     -- when ShowPatternDetails calls ShowRadar.
     local radarElement = panel.Q("radar")
     radarElement.SetMeshPainterFunction(function(element, painter)
-        painter.SetLineWidth(2)
-        painter.SetLineCap("Round")
-        painter.SetLineJoin("Miter")
+        painter.lineWidth = 2
+        painter.lineCap = unity.lineCap.Round
+        painter.lineJoin = unity.lineJoin.Miter
 
         local majorStrokeAlpha = 0.12
         local minorStrokeAlpha = 0.05
@@ -379,14 +379,14 @@ function InitializeSelectPatternPanel(tm)
         local radarCenterY = radarElement.contentRect.height * 0.5
 
         -- Draw radii, lines from the center to vertices of the outmost pentagon
-        painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
+        painter.strokeColor = unity.color.__new(1, 1, 1, majorStrokeAlpha)
         for i = 1, 5 do
             local angle = RadarAngleForVertex(i)
             painter.BeginPath()
-            painter.MoveTo(radarCenterX, radarCenterY)
-            painter.LineTo(
+            painter.MoveTo(unity.vector2.__new(radarCenterX, radarCenterY))
+            painter.LineTo(unity.vector2.__new(
                 radarCenterX + radarRadiusUnit * 100 * unity.mathf.Cos(angle),
-                radarCenterY + radarRadiusUnit * 100 * unity.mathf.Sin(angle))
+                radarCenterY + radarRadiusUnit * 100 * unity.mathf.Sin(angle)))
             painter.ClosePath()
             painter.Stroke()
         end
@@ -395,17 +395,17 @@ function InitializeSelectPatternPanel(tm)
         for pentagon = 1, 5 do
             local radius = radarRadiusUnit * pentagon * 20
             if (pentagon == 5) then
-                painter.SetStrokeColor(1, 1, 1, majorStrokeAlpha)
+                painter.strokeColor = unity.color.__new(1, 1, 1, majorStrokeAlpha)
             else
-                painter.SetStrokeColor(1, 1, 1, minorStrokeAlpha)
+                painter.strokeColor = unity.color.__new(1, 1, 1, minorStrokeAlpha)
             end
             painter.BeginPath()
-            painter.MoveTo(radarCenterX, radarCenterY - radius)
+            painter.MoveTo(unity.vector2.__new(radarCenterX, radarCenterY - radius))
             for vertex = 1, 4 do
                 local angle = RadarAngleForVertex(vertex)
-                painter.LineTo(
+                painter.LineTo(unity.vector2.__new(
                     radarCenterX + radius * unity.mathf.Cos(angle),
-                    radarCenterY + radius * unity.mathf.Sin(angle))
+                    radarCenterY + radius * unity.mathf.Sin(angle)))
             end
             painter.ClosePath()
             painter.Stroke()
@@ -413,14 +413,16 @@ function InitializeSelectPatternPanel(tm)
 
         -- Draw radar
         if (radarOfSelectedPattern ~= nil) then
-            painter.SetFillColor(165 / 256, 214 / 256, 167 / 256)
+            painter.fillColor = unity.color.__new(165 / 256, 214 / 256, 167 / 256)
             painter.BeginPath()
-            painter.MoveTo(radarCenterX, radarCenterY - radarRadiusUnit * radarOfSelectedPattern.density)
+            painter.MoveTo(unity.vector2.__new(
+                radarCenterX,
+                radarCenterY - radarRadiusUnit * radarOfSelectedPattern.density))
             function DrawRadarDimension(vertex, normalized)
                 local angle = RadarAngleForVertex(vertex)
-                painter.LineTo(
+                painter.LineTo(unity.vector2.__new(
                     radarCenterX + radarRadiusUnit * normalized * unity.mathf.Cos(angle),
-                    radarCenterY + radarRadiusUnit * normalized * unity.mathf.Sin(angle))
+                    radarCenterY + radarRadiusUnit * normalized * unity.mathf.Sin(angle)))
             end
             DrawRadarDimension(1, radarOfSelectedPattern.peak)
             DrawRadarDimension(2, radarOfSelectedPattern.speed)

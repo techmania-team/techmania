@@ -30,6 +30,7 @@ namespace ThemeApi
             UserData.RegisterAssembly();
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
+            UserData.RegisterType<Painter2D>();
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<IStyle>();
@@ -40,8 +41,8 @@ namespace ThemeApi
             UserData.RegisterType<StyleFloat>();
             UserData.RegisterType<AudioSource>();
             UserData.RegisterType<AudioClip>();
-            UserData.RegisterType<Texture2D>();
             UserData.RegisterType<Rect>();
+            UserData.RegisterType<Texture2D>();
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
             {
@@ -82,7 +83,7 @@ namespace ThemeApi
         {
             Table apiTable = new Table(session);
 
-            // Expose Techmania class
+            // Expose Techmania class and enums
             Techmania tm = new Techmania();
             Table tmEnums = new Table(session);
             UserData.RegisterType<VisualElementWrap.EventType>();
@@ -120,9 +121,33 @@ namespace ThemeApi
                 UserData.CreateStatic<Resolution>();
             UserData.RegisterType<Mathf>();
             unityTypes["mathf"] = UserData.CreateStatic<Mathf>();
+            UserData.RegisterType<Vector2>();
+            unityTypes["vector2"] =
+                UserData.CreateStatic<Vector2>();
             UserData.RegisterType<Vector3>();
             unityTypes["vector3"] =
                 UserData.CreateStatic<Vector3>();
+            UserData.RegisterType<Color>();
+            unityTypes["color"] = UserData.CreateStatic<Color>();
+            UserData.RegisterType<Angle>();
+            unityTypes["angle"] = UserData.CreateStatic<Angle>();
+
+            // Expose Unity enums
+            Table unityEnums = new Table(session);
+            UserData.RegisterType<LineCap>();
+            unityTypes["lineCap"] = UserData.CreateStatic<LineCap>();
+            UserData.RegisterType<LineJoin>();
+            unityTypes["lineJoin"] = UserData.CreateStatic<LineJoin>();
+            UserData.RegisterType<FillRule>();
+            unityTypes["fillRule"] = UserData.CreateStatic<FillRule>();
+            UserData.RegisterType<AngleUnit>();
+            unityTypes["angleUnit"] = UserData.CreateStatic<
+                AngleUnit>();
+            UserData.RegisterType<ArcDirection>();
+            unityTypes["arcDirection"] = UserData.CreateStatic<
+                ArcDirection>();
+
+            unityTypes["enum"] = unityEnums;
             apiTable["unity"] = unityTypes;
 
             // Expose utility classes

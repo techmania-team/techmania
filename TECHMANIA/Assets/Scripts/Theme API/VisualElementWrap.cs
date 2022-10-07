@@ -385,10 +385,8 @@ namespace ThemeApi
                 inner, callback });
         }
 
-        public void UnregisterCallback(string eventTypeString)
+        public void UnregisterAllCallback(EventType eventType)
         {
-            EventType eventType = System.Enum.Parse<EventType>(
-                eventTypeString);
             System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
             {
@@ -538,7 +536,7 @@ namespace ThemeApi
         #endregion
 
         #region Custom mesh
-        // Parameters: VisualElementWrap, PainterWrap
+        // Parameters: VisualElementWrap, Painter2D
         // Call VisualElementWrap.contentRect for draw boundaries.
         // (0, 0) is top left, positions are in pixels.
         public void SetMeshPainterFunction(DynValue function)
@@ -546,9 +544,7 @@ namespace ThemeApi
             inner.generateVisualContent =
                 (MeshGenerationContext context) =>
                 {
-                    PainterWrap painter = new PainterWrap(
-                        context.painter2D);
-                    function.Function.Call(this, painter);
+                    function.Function.Call(this, context.painter2D);
                 };
         }
 
