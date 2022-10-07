@@ -156,7 +156,7 @@ public class Records : RecordsBase
     // Requires fingerprints to have been calculated.
     public Record GetRecord(Pattern p)
     {
-        return GetRecord(p, Options.instance.rulesetEnum);
+        return GetRecord(p, Options.instance.ruleset);
     }
 
     // If the score is invalid for any reason (modifiers,
@@ -204,7 +204,7 @@ public class Records : RecordsBase
                 {
                     guid = p.patternMetadata.guid,
                     fingerprint = p.fingerprint,
-                    ruleset = Options.instance.rulesetEnum,
+                    ruleset = Options.instance.ruleset,
                     score = totalScore,
                     medal = s.Medal(),
                     gameVersion = Application.version

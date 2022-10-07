@@ -41,12 +41,7 @@ public class Options : OptionsBase
     public int width; 
     public int height;
     public int refreshRate;
-    public FullScreenMode fullScreenModeEnum;
-    public string fullScreenMode
-    {
-        get { return fullScreenModeEnum.ToString(); }
-        set { fullScreenModeEnum = Enum.Parse<FullScreenMode>(value); }
-    }
+    public FullScreenMode fullScreenMode;
     public bool vSync;
 
     // Audio
@@ -83,12 +78,7 @@ public class Options : OptionsBase
         Legacy,
         Custom
     }
-    public Ruleset rulesetEnum;
-    public string ruleset
-    {
-        get { return rulesetEnum.ToString(); }
-        set { rulesetEnum = Enum.Parse<Ruleset>(value); }
-    }
+    public Ruleset ruleset;
     public bool customDataLocation;
     // Remember to call Paths.ApplyCustomDataLocation after modifying
     // these paths.
@@ -148,7 +138,7 @@ public class Options : OptionsBase
         width = 0;
         height = 0;
         refreshRate = 0;
-        fullScreenModeEnum = FullScreenMode.ExclusiveFullScreen;
+        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         vSync = false;
 
         masterVolumePercent = 100;
@@ -174,7 +164,7 @@ public class Options : OptionsBase
         keyboardMouseOffsetMs = 0;
         keyboardMouseLatencyMs = 0;
 
-        rulesetEnum = Ruleset.Standard;
+        ruleset = Ruleset.Standard;
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
@@ -251,7 +241,7 @@ public class Options : OptionsBase
             Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 0;
 #else
-        Screen.SetResolution(width, height, fullScreenModeEnum, 
+        Screen.SetResolution(width, height, fullScreenMode, 
             refreshRate);
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
@@ -1112,7 +1102,7 @@ public class OptionsV2 : OptionsBase
             width = width,
             height = height,
             refreshRate = refreshRate,
-            fullScreenModeEnum = fullScreenMode,
+            fullScreenMode = fullScreenMode,
             vSync = vSync,
 
             masterVolumePercent = masterVolumePercent,
@@ -1135,7 +1125,7 @@ public class OptionsV2 : OptionsBase
             keyboardMouseOffsetMs = keyboardMouseOffsetMs,
             keyboardMouseLatencyMs = keyboardMouseLatencyMs,
 
-            rulesetEnum = (Options.Ruleset)ruleset,
+            ruleset = (Options.Ruleset)ruleset,
             customDataLocation = customDataLocation,
             tracksFolderLocation = tracksFolderLocation,
             skinsFolderLocation = skinsFolderLocation,

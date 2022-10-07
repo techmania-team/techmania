@@ -368,8 +368,8 @@ function InitializeSelectPatternPanel(tm)
     local radarElement = panel.Q("radar")
     radarElement.SetMeshPainterFunction(function(element, painter)
         painter.lineWidth = 2
-        painter.lineCap = unity.lineCap.Round
-        painter.lineJoin = unity.lineJoin.Miter
+        painter.lineCap = unity.enum.lineCap.Round
+        painter.lineJoin = unity.enum.lineJoin.Miter
 
         local majorStrokeAlpha = 0.12
         local minorStrokeAlpha = 0.05

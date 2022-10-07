@@ -145,18 +145,22 @@ namespace ThemeApi
 
             // Expose Unity enums
             Table unityEnums = new Table(session);
+            // Enums used by Options
+            UserData.RegisterType<FullScreenMode>();
+            unityEnums["fullScreenMode"] = UserData.CreateStatic<
+                FullScreenMode>();
             // Enums used by Painter2D
             UserData.RegisterType<LineCap>();
-            unityTypes["lineCap"] = UserData.CreateStatic<LineCap>();
+            unityEnums["lineCap"] = UserData.CreateStatic<LineCap>();
             UserData.RegisterType<LineJoin>();
-            unityTypes["lineJoin"] = UserData.CreateStatic<LineJoin>();
+            unityEnums["lineJoin"] = UserData.CreateStatic<LineJoin>();
             UserData.RegisterType<FillRule>();
-            unityTypes["fillRule"] = UserData.CreateStatic<FillRule>();
+            unityEnums["fillRule"] = UserData.CreateStatic<FillRule>();
             UserData.RegisterType<AngleUnit>();
-            unityTypes["angleUnit"] = UserData.CreateStatic<
+            unityEnums["angleUnit"] = UserData.CreateStatic<
                 AngleUnit>();
             UserData.RegisterType<ArcDirection>();
-            unityTypes["arcDirection"] = UserData.CreateStatic<
+            unityEnums["arcDirection"] = UserData.CreateStatic<
                 ArcDirection>();
 
             unityTypes["enum"] = unityEnums;

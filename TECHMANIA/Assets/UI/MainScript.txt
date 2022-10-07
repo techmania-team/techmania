@@ -47,3 +47,9 @@ SetUpNavigation(tm)
 -- end
 -- v = Vector3(1, 2, 3)
 -- print(v.y)
+
+-- Enum example
+
+-- print(tostring(tm.enum.ruleset.Standard))  -- enums can be cast to string
+-- local enum = tm.enum.ruleset["Legacy"]  -- enums can be cast from string
+-- local equal = enum == tm.enum.ruleset.Legacy  -- enums can be tested for equality

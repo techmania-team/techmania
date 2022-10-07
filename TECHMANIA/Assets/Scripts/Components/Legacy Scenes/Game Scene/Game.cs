@@ -276,7 +276,7 @@ public class Game : MonoBehaviour
 
         // Load options.
         Options.RefreshInstance();
-        if (Options.instance.rulesetEnum == Options.Ruleset.Custom)
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
         {
             Ruleset.LoadCustomRuleset();
         }

@@ -116,10 +116,10 @@ function InitializeOptionsPanel(tm)
         end
 
         fullScreenDisplayString = {
-            ExclusiveFullScreen = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
-            FullScreenWindow = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
-            MaximizedWindow = tm.l10n.GetString("fullscreen_mode_maximized_window"),
-            Windowed = tm.l10n.GetString("fullscreen_mode_windowed")
+            [unity.enum.fullScreenMode.ExclusiveFullScreen] = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
+            [unity.enum.fullScreenMode.FullScreenWindow] = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
+            [unity.enum.fullScreenMode.MaximizedWindow] = tm.l10n.GetString("fullscreen_mode_maximized_window"),
+            [unity.enum.fullScreenMode.Windowed] = tm.l10n.GetString("fullscreen_mode_windowed")
         }
         InitializeOneLocalizedDropdown("fullscreen-mode", fullScreenDisplayString)
         
@@ -137,9 +137,9 @@ function InitializeOptionsPanel(tm)
         InitializeOneLocalizedDropdown("background-scaling", bgScalingDisplayString)
 
         rulesetDisplayString = {
-            Standard = tm.l10n.GetString("ruleset_standard"),
-            Legacy = tm.l10n.GetString("ruleset_legacy"),
-            Custom = tm.l10n.GetString("ruleset_custom")
+            [tm.enum.ruleset.Standard] = tm.l10n.GetString("ruleset_standard"),
+            [tm.enum.ruleset.Legacy] = tm.l10n.GetString("ruleset_legacy"),
+            [tm.enum.ruleset.Custom] = tm.l10n.GetString("ruleset_custom")
         }
         InitializeOneLocalizedDropdown("ruleset", rulesetDisplayString)
     end
@@ -242,15 +242,15 @@ function InitializeOptionsPanel(tm)
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.ruleset = KeyFromValue(rulesetDisplayString, event.newValue)
-        if (tm.options.ruleset == "Custom") then
+        if (tm.options.ruleset == tm.enum.ruleset.Custom) then
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.ok) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
                 local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
                 local error = net.string.Format(errorFormat, path)
                 Alert(error)
-                tm.options.ruleset = "Standard"
-                rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString["Standard"])
+                tm.options.ruleset = tm.enum.ruleset.Standard
+                rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.enum.ruleset.Standard])
             end
         end
     end)

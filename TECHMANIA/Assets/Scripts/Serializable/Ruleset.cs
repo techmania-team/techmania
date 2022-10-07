@@ -170,7 +170,7 @@ public class Ruleset : RulesetBase
         }
 
         List<int> overrideList = null;
-        if (Options.instance.rulesetEnum == Options.Ruleset.Legacy &&
+        if (Options.instance.ruleset == Options.Ruleset.Legacy &&
             InternalGameSetup.patternAfterModifier.legacyRulesetOverride != null)
         {
             LegacyRulesetOverride o =
@@ -330,7 +330,7 @@ public class Ruleset : RulesetBase
 
     private static Ruleset GetInstance()
     {
-        switch (Options.instance.rulesetEnum)
+        switch (Options.instance.ruleset)
         {
             case Options.Ruleset.Standard:
                 return standard;
@@ -347,7 +347,7 @@ public class Ruleset : RulesetBase
                 }
             default:
                 throw new Exception("Unknown ruleset: " +
-                    Options.instance.rulesetEnum);
+                    Options.instance.ruleset);
         }
     }
 
