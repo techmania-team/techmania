@@ -1,12 +1,21 @@
 function InitializeGamePanel(tm)
     local panel = tm.root.Q("game-panel")
 
+    panel.RegisterCallback(eventType.KeyDown, function(element, event)
+        if (event.keyCode == unity.enum.keyCode.Escape) then
+            if (tm.game.state == tm.enum.gameState.Paused) then
+                UnpauseGame(tm, panel)
+            elseif (tm.game.state == tm.enum.gameState.Ongoing) then
+                PauseGame(tm, panel)
+            end
+        end
+        if (event.keyCode == unity.enum.keyCode.Space or
+            event.keyCode == unity.enum.keyCode.Backspace) then
+        end
+    end)
+
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
-        if (tm.game.state != tm.enum.gameState.Ongoing) then return end
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
-        tm.game.Pause()
-        FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))
-        ShowPauseMenu(panel.Q("pause-menu"))
+        PauseGame(tm, panel)
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
@@ -58,10 +67,7 @@ function InitializePauseMenu(tm)
     end)
 
     function OnCancel()
-        FadeOutDialog(bg, menu, function()
-            -- Only unpause after the menu has fully faded out.
-            tm.game.Unpause()
-        end)
+        UnpauseGame(tm, panel)
     end
     menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, OnCancel)
@@ -121,6 +127,28 @@ function GamePanelBeginGame(tm, panel)
 
     tm.options.RestoreVSync()
     tm.game.Begin()
+
+    -- Give game panel focus so it can receive keyboard events
+    panel.Focus()
+end
+
+function PauseGame(tm, panel)
+    if (tm.game.state != tm.enum.gameState.Ongoing) then return end
+    local bg = panel.Q("pause-menu-bg")
+    local menu = bg.Q("pause-menu")
+    tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
+    tm.game.Pause()
+    FadeInDialog(bg, menu)
+    ShowPauseMenu(menu)
+end
+
+function UnpauseGame(tm, panel)
+    local bg = panel.Q("pause-menu-bg")
+    local menu = bg.Q("pause-menu")
+    FadeOutDialog(bg, menu, function()
+        -- Only unpause after the menu has fully faded out.
+        tm.game.Unpause()
+    end)
 end
 
 InitializeGamePanel(tm)

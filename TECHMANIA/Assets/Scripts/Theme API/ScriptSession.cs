@@ -168,6 +168,9 @@ namespace ThemeApi
             // Enums used by styles
             addType(unityEnums, typeof(StyleKeyword));
             addType(unityEnums, typeof(LengthUnit));
+            // Enums used by events
+            addType(unityEnums, typeof(PropagationPhase));
+            addType(unityEnums, typeof(KeyCode));
 
             unityTypes["enum"] = unityEnums;
             apiTable["unity"] = unityTypes;

@@ -319,6 +319,8 @@ namespace ThemeApi
                 EventType.ChangeInt => typeof(ChangeEvent<int>),
                 EventType.ChangeFloat => typeof(ChangeEvent<float>),
                 EventType.ChangeString => typeof(ChangeEvent<string>),
+                EventType.KeyDown => typeof(KeyDownEvent),
+                EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),
                 EventType.Click => typeof(ClickEvent),
@@ -554,10 +556,18 @@ namespace ThemeApi
         }
         #endregion
 
+        #region Focus
         public void Focus()
         {
             inner.Focus();
         }
+
+        public VisualElementWrap FocusedElement()
+        {
+            return new VisualElementWrap(
+                inner.focusController.focusedElement as VisualElement);
+        }
+        #endregion
     }
 
     [MoonSharpUserData]
