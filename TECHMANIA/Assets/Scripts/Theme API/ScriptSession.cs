@@ -95,6 +95,17 @@ namespace ThemeApi
             UserData.RegisterType<AudioManager.Channel>();
             tmEnums["audioChannel"] = UserData.CreateStatic<
                 AudioManager.Channel>();
+            // Enums used by Track
+            UserData.RegisterType<ControlScheme>();
+            tmEnums["controlScheme"] = UserData.CreateStatic<
+                ControlScheme>();
+            UserData.RegisterType<NoteType>();
+            tmEnums["noteType"] = UserData.CreateStatic<
+                NoteType>();
+            UserData.RegisterType<CurveType>();
+            tmEnums["curveType"] = UserData.CreateStatic<
+                CurveType>();
+
             tm.@enum = tmEnums;
             apiTable["tm"] = UserData.Create(tm);
 
@@ -134,6 +145,7 @@ namespace ThemeApi
 
             // Expose Unity enums
             Table unityEnums = new Table(session);
+            // Enums used by Painter2D
             UserData.RegisterType<LineCap>();
             unityTypes["lineCap"] = UserData.CreateStatic<LineCap>();
             UserData.RegisterType<LineJoin>();

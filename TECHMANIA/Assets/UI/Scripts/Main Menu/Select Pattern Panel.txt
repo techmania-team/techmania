@@ -166,16 +166,16 @@ end
 
 function ShowControlSchemeIcons(tm)
     for index, pattern in ipairs(selectedFullTrack.patterns) do
-        local scheme = pattern.patternMetadata.controlSchemeString
+        local scheme = pattern.patternMetadata.controlScheme
         local radioButton = allPatternRadioButtons[index]
 
         local overrideScheme = scheme
         if (tm.options.modifiers.controlOverride == "OverrideToTouch") then
-            overrideScheme = "Touch"
+            overrideScheme = tm.enum.controlScheme.Touch
         elseif (tm.options.modifiers.controlOverride == "OverrideToKeys") then
-            overrideScheme = "Keys"
+            overrideScheme = tm.enum.controlScheme.Keys
         elseif (tm.options.modifiers.controlOverride == "OverrideToKM") then
-            overrideScheme = "KM"
+            overrideScheme = tm.enum.controlScheme.KM
         end
 
         local iconContainer = radioButton.Q("scheme-icon-container")
@@ -188,9 +188,9 @@ function ShowControlSchemeIcons(tm)
         end
         scheme = overrideScheme
 
-        radioButton.Q("touch-icon").display = scheme == "Touch"
-        radioButton.Q("keys-icon").display = scheme == "Keys"
-        radioButton.Q("km-icon").display = scheme == "KM"
+        radioButton.Q("touch-icon").display = scheme == tm.enum.controlScheme.Touch
+        radioButton.Q("keys-icon").display = scheme == tm.enum.controlScheme.Keys
+        radioButton.Q("km-icon").display = scheme == tm.enum.controlScheme.KM
     end
 end
 

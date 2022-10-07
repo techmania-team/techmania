@@ -42,7 +42,7 @@ function CompareTracks(t1, t2)
         end
 
         for _, pattern in ipairs(track.patterns) do
-            if (pattern.patternMetadata.controlSchemeString == controlScheme) then
+            if (pattern.patternMetadata.controlScheme == controlScheme) then
                 local level = pattern.patternMetadata.level
                 if ((trackListSortAscending and level < basis) or
                     (not trackListSortAscending and level > basis)) then
@@ -64,8 +64,9 @@ function CompareTracks(t1, t2)
         basis1 = t1.trackMetadata.genre
         basis2 = t2.trackMetadata.genre
     else
-        basis1 = FindBasisPatternLevel(t1, trackListSortBasis)
-        basis2 = FindBasisPatternLevel(t2, trackListSortBasis)
+        -- "Touch", "Keys" or "KM"
+        basis1 = FindBasisPatternLevel(t1, tm.enum.controlScheme[trackListSortBasis])
+        basis2 = FindBasisPatternLevel(t2, tm.enum.controlScheme[trackListSortBasis])
     end
 
     if (trackListSortAscending) then

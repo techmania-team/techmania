@@ -402,16 +402,6 @@ public class PatternMetadata
     public int playableLanes;
     public string author;
 
-    // The naming of this enum-string pair is inconsistent with
-    // Options due to our unwillingness to introduce a format upgrade.
-    // With 2.0, Options upgraded from 2 to 3 so we had a chance to
-    // rename fields.
-    public string controlSchemeString
-    {
-        get { return controlScheme.ToString(); }
-        set { controlScheme = Enum.Parse<ControlScheme>(value); }
-    }
-
     // Background AV.
 
     // The backing track played in game.
@@ -548,12 +538,6 @@ public class Note
     public int pulse;
     public int lane;
     public string sound;  // Filename with extension, no folder
-
-    public string typeString
-    {
-        get { return type.ToString(); }
-        set { type = Enum.Parse<NoteType>(value); }
-    }
 
     // Available only after calling
     // Pattern.CalculateTimeOfAllNotes:
@@ -764,12 +748,6 @@ public class HoldNote : Note
 public class DragNote : Note
 {
     public CurveType curveType;
-
-    public string curveTypeString
-    {
-        get { return curveType.ToString(); }
-        set { curveType = Enum.Parse<CurveType>(value); }
-    }
 
     // There must be at least 2 nodes, with nodes[0]
     // describing the note head.

@@ -74,11 +74,11 @@ function CalculateRadarOfPattern(pattern)
                 numChaosNotes = numChaosNotes + 1
             end
 
-            if (n.typeString == "Hold" or
-                n.typeString == "RepeatHeadHold") then
+            if (n.type == tm.enum.noteType.Hold or
+                n.type == tm.enum.noteType.RepeatHeadHold) then
                 numAsyncNotes = numAsyncNotes + 0.5
-            elseif (n.typeString == "Repeat" or
-                n.typeString == "RepeatHold") then
+            elseif (n.type == tm.enum.noteType.Repeat or
+                n.type == tm.enum.noteType.RepeatHold) then
                 numAsyncNotes = numAsyncNotes + 1
             end
         end
