@@ -260,9 +260,9 @@ public class Game : MonoBehaviour
         topBar.SetActive(false);
         pauseButton.SetActive(!inEditor);
         backButton.SetActive(inEditor);
-        practiceTopBar.SetActive(Modifiers.instance.modeEnum
+        practiceTopBar.SetActive(Modifiers.instance.mode
             == Modifiers.Mode.Practice);
-        regularTopBar.SetActive(Modifiers.instance.modeEnum
+        regularTopBar.SetActive(Modifiers.instance.mode
             != Modifiers.Mode.Practice);
         middleFeverBar.SetActive(false);
         loadingBar.SetActive(true);
@@ -288,7 +288,7 @@ public class Game : MonoBehaviour
             Options.instance.modifiers = new Modifiers();
             InternalGameSetup.trackOptions.backgroundBrightness = 10;
             InternalGameSetup.trackOptions.noVideo = false;
-            Modifiers.instance.modeEnum = Modifiers.Mode.Practice;
+            Modifiers.instance.mode = Modifiers.Mode.Practice;
 
             practiceTopBar.SetActive(true);
             regularTopBar.SetActive(false);
@@ -465,7 +465,7 @@ public class Game : MonoBehaviour
         //        0f, -topBarHeight);
         //}
         noFailIndicator.SetActive(
-            Modifiers.instance.modeEnum == Modifiers.Mode.NoFail);
+            Modifiers.instance.mode == Modifiers.Mode.NoFail);
         middleFeverBar.SetActive(true);
         loadingBar.SetActive(false);
         //if (Options.instance.showFps)
@@ -772,7 +772,7 @@ public class Game : MonoBehaviour
 
         // Miscellaneous initialization.
         hitboxVisible = false;
-        autoPlay = Modifiers.instance.modeEnum == Modifiers.Mode.AutoPlay;
+        autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
         fingerInLane = new Dictionary<int, int>();
         currentCombo = 0;
         maxCombo = 0;
@@ -1348,7 +1348,7 @@ public class Game : MonoBehaviour
     {
         if (IsPaused()) return;
         if (BaseTime <= endOfPatternBaseTime) return;
-        if (Modifiers.instance.modeEnum == Modifiers.Mode.Practice) return;
+        if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
         if (!score.AllNotesResolved()) return;
 
         if (feverState == FeverState.Active)
@@ -1622,7 +1622,7 @@ public class Game : MonoBehaviour
     #region Practice Mode
     private void UpdatePracticeMode()
     {
-        if (Modifiers.instance.modeEnum != Modifiers.Mode.Practice) return;
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice) return;
         if (Input.GetKeyDown(KeyCode.F3))
         {
             JumpToPreviousScan();
@@ -1802,7 +1802,7 @@ public class Game : MonoBehaviour
     // Returns whether the scan was changed in this method.
     private bool ProcessScanChangeInPracticeMode(int newScan)
     {
-        if (Modifiers.instance.modeEnum != Modifiers.Mode.Practice)
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
             return false;
         }
@@ -1856,7 +1856,7 @@ public class Game : MonoBehaviour
     {
         if (feverState != FeverState.Ready) return;
         if (autoPlay) return;
-        if (Modifiers.instance.feverEnum == Modifiers.Fever.AutoFever)
+        if (Modifiers.instance.fever == Modifiers.Fever.AutoFever)
         {
             return;
         }
@@ -2339,7 +2339,7 @@ public class Game : MonoBehaviour
         {
             SetCombo(currentCombo + 1);
 
-            if (Modifiers.instance.modeEnum != Modifiers.Mode.Practice)
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
                 hp += Ruleset.instance.GetHpDelta(
                     judgement, n.note.type,
@@ -2355,7 +2355,7 @@ public class Game : MonoBehaviour
                 {
                     feverAmount += feverCoefficient / numPlayableNotes;
                     if (autoPlay ||
-                        Modifiers.instance.feverEnum
+                        Modifiers.instance.fever
                         == Modifiers.Fever.FeverOff)
                     {
                         feverAmount = 0f;
@@ -2364,7 +2364,7 @@ public class Game : MonoBehaviour
                     {
                         feverState = FeverState.Ready;
                         feverAmount = 1f;
-                        if (Modifiers.instance.feverEnum
+                        if (Modifiers.instance.fever
                             == Modifiers.Fever.AutoFever)
                         {
                             ActivateFever();
@@ -2377,14 +2377,14 @@ public class Game : MonoBehaviour
         {
             SetCombo(0);
 
-            if (Modifiers.instance.modeEnum != Modifiers.Mode.Practice)
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
             {
                 hp += Ruleset.instance.GetHpDelta(
                     judgement, n.note.type,
                     feverState == FeverState.Active);
                 if (hp < 0) hp = 0;
                 if (hp <= 0 &&
-                    Modifiers.instance.modeEnum !=
+                    Modifiers.instance.mode !=
                     Modifiers.Mode.NoFail)
                 {
                     // Stage failed.
@@ -2409,7 +2409,7 @@ public class Game : MonoBehaviour
                 }
             }
         }
-        if (Modifiers.instance.modeEnum != Modifiers.Mode.Practice)
+        if (Modifiers.instance.mode != Modifiers.Mode.Practice)
         {
             score.LogNote(judgement);
             judgementTally.Refresh(score);
@@ -2460,7 +2460,7 @@ public class Game : MonoBehaviour
         }
 
         bool hidden = InternalGameSetup.patternAfterModifier.IsHiddenNote(n.note.lane);
-        if (Modifiers.instance.assistTickEnum == 
+        if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden
             && !emptyHit)

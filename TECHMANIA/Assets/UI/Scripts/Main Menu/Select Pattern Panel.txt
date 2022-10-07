@@ -133,8 +133,8 @@ function ShowCurrentModifiers(tm)
 
     local allSegments = {}
     function CheckAndAddSegment(modifierKey, isSpecial)
-        if (tm.options.modifiers[modifierKey] == "Normal") then return end
-        if (tm.options.modifiers[modifierKey] == "None") then return end
+        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
+        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
         local segment = modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
         if (isSpecial) then
             segment = "<color=#CF6679>" .. segment .. "</color>"
@@ -170,11 +170,11 @@ function ShowControlSchemeIcons(tm)
         local radioButton = allPatternRadioButtons[index]
 
         local overrideScheme = scheme
-        if (tm.options.modifiers.controlOverride == "OverrideToTouch") then
+        if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
             overrideScheme = tm.enum.controlScheme.Touch
-        elseif (tm.options.modifiers.controlOverride == "OverrideToKeys") then
+        elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
             overrideScheme = tm.enum.controlScheme.Keys
-        elseif (tm.options.modifiers.controlOverride == "OverrideToKM") then
+        elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
             overrideScheme = tm.enum.controlScheme.KM
         end
 
@@ -452,61 +452,61 @@ function InitializeModifierSidesheet(tm)
 
     function LocalizeDropdowns(tm)
         modifierDisplayString.noteOpacity = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            FadeOut = tm.l10n.GetString("modifier_fade_out"),
-            FadeOut2 = tm.l10n.GetString("modifier_fade_out_2"),
-            FadeIn = tm.l10n.GetString("modifier_fade_in"),
-            FadeIn2 = tm.l10n.GetString("modifier_fade_in_2")
+            [tm.enum.noteOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.noteOpacity.FadeOut] = tm.l10n.GetString("modifier_fade_out"),
+            [tm.enum.noteOpacity.FadeOut2] = tm.l10n.GetString("modifier_fade_out_2"),
+            [tm.enum.noteOpacity.FadeIn] = tm.l10n.GetString("modifier_fade_in"),
+            [tm.enum.noteOpacity.FadeIn2] = tm.l10n.GetString("modifier_fade_in_2")
         }
         modifierDisplayString.scanlineOpacity = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            Blink = tm.l10n.GetString("modifier_blink"),
-            Blink2 = tm.l10n.GetString("modifier_blink_2"),
-            Blind = tm.l10n.GetString("modifier_blind")
+            [tm.enum.scanlineOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanlineOpacity.Blink] = tm.l10n.GetString("modifier_blink"),
+            [tm.enum.scanlineOpacity.Blink2] = tm.l10n.GetString("modifier_blink_2"),
+            [tm.enum.scanlineOpacity.Blind] = tm.l10n.GetString("modifier_blind")
         }
         modifierDisplayString.scanDirection = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            RR = tm.l10n.GetString("modifier_right_right"),
-            LR = tm.l10n.GetString("modifier_left_right"),
-            LL = tm.l10n.GetString("modifier_left_left")
+            [tm.enum.scanDirection.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanDirection.RR] = tm.l10n.GetString("modifier_right_right"),
+            [tm.enum.scanDirection.LR] = tm.l10n.GetString("modifier_left_right"),
+            [tm.enum.scanDirection.LL] = tm.l10n.GetString("modifier_left_left")
         }
         modifierDisplayString.notePosition = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            Mirror = tm.l10n.GetString("modifier_mirror")
+            [tm.enum.notePosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.notePosition.Mirror] = tm.l10n.GetString("modifier_mirror")
         }
         modifierDisplayString.scanPosition = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            Swap = tm.l10n.GetString("modifier_swap")
+            [tm.enum.scanPosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanPosition.Swap] = tm.l10n.GetString("modifier_swap")
         }
         modifierDisplayString.fever = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            FeverOff = tm.l10n.GetString("modifier_fever_off"),
-            AutoFever = tm.l10n.GetString("modifier_auto_fever")
+            [tm.enum.fever.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.fever.FeverOff] = tm.l10n.GetString("modifier_fever_off"),
+            [tm.enum.fever.AutoFever] = tm.l10n.GetString("modifier_auto_fever")
         }
         modifierDisplayString.keysound = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            AutoKeysound = tm.l10n.GetString("modifier_auto_keysound")
+            [tm.enum.keysound.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.keysound.AutoKeysound] = tm.l10n.GetString("modifier_auto_keysound")
         }
         modifierDisplayString.assistTick = {
-            None = tm.l10n.GetString("modifier_none"),
-            AssistTick = tm.l10n.GetString("modifier_assist_tick"),
-            AutoAssistTick = tm.l10n.GetString("modifier_auto_assist_tick")
+            [tm.enum.assistTick.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.assistTick.AssistTick] = tm.l10n.GetString("modifier_assist_tick"),
+            [tm.enum.assistTick.AutoAssistTick] = tm.l10n.GetString("modifier_auto_assist_tick")
         }
         modifierDisplayString.mode = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            NoFail = tm.l10n.GetString("modifier_no_fail"),
-            AutoPlay = tm.l10n.GetString("modifier_auto_play"),
-            Practice = tm.l10n.GetString("modifier_practice")
+            [tm.enum.mode.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.mode.NoFail] = tm.l10n.GetString("modifier_no_fail"),
+            [tm.enum.mode.AutoPlay] = tm.l10n.GetString("modifier_auto_play"),
+            [tm.enum.mode.Practice] = tm.l10n.GetString("modifier_practice")
         }
         modifierDisplayString.controlOverride = {
-            None = tm.l10n.GetString("modifier_none"),
-            OverrideToTouch = tm.l10n.GetString("modifier_override_to_touch"),
-            OverrideToKeys = tm.l10n.GetString("modifier_override_to_keys"),
-            OverrideToKM = tm.l10n.GetString("modifier_override_to_km")
+            [tm.enum.controlOverride.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.controlOverride.OverrideToTouch] = tm.l10n.GetString("modifier_override_to_touch"),
+            [tm.enum.controlOverride.OverrideToKeys] = tm.l10n.GetString("modifier_override_to_keys"),
+            [tm.enum.controlOverride.OverrideToKM] = tm.l10n.GetString("modifier_override_to_km")
         }
         modifierDisplayString.scrollSpeed = {
-            Normal = tm.l10n.GetString("modifier_normal"),
-            HalfSpeed = tm.l10n.GetString("modifier_half_speed")
+            [tm.enum.scrollSpeed.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scrollSpeed.HalfSpeed] = tm.l10n.GetString("modifier_half_speed")
         }
 
         function LocalizeOneDropdown(bg, containerName, displayStringTable)

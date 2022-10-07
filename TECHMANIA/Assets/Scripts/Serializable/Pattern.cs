@@ -615,7 +615,7 @@ public partial class Pattern
         Pattern p = CloneWithDifferentGuid();
         int playableLanes = patternMetadata.playableLanes;
 
-        if (modifiers.notePositionEnum == Modifiers.NotePosition.Mirror)
+        if (modifiers.notePosition == Modifiers.NotePosition.Mirror)
         {
             foreach (Note n in p.notes)
             {
@@ -635,7 +635,7 @@ public partial class Pattern
             }
         }
 
-        if (modifiers.keysoundEnum == Modifiers.Keysound.AutoKeysound)
+        if (modifiers.keysound == Modifiers.Keysound.AutoKeysound)
         {
             List<Note> addedNotes = new List<Note>();
             foreach (Note n in p.notes)
@@ -653,7 +653,7 @@ public partial class Pattern
             }
         }
 
-        if (modifiers.assistTickEnum == 
+        if (modifiers.assistTick == 
             Modifiers.AssistTick.AutoAssistTick)
         {
             List<AssistTickNote> addedNotes =
@@ -674,7 +674,7 @@ public partial class Pattern
             }
         }
 
-        switch (modifiers.controlOverrideEnum)
+        switch (modifiers.controlOverride)
         {
             case Modifiers.ControlOverride.None:
                 break;
@@ -689,7 +689,7 @@ public partial class Pattern
                 break;
         }
 
-        if (modifiers.scrollSpeedEnum == Modifiers.ScrollSpeed.HalfSpeed)
+        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
         {
             p.patternMetadata.bps *= 2;
         }

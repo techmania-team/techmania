@@ -457,12 +457,7 @@ public class Modifiers
         FadeIn,
         FadeIn2
     }
-    public NoteOpacity noteOpacityEnum;
-    public string noteOpacity
-    {
-        get { return noteOpacityEnum.ToString(); }
-        set { noteOpacityEnum = Enum.Parse<NoteOpacity>(value); }
-    }
+    public NoteOpacity noteOpacity;
     public static readonly string[] noteOpacityDisplayKeys =
     {
         "modifier_normal",
@@ -479,13 +474,7 @@ public class Modifiers
         Blink2,
         Blind
     }
-    public ScanlineOpacity scanlineOpacityEnum;
-    public string scanlineOpacity
-    {
-        get { return scanlineOpacityEnum.ToString(); }
-        set { scanlineOpacityEnum =
-                Enum.Parse<ScanlineOpacity>(value); }
-    }
+    public ScanlineOpacity scanlineOpacity;
     public static readonly string[] scanlineOpacityDisplayKeys =
     {
         "modifier_normal",
@@ -501,12 +490,7 @@ public class Modifiers
         LR,
         LL
     }
-    public ScanDirection scanDirectionEnum;
-    public string scanDirection
-    {
-        get { return scanDirectionEnum.ToString(); }
-        set { scanDirectionEnum = Enum.Parse<ScanDirection>(value); }
-    }
+    public ScanDirection scanDirection;
     public static readonly string[] scanDirectionDisplayKeys =
     {
         "modifier_normal",
@@ -520,12 +504,7 @@ public class Modifiers
         Normal,
         Mirror
     }
-    public NotePosition notePositionEnum;
-    public string notePosition
-    {
-        get { return notePositionEnum.ToString(); }
-        set { notePositionEnum = Enum.Parse<NotePosition>(value); }
-    }
+    public NotePosition notePosition;
     public static readonly string[] notePositionDisplayKeys =
     {
         "modifier_normal",
@@ -537,12 +516,7 @@ public class Modifiers
         Normal,
         Swap
     }
-    public ScanPosition scanPositionEnum;
-    public string scanPosition
-    {
-        get { return scanPositionEnum.ToString(); }
-        set { scanPositionEnum = Enum.Parse<ScanPosition>(value); }
-    }
+    public ScanPosition scanPosition;
     public static readonly string[] scanPositionDisplayKeys =
     {
         "modifier_normal",
@@ -555,12 +529,7 @@ public class Modifiers
         FeverOff,
         AutoFever
     }
-    public Fever feverEnum;
-    public string fever
-    {
-        get { return feverEnum.ToString(); }
-        set { feverEnum = Enum.Parse<Fever>(value); }
-    }
+    public Fever fever;
     public static readonly string[] feverDisplayKeys =
     {
         "modifier_normal",
@@ -573,12 +542,7 @@ public class Modifiers
         Normal,
         AutoKeysound
     }
-    public Keysound keysoundEnum;
-    public string keysound
-    {
-        get { return keysoundEnum.ToString(); }
-        set { keysoundEnum = Enum.Parse<Keysound>(value); }
-    }
+    public Keysound keysound;
     public static readonly string[] keysoundDisplayKeys =
     {
         "modifier_normal",
@@ -591,12 +555,7 @@ public class Modifiers
         AssistTick,
         AutoAssistTick
     }
-    public AssistTick assistTickEnum;
-    public string assistTick
-    {
-        get { return assistTickEnum.ToString(); }
-        set { assistTickEnum = Enum.Parse<AssistTick>(value); }
-    }
+    public AssistTick assistTick;
     public static readonly string[] assistTickDisplayKeys =
     {
         "modifier_none",
@@ -613,12 +572,7 @@ public class Modifiers
         AutoPlay,
         Practice
     }
-    public Mode modeEnum;
-    public string mode
-    {
-        get { return modeEnum.ToString(); }
-        set { modeEnum = Enum.Parse<Mode>(value); }
-    }
+    public Mode mode;
     public static readonly string[] modeDisplayKeys =
     {
         "modifier_normal",
@@ -634,13 +588,7 @@ public class Modifiers
         OverrideToKeys,
         OverrideToKM
     }
-    public ControlOverride controlOverrideEnum;
-    public string controlOverride
-    {
-        get { return controlOverrideEnum.ToString(); }
-        set { controlOverrideEnum =
-                Enum.Parse<ControlOverride>(value); }
-    }
+    public ControlOverride controlOverride;
     public static readonly string[] controlOverrideDisplayKeys =
     {
         "modifier_none",
@@ -654,12 +602,7 @@ public class Modifiers
         Normal,
         HalfSpeed
     }
-    public ScrollSpeed scrollSpeedEnum;
-    public string scrollSpeed
-    {
-        get { return scrollSpeedEnum.ToString(); }
-        set { scrollSpeedEnum = Enum.Parse<ScrollSpeed>(value); }
-    }
+    public ScrollSpeed scrollSpeed;
     public static readonly string[] scrollSpeedDisplayKeys =
     {
         "modifier_normal",
@@ -673,67 +616,67 @@ public class Modifiers
     public void ToDisplaySegments(List<string> regularSegments,
         List<string> specialSegments)
     {
-        if (noteOpacityEnum != 0)
+        if (noteOpacity != 0)
         {
             regularSegments.Add(L10n.GetString(
-                noteOpacityDisplayKeys[(int)noteOpacityEnum]));
+                noteOpacityDisplayKeys[(int)noteOpacity]));
         }
-        if (scanlineOpacityEnum != 0)
+        if (scanlineOpacity != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanlineOpacityDisplayKeys[(int)scanlineOpacityEnum]));
+                scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
         }
-        if (scanDirectionEnum != 0)
+        if (scanDirection != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanDirectionDisplayKeys[(int)scanDirectionEnum]));
+                scanDirectionDisplayKeys[(int)scanDirection]));
         }
-        if (notePositionEnum != 0)
+        if (notePosition != 0)
         {
             regularSegments.Add(L10n.GetString(
-                notePositionDisplayKeys[(int)notePositionEnum]));
+                notePositionDisplayKeys[(int)notePosition]));
         }
-        if (scanPositionEnum != 0)
+        if (scanPosition != 0)
         {
             regularSegments.Add(L10n.GetString(
-                scanPositionDisplayKeys[(int)scanPositionEnum]));
+                scanPositionDisplayKeys[(int)scanPosition]));
         }
-        if (feverEnum != 0)
+        if (fever != 0)
         {
             regularSegments.Add(L10n.GetString(
-                feverDisplayKeys[(int)feverEnum]));
+                feverDisplayKeys[(int)fever]));
         }
-        if (keysoundEnum != 0)
+        if (keysound != 0)
         {
             regularSegments.Add(L10n.GetString(
-                keysoundDisplayKeys[(int)keysoundEnum]));
+                keysoundDisplayKeys[(int)keysound]));
         }
-        if (assistTickEnum != 0)
+        if (assistTick != 0)
         {
             regularSegments.Add(L10n.GetString(
-                assistTickDisplayKeys[(int)assistTickEnum]));
+                assistTickDisplayKeys[(int)assistTick]));
         }
 
-        if (modeEnum != 0)
+        if (mode != 0)
         {
             specialSegments.Add(L10n.GetString(
-                modeDisplayKeys[(int)modeEnum]));
+                modeDisplayKeys[(int)mode]));
         }
-        if (controlOverrideEnum != 0)
+        if (controlOverride != 0)
         {
             specialSegments.Add(L10n.GetString(
-                controlOverrideDisplayKeys[(int)controlOverrideEnum]));
+                controlOverrideDisplayKeys[(int)controlOverride]));
         }
-        if (scrollSpeedEnum != 0)
+        if (scrollSpeed != 0)
         {
             specialSegments.Add(L10n.GetString(
-                scrollSpeedDisplayKeys[(int)scrollSpeedEnum]));
+                scrollSpeedDisplayKeys[(int)scrollSpeed]));
         }
     }
 
     public Scan.Direction GetTopScanDirection()
     {
-        switch (scanDirectionEnum)
+        switch (scanDirection)
         {
             case ScanDirection.Normal:
             case ScanDirection.RR:
@@ -748,7 +691,7 @@ public class Modifiers
 
     public Scan.Direction GetBottomScanDirection()
     {
-        switch (scanDirectionEnum)
+        switch (scanDirection)
         {
             case ScanDirection.Normal:
             case ScanDirection.LL:
@@ -764,7 +707,7 @@ public class Modifiers
     public Scan.Position GetScanPosition(int scanNumber)
     {
         bool isBottomScan = scanNumber % 2 == 0;
-        if (scanPositionEnum == ScanPosition.Swap)
+        if (scanPosition == ScanPosition.Swap)
         {
             isBottomScan = !isBottomScan;
         }
@@ -774,9 +717,9 @@ public class Modifiers
 
     public bool HasAnySpecialModifier()
     {
-        if (modeEnum != Mode.Normal) return true;
-        if (controlOverrideEnum != ControlOverride.None) return true;
-        if (scrollSpeedEnum != ScrollSpeed.Normal) return true;
+        if (mode != Mode.Normal) return true;
+        if (controlOverride != ControlOverride.None) return true;
+        if (scrollSpeed != ScrollSpeed.Normal) return true;
         return false;
     }
 
@@ -784,17 +727,17 @@ public class Modifiers
     {
         return new Modifiers()
         {
-            noteOpacityEnum = noteOpacityEnum,
-            scanlineOpacityEnum = scanlineOpacityEnum,
-            scanDirectionEnum = scanDirectionEnum,
-            notePositionEnum = notePositionEnum,
-            scanPositionEnum = scanPositionEnum,
-            feverEnum = feverEnum,
-            keysoundEnum = keysoundEnum,
-            assistTickEnum = assistTickEnum,
-            modeEnum = modeEnum,
-            controlOverrideEnum = controlOverrideEnum,
-            scrollSpeedEnum = scrollSpeedEnum
+            noteOpacity = noteOpacity,
+            scanlineOpacity = scanlineOpacity,
+            scanDirection = scanDirection,
+            notePosition = notePosition,
+            scanPosition = scanPosition,
+            fever = fever,
+            keysound = keysound,
+            assistTick = assistTick,
+            mode = mode,
+            controlOverride = controlOverride,
+            scrollSpeed = scrollSpeed
         };
     }
 }

@@ -101,7 +101,7 @@ public class PatternBanner : MonoBehaviour
         ControlScheme actualScheme = intendedScheme;
         if (!inEditor)
         {
-            switch (Modifiers.instance.controlOverrideEnum)
+            switch (Modifiers.instance.controlOverride)
             {
                 case Modifiers.ControlOverride.OverrideToTouch:
                     actualScheme = ControlScheme.Touch;

@@ -94,8 +94,8 @@ function GamePanelStartLoading(tm)
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
     panel.Q("top-bar").Q("pause-button").display = true
     panel.Q("top-bar").Q("back-button").display = false
-    panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != "Practice"
-    panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == "Practice"
+    panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
+    panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
