@@ -2,7 +2,7 @@ function InitializeGamePanel(tm)
     local panel = tm.root.Q("game-panel")
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
-        if (tm.game.state != "Ongoing") then return end
+        if (tm.game.state != tm.enum.gameState.Ongoing) then return end
         tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
         tm.game.Pause()
         FadeInDialog(panel.Q("pause-menu-bg"), panel.Q("pause-menu"))

@@ -174,7 +174,7 @@ function InitializeBgBrightnessSlider(tm, container)
         if (selectedTrackOptions == nil) then return end
         selectedTrackOptions.backgroundBrightness = event.newValue
         container.Q("value-display").text = tostring(event.newValue)
-        if (tm.game.state == "Ongoing" or tm.game.state == "Paused") then
+        if (tm.game.state == tm.enum.gameState.Ongoing or tm.game.state == tm.enum.gameState.Paused) then
             tm.game.UpdateBgBrightness()
         end
     end)

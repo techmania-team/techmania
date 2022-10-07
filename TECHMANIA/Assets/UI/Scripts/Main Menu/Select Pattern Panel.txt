@@ -277,9 +277,9 @@ function InitializeRadar(tm)
     local radarDisplayHeight = radarElement.Q("density").contentRect.height
     local radarDisplayDistance = radarRadiusUnit * 100 + 40
     function PlaceRadarDisplay(element, vertex)
-        element.style.left = util.style.LengthInPixel(
+        element.style.left = unity.styleLength.__new(
             radarCenterX + radarDisplayDistance * unity.mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
-        element.style.top = util.style.LengthInPixel(
+        element.style.top = unity.styleLength.__new(
             radarCenterY + radarDisplayDistance * unity.mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
     end
     PlaceRadarDisplay(radarElement.Q("density"), 0)

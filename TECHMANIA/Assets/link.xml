@@ -7,14 +7,14 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="MoonSharp.*" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.Rect" preserve="all" />
+    <type fullname="UnityEngine.Texture2D" preserve="all" />
     <type fullname="UnityEngine.Time" preserve="all" />
     <type fullname="UnityEngine.Screen" preserve="all" />
     <type fullname="UnityEngine.Resolution" preserve="all" />
     <type fullname="UnityEngine.Mathf" preserve="all" />
     <type fullname="UnityEngine.Vector2" preserve="all" />
     <type fullname="UnityEngine.Vector3" preserve="all" />
-    <type fullname="UnityEngine.Rect" preserve="all" />
-    <type fullname="UnityEngine.Texture2D" preserve="all" />
     <type fullname="UnityEngine.Color" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.UIElementsModule">
@@ -26,13 +26,23 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="UnityEngine.UIElements.IStyle" preserve="all" />
     <type fullname="UnityEngine.UIElements.ITransform" preserve="all" />
     <type fullname="UnityEngine.UIElements.StyleSheet" preserve="all" />
-    <type fullname="UnityEngine.UIElements.StyleLength" preserve="all" />
-    <type fullname="UnityEngine.UIElements.StyleTranslate" preserve="all" />
-    <type fullname="UnityEngine.UIElements.StyleFloat" preserve="all" />
     <type fullname="UnityEngine.UIElements.ChangeEvent`1" preserve="all" />
     <type fullname="UnityEngine.UIElements.PointerOverEvent" preserve="all" />
     <type fullname="UnityEngine.UIElements.ClickEvent" preserve="all" />
     <type fullname="UnityEngine.UIElements.Angle" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleBackground" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Background" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleColor" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleFloat" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleInt" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleLength" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Length" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleTranslate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Translate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleRotate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Rotate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleScale" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Scale" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.AudioModule">
     <type fullname="UnityEngine.AudioSource" preserve="all" />

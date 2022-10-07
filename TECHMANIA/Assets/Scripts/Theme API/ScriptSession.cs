@@ -28,6 +28,8 @@ namespace ThemeApi
 
             // Register types
             UserData.RegisterAssembly();
+            UserData.RegisterType<Rect>();
+            UserData.RegisterType<Texture2D>();
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
             UserData.RegisterType<Painter2D>();
@@ -36,13 +38,9 @@ namespace ThemeApi
             UserData.RegisterType<IStyle>();
             UserData.RegisterType<ITransform>();
             UserData.RegisterType<StyleSheet>();
-            UserData.RegisterType<StyleLength>();
-            UserData.RegisterType<StyleTranslate>();
-            UserData.RegisterType<StyleFloat>();
             UserData.RegisterType<AudioSource>();
             UserData.RegisterType<AudioClip>();
-            UserData.RegisterType<Rect>();
-            UserData.RegisterType<Texture2D>();
+            
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
             {
@@ -104,6 +102,7 @@ namespace ThemeApi
             addType(tmEnums, typeof(Options.Ruleset));
             addTypeAs(tmEnums, typeof(AudioManager.Channel),
                 "audioChannel");
+            addTypeAs(tmEnums, typeof(GameState.State), "gameState");
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));
             addType(tmEnums, typeof(NoteType));
@@ -142,6 +141,19 @@ namespace ThemeApi
             addType(unityTypes, typeof(Vector3));
             addType(unityTypes, typeof(Color));
             addType(unityTypes, typeof(Angle));
+            addType(unityTypes, typeof(StyleBackground));
+            addType(unityTypes, typeof(Background));
+            addType(unityTypes, typeof(StyleColor));
+            addType(unityTypes, typeof(StyleFloat));
+            addType(unityTypes, typeof(StyleInt));
+            addType(unityTypes, typeof(StyleLength));
+            addType(unityTypes, typeof(Length));
+            addType(unityTypes, typeof(StyleTranslate));
+            addType(unityTypes, typeof(Translate));
+            addType(unityTypes, typeof(StyleRotate));
+            addType(unityTypes, typeof(Rotate));
+            addType(unityTypes, typeof(StyleScale));
+            addType(unityTypes, typeof(Scale));
 
             // Expose Unity enums
             Table unityEnums = new Table(session);
@@ -153,13 +165,15 @@ namespace ThemeApi
             addType(unityEnums, typeof(FillRule));
             addType(unityEnums, typeof(AngleUnit));
             addType(unityEnums, typeof(ArcDirection));
+            // Enums used by styles
+            addType(unityEnums, typeof(StyleKeyword));
+            addType(unityEnums, typeof(LengthUnit));
 
             unityTypes["enum"] = unityEnums;
             apiTable["unity"] = unityTypes;
 
             // Expose utility classes
             Table utilTypes = new Table(session);
-            addTypeAs(utilTypes, typeof(StyleHelper), "style");
             addTypeAs(utilTypes, typeof(IO), "io");
             apiTable["util"] = utilTypes;
 

@@ -14,7 +14,7 @@ function InitializeWelcomeMat(tm)
     function Blink(timer, period)
         local opacity = unity.mathf.PingPong(timer, period) / period
         local smoothOpacity = unity.mathf.SmoothStep(0, 1, opacity)
-        mat.style.opacity = util.style.Float(smoothOpacity)
+        mat.style.opacity = unity.styleFloat.__new(smoothOpacity)
     end
     function SlowBlink()
         local matTimer = 0

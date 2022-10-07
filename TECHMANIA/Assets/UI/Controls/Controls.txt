@@ -6,9 +6,17 @@ function WaitForSeconds(seconds)
     end
 end
 
+function StyleLengthInPercent(percent)
+    return unity.styleLength.__new(
+        unity.length.__new(
+            percent, unity.enum.lengthUnit.Percent
+        )
+    )
+end
+
 function SetProgressBar(progressBar, percent)
     progressBar.Q("filled-portion").style.right =
-        util.style.LengthInPercent(100 - percent)
+        StyleLengthInPercent(100 - percent)
 end
 
 function UpdateSliderAppearance(slider)
@@ -16,7 +24,7 @@ function UpdateSliderAppearance(slider)
         (slider.highValue - slider.lowValue)
     SetProgressBar(slider.parent, percent)
     slider.Q("overlay-center").style.left =
-        util.style.LengthInPercent(percent)
+        StyleLengthInPercent(percent)
 end
 
 function SetUpAllSliders(tm)
@@ -142,7 +150,7 @@ function TransitionPanelCoroutine(tm, from, to, length, toPanelInitializer)
     from.display = false
 
     to.display = true
-    to.style.opacity = util.style.Float(0)
+    to.style.opacity = unity.styleFloat.__new(0)
     coroutine.yield()
     if (toPanelInitializer != nil) then toPanelInitializer() end
 

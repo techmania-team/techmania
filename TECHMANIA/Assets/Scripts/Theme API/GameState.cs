@@ -30,63 +30,62 @@ namespace ThemeApi
             // Transitions to Idle state.
             Complete
         }
-        public State stateEnum { get; private set; }
-        public string state => stateEnum.ToString();
+        public State state { get; private set; }
 
         [MoonSharpHidden]
         public GameState()
         {
-            stateEnum = State.Idle;
+            state = State.Idle;
             GameController.instance.SetStateInstance(this);
         }
 
         private void CheckState(State expectedState, string methodName)
         {
-            if (stateEnum == expectedState) return;
-            throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {stateEnum}.");
+            if (state == expectedState) return;
+            throw new System.Exception($"{methodName} expects {expectedState} state, but the current state is {state}.");
         }
 
         private void CheckState(List<State> states, string methodName)
         {
             foreach (State s in states)
             {
-                if (stateEnum == s) return;
+                if (state == s) return;
             }
-            throw new System.Exception($"{methodName} expects one of the following states: {string.Join(',', states)}, but the current states is {stateEnum}.");
+            throw new System.Exception($"{methodName} expects one of the following states: {string.Join(',', states)}, but the current states is {state}.");
         }
 
         public void BeginLoading()
         {
             CheckState(State.Idle, "BeginLoading");
-            stateEnum = State.Loading;
+            state = State.Loading;
             GameController.instance.BeginLoading();
         }
 
         public void Begin()
         {
             CheckState(State.LoadComplete, "Begin");
-            stateEnum = State.Ongoing;
+            state = State.Ongoing;
             GameController.instance.Begin();
         }
 
         public void Pause()
         {
             CheckState(State.Ongoing, "Pause");
-            stateEnum = State.Paused;
+            state = State.Paused;
             GameController.instance.Pause();
         }
 
         public void Unpause()
         {
             CheckState(State.Paused, "Unpause");
-            stateEnum = State.Ongoing;
+            state = State.Ongoing;
             GameController.instance.Unpause();
         }
 
         public void Conclude()
         {
             // Any state => Idle
-            stateEnum = State.Idle;
+            state = State.Idle;
         }
 
         public void UpdateBgBrightness()
@@ -100,7 +99,7 @@ namespace ThemeApi
         [MoonSharpHidden]
         public void SetState(State newState)
         {
-            stateEnum = newState;
+            state = newState;
         }
 
         public float feverValue;
