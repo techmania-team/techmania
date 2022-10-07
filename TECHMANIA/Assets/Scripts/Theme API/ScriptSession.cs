@@ -83,100 +83,85 @@ namespace ThemeApi
         {
             Table apiTable = new Table(session);
 
+            Action<Table, Type, string> addTypeAs =
+                (Table table, Type type, string key) =>
+                {
+                    UserData.RegisterType(type);
+                    table[key] = UserData.CreateStatic(type);
+                };
+            Action<Table, Type> addType =
+                (Table table, Type type) =>
+                {
+                    string key = type.Name.Substring(0, 1).ToLower()
+                        + type.Name.Substring(1);
+                    addTypeAs(table, type, key);
+                };
+
             // Expose Techmania class and enums
             Techmania tm = new Techmania();
             Table tmEnums = new Table(session);
-            UserData.RegisterType<VisualElementWrap.EventType>();
-            tmEnums["eventType"] = UserData.CreateStatic<
-                VisualElementWrap.EventType>();
-            UserData.RegisterType<Options.Ruleset>();
-            tmEnums["ruleset"] = UserData.CreateStatic<
-                Options.Ruleset>();
-            UserData.RegisterType<AudioManager.Channel>();
-            tmEnums["audioChannel"] = UserData.CreateStatic<
-                AudioManager.Channel>();
+            addType(tmEnums, typeof(VisualElementWrap.EventType));
+            addType(tmEnums, typeof(Options.Ruleset));
+            addTypeAs(tmEnums, typeof(AudioManager.Channel),
+                "audioChannel");
             // Enums used by Track
-            UserData.RegisterType<ControlScheme>();
-            tmEnums["controlScheme"] = UserData.CreateStatic<
-                ControlScheme>();
-            UserData.RegisterType<NoteType>();
-            tmEnums["noteType"] = UserData.CreateStatic<
-                NoteType>();
-            UserData.RegisterType<CurveType>();
-            tmEnums["curveType"] = UserData.CreateStatic<
-                CurveType>();
+            addType(tmEnums, typeof(ControlScheme));
+            addType(tmEnums, typeof(NoteType));
+            addType(tmEnums, typeof(CurveType));
+            // Enums used by Modifiers
+            addType(tmEnums, typeof(Modifiers.NoteOpacity));
+            addType(tmEnums, typeof(Modifiers.ScanlineOpacity));
+            addType(tmEnums, typeof(Modifiers.ScanDirection));
+            addType(tmEnums, typeof(Modifiers.NotePosition));
+            addType(tmEnums, typeof(Modifiers.ScanPosition));
+            addType(tmEnums, typeof(Modifiers.Fever));
+            addType(tmEnums, typeof(Modifiers.Keysound));
+            addType(tmEnums, typeof(Modifiers.AssistTick));
+            addType(tmEnums, typeof(Modifiers.Mode));
+            addType(tmEnums, typeof(Modifiers.ControlOverride));
+            addType(tmEnums, typeof(Modifiers.ScrollSpeed));
 
             tm.@enum = tmEnums;
             apiTable["tm"] = UserData.Create(tm);
 
             // Expose .Net classes
             Table netTypes = new Table(session);
-            UserData.RegisterType<bool>();
-            netTypes["bool"] = UserData.CreateStatic<bool>();
-            UserData.RegisterType<int>();
-            netTypes["int"] = UserData.CreateStatic<int>();
-            UserData.RegisterType<float>();
-            netTypes["float"] = UserData.CreateStatic<float>();
-            netTypes["string"] = UserData.CreateStatic<StringWrap>();
+            addTypeAs(netTypes, typeof(bool), "bool");
+            addTypeAs(netTypes, typeof(int), "int");
+            addTypeAs(netTypes, typeof(float), "float");
+            addTypeAs(netTypes, typeof(StringWrap), "string");
             apiTable["net"] = netTypes;
 
             // Expose Unity classes
             Table unityTypes = new Table(session);
-            UserData.RegisterType<Time>();
-            unityTypes["time"] = UserData.CreateStatic<Time>();
-            UserData.RegisterType<Screen>();
-            unityTypes["screen"] = UserData.CreateStatic
-                <Screen>();
-            UserData.RegisterType<Resolution>();
-            unityTypes["resolution"] =
-                UserData.CreateStatic<Resolution>();
-            UserData.RegisterType<Mathf>();
-            unityTypes["mathf"] = UserData.CreateStatic<Mathf>();
-            UserData.RegisterType<Vector2>();
-            unityTypes["vector2"] =
-                UserData.CreateStatic<Vector2>();
-            UserData.RegisterType<Vector3>();
-            unityTypes["vector3"] =
-                UserData.CreateStatic<Vector3>();
-            UserData.RegisterType<Color>();
-            unityTypes["color"] = UserData.CreateStatic<Color>();
-            UserData.RegisterType<Angle>();
-            unityTypes["angle"] = UserData.CreateStatic<Angle>();
+            addType(unityTypes, typeof(Time));
+            addType(unityTypes, typeof(Screen));
+            addType(unityTypes, typeof(Resolution));
+            addType(unityTypes, typeof(Mathf));
+            addType(unityTypes, typeof(Vector2));
+            addType(unityTypes, typeof(Vector3));
+            addType(unityTypes, typeof(Color));
+            addType(unityTypes, typeof(Angle));
 
             // Expose Unity enums
             Table unityEnums = new Table(session);
             // Enums used by Options
-            UserData.RegisterType<FullScreenMode>();
-            unityEnums["fullScreenMode"] = UserData.CreateStatic<
-                FullScreenMode>();
+            addType(unityEnums, typeof(FullScreenMode));
             // Enums used by Painter2D
-            UserData.RegisterType<LineCap>();
-            unityEnums["lineCap"] = UserData.CreateStatic<LineCap>();
-            UserData.RegisterType<LineJoin>();
-            unityEnums["lineJoin"] = UserData.CreateStatic<LineJoin>();
-            UserData.RegisterType<FillRule>();
-            unityEnums["fillRule"] = UserData.CreateStatic<FillRule>();
-            UserData.RegisterType<AngleUnit>();
-            unityEnums["angleUnit"] = UserData.CreateStatic<
-                AngleUnit>();
-            UserData.RegisterType<ArcDirection>();
-            unityEnums["arcDirection"] = UserData.CreateStatic<
-                ArcDirection>();
+            addType(unityEnums, typeof(LineCap));
+            addType(unityEnums, typeof(LineJoin));
+            addType(unityEnums, typeof(FillRule));
+            addType(unityEnums, typeof(AngleUnit));
+            addType(unityEnums, typeof(ArcDirection));
 
             unityTypes["enum"] = unityEnums;
             apiTable["unity"] = unityTypes;
 
             // Expose utility classes
             Table utilTypes = new Table(session);
-            utilTypes["style"] = UserData.CreateStatic<StyleHelper>();
-            utilTypes["io"] = UserData.CreateStatic<IO>();
+            addTypeAs(utilTypes, typeof(StyleHelper), "style");
+            addTypeAs(utilTypes, typeof(IO), "io");
             apiTable["util"] = utilTypes;
-
-            // Experimental: expose enums
-            Table typeTable = new Table(session);
-            UserData.RegisterType<KeyCode>();
-            typeTable["KeyCode"] = UserData.CreateStatic<KeyCode>();
-            apiTable["enums"] = typeTable;
 
             return apiTable;
         }
