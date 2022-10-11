@@ -58,7 +58,8 @@ function InitializeGamePanel(tm)
 end
 
 function InitializePauseMenu(tm)
-    local bg = tm.root.Q("pause-menu-bg")
+    local panel = tm.root.Q("game-panel")
+    local bg = panel.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
 
     menu.RegisterCallback(eventType.Click, function(element, event)

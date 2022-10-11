@@ -6,6 +6,8 @@ using UnityEngine.Audio;
 
 namespace ThemeApi
 {
+    // TODO: merge AudioManager and AudioSourceManager into one.
+    // There's really no need for 2 layers of wrappers.
     [MoonSharpUserData]
     public class AudioManager
     {

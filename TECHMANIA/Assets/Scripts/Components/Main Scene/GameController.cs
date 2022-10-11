@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     public static GameController instance { get; private set; }
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
+    private GameTimer timer;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -223,6 +224,8 @@ public class GameController : MonoBehaviour
         reportLoadProgress(bga);
 
         // TODO: Step 6: initialize pattern.
+        timer = new GameTimer(setup.patternAfterModifier);
+        timer.Prepare();
 
         // Load complete; wait on theme to begin game.
         state.SetState(ThemeApi.GameState.State.LoadComplete);
@@ -232,21 +235,22 @@ public class GameController : MonoBehaviour
     public void Begin()
     {
         UpdateBgBrightness();
+        timer.Begin();
     }
 
     public void Pause()
     {
-
+        timer.Pause();
     }
 
     public void Unpause()
     {
-
+        timer.Unpause();
     }
 
     public void Conclude()
     {
-
+        timer.Dispose();
     }
 
     public void UpdateBgBrightness()
@@ -264,6 +268,12 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (state == null) return;
+
+        if (state.state == ThemeApi.GameState.State.Ongoing ||
+            state.state == ThemeApi.GameState.State.Paused)
+        {
+            timer.Update();
+        }
     }
 }
