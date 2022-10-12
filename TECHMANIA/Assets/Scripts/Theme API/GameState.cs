@@ -84,8 +84,8 @@ namespace ThemeApi
 
         public void Conclude()
         {
-            // Any state => Idle
             state = State.Idle;
+            GameController.instance.Conclude();
         }
 
         public void UpdateBgBrightness()

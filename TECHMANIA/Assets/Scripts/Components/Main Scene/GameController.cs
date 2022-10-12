@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
     private GameTimer timer;
+    private ThemeApi.VideoElement bgaElement;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -219,7 +220,30 @@ public class GameController : MonoBehaviour
         if (!string.IsNullOrEmpty(bga) &&
             !setup.trackOptions.noVideo)
         {
-            // TODO: set up video player.
+            string path = Paths.Combine(setup.trackFolder,
+                bga);
+            bool loaded = false;
+            Status status = null;
+            ThemeApi.VideoElement loadedElement = null;
+            ThemeApi.VideoElement.CreateFromFile(path,
+                (Status loadStatus, ThemeApi.VideoElement element) =>
+                {
+                    loaded = true;
+                    status = loadStatus;
+                    loadedElement = element;
+                });
+            yield return new WaitUntil(() => loaded);
+            if (!status.Ok())
+            {
+                reportLoadError(status);
+                yield break;
+            }
+            bgaElement = loadedElement;
+            bgaElement.targetElement = setup.bgContainer;
+        }
+        else
+        {
+            bgaElement = null;
         }
         reportLoadProgress(bga);
 
@@ -236,21 +260,25 @@ public class GameController : MonoBehaviour
     {
         UpdateBgBrightness();
         timer.Begin();
+        bgaElement?.Play();
     }
 
     public void Pause()
     {
         timer.Pause();
+        bgaElement?.Pause();
     }
 
     public void Unpause()
     {
         timer.Unpause();
+        bgaElement?.Unpause();
     }
 
     public void Conclude()
     {
         timer.Dispose();
+        bgaElement?.Dispose();
     }
 
     public void UpdateBgBrightness()

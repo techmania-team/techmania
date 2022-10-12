@@ -41,6 +41,25 @@ namespace ThemeApi
                 });
         }
 
+        public static VideoElement LoadVideoFromTheme(string path)
+        {
+            UnityEngine.Video.VideoClip clip =
+                GlobalResource.GetThemeContent<
+                    UnityEngine.Video.VideoClip>(path);
+            return VideoElement.CreateFromClip(clip);
+        }
+
+        // Callback parameters: Status, VideoElement
+        public static void LoadVideoFromFile(string path,
+            DynValue callback)
+        {
+            VideoElement.CreateFromFile(path,
+                callback: (Status status, VideoElement element) =>
+                {
+                    callback.Function.Call(status, element);
+                });
+        }
+
         public static Track LoadFullTrack(string path)
         {
             return Track.LoadFromFile(path) as Track;

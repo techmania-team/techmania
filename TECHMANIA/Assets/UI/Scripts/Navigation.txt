@@ -89,7 +89,12 @@ function GamePanelToSelectTrackPanel(tm)
     FadeOutThenInToPanel(
         tm,
         tm.root.Q("game-panel"),
-        tm.root.Q("select-track-panel")
+        tm.root.Q("select-track-panel"),
+        function()
+            -- This causes the BGA to unload so it should happen
+            -- after the game panel has faded out.
+            tm.game.Conclude()
+        end
     )
     ShowSelectTrackPanel(tm)
 end

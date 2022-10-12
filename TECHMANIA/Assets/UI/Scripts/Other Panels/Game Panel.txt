@@ -82,7 +82,6 @@ function InitializePauseMenu(tm)
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
-        tm.game.Conclude()
         GamePanelToSelectTrackPanel(tm)
     end)
 
