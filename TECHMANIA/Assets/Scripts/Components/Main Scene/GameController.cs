@@ -7,10 +7,11 @@ using UnityEngine.UIElements;
 public class GameController : MonoBehaviour
 {
     public static GameController instance { get; private set; }
+
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
     private GameTimer timer;
-    private ThemeApi.VideoElement bgaElement;
+    private GameBackground bg;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -117,6 +118,8 @@ public class GameController : MonoBehaviour
 
         // Step 1: load background image to display on the loading
         // screen.
+        bg = new GameBackground(setup.bgContainer.inner,
+            trackOptions: setup.trackOptions);
         string backImage = setup.patternAfterModifier.patternMetadata
             .backImage;
         if (!string.IsNullOrEmpty(backImage))
@@ -138,12 +141,7 @@ public class GameController : MonoBehaviour
                 reportLoadError(status);
                 yield break;
             }
-
-            VisualElement bg = setup.bgContainer.inner;
-            bg.style.backgroundImage = new StyleBackground(texture);
-            bg.style.unityBackgroundScaleMode = new 
-                StyleEnum<ScaleMode>(ScaleMode.ScaleAndCrop);
-            bg.style.unityBackgroundImageTintColor = Color.white;
+            bg.DisplayImage(texture);
         }
         reportLoadProgress(backImage);
 
@@ -169,12 +167,12 @@ public class GameController : MonoBehaviour
         reportLoadProgress(Paths.kSkinFilename);
 
         // Step 3: load backing track.
-        string backingTrack = setup.patternAfterModifier
+        string backingTrackFilename = setup.patternAfterModifier
             .patternMetadata.backingTrack;
-        if (!string.IsNullOrEmpty(backingTrack))
+        if (!string.IsNullOrEmpty(backingTrackFilename))
         {
-            string path = Paths.Combine(setup.trackFolder, 
-                backingTrack);
+            string path = Paths.Combine(setup.trackFolder,
+                backingTrackFilename);
             bool loaded = false;
             Status status = null;
             AudioClip clip = null;
@@ -191,8 +189,9 @@ public class GameController : MonoBehaviour
                 reportLoadError(status);
                 yield break;
             }
+            bg.SetBackingTrack(clip);
         }
-        reportLoadProgress(backingTrack);
+        reportLoadProgress(backingTrackFilename);
 
         // Step 4: load keysounds.
         bool keysoundsLoaded = false;
@@ -224,13 +223,14 @@ public class GameController : MonoBehaviour
                 bga);
             bool loaded = false;
             Status status = null;
-            ThemeApi.VideoElement loadedElement = null;
+            ThemeApi.VideoElement element = null;
             ThemeApi.VideoElement.CreateFromFile(path,
-                (Status loadStatus, ThemeApi.VideoElement element) =>
+                (Status loadStatus,
+                ThemeApi.VideoElement loadedElement) =>
                 {
                     loaded = true;
                     status = loadStatus;
-                    loadedElement = element;
+                    element = loadedElement;
                 });
             yield return new WaitUntil(() => loaded);
             if (!status.Ok())
@@ -238,18 +238,30 @@ public class GameController : MonoBehaviour
                 reportLoadError(status);
                 yield break;
             }
-            bgaElement = loadedElement;
-            bgaElement.targetElement = setup.bgContainer;
-        }
-        else
-        {
-            bgaElement = null;
+            bg.SetBga(element,
+                loop: setup.patternAfterModifier.patternMetadata
+                    .playBgaOnLoop,
+                offset: (float)setup.patternAfterModifier
+                    .patternMetadata.bgaOffset);
         }
         reportLoadProgress(bga);
 
         // TODO: Step 6: initialize pattern.
         timer = new GameTimer(setup.patternAfterModifier);
-        timer.Prepare();
+        float backingTrackLength = 0f;
+        float bgaLength = 0f;
+        if (bg.backingTrack != null)
+        {
+            backingTrackLength = bg.backingTrack.length;
+        }
+        if (bg.bgaElement != null &&
+            !setup.patternAfterModifier
+                .patternMetadata.playBgaOnLoop &&
+            setup.patternAfterModifier.patternMetadata.waitForEndOfBga)
+        {
+            bgaLength = bg.bgaElement.length;
+        }
+        timer.Prepare(backingTrackLength, bgaLength);
 
         // Load complete; wait on theme to begin game.
         state.SetState(ThemeApi.GameState.State.LoadComplete);
@@ -258,39 +270,31 @@ public class GameController : MonoBehaviour
 
     public void Begin()
     {
-        UpdateBgBrightness();
         timer.Begin();
-        bgaElement?.Play();
+        bg.Begin();
     }
 
     public void Pause()
     {
         timer.Pause();
-        bgaElement?.Pause();
+        bg.Pause();
     }
 
     public void Unpause()
     {
         timer.Unpause();
-        bgaElement?.Unpause();
+        bg.Unpause();
     }
 
     public void Conclude()
     {
         timer.Dispose();
-        bgaElement?.Dispose();
+        bg.Conclude();
     }
 
     public void UpdateBgBrightness()
     {
-        SetBgAlpha((float)setup.trackOptions.backgroundBrightness /
-            PerTrackOptions.kMaxBrightness);
-    }
-
-    private void SetBgAlpha(float a)
-    {
-        setup.bgContainer.style.unityBackgroundImageTintColor =
-            new StyleColor(new Color(1f, 1f, 1f, a));
+        bg.UpdateBgBrightness();
     }
 
     // Update is called once per frame
@@ -298,10 +302,10 @@ public class GameController : MonoBehaviour
     {
         if (state == null) return;
 
-        if (state.state == ThemeApi.GameState.State.Ongoing ||
-            state.state == ThemeApi.GameState.State.Paused)
+        if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update();
+            bg.Update(timer.BaseTime);
         }
     }
 }

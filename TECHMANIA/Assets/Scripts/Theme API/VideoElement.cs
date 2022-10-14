@@ -13,8 +13,8 @@ namespace ThemeApi
     {
         public VisualElementWrap targetElement;
 
-        private VideoPlayer player;
-        private RenderTexture renderTexture;
+        public VideoPlayer player { get; private set; }
+        public RenderTexture renderTexture { get; private set; }
 
         #region Creation and Disposal
         [MoonSharpHidden]
@@ -25,7 +25,7 @@ namespace ThemeApi
             e.player.clip = clip;
             e.player.Prepare();
             while (!e.player.isPrepared) { }
-            e.PrepareRenderTexture();
+            e.PrepareToPlay();
             return e;
         }
 
@@ -38,7 +38,7 @@ namespace ThemeApi
             e.player.url = path;
             e.player.prepareCompleted += (VideoPlayer source) =>
             {
-                e.PrepareRenderTexture();
+                e.PrepareToPlay();
                 callback(Status.OKStatus(), e);
             };
             e.player.errorReceived += (
@@ -52,7 +52,7 @@ namespace ThemeApi
             e.player.Prepare();
         }
 
-        private void PrepareRenderTexture()
+        private void PrepareToPlay()
         {
             renderTexture = new RenderTexture(
                 width: (int)player.width,
@@ -73,6 +73,20 @@ namespace ThemeApi
         #endregion
 
         #region Properties
+        public float length => (float)player.length;
+        public float time
+        {
+            get { return (float)player.time; }
+            set { player.time = value; }
+        }
+
+        public bool isPlaying => player.isPlaying;
+        public bool isPaused => player.isPaused;
+        public bool isLooping
+        {
+            get { return player.isLooping; }
+            set { player.isLooping = value; }
+        }
         #endregion
 
         #region Controls

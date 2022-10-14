@@ -63,7 +63,8 @@ public class GameTimer
         speed = 1f;
     }
 
-    public void Prepare()
+    public void Prepare(float backingTrackLength,
+        float bgaLength)
     {
         pattern.PrepareForTimeCalculation();
         pattern.CalculateTimeOfAllNotes(calculateTimeWindows: true);
@@ -75,9 +76,8 @@ public class GameTimer
             Options.instance.keyboardMouseOffsetMs;
         offset = offsetMs * 0.001f;
 
-        // Calculate the start time of the first note, as well as
-        // the end time of the last note, so we can calculate
-        // firstScan and lastScan.
+        // Calculate the start time of the first note, and
+        // the end time of the last note.
         float firstNoteStartTime = 0f;
         float lastNoteEndTime = 0f;
         foreach (Note n in pattern.notes)
@@ -113,29 +113,33 @@ public class GameTimer
                 endOfDuration, endOfKeysound);
         }
 
-        // To calculate firstScan, rewind till 1 scan before the
-        // first note.
-        firstScan = 0;
-        while (initialTime >= firstNoteStartTime)
+        // To calculate the start and end time of the pattern,
+        // also take backing track and BGA into account.
+        float patternStartTime = firstNoteStartTime;
+        float patternEndTime = lastNoteEndTime;
+        if (!string.IsNullOrEmpty(
+            pattern.patternMetadata.backingTrack))
         {
-            firstScan--;
-            initialTime = pattern.PulseToTime(
-                firstScan * PulsesPerScan);
+            patternEndTime = Mathf.Max(
+                patternEndTime, backingTrackLength);
+        }
+        if (!string.IsNullOrEmpty(
+            pattern.patternMetadata.bga))
+        {
+            patternStartTime = Mathf.Min(patternStartTime,
+                (float)pattern.patternMetadata.bgaOffset);
+            patternEndTime = Mathf.Max(patternEndTime,
+                bgaLength + (float)pattern.patternMetadata.bgaOffset);
         }
 
-        // Rewind further until 1 scan before the BGA starts.
-        while (initialTime > pattern.patternMetadata.bgaOffset)
-        {
-            firstScan--;
-            initialTime = pattern.PulseToTime(
-                firstScan * PulsesPerScan);
-        }
-
-        // To calculate lastScan, use lastNoteEndTime.
-        float maxPulse = pattern.TimeToPulse(lastNoteEndTime);
-        lastScan = Mathf.FloorToInt(maxPulse);
-
-        // TODO: also take BGA into account.
+        // Calculate first and last scan.
+        firstScan = Mathf.FloorToInt(
+            pattern.TimeToPulse(patternStartTime) /
+            PulsesPerScan);
+        lastScan = Mathf.FloorToInt(
+            pattern.TimeToPulse(patternEndTime) /
+            PulsesPerScan);
+        initialTime = pattern.PulseToTime(firstScan * PulsesPerScan);
     }
 
     public void Begin()

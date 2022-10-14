@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class AudioSourceManager : MonoBehaviour
 {
+    public static AudioSourceManager instance { get; private set; }
+
     public UnityEngine.Audio.AudioMixer audioMixer;
 
     public AudioSource backingTrack;
@@ -19,6 +21,8 @@ public class AudioSourceManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        instance = this;
+
         playableLanes = playableLanesContainer
             .GetComponentsInChildren<AudioSource>();
         hiddenLanes = hiddenLanesContainer
@@ -86,8 +90,7 @@ public class AudioSourceManager : MonoBehaviour
         int panPercent = Note.defaultPan)
     {
         PlaySound(backingTrack, clip, startTime,
-            volumePercent: Note.defaultVolume,
-            panPercent: Note.defaultPan);
+            volumePercent, panPercent);
         return backingTrack;
     }
 

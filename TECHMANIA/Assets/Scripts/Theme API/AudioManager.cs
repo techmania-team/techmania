@@ -18,7 +18,7 @@ namespace ThemeApi
         [MoonSharpHidden]
         public AudioManager()
         {
-            manager = Object.FindObjectOfType<AudioSourceManager>();
+            manager = AudioSourceManager.instance;
             mixer = manager.audioMixer;
         }
 
@@ -35,7 +35,8 @@ namespace ThemeApi
         // panPercent: [-100, 100]
         public AudioSource Play(AudioClip clip, Channel channel,
             float startTime = 0f,
-            int volumePercent = 100, int panPercent = 0)
+            int volumePercent = Note.defaultVolume,
+            int panPercent = Note.defaultPan)
         {
             if (clip == null)
             {
