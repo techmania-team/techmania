@@ -79,6 +79,7 @@ function InitializePauseMenu(tm)
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
         GamePanelStartLoading(tm)
+        tm.game.BeginLoading()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
@@ -113,7 +114,9 @@ function GamePanelStartLoading(tm)
     -- TODO: respond to beatMarkers option
 
     tm.options.TemporarilyDisableVSync()
-    tm.game.BeginLoading()
+    
+    -- tm.game.BeginLoading() will be called by navigation,
+    -- after the game panel becomes visible.
 end
 
 function GamePanelBeginGame(tm, panel)

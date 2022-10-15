@@ -93,6 +93,7 @@ public class GameBackground
     }
     #endregion
 
+    #region Update
     public void Update(float baseTime)
     {
         UpdateBackingTrack(baseTime);
@@ -133,6 +134,7 @@ public class GameBackground
             UpdateBgBrightness();
         }
     }
+    #endregion
 
     public void UpdateBgBrightness()
     {

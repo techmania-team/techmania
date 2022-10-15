@@ -8,10 +8,13 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance { get; private set; }
 
+    public VisualTreeAsset layoutTemplate;
+
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
     private GameTimer timer;
     private GameBackground bg;
+    private GameLayout layout;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -111,7 +114,7 @@ public class GameController : MonoBehaviour
             if (n.sound != null && n.sound != "")
             {
                 keysoundFullPaths.Add(Paths.Combine(
-                    setup.trackFolder, n.sound));
+                    setup.lockedTrackFolder, n.sound));
             }
         }
         totalFiles += keysoundFullPaths.Count;
@@ -124,7 +127,8 @@ public class GameController : MonoBehaviour
             .backImage;
         if (!string.IsNullOrEmpty(backImage))
         {
-            string path = Paths.Combine(setup.trackFolder, backImage);
+            string path = Paths.Combine(
+                setup.lockedTrackFolder, backImage);
             bool loaded = false;
             Status status = null;
             Texture2D texture = null;
@@ -171,7 +175,7 @@ public class GameController : MonoBehaviour
             .patternMetadata.backingTrack;
         if (!string.IsNullOrEmpty(backingTrackFilename))
         {
-            string path = Paths.Combine(setup.trackFolder,
+            string path = Paths.Combine(setup.lockedTrackFolder,
                 backingTrackFilename);
             bool loaded = false;
             Status status = null;
@@ -196,7 +200,7 @@ public class GameController : MonoBehaviour
         // Step 4: load keysounds.
         bool keysoundsLoaded = false;
         Status keysoundStatus = null;
-        ResourceLoader.CacheAllKeysounds(setup.trackFolder,
+        ResourceLoader.CacheAllKeysounds(setup.lockedTrackFolder,
             keysoundFullPaths,
             cacheAudioCompleteCallback: (Status status) =>
             {
@@ -219,7 +223,7 @@ public class GameController : MonoBehaviour
         if (!string.IsNullOrEmpty(bga) &&
             !setup.trackOptions.noVideo)
         {
-            string path = Paths.Combine(setup.trackFolder,
+            string path = Paths.Combine(setup.lockedTrackFolder,
                 bga);
             bool loaded = false;
             Status status = null;
@@ -246,7 +250,9 @@ public class GameController : MonoBehaviour
         }
         reportLoadProgress(bga);
 
-        // TODO: Step 6: initialize pattern.
+        // A few more synchronous loading steps.
+
+        // Prepare timer.
         timer = new GameTimer(setup.patternAfterModifier);
         float backingTrackLength = 0f;
         float bgaLength = 0f;
@@ -263,6 +269,16 @@ public class GameController : MonoBehaviour
         }
         timer.Prepare(backingTrackLength, bgaLength);
 
+        // Prepare scanlines and scan countdowns.
+        layout = new GameLayout(
+            pattern: setup.patternAfterModifier,
+            gameContainer: setup.gameContainer.inner,
+            layoutTemplate: layoutTemplate);
+        yield return null;  // For layout update
+        layout.Prepare();
+
+        // TODO: Spawn note elements.
+
         // Load complete; wait on theme to begin game.
         state.SetState(ThemeApi.GameState.State.LoadComplete);
         setup.onLoadComplete?.Function?.Call();
@@ -272,6 +288,7 @@ public class GameController : MonoBehaviour
     {
         timer.Begin();
         bg.Begin();
+        layout.Begin();
     }
 
     public void Pause()
@@ -290,6 +307,7 @@ public class GameController : MonoBehaviour
     {
         timer.Dispose();
         bg.Conclude();
+        layout.Dispose();
     }
 
     public void UpdateBgBrightness()
@@ -306,6 +324,7 @@ public class GameController : MonoBehaviour
         {
             timer.Update();
             bg.Update(timer.BaseTime);
+            layout.Update(timer.Scan);
         }
     }
 }

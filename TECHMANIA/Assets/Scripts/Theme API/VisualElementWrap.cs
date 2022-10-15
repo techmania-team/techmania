@@ -516,6 +516,21 @@ namespace ThemeApi
             inner.Insert(index, child.inner);
         }
 
+        public void RemoveAllChildren()
+        {
+            // Make a copy of the child list so we don't modify
+            // the child list while enumerating it.
+            List<VisualElement> children = new List<VisualElement>();
+            foreach (VisualElement child in inner.Children())
+            {
+                children.Add(child);
+            }
+            foreach (VisualElement child in children)
+            {
+                child.RemoveFromHierarchy();
+            }
+        }
+
         public void PlaceBehind(VisualElementWrap sibling)
         {
             inner.PlaceBehind(sibling.inner);

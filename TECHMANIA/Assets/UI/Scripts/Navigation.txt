@@ -28,7 +28,12 @@ function SetUpNavigation(tm)
         FadeOutThenInToPanel(
             tm,
             tm.root.Q("select-pattern-panel"),
-            tm.root.Q("game-panel")
+            tm.root.Q("game-panel"),
+            function()
+                -- Only start loading after the game panel appears, in order
+                -- for layout to work.
+                tm.game.BeginLoading()
+            end
         )
         StopPreviewTrackPlayback(tm)
     end)
