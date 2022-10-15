@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 public class GameLayout
 {
     private Pattern pattern;
+    private float countdownLengthInScans;
+
     private VisualElement gameContainer;
     private float scanHeight => gameContainer.resolvedStyle
         .height * 0.5f;
@@ -29,11 +31,14 @@ public class GameLayout
         public VisualElement scanlineAnchor;
         public VisualElement scanline;
         public VisualElement countdownBg;
-        public VisualElement countdown;
+        public VisualElement countdownNum;
     }
     private ScanElements topScan;
     private ScanElements bottomScan;
-    private Position evenScanPosition;
+    // Points to one of topScan/bottomScan.
+    private ScanElements evenScan;
+    // Points to one of topScan/bottomScan.
+    private ScanElements oddScan;
 
     public GameLayout(Pattern pattern,
         VisualElement gameContainer,
@@ -57,7 +62,7 @@ public class GameLayout
                 scanlineAnchor = element.Q("scanline-anchor"),
                 scanline = element.Q("scanline"),
                 countdownBg = element.Q("countdown-bg"),
-                countdown = element.Q("countdown")
+                countdownNum = element.Q("countdown-num")
             };
         topScan = makeScanElements(layout.Q("top-half"));
         bottomScan = makeScanElements(layout.Q("bottom-half"));
@@ -81,7 +86,7 @@ public class GameLayout
                     skin.scanline);
                 setAspectRatio(scanElements.countdownBg,
                     skin.scanCountdownBackground);
-                setAspectRatio(scanElements.countdown,
+                setAspectRatio(scanElements.countdownNum,
                     skin.scanCountdownNumbers);
             };
         setAspectRatioForScan(topScan);
@@ -123,9 +128,9 @@ public class GameLayout
                 elements.direction == Direction.Left);
             elements.countdownBg.EnableInClassList("h-flipped",
                 elements.direction == Direction.Left);
-            elements.countdown.EnableInClassList("left-side",
+            elements.countdownNum.EnableInClassList("left-side",
                 elements.direction == Direction.Right);
-            elements.countdown.EnableInClassList("right-side",
+            elements.countdownNum.EnableInClassList("right-side",
                 elements.direction == Direction.Left);
         };
         setUpFlip(topScan);
@@ -135,11 +140,32 @@ public class GameLayout
         switch (Modifiers.instance.scanPosition)
         {
             case Modifiers.ScanPosition.Normal:
-                evenScanPosition = Position.Bottom;
+                evenScan = bottomScan;
+                oddScan = topScan;
                 break;
             case Modifiers.ScanPosition.Swap:
-                evenScanPosition = Position.Top;
+                evenScan = topScan;
+                oddScan = bottomScan;
                 break;
+        }
+
+        // Calculate countdown length.
+        if (GlobalResource.gameUiSkin
+            .scanCountdownCoversFiveEighthScans)
+        {
+            countdownLengthInScans = 5f / 8f;
+        }
+        else
+        {
+            int bps = pattern.patternMetadata.bps;
+            if (bps <= 2)
+            {
+                countdownLengthInScans = 3f / 4f;
+            }
+            else
+            {
+                countdownLengthInScans = 3f / bps;
+            }
         }
     }
 
@@ -157,17 +183,19 @@ public class GameLayout
 
     public void Update(float scan)
     {
+        // Because modulo doesn't work on negative numbers.
         while (scan < 0f) scan += 2f;
 
         // Update scanline position.
+
         float marginBeforeScan = Ruleset.instance
             .scanMarginBeforeFirstBeat;
         float marginAfterScan = Ruleset.instance
             .scanMarginAfterLastBeat;
 
-        // Limit scan to [-0.5, 1.5].
+        // Clamp scan to [-0.5, 1.5].
         float relativeScanEven = Mathf.Repeat(scan + 0.5f, 2f) - 0.5f;
-        float relativeScanOdd = Mathf.Repeat(scan - 0.5f, 2f) - 0.5f;
+        float relativeScanOdd = Mathf.Repeat(scan + 1.5f, 2f) - 0.5f;
         // And then take margins into account.
         relativeScanEven = Mathf.LerpUnclamped(marginBeforeScan,
             1f - marginAfterScan, relativeScanEven);
@@ -185,16 +213,43 @@ public class GameLayout
                     new StyleLength(new Length(
                         relativeScan * 100f, LengthUnit.Percent));
             };
-        switch (evenScanPosition)
-        {
-            case Position.Top:
-                setRelativeScan(topScan, relativeScanEven);
-                setRelativeScan(bottomScan, relativeScanOdd);
-                break;
-            case Position.Bottom:
-                setRelativeScan(bottomScan, relativeScanEven);
-                setRelativeScan(topScan, relativeScanOdd);
-                break;
-        }
+        setRelativeScan(evenScan, relativeScanEven);
+        setRelativeScan(oddScan, relativeScanOdd);
+
+        // Update countdown.
+
+        GameUISkin skin = GlobalResource.gameUiSkin;
+        // Clamp scan to [0, 2].
+        relativeScanEven = Mathf.Repeat(scan, 2f);
+        relativeScanOdd = Mathf.Repeat(scan + 1f, 2f);
+        // Calculate countdown progress.
+        float countdownProgresEven = Mathf.InverseLerp(
+            2f - countdownLengthInScans, 2f, relativeScanEven);
+        float countdownProgresOdd = Mathf.InverseLerp(
+            2f - countdownLengthInScans, 2f, relativeScanOdd);
+        System.Action<ScanElements, float> setCountdownProgress =
+            (ScanElements elements, float progress) =>
+            {
+                if (progress < 0f)
+                {
+                    elements.countdownBg.visible = false;
+                    elements.countdownNum.visible = false;
+                }
+                else
+                {
+                    elements.countdownBg.visible = true;
+                    elements.countdownBg.style.backgroundImage =
+                        new StyleBackground(
+                            skin.scanCountdownBackground
+                            .GetSpriteAtFloatIndex(progress));
+                    elements.countdownNum.visible = true;
+                    elements.countdownNum.style.backgroundImage =
+                        new StyleBackground(
+                            skin.scanCountdownNumbers
+                            .GetSpriteAtFloatIndex(progress));
+                }
+            };
+        setCountdownProgress(evenScan, countdownProgresEven);
+        setCountdownProgress(oddScan, countdownProgresOdd);
     }
 }

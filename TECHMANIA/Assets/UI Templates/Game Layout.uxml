@@ -1,19 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Templates/Game.uss?fileID=7433441132597879392&amp;guid=ceb06435995ca63468a334b5559c5e18&amp;type=3#Game" />
-    <ui:VisualElement name="bg" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
-        <ui:VisualElement name="top-half" class="half">
-            <ui:VisualElement name="scanline-anchor" class="scanline-anchor" style="left: 30%;">
-                <ui:VisualElement name="scanline" class="scanline" style="width: 700px;" />
+    <Style src="project://database/Assets/UI%20Templates/Game%20Layout.uss?fileID=7433441132597879392&amp;guid=ceb06435995ca63468a334b5559c5e18&amp;type=3#Game Layout" />
+    <ui:VisualElement name="bg" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="top-half" picking-mode="Ignore" class="half">
+            <ui:VisualElement name="scanline-anchor" picking-mode="Ignore" class="scanline-anchor" style="left: 30%;">
+                <ui:VisualElement name="scanline" picking-mode="Ignore" class="scanline" style="width: 700px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="countdown-bg" class="countdown-bg left-side" style="width: 540px;" />
-            <ui:VisualElement name="countdown" class="countdown left-side" style="width: 190px;" />
+            <ui:VisualElement name="countdown-bg" picking-mode="Ignore" class="countdown-bg left-side" style="width: 540px;" />
+            <ui:VisualElement name="countdown-num" picking-mode="Ignore" class="countdown left-side" style="width: 190px;" />
         </ui:VisualElement>
-        <ui:VisualElement name="bottom-half" class="half">
-            <ui:VisualElement name="scanline-anchor" class="scanline-anchor" style="left: 80%;">
-                <ui:VisualElement name="scanline" class="h-flipped scanline" style="width: 700px;" />
+        <ui:VisualElement name="bottom-half" picking-mode="Ignore" class="half">
+            <ui:VisualElement name="scanline-anchor" picking-mode="Ignore" class="scanline-anchor" style="left: 80%;">
+                <ui:VisualElement name="scanline" picking-mode="Ignore" class="h-flipped scanline" style="width: 700px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="countdown-bg" class="countdown-bg right-side h-flipped" style="width: 540px;" />
-            <ui:VisualElement name="countdown" class="countdown right-side" style="width: 190px;" />
+            <ui:VisualElement name="countdown-bg" picking-mode="Ignore" class="countdown-bg right-side h-flipped" style="width: 540px;" />
+            <ui:VisualElement name="countdown-num" picking-mode="Ignore" class="countdown right-side" style="width: 190px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
