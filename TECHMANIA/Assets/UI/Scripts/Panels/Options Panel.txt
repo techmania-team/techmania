@@ -248,7 +248,7 @@ function InitializeOptionsPanel()
                 local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
                 local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
                 local error = net.string.Format(errorFormat, path)
-                Alert(error)
+                alertBox.Alert(error)
                 tm.options.ruleset = tm.enum.ruleset.Standard
                 rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.enum.ruleset.Standard])
             end
@@ -258,7 +258,7 @@ function InitializeOptionsPanel()
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     customLocationToggle.RegisterCallback(eventType.Click, function()
         tm.options.customDataLocation = not tm.options.customDataLocation
-        trackListNeedsRefresh = true
+        selectTrackPanel.needsRefresh = true
         UpdateCustomDataLocationDisplay(panel)
     end)
 
@@ -268,7 +268,7 @@ function InitializeOptionsPanel()
         if (newFolder != nil) then
             tm.options.tracksFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
-            trackListNeedsRefresh = true
+            selectTrackPanel.needsRefresh = true
             UpdateCustomDataLocationDisplay(panel)
         end
     end)

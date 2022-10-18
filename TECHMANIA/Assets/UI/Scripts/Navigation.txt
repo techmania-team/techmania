@@ -4,7 +4,7 @@ function SetUpNavigation()
             tm.root.Q("main-menu"),
             tm.root.Q("select-track-panel")
         )
-        ShowSelectTrackPanel()
+        selectTrackPanel.Show()
     end)
     tm.root.Q("select-track-panel").Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
@@ -91,5 +91,5 @@ function GamePanelToSelectTrackPanel()
             tm.game.Conclude()
         end
     )
-    ShowSelectTrackPanel()
+    selectTrackPanel.Show()
 end

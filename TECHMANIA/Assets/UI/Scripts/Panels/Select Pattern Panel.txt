@@ -1,4 +1,4 @@
--- selectedTrackFolder and selectedFullTrack are defined in Select Track Panel.txt.
+-- selectTrackPanel.selectedTrackFolder and selectTrackPanel.selectedFullTrack are defined in Select Track Panel.txt.
 selectedTrackOptions = nil
 selectedPattern = nil
 allPatternRadioButtons = {}
@@ -165,7 +165,7 @@ function ShowCurrentModifiers()
 end
 
 function ShowControlSchemeIcons()
-    for index, pattern in ipairs(selectedFullTrack.patterns) do
+    for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
         local scheme = pattern.patternMetadata.controlScheme
         local radioButton = allPatternRadioButtons[index]
 
@@ -196,13 +196,13 @@ end
 
 function ShowSelectPatternPanel()
     local panel = tm.root.Q("select-pattern-panel")
-    local track = selectedFullTrack
+    local track = selectTrackPanel.selectedFullTrack
 
     -- Load per-track options.
     selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
 
     -- Display metadata.
-    local eyecatchPath = tm.paths.Combine(selectedTrackFolder, track.trackMetadata.eyecatchImage)
+    local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
     panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
     panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
@@ -353,7 +353,7 @@ function InitializeSelectPatternPanel()
         tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), tm.enum.audioChannel.SFX)
 
         -- Populate game setup
-        tm.gameSetup.trackFolder = selectedTrackFolder
+        tm.gameSetup.trackFolder = selectTrackPanel.selectedTrackFolder
         tm.gameSetup.patternGuid = selectedPattern.patternMetadata.guid
 
         -- Save options
@@ -581,8 +581,8 @@ function InitializeModifierSidesheet()
 end
 
 function StartPreviewTrackPlayback()
-    local trackFolder = selectedTrackFolder
-    local trackMetadata = selectedFullTrack.trackMetadata
+    local trackFolder = selectTrackPanel.selectedTrackFolder
+    local trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
 
     if (previewPlaybackCoroutine != nil) then
         tm.StopCoroutine(previewPlaybackCoroutine)

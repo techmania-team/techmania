@@ -32,7 +32,7 @@ function InitializeGamePanel()
 
     tm.gameSetup.onLoadError = function(status)
         tm.game.Conclude()
-        Alert(status.errorMessage, nil, function()
+        alertBox.Alert(status.errorMessage, nil, function()
             GamePanelToSelectTrackPanel()
         end)
     end

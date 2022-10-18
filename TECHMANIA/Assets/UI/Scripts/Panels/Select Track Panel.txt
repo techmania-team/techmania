@@ -1,30 +1,28 @@
-selectTrackPanelLocation = ""
-trackListNeedsRefresh = false
-trackListFilterKeywords = {}
-trackListFilterKeywordsPreSplit = ""
-showTracksInAllFolders = false
--- Possible values: Title, Artist, Genre, Touch, Keys, KM
-trackListSortBasis = "Title"
--- key: enum, value: display string
-trackListSortBasisDisplayString = {}
-trackListSortAscending = true
+selectTrackPanel = {
+    panel = tm.root.Q("select-track-panel"),
 
-selectedTrackFolder = ""
-selectedFullTrack = nil
+    location = "",
+    needsRefresh = false,
 
-function ClearAllTrackCards()
-    local panel = tm.root.Q("select-track-panel")
+    filter = {
+        keywords = {},
+        keywordsPreSplit = "",  -- for display
+        showTracksInAllFolders = false,
+        -- Possible values: Title, Artist, Genre, Touch, Keys, KM
+        sortBasis = "Title",
+        -- key: enum, value: display string
+        sortBasisDisplayString = {},
+        ascending = true
+    },
+    
+    selectedTrackFolder = "",
+    selectedFullTrack = nil
+}
 
-    local subfolderContainer = panel.Q("subfolder-container")
-    for _, child in ipairs(subfolderContainer.Children()) do
-        child.RemoveFromHierarchy()
-    end
-
-    local trackContainer = panel.Q("track-container")
-    for _, child in ipairs(trackContainer.Children()) do
-        child.RemoveFromHierarchy()
-    end
-end
+filterSideSheet = {
+    bg = selectTrackPanel.panel.Q("filter-sidesheet-background"),
+    sheet = selectTrackPanel.panel.Q("filter-sidesheet-background").Q("filter-sidesheet")
+}
 
 function CompareTracks(t1, t2)
     local basis1, basis2
@@ -35,7 +33,7 @@ function CompareTracks(t1, t2)
 
         local basis
         -- Tracks without any pattern in the specified scheme are sorted last.
-        if (trackListSortAscending) then
+        if (selectTrackPanel.filter.ascending) then
             basis = 65536
         else
             basis = -65536
@@ -44,8 +42,8 @@ function CompareTracks(t1, t2)
         for _, pattern in ipairs(track.patterns) do
             if (pattern.patternMetadata.controlScheme == controlScheme) then
                 local level = pattern.patternMetadata.level
-                if ((trackListSortAscending and level < basis) or
-                    (not trackListSortAscending and level > basis)) then
+                if ((selectTrackPanel.filter.ascending and level < basis) or
+                    (not selectTrackPanel.filter.ascending and level > basis)) then
                     basis = level
                 end
             end
@@ -54,41 +52,54 @@ function CompareTracks(t1, t2)
         return basis
     end
 
-    if (trackListSortBasis == "Title") then
+    if (selectTrackPanel.filter.sortBasis == "Title") then
         basis1 = t1.trackMetadata.title
         basis2 = t2.trackMetadata.title
-    elseif (trackListSortBasis == "Artist") then
+    elseif (selectTrackPanel.filter.sortBasis == "Artist") then
         basis1 = t1.trackMetadata.artist
         basis2 = t2.trackMetadata.artist
-    elseif (trackListSortBasis == "Genre") then
+    elseif (selectTrackPanel.filter.sortBasis == "Genre") then
         basis1 = t1.trackMetadata.genre
         basis2 = t2.trackMetadata.genre
     else
         -- "Touch", "Keys" or "KM"
-        basis1 = FindBasisPatternLevel(t1, tm.enum.controlScheme[trackListSortBasis])
-        basis2 = FindBasisPatternLevel(t2, tm.enum.controlScheme[trackListSortBasis])
+        basis1 = FindBasisPatternLevel(t1, tm.enum.controlScheme[selectTrackPanel.filter.sortBasis])
+        basis2 = FindBasisPatternLevel(t2, tm.enum.controlScheme[selectTrackPanel.filter.sortBasis])
     end
 
-    if (trackListSortAscending) then
+    if (selectTrackPanel.filter.ascending) then
         return basis1 < basis2
     else
         return basis1 > basis2
     end
 end
 
-function ShowTracksAtCurrentLocation()
-    local panel = tm.root.Q("select-track-panel")
+selectTrackPanel.ClearAllCards = function()
+    local panel = selectTrackPanel.panel
+    local subfolderContainer = panel.Q("subfolder-container")
+    for _, child in ipairs(subfolderContainer.Children()) do
+        child.RemoveFromHierarchy()
+    end
+    local trackContainer = panel.Q("track-container")
+    for _, child in ipairs(trackContainer.Children()) do
+        child.RemoveFromHierarchy()
+    end
+end
 
-    if (showTracksInAllFolders) then
-        selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
+selectTrackPanel.RefreshAllCards = function()
+    local panel = selectTrackPanel.panel
+
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
+        selectTrackPanel.location = tm.paths.GetTrackRootFolder()
     end
 
-    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
-    panel.Q("up-button").SetEnabled(selectTrackPanelLocation != tm.paths.GetTrackRootFolder())
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
+    panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
+
+    selectTrackPanel.ClearAllCards()
 
     local subfolderContainer = panel.Q("subfolder-container")
     local trackContainer = panel.Q("track-container")
-    ClearAllTrackCards()
 
     local anythingInFolder = false
     local hiddenTracks = 0
@@ -97,7 +108,7 @@ function ShowTracksAtCurrentLocation()
     local subfolders = {}
     local tracksInFolder = {}
     local tracksWithError = {}
-    if (showTracksInAllFolders) then
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
         function SearchAndProcessFolder(folder)
             for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
                 table.insert(tracksInFolder, trackInFolder)
@@ -109,11 +120,11 @@ function ShowTracksAtCurrentLocation()
                 SearchAndProcessFolder(subfolder.fullPath)
             end
         end
-        SearchAndProcessFolder(selectTrackPanelLocation)
+        SearchAndProcessFolder(selectTrackPanel.location)
     else
-        subfolders = tm.resources.GetSubfolders(selectTrackPanelLocation)
-        tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanelLocation)
-        tracksWithError = tm.resources.GetTracksWithError(selectTrackPanelLocation)
+        subfolders = tm.resources.GetSubfolders(selectTrackPanel.location)
+        tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanel.location)
+        tracksWithError = tm.resources.GetTracksWithError(selectTrackPanel.location)
     end
 
     -- Render lists as cards.
@@ -130,20 +141,20 @@ function ShowTracksAtCurrentLocation()
         card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
         SetUpScrollingText(card.Q("name-container"))
         card.RegisterCallback(eventType.Click, function(_, _, subfolder)
-            selectTrackPanelLocation = subfolder.fullPath
-            ShowTracksAtCurrentLocation()
+            selectTrackPanel.location = subfolder.fullPath
+            selectTrackPanel.RefreshAllCards()
         end, subfolder)
     end
 
     function TrackContainsAnyFilterKeyword(metadata)
-        if (#trackListFilterKeywords == 0) then
+        if (#selectTrackPanel.filter.keywords == 0) then
             return true
         end
 
         local title = net.string.ToLower(metadata.title)
         local artist = net.string.ToLower(metadata.artist)
         local genre = net.string.ToLower(metadata.genre)
-        for _, keyword in ipairs(trackListFilterKeywords) do
+        for _, keyword in ipairs(selectTrackPanel.filter.keywords) do
             if (net.string.Contains(title, keyword) or
                 net.string.Contains(artist, keyword) or
                 net.string.Contains(genre, keyword)) then
@@ -174,15 +185,15 @@ function ShowTracksAtCurrentLocation()
             SetUpScrollingText(card.Q("artist-container"))
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 -- Load full track and navigate to select pattern panel.
-                selectedTrackFolder = trackInFolder.folder
+                selectTrackPanel.selectedTrackFolder = trackInFolder.folder
                 local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
-                selectedFullTrack = util.io.LoadFullTrack(trackPath)
+                selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
                 SelectTrackToSelectPatternPanel()
             end, trackInFolder)
 
-            if (selectedFullTrack != nil and
+            if (selectTrackPanel.selectedFullTrack != nil and
                 trackInFolder.minimizedTrack.trackMetadata.guid ==
-                selectedFullTrack.trackMetadata.guid) then
+                selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
                 cardOfPreviouslySelectedTrack = card
             end
         else
@@ -213,7 +224,7 @@ function ShowTracksAtCurrentLocation()
         SetUpScrollingText(card.Q("name-container"))
         SetUpScrollingText(card.Q("artist-container"))
         card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
-            Alert(errorMessage)
+            alertBox.Alert(errorMessage)
         end, errorMessage)
     end
 
@@ -221,7 +232,7 @@ function ShowTracksAtCurrentLocation()
         panel.Q("track-status").text = net.string.Format(
             tm.l10n.GetString("select_track_some_tracks_hidden_text"),
             hiddenTracks,
-            trackListFilterKeywordsPreSplit)
+            selectTrackPanel.filter.keywordsPreSplit)
     elseif (not anythingInFolder) then
         panel.Q("track-status").text = tm.l10n.GetString("select_track_no_track_text")
     else
@@ -235,105 +246,67 @@ function ShowTracksAtCurrentLocation()
     end
 end
 
-function ShowSelectTrackPanel()
-    if (trackListNeedsRefresh) then
-        RefreshTrackList()
+selectTrackPanel.Show = function()
+    if (selectTrackPanel.needsRefresh) then
+        selectTrackPanel.Refresh()
         return
     end
-    ShowTracksAtCurrentLocation()
-    tm.root.Q("select-track-panel").Q("upgrade-button").display = tm.resources.anyOutdatedTrack
+    selectTrackPanel.RefreshAllCards()
+    selectTrackPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedTrack
 end
 
-function RefreshTrackList()
-    ClearAllTrackCards()
-    local panel = tm.root.Q("select-track-panel")
-    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
-    trackListNeedsRefresh = false
+selectTrackPanel.Refresh = function()
+    selectTrackPanel.ClearAllCards()
+    local panel = selectTrackPanel.panel
+    selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+    selectTrackPanel.needsRefresh = false
     panel.Q("back-button").SetEnabled(false)
-    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanelLocation)
+    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
     util.io.ReloadTrackList(function(currentlyLoadingFile)
         panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
     end,
     function(reloadStatus)
         panel.Q("back-button").SetEnabled(true)
-        ShowSelectTrackPanel()
+        selectTrackPanel.Show()
     end)
 end
 
-function SetDropdownValuesInFilterSidesheet()
-    local sortBasisDropdown = tm.root.Q("select-track-panel").Q("filter-sidesheet").Q("sort-by").Q("dropdown")
-    sortBasisDropdown.SetValueWithoutNotify(trackListSortBasisDisplayString[trackListSortBasis])
-end
+selectTrackPanel.Initialize = function()
+    selectTrackPanel.location = tm.paths.GetTrackRootFolder()
 
-function ShowFilterSidesheet()
-    local sheet = tm.root.Q("select-track-panel").Q("filter-sidesheet")
-
-    sheet.Q("keyword-field").Q("text-field").stringValue = trackListFilterKeywordsPreSplit
-
-    SetToggleIsOn(sheet.Q("all-folders").Q("track"), showTracksInAllFolders)
-
-    SetDropdownValuesInFilterSidesheet()
-
-    local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
-    local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
-    if (trackListSortAscending) then
-        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
-    else
-        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
-    end
-end
-
-function FadeInFilterSidesheet(bg)
-    bg.display = true
-    tm.StartCoroutine(function()
-        FadeInCoroutine(bg.Q("filter-sidesheet"), 100, 0)
-    end)
-end
-
-function FadeOutFilterSidesheet(bg)
-    tm.StartCoroutine(function()
-        FadeOutCoroutine(bg.Q("filter-sidesheet"), 100, 0, function()
-            bg.display = false
-        end)
-    end)
-end
-
-function InitializeSelectTrackPanel()
-    selectTrackPanelLocation = tm.paths.GetTrackRootFolder()
-
-    local panel = tm.root.Q("select-track-panel")
+    local panel = selectTrackPanel.panel
     panel.Q("refresh-button").RegisterCallback(eventType.Click, function()
-        RefreshTrackList()
+        selectTrackPanel.Refresh()
     end)
 
-    local sidesheetBg = panel.Q("filter-sidesheet-background")
+    local sidesheetBg = filterSideSheet.bg
     sidesheetBg.display = false
     panel.Q("filter-button").RegisterCallback(eventType.Click, function()
         if (sidesheetBg.display) then
-            FadeOutFilterSidesheet(sidesheetBg)
+            filterSideSheet.FadeOut()
         else
-            ShowFilterSidesheet()
-            FadeInFilterSidesheet(sidesheetBg)
+            filterSideSheet.Show()
+            filterSideSheet.FadeIn()
         end
     end)
 
     panel.Q("upgrade-button").RegisterCallback(eventType.Click, function()
-        Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
+        alertBox.Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
             tm.l10n.GetString("select_track_upgrade_version_confirm"),
             tm.l10n.GetString("select_track_upgrade_version_cancel"),
             function()
-                ClearAllTrackCards()
+                selectTrackPanel.ClearAllCards()
                 panel.Q("back-button").SetEnabled(false)
                 util.io.UpgradeAllTracks(function(currentlyLoadingFile)
                     panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
                 end,
                 function(reloadStatus)
                     panel.Q("back-button").SetEnabled(true)
-                    ShowSelectTrackPanel()
+                    selectTrackPanel.Show()
                     if (reloadStatus.Ok()) then
-                        Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
+                        alertBox.Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
                     else
-                        Alert(tm.paths.EscapeBackslash(net.string.Format(
+                        alertBox.Alert(tm.paths.EscapeBackslash(net.string.Format(
                             tm.l10n.GetString("select_track_upgrade_process_error_format"),
                             reloadStatus.errorMessage)))
                     end
@@ -342,20 +315,60 @@ function InitializeSelectTrackPanel()
     end)
 
     panel.Q("up-button").RegisterCallback(eventType.Click, function()
-        selectTrackPanelLocation = tm.paths.GoUpFrom(selectTrackPanelLocation)
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.location = tm.paths.GoUpFrom(selectTrackPanel.location)
+        selectTrackPanel.RefreshAllCards()
     end)
 
     panel.Q("open-button").RegisterCallback(eventType.Click, function()
-        tm.OpenURL(selectTrackPanelLocation)
+        tm.OpenURL(selectTrackPanel.location)
     end)
 end
 
-function InitializeTrackFilterSidesheet()
-    local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
+filterSideSheet.SetDropdownValues = function()
+    local sortBasisDropdown = filterSideSheet.sheet.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.SetValueWithoutNotify(selectTrackPanel.filter.sortBasisDisplayString[selectTrackPanel.filter.sortBasis])
+end
+
+filterSideSheet.Show = function()
+    local sheet = filterSideSheet.sheet
+
+    sheet.Q("keyword-field").Q("text-field").stringValue = selectTrackPanel.filter.keywordsPreSplit
+
+    SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectTrackPanel.filter.showTracksInAllFolders)
+
+    filterSideSheet.SetDropdownValues()
+
+    local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
+    if (selectTrackPanel.filter.ascending) then
+        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    else
+        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    end
+end
+
+filterSideSheet.FadeIn = function()
+    local bg = filterSideSheet.bg
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(bg.Q("filter-sidesheet"), 100, 0)
+    end)
+end
+
+filterSideSheet.FadeOut = function()
+    local bg = filterSideSheet.bg
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(bg.Q("filter-sidesheet"), 100, 0, function()
+            bg.display = false
+        end)
+    end)
+end
+
+filterSideSheet.Initialize = function()
+    local bg = filterSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
         tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
-        FadeOutFilterSidesheet(bg)
+        filterSideSheet.FadeOut()
     end)
 
     bg.Q("filter-sidesheet").RegisterCallback(eventType.Click, function(element, event)
@@ -364,29 +377,29 @@ function InitializeTrackFilterSidesheet()
     end)
 
     bg.Q("close-button").RegisterCallback(eventType.Click, function()
-        FadeOutFilterSidesheet(bg)
+        filterSideSheet.FadeOut()
     end)
 
     bg.Q("keyword-field").Q("text-field").RegisterCallback(eventType.ChangeString, function(element, event)
-        trackListFilterKeywordsPreSplit = net.string.Trim(event.newValue)
-        local keywords = net.string.Split(trackListFilterKeywordsPreSplit, ' ')
-        trackListFilterKeywords = {}
+        selectTrackPanel.filter.keywordsPreSplit = net.string.Trim(event.newValue)
+        local keywords = net.string.Split(selectTrackPanel.filter.keywordsPreSplit, ' ')
+        selectTrackPanel.filter.keywords = {}
         for _, keyword in ipairs(keywords) do
             if (net.string.Length(keyword) > 0) then
-                table.insert(trackListFilterKeywords, net.string.ToLower(keyword))
+                table.insert(selectTrackPanel.filter.keywords, net.string.ToLower(keyword))
             end
         end
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.RefreshAllCards()
     end)
 
     bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
-        showTracksInAllFolders = not showTracksInAllFolders
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
+        selectTrackPanel.RefreshAllCards()
     end)
 
     function LocalizeDropdown()
-        local bg = tm.root.Q("select-track-panel").Q("filter-sidesheet-background")
-        trackListSortBasisDisplayString = {
+        local bg = filterSideSheet.bg
+        selectTrackPanel.filter.sortBasisDisplayString = {
             Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
             Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
             Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
@@ -395,7 +408,7 @@ function InitializeTrackFilterSidesheet()
             KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
         }
         local sortBasisChoices = {}
-        for _, display in pairs(trackListSortBasisDisplayString) do
+        for _, display in pairs(selectTrackPanel.filter.sortBasisDisplayString) do
             table.insert(sortBasisChoices, display)
         end
         local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
@@ -404,27 +417,27 @@ function InitializeTrackFilterSidesheet()
     LocalizeDropdown()
     table.insert(callbacksOnLocaleChange, function()
         LocalizeDropdown()
-        SetDropdownValuesInFilterSidesheet()
+        filterSideSheet.SetDropdownValues()
     end)
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
     sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        trackListSortBasis = KeyFromValue(trackListSortBasisDisplayString, event.newValue)
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.filter.sortBasis = KeyFromValue(selectTrackPanel.filter.sortBasisDisplayString, event.newValue)
+        selectTrackPanel.RefreshAllCards()
     end)
 
     local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
     ascendingRadioButton.RegisterCallback(eventType.Click, function()
         SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
-        trackListSortAscending = true
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.filter.ascending = true
+        selectTrackPanel.RefreshAllCards()
     end)
     descendingRadioButton.RegisterCallback(eventType.Click, function()
         SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
-        trackListSortAscending = false
-        ShowTracksAtCurrentLocation()
+        selectTrackPanel.filter.ascending = false
+        selectTrackPanel.RefreshAllCards()
     end)
 end
 
-InitializeSelectTrackPanel()
-InitializeTrackFilterSidesheet()
+selectTrackPanel.Initialize()
+filterSideSheet.Initialize()

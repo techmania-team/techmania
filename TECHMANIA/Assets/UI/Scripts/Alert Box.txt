@@ -1,5 +1,9 @@
-alertBoxConfirmCallback = nil
-alertBoxCancelCallback = nil
+alertBox = {
+    bg = tm.root.Q("alert-box-background"),
+    
+    confirmCallback = nil,
+    cancelCallback = nil
+}
 
 function FadeInDialog(bg, dialog)
     bg.display = true
@@ -19,44 +23,44 @@ function FadeOutDialog(bg, dialog, finishCallback)
     end)
 end
 
-function Alert(message, confirmText, callback)
-    local bg = tm.root.Q("alert-box-background")
+alertBox.Alert = function(message, confirmText, callback)
+    local bg = alertBox.bg
     bg.Q("alert-text").text = message
     if (confirmText == nil) then
         confirmText = tm.l10n.GetString("alert_ok")
     end
     bg.Q("confirm-button").text = confirmText
     bg.Q("cancel-button").display = false
-    alertBoxConfirmCallback = callback
-    alertBoxCancelCallback = callback
+    alertBox.confirmCallback = callback
+    alertBox.cancelCallback = callback
     FadeInDialog(bg, bg.Q("alert-box"))
 end
 
-function Confirm(message, confirmText, cancelText, confirmCallback)
-    local bg = tm.root.Q("alert-box-background")
+alertBox.Confirm = function(message, confirmText, cancelText, confirmCallback)
+    local bg = alertBox.bg
     bg.Q("alert-text").text = message
     bg.Q("confirm-button").text = confirmText
     bg.Q("cancel-button").display = true
     bg.Q("cancel-button").text = cancelText
-    alertBoxConfirmCallback = confirmCallback
-    alertBoxCancelCallback = nil
+    alertBox.confirmCallback = confirmCallback
+    alertBox.cancelCallback = nil
     FadeInDialog(bg, bg.Q("alert-box"))
 end
 
-function InitializeAlertBox()
-    local bg = tm.root.Q("alert-box-background")
+alertBox.Initialize = function()
+    local bg = alertBox.bg
     bg.display = false
     bg.Q("confirm-button").RegisterCallback(eventType.Click, function()
         FadeOutDialog(bg, bg.Q("alert-box"))
-        if (alertBoxConfirmCallback != nil) then
-            alertBoxConfirmCallback()
+        if (alertBox.confirmCallback != nil) then
+            alertBox.confirmCallback()
         end
     end)
 
     function OnCancel()
         FadeOutDialog(bg, bg.Q("alert-box"))
-        if (alertBoxCancelCallback != nil) then
-            alertBoxCancelCallback()
+        if (alertBox.cancelCallback != nil) then
+            alertBox.cancelCallback()
         end
     end
     bg.Q("cancel-button").RegisterCallback(eventType.Click, OnCancel)
@@ -71,4 +75,4 @@ function InitializeAlertBox()
     end)
 end
 
-InitializeAlertBox()
+alertBox.Initialize()
