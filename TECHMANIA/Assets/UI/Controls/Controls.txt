@@ -27,7 +27,7 @@ function UpdateSliderAppearance(slider)
         StyleLengthInPercent(percent)
 end
 
-function SetUpAllSliders(tm)
+function SetUpAllSliders()
     tm.root.Query(nil, "slider").ForEach(function (element)
         element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
         element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
@@ -40,7 +40,7 @@ function SetSliderValueWithoutNotify(slider, value)
     UpdateSliderAppearance(slider)
 end
 
-function SetUpAllToggles(tm)
+function SetUpAllToggles()
     tm.root.Query(nil, "toggle-track").ForEach(function (element)
         element.RegisterCallback(eventType.Click, function (track)
             track.ToggleInClassList("toggle-track-on")
@@ -58,7 +58,7 @@ function SetToggleIsOn(trackElement, on)
     trackElement.EnableInClassList("toggle-track-off", not on)
 end
 
-function SetUpClickSound(tm, element)
+function SetUpClickSound(element)
     if (element.ClassListContains("special-click-sfx")) then return end
     local sfxName = "Assets/UI/SFX/Click.wav"
     if (element.name == "back-button" or
@@ -70,7 +70,7 @@ function SetUpClickSound(tm, element)
     end)
 end
 
-function SetUpPointerOverSound(tm, element)
+function SetUpPointerOverSound(element)
     element.RegisterCallback(eventType.PointerOver, function (element)
         if (element.enabledInHierarchy) then
             tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), tm.enum.audioChannel.SFX)
@@ -78,24 +78,24 @@ function SetUpPointerOverSound(tm, element)
     end)
 end
 
-function SetUpButtonSounds(tm, element)
-    SetUpClickSound(tm, element)
-    SetUpPointerOverSound(tm, element)
+function SetUpButtonSounds(element)
+    SetUpClickSound(element)
+    SetUpPointerOverSound(element)
 end
 
-function SetUpButtonSoundsForClass(tm, className)
+function SetUpButtonSoundsForClass(className)
     tm.root.Query(nil, className).ForEach(function (element)
-        SetUpButtonSounds(tm, element)
+        SetUpButtonSounds(element)
     end)
 end
 
-function SetUpSliderSounds(tm)
+function SetUpSliderSounds()
     tm.root.Query(nil, "slider").ForEach(function (element)
-        SetUpPointerOverSound(tm, element)
+        SetUpPointerOverSound(element)
     end)
 end
 
-function SetUpScrollingText(tm, scrollingTextContainer)
+function SetUpScrollingText(scrollingTextContainer)
     scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
     scrollingTextContainer.Q("unity-content-viewport").pickable = false
     scrollingTextContainer.Q("unity-content-container").pickable = false
@@ -115,38 +115,38 @@ function SetUpScrollingText(tm, scrollingTextContainer)
     scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
 end
 
-function SetUpAllScrollingTexts(tm)
+function SetUpAllScrollingTexts()
     tm.root.Query(nil, "scrolling-text").ForEach(function (container)
-        SetUpScrollingText(tm, container)
+        SetUpScrollingText(container)
     end)
 end
 
-function InitializeControls(tm)
+function InitializeControls()
     -- To apply themes to dropdowns
     tm.SetThemeStyleSheet("Assets/UI/Theme StyleSheet.tss")
-    SetUpAllSliders(tm)
-    SetUpAllToggles(tm)
-    SetUpButtonSoundsForClass(tm, "button-text")
-    SetUpButtonSoundsForClass(tm, "button-icon")
-    SetUpButtonSoundsForClass(tm, "button-outlined")
-    SetUpButtonSoundsForClass(tm, "button-icon-outlined")
-    SetUpButtonSoundsForClass(tm, "button-contained")
-    SetUpButtonSoundsForClass(tm, "button-icon-contained")
-    SetUpButtonSoundsForClass(tm, "button-card")
-    SetUpButtonSoundsForClass(tm, "toggle-track")
-    SetUpButtonSoundsForClass(tm, "input-field")
-    SetUpSliderSounds(tm)
-    SetUpAllScrollingTexts(tm)
+    SetUpAllSliders()
+    SetUpAllToggles()
+    SetUpButtonSoundsForClass("button-text")
+    SetUpButtonSoundsForClass("button-icon")
+    SetUpButtonSoundsForClass("button-outlined")
+    SetUpButtonSoundsForClass("button-icon-outlined")
+    SetUpButtonSoundsForClass("button-contained")
+    SetUpButtonSoundsForClass("button-icon-contained")
+    SetUpButtonSoundsForClass("button-card")
+    SetUpButtonSoundsForClass("toggle-track")
+    SetUpButtonSoundsForClass("input-field")
+    SetUpSliderSounds()
+    SetUpAllScrollingTexts()
 end
 
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
-function TransitionPanelCoroutine(tm, from, to, length, toPanelInitializer)
+function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     local transitionTime = 0.2
 
     from.display = true
     to.display = false
-    FadeOutCoroutine(tm, from, length, 0)
+    FadeOutCoroutine(from, length, 0)
     from.display = false
 
     to.display = true
@@ -154,7 +154,7 @@ function TransitionPanelCoroutine(tm, from, to, length, toPanelInitializer)
     coroutine.yield()
     if (toPanelInitializer != nil) then toPanelInitializer() end
 
-    FadeInCoroutine(tm, to, -length, 0)
+    FadeInCoroutine(to, -length, 0)
 end
 
 -- toPanelInitializer will be called 1 frame after the "to"
@@ -162,9 +162,9 @@ end
 --
 -- Avoid adding VisualElements inside toPanelInitializer:
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromLeft(tm, from, to, toPanelInitializer)
+function TransitionPanelFromLeft(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(tm, from, to,
+        TransitionPanelCoroutine(from, to,
             100,  -- length
             toPanelInitializer)
     end)
@@ -175,17 +175,17 @@ end
 --
 -- Avoid adding VisualElements inside toPanelInitializer:
 -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromRight(tm, from, to, toPanelInitializer)
+function TransitionPanelFromRight(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(tm, from, to,
+        TransitionPanelCoroutine(from, to,
             -100,  -- length
             toPanelInitializer)
     end)
 end
 
-function FadeOutThenInToPanel(tm, from, to, toPanelInitializer)
+function FadeOutThenInToPanel(from, to, toPanelInitializer)
     tm.StartCoroutine(function()
-        TransitionPanelCoroutine(tm, from, to,
+        TransitionPanelCoroutine(from, to,
             0,  -- length
             toPanelInitializer
         )

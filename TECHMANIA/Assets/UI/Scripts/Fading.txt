@@ -16,7 +16,7 @@ end
 
 -- This operates on opacity and translate, but NOT display.
 -- element's translate will animate from (translateX, translateY) to (0, 0).
-function FadeInCoroutine(tm, element, translateX, translateY)
+function FadeInCoroutine(element, translateX, translateY)
     local transitionTime = 0.2
     local timer = 0
     element.style.opacity = StyleFloat(0)
@@ -36,7 +36,7 @@ end
 
 -- This operates on opacity and translate, but NOT display.
 -- element's translate will animate from (0, 0) to (translateX, translateY).
-function FadeOutCoroutine(tm, element, translateX, translateY, finishCallback)
+function FadeOutCoroutine(element, translateX, translateY, finishCallback)
     local transitionTime = 0.2
     local timer = 0
     element.style.opacity = StyleFloat(1)

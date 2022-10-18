@@ -7,7 +7,7 @@ function KeyFromValue(table, value)
     return nil
 end
 
-function LoadAndShowEyecatch(tm, path, eyecatchElement)
+function LoadAndShowEyecatch(path, eyecatchElement)
     util.io.LoadTextureFromFile(path, function(status, texture)
         if (status.Ok()) then
             eyecatchElement.backgroundImage = texture
@@ -166,7 +166,7 @@ function ShowVolumeSliders(container)
 end
 
 -- Uses the selectedTrackOptions global variable.
-function InitializeBgBrightnessSlider(tm, container)
+function InitializeBgBrightnessSlider(container)
     local slider = container.Q("slider")
     slider.lowValue = 0
     slider.highValue = 10

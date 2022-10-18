@@ -12,18 +12,18 @@ callbacksOnLocaleChange = {}
 tm.ExecuteScript("Assets/UI/Scripts/Utilities.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Fading.txt")
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
-InitializeControls(tm)
+InitializeControls()
 
 tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Welcome Mat.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Select Track Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Select Pattern Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Options Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Main Menu/Information Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Other Panels/Game Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Welcome Mat.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Select Track Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Options Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Information Panel.txt")
+tm.ExecuteScript("Assets/UI/Scripts/Panels/Game Panel.txt")
 
 tm.ExecuteScript("Assets/UI/Scripts/Navigation.txt")
-SetUpNavigation(tm)
+SetUpNavigation()
 
 -- Array/table example
 

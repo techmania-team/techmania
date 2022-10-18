@@ -6,7 +6,7 @@ beatMarkersDisplayString = {}
 bgScalingDisplayString = {}
 rulesetDisplayString = {}
 
-function InitializeThemeOptions(tm)
+function InitializeThemeOptions()
     themeOptions = tm.options.GetThemeOptions()
 
     function InitializeOneOption(key, defaultValue)
@@ -26,7 +26,7 @@ function InitializeThemeOptions(tm)
     InitializeOneOption("pauseWhenGameLosesFocus", "True")
 end
 
-function UpdateCustomDataLocationDisplay(tm, panel)
+function UpdateCustomDataLocationDisplay(panel)
     local tracksContainer = panel.Q("tracks-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
     if (tm.options.customDataLocation) then
@@ -48,7 +48,7 @@ function UpdateCustomDataLocationDisplay(tm, panel)
     end
 end
 
-function ShowOptionsPanel(tm)
+function ShowOptionsPanel()
     local panel = tm.root.Q("options-panel")
 
     local currentResolution = unity.resolution.__new()
@@ -92,7 +92,7 @@ function ShowOptionsPanel(tm)
 
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
-    UpdateCustomDataLocationDisplay(tm, panel)
+    UpdateCustomDataLocationDisplay(panel)
 
     local offsetLatencyDisplay = panel.Q("offset-latency").Q("value-display")
     offsetLatencyDisplay.text =
@@ -104,7 +104,7 @@ function ShowOptionsPanel(tm)
     ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 end
 
-function InitializeOptionsPanel(tm)
+function InitializeOptionsPanel()
     function InitializeLocalizedDropdowns(panel)
         function InitializeOneLocalizedDropdown(containerName, stringTable)
             local dropdown = panel.Q(containerName).Q("dropdown")
@@ -204,7 +204,7 @@ function InitializeOptionsPanel(tm)
         for _, callback in ipairs(callbacksOnLocaleChange) do
             callback()
         end
-        ShowOptionsPanel(tm)
+        ShowOptionsPanel()
     end)
 
     local skinsButton = panel.Q("skins").Q("button")
@@ -259,7 +259,7 @@ function InitializeOptionsPanel(tm)
     customLocationToggle.RegisterCallback(eventType.Click, function()
         tm.options.customDataLocation = not tm.options.customDataLocation
         trackListNeedsRefresh = true
-        UpdateCustomDataLocationDisplay(tm, panel)
+        UpdateCustomDataLocationDisplay(panel)
     end)
 
     local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
@@ -269,7 +269,7 @@ function InitializeOptionsPanel(tm)
             tm.options.tracksFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
             trackListNeedsRefresh = true
-            UpdateCustomDataLocationDisplay(tm, panel)
+            UpdateCustomDataLocationDisplay(panel)
         end
     end)
     local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
@@ -278,12 +278,12 @@ function InitializeOptionsPanel(tm)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
-            UpdateCustomDataLocationDisplay(tm, panel)
+            UpdateCustomDataLocationDisplay(panel)
         end
     end)
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 end
 
-InitializeThemeOptions(tm)
-InitializeOptionsPanel(tm)
+InitializeThemeOptions()
+InitializeOptionsPanel()

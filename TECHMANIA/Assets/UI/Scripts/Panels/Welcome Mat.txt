@@ -1,4 +1,4 @@
-function InitializeWelcomeMat(tm)
+function InitializeWelcomeMat()
     local mainMenu = tm.root.Q("main-menu")
     local buttons = mainMenu.Q("buttons")
     local mat = mainMenu.Q("welcome-mat")
@@ -48,4 +48,4 @@ function InitializeWelcomeMat(tm)
     end)
 end
 
-InitializeWelcomeMat(tm)
+InitializeWelcomeMat()

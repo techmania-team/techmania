@@ -1,4 +1,4 @@
-function InitializeInformationPanel(tm)
+function InitializeInformationPanel()
     local panel = tm.root.Q("information-panel")
     panel.display = false
 
@@ -36,4 +36,4 @@ function InitializeInformationPanel(tm)
     panel.Q("localization-text").text = localizerCredit
 end
 
-InitializeInformationPanel(tm)
+InitializeInformationPanel()

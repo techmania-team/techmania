@@ -4,13 +4,13 @@ alertBoxCancelCallback = nil
 function FadeInDialog(bg, dialog)
     bg.display = true
     tm.StartCoroutine(function()
-        FadeInCoroutine(tm, dialog, 0, -100)
+        FadeInCoroutine(dialog, 0, -100)
     end)
 end
 
 function FadeOutDialog(bg, dialog, finishCallback)
     tm.StartCoroutine(function()
-        FadeOutCoroutine(tm, dialog, 0, -100, function()
+        FadeOutCoroutine(dialog, 0, -100, function()
             bg.display = false
             if (finishCallback != nil) then
                 finishCallback()
@@ -43,7 +43,7 @@ function Confirm(message, confirmText, cancelText, confirmCallback)
     FadeInDialog(bg, bg.Q("alert-box"))
 end
 
-function InitializeAlertBox(tm)
+function InitializeAlertBox()
     local bg = tm.root.Q("alert-box-background")
     bg.display = false
     bg.Q("confirm-button").RegisterCallback(eventType.Click, function()
@@ -71,4 +71,4 @@ function InitializeAlertBox(tm)
     end)
 end
 
-InitializeAlertBox(tm)
+InitializeAlertBox()

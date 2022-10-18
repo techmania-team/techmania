@@ -1,12 +1,12 @@
-function InitializeGamePanel(tm)
+function InitializeGamePanel()
     local panel = tm.root.Q("game-panel")
 
     panel.RegisterCallback(eventType.KeyDown, function(element, event)
         if (event.keyCode == unity.enum.keyCode.Escape) then
             if (tm.game.state == tm.enum.gameState.Paused) then
-                UnpauseGame(tm, panel)
+                UnpauseGame(panel)
             elseif (tm.game.state == tm.enum.gameState.Ongoing) then
-                PauseGame(tm, panel)
+                PauseGame(panel)
             end
         end
         if (event.keyCode == unity.enum.keyCode.Space or
@@ -15,7 +15,7 @@ function InitializeGamePanel(tm)
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
-        PauseGame(tm, panel)
+        PauseGame(panel)
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
@@ -33,12 +33,12 @@ function InitializeGamePanel(tm)
     tm.gameSetup.onLoadError = function(status)
         tm.game.Conclude()
         Alert(status.errorMessage, nil, function()
-            GamePanelToSelectTrackPanel(tm)
+            GamePanelToSelectTrackPanel()
         end)
     end
 
     tm.gameSetup.onLoadComplete = function()
-        GamePanelBeginGame(tm, panel)
+        GamePanelBeginGame(panel)
     end
 
     tm.gameSetup.onUpdate = function()
@@ -57,7 +57,7 @@ function InitializeGamePanel(tm)
     end
 end
 
-function InitializePauseMenu(tm)
+function InitializePauseMenu()
     local panel = tm.root.Q("game-panel")
     local bg = panel.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
@@ -68,7 +68,7 @@ function InitializePauseMenu(tm)
     end)
 
     function OnCancel()
-        UnpauseGame(tm, panel)
+        UnpauseGame(panel)
     end
     menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, OnCancel)
@@ -78,15 +78,15 @@ function InitializePauseMenu(tm)
 
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
-        GamePanelStartLoading(tm)
+        GamePanelStartLoading()
         tm.game.BeginLoading()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
-        GamePanelToSelectTrackPanel(tm)
+        GamePanelToSelectTrackPanel()
     end)
 
-    InitializeBgBrightnessSlider(tm, menu.Q("bg-brightness-wrap"))
+    InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
     InitializeVolumeSliders(menu)
 end
 
@@ -95,7 +95,7 @@ function ShowPauseMenu(menu)
     ShowVolumeSliders(menu)
 end
 
-function GamePanelStartLoading(tm)
+function GamePanelStartLoading()
     local panel = tm.root.Q("game-panel")
 
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
@@ -119,7 +119,7 @@ function GamePanelStartLoading(tm)
     -- after the game panel becomes visible.
 end
 
-function GamePanelBeginGame(tm, panel)
+function GamePanelBeginGame(panel)
     if (themeOptions.Get("backgroundScalingMode") == "FillGameArea") then
         panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
     end
@@ -135,7 +135,7 @@ function GamePanelBeginGame(tm, panel)
     panel.Focus()
 end
 
-function PauseGame(tm, panel)
+function PauseGame(panel)
     if (tm.game.state != tm.enum.gameState.Ongoing) then return end
     local bg = panel.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
@@ -145,7 +145,7 @@ function PauseGame(tm, panel)
     ShowPauseMenu(menu)
 end
 
-function UnpauseGame(tm, panel)
+function UnpauseGame(panel)
     local bg = panel.Q("pause-menu-bg")
     local menu = bg.Q("pause-menu")
     FadeOutDialog(bg, menu, function()
@@ -154,5 +154,5 @@ function UnpauseGame(tm, panel)
     end)
 end
 
-InitializeGamePanel(tm)
-InitializePauseMenu(tm)
+InitializeGamePanel()
+InitializePauseMenu()

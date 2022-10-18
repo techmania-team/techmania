@@ -18,11 +18,6 @@ public class GameLayout
         Left,
         Right
     }
-    private enum Position
-    {
-        Top,
-        Bottom
-    }
 
     private TemplateContainer layout;
     private class ScanElements

@@ -328,8 +328,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
-            <ui:VisualElement name="markers" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-            <ui:VisualElement name="info-insert" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:VisualElement name="markers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:VisualElement name="info-insert" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="game-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="middle-fever-bar-bg" picking-mode="Ignore" class="surface-8dp" style="height: 8px; align-items: center;">
                 <ui:VisualElement name="middle-fever-bar" picking-mode="Ignore" class="red-700" style="width: 80%; height: 100%;" />
