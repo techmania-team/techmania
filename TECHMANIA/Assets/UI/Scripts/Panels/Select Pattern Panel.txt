@@ -31,6 +31,102 @@ modifierSideSheet = {
     sheet = selectPatternPanel.panel.Q("modifier-sidesheet"),
 }
 
+-- Returns a table with keys "density", "peak", "speed", "chaos" and "async".
+-- Make sure to call pattern.PrepareForTimeCalculation() before this.
+function CalculateRadar(pattern)
+    local radar = {}
+    if (pattern == nil) then
+        radar.density = 0
+        radar.peak = 0
+        radar.speed = 0
+        radar.chaos = 0
+        radar.async = 0
+        return radar
+    end
+
+    -- Pre-processing
+    local seconds = 0
+    local scans = 0
+    _, seconds, scans = pattern.GetLengthInSecondsAndScans()
+    local pulsesPerBeat = 240
+    local pulsesPerScan = pattern.patternMetadata.bps * pulsesPerBeat
+    local playableNotes = 0
+    local notesInScan = {}
+    local numChaosNotes = 0
+    local numAsyncNotes = 0
+    local allNotes = pattern.notesAsList()
+    for _, n in ipairs(allNotes) do
+        if (n.lane < pattern.patternMetadata.playableLanes) then
+            playableNotes = playableNotes + 1
+
+            local scan = math.floor(n.pulse / pulsesPerScan)
+            if (notesInScan[scan] == nil) then notesInScan[scan] = 0 end
+            notesInScan[scan] = notesInScan[scan] + 1
+
+            if (n.pulse % (pulsesPerBeat / 2) ~= 0) then
+                numChaosNotes = numChaosNotes + 1
+            end
+
+            if (n.type == tm.enum.noteType.Hold or
+                n.type == tm.enum.noteType.RepeatHeadHold) then
+                numAsyncNotes = numAsyncNotes + 0.5
+            elseif (n.type == tm.enum.noteType.Repeat or
+                n.type == tm.enum.noteType.RepeatHold) then
+                numAsyncNotes = numAsyncNotes + 1
+            end
+        end
+    end
+    
+    function Normalize(raw, min, max)
+        local t = unity.mathf.InverseLerp(min, max, raw)
+        return unity.mathf.RoundToInt(t * 100)
+    end
+
+    -- Density: average number of notes per second.
+    local density = 0
+    if (seconds > 0) then
+        density = playableNotes / seconds
+    end
+    radar.density = Normalize(density, 0.5, 8)
+
+    -- Peak: peak number of notes per second.
+    local peak = 0
+    for scan, notes in pairs(notesInScan) do  -- Not ipairs here as some scans may be empty
+        local startTime = pattern.PulseToTime(scan * pulsesPerScan)
+        local endTime = pattern.PulseToTime((scan + 1) * pulsesPerScan)
+        local densityOfThisScan = notes / (endTime - startTime)
+        if (densityOfThisScan > peak) then peak = densityOfThisScan end
+    end
+    radar.peak = Normalize(peak, 1, 18)
+
+    -- Speed: average scans per minute.
+    local speed = 0
+    if (seconds > 0) then
+        speed = scans * 60 / seconds
+    end
+    radar.speed = Normalize(speed, 12, 55)
+
+    -- Chaos: percentage of notes that are not 4th or 8th notes.
+    local chaos = 0
+    if (playableNotes > 0) then
+        chaos = numChaosNotes * 100 / playableNotes
+    end
+    radar.chaos = Normalize(chaos, 0, 50)
+
+    -- Async: percentage of notes that are hold or repeat notes.
+    local async = 0
+    if (playableNotes > 0) then
+        async = numAsyncNotes * 100 / playableNotes
+    end
+    radar.async = Normalize(async, 0, 40)
+
+    return radar
+end
+
+function RadarAngleForVertex(i)
+    return (-90 + 72 * i) * unity.mathf.Deg2Rad
+end
+
 -- Currently selected pattern may be nil.
 selectPatternPanel.ShowPatternDetails = function()
     local pattern = selectPatternPanel.selectedPattern
@@ -38,7 +134,7 @@ selectPatternPanel.ShowPatternDetails = function()
 
     function ShowRadar()
         local radarElement = panel.Q("radar")
-        selectPatternPanel.radarOfSelectedPattern = CalculateRadarOfPattern(pattern)
+        selectPatternPanel.radarOfSelectedPattern = CalculateRadar(pattern)
         radarElement.MarkDirtyRepaint()
 
         radarElement.Q("density").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.density)
@@ -82,7 +178,7 @@ selectPatternPanel.ShowPatternDetails = function()
     else
         panel.Q("bpm").Q("content").text = FormatBpm(minBpm)
     end
-    SetUpScrollingText(panel.Q("bpm").Q("container"))
+    controls.SetUpScrollingText(panel.Q("bpm").Q("container"))
 
     -- Length
     local length = 0
@@ -133,10 +229,6 @@ selectPatternPanel.ShowPatternDetails = function()
     ShowRadar()
 end
 
-function RadarAngleForVertex(i)
-    return (-90 + 72 * i) * unity.mathf.Deg2Rad
-end
-
 selectPatternPanel.ShowCurrentModifiers = function()
     local container = selectPatternPanel.panel.Q("modifier-display").Q("container")
     local content = container.Q("content")
@@ -171,7 +263,7 @@ selectPatternPanel.ShowCurrentModifiers = function()
     end
 
     content.text = net.string.Join(" / ", allSegments)
-    SetUpScrollingText(container)
+    controls.SetUpScrollingText(container)
 end
 
 selectPatternPanel.ShowControlSchemeIcons = function()
@@ -228,7 +320,7 @@ selectPatternPanel.Show = function()
     for _, pattern in ipairs(track.patterns) do
         local radioButton = patternListContainer.InstantiateTemplate("Assets/UI/Templates/Pattern Radio Button.uxml").Q("radio-button")
         table.insert(selectPatternPanel.allPatternRadioButtons, radioButton)
-        SetUpButtonSounds(radioButton)
+        controls.SetUpButtonSounds(radioButton)
 
         local metadata = pattern.patternMetadata
 
@@ -238,7 +330,7 @@ selectPatternPanel.Show = function()
         -- Control scheme icons are controlled separately in selectPatternPanel.ShowControlSchemeIcons.
         radioButton.Q("level").text = metadata.level
         radioButton.Q("pattern-name").text = metadata.patternName
-        SetUpScrollingText(radioButton.Q("pattern-name-container"))
+        controls.SetUpScrollingText(radioButton.Q("pattern-name-container"))
 
         local record = tm.records.GetRecord(pattern)
         local medal = ""
@@ -259,12 +351,12 @@ selectPatternPanel.Show = function()
 
         radioButton.RegisterCallback(eventType.Click, function(_, _, pattern)
             selectPatternPanel.selectedPattern = pattern
-            SetRadioButton(radioButton, selectPatternPanel.allPatternRadioButtons)
+            controls.SetRadioButton(radioButton, selectPatternPanel.allPatternRadioButtons)
             selectPatternPanel.ShowPatternDetails()
             panel.Q("play-button").SetEnabled(true)
         end, pattern)
     end
-    SetRadioButton(nil, selectPatternPanel.allPatternRadioButtons)
+    controls.SetRadioButton(nil, selectPatternPanel.allPatternRadioButtons)
     selectPatternPanel.ShowControlSchemeIcons()
 
     -- Initialize details when no pattern is selected.
@@ -321,7 +413,7 @@ selectPatternPanel.Initialize = function()
         tm.options.SaveToFile()
 
         -- Begin loading
-        GamePanelStartLoading()
+        gamePanel.StartLoading()
     end)
 
     -- Set the function to draw radar graph. Actual drawing happens
@@ -498,11 +590,11 @@ modifierSideSheet.Show = function()
     if (themeOptions.Get("showJudgementTally") == "True") then
         showTally = true
     end
-    SetToggleIsOn(sheet.Q("judgement-tally").Q("track"), showTally)
+    controls.SetToggleIsOn(sheet.Q("judgement-tally").Q("track"), showTally)
 
-    ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
+    commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
 
-    SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+    controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
 end
 
 modifierSideSheet.FadeIn = function()
@@ -657,7 +749,7 @@ modifierSideSheet.Initialize = function()
         end
     end)
 
-    InitializeBgBrightnessSlider(bg.Q("bg-brightness"))
+    commonUI.InitializeBgBrightnessSlider(bg.Q("bg-brightness"))
 
     bg.Q("no-video").Q("track").RegisterCallback(eventType.Click, function(element, event)
         if (selectTrackPanel.selectedTrackOptions == nil) then return end

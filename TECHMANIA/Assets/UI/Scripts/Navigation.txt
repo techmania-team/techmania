@@ -2,14 +2,14 @@ function SetUpNavigation()
     local mainMenu = tm.root.Q("main-menu")
 
     mainMenu.Q("start-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromRight(
+        panelTransition.FromRight(
             mainMenu,
             selectTrackPanel.panel
         )
         selectTrackPanel.Show()
     end)
     selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromLeft(
+        panelTransition.FromLeft(
             selectTrackPanel.panel,
             mainMenu
         )
@@ -17,16 +17,16 @@ function SetUpNavigation()
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
     selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromLeft(
+        panelTransition.FromLeft(
             selectPatternPanel.panel,
             selectTrackPanel.panel
         )
         selectPatternPanel.StopPreviewTrackPlayback()
     end)
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
-        FadeOutThenInToPanel(
+        panelTransition.Fade(
             selectPatternPanel.panel,
-            tm.root.Q("game-panel"),
+            gamePanel.panel,
             function()
                 -- Only start loading after the game panel appears, in order
                 -- for layout to work.
@@ -36,27 +36,27 @@ function SetUpNavigation()
         selectPatternPanel.StopPreviewTrackPlayback()
     end)
     mainMenu.Q("options-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromRight(
+        panelTransition.FromRight(
             mainMenu,
             optionsPanel.panel
         )
         optionsPanel.Show()
     end)
     optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromLeft(
+        panelTransition.FromLeft(
             optionsPanel.panel,
             mainMenu
         )
         tm.options.SaveToFile()
     end)
     mainMenu.Q("information-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromRight(
+        panelTransition.FromRight(
             mainMenu,
             infoPanel.panel
         )
     end)
     infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        TransitionPanelFromLeft(
+        panelTransition.FromLeft(
             infoPanel.panel,
             mainMenu
         )
@@ -67,7 +67,7 @@ function SetUpNavigation()
 end
 
 function SelectTrackToSelectPatternPanel()
-    TransitionPanelFromRight(
+    panelTransition.FromRight(
         selectTrackPanel.panel,
         selectPatternPanel.panel,
         function()
@@ -84,8 +84,8 @@ function SelectTrackToSelectPatternPanel()
 end
 
 function GamePanelToSelectTrackPanel()
-    FadeOutThenInToPanel(
-        tm.root.Q("game-panel"),
+    panelTransition.Fade(
+        gamePanel.panel,
         selectTrackPanel.panel,
         function()
             -- This causes the BGA to unload so it should happen

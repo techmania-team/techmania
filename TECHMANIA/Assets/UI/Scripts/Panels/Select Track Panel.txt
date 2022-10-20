@@ -138,9 +138,9 @@ selectTrackPanel.RefreshAllCards = function()
         if (subfolder.eyecatchFullPath != nil) then
             LoadAndShowEyecatch(subfolder.eyecatchFullPath, card.Q("eyecatch"))
         end
-        SetUpButtonSounds(card)
+        controls.SetUpButtonSounds(card)
         card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
-        SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("name-container"))
         card.RegisterCallback(eventType.Click, function(_, _, subfolder)
             selectTrackPanel.location = subfolder.fullPath
             selectTrackPanel.RefreshAllCards()
@@ -179,11 +179,11 @@ selectTrackPanel.RefreshAllCards = function()
             card.Q("error-icon").visible = false
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
             LoadAndShowEyecatch(eyecatchPath, card.Q("eyecatch"))
-            SetUpButtonSounds(card)
+            controls.SetUpButtonSounds(card)
             card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
             card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
-            SetUpScrollingText(card.Q("name-container"))
-            SetUpScrollingText(card.Q("artist-container"))
+            controls.SetUpScrollingText(card.Q("name-container"))
+            controls.SetUpScrollingText(card.Q("artist-container"))
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 -- Load full track and navigate to select pattern panel.
                 selectTrackPanel.selectedTrackFolder = trackInFolder.folder
@@ -208,7 +208,7 @@ selectTrackPanel.RefreshAllCards = function()
         card.Q("eyecatch").visible = false
         card.Q("default-eyecatch").visible = false
         card.Q("error-icon").visible = true
-        SetUpButtonSounds(card)
+        controls.SetUpButtonSounds(card)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
             card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
@@ -222,8 +222,8 @@ selectTrackPanel.RefreshAllCards = function()
                 trackWithError.status.errorMessage))
         end
         card.Q("artist").text = tm.l10n.GetString("select_track_error_card_artist")
-        SetUpScrollingText(card.Q("name-container"))
-        SetUpScrollingText(card.Q("artist-container"))
+        controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("artist-container"))
         card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
             alertBox.Alert(errorMessage)
         end, errorMessage)
@@ -335,16 +335,16 @@ filterSideSheet.Show = function()
 
     sheet.Q("keyword-field").Q("text-field").stringValue = selectTrackPanel.filter.keywordsPreSplit
 
-    SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectTrackPanel.filter.showTracksInAllFolders)
+    controls.SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectTrackPanel.filter.showTracksInAllFolders)
 
     filterSideSheet.SetDropdownValues()
 
     local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
     if (selectTrackPanel.filter.ascending) then
-        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
     else
-        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
     end
 end
 
@@ -429,12 +429,12 @@ filterSideSheet.Initialize = function()
     local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
     ascendingRadioButton.RegisterCallback(eventType.Click, function()
-        SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = true
         selectTrackPanel.RefreshAllCards()
     end)
     descendingRadioButton.RegisterCallback(eventType.Click, function()
-        SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = false
         selectTrackPanel.RefreshAllCards()
     end)

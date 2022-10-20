@@ -1,12 +1,21 @@
-function InitializeGamePanel()
-    local panel = tm.root.Q("game-panel")
+gamePanel = {
+    panel = tm.root.Q("game-panel")
+}
+
+pauseMenu = {
+    bg = gamePanel.panel.Q("pause-menu-bg"),
+    menu = gamePanel.panel.Q("pause-menu")
+}
+
+gamePanel.Initialize = function()
+    local panel = gamePanel.panel
 
     panel.RegisterCallback(eventType.KeyDown, function(element, event)
         if (event.keyCode == unity.enum.keyCode.Escape) then
             if (tm.game.state == tm.enum.gameState.Paused) then
-                UnpauseGame(panel)
+                gamePanel.Unpause()
             elseif (tm.game.state == tm.enum.gameState.Ongoing) then
-                PauseGame(panel)
+                gamePanel.Pause()
             end
         end
         if (event.keyCode == unity.enum.keyCode.Space or
@@ -15,7 +24,7 @@ function InitializeGamePanel()
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
-        PauseGame(panel)
+        gamePanel.Pause()
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
@@ -27,7 +36,7 @@ function InitializeGamePanel()
 
     tm.gameSetup.onLoadProgress = function(progress)
         local percent = progress.filesLoaded * 100 / progress.totalFiles
-        SetProgressBar(panel.Q("loading-progress"), percent)
+        controls.SetProgressBar(panel.Q("loading-progress"), percent)
     end
 
     tm.gameSetup.onLoadError = function(status)
@@ -38,7 +47,7 @@ function InitializeGamePanel()
     end
 
     tm.gameSetup.onLoadComplete = function()
-        GamePanelBeginGame(panel)
+        gamePanel.BeginGame()
     end
 
     tm.gameSetup.onUpdate = function()
@@ -57,46 +66,8 @@ function InitializeGamePanel()
     end
 end
 
-function InitializePauseMenu()
-    local panel = tm.root.Q("game-panel")
-    local bg = panel.Q("pause-menu-bg")
-    local menu = bg.Q("pause-menu")
-
-    menu.RegisterCallback(eventType.Click, function(element, event)
-        -- Prevents bg from receiving this event on the bubble up phase
-        event.StopPropagation()
-    end)
-
-    function OnCancel()
-        UnpauseGame(panel)
-    end
-    menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
-    bg.RegisterCallback(eventType.Click, OnCancel)
-    bg.RegisterCallback(eventType.Click, function(_, _)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
-    end)
-
-    menu.Q("restart-button").RegisterCallback(eventType.Click, function()
-        tm.game.Conclude()
-        GamePanelStartLoading()
-        tm.game.BeginLoading()
-    end)
-
-    menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
-        GamePanelToSelectTrackPanel()
-    end)
-
-    InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
-    InitializeVolumeSliders(menu)
-end
-
-function ShowPauseMenu(menu)
-    ShowBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
-    ShowVolumeSliders(menu)
-end
-
-function GamePanelStartLoading()
-    local panel = tm.root.Q("game-panel")
+gamePanel.StartLoading = function()
+    local panel = gamePanel.panel
 
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
     panel.Q("top-bar").Q("pause-button").display = true
@@ -106,7 +77,7 @@ function GamePanelStartLoading()
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
-    panel.Q("pause-menu-bg").display = false
+    pauseMenu.bg.display = false
 
     -- TODO: respond to showFps option
     -- TODO: respond to showJudgementTally option
@@ -119,7 +90,8 @@ function GamePanelStartLoading()
     -- after the game panel becomes visible.
 end
 
-function GamePanelBeginGame(panel)
+gamePanel.BeginGame = function()
+    local panel = gamePanel.panel
     if (themeOptions.Get("backgroundScalingMode") == "FillGameArea") then
         panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
     end
@@ -135,24 +107,63 @@ function GamePanelBeginGame(panel)
     panel.Focus()
 end
 
-function PauseGame(panel)
+gamePanel.Pause = function()
     if (tm.game.state != tm.enum.gameState.Ongoing) then return end
-    local bg = panel.Q("pause-menu-bg")
-    local menu = bg.Q("pause-menu")
+
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
     tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
     tm.game.Pause()
     FadeInDialog(bg, menu)
-    ShowPauseMenu(menu)
+    pauseMenu.Show()
 end
 
-function UnpauseGame(panel)
-    local bg = panel.Q("pause-menu-bg")
-    local menu = bg.Q("pause-menu")
+gamePanel.Unpause = function()
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
     FadeOutDialog(bg, menu, function()
         -- Only unpause after the menu has fully faded out.
         tm.game.Unpause()
     end)
 end
 
-InitializeGamePanel()
-InitializePauseMenu()
+pauseMenu.Initialize = function()
+    local panel = gamePanel.panel
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
+
+    menu.RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    function OnCancel()
+        gamePanel.Unpause()
+    end
+    menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, function(_, _)
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+    end)
+
+    menu.Q("restart-button").RegisterCallback(eventType.Click, function()
+        tm.game.Conclude()
+        gamePanel.StartLoading()
+        tm.game.BeginLoading()
+    end)
+
+    menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        GamePanelToSelectTrackPanel()
+    end)
+
+    commonUI.InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
+    commonUI.InitializeVolumeSliders(menu)
+end
+
+pauseMenu.Show = function()
+    commonUI.ShowBgBrightnessSlider(pauseMenu.menu.Q("bg-brightness-wrap"))
+    commonUI.ShowVolumeSliders(pauseMenu.menu)
+end
+
+gamePanel.Initialize()
+pauseMenu.Initialize()

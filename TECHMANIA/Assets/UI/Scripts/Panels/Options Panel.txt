@@ -67,9 +67,9 @@ optionsPanel.Show = function()
     fullScreenDropdown.SetValueWithoutNotify(optionsPanel.fullScreenDisplayString[tm.options.fullScreenMode])
 
     local vSyncToggle = panel.Q("vsync").Q("track")
-    SetToggleIsOn(vSyncToggle, tm.options.vSync)
+    controls.SetToggleIsOn(vSyncToggle, tm.options.vSync)
 
-    ShowVolumeSliders(panel)
+    commonUI.ShowVolumeSliders(panel)
 
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
@@ -80,7 +80,7 @@ optionsPanel.Show = function()
 
     function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
-        SetToggleIsOn(toggle, net.bool.Parse(themeOptions.Get(key)))
+        controls.SetToggleIsOn(toggle, net.bool.Parse(themeOptions.Get(key)))
     end
     ShowThemeOptionToggle("show-loading-bar", "showLoadingBar")
     ShowThemeOptionToggle("show-fps", "showFps")
@@ -96,7 +96,7 @@ optionsPanel.Show = function()
     rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.options.ruleset])
 
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
-    SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
+    controls.SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
     optionsPanel.UpdateCustomDataLocationDisplay()
 
     local offsetLatencyDisplay = panel.Q("offset-latency").Q("value-display")
@@ -186,7 +186,7 @@ optionsPanel.Initialize = function()
         tm.options.ApplyGraphicSettings()
     end)
 
-    InitializeVolumeSliders(panel)
+    commonUI.InitializeVolumeSliders(panel)
 
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.choices = {"128", "256", "512", "1024"}

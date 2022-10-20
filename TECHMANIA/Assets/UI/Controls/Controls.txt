@@ -14,48 +14,12 @@ function StyleLengthInPercent(percent)
     )
 end
 
-function SetProgressBar(progressBar, percent)
-    progressBar.Q("filled-portion").style.right =
-        StyleLengthInPercent(100 - percent)
-end
-
 function UpdateSliderAppearance(slider)
     local percent = (slider.value - slider.lowValue) * 100 / 
         (slider.highValue - slider.lowValue)
-    SetProgressBar(slider.parent, percent)
+    controls.SetProgressBar(slider.parent, percent)
     slider.Q("overlay-center").style.left =
         StyleLengthInPercent(percent)
-end
-
-function SetUpAllSliders()
-    tm.root.Query(nil, "slider").ForEach(function (element)
-        element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
-        element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
-        UpdateSliderAppearance(element)
-    end)
-end
-
-function SetSliderValueWithoutNotify(slider, value)
-    slider.SetValueWithoutNotify(value)
-    UpdateSliderAppearance(slider)
-end
-
-function SetUpAllToggles()
-    tm.root.Query(nil, "toggle-track").ForEach(function (element)
-        element.RegisterCallback(eventType.Click, function (track)
-            track.ToggleInClassList("toggle-track-on")
-            track.ToggleInClassList("toggle-track-off")
-        end)
-    end)
-end
-
-function IsToggleOn(trackElement)
-    return trackElement.ClassListContains("toggle-track-on")
-end
-
-function SetToggleIsOn(trackElement, on)
-    trackElement.EnableInClassList("toggle-track-on", on)
-    trackElement.EnableInClassList("toggle-track-off", not on)
 end
 
 function SetUpClickSound(element)
@@ -78,54 +42,31 @@ function SetUpPointerOverSound(element)
     end)
 end
 
-function SetUpButtonSounds(element)
-    SetUpClickSound(element)
-    SetUpPointerOverSound(element)
-end
-
-function SetUpButtonSoundsForClass(className)
-    tm.root.Query(nil, className).ForEach(function (element)
-        SetUpButtonSounds(element)
-    end)
-end
-
-function SetUpSliderSounds()
-    tm.root.Query(nil, "slider").ForEach(function (element)
-        SetUpPointerOverSound(element)
-    end)
-end
-
-function SetUpScrollingText(scrollingTextContainer)
-    scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
-    scrollingTextContainer.Q("unity-content-viewport").pickable = false
-    scrollingTextContainer.Q("unity-content-container").pickable = false
-    function ContainerUpdate(element)
-        local low = element.horizontalScroller.lowValue
-        local high = element.horizontalScroller.highValue
-        if (net.float.IsNaN(high) or high <= low) then
-            return
-        end
-        local scrollDuration = 4
-        local pingPongTime = unity.mathf.PingPong(unity.time.time, scrollDuration)
-        -- InverseLerp's output is clamped between 0 and 1.
-        local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
-        element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
-    end
-    scrollingTextContainer.UnregisterCallback(eventType.FrameUpdate, ContainerUpdate)
-    scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
-end
-
-function SetUpAllScrollingTexts()
-    tm.root.Query(nil, "scrolling-text").ForEach(function (container)
-        SetUpScrollingText(container)
-    end)
-end
-
 function InitializeControls()
     -- To apply themes to dropdowns
     tm.SetThemeStyleSheet("Assets/UI/Theme StyleSheet.tss")
-    SetUpAllSliders()
-    SetUpAllToggles()
+
+    -- Sliders
+    tm.root.Query(nil, "slider").ForEach(function (element)
+        element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
+        element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
+        UpdateSliderAppearance(element)
+    end)
+
+    -- Toggles
+    tm.root.Query(nil, "toggle-track").ForEach(function (element)
+        element.RegisterCallback(eventType.Click, function (track)
+            track.ToggleInClassList("toggle-track-on")
+            track.ToggleInClassList("toggle-track-off")
+        end)
+    end)
+
+    -- Buttons
+    function SetUpButtonSoundsForClass(className)
+        tm.root.Query(nil, className).ForEach(function (element)
+            controls.SetUpButtonSounds(element)
+        end)
+    end
     SetUpButtonSoundsForClass("button-text")
     SetUpButtonSoundsForClass("button-icon")
     SetUpButtonSoundsForClass("button-outlined")
@@ -135,9 +76,72 @@ function InitializeControls()
     SetUpButtonSoundsForClass("button-card")
     SetUpButtonSoundsForClass("toggle-track")
     SetUpButtonSoundsForClass("input-field")
-    SetUpSliderSounds()
-    SetUpAllScrollingTexts()
+
+    -- Sliders
+    tm.root.Query(nil, "slider").ForEach(function (element)
+        SetUpPointerOverSound(element)
+    end)
+
+    -- Scrolling texts
+    tm.root.Query(nil, "scrolling-text").ForEach(function (container)
+        controls.SetUpScrollingText(container)
+    end)
 end
+
+-- These are the control functions meant to be called
+-- from other scripts.
+controls = {
+    SetProgressBar = function(progressBar, percent)
+        progressBar.Q("filled-portion").style.right =
+            StyleLengthInPercent(100 - percent)
+    end,
+
+    SetSliderValueWithoutNotify = function(slider, value)
+        slider.SetValueWithoutNotify(value)
+        UpdateSliderAppearance(slider)
+    end,
+
+    IsToggleOn = function(trackElement)
+        return trackElement.ClassListContains("toggle-track-on")
+    end,
+
+    SetToggleIsOn = function(trackElement, on)
+        trackElement.EnableInClassList("toggle-track-on", on)
+        trackElement.EnableInClassList("toggle-track-off", not on)
+    end,
+
+    SetUpButtonSounds = function(element)
+        SetUpClickSound(element)
+        SetUpPointerOverSound(element)
+    end,
+
+    SetRadioButton = function(onButton, buttonsInGroup)
+        for _, radio in ipairs(buttonsInGroup) do
+            radio.Q("on-icon").display = (radio == onButton)
+            radio.Q("off-icon").display = not (radio == onButton)
+        end
+    end,
+
+    SetUpScrollingText = function(scrollingTextContainer)
+        scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
+        scrollingTextContainer.Q("unity-content-viewport").pickable = false
+        scrollingTextContainer.Q("unity-content-container").pickable = false
+        function ContainerUpdate(element)
+            local low = element.horizontalScroller.lowValue
+            local high = element.horizontalScroller.highValue
+            if (net.float.IsNaN(high) or high <= low) then
+                return
+            end
+            local scrollDuration = 4
+            local pingPongTime = unity.mathf.PingPong(unity.time.time, scrollDuration)
+            -- InverseLerp's output is clamped between 0 and 1.
+            local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+            element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
+        end
+        scrollingTextContainer.UnregisterCallback(eventType.FrameUpdate, ContainerUpdate)
+        scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
+    end
+}
 
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
@@ -157,44 +161,39 @@ function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     FadeInCoroutine(to, -length, 0)
 end
 
--- toPanelInitializer will be called 1 frame after the "to"
--- panel becomes displayed, so all the layout is ready.
---
--- Avoid adding VisualElements inside toPanelInitializer:
--- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromLeft(from, to, toPanelInitializer)
-    tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
-            100,  -- length
-            toPanelInitializer)
-    end)
-end
+panelTransition = {
+    -- toPanelInitializer will be called 1 frame after the "to"
+    -- panel becomes displayed, so all the layout is ready.
+    --
+    -- Avoid adding VisualElements inside toPanelInitializer:
+    -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
+    FromLeft = function(from, to, toPanelInitializer)
+        tm.StartCoroutine(function()
+            TransitionPanelCoroutine(from, to,
+                100,  -- length
+                toPanelInitializer)
+        end)
+    end,
 
--- toPanelInitializer will be called 1 frame after the "to"
--- panel becomes displayed, so all the layout is ready.
---
--- Avoid adding VisualElements inside toPanelInitializer:
--- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-function TransitionPanelFromRight(from, to, toPanelInitializer)
-    tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
-            -100,  -- length
-            toPanelInitializer)
-    end)
-end
+    -- toPanelInitializer will be called 1 frame after the "to"
+    -- panel becomes displayed, so all the layout is ready.
+    --
+    -- Avoid adding VisualElements inside toPanelInitializer:
+    -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
+    FromRight = function(from, to, toPanelInitializer)
+        tm.StartCoroutine(function()
+            TransitionPanelCoroutine(from, to,
+                -100,  -- length
+                toPanelInitializer)
+        end)
+    end,
 
-function FadeOutThenInToPanel(from, to, toPanelInitializer)
-    tm.StartCoroutine(function()
-        TransitionPanelCoroutine(from, to,
-            0,  -- length
-            toPanelInitializer
-        )
-    end)
-end
-
-function SetRadioButton(onButton, buttonsInGroup)
-    for _, radio in ipairs(buttonsInGroup) do
-        radio.Q("on-icon").display = (radio == onButton)
-        radio.Q("off-icon").display = not (radio == onButton)
+    Fade = function(from, to, toPanelInitializer)
+        tm.StartCoroutine(function()
+            TransitionPanelCoroutine(from, to,
+                0,  -- length
+                toPanelInitializer
+            )
+        end)
     end
-end
+}

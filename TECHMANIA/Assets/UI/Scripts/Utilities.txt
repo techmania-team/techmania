@@ -38,99 +38,9 @@ function ScoreToRank(score)
     end
 end
 
--- Returns a table with keys "density", "peak", "speed", "chaos" and "async".
--- Make sure to call pattern.PrepareForTimeCalculation() before this.
-function CalculateRadarOfPattern(pattern)
-    local radar = {}
-    if (pattern == nil) then
-        radar.density = 0
-        radar.peak = 0
-        radar.speed = 0
-        radar.chaos = 0
-        radar.async = 0
-        return radar
-    end
+commonUI = {}
 
-    -- Pre-processing
-    local seconds = 0
-    local scans = 0
-    _, seconds, scans = pattern.GetLengthInSecondsAndScans()
-    local pulsesPerBeat = 240
-    local pulsesPerScan = pattern.patternMetadata.bps * pulsesPerBeat
-    local playableNotes = 0
-    local notesInScan = {}
-    local numChaosNotes = 0
-    local numAsyncNotes = 0
-    local allNotes = pattern.notesAsList()
-    for _, n in ipairs(allNotes) do
-        if (n.lane < pattern.patternMetadata.playableLanes) then
-            playableNotes = playableNotes + 1
-
-            local scan = math.floor(n.pulse / pulsesPerScan)
-            if (notesInScan[scan] == nil) then notesInScan[scan] = 0 end
-            notesInScan[scan] = notesInScan[scan] + 1
-
-            if (n.pulse % (pulsesPerBeat / 2) ~= 0) then
-                numChaosNotes = numChaosNotes + 1
-            end
-
-            if (n.type == tm.enum.noteType.Hold or
-                n.type == tm.enum.noteType.RepeatHeadHold) then
-                numAsyncNotes = numAsyncNotes + 0.5
-            elseif (n.type == tm.enum.noteType.Repeat or
-                n.type == tm.enum.noteType.RepeatHold) then
-                numAsyncNotes = numAsyncNotes + 1
-            end
-        end
-    end
-    
-    function Normalize(raw, min, max)
-        local t = unity.mathf.InverseLerp(min, max, raw)
-        return unity.mathf.RoundToInt(t * 100)
-    end
-
-    -- Density: average number of notes per second.
-    local density = 0
-    if (seconds > 0) then
-        density = playableNotes / seconds
-    end
-    radar.density = Normalize(density, 0.5, 8)
-
-    -- Peak: peak number of notes per second.
-    local peak = 0
-    for scan, notes in pairs(notesInScan) do  -- Not ipairs here as some scans may be empty
-        local startTime = pattern.PulseToTime(scan * pulsesPerScan)
-        local endTime = pattern.PulseToTime((scan + 1) * pulsesPerScan)
-        local densityOfThisScan = notes / (endTime - startTime)
-        if (densityOfThisScan > peak) then peak = densityOfThisScan end
-    end
-    radar.peak = Normalize(peak, 1, 18)
-
-    -- Speed: average scans per minute.
-    local speed = 0
-    if (seconds > 0) then
-        speed = scans * 60 / seconds
-    end
-    radar.speed = Normalize(speed, 12, 55)
-
-    -- Chaos: percentage of notes that are not 4th or 8th notes.
-    local chaos = 0
-    if (playableNotes > 0) then
-        chaos = numChaosNotes * 100 / playableNotes
-    end
-    radar.chaos = Normalize(chaos, 0, 50)
-
-    -- Async: percentage of notes that are hold or repeat notes.
-    local async = 0
-    if (playableNotes > 0) then
-        async = numAsyncNotes * 100 / playableNotes
-    end
-    radar.async = Normalize(async, 0, 40)
-
-    return radar
-end
-
-function InitializeVolumeSliders(container)
+commonUI.InitializeVolumeSliders = function(container)
     function InitializeOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
@@ -150,13 +60,13 @@ function InitializeVolumeSliders(container)
     InitializeOneVolumeSlider("sound-effects", "sfxVolumePercent")
 end
 
-function ShowVolumeSliders(container)
+commonUI.ShowVolumeSliders = function(container)
     function ShowOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
         local valueDisplay = wrap.Q("value-display")
 
-        SetSliderValueWithoutNotify(slider, tm.options[optionKey])
+        controls.SetSliderValueWithoutNotify(slider, tm.options[optionKey])
         valueDisplay.text = tostring(tm.options[optionKey])
     end
     ShowOneVolumeSlider("master", "masterVolumePercent")
@@ -166,7 +76,7 @@ function ShowVolumeSliders(container)
 end
 
 -- Uses the selectTrackPanel.selectedTrackOptions global variable.
-function InitializeBgBrightnessSlider(container)
+commonUI.InitializeBgBrightnessSlider = function(container)
     local slider = container.Q("slider")
     slider.lowValue = 0
     slider.highValue = 10
@@ -181,7 +91,7 @@ function InitializeBgBrightnessSlider(container)
 end
 
 -- Uses the selectTrackPanel.selectedTrackOptions global variable.
-function ShowBgBrightnessSlider(container)
-    SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
+commonUI.ShowBgBrightnessSlider = function(container)
+    controls.SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
     container.Q("value-display").text = tostring(selectTrackPanel.selectedTrackOptions.backgroundBrightness)
 end
