@@ -1,5 +1,9 @@
-function InitializeInformationPanel()
-    local panel = tm.root.Q("information-panel")
+infoPanel = {
+    panel = tm.root.Q("information-panel")
+}
+
+infoPanel.Initialize = function()
+    local panel = infoPanel.panel
     panel.display = false
 
     local platform = tm.GetPlatform()
@@ -36,4 +40,4 @@ function InitializeInformationPanel()
     panel.Q("localization-text").text = localizerCredit
 end
 
-InitializeInformationPanel()
+infoPanel.Initialize()

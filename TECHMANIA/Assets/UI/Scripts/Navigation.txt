@@ -1,29 +1,31 @@
 function SetUpNavigation()
-    tm.root.Q("main-menu").Q("start-button").RegisterCallback(eventType.Click, function()
+    local mainMenu = tm.root.Q("main-menu")
+
+    mainMenu.Q("start-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
-            tm.root.Q("main-menu"),
-            tm.root.Q("select-track-panel")
+            mainMenu,
+            selectTrackPanel.panel
         )
         selectTrackPanel.Show()
     end)
-    tm.root.Q("select-track-panel").Q("back-button").RegisterCallback(eventType.Click, function()
+    selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
-            tm.root.Q("select-track-panel"),
-            tm.root.Q("main-menu")
+            selectTrackPanel.panel,
+            mainMenu
         )
     end)
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
-    tm.root.Q("select-pattern-panel").Q("back-button").RegisterCallback(eventType.Click, function()
+    selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
-            tm.root.Q("select-pattern-panel"),
-            tm.root.Q("select-track-panel")
+            selectPatternPanel.panel,
+            selectTrackPanel.panel
         )
-        StopPreviewTrackPlayback()
+        selectPatternPanel.StopPreviewTrackPlayback()
     end)
-    tm.root.Q("select-pattern-panel").Q("play-button").RegisterCallback(eventType.Click, function()
+    selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
         FadeOutThenInToPanel(
-            tm.root.Q("select-pattern-panel"),
+            selectPatternPanel.panel,
             tm.root.Q("game-panel"),
             function()
                 -- Only start loading after the game panel appears, in order
@@ -31,60 +33,60 @@ function SetUpNavigation()
                 tm.game.BeginLoading()
             end
         )
-        StopPreviewTrackPlayback()
+        selectPatternPanel.StopPreviewTrackPlayback()
     end)
-    tm.root.Q("main-menu").Q("options-button").RegisterCallback(eventType.Click, function()
+    mainMenu.Q("options-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
-            tm.root.Q("main-menu"),
-            tm.root.Q("options-panel")
+            mainMenu,
+            optionsPanel.panel
         )
-        ShowOptionsPanel()
+        optionsPanel.Show()
     end)
-    tm.root.Q("options-panel").Q("back-button").RegisterCallback(eventType.Click, function()
+    optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
-            tm.root.Q("options-panel"),
-            tm.root.Q("main-menu")
+            optionsPanel.panel,
+            mainMenu
         )
         tm.options.SaveToFile()
     end)
-    tm.root.Q("main-menu").Q("information-button").RegisterCallback(eventType.Click, function()
+    mainMenu.Q("information-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromRight(
-            tm.root.Q("main-menu"),
-            tm.root.Q("information-panel")
+            mainMenu,
+            infoPanel.panel
         )
     end)
-    tm.root.Q("information-panel").Q("back-button").RegisterCallback(eventType.Click, function()
+    infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         TransitionPanelFromLeft(
-            tm.root.Q("information-panel"),
-            tm.root.Q("main-menu")
+            infoPanel.panel,
+            mainMenu
         )
     end)
-    tm.root.Q("main-menu").Q("quit-button").RegisterCallback(eventType.Click, function()
+    mainMenu.Q("quit-button").RegisterCallback(eventType.Click, function()
         tm.Quit()
     end)
 end
 
 function SelectTrackToSelectPatternPanel()
     TransitionPanelFromRight(
-        tm.root.Q("select-track-panel"),
-        tm.root.Q("select-pattern-panel"),
+        selectTrackPanel.panel,
+        selectPatternPanel.panel,
         function()
-            -- This has to be called 1 frame after select-pattern-panel
+            -- This has to be called 1 frame after selectPatternPanel
             -- displays so the radar can be initialized properly.
-            InitializeRadar()
-            -- This has to be called after select-pattern-panel displays
+            selectPatternPanel.InitializeRadar()
+            -- This has to be called after selectPatternPanel displays
             -- so the load audio callback can check whether the panel
             -- displays to decide whether to play the audio.
-            StartPreviewTrackPlayback()
+            selectPatternPanel.StartPreviewTrackPlayback()
         end
     )
-    ShowSelectPatternPanel()
+    selectPatternPanel.Show()
 end
 
 function GamePanelToSelectTrackPanel()
     FadeOutThenInToPanel(
         tm.root.Q("game-panel"),
-        tm.root.Q("select-track-panel"),
+        selectTrackPanel.panel,
         function()
             -- This causes the BGA to unload so it should happen
             -- after the game panel has faded out.

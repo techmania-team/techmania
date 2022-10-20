@@ -1,11 +1,5 @@
 themeOptions = nil
 
--- key: enum, value: display string
-fullScreenDisplayString = {}
-beatMarkersDisplayString = {}
-bgScalingDisplayString = {}
-rulesetDisplayString = {}
-
 function InitializeThemeOptions()
     themeOptions = tm.options.GetThemeOptions()
 
@@ -26,7 +20,18 @@ function InitializeThemeOptions()
     InitializeOneOption("pauseWhenGameLosesFocus", "True")
 end
 
-function UpdateCustomDataLocationDisplay(panel)
+optionsPanel = {
+    panel = tm.root.Q("options-panel"),
+
+    -- key: enum, value: display string
+    fullScreenDisplayString = {},
+    beatMarkersDisplayString = {},
+    bgScalingDisplayString = {},
+    rulesetDisplayString = {}
+}
+
+optionsPanel.UpdateCustomDataLocationDisplay = function()
+    local panel = optionsPanel.panel
     local tracksContainer = panel.Q("tracks-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
     if (tm.options.customDataLocation) then
@@ -48,8 +53,8 @@ function UpdateCustomDataLocationDisplay(panel)
     end
 end
 
-function ShowOptionsPanel()
-    local panel = tm.root.Q("options-panel")
+optionsPanel.Show = function()
+    local panel = optionsPanel.panel
 
     local currentResolution = unity.resolution.__new()
     currentResolution.width = tm.options.width
@@ -59,7 +64,7 @@ function ShowOptionsPanel()
     resolutionDropdown.SetValueWithoutNotify(currentResolution.ToString())
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
-    fullScreenDropdown.SetValueWithoutNotify(fullScreenDisplayString[tm.options.fullScreenMode])
+    fullScreenDropdown.SetValueWithoutNotify(optionsPanel.fullScreenDisplayString[tm.options.fullScreenMode])
 
     local vSyncToggle = panel.Q("vsync").Q("track")
     SetToggleIsOn(vSyncToggle, tm.options.vSync)
@@ -83,16 +88,16 @@ function ShowOptionsPanel()
     ShowThemeOptionToggle("show-lane-dividers", "showLaneDividers")
 
     local beatMarkersDropdown = panel.Q("beat-markers").Q("dropdown")
-    beatMarkersDropdown.SetValueWithoutNotify(beatMarkersDisplayString[themeOptions.Get("beatMarkers")])
+    beatMarkersDropdown.SetValueWithoutNotify(optionsPanel.beatMarkersDisplayString[themeOptions.Get("beatMarkers")])
     local bgScalingDropdown = panel.Q("background-scaling").Q("dropdown")
-    bgScalingDropdown.SetValueWithoutNotify(bgScalingDisplayString[themeOptions.Get("backgroundScalingMode")])
+    bgScalingDropdown.SetValueWithoutNotify(optionsPanel.bgScalingDisplayString[themeOptions.Get("backgroundScalingMode")])
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
-    rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.options.ruleset])
+    rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.options.ruleset])
 
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     SetToggleIsOn(customLocationToggle, tm.options.customDataLocation)
-    UpdateCustomDataLocationDisplay(panel)
+    optionsPanel.UpdateCustomDataLocationDisplay()
 
     local offsetLatencyDisplay = panel.Q("offset-latency").Q("value-display")
     offsetLatencyDisplay.text =
@@ -104,7 +109,7 @@ function ShowOptionsPanel()
     ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 end
 
-function InitializeOptionsPanel()
+optionsPanel.Initialize = function()
     function InitializeLocalizedDropdowns(panel)
         function InitializeOneLocalizedDropdown(containerName, stringTable)
             local dropdown = panel.Q(containerName).Q("dropdown")
@@ -115,36 +120,36 @@ function InitializeOptionsPanel()
             dropdown.choices = choices
         end
 
-        fullScreenDisplayString = {
+        optionsPanel.fullScreenDisplayString = {
             [unity.enum.fullScreenMode.ExclusiveFullScreen] = tm.l10n.GetString("fullscreen_mode_exclusive_fullscreen"),
             [unity.enum.fullScreenMode.FullScreenWindow] = tm.l10n.GetString("fullscreen_mode_fullscreen_window"),
             [unity.enum.fullScreenMode.MaximizedWindow] = tm.l10n.GetString("fullscreen_mode_maximized_window"),
             [unity.enum.fullScreenMode.Windowed] = tm.l10n.GetString("fullscreen_mode_windowed")
         }
-        InitializeOneLocalizedDropdown("fullscreen-mode", fullScreenDisplayString)
+        InitializeOneLocalizedDropdown("fullscreen-mode", optionsPanel.fullScreenDisplayString)
         
-        beatMarkersDisplayString = {
+        optionsPanel.beatMarkersDisplayString = {
             Hidden = tm.l10n.GetString("beat_markers_hidden"),
             ShowBeatMarkers = tm.l10n.GetString("beat_markers_show_beat_markers"),
             ShowHalfBeatMarkers = tm.l10n.GetString("beat_markers_show_half_beat_markers")
         }
-        InitializeOneLocalizedDropdown("beat-markers", beatMarkersDisplayString)
+        InitializeOneLocalizedDropdown("beat-markers", optionsPanel.beatMarkersDisplayString)
 
-        bgScalingDisplayString = {
+        optionsPanel.bgScalingDisplayString = {
             FillEntireScreen = tm.l10n.GetString("bg_scaling_fill_entire_screen"),
             FillGameArea = tm.l10n.GetString("bg_scaling_fill_game_area")
         }
-        InitializeOneLocalizedDropdown("background-scaling", bgScalingDisplayString)
+        InitializeOneLocalizedDropdown("background-scaling", optionsPanel.bgScalingDisplayString)
 
-        rulesetDisplayString = {
+        optionsPanel.rulesetDisplayString = {
             [tm.enum.ruleset.Standard] = tm.l10n.GetString("ruleset_standard"),
             [tm.enum.ruleset.Legacy] = tm.l10n.GetString("ruleset_legacy"),
             [tm.enum.ruleset.Custom] = tm.l10n.GetString("ruleset_custom")
         }
-        InitializeOneLocalizedDropdown("ruleset", rulesetDisplayString)
+        InitializeOneLocalizedDropdown("ruleset", optionsPanel.rulesetDisplayString)
     end
 
-    local panel = tm.root.Q("options-panel")
+    local panel = optionsPanel.panel
     InitializeLocalizedDropdowns(panel)
     table.insert(callbacksOnLocaleChange, function()
         InitializeLocalizedDropdowns(panel)
@@ -171,7 +176,7 @@ function InitializeOptionsPanel()
 
     local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
     fullScreenDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        tm.options.fullScreenMode = KeyFromValue(fullScreenDisplayString, event.newValue)
+        tm.options.fullScreenMode = KeyFromValue(optionsPanel.fullScreenDisplayString, event.newValue)
         tm.options.ApplyGraphicSettings()
     end)
 
@@ -204,7 +209,7 @@ function InitializeOptionsPanel()
         for _, callback in ipairs(callbacksOnLocaleChange) do
             callback()
         end
-        ShowOptionsPanel()
+        optionsPanel.Show()
     end)
 
     local skinsButton = panel.Q("skins").Q("button")
@@ -236,12 +241,12 @@ function InitializeOptionsPanel()
             themeOptions.Set(key, enum)
         end)
     end
-    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", beatMarkersDisplayString)
-    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", bgScalingDisplayString)
+    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", optionsPanel.beatMarkersDisplayString)
+    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", optionsPanel.bgScalingDisplayString)
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        tm.options.ruleset = KeyFromValue(rulesetDisplayString, event.newValue)
+        tm.options.ruleset = KeyFromValue(optionsPanel.rulesetDisplayString, event.newValue)
         if (tm.options.ruleset == tm.enum.ruleset.Custom) then
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.ok) then
@@ -250,7 +255,7 @@ function InitializeOptionsPanel()
                 local error = net.string.Format(errorFormat, path)
                 alertBox.Alert(error)
                 tm.options.ruleset = tm.enum.ruleset.Standard
-                rulesetDropdown.SetValueWithoutNotify(rulesetDisplayString[tm.enum.ruleset.Standard])
+                rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.enum.ruleset.Standard])
             end
         end
     end)
@@ -259,7 +264,7 @@ function InitializeOptionsPanel()
     customLocationToggle.RegisterCallback(eventType.Click, function()
         tm.options.customDataLocation = not tm.options.customDataLocation
         selectTrackPanel.needsRefresh = true
-        UpdateCustomDataLocationDisplay(panel)
+        optionsPanel.UpdateCustomDataLocationDisplay()
     end)
 
     local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
@@ -269,7 +274,7 @@ function InitializeOptionsPanel()
             tm.options.tracksFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
             selectTrackPanel.needsRefresh = true
-            UpdateCustomDataLocationDisplay(panel)
+            optionsPanel.UpdateCustomDataLocationDisplay()
         end
     end)
     local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
@@ -278,7 +283,7 @@ function InitializeOptionsPanel()
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
-            UpdateCustomDataLocationDisplay(panel)
+            optionsPanel.UpdateCustomDataLocationDisplay()
         end
     end)
 
@@ -286,4 +291,4 @@ function InitializeOptionsPanel()
 end
 
 InitializeThemeOptions()
-InitializeOptionsPanel()
+optionsPanel.Initialize()

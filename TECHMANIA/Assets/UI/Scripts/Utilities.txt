@@ -165,14 +165,14 @@ function ShowVolumeSliders(container)
     ShowOneVolumeSlider("sound-effects", "sfxVolumePercent")
 end
 
--- Uses the selectedTrackOptions global variable.
+-- Uses the selectTrackPanel.selectedTrackOptions global variable.
 function InitializeBgBrightnessSlider(container)
     local slider = container.Q("slider")
     slider.lowValue = 0
     slider.highValue = 10
     slider.RegisterCallback(eventType.ChangeInt, function(element, event)
-        if (selectedTrackOptions == nil) then return end
-        selectedTrackOptions.backgroundBrightness = event.newValue
+        if (selectTrackPanel.selectedTrackOptions == nil) then return end
+        selectTrackPanel.selectedTrackOptions.backgroundBrightness = event.newValue
         container.Q("value-display").text = tostring(event.newValue)
         if (tm.game.state == tm.enum.gameState.Ongoing or tm.game.state == tm.enum.gameState.Paused) then
             tm.game.UpdateBgBrightness()
@@ -180,8 +180,8 @@ function InitializeBgBrightnessSlider(container)
     end)
 end
 
--- Uses the selectedTrackOptions global variable.
+-- Uses the selectTrackPanel.selectedTrackOptions global variable.
 function ShowBgBrightnessSlider(container)
-    SetSliderValueWithoutNotify(container.Q("slider"), selectedTrackOptions.backgroundBrightness)
-    container.Q("value-display").text = tostring(selectedTrackOptions.backgroundBrightness)
+    SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
+    container.Q("value-display").text = tostring(selectTrackPanel.selectedTrackOptions.backgroundBrightness)
 end
