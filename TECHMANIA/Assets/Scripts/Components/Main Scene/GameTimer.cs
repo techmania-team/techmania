@@ -38,8 +38,8 @@ public class GameTimer
     #region Pattern metadata
     private Pattern pattern;
     private float endOfPatternBaseTime;
-    private int firstScan;
-    private int lastScan;
+    public int firstScan { get; private set; }
+    public int lastScan { get; private set; }
 
     // BaseTime is equal to this value when the stopwatch begins.
     private float initialTime;

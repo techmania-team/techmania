@@ -11,36 +11,43 @@ public class GameLayout
     private float countdownLengthInScans;
 
     private VisualElement gameContainer;
+    private TemplateContainer layout;
 
     public enum ScanDirection
     {
         Left,
         Right
     }
-
-    private TemplateContainer layout;
-    private class ScanElements
+    private class HalfElements
     {
         public ScanDirection direction;
-        public VisualElement scanlineAnchor;
-        public VisualElement scanline;
+        public VisualElement scanlineContainer;
         public VisualElement countdownBg;
         public VisualElement countdownNum;
         public VisualElement noteContainer;
     }
-    private ScanElements topScan;
-    private ScanElements bottomScan;
-    // Points to one of topScan/bottomScan.
-    private ScanElements evenScan;
-    // Points to one of topScan/bottomScan.
-    private ScanElements oddScan;
+    private HalfElements topHalf;
+    private HalfElements bottomHalf;
+    // Points to one of topHalf/bottomHalf.
+    private HalfElements evenHalf;
+    // Points to one of topHalf/bottomHalf.
+    private HalfElements oddHalf;
+
+    private class ScanElements
+    {
+        public int scanNumber;
+        public ScanDirection direction;
+        public TemplateContainer anchor;
+        public VisualElement scanline;
+    }
+    private List<ScanElements> scanElements;
 
     #region Public properties
     public float scanHeight => gameContainer.resolvedStyle
         .height * 0.5f;
     public float screenWidth => gameContainer.resolvedStyle.width;
-    public ScanDirection evenScanDirection => evenScan.direction;
-    public ScanDirection oddScanDirection => oddScan.direction;
+    public ScanDirection evenScanDirection => evenHalf.direction;
+    public ScanDirection oddScanDirection => oddHalf.direction;
     #endregion
 
     public GameLayout(Pattern pattern,
@@ -59,17 +66,16 @@ public class GameLayout
             new StyleEnum<DisplayStyle>(DisplayStyle.None);
         gameContainer.Add(layout);
 
-        System.Func<VisualElement, ScanElements> makeScanElements =
-            (VisualElement element) => new ScanElements()
+        System.Func<VisualElement, HalfElements> makeHalfElements =
+            (VisualElement element) => new HalfElements()
             {
-                scanlineAnchor = element.Q("scanline-anchor"),
-                scanline = element.Q("scanline"),
+                scanlineContainer = element.Q("scanline-container"),
                 countdownBg = element.Q("countdown-bg"),
                 countdownNum = element.Q("countdown-num"),
                 noteContainer = element.Q("note-container")
             };
-        topScan = makeScanElements(layout.Q("top-half"));
-        bottomScan = makeScanElements(layout.Q("bottom-half"));
+        topHalf = makeHalfElements(layout.Q("top-half"));
+        bottomHalf = makeHalfElements(layout.Q("bottom-half"));
     }
 
     public void ResetAspectRatio()
@@ -83,74 +89,96 @@ public class GameLayout
                 element.style.width = scanHeight *
                     rect.width / rect.height;
             };
-        System.Action<ScanElements> setAspectRatioForScan =
-            (ScanElements scanElements) =>
+
+        System.Action<HalfElements> setAspectRatioForHalf =
+            (HalfElements half) =>
             {
-                setAspectRatio(scanElements.scanline,
-                    skin.scanline);
-                setAspectRatio(scanElements.countdownBg,
+                setAspectRatio(half.countdownBg,
                     skin.scanCountdownBackground);
-                setAspectRatio(scanElements.countdownNum,
+                setAspectRatio(half.countdownNum,
                     skin.scanCountdownNumbers);
             };
-        setAspectRatioForScan(topScan);
-        setAspectRatioForScan(bottomScan);
+        setAspectRatioForHalf(topHalf);
+        setAspectRatioForHalf(bottomHalf);
+
+        foreach (ScanElements scan in scanElements)
+        {
+            setAspectRatio(scan.scanline, skin.scanline);
+        }
     }
 
-    public void Prepare()
+    public void Prepare(int firstScan, int lastScan,
+        VisualTreeAsset scanlineTemplate)
     {
-        ResetAspectRatio();
-
         // Respond to scan direction.
         switch (Modifiers.instance.scanDirection)
         {
             case Modifiers.ScanDirection.Normal:
-                topScan.direction = ScanDirection.Right;
-                bottomScan.direction = ScanDirection.Left;
+                topHalf.direction = ScanDirection.Right;
+                bottomHalf.direction = ScanDirection.Left;
                 break;
             case Modifiers.ScanDirection.RR:
-                topScan.direction = ScanDirection.Right;
-                bottomScan.direction = ScanDirection.Right;
+                topHalf.direction = ScanDirection.Right;
+                bottomHalf.direction = ScanDirection.Right;
                 break;
             case Modifiers.ScanDirection.LR:
-                topScan.direction = ScanDirection.Left;
-                bottomScan.direction = ScanDirection.Right;
+                topHalf.direction = ScanDirection.Left;
+                bottomHalf.direction = ScanDirection.Right;
                 break;
             case Modifiers.ScanDirection.LL:
-                topScan.direction = ScanDirection.Left;
-                bottomScan.direction = ScanDirection.Left;
+                topHalf.direction = ScanDirection.Left;
+                bottomHalf.direction = ScanDirection.Left;
                 break;
         }
-        System.Action<ScanElements> setUpFlip =
-            (ScanElements elements) =>
+        System.Action<HalfElements> setUpFlip =
+            (HalfElements half) =>
         {
-            elements.scanline.EnableInClassList("h-flipped",
-                elements.direction == ScanDirection.Left);
-            elements.countdownBg.EnableInClassList("left-side",
-                elements.direction == ScanDirection.Right);
-            elements.countdownBg.EnableInClassList("right-side",
-                elements.direction == ScanDirection.Left);
-            elements.countdownBg.EnableInClassList("h-flipped",
-                elements.direction == ScanDirection.Left);
-            elements.countdownNum.EnableInClassList("left-side",
-                elements.direction == ScanDirection.Right);
-            elements.countdownNum.EnableInClassList("right-side",
-                elements.direction == ScanDirection.Left);
+            half.countdownBg.EnableInClassList("left-side",
+                half.direction == ScanDirection.Right);
+            half.countdownBg.EnableInClassList("right-side",
+                half.direction == ScanDirection.Left);
+            half.countdownBg.EnableInClassList("h-flipped",
+                half.direction == ScanDirection.Left);
+            half.countdownNum.EnableInClassList("left-side",
+                half.direction == ScanDirection.Right);
+            half.countdownNum.EnableInClassList("right-side",
+                half.direction == ScanDirection.Left);
         };
-        setUpFlip(topScan);
-        setUpFlip(bottomScan);
+        setUpFlip(topHalf);
+        setUpFlip(bottomHalf);
 
         // Respond to swap.
         switch (Modifiers.instance.scanPosition)
         {
             case Modifiers.ScanPosition.Normal:
-                evenScan = bottomScan;
-                oddScan = topScan;
+                evenHalf = bottomHalf;
+                oddHalf = topHalf;
                 break;
             case Modifiers.ScanPosition.Swap:
-                evenScan = topScan;
-                oddScan = bottomScan;
+                evenHalf = topHalf;
+                oddHalf = bottomHalf;
                 break;
+        }
+
+        // Spawn scanlines.
+        scanElements = new List<ScanElements>();
+        for (int i = firstScan; i <= lastScan; i++)
+        {
+            HalfElements half = (i % 2 == 0) ? evenHalf : oddHalf;
+            ScanElements scan = new ScanElements()
+            {
+                scanNumber = i,
+                direction = half.direction,
+                anchor = scanlineTemplate.Instantiate()
+            };
+            scan.anchor.pickingMode = PickingMode.Ignore;
+            scan.anchor.AddToClassList("scanline-anchor");
+            scan.scanline = scan.anchor.Q("scanline");
+            scan.scanline.EnableInClassList("h-flipped",
+                scan.direction == ScanDirection.Left);
+
+            half.scanlineContainer.Add(scan.anchor);
+            scanElements.Add(scan);
         }
 
         // Calculate countdown length.
@@ -171,6 +199,9 @@ public class GameLayout
                 countdownLengthInScans = 3f / bps;
             }
         }
+
+        // Reset aspect ratio.
+        ResetAspectRatio();
     }
 
     public void Begin()
@@ -183,6 +214,7 @@ public class GameLayout
     public void Dispose()
     {
         layout.RemoveFromHierarchy();
+        scanElements.Clear();
     }
 
     public void Update(float scan)
@@ -190,49 +222,45 @@ public class GameLayout
         // Because modulo doesn't work on negative numbers.
         while (scan < 0f) scan += 2f;
 
-        // Update scanline position.
+        // Update scanline.
+
+        GameUISkin skin = GlobalResource.gameUiSkin;
+        float scanAfterRepeat = Mathf.Repeat(scan, 1f);
+        Sprite scanlineSprite = skin.scanline.GetSpriteAtFloatIndex(
+            scanAfterRepeat);
 
         float marginBeforeScan = Ruleset.instance
             .scanMarginBeforeFirstBeat;
         float marginAfterScan = Ruleset.instance
             .scanMarginAfterLastBeat;
-
-        // Clamp scan to [-0.5, 1.5].
-        float clampedScanEven = Mathf.Repeat(scan + 0.5f, 2f) - 0.5f;
-        float clampedScanOdd = Mathf.Repeat(scan + 1.5f, 2f) - 0.5f;
-        // And then take margins into account.
-        float relativeXEven = Mathf.LerpUnclamped(marginBeforeScan,
-            1f - marginAfterScan, clampedScanEven);
-        float relativeXOdd = Mathf.LerpUnclamped(marginBeforeScan,
-            1f - marginAfterScan, clampedScanOdd);
-
-        System.Action<ScanElements, float> setRelativeX =
-            (ScanElements elements, float relativeX) =>
+        foreach (ScanElements s in scanElements)
+        {
+            float relativeScan = scan - s.scanNumber;
+            float relativeX = Mathf.LerpUnclamped(marginBeforeScan,
+                1f - marginAfterScan, relativeScan);
+            if (s.direction == ScanDirection.Left)
             {
-                if (elements.direction == ScanDirection.Left)
-                {
-                    relativeX = 1f - relativeX;
-                }
-                elements.scanlineAnchor.style.left =
-                    new StyleLength(new Length(
-                        relativeX * 100f, LengthUnit.Percent));
-            };
-        setRelativeX(evenScan, relativeXEven);
-        setRelativeX(oddScan, relativeXOdd);
+                relativeX = 1f - relativeX;
+            }
+
+            s.anchor.style.left = new StyleLength(new Length(
+                relativeX * 100f, LengthUnit.Percent));
+            s.scanline.style.backgroundImage = new StyleBackground(
+                scanlineSprite);
+        }
 
         // Update countdown.
 
-        GameUISkin skin = GlobalResource.gameUiSkin;
         // Clamp scan to [0, 2].
-        clampedScanEven = Mathf.Repeat(scan, 2f);
-        clampedScanOdd = Mathf.Repeat(scan + 1f, 2f);
+        float clampedScanEven = Mathf.Repeat(scan, 2f);
+        float clampedScanOdd = Mathf.Repeat(scan + 1f, 2f);
         // Calculate countdown progress.
         float countdownProgresEven = Mathf.InverseLerp(
             2f - countdownLengthInScans, 2f, clampedScanEven);
         float countdownProgresOdd = Mathf.InverseLerp(
             2f - countdownLengthInScans, 2f, clampedScanOdd);
-        System.Action<ScanElements, float> setCountdownProgress =
-            (ScanElements elements, float progress) =>
+        System.Action<HalfElements, float> setCountdownProgress =
+            (HalfElements elements, float progress) =>
             {
                 if (progress < 0f)
                 {
@@ -253,7 +281,7 @@ public class GameLayout
                             .GetSpriteAtFloatIndex(progress));
                 }
             };
-        setCountdownProgress(evenScan, countdownProgresEven);
-        setCountdownProgress(oddScan, countdownProgresOdd);
+        setCountdownProgress(evenHalf, countdownProgresEven);
+        setCountdownProgress(oddHalf, countdownProgresOdd);
     }
 }

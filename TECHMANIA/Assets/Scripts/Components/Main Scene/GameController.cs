@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     public static GameController instance { get; private set; }
 
     public VisualTreeAsset layoutTemplate;
+    public VisualTreeAsset scanlineTemplate;
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
@@ -271,7 +272,10 @@ public class GameController : MonoBehaviour
             gameContainer: setup.gameContainer.inner,
             layoutTemplate: layoutTemplate);
         yield return null;  // For layout update
-        layout.Prepare();
+        layout.Prepare(
+            firstScan: timer.firstScan,
+            lastScan: timer.lastScan,
+            scanlineTemplate);
         
         // TODO: prepare keyboard input.
         // TODO: Spawn note elements; ignore silent hidden notes.
