@@ -1,0 +1,12 @@
+VisualElement {
+    position: absolute;
+}
+
+#hitbox {
+    background-image: url('project://database/Assets/Sprites/Outline.png?fileID=2800000&guid=372db111be00a6b458405cb3e299b0d0&type=3#Outline');
+    -unity-slice-left: 2;
+    -unity-slice-top: 2;
+    -unity-slice-right: 2;
+    -unity-slice-bottom: 2;
+    -unity-background-image-tint-color: rgba(165, 214, 167, 255);
+}
