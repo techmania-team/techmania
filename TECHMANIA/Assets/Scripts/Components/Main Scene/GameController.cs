@@ -97,10 +97,6 @@ public class GameController : MonoBehaviour
         setup.patternAfterModifier = setup.patternBeforeModifier
             .ApplyModifiers(Modifiers.instance);
 
-        // TODO: hide background and VFX from previous game.
-        setup.bgContainer.inner.style.unityBackgroundImageTintColor =
-            Color.clear;
-
         // Step 0: calculate the number of files to load.
         totalFiles =
             1 +  // Background image
@@ -276,8 +272,16 @@ public class GameController : MonoBehaviour
             layoutTemplate: layoutTemplate);
         yield return null;  // For layout update
         layout.Prepare();
-
-        // TODO: Spawn note elements.
+        
+        // TODO: prepare keyboard input.
+        // TODO: Spawn note elements; ignore silent hidden notes.
+        //       Organize note elements in two lists:
+        //       one by scan number, to prepare and activate
+        //       entire scans at once;
+        //       one by lane number, to find the upcoming notes
+        //       of each lane.
+        // TODO: Calculate Fever coefficient.
+        // TODO: Initialize score.
 
         // Load complete; wait on theme to begin game.
         state.SetState(ThemeApi.GameState.State.LoadComplete);

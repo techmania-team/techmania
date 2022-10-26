@@ -34,6 +34,14 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+.note-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
+
 .h-flipped {
     scale: -1 1;
 }

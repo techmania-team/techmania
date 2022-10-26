@@ -2314,7 +2314,7 @@ public class Game : MonoBehaviour
 
     private void ResolveNote(NoteObject n, Judgement judgement)
     {
-        // Remove note from linked lists.
+        // Remove note from lists.
         noteObjectsInLane[n.note.lane].Remove(n);
         switch (n.note.type)
         {

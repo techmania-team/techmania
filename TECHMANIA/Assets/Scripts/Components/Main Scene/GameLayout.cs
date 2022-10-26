@@ -4,16 +4,15 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // Controls scanline and scan countdowns.
+// TODO: spawn one scanline per scan, after all.
 public class GameLayout
 {
     private Pattern pattern;
     private float countdownLengthInScans;
 
     private VisualElement gameContainer;
-    private float scanHeight => gameContainer.resolvedStyle
-        .height * 0.5f;
 
-    private enum Direction
+    public enum ScanDirection
     {
         Left,
         Right
@@ -22,11 +21,12 @@ public class GameLayout
     private TemplateContainer layout;
     private class ScanElements
     {
-        public Direction direction;
+        public ScanDirection direction;
         public VisualElement scanlineAnchor;
         public VisualElement scanline;
         public VisualElement countdownBg;
         public VisualElement countdownNum;
+        public VisualElement noteContainer;
     }
     private ScanElements topScan;
     private ScanElements bottomScan;
@@ -34,6 +34,14 @@ public class GameLayout
     private ScanElements evenScan;
     // Points to one of topScan/bottomScan.
     private ScanElements oddScan;
+
+    #region Public properties
+    public float scanHeight => gameContainer.resolvedStyle
+        .height * 0.5f;
+    public float screenWidth => gameContainer.resolvedStyle.width;
+    public ScanDirection evenScanDirection => evenScan.direction;
+    public ScanDirection oddScanDirection => oddScan.direction;
+    #endregion
 
     public GameLayout(Pattern pattern,
         VisualElement gameContainer,
@@ -57,7 +65,8 @@ public class GameLayout
                 scanlineAnchor = element.Q("scanline-anchor"),
                 scanline = element.Q("scanline"),
                 countdownBg = element.Q("countdown-bg"),
-                countdownNum = element.Q("countdown-num")
+                countdownNum = element.Q("countdown-num"),
+                noteContainer = element.Q("note-container")
             };
         topScan = makeScanElements(layout.Q("top-half"));
         bottomScan = makeScanElements(layout.Q("bottom-half"));
@@ -96,37 +105,37 @@ public class GameLayout
         switch (Modifiers.instance.scanDirection)
         {
             case Modifiers.ScanDirection.Normal:
-                topScan.direction = Direction.Right;
-                bottomScan.direction = Direction.Left;
+                topScan.direction = ScanDirection.Right;
+                bottomScan.direction = ScanDirection.Left;
                 break;
             case Modifiers.ScanDirection.RR:
-                topScan.direction = Direction.Right;
-                bottomScan.direction = Direction.Right;
+                topScan.direction = ScanDirection.Right;
+                bottomScan.direction = ScanDirection.Right;
                 break;
             case Modifiers.ScanDirection.LR:
-                topScan.direction = Direction.Left;
-                bottomScan.direction = Direction.Right;
+                topScan.direction = ScanDirection.Left;
+                bottomScan.direction = ScanDirection.Right;
                 break;
             case Modifiers.ScanDirection.LL:
-                topScan.direction = Direction.Left;
-                bottomScan.direction = Direction.Left;
+                topScan.direction = ScanDirection.Left;
+                bottomScan.direction = ScanDirection.Left;
                 break;
         }
         System.Action<ScanElements> setUpFlip =
             (ScanElements elements) =>
         {
             elements.scanline.EnableInClassList("h-flipped",
-                elements.direction == Direction.Left);
+                elements.direction == ScanDirection.Left);
             elements.countdownBg.EnableInClassList("left-side",
-                elements.direction == Direction.Right);
+                elements.direction == ScanDirection.Right);
             elements.countdownBg.EnableInClassList("right-side",
-                elements.direction == Direction.Left);
+                elements.direction == ScanDirection.Left);
             elements.countdownBg.EnableInClassList("h-flipped",
-                elements.direction == Direction.Left);
+                elements.direction == ScanDirection.Left);
             elements.countdownNum.EnableInClassList("left-side",
-                elements.direction == Direction.Right);
+                elements.direction == ScanDirection.Right);
             elements.countdownNum.EnableInClassList("right-side",
-                elements.direction == Direction.Left);
+                elements.direction == ScanDirection.Left);
         };
         setUpFlip(topScan);
         setUpFlip(bottomScan);
@@ -189,39 +198,39 @@ public class GameLayout
             .scanMarginAfterLastBeat;
 
         // Clamp scan to [-0.5, 1.5].
-        float relativeScanEven = Mathf.Repeat(scan + 0.5f, 2f) - 0.5f;
-        float relativeScanOdd = Mathf.Repeat(scan + 1.5f, 2f) - 0.5f;
+        float clampedScanEven = Mathf.Repeat(scan + 0.5f, 2f) - 0.5f;
+        float clampedScanOdd = Mathf.Repeat(scan + 1.5f, 2f) - 0.5f;
         // And then take margins into account.
-        relativeScanEven = Mathf.LerpUnclamped(marginBeforeScan,
-            1f - marginAfterScan, relativeScanEven);
-        relativeScanOdd = Mathf.LerpUnclamped(marginBeforeScan,
-            1f - marginAfterScan, relativeScanOdd);
+        float relativeXEven = Mathf.LerpUnclamped(marginBeforeScan,
+            1f - marginAfterScan, clampedScanEven);
+        float relativeXOdd = Mathf.LerpUnclamped(marginBeforeScan,
+            1f - marginAfterScan, clampedScanOdd);
 
-        System.Action<ScanElements, float> setRelativeScan =
-            (ScanElements elements, float relativeScan) =>
+        System.Action<ScanElements, float> setRelativeX =
+            (ScanElements elements, float relativeX) =>
             {
-                if (elements.direction == Direction.Left)
+                if (elements.direction == ScanDirection.Left)
                 {
-                    relativeScan = 1f - relativeScan;
+                    relativeX = 1f - relativeX;
                 }
                 elements.scanlineAnchor.style.left =
                     new StyleLength(new Length(
-                        relativeScan * 100f, LengthUnit.Percent));
+                        relativeX * 100f, LengthUnit.Percent));
             };
-        setRelativeScan(evenScan, relativeScanEven);
-        setRelativeScan(oddScan, relativeScanOdd);
+        setRelativeX(evenScan, relativeXEven);
+        setRelativeX(oddScan, relativeXOdd);
 
         // Update countdown.
 
         GameUISkin skin = GlobalResource.gameUiSkin;
         // Clamp scan to [0, 2].
-        relativeScanEven = Mathf.Repeat(scan, 2f);
-        relativeScanOdd = Mathf.Repeat(scan + 1f, 2f);
+        clampedScanEven = Mathf.Repeat(scan, 2f);
+        clampedScanOdd = Mathf.Repeat(scan + 1f, 2f);
         // Calculate countdown progress.
         float countdownProgresEven = Mathf.InverseLerp(
-            2f - countdownLengthInScans, 2f, relativeScanEven);
+            2f - countdownLengthInScans, 2f, clampedScanEven);
         float countdownProgresOdd = Mathf.InverseLerp(
-            2f - countdownLengthInScans, 2f, relativeScanOdd);
+            2f - countdownLengthInScans, 2f, clampedScanOdd);
         System.Action<ScanElements, float> setCountdownProgress =
             (ScanElements elements, float progress) =>
             {

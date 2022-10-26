@@ -34,6 +34,10 @@ public class Scan : MonoBehaviour
     private float marginAbove;
     private float marginBelow;
 
+    // The Scan object holds references to NoteAppearances,
+    // HoldExtensions and RepeatPathExtensions in order to:
+    // - Set Prepare and Active states based on scan change
+    // - Set states based on scan jumping (NoteAppearance only)
     private List<NoteAppearance> noteAppearances;
     private List<HoldExtension> holdExtensions;
     private List<RepeatPathExtension> repeatPathExtensions;
@@ -172,16 +176,6 @@ public class Scan : MonoBehaviour
         extension.Initialize(this, head, lastRepeatNotePulse);
 
         return extension;
-    }
-
-    public void SetAllNotesInactive()
-    {
-        foreach (NoteAppearance n in noteAppearances)
-        {
-            // This will take care of hold extensions and
-            // repeat path extensions.
-            n.SetInactive();
-        }
     }
 
     private void Activate()

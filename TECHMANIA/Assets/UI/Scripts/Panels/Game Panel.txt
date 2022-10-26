@@ -30,6 +30,8 @@ gamePanel.Initialize = function()
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
     end)
 
+    -- TODO: update Fever instruction based on control scheme
+
     tm.gameSetup.bgContainer = panel.Q("bg-layer")
     tm.gameSetup.gameContainer = panel.Q("game-layer")
     tm.gameSetup.vfxComboContainer = nil  -- Unused
