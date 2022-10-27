@@ -11,11 +11,28 @@ public class GameController : MonoBehaviour
     public VisualTreeAsset layoutTemplate;
     public VisualTreeAsset scanlineTemplate;
 
+    [Serializable]
+    public class NoteTemplates
+    {
+        public VisualTreeAsset basicNote;
+
+        public VisualTreeAsset GetForType(NoteType type)
+        {
+            return type switch
+            {
+                NoteType.Basic => basicNote,
+                _ => null
+            };
+        }
+    }
+    public NoteTemplates noteTemplates;
+
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
     private GameTimer timer;
     private GameBackground bg;
     private GameLayout layout;
+    private NoteManager noteManager;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -271,19 +288,21 @@ public class GameController : MonoBehaviour
             pattern: setup.patternAfterModifier,
             gameContainer: setup.gameContainer.inner,
             layoutTemplate: layoutTemplate);
-        yield return null;  // For layout update
         layout.Prepare(
             firstScan: timer.firstScan,
             lastScan: timer.lastScan,
             scanlineTemplate);
-        
+        yield return null;  // For layout update
+        layout.ResetAspectRatio();
+
+        // Spawn notes.
+        noteManager = new NoteManager(layout: layout);
+        noteManager.Prepare(
+            setup.patternAfterModifier,
+            lastScan: timer.lastScan,
+            noteTemplates);
+
         // TODO: prepare keyboard input.
-        // TODO: Spawn note elements; ignore silent hidden notes.
-        //       Organize note elements in two lists:
-        //       one by scan number, to prepare and activate
-        //       entire scans at once;
-        //       one by lane number, to find the upcoming notes
-        //       of each lane.
         // TODO: Calculate Fever coefficient.
         // TODO: Initialize score.
 
@@ -316,6 +335,7 @@ public class GameController : MonoBehaviour
         timer.Dispose();
         bg.Conclude();
         layout.Dispose();
+        noteManager.Dispose();
     }
 
     public void UpdateBgBrightness()

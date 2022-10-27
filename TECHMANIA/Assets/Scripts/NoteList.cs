@@ -11,7 +11,7 @@ using UnityEngine;
 //   of actually removing, this way we can easily reset the NoteList
 //   to the initial state.
 // - A cursor always points to the first active element.
-public class NoteList
+public class NoteList<T> where T : NoteObject
 {
     private List<NoteObject> list;
     private List<bool> active;
@@ -115,3 +115,5 @@ public class NoteList
         list.Where((e, i) => !active[i]).ToList().ForEach(action);
     }
 }
+
+public class LegacyNoteList : NoteList<NoteObject> { }

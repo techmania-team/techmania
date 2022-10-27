@@ -222,12 +222,12 @@ public class Game : MonoBehaviour
 
     // Each NoteList represents one lane; each lane is sorted by
     // pulse.
-    private List<NoteList> noteObjectsInLane;
+    private List<LegacyNoteList> noteObjectsInLane;
     // noteObjectsInLane separated into mouse and keyboard notes.
     // In KM, Each input device only care about notes in its
     // corresponding list.
-    private List<NoteList> notesForMouseInLane;
-    private List<NoteList> notesForKeyboardInLane;
+    private List<LegacyNoteList> notesForMouseInLane;
+    private List<LegacyNoteList> notesForKeyboardInLane;
     private int numPlayableNotes;
 
     // Value is the judgement at note's head.
@@ -646,9 +646,9 @@ public class Game : MonoBehaviour
         // are drawn on the top.
         // Also organize them as linked lists, so empty hits can
         // play the keysound of upcoming notes.
-        noteObjectsInLane = new List<NoteList>();
-        notesForMouseInLane = new List<NoteList>();
-        notesForKeyboardInLane = new List<NoteList>();
+        noteObjectsInLane = new List<LegacyNoteList>();
+        notesForMouseInLane = new List<LegacyNoteList>();
+        notesForKeyboardInLane = new List<LegacyNoteList>();
         numPlayableNotes = 0;
         NoteObject nextChainNode = null;
         List<List<NoteObject>> unmanagedRepeatNotes =
@@ -657,9 +657,9 @@ public class Game : MonoBehaviour
         // empty hits on the noteless lanes will generate errors.
         for (int i = 0; i < playableLanes; i++)
         {
-            noteObjectsInLane.Add(new NoteList());
-            notesForMouseInLane.Add(new NoteList());
-            notesForKeyboardInLane.Add(new NoteList());
+            noteObjectsInLane.Add(new LegacyNoteList());
+            notesForMouseInLane.Add(new LegacyNoteList());
+            notesForKeyboardInLane.Add(new LegacyNoteList());
             unmanagedRepeatNotes.Add(new List<NoteObject>());
         }
         foreach (Note n in InternalGameSetup.patternAfterModifier.notes.Reverse())
@@ -676,9 +676,9 @@ public class Game : MonoBehaviour
 
             while (noteObjectsInLane.Count <= n.lane)
             {
-                noteObjectsInLane.Add(new NoteList());
-                notesForMouseInLane.Add(new NoteList());
-                notesForKeyboardInLane.Add(new NoteList());
+                noteObjectsInLane.Add(new LegacyNoteList());
+                notesForMouseInLane.Add(new LegacyNoteList());
+                notesForKeyboardInLane.Add(new LegacyNoteList());
                 unmanagedRepeatNotes.Add(new List<NoteObject>());
             }
             noteObjectsInLane[n.lane].Add(noteObject);
@@ -744,9 +744,9 @@ public class Game : MonoBehaviour
                     scanObjects);
             }
         }
-        foreach (NoteList l in noteObjectsInLane) l.Reverse();
-        foreach (NoteList l in notesForKeyboardInLane) l.Reverse();
-        foreach (NoteList l in notesForMouseInLane) l.Reverse();
+        foreach (LegacyNoteList l in noteObjectsInLane) l.Reverse();
+        foreach (LegacyNoteList l in notesForKeyboardInLane) l.Reverse();
+        foreach (LegacyNoteList l in notesForMouseInLane) l.Reverse();
 
         // Calculate Fever coefficient. The goal is for the Fever bar
         // to fill up in around 12.5 seconds.
@@ -1301,7 +1301,7 @@ public class Game : MonoBehaviour
             laneIndex < noteObjectsInLane.Count;
             laneIndex++)
         {
-            NoteList lane = noteObjectsInLane[laneIndex];
+            LegacyNoteList lane = noteObjectsInLane[laneIndex];
             if (lane.Count == 0) continue;
             NoteObject upcomingNote = lane.First();
 
@@ -1683,17 +1683,17 @@ public class Game : MonoBehaviour
         previousComboTick = Pulse;
 
         // Rebuild data structures.
-        foreach (NoteList l in noteObjectsInLane)
+        foreach (LegacyNoteList l in noteObjectsInLane)
         {
             l.Reset();
             l.RemoveUpTo(Pulse);
         }
-        foreach (NoteList l in notesForKeyboardInLane)
+        foreach (LegacyNoteList l in notesForKeyboardInLane)
         {
             l.Reset();
             l.RemoveUpTo(Pulse);
         }
-        foreach (NoteList l in notesForMouseInLane)
+        foreach (LegacyNoteList l in notesForMouseInLane)
         {
             l.Reset();
             l.RemoveUpTo(Pulse);
@@ -1735,7 +1735,7 @@ public class Game : MonoBehaviour
         // Play keysounds before this moment if they last enough.
         // Only go through the notes removed earlier; unremoved
         // notes will be handled by gameplay or UpdateTime.
-        foreach (NoteList l in noteObjectsInLane)
+        foreach (LegacyNoteList l in noteObjectsInLane)
         {
             l.ForEachRemoved((NoteObject noteObject) =>
             {

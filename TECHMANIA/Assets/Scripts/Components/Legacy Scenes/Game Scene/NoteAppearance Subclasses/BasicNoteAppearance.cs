@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class BasicNoteAppearance : NoteAppearance
 {
+    // Not overridden:
+    // TypeSpecificInitialize()
+    // TypeSpecificResolve()
+    // TypeSpecificUpdate()
+    // TypeSpecificInitializeScale()
+    // Vector2 GetHitboxSizeFromRuleset()
     protected override void TypeSpecificUpdateState()
     {
         switch (state)

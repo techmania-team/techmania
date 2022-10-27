@@ -313,6 +313,7 @@ public partial class Pattern
 
     private const int kAutoKeysoundFirstLane = 64;
     private const int kAutoAssistTickFirstLane = 68;
+    public const int kMaxLane = 72;
 
     public Pattern()
     {

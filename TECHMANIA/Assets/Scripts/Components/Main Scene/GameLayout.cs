@@ -48,6 +48,10 @@ public class GameLayout
     public float screenWidth => gameContainer.resolvedStyle.width;
     public ScanDirection evenScanDirection => evenHalf.direction;
     public ScanDirection oddScanDirection => oddHalf.direction;
+    public VisualElement evenScanNoteContainer =>
+        evenHalf.noteContainer;
+    public VisualElement oddScanNoteContainer =>
+        oddHalf.noteContainer;
     #endregion
 
     public GameLayout(Pattern pattern,
@@ -199,9 +203,6 @@ public class GameLayout
                 countdownLengthInScans = 3f / bps;
             }
         }
-
-        // Reset aspect ratio.
-        ResetAspectRatio();
     }
 
     public void Begin()
