@@ -88,11 +88,11 @@ public class GameLayout
         bottomHalf = makeHalfElements(layout.Q("bottom-half"));
     }
 
-    public void ResetAspectRatio()
+    public void ResetSize()
     {
         GameUISkin skin = GlobalResource.gameUiSkin;
 
-        System.Action<VisualElement, SpriteSheet> setAspectRatio =
+        System.Action<VisualElement, SpriteSheet> setSize =
             (VisualElement element, SpriteSheet spriteSheet) =>
             {
                 Rect rect = spriteSheet.sprites[0].rect;
@@ -100,20 +100,20 @@ public class GameLayout
                     rect.width / rect.height;
             };
 
-        System.Action<HalfElements> setAspectRatioForHalf =
+        System.Action<HalfElements> setSizeForHalf =
             (HalfElements half) =>
             {
-                setAspectRatio(half.countdownBg,
+                setSize(half.countdownBg,
                     skin.scanCountdownBackground);
-                setAspectRatio(half.countdownNum,
+                setSize(half.countdownNum,
                     skin.scanCountdownNumbers);
             };
-        setAspectRatioForHalf(topHalf);
-        setAspectRatioForHalf(bottomHalf);
+        setSizeForHalf(topHalf);
+        setSizeForHalf(bottomHalf);
 
         foreach (ScanElements scan in scanElements)
         {
-            setAspectRatio(scan.scanline, skin.scanline);
+            setSize(scan.scanline, skin.scanline);
         }
     }
 

@@ -293,7 +293,7 @@ public class GameController : MonoBehaviour
             lastScan: timer.lastScan,
             scanlineTemplate);
         yield return null;  // For layout update
-        layout.ResetAspectRatio();
+        layout.ResetSize();
 
         // Spawn notes.
         noteManager = new NoteManager(layout: layout);
