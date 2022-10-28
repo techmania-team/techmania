@@ -45,6 +45,12 @@ public class GameLayout
     #region Public properties
     public float scanHeight => gameContainer.resolvedStyle
         .height * 0.5f;
+    public float laneHeight => scanHeight * (1f -
+        Ruleset.instance.scanMarginTopBottom[
+            pattern.patternMetadata.playableLanes - 2] -
+        Ruleset.instance.scanMarginMiddle[
+            pattern.patternMetadata.playableLanes - 2]);
+
     public float screenWidth => gameContainer.resolvedStyle.width;
     public ScanDirection evenScanDirection => evenHalf.direction;
     public ScanDirection oddScanDirection => oddHalf.direction;

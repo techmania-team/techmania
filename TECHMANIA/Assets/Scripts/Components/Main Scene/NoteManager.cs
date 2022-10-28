@@ -7,29 +7,16 @@ public class NoteManager
 {
     public GameLayout layout;
 
-    // TODO: remove this inheritance once we deprecate
-    // NoteObject.
-    private class NoteElements : NoteObject
-    {
-        // Inherited: public Note note, a reference to
-        // the note that spawned these elements.
-
-        public VisualElement noteHead;
-        public VisualElement feverOverlay;
-        public VisualElement approachOverlay;
-        public VisualElement hitBox;
-    }
     private class NoteList : NoteList<NoteElements> { }
-
     // The main data structure to hold note elements, indexed
     // by lane.
     private List<NoteList> notesInLane;
 
     // A few other ways to hold note elements:
     
-    // Indexed by scan number, so we can prepare and activate
+    // Keyed by scan number, so we can prepare and activate
     // entire scans at once. Only holds playable notes.
-    private List<List<NoteElements>> notesInScan;
+    private Dictionary<int, List<NoteElements>> notesInScan;
     // Playable notes separated into mouse and keyboard notes,
     // indexed by lane.
     // In KM, each input device only cares about notes in its
@@ -41,7 +28,7 @@ public class NoteManager
     {
         this.layout = layout;
 
-        notesInScan = new List<List<NoteElements>>();
+        notesInScan = new Dictionary<int, List<NoteElements>>();
         notesInLane = new List<NoteList>();
         mouseNotesInLane = new List<NoteList>();
         keyboardNotesInLane = new List<NoteList>();
@@ -50,9 +37,11 @@ public class NoteManager
     public void Prepare(Pattern p, int lastScan,
         GameController.NoteTemplates noteTemplates)
     {
-        for (int i = 0; i < lastScan; i++)
+        for (int i = -1; i < lastScan; i++)
         {
-            notesInScan.Add(new List<NoteElements>());
+            // An end-of-scan note on pulse 0 is considered to be
+            // in scan -1.
+            notesInScan.Add(i, new List<NoteElements>());
         }
         for (int i = 0; i < Pattern.kMaxLane; i++)
         {
@@ -79,30 +68,33 @@ public class NoteManager
                 continue;
             }
 
-            NoteElements noteElements = new NoteElements()
+            NoteElements noteElements;
+            if (hidden)
             {
-                note = n
-            };
-
-            // If playable, spawn elements.
-            if (!hidden)
+                noteElements = new NoteElements(n);
+            }
+            else
             {
+                // Spawn elements for playable notes.
                 TemplateContainer template =
                     noteTemplates.GetForType(n.type).Instantiate();
-                    template.AddToClassList("note-anchor");
                 VisualElement noteContainer =
                     (scan % 2 == 0) ? layout.evenScanNoteContainer
                     : layout.oddScanNoteContainer;
                 noteContainer.Add(template);
 
-                noteElements.feverOverlay = template.
-                    Q("fever-overlay");
-                noteElements.approachOverlay = template.
-                    Q("approach-overlay");
-                noteElements.hitBox = template.
-                    Q("hitbox");
+                switch (n.type)
+                {
+                    case NoteType.Basic:
+                        noteElements = new BasicNoteElements(n);
+                        break;
+                    // TODO: other note types.
+                    default:
+                        noteElements = new NoteElements(n);
+                        break;
+                }
+                noteElements.Initialize(pattern: p, template, layout);
 
-                // TODO: other note types.
                 // TODO: position these elements.
             }
 
@@ -138,6 +130,8 @@ public class NoteManager
             mouseNotesInLane[i].Reverse();
             keyboardNotesInLane[i].Reverse();
         }
+
+        NoteElements.hitboxVisible = false;
     }
 
     public void ResetAspectRatio()
