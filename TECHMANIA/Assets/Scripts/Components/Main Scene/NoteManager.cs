@@ -58,7 +58,9 @@ public class NoteManager
         // be in the original order.
         foreach (Note n in p.notes.Reverse())
         {
-            int scan = n.GetScanNumber(p.patternMetadata.bps);
+            float floatScan = (float)n.pulse / Pattern.pulsesPerBeat
+                / p.patternMetadata.bps;
+            int intScan = n.GetScanNumber(p.patternMetadata.bps);
             int lane = n.lane;
             bool hidden = p.IsHiddenNote(lane);
 
@@ -78,10 +80,6 @@ public class NoteManager
                 // Spawn elements for playable notes.
                 TemplateContainer template =
                     noteTemplates.GetForType(n.type).Instantiate();
-                VisualElement noteContainer =
-                    (scan % 2 == 0) ? layout.evenScanNoteContainer
-                    : layout.oddScanNoteContainer;
-                noteContainer.Add(template);
 
                 switch (n.type)
                 {
@@ -93,16 +91,17 @@ public class NoteManager
                         noteElements = new NoteElements(n);
                         break;
                 }
-                noteElements.Initialize(pattern: p, template, layout);
-
-                // TODO: position these elements.
+                noteElements.Initialize(floatScan, intScan,
+                    template, layout);
+                layout.PlaceNoteElements(floatScan, intScan, 
+                    noteElements);
             }
 
             // Add to data structures.
             notesInLane[lane].Add(noteElements);
             if (!hidden)
             {
-                notesInScan[scan].Add(noteElements);
+                notesInScan[intScan].Add(noteElements);
                 switch (n.type)
                 {
                     case NoteType.Basic:

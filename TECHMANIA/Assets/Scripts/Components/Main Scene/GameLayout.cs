@@ -49,7 +49,8 @@ public class GameLayout
         Ruleset.instance.scanMarginTopBottom[
             pattern.patternMetadata.playableLanes - 2] -
         Ruleset.instance.scanMarginMiddle[
-            pattern.patternMetadata.playableLanes - 2]);
+            pattern.patternMetadata.playableLanes - 2]) /
+        pattern.patternMetadata.playableLanes;
 
     public float screenWidth => gameContainer.resolvedStyle.width;
     public ScanDirection evenScanDirection => evenHalf.direction;
@@ -211,6 +212,59 @@ public class GameLayout
         }
     }
 
+    public void PlaceNoteElements(float floatScan, int intScan,
+        NoteElements elements)
+    {
+        // Place in hierarchy.
+        VisualElement noteContainer =
+            (intScan % 2 == 0) ? evenScanNoteContainer
+            : oddScanNoteContainer;
+        noteContainer.Add(elements.templateContainer);
+
+        // Set position.
+        PlaceElementHorizontally(elements.templateContainer,
+            relativeScan: floatScan - intScan,
+            (intScan % 2 == 0) ? evenScanDirection : oddScanDirection);
+        PlaceElementVertically(elements.templateContainer,
+            intScan, elements.note.lane);
+    }
+
+    private void PlaceElementHorizontally(VisualElement element,
+        float relativeScan, ScanDirection scanDirection)
+    {
+        float marginBeforeScan = Ruleset.instance
+            .scanMarginBeforeFirstBeat;
+        float marginAfterScan = Ruleset.instance
+            .scanMarginAfterLastBeat;
+        float relativeX = Mathf.LerpUnclamped(marginBeforeScan,
+                1f - marginAfterScan, relativeScan);
+        if (scanDirection == ScanDirection.Left)
+        {
+            relativeX = 1f - relativeX;
+        }
+        element.style.left = new StyleLength(new Length(
+            relativeX * 100f, LengthUnit.Percent));
+    }
+
+    private void PlaceElementVertically(VisualElement element,
+        int scan, int lane)
+    {
+        int playableLanes = pattern.patternMetadata.playableLanes;
+        float relativeLaneHeight = (1f -
+            Ruleset.instance.scanMarginTopBottom[playableLanes - 2] -
+            Ruleset.instance.scanMarginMiddle[playableLanes - 2])
+            / playableLanes;
+
+        HalfElements half = (scan % 2 == 0) ? evenHalf : oddHalf;
+        float topOfLaneZero = (half == topHalf) ?
+            Ruleset.instance.scanMarginTopBottom[playableLanes - 2] :
+            Ruleset.instance.scanMarginMiddle[playableLanes - 2];
+        float relativeY = topOfLaneZero + relativeLaneHeight *
+            (lane + 0.5f);
+        element.style.top = new StyleLength(new Length(
+            relativeY * 100f, LengthUnit.Percent));
+    }
+
     public void Begin()
     {
         layout.style.display = 
@@ -226,38 +280,25 @@ public class GameLayout
 
     public void Update(float scan)
     {
-        // Because modulo doesn't work on negative numbers.
-        while (scan < 0f) scan += 2f;
-
         // Update scanline.
 
         GameUISkin skin = GlobalResource.gameUiSkin;
-        float scanAfterRepeat = Mathf.Repeat(scan, 1f);
         Sprite scanlineSprite = skin.scanline.GetSpriteAtFloatIndex(
-            scanAfterRepeat);
+            scan);
 
-        float marginBeforeScan = Ruleset.instance
-            .scanMarginBeforeFirstBeat;
-        float marginAfterScan = Ruleset.instance
-            .scanMarginAfterLastBeat;
         foreach (ScanElements s in scanElements)
         {
             float relativeScan = scan - s.scanNumber;
-            float relativeX = Mathf.LerpUnclamped(marginBeforeScan,
-                1f - marginAfterScan, relativeScan);
-            if (s.direction == ScanDirection.Left)
-            {
-                relativeX = 1f - relativeX;
-            }
-
-            s.anchor.style.left = new StyleLength(new Length(
-                relativeX * 100f, LengthUnit.Percent));
+            PlaceElementHorizontally(s.anchor, relativeScan,
+                s.direction);
             s.scanline.style.backgroundImage = new StyleBackground(
                 scanlineSprite);
         }
 
         // Update countdown.
 
+        // Because modulo doesn't work on negative numbers.
+        while (scan < 0f) scan += 2f;
         // Clamp scan to [0, 2].
         float clampedScanEven = Mathf.Repeat(scan, 2f);
         float clampedScanOdd = Mathf.Repeat(scan + 1f, 2f);

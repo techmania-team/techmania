@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
             return type switch
             {
                 NoteType.Basic => basicNote,
-                _ => null
+                _ => basicNote
             };
         }
     }
@@ -301,6 +301,7 @@ public class GameController : MonoBehaviour
             setup.patternAfterModifier,
             lastScan: timer.lastScan,
             noteTemplates);
+        Debug.Log("Lane height: " + layout.laneHeight);
 
         // TODO: prepare keyboard input.
         // TODO: Calculate Fever coefficient.

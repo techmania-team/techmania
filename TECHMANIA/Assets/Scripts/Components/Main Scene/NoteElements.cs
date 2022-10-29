@@ -49,10 +49,11 @@ public class NoteElements : NoteObject
     // Determines whether some elements are horizontally flipped.
     private GameLayout.ScanDirection scanDirection;
 
+    public TemplateContainer templateContainer;
     public VisualElement noteImage;
-    public VisualElement feverOverlay;
-    public VisualElement approachOverlay;
-    public VisualElement hitbox;
+    public VisualElement feverOverlay;  // May be null
+    public VisualElement approachOverlay;  // May be null
+    public VisualElement hitbox;  // May be null
 
     public GameLayout layout;
 
@@ -96,20 +97,19 @@ public class NoteElements : NoteObject
 
     #region Initialization
     public void Initialize(
-        Pattern pattern,
+        float floatScan, int intScan,
         TemplateContainer templateInstance,
         GameLayout layout)
     {
-        // Determine scan number and scan direction.
+        // Determine scan direction.
         this.layout = layout;
-        floatScan = (float)note.pulse / Pattern.pulsesPerBeat /
-            pattern.patternMetadata.bps;
-        int intScan = note.GetScanNumber(pattern.patternMetadata.bps);
+        this.floatScan = floatScan;
         scanDirection = (intScan % 2 == 0) ?
             layout.evenScanDirection :
             layout.oddScanDirection;
 
         // Set up the common VisualElements.
+        this.templateContainer = templateInstance;
         templateInstance.AddToClassList("note-anchor");
         templateInstance.pickingMode = PickingMode.Ignore;
 
@@ -140,7 +140,6 @@ public class NoteElements : NoteObject
         {
             state = State.Inactive;
             UpdateState();
-            UpdateSprites();
             HitboxMatchNoteImageAlpha();
         }
     }
@@ -284,36 +283,36 @@ public class NoteElements : NoteObject
 
     private void UpdateTrailAndHoldExtension()
     {
-        if (GetComponent<HoldTrailManager>() == null) return;
+        //if (GetComponent<HoldTrailManager>() == null) return;
 
-        switch (state)
-        {
-            case State.Inactive:
-            case State.Resolved:
-            case State.PendingResolve:
-                SetDurationTrailVisibility(Visibility.Hidden);
-                SetHoldExtensionVisibility(Visibility.Hidden);
-                break;
-            case State.Prepare:
-                if (note.type == NoteType.Hold)
-                {
-                    SetDurationTrailVisibility(
-                        Visibility.Transparent);
-                }
-                else
-                {
-                    SetDurationTrailVisibility(Visibility.Visible);
-                }
-                // Not set for extensions: these will be controlled
-                // by the scan they belong to.
-                break;
-            case State.Active:
-            case State.Ongoing:
-                SetDurationTrailVisibility(Visibility.Visible);
-                // Not set for extensions: these will be controlled
-                // by the scan they belong to.
-                break;
-        }
+        //switch (state)
+        //{
+        //    case State.Inactive:
+        //    case State.Resolved:
+        //    case State.PendingResolve:
+        //        SetDurationTrailVisibility(Visibility.Hidden);
+        //        SetHoldExtensionVisibility(Visibility.Hidden);
+        //        break;
+        //    case State.Prepare:
+        //        if (note.type == NoteType.Hold)
+        //        {
+        //            SetDurationTrailVisibility(
+        //                Visibility.Transparent);
+        //        }
+        //        else
+        //        {
+        //            SetDurationTrailVisibility(Visibility.Visible);
+        //        }
+        //        // Not set for extensions: these will be controlled
+        //        // by the scan they belong to.
+        //        break;
+        //    case State.Active:
+        //    case State.Ongoing:
+        //        SetDurationTrailVisibility(Visibility.Visible);
+        //        // Not set for extensions: these will be controlled
+        //        // by the scan they belong to.
+        //        break;
+        //}
     }
     #endregion
 
@@ -405,8 +404,8 @@ public class NoteElements : NoteObject
         if (controlledExternally) return;
 
         HitboxMatchNoteImageAlpha();
-        UpdateSprites();
-        TypeSpecificUpdate();
+        UpdateSprites(timer);
+        TypeSpecificUpdate(timer);
         if ((state == State.Prepare || state == State.Active) &&
             Modifiers.instance.noteOpacity
             != Modifiers.NoteOpacity.Normal)
@@ -434,9 +433,9 @@ public class NoteElements : NoteObject
         hitbox.style.opacity = noteImage.style.opacity.value;
     }
 
-    protected virtual void UpdateSprites() { }
+    protected virtual void UpdateSprites(GameTimer timer) { }
 
-    protected virtual void TypeSpecificUpdate() { }
+    protected virtual void TypeSpecificUpdate(GameTimer timer) { }
 
     private void UpdateAlphaUpperBound(float currentScan)
     {

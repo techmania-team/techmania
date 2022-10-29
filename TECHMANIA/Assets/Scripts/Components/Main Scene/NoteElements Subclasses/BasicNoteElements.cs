@@ -34,11 +34,11 @@ public class BasicNoteElements : NoteElements
         return GlobalResource.noteSkin.basic.scale;
     }
 
-    protected override void UpdateSprites()
+    protected override void UpdateSprites(GameTimer timer)
     {
         noteImage.style.backgroundImage = new 
             UnityEngine.UIElements.StyleBackground(
             GlobalResource.noteSkin.basic
-            .GetSpriteAtFloatIndex(Game.FloatBeat));
+            .GetSpriteAtFloatIndex(timer.Beat));
     }
 }
