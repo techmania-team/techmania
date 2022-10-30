@@ -1,14 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="Basic Note" src="project://database/Assets/UI%20Templates/Notes/Basic%20Note.uxml?fileID=9197481963319205126&amp;guid=36363bbd296f5fb439d97085a32d9033&amp;type=3#Basic Note" />
     <Style src="project://database/Assets/UI%20Templates/Game%20Layout.uss?fileID=7433441132597879392&amp;guid=ceb06435995ca63468a334b5559c5e18&amp;type=3#Game Layout" />
     <ui:VisualElement name="bg" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
         <ui:VisualElement name="top-half" picking-mode="Ignore" class="half">
             <ui:VisualElement name="scanline-container" picking-mode="Ignore" class="scanline-container" />
             <ui:VisualElement name="countdown-bg" picking-mode="Ignore" class="countdown-bg left-side" style="width: 540px;" />
             <ui:VisualElement name="countdown-num" picking-mode="Ignore" class="countdown left-side" style="width: 190px;" />
-            <ui:VisualElement name="note-container" picking-mode="Ignore" class="note-container">
-                <ui:Instance template="Basic Note" name="Basic Note" class="note-anchor" style="left: 75%; top: 30%;" />
-            </ui:VisualElement>
+            <ui:VisualElement name="note-container" picking-mode="Ignore" class="note-container" />
         </ui:VisualElement>
         <ui:VisualElement name="bottom-half" picking-mode="Ignore" class="half">
             <ui:VisualElement name="scanline-container" picking-mode="Ignore" class="scanline-container" />

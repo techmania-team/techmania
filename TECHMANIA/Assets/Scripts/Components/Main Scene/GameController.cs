@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
             return type switch
             {
                 NoteType.Basic => basicNote,
-                _ => basicNote
+                _ => null
             };
         }
     }
@@ -296,12 +296,12 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
 
         // Spawn notes.
+        NoteElements.hitboxVisible = false;
         noteManager = new NoteManager(layout: layout);
         noteManager.Prepare(
             setup.patternAfterModifier,
             lastScan: timer.lastScan,
             noteTemplates);
-        Debug.Log("Lane height: " + layout.laneHeight);
 
         // TODO: prepare keyboard input.
         // TODO: Calculate Fever coefficient.
@@ -354,6 +354,7 @@ public class GameController : MonoBehaviour
             timer.Update();
             bg.Update(timer.BaseTime);
             layout.Update(timer.Scan);
+            noteManager.Update(timer);
         }
     }
 }

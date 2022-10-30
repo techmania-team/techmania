@@ -90,9 +90,16 @@ public class NoteElements : NoteObject
     // instead of NoteManager / GameController.
     public bool controlledExternally;
 
-    public NoteElements(Note note)
+    public NoteElements(Note note, bool controlledExternally = false)
     {
         this.note = note;
+        this.controlledExternally = controlledExternally;
+    }
+
+    public void ResetAspectRatio()
+    {
+        InitializeSize();
+        InitializeHitbox();
     }
 
     #region Initialization
@@ -397,7 +404,7 @@ public class NoteElements : NoteObject
     #endregion
 
     #region Update
-    protected void UpdateTime(GameTimer timer)
+    public void UpdateTime(GameTimer timer)
     {
         if (state == State.Inactive || state == State.Resolved)
             return;

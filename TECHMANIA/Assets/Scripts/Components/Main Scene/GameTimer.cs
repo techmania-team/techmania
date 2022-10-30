@@ -30,9 +30,9 @@ public class GameTimer
     public float Scan { get; private set; }
 
     // The same numbers rounded down, for convenience.
-    public float IntPulse { get; private set; }
-    public float IntBeat { get; private set; }
-    public float IntScan { get; private set; }
+    public int IntPulse { get; private set; }
+    public int IntBeat { get; private set; }
+    public int IntScan { get; private set; }
     #endregion
 
     #region Pattern metadata

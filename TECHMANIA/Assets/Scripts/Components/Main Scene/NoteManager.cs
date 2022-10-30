@@ -79,8 +79,9 @@ public class NoteManager
             {
                 // Spawn elements for playable notes.
                 TemplateContainer template =
-                    noteTemplates.GetForType(n.type).Instantiate();
+                    noteTemplates.GetForType(n.type)?.Instantiate();
 
+                bool supportedType = true;
                 switch (n.type)
                 {
                     case NoteType.Basic:
@@ -88,12 +89,14 @@ public class NoteManager
                         break;
                     // TODO: other note types.
                     default:
-                        noteElements = new NoteElements(n);
+                        noteElements = null;
+                        supportedType = false;
                         break;
                 }
+                if (!supportedType) continue;
                 noteElements.Initialize(floatScan, intScan,
                     template, layout);
-                layout.PlaceNoteElements(floatScan, intScan, 
+                layout.PlaceNoteElements(floatScan, intScan,
                     noteElements);
             }
 
@@ -129,13 +132,60 @@ public class NoteManager
             mouseNotesInLane[i].Reverse();
             keyboardNotesInLane[i].Reverse();
         }
-
-        NoteElements.hitboxVisible = false;
     }
 
     public void ResetAspectRatio()
     {
+        foreach (List<NoteElements> list in notesInScan.Values)
+        {
+            foreach (NoteElements elements in list)
+            {
+                elements.ResetAspectRatio();
+            }
+        }
+    }
 
+    public void Update(GameTimer timer)
+    {
+        // Put notes in the upcoming scan in Prepare state if needed.
+        if (notesInScan.ContainsKey(timer.IntScan + 1))
+        {
+            foreach (NoteElements elements in
+                notesInScan[timer.IntScan + 1])
+            {
+                if (elements.state == NoteElements.State.Inactive)
+                {
+                    elements.Prepare();
+                }
+            }
+        }
+
+        // Put notes in the upcoming scan in Active state if needed.
+        float relativeScan = timer.Scan - timer.IntScan;
+        if (relativeScan > 0.875f &&
+            notesInScan.ContainsKey(timer.IntScan + 1))
+        {
+            foreach (NoteElements elements in
+                notesInScan[timer.IntScan + 1])
+            {
+                if (elements.state == NoteElements.State.Prepare)
+                {
+                    elements.Activate();
+                }
+            }
+        }
+
+        // Update notes with time, mainly to update sprites.
+        System.Action<int> updateNotesInScan = (int scan) =>
+        {
+            if (!notesInScan.ContainsKey(scan)) return;
+            foreach (NoteElements elements in notesInScan[scan])
+            {
+                elements.UpdateTime(timer);
+            }
+        };
+        updateNotesInScan(timer.IntScan);
+        updateNotesInScan(timer.IntScan + 1);
     }
 
     public void Dispose()
