@@ -437,7 +437,10 @@ public class NoteElements : NoteObject
     private void HitboxMatchNoteImageAlpha()
     {
         if (hitbox == null) return;
-        hitbox.style.opacity = noteImage.style.opacity.value;
+
+        float alpha = noteImage.style.opacity.value;
+        if (!hitboxVisible) alpha = 0f;
+        hitbox.style.opacity = alpha;
     }
 
     protected virtual void UpdateSprites(GameTimer timer) { }
