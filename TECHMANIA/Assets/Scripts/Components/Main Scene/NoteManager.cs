@@ -7,7 +7,6 @@ public class NoteManager
 {
     public GameLayout layout;
 
-    private class NoteList : NoteList<NoteElements> { }
     // The main data structure to hold note elements, indexed
     // by lane.
     private List<NoteList> notesInLane;

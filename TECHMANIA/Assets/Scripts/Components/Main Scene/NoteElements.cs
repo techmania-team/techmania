@@ -37,13 +37,14 @@ using UnityEngine.UIElements;
 //   |-- RepeatNoteElementsBase
 //         |-- RepeatNoteElements
 //         |-- RepeatHoldElements
-//
-// TODO: remove the inheritance on NoteObject once we deprecate
-// NoteObject.
-public class NoteElements : NoteObject
+public class NoteElements : INoteHolder
 {
-    // Inherited: public Note note, a reference to
-    // the note that spawned these elements.
+    public Note note;
+    Note INoteHolder.note
+    {
+        get { return note; }
+        set { note = value; }
+    }
 
     private float floatScan;  // Disregards end-of-scan.
     // Determines whether some elements are horizontally flipped.

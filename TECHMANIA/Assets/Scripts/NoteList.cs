@@ -11,9 +11,9 @@ using UnityEngine;
 //   of actually removing, this way we can easily reset the NoteList
 //   to the initial state.
 // - A cursor always points to the first active element.
-public class NoteList<T> where T : NoteObject
+public class NoteList
 {
-    private List<NoteObject> list;
+    private List<INoteHolder> list;
     private List<bool> active;
     private int first;
     private int count;
@@ -22,13 +22,13 @@ public class NoteList<T> where T : NoteObject
     #region Initialize
     public NoteList()
     {
-        list = new List<NoteObject>();
+        list = new List<INoteHolder>();
         active = new List<bool>();
         count = 0;
         first = 0;
     }
 
-    public void Add(NoteObject n)
+    public void Add(INoteHolder n)
     {
         list.Add(n);
         active.Add(true);
@@ -42,7 +42,7 @@ public class NoteList<T> where T : NoteObject
     }
     #endregion
 
-    public void Remove(NoteObject n)
+    public void Remove(INoteHolder n)
     {
         for (int i = first; i < list.Count; i++)
         {
@@ -95,7 +95,7 @@ public class NoteList<T> where T : NoteObject
         first = list.Count;
     }
 
-    public NoteObject First()
+    public INoteHolder First()
     {
         if (first >= list.Count)
         {
@@ -110,10 +110,8 @@ public class NoteList<T> where T : NoteObject
         for (int i = 0; i < Count; i++) active[i] = true;
     }
 
-    public void ForEachRemoved(Action<NoteObject> action)
+    public void ForEachRemoved(Action<INoteHolder> action)
     {
         list.Where((e, i) => !active[i]).ToList().ForEach(action);
     }
 }
-
-public class LegacyNoteList : NoteList<NoteObject> { }
