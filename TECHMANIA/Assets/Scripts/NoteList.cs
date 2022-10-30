@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// Implemented by NoteObject and NoteElements.
+public interface INoteHolder
+{
+    public Note note { get; set; }
+}
+
 // A custom data structure for storing notes in Game.
 // - Elements are set once, and then never removed.
 // - Each element can be active or inactive. Initially all elements

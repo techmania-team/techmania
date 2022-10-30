@@ -9,19 +9,20 @@ public class NoteManager
 
     // The main data structure to hold note elements, indexed
     // by lane.
-    private List<NoteList> notesInLane;
+    public List<NoteList> notesInLane { get; private set; }
 
     // A few other ways to hold note elements:
     
     // Keyed by scan number, so we can prepare and activate
     // entire scans at once. Only holds playable notes.
-    private Dictionary<int, List<NoteElements>> notesInScan;
+    public Dictionary<int, List<NoteElements>> notesInScan
+        { get; private set; }
     // Playable notes separated into mouse and keyboard notes,
     // indexed by lane.
     // In KM, each input device only cares about notes in its
     // corresponding list.
-    private List<NoteList> mouseNotesInLane;
-    private List<NoteList> keyboardNotesInLane;
+    public List<NoteList> mouseNotesInLane { get; private set; }
+    public List<NoteList> keyboardNotesInLane { get; private set; }
 
     public NoteManager(GameLayout layout)
     {

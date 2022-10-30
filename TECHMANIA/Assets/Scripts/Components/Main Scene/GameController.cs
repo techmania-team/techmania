@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour
     private GameBackground bg;
     private GameLayout layout;
     private NoteManager noteManager;
+    private GameInputManager input;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -303,7 +304,11 @@ public class GameController : MonoBehaviour
             lastScan: timer.lastScan,
             noteTemplates);
 
-        // TODO: prepare keyboard input.
+        // Prepare for input.
+        input = new GameInputManager(setup.patternAfterModifier,
+            noteManager);
+        input.Prepare();
+
         // TODO: Calculate Fever coefficient.
         // TODO: Initialize score.
 
@@ -337,6 +342,7 @@ public class GameController : MonoBehaviour
         bg.Conclude();
         layout.Dispose();
         noteManager.Dispose();
+        input.Dispose();
     }
 
     public void UpdateBgBrightness()
@@ -355,6 +361,7 @@ public class GameController : MonoBehaviour
             bg.Update(timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer);
+            input.Update(timer.IntScan);
         }
     }
 }

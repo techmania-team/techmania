@@ -1,11 +1,5 @@
 ﻿using UnityEngine;
 
-// Used by NoteList; implemented by NoteObject and NoteElements.
-public interface INoteHolder
-{
-    public Note note { get; set; }
-}
-
 // Used by legacy Game component and editor.
 public class NoteObject : MonoBehaviour, INoteHolder
 {
