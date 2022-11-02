@@ -100,7 +100,7 @@ public class NoteElements : INoteHolder
     public void ResetAspectRatio()
     {
         InitializeSize();
-        InitializeHitbox();
+        ResetHitbox();
     }
 
     #region Initialization
@@ -146,8 +146,7 @@ public class NoteElements : INoteHolder
         }
         else
         {
-            state = State.Inactive;
-            UpdateState();
+            ResetToInactive();
             HitboxMatchNoteImageAlpha();
         }
     }
@@ -198,22 +197,22 @@ public class NoteElements : INoteHolder
     #endregion
 
     #region Setting / Resetting Inactive state
-    public void SetInactive()
+    public void ResetToInactive()
     {
         state = State.Inactive;
         // Drag notes need to reset hitbox size.
-        InitializeHitbox();
+        ResetHitbox();
         // Drag notes need to reset curve; repeat heads need to
         // reset next unresolved note index.
-        TypeSpecificInitialize();
+        TypeSpecificReset();
         UpdateState();
     }
 
-    protected virtual void TypeSpecificInitialize() { }
+    protected virtual void TypeSpecificReset() { }
 
     // Not called during initialization because drag notes' hitbox
     // sizes change.
-    private void InitializeHitbox()
+    private void ResetHitbox()
     {
         if (hitbox == null) return;
         Vector2 hitboxScale = GetHitboxScaleFromRuleset();

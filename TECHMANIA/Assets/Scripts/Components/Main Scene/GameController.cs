@@ -306,7 +306,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for input.
         input = new GameInputManager(setup.patternAfterModifier,
-            noteManager);
+            layout, noteManager);
         input.Prepare();
 
         // TODO: Calculate Fever coefficient.
@@ -361,7 +361,7 @@ public class GameController : MonoBehaviour
             bg.Update(timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer);
-            input.Update(timer.IntScan);
+            input.Update(timer);
         }
     }
 }

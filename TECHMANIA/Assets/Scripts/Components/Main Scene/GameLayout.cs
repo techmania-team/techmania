@@ -11,7 +11,7 @@ public class GameLayout
     private float countdownLengthInScans;
 
     private VisualElement gameContainer;
-    private TemplateContainer layout;
+    public TemplateContainer layoutContainer { get; private set; }
 
     public enum ScanDirection
     {
@@ -43,7 +43,7 @@ public class GameLayout
     private List<ScanElements> scanElements;
 
     #region Public properties
-    public float scanHeight => gameContainer.resolvedStyle
+    public float scanHeight => layoutContainer.resolvedStyle
         .height * 0.5f;
     public float laneHeight => scanHeight * (1f -
         Ruleset.instance.scanMarginTopBottom[
@@ -52,13 +52,15 @@ public class GameLayout
             pattern.patternMetadata.playableLanes - 2]) /
         pattern.patternMetadata.playableLanes;
 
-    public float screenWidth => gameContainer.resolvedStyle.width;
+    public float screenWidth => layoutContainer.resolvedStyle.width;
     public ScanDirection evenScanDirection => evenHalf.direction;
     public ScanDirection oddScanDirection => oddHalf.direction;
     public VisualElement evenScanNoteContainer =>
         evenHalf.noteContainer;
     public VisualElement oddScanNoteContainer =>
         oddHalf.noteContainer;
+    public VisualElement topHalfBg => topHalf.noteContainer;
+    public VisualElement bottomHalfBg => bottomHalf.noteContainer;
     #endregion
 
     public GameLayout(Pattern pattern,
@@ -68,14 +70,14 @@ public class GameLayout
         this.pattern = pattern;
         this.gameContainer = gameContainer;
 
-        layout = layoutTemplate.Instantiate();
+        layoutContainer = layoutTemplate.Instantiate();
         // Make sure the game - where everything uses absolute
         // positioning - takes up the entirety of setup.gameContainer.
-        layout.style.flexGrow = new StyleFloat(1f);
+        layoutContainer.style.flexGrow = new StyleFloat(1f);
         // Layout becomes visible on Begin().
-        layout.style.display =
+        layoutContainer.style.display =
             new StyleEnum<DisplayStyle>(DisplayStyle.None);
-        gameContainer.Add(layout);
+        gameContainer.Add(layoutContainer);
 
         System.Func<VisualElement, HalfElements> makeHalfElements =
             (VisualElement element) => new HalfElements()
@@ -85,8 +87,8 @@ public class GameLayout
                 countdownNum = element.Q("countdown-num"),
                 noteContainer = element.Q("note-container")
             };
-        topHalf = makeHalfElements(layout.Q("top-half"));
-        bottomHalf = makeHalfElements(layout.Q("bottom-half"));
+        topHalf = makeHalfElements(layoutContainer.Q("top-half"));
+        bottomHalf = makeHalfElements(layoutContainer.Q("bottom-half"));
     }
 
     public void ResetSize()
@@ -267,20 +269,22 @@ public class GameLayout
 
     public void Begin()
     {
-        layout.style.display = 
+        layoutContainer.style.display = 
             new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
         Update(scan: 0f);
     }
 
     public void Dispose()
     {
-        layout.RemoveFromHierarchy();
+        layoutContainer.RemoveFromHierarchy();
         scanElements.Clear();
     }
 
     public void Update(float scan)
     {
         // Update scanline.
+        // TODO: respond to scanline opacity.
+        // TODO: respond to auto play.
 
         GameUISkin skin = GlobalResource.gameUiSkin;
         Sprite scanlineSprite = skin.scanline.GetSpriteAtFloatIndex(
@@ -331,5 +335,42 @@ public class GameLayout
             };
         setCountdownProgress(evenHalf, countdownProgresEven);
         setCountdownProgress(oddHalf, countdownProgresOdd);
+    }
+
+    public int LocalPointToLaneNumber(float y)
+    {
+        float normalizedY = y * 2f /
+            layoutContainer.contentRect.height;  // In [0, 2]
+        int playableLanes = pattern.patternMetadata.playableLanes;
+
+        float marginTopBottom = Ruleset.instance.scanMarginTopBottom
+            [playableLanes - 2];
+        float marginMiddle = Ruleset.instance.scanMarginMiddle
+            [playableLanes - 2];
+        if (normalizedY < marginTopBottom)
+            return 0;
+        if (normalizedY >= 1f - marginMiddle
+            && normalizedY < 1f)
+            return playableLanes - 1;
+        if (normalizedY >= 1f
+            && normalizedY < 1f + marginMiddle)
+            return 0;
+        if (normalizedY >= 2f - marginTopBottom)
+            return playableLanes - 1;
+
+        float normalizedLaneHeight =
+            (1f - marginTopBottom - marginMiddle) / playableLanes;
+        if (normalizedY < 1f)
+        {
+            return Mathf.FloorToInt(
+                (normalizedY - marginTopBottom)
+                / normalizedLaneHeight);
+        }
+        else
+        {
+            return Mathf.FloorToInt(
+                (normalizedY - 1f - marginMiddle)
+                / normalizedLaneHeight);
+        }
     }
 }

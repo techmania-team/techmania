@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameInputManager
 {
@@ -8,18 +9,21 @@ public class GameInputManager
     private ControlScheme scheme;
     private int lanes;
 
+    private GameLayout layout;
     private NoteManager noteManager;
 
     private List<List<KeyCode>> keysForLane;
 
     public GameInputManager(
         Pattern pattern,
+        GameLayout layout,
         NoteManager noteManager)
     {
         this.pattern = pattern;
         scheme = pattern.patternMetadata.controlScheme;
         lanes = pattern.patternMetadata.playableLanes;
 
+        this.layout = layout;
         this.noteManager = noteManager;
     }
 
@@ -106,13 +110,80 @@ public class GameInputManager
         });
     }
 
-    public void Update(int scan)
+    public void Update(GameTimer timer)
     {
+        // TODO: if auto play, do nothing
 
+        // Input handling gets a bit complicated so here's a graph.
+        //
+        // Touch/KM                Keys/KM           Timer
+        // --------                -------           -----
+        // OnFingerDown/Move[0]    OnKeyDown[1]      UpdateTime[2]
+        //     |                       |                 |
+        // ProcessMouseOrFingerDown    |                 |
+        //     |                       |                 |
+        //     -------------------------                 |
+        //                |                              |
+        //             HitNote                           |
+        //              |   |                            |
+        //              |   ------------------------------
+        //              |                 |
+        //       RegisterOngoing       ResolveNote
+        //
+        // [0] mouse is considered finger #0; finger moving between
+        // lanes will cause a new finger down event.
+        // [1] takes a lane number in Keys, works on any lane in KM.
+        // [2] the timer will resolve notes as Breaks when the
+        // time window to play them has completely passed.
+        //
+        //
+        //
+        // Parallel to the above is the handling of ongoing notes.
+        //
+        // Touch/KM           Keys/KM         Update
+        // --------           -------         ------
+        // OnFingerHeld       OnKeyHeld[2]    UpdateOngoingNotes[1]
+        //      |                 |                    |
+        //      -------------------                    |
+        //              |                              |
+        //        HitOngoingNote[0]                    |
+        //              |                              |
+        //              --------------------------------
+        //                              |
+        //                         ResolveNote
+        //
+        // [0] marks the note as being hit on the current frame, or
+        // resolves the note if its duration has passed.
+        // [1] after all input is handled, any ongoing note not
+        // marked on the current frame will be resolved as Misses.
+        // [2] takes a lane number in Keys, works on any lane in KM.
+
+        // TODO: KM works on right mouse button as well.
     }
 
     public void Dispose()
     {
-
+        keysForLane.Clear();
     }
+
+    #region Transformation
+    // Note: Y+ is downward.
+    private static Vector2 ScreenSpaceToElementLocalSpace(
+        VisualElement element, Vector2 screenSpace)
+    {
+        Vector2 invertedScreenSpace = new Vector2(
+            screenSpace.x, Screen.height - screenSpace.y);
+        Vector2 worldSpace = RuntimePanelUtils.ScreenToPanel(
+            element.panel, invertedScreenSpace);
+        return element.WorldToLocal(worldSpace);
+    }
+
+    private static bool ElementContainsPointInScreenSpace(
+        VisualElement element, Vector2 screenSpace)
+    {
+        Vector2 localSpace = ScreenSpaceToElementLocalSpace(
+            element, screenSpace);
+        return element.ContainsPoint(localSpace);
+    }
+    #endregion
 }
