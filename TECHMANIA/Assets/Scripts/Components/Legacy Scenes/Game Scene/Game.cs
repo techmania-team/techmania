@@ -22,13 +22,6 @@ public enum Judgement
     Break
 }
 
-public enum InputDevice
-{
-    Touchscreen,
-    Keyboard,
-    Mouse
-}
-
 public class Game : MonoBehaviour
 {
     public GlobalResourceLoader globalResourceLoader;
@@ -1986,8 +1979,9 @@ public class Game : MonoBehaviour
                 if (ongoingNotes.ContainsKey(noteToCheck))
                 {
                     hitOngoingNote = true;
-                    // No need to check for empty touch
-                    // receiver because they are lower priority.
+                    // Later there will be no need to check for
+                    // empty touch receiver because they are lower
+                    // priority.
                     continue;
                 }
 

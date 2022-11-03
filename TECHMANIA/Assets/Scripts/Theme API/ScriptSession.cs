@@ -178,6 +178,8 @@ namespace ThemeApi
             // Expose utility classes
             Table utilTypes = new Table(session);
             addTypeAs(utilTypes, typeof(IO), "io");
+            addTypeAs(utilTypes, typeof(VisualElementTransform),
+                "transform");
             apiTable["util"] = utilTypes;
 
             return apiTable;

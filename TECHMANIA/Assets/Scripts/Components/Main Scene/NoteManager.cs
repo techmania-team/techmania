@@ -15,6 +15,14 @@ public class NoteManager
     
     // Keyed by scan number, so we can prepare and activate
     // entire scans at once. Only holds playable notes.
+    //
+    // Organized as a dictionary because:
+    // - An end-of-scan note at pulse 0 is considered to be in
+    //   scan -1
+    // - Empty scans shouldn't take up space
+    //
+    // Therefore, beware that some scans may not exist in this
+    // dictionary.
     public Dictionary<int, List<NoteElements>> notesInScan
         { get; private set; }
     // Playable notes separated into mouse and keyboard notes,
@@ -37,12 +45,6 @@ public class NoteManager
     public void Prepare(Pattern p, int lastScan,
         GameController.NoteTemplates noteTemplates)
     {
-        for (int i = -1; i < lastScan; i++)
-        {
-            // An end-of-scan note on pulse 0 is considered to be
-            // in scan -1.
-            notesInScan.Add(i, new List<NoteElements>());
-        }
         for (int i = 0; i < Pattern.kMaxLane; i++)
         {
             notesInLane.Add(new NoteList());
@@ -104,6 +106,10 @@ public class NoteManager
             notesInLane[lane].Add(noteElements);
             if (!hidden)
             {
+                if (!notesInScan.ContainsKey(intScan))
+                {
+                    notesInScan.Add(intScan, new List<NoteElements>());
+                }
                 notesInScan[intScan].Add(noteElements);
                 switch (n.type)
                 {
@@ -122,6 +128,10 @@ public class NoteManager
                         break;
                 }
             }
+        }
+        foreach (List<NoteElements> list in notesInScan.Values)
+        {
+            list.Reverse();
         }
         for (int i = 0; i < Pattern.kMaxLane; i++)
         {

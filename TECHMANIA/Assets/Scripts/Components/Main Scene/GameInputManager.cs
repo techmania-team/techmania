@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum InputDevice
+{
+    Touchscreen,
+    Keyboard,
+    Mouse
+}
+
 public class GameInputManager
 {
     private Pattern pattern;
@@ -11,13 +18,15 @@ public class GameInputManager
 
     private GameLayout layout;
     private NoteManager noteManager;
+    private GameTimer timer;
 
     private List<List<KeyCode>> keysForLane;
 
     public GameInputManager(
         Pattern pattern,
         GameLayout layout,
-        NoteManager noteManager)
+        NoteManager noteManager,
+        GameTimer timer)
     {
         this.pattern = pattern;
         scheme = pattern.patternMetadata.controlScheme;
@@ -25,10 +34,18 @@ public class GameInputManager
 
         this.layout = layout;
         this.noteManager = noteManager;
+        this.timer = timer;
     }
 
     public void Prepare()
     {
+        // Initialize data structures.
+        fingerInLane = new Dictionary<int, int>();
+        ongoingNotes = new Dictionary<NoteElements, Judgement>();
+        ongoingNoteIsHitOnThisFrame = new
+            Dictionary<NoteElements, bool>();
+        ongoingNoteLastInput = new Dictionary<NoteElements, float>();
+
         // Prepare keycodes for keyboard input.
         keysForLane = new List<List<KeyCode>>();
         if (lanes >= 4)
@@ -110,28 +127,33 @@ public class GameInputManager
         });
     }
 
-    public void Update(GameTimer timer)
+    public void Dispose()
     {
-        // TODO: if auto play, do nothing
+        keysForLane.Clear();
+    }
 
+    #region Update
+    public void Update()
+    {
         // Input handling gets a bit complicated so here's a graph.
         //
-        // Touch/KM                Keys/KM           Timer
-        // --------                -------           -----
-        // OnFingerDown/Move[0]    OnKeyDown[1]      UpdateTime[2]
-        //     |                       |                 |
-        // ProcessMouseOrFingerDown    |                 |
-        //     |                       |                 |
-        //     -------------------------                 |
-        //                |                              |
-        //             HitNote                           |
-        //              |   |                            |
-        //              |   ------------------------------
+        // Touch/KM                Keys/KM         Timer
+        // --------                -------         -----
+        // OnFingerDown/Move[0]    OnKeyDown[1]    CheckForBreak[2]
+        //     |                       |               |
+        // ProcessFingerDown           |               |
+        //     |                       |               |
+        //     -------------------------               |
+        //                |                            |
+        //             HitNote                         |
+        //              |   |                          |
+        //              |   ----------------------------
         //              |                 |
         //       RegisterOngoing       ResolveNote
         //
         // [0] mouse is considered finger #0; finger moving between
-        // lanes will cause a new finger down event.
+        // lanes will cause a new finger down event. Therefore the
+        // handling of finger down events is in a separate method.
         // [1] takes a lane number in Keys, works on any lane in KM.
         // [2] the timer will resolve notes as Breaks when the
         // time window to play them has completely passed.
@@ -158,32 +180,343 @@ public class GameInputManager
         // marked on the current frame will be resolved as Misses.
         // [2] takes a lane number in Keys, works on any lane in KM.
 
-        // TODO: KM works on right mouse button as well.
+        if (GameController.autoPlay)
+        {
+            HandleAutoPlay();
+        }
+        else
+        {
+            HandleInputByScheme();
+            CheckForBreak();
+        }
+        UpdateOngoingNotes();
     }
 
-    public void Dispose()
+    private void HandleInputByScheme()
     {
-        keysForLane.Clear();
+        switch (scheme)
+        {
+            case ControlScheme.Touch:
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch t = Input.GetTouch(i);
+                    switch (t.phase)
+                    {
+                        case TouchPhase.Began:
+                            OnFingerDown(t.fingerId, t.position);
+                            break;
+                        case TouchPhase.Moved:
+                            OnFingerMove(t.fingerId, t.position);
+                            OnFingerHeld(t.position);
+                            break;
+                        case TouchPhase.Stationary:
+                            OnFingerHeld(t.position);
+                            break;
+                        case TouchPhase.Canceled:
+                        case TouchPhase.Ended:
+                            OnFingerUp(t.fingerId);
+                            break;
+                    }
+                }
+                break;
+            case ControlScheme.Keys:
+                for (int lane = 0; lane < lanes; lane++)
+                {
+                    foreach (KeyCode key in keysForLane[lane])
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            OnKeyDownOnLane(lane);
+                        }
+                        if (Input.GetKey(key))
+                        {
+                            OnKeyHeldOnLane(lane);
+                        }
+                    }
+                }
+                break;
+            case ControlScheme.KM:
+                if (Input.GetMouseButtonDown(0) ||
+                    Input.GetMouseButtonDown(1) ||
+                    Input.GetMouseButtonDown(2))
+                {
+                    OnFingerDown(0, Input.mousePosition);
+                }
+                if (Input.GetMouseButton(0) ||
+                    Input.GetMouseButton(1) ||
+                    Input.GetMouseButton(2))
+                {
+                    OnFingerMove(0, Input.mousePosition);
+                    OnFingerHeld(Input.mousePosition);
+                }
+                if (Input.GetMouseButtonUp(0) ||
+                    Input.GetMouseButtonUp(1) ||
+                    Input.GetMouseButtonUp(2))
+                {
+                    OnFingerUp(0);
+                }
+                for (int lane = 0; lane < lanes; lane++)
+                {
+                    foreach (KeyCode key in keysForLane[lane])
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            OnKeyDownOnAnyLane();
+                        }
+                        if (Input.GetKey(key))
+                        {
+                            OnKeyHeldOnAnyLane();
+                        }
+                    }
+                }
+                break;
+        }
     }
 
-    #region Transformation
-    // Note: Y+ is downward.
-    private static Vector2 ScreenSpaceToElementLocalSpace(
-        VisualElement element, Vector2 screenSpace)
+    private void HandleAutoPlay()
     {
-        Vector2 invertedScreenSpace = new Vector2(
-            screenSpace.x, Screen.height - screenSpace.y);
-        Vector2 worldSpace = RuntimePanelUtils.ScreenToPanel(
-            element.panel, invertedScreenSpace);
-        return element.WorldToLocal(worldSpace);
+        // TODO: copy from Game.UpdateTime
     }
 
-    private static bool ElementContainsPointInScreenSpace(
-        VisualElement element, Vector2 screenSpace)
+    private void CheckForBreak()
     {
-        Vector2 localSpace = ScreenSpaceToElementLocalSpace(
-            element, screenSpace);
-        return element.ContainsPoint(localSpace);
+        // TODO: copy from Game.UpdateTime
     }
+
+    private void UpdateOngoingNotes()
+    {
+        
+    }
+    #endregion
+
+    #region Timing calculation
+    private InputDevice DeviceForNote(Note n)
+    {
+        if (scheme == ControlScheme.Touch)
+        {
+            return InputDevice.Touchscreen;
+        }
+        if (scheme == ControlScheme.Keys)
+        {
+            return InputDevice.Keyboard;
+        }
+
+        switch (n.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.Drag:
+                return InputDevice.Mouse;
+            default:
+                return InputDevice.Keyboard;
+        }
+    }
+
+    private float LatencyForNote(Note n)
+    {
+        int latencyMs = Options.instance.GetLatencyForDevice(
+            DeviceForNote(n));
+        return GameController.autoPlay ? 0f : latencyMs * 0.001f;
+    }
+    #endregion
+
+    #region Finger / mouse events
+    private Dictionary<int, int> fingerInLane;
+
+    private void OnFingerDown(int finger, Vector2 screenPoint)
+    {
+        int lane = layout.ScreenPointToLaneNumber(screenPoint);
+        if (fingerInLane.ContainsKey(finger))
+        {
+            fingerInLane[finger] = lane;
+        }
+        else
+        {
+            fingerInLane.Add(finger, lane);
+        }
+        ProcessFingerDown(lane, screenPoint);
+    }
+
+    // Meant for ongoing notes; doesn't care which finger.
+    private void OnFingerHeld(Vector2 screenPoint)
+    {
+        // TODO
+    }
+
+    // Fires additional finger down events if the finger moved
+    // between lanes.
+    private void OnFingerMove(int finger, Vector2 screenPoint)
+    {
+        if (!fingerInLane.ContainsKey(finger))
+        {
+            OnFingerDown(finger, screenPoint);
+            return;
+        }
+
+        int lane = layout.ScreenPointToLaneNumber(screenPoint);
+        if (fingerInLane[finger] != lane)
+        {
+            ProcessFingerDown(lane, screenPoint);
+            fingerInLane[finger] = lane;
+        }
+    }
+
+    private void OnFingerUp(int finger)
+    {
+        fingerInLane.Remove(finger);
+    }
+
+    private void ProcessFingerDown(int lane, Vector2 screenPoint)
+    {
+        RaycastResult raycastResult = Raycast(screenPoint);
+        if (raycastResult.newNote != null)
+        {
+            // Hit a new note, so just process it.
+            HitNote(raycastResult.newNote, 
+                raycastResult.newNoteTimeDifference);
+        }
+        else if (raycastResult.ongoingNotes.Count > 0)
+        {
+            // Hit no new note but at least 1 ongoing note, this
+            // will be processed by OnFingerHeld. Do nothing here.
+            return;
+        }
+        else
+        {
+            // Hit nothing - empty hit.
+            EmptyHit(lane);
+        }
+    }
+
+    private class RaycastResult
+    {
+        // If a point hits multiple new notes, this is the one
+        // with smallest pulse.
+        public NoteElements newNote = null;
+        public float newNoteTimeDifference = 0f;
+        // All ongoing notes that the point hits.
+        public List<NoteElements> ongoingNotes =
+            new List<NoteElements>();
+    }
+    private RaycastResult Raycast(Vector2 screenPoint)
+    {
+        RaycastResult result = new RaycastResult();
+        System.Action<NoteElements> raycastOnNote =
+            (NoteElements elements) =>
+        {
+            if (elements.hitbox == null) return;
+            if (elements.hitbox.pickingMode == PickingMode.Ignore)
+            {
+                return;
+            }
+            if (!ThemeApi.VisualElementTransform
+                .ElementContainsPointInScreenSpace(
+                elements.hitbox, screenPoint))
+            {
+                return;
+            }
+            if (scheme == ControlScheme.KM)
+            {
+                if (elements.note.type == NoteType.Hold ||
+                    elements.note.type == NoteType.RepeatHead ||
+                    elements.note.type == NoteType.RepeatHeadHold ||
+                    elements.note.type == NoteType.Repeat ||
+                    elements.note.type == NoteType.RepeatHold)
+                {
+                    return;
+                }
+            }
+
+            NoteElements noteToCheck = elements;
+            // TODO: get the correct note to check for
+            // repeat heads
+            if (ongoingNotes.ContainsKey(noteToCheck))
+            {
+                result.ongoingNotes.Add(noteToCheck);
+                return;
+            }
+
+            // If control reaches here, we probably hit a new
+            // note, but there are a few more checks.
+
+            // Have we already hit another new note?
+            if (result.newNote != null) return;
+
+            // Is the current time within the note's time window?
+            float correctTime = noteToCheck.note.time
+                + LatencyForNote(noteToCheck.note);
+            float difference = timer.GameTime - correctTime;
+            if (Mathf.Abs(difference) >
+                noteToCheck.note.timeWindow[Judgement.Miss])
+            {
+                return;
+            }
+
+            // All checks pass, we hit this note.
+            result.newNote = noteToCheck;
+            result.newNoteTimeDifference = difference;
+        };
+
+        // Raycast on notes in the surrounding scans.
+        for (int scan = timer.IntScan - 2;
+            scan <= timer.IntScan + 2;
+            scan++)
+        {
+            if (!noteManager.notesInScan.ContainsKey(scan))
+            {
+                continue;
+            }
+            foreach (NoteElements elements in
+                noteManager.notesInScan[scan])
+            {
+                raycastOnNote(elements);
+            }
+        }
+
+        return result;
+    }
+    #endregion
+
+    #region Keyboard events
+    public void OnKeyDownOnLane(int lane)
+    {
+
+    }
+
+    public void OnKeyHeldOnLane(int lane)
+    {
+
+    }
+
+    public void OnKeyDownOnAnyLane()
+    {
+
+    }
+
+    public void OnKeyHeldOnAnyLane()
+    {
+
+    }
+    #endregion
+
+    #region Hitting notes / empty hits
+    private void HitNote(NoteElements elements, float timeDifference)
+    {
+        Debug.Log($"Hit note at {elements.note.pulse} with time difference {timeDifference}");
+        elements.Resolve();
+    }
+
+    private void EmptyHit(int lane)
+    {
+
+    }
+    #endregion
+
+    #region Ongoing notes
+    // Value is the judgement at note's head.
+    private Dictionary<NoteElements, Judgement> ongoingNotes;
+    private Dictionary<NoteElements, bool> ongoingNoteIsHitOnThisFrame;
+    private Dictionary<NoteElements, float> ongoingNoteLastInput;
     #endregion
 }

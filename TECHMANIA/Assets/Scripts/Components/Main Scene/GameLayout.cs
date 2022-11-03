@@ -4,13 +4,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // Controls scanline and scan countdowns.
-// TODO: spawn one scanline per scan, after all.
 public class GameLayout
 {
     private Pattern pattern;
     private float countdownLengthInScans;
 
-    private VisualElement gameContainer;
     public TemplateContainer layoutContainer { get; private set; }
 
     public enum ScanDirection
@@ -68,15 +66,13 @@ public class GameLayout
         VisualTreeAsset layoutTemplate)
     {
         this.pattern = pattern;
-        this.gameContainer = gameContainer;
 
         layoutContainer = layoutTemplate.Instantiate();
         // Make sure the game - where everything uses absolute
         // positioning - takes up the entirety of setup.gameContainer.
         layoutContainer.style.flexGrow = new StyleFloat(1f);
         // Layout becomes visible on Begin().
-        layoutContainer.style.display =
-            new StyleEnum<DisplayStyle>(DisplayStyle.None);
+        layoutContainer.style.visibility = Visibility.Hidden;
         gameContainer.Add(layoutContainer);
 
         System.Func<VisualElement, HalfElements> makeHalfElements =
@@ -88,11 +84,13 @@ public class GameLayout
                 noteContainer = element.Q("note-container")
             };
         topHalf = makeHalfElements(layoutContainer.Q("top-half"));
-        bottomHalf = makeHalfElements(layoutContainer.Q("bottom-half"));
+        bottomHalf = makeHalfElements(layoutContainer.Q(
+            "bottom-half"));
     }
 
     public void ResetSize()
     {
+        Debug.Log("lane height: " + laneHeight);
         GameUISkin skin = GlobalResource.gameUiSkin;
 
         System.Action<VisualElement, SpriteSheet> setSize =
@@ -269,8 +267,7 @@ public class GameLayout
 
     public void Begin()
     {
-        layoutContainer.style.display = 
-            new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+        layoutContainer.style.visibility = Visibility.Visible;
         Update(scan: 0f);
     }
 
@@ -337,9 +334,20 @@ public class GameLayout
         setCountdownProgress(oddHalf, countdownProgresOdd);
     }
 
-    public int LocalPointToLaneNumber(float y)
+    #region Point to lane number
+    public const int kOutsideAllLanes = -1;
+
+    public int ScreenPointToLaneNumber(Vector2 screenPoint)
     {
-        float normalizedY = y * 2f /
+        Vector2 localPoint = ThemeApi.VisualElementTransform
+            .ScreenSpaceToElementLocalSpace(
+            layoutContainer, screenPoint);
+        if (!layoutContainer.ContainsPoint(localPoint))
+        {
+            return kOutsideAllLanes;
+        }
+
+        float normalizedY = localPoint.y * 2f /
             layoutContainer.contentRect.height;  // In [0, 2]
         int playableLanes = pattern.patternMetadata.playableLanes;
 
@@ -373,4 +381,5 @@ public class GameLayout
                 / normalizedLaneHeight);
         }
     }
+    #endregion
 }

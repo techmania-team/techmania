@@ -86,7 +86,6 @@ public class NoteElements : INoteHolder
     }
     // Affected by NoteOpacity modifiers.
     private float alphaUpperBound;
-    public static bool hitboxVisible;
     // If this note is controlled by some UI (eg. calibration)
     // instead of NoteManager / GameController.
     public bool controlledExternally;
@@ -439,7 +438,7 @@ public class NoteElements : INoteHolder
         if (hitbox == null) return;
 
         float alpha = noteImage.style.opacity.value;
-        if (!hitboxVisible) alpha = 0f;
+        if (!GameController.hitboxVisible) alpha = 0f;
         hitbox.style.opacity = alpha;
     }
 

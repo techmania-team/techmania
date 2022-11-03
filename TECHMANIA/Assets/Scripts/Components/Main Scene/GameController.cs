@@ -35,6 +35,9 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
 
+    public static bool autoPlay;
+    public static bool hitboxVisible;
+
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
         setup = s;
@@ -267,6 +270,10 @@ public class GameController : MonoBehaviour
 
         // A few more synchronous loading steps.
 
+        // Switches.
+        autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
+        hitboxVisible = false;
+
         // Prepare timer.
         timer = new GameTimer(setup.patternAfterModifier);
         float backingTrackLength = 0f;
@@ -297,7 +304,6 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
 
         // Spawn notes.
-        NoteElements.hitboxVisible = false;
         noteManager = new NoteManager(layout: layout);
         noteManager.Prepare(
             setup.patternAfterModifier,
@@ -306,7 +312,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for input.
         input = new GameInputManager(setup.patternAfterModifier,
-            layout, noteManager);
+            layout, noteManager, timer);
         input.Prepare();
 
         // TODO: Calculate Fever coefficient.
@@ -361,7 +367,7 @@ public class GameController : MonoBehaviour
             bg.Update(timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer);
-            input.Update(timer);
+            input.Update();
         }
     }
 }
