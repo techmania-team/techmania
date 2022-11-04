@@ -382,10 +382,15 @@ public partial class Pattern
     // This is meant for choosing the audio channel for keysounds,
     // and therefore does not consider auto keysound or auto assist
     // tick notes to be hidden.
-    public bool IsHiddenNote(int lane)
+    public bool ShouldPlayInMusicChannel(int lane)
     {
         return lane >= patternMetadata.playableLanes &&
             lane < kAutoKeysoundFirstLane;
+    }
+
+    public bool IsHidden(int lane)
+    {
+        return lane >= patternMetadata.playableLanes;
     }
 }
 

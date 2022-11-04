@@ -22,6 +22,22 @@ public class KeysoundPlayer
         audioSourceOfNote = new Dictionary<Note, AudioSource>();
     }
 
+    public void Pause()
+    {
+        foreach (AudioSource source in audioSourceOfNote.Values)
+        {
+            source.Pause();
+        }
+    }
+
+    public void Unpause()
+    {
+        foreach (AudioSource source in audioSourceOfNote.Values)
+        {
+            source.UnPause();
+        }
+    }
+
     public void Dispose()
     {
         foreach (AudioSource source in audioSourceOfNote.Values)

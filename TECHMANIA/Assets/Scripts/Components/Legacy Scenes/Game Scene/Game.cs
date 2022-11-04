@@ -584,8 +584,9 @@ public class Game : MonoBehaviour
         List<Note> notesToRemove = new List<Note>();
         foreach (Note n in InternalGameSetup.patternAfterModifier.notes)
         {
-            if (n.sound == "" && InternalGameSetup.patternAfterModifier.IsHiddenNote(
-                n.lane))
+            if (n.sound == "" &&
+                InternalGameSetup.patternAfterModifier.IsHidden(
+                    n.lane))
             {
                 notesToRemove.Add(n);
             }
@@ -1742,7 +1743,7 @@ public class Game : MonoBehaviour
                 if (n.time + clip.length > BaseTime)
                 {
                     audioSourceManager.PlayKeysound(clip,
-                        InternalGameSetup.patternAfterModifier.IsHiddenNote(n.lane),
+                        InternalGameSetup.patternAfterModifier.ShouldPlayInMusicChannel(n.lane),
                         startTime: BaseTime - n.time,
                         n.volumePercent, n.panPercent);
                 }
@@ -2458,7 +2459,7 @@ public class Game : MonoBehaviour
             return;
         }
 
-        bool hidden = InternalGameSetup.patternAfterModifier.IsHiddenNote(n.note.lane);
+        bool hidden = InternalGameSetup.patternAfterModifier.ShouldPlayInMusicChannel(n.note.lane);
         if (Modifiers.instance.assistTick == 
             Modifiers.AssistTick.AssistTick
             && !hidden

@@ -12,7 +12,6 @@ public enum InputDevice
 
 public class GameInputManager
 {
-    private Pattern pattern;
     private ControlScheme scheme;
     private int lanes;
 
@@ -30,7 +29,6 @@ public class GameInputManager
         NoteManager noteManager,
         GameTimer timer)
     {
-        this.pattern = pattern;
         scheme = pattern.patternMetadata.controlScheme;
         lanes = pattern.patternMetadata.playableLanes;
 

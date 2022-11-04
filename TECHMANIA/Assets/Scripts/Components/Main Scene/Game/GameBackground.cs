@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 // TODO: also manage hidden notes.
 public class GameBackground
 {
+    private Pattern pattern;
+
     // null if no backing track.
     public AudioClip backingTrack { get; private set; }
     private AudioSource backingSource => AudioSourceManager.instance
@@ -20,10 +22,16 @@ public class GameBackground
     private PerTrackOptions trackOptions;  // To retrieve brightness
     private bool bgaCovered;
 
+    private int playableLanes;  // To find hidden lanes
+    private NoteManager noteManager;
+    private KeysoundPlayer keysoundPlayer;
+
     #region Preparation
-    public GameBackground(VisualElement bgContainer,
+    public GameBackground(Pattern pattern,
+        VisualElement bgContainer,
         PerTrackOptions trackOptions)
     {
+        this.pattern = pattern;
         this.bgContainer = bgContainer;
         this.bgContainer.style.unityBackgroundImageTintColor =
             Color.clear;
@@ -57,6 +65,15 @@ public class GameBackground
         bgaElement.targetElement = new
             ThemeApi.VisualElementWrap(bgContainer);
         bgaElement.isLooping = loop;
+    }
+
+    public void SetNoteManager(NoteManager noteManager,
+        KeysoundPlayer keysoundPlayer,
+        int playableLanes)
+    {
+        this.noteManager = noteManager;
+        this.keysoundPlayer = keysoundPlayer;
+        this.playableLanes = playableLanes;
     }
     #endregion
 
@@ -99,6 +116,7 @@ public class GameBackground
     {
         UpdateBackingTrack(baseTime);
         UpdateBga(baseTime);
+        UpdateHiddenNotes(baseTime);
     }
 
     private void UpdateBackingTrack(float baseTime)
@@ -133,6 +151,23 @@ public class GameBackground
             bgaElement.Pause();
             bgaCovered = true;
             UpdateBgBrightness();
+        }
+    }
+
+    private void UpdateHiddenNotes(float baseTime)
+    {
+        for (int lane = playableLanes; lane < Pattern.kMaxLane; lane++)
+        {
+            if (noteManager.notesInLane[lane].Count == 0) continue;
+            NoteElements upcomingNote = noteManager.notesInLane[lane]
+                .First() as NoteElements;
+            if (baseTime < upcomingNote.note.time) continue;
+
+            bool musicChannel = pattern.ShouldPlayInMusicChannel(
+                upcomingNote.note.lane);
+            keysoundPlayer.Play(upcomingNote.note,
+                hidden: musicChannel, emptyHit: false);
+            noteManager.ResolveNote(upcomingNote);
         }
     }
     #endregion

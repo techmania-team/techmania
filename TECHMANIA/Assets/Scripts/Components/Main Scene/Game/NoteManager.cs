@@ -32,6 +32,8 @@ public class NoteManager
     public List<NoteList> mouseNotesInLane { get; private set; }
     public List<NoteList> keyboardNotesInLane { get; private set; }
 
+    private int playableLanes;
+
     public NoteManager(GameLayout layout)
     {
         this.layout = layout;
@@ -42,14 +44,15 @@ public class NoteManager
         keyboardNotesInLane = new List<NoteList>();
     }
 
-    public void Prepare(Pattern p, int lastScan,
+    public void Prepare(Pattern p,
         GameController.NoteTemplates noteTemplates)
     {
+        playableLanes = p.patternMetadata.playableLanes;
         for (int i = 0; i < Pattern.kMaxLane; i++)
         {
             notesInLane.Add(new NoteList());
         }
-        for (int i = 0; i < p.patternMetadata.playableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         {
             mouseNotesInLane.Add(new NoteList());
             keyboardNotesInLane.Add(new NoteList());
@@ -64,7 +67,7 @@ public class NoteManager
                 / p.patternMetadata.bps;
             int intScan = n.GetScanNumber(p.patternMetadata.bps);
             int lane = n.lane;
-            bool hidden = p.IsHiddenNote(lane);
+            bool hidden = p.IsHidden(lane);
 
             // Ignore silent hidden notes.
             if (hidden && string.IsNullOrEmpty(n.sound))
@@ -137,7 +140,7 @@ public class NoteManager
         {
             notesInLane[i].Reverse();
         }
-        for (int i = 0; i < p.patternMetadata.playableLanes; i++)
+        for (int i = 0; i < playableLanes; i++)
         { 
             mouseNotesInLane[i].Reverse();
             keyboardNotesInLane[i].Reverse();
@@ -202,21 +205,25 @@ public class NoteManager
     {
         int lane = elements.note.lane;
         notesInLane[elements.note.lane].Remove(elements);
-        switch (elements.note.type)
+
+        if (lane < playableLanes)
         {
-            case NoteType.Basic:
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-            case NoteType.Drag:
-                mouseNotesInLane[lane].Remove(elements);
-                break;
-            case NoteType.Hold:
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                keyboardNotesInLane[lane].Remove(elements);
-                break;
+            switch (elements.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.Drag:
+                    mouseNotesInLane[lane].Remove(elements);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHead:
+                case NoteType.RepeatHeadHold:
+                case NoteType.Repeat:
+                case NoteType.RepeatHold:
+                    keyboardNotesInLane[lane].Remove(elements);
+                    break;
+            }
         }
     }
 

@@ -141,7 +141,9 @@ public class GameController : MonoBehaviour
 
         // Step 1: load background image to display on the loading
         // screen.
-        bg = new GameBackground(setup.bgContainer.inner,
+        bg = new GameBackground(
+            setup.patternAfterModifier,
+            setup.bgContainer.inner,
             trackOptions: setup.trackOptions);
         string backImage = setup.patternAfterModifier.patternMetadata
             .backImage;
@@ -313,8 +315,12 @@ public class GameController : MonoBehaviour
         noteManager = new NoteManager(layout: layout);
         noteManager.Prepare(
             setup.patternAfterModifier,
-            lastScan: timer.lastScan,
             noteTemplates);
+
+        // Set up bg to play hidden notes.
+        bg.SetNoteManager(noteManager, keysoundPlayer,
+            playableLanes: setup.patternAfterModifier
+                .patternMetadata.playableLanes);
 
         // Prepare for input.
         input = new GameInputManager(setup.patternAfterModifier,
@@ -340,12 +346,14 @@ public class GameController : MonoBehaviour
     {
         timer.Pause();
         bg.Pause();
+        keysoundPlayer.Pause();
     }
 
     public void Unpause()
     {
         timer.Unpause();
         bg.Unpause();
+        keysoundPlayer.Unpause();
     }
 
     public void Conclude()
@@ -437,8 +445,6 @@ public class GameController : MonoBehaviour
     public void ResolveNote(NoteElements elements,
         Judgement judgement)
     {
-        Debug.Log($"Resolving note at pulse {elements.note.pulse} with judgement {judgement}");
-
         // Remove note from lists.
         noteManager.ResolveNote(elements);
 
