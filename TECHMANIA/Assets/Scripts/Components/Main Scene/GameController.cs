@@ -35,6 +35,7 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
 
+    // TODO: when this changes, tell layout to reset scanlines' size.
     public static bool autoPlay;
     public static bool hitboxVisible;
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // Controls scanline and scan countdowns.
+// TODO: also touch feedback.
 public class GameLayout
 {
     private Pattern pattern;
@@ -211,6 +212,7 @@ public class GameLayout
         }
     }
 
+    #region Placing elements
     public void PlaceNoteElements(float floatScan, int intScan,
         NoteElements elements)
     {
@@ -263,6 +265,7 @@ public class GameLayout
         element.style.top = new StyleLength(new Length(
             relativeY * 100f, LengthUnit.Percent));
     }
+    #endregion
 
     public void Begin()
     {
@@ -279,12 +282,12 @@ public class GameLayout
     public void Update(float scan)
     {
         // Update scanline.
-        // TODO: respond to scanline opacity.
-        // TODO: respond to auto play.
 
         GameUISkin skin = GlobalResource.gameUiSkin;
-        Sprite scanlineSprite = skin.scanline.GetSpriteAtFloatIndex(
-            scan);
+        Sprite scanlineSprite = GameController.autoPlay ?
+            skin.autoPlayScanline.GetSpriteAtFloatIndex(scan) :
+            skin.scanline.GetSpriteAtFloatIndex(scan);
+        float scanlineAlpha = ScanlineAlpha(scan);
 
         foreach (ScanElements s in scanElements)
         {
@@ -293,6 +296,7 @@ public class GameLayout
                 s.direction);
             s.scanline.style.backgroundImage = new StyleBackground(
                 scanlineSprite);
+            s.scanline.style.opacity = scanlineAlpha;
         }
 
         // Update countdown.
@@ -331,6 +335,54 @@ public class GameLayout
             };
         setCountdownProgress(evenHalf, countdownProgresEven);
         setCountdownProgress(oddHalf, countdownProgresOdd);
+    }
+
+    private float ScanlineAlpha(float scan)
+    {
+        float alpha = 1f;
+        switch (Modifiers.instance.scanlineOpacity)
+        {
+            case Modifiers.ScanlineOpacity.Normal:
+                return 1f;
+            case Modifiers.ScanlineOpacity.Blind:
+                return 0f;
+            case Modifiers.ScanlineOpacity.Blink:
+                // 4 periods per scan.
+                scan *= 4f;
+                scan -= Mathf.Floor(scan);
+                if (scan < 0.25f)
+                {
+                    alpha = Mathf.InverseLerp(0f, 0.25f, scan);
+                }
+                else if (scan < 0.5f)
+                {
+                    alpha = Mathf.InverseLerp(0.5f, 0.25f, scan);
+                }
+                else
+                {
+                    alpha = 0f;
+                }
+                break;
+            case Modifiers.ScanlineOpacity.Blink2:
+                // 2 periods per scan.
+                scan *= 2f;
+                scan -= Mathf.Floor(scan);
+                if (scan < 0.125f)
+                {
+                    alpha = Mathf.InverseLerp(0f, 0.125f, scan);
+                }
+                else if (scan < 0.25f)
+                {
+                    alpha = Mathf.InverseLerp(
+                        0.25f, 0.125f, scan);
+                }
+                else
+                {
+                    alpha = 0f;
+                }
+                break;
+        }
+        return Mathf.SmoothStep(0f, 1f, alpha);
     }
 
     #region Point to lane number
