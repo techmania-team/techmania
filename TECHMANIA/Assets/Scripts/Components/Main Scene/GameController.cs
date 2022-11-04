@@ -426,9 +426,11 @@ public class GameController : MonoBehaviour
         // TODO: play keysound
     }
 
-    private void ResolveNote(NoteElements elements,
+    public void ResolveNote(NoteElements elements,
         Judgement judgement)
     {
+        Debug.Log($"Resolving note at pulse {elements.note.pulse} with judgement {judgement}");
+
         // Remove note from lists.
         noteManager.ResolveNote(elements);
 

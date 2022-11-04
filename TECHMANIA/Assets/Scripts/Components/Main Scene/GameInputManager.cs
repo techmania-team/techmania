@@ -278,12 +278,38 @@ public class GameInputManager
 
     private void HandleAutoPlay()
     {
-        // TODO: copy from Game.UpdateTime
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            if (noteManager.notesInLane[lane].Count == 0) continue;
+            NoteElements upcoming = noteManager.notesInLane[lane]
+                .First() as NoteElements;
+
+            if (timer.GameTime >= upcoming.note.time &&
+                !ongoingNotes.ContainsKey(upcoming))
+            {
+                controller.HitNote(upcoming, 0f);
+            }
+        }
     }
 
     private void CheckForBreak()
     {
-        // TODO: copy from Game.UpdateTime
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            if (noteManager.notesInLane[lane].Count == 0) continue;
+            NoteElements upcoming = noteManager.notesInLane[lane]
+                .First() as NoteElements;
+
+            
+            if (timer.GameTime > upcoming.note.time
+                + upcoming.note.timeWindow[Judgement.Miss]
+                + LatencyForNote(upcoming.note) /* TODO: * speed */
+                &&
+                !ongoingNotes.ContainsKey(upcoming))
+            {
+                controller.ResolveNote(upcoming, Judgement.Break);
+            }
+        }
     }
 
     private void UpdateOngoingNotes()
