@@ -90,7 +90,6 @@ public class GameLayout
 
     public void ResetSize()
     {
-        Debug.Log("lane height: " + laneHeight);
         GameUISkin skin = GlobalResource.gameUiSkin;
 
         System.Action<VisualElement, SpriteSheet> setSize =

@@ -16,6 +16,7 @@ public class GameInputManager
     private ControlScheme scheme;
     private int lanes;
 
+    private GameController controller;
     private GameLayout layout;
     private NoteManager noteManager;
     private GameTimer timer;
@@ -24,6 +25,7 @@ public class GameInputManager
 
     public GameInputManager(
         Pattern pattern,
+        GameController controller,
         GameLayout layout,
         NoteManager noteManager,
         GameTimer timer)
@@ -32,6 +34,7 @@ public class GameInputManager
         scheme = pattern.patternMetadata.controlScheme;
         lanes = pattern.patternMetadata.playableLanes;
 
+        this.controller = controller;
         this.layout = layout;
         this.noteManager = noteManager;
         this.timer = timer;
@@ -369,11 +372,12 @@ public class GameInputManager
 
     private void ProcessFingerDown(int lane, Vector2 screenPoint)
     {
-        RaycastResult raycastResult = Raycast(screenPoint);
+        RaycastResult raycastResult = Raycast(screenPoint,
+            prioritizeNewNote: true);
         if (raycastResult.newNote != null)
         {
             // Hit a new note, so just process it.
-            HitNote(raycastResult.newNote, 
+            controller.HitNote(raycastResult.newNote, 
                 raycastResult.newNoteTimeDifference);
         }
         else if (raycastResult.ongoingNotes.Count > 0)
@@ -385,7 +389,7 @@ public class GameInputManager
         else
         {
             // Hit nothing - empty hit.
-            EmptyHit(lane);
+            controller.EmptyHitForFinger(lane);
         }
     }
 
@@ -399,7 +403,11 @@ public class GameInputManager
         public List<NoteElements> ongoingNotes =
             new List<NoteElements>();
     }
-    private RaycastResult Raycast(Vector2 screenPoint)
+
+    // If prioritizeNewNote, raycast will stop after finding
+    // a new note.
+    private RaycastResult Raycast(Vector2 screenPoint,
+        bool prioritizeNewNote)
     {
         RaycastResult result = new RaycastResult();
         System.Action<NoteElements> raycastOnNote =
@@ -471,6 +479,14 @@ public class GameInputManager
                 noteManager.notesInScan[scan])
             {
                 raycastOnNote(elements);
+                if (prioritizeNewNote && result.newNote != null)
+                {
+                    break;
+                }
+            }
+            if (prioritizeNewNote && result.newNote != null)
+            {
+                break;
             }
         }
 
@@ -500,23 +516,22 @@ public class GameInputManager
     }
     #endregion
 
-    #region Hitting notes / empty hits
-    private void HitNote(NoteElements elements, float timeDifference)
-    {
-        Debug.Log($"Hit note at {elements.note.pulse} with time difference {timeDifference}");
-        elements.Resolve();
-    }
-
-    private void EmptyHit(int lane)
-    {
-
-    }
-    #endregion
-
     #region Ongoing notes
     // Value is the judgement at note's head.
     private Dictionary<NoteElements, Judgement> ongoingNotes;
     private Dictionary<NoteElements, bool> ongoingNoteIsHitOnThisFrame;
     private Dictionary<NoteElements, float> ongoingNoteLastInput;
+
+    public void RegisterOngoingNote(NoteElements elements,
+        Judgement judgement)
+    {
+        ongoingNotes.Add(elements, judgement);
+        ongoingNoteIsHitOnThisFrame.Add(elements, true);
+    }
+
+    public bool IsOngoing(NoteElements elements)
+    {
+        return ongoingNotes.ContainsKey(elements);
+    }
     #endregion
 }

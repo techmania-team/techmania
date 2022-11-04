@@ -144,13 +144,13 @@ public class NoteManager
         }
     }
 
-    public void ResetAspectRatio()
+    public void ResetSize()
     {
         foreach (List<NoteElements> list in notesInScan.Values)
         {
             foreach (NoteElements elements in list)
             {
-                elements.ResetAspectRatio();
+                elements.ResetSize();
             }
         }
     }
@@ -196,6 +196,28 @@ public class NoteManager
         };
         updateNotesInScan(timer.IntScan);
         updateNotesInScan(timer.IntScan + 1);
+    }
+
+    public void ResolveNote(NoteElements elements)
+    {
+        int lane = elements.note.lane;
+        notesInLane[elements.note.lane].Remove(elements);
+        switch (elements.note.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.Drag:
+                mouseNotesInLane[lane].Remove(elements);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHead:
+            case NoteType.RepeatHeadHold:
+            case NoteType.Repeat:
+            case NoteType.RepeatHold:
+                keyboardNotesInLane[lane].Remove(elements);
+                break;
+        }
     }
 
     public void Dispose()

@@ -312,7 +312,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for input.
         input = new GameInputManager(setup.patternAfterModifier,
-            layout, noteManager, timer);
+            this, layout, noteManager, timer);
         input.Prepare();
 
         // TODO: Calculate Fever coefficient.
@@ -356,6 +356,12 @@ public class GameController : MonoBehaviour
         bg.UpdateBgBrightness();
     }
 
+    public void ResetSize()
+    {
+        layout.ResetSize();
+        noteManager.ResetSize();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -370,4 +376,102 @@ public class GameController : MonoBehaviour
             input.Update();
         }
     }
+
+    #region Responding to input
+    public void HitNote(NoteElements elements, float timeDifference)
+    {
+        Judgement judgement = Judgement.Miss;
+        float absDifference = Mathf.Abs(timeDifference);
+        // TODO: Compensate for speed.
+
+        foreach (Judgement j in new List<Judgement>{
+            Judgement.RainbowMax,
+            Judgement.Max,
+            Judgement.Cool,
+            Judgement.Good,
+            Judgement.Miss
+        })
+        {
+            if (absDifference <= elements.note.timeWindow[j])
+            {
+                judgement = j;
+                break;
+            }
+        }
+
+        switch (elements.note.type)
+        {
+            case NoteType.Hold:
+            case NoteType.Drag:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                if (judgement == Judgement.Miss)
+                {
+                    // Missed notes do not enter Ongoing state.
+                    ResolveNote(elements, judgement);
+                }
+                else
+                {
+                    // Register an ongoing note.
+                    input.RegisterOngoingNote(elements, judgement);
+                    elements.SetOngoing();
+                    // TODO: spawn VFX for the ongoing stuff
+                }
+                break;
+            default:
+                ResolveNote(elements, judgement);
+                break;
+        }
+
+        // TODO: play keysound
+    }
+
+    private void ResolveNote(NoteElements elements,
+        Judgement judgement)
+    {
+        // Remove note from lists.
+        noteManager.ResolveNote(elements);
+
+        // TODO: update score, combo and fever.
+        // TODO: spawn VFX.
+        // TODO: show combo text.
+
+        elements.Resolve();
+    }
+
+    public void EmptyHitForFinger(int lane)
+    {
+        // Find the upcoming note.
+        NoteElements upcomingNote = null;
+        switch (setup.patternAfterModifier.patternMetadata
+            .controlScheme)
+        {
+            case ControlScheme.Touch:
+                if (noteManager.notesInLane[lane].Count == 0)
+                    break;
+                upcomingNote = noteManager.notesInLane[lane].First()
+                    as NoteElements;
+                break;
+            case ControlScheme.Keys:
+                // Keys should not call this method.
+                break;
+            case ControlScheme.KM:
+                if (noteManager.mouseNotesInLane[lane].Count == 0) 
+                    break;
+                upcomingNote = noteManager.mouseNotesInLane[lane]
+                    .First() as NoteElements;
+                break;
+        }
+
+        if (upcomingNote == null) return;
+        if (input.IsOngoing(upcomingNote)) return;
+
+        // TODO: play keysound
+    }
+
+    public void EmptyHitForKeyboard(NoteElements elements)
+    {
+        // TODO: just play keysound.
+    }
+    #endregion
 }

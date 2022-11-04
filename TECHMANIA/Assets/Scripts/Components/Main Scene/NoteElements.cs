@@ -96,7 +96,7 @@ public class NoteElements : INoteHolder
         this.controlledExternally = controlledExternally;
     }
 
-    public void ResetAspectRatio()
+    public void ResetSize()
     {
         InitializeSize();
         ResetHitbox();
