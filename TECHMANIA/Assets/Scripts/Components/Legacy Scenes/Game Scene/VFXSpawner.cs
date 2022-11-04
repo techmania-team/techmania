@@ -47,7 +47,7 @@ public class VFXSpawner : MonoBehaviour
             spriteSheetLayers, loop);
     }
 
-    public void SpawnVFXOnHit(NoteObject note, Judgement judgement)
+    public void SpawnOngoingVFX(NoteObject note, Judgement judgement)
     {
         // Judgement should never be Break here.
         if (judgement == Judgement.Miss) return;

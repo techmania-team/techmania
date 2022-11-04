@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
     private ThemeApi.GameState state;
     private GameTimer timer;
     private GameBackground bg;
+    private KeysoundPlayer keysoundPlayer;
     private GameLayout layout;
     private NoteManager noteManager;
     private GameInputManager input;
@@ -275,6 +276,10 @@ public class GameController : MonoBehaviour
         autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
         hitboxVisible = false;
 
+        // Keysound player.
+        keysoundPlayer = new KeysoundPlayer(setup.assistTick);
+        keysoundPlayer.Prepare();
+
         // Prepare timer.
         timer = new GameTimer(setup.patternAfterModifier);
         float backingTrackLength = 0f;
@@ -347,6 +352,7 @@ public class GameController : MonoBehaviour
     {
         timer.Dispose();
         bg.Conclude();
+        keysoundPlayer.Dispose();
         layout.Dispose();
         noteManager.Dispose();
         input.Dispose();
@@ -383,7 +389,7 @@ public class GameController : MonoBehaviour
     {
         Judgement judgement = Judgement.Miss;
         float absDifference = Mathf.Abs(timeDifference);
-        // TODO: Compensate for speed.
+        absDifference /= timer.speed;
 
         foreach (Judgement j in new List<Judgement>{
             Judgement.RainbowMax,
@@ -424,7 +430,8 @@ public class GameController : MonoBehaviour
                 break;
         }
 
-        // TODO: play keysound
+        keysoundPlayer.Play(elements.note,
+            hidden: false, emptyHit: false);
     }
 
     public void ResolveNote(NoteElements elements,
@@ -468,13 +475,14 @@ public class GameController : MonoBehaviour
 
         if (upcomingNote == null) return;
         if (input.IsOngoing(upcomingNote)) return;
-
-        // TODO: play keysound
+        keysoundPlayer.Play(upcomingNote.note,
+            hidden: false, emptyHit: true);
     }
 
     public void EmptyHitForKeyboard(NoteElements elements)
     {
-        // TODO: just play keysound.
+        keysoundPlayer.Play(elements.note,
+            hidden: false, emptyHit: true);
     }
     #endregion
 }

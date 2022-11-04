@@ -2251,7 +2251,7 @@ public class Game : MonoBehaviour
             }
         }
 
-        vfxSpawner.SpawnVFXOnHit(n, judgement);
+        vfxSpawner.SpawnOngoingVFX(n, judgement);
 
         switch (n.note.type)
         {

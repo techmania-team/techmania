@@ -17,10 +17,12 @@ public class GameTimer
     {
         get
         {
-            if (autoPlay) return BaseTime;
+            if (GameController.autoPlay) return BaseTime;
             return BaseTime - offset;
         }
     }
+
+    public float speed { get; private set; }
     #endregion
 
     #region Pulse, beat, scan
@@ -45,21 +47,12 @@ public class GameTimer
     private float initialTime;
     #endregion
 
-    #region State
-    private bool autoPlay;
-    private float speed;
-    #endregion
-
-    #region Events
-    #endregion
-
     #region Methods
     public GameTimer(Pattern p)
     {
         stopwatch = new System.Diagnostics.Stopwatch();
         pattern = p;
         PulsesPerScan = Pattern.pulsesPerBeat * p.patternMetadata.bps;
-        autoPlay = false;
         speed = 1f;
     }
 

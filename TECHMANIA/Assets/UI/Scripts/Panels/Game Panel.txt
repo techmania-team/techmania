@@ -35,6 +35,7 @@ gamePanel.Initialize = function()
     tm.gameSetup.bgContainer = panel.Q("bg-layer")
     tm.gameSetup.gameContainer = panel.Q("game-layer")
     tm.gameSetup.vfxComboContainer = nil  -- Unused
+    tm.gameSetup.assistTick = util.io.LoadAudioFromTheme("Assets/UI/SFX/Assist Tick.wav")
 
     tm.gameSetup.onLoadProgress = function(progress)
         local percent = progress.filesLoaded * 100 / progress.totalFiles

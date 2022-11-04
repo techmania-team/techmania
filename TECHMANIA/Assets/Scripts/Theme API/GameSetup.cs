@@ -28,6 +28,10 @@ namespace ThemeApi
         public VisualElementWrap gameContainer;
         public VisualElementWrap vfxComboContainer;  // Unused
 
+        // Audio
+
+        public AudioClip assistTick;
+
         // Callbacks during Loading state
 
         [MoonSharpUserData]

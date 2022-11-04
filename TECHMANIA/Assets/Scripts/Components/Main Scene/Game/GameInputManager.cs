@@ -303,7 +303,7 @@ public class GameInputManager
             
             if (timer.GameTime > upcoming.note.time
                 + upcoming.note.timeWindow[Judgement.Miss]
-                + LatencyForNote(upcoming.note) /* TODO: * speed */
+                + LatencyForNote(upcoming.note) * timer.speed
                 &&
                 !ongoingNotes.ContainsKey(upcoming))
             {
