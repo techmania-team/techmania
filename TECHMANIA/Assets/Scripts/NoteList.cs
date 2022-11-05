@@ -48,6 +48,8 @@ public class NoteList
     }
     #endregion
 
+    public bool IsEmpty() { return Count == 0; }
+
     public void Remove(INoteHolder n)
     {
         for (int i = first; i < list.Count; i++)

@@ -169,16 +169,18 @@ public class GameInputManager
         //      |                 |                    |
         //      -------------------                    |
         //              |                              |
-        //        HitOngoingNote[0]                    |
+        //        hitOnThisFrame[0]                    |
         //              |                              |
         //              --------------------------------
         //                              |
         //                         ResolveNote
         //
-        // [0] marks the note as being hit on the current frame, or
-        // resolves the note if its duration has passed.
+        // [0] marks the note as being hit on the current frame.
         // [1] after all input is handled, any ongoing note not
-        // marked on the current frame will be resolved as Misses.
+        // marked on the current frame will be seen as lost input,
+        // eventually resolved as MISS; any ongoing note that
+        // finished its duration is resolved with the original
+        // judgement on the note head.
         // [2] takes a lane number in Keys, works on any lane in KM.
 
         if (GameController.autoPlay)
@@ -278,7 +280,7 @@ public class GameInputManager
     {
         for (int lane = 0; lane < lanes; lane++)
         {
-            if (noteManager.notesInLane[lane].Count == 0) continue;
+            if (noteManager.notesInLane[lane].IsEmpty()) continue;
             NoteElements upcoming = noteManager.notesInLane[lane]
                 .First() as NoteElements;
 
@@ -294,7 +296,7 @@ public class GameInputManager
     {
         for (int lane = 0; lane < lanes; lane++)
         {
-            if (noteManager.notesInLane[lane].Count == 0) continue;
+            if (noteManager.notesInLane[lane].IsEmpty()) continue;
             NoteElements upcoming = noteManager.notesInLane[lane]
                 .First() as NoteElements;
 
@@ -346,6 +348,12 @@ public class GameInputManager
             DeviceForNote(n));
         return GameController.autoPlay ? 0f : latencyMs * 0.001f;
     }
+
+    private float TimeDifferenceForNote(Note n)
+    {
+        float correctTime = n.time + LatencyForNote(n);
+        return timer.GameTime - correctTime;
+    }
     #endregion
 
     #region Finger / mouse events
@@ -368,7 +376,15 @@ public class GameInputManager
     // Meant for ongoing notes; doesn't care which finger.
     private void OnFingerHeld(Vector2 screenPoint)
     {
-        // TODO
+        RaycastResult raycastResult = Raycast(screenPoint,
+            prioritizeNewNote: false);
+        foreach (NoteElements elements in raycastResult.ongoingNotes)
+        {
+            if (ongoingNoteIsHitOnThisFrame.ContainsKey(elements))
+            {
+                ongoingNoteIsHitOnThisFrame[elements] = true;
+            }
+        }
     }
 
     // Fires additional finger down events if the finger moved
@@ -417,19 +433,24 @@ public class GameInputManager
         }
     }
 
+    // For repeat note series, the fields point to the repeat note
+    // to check, instead of the repeat head.
     private class RaycastResult
     {
         // If a point hits multiple new notes, this is the one
         // with smallest pulse.
         public NoteElements newNote = null;
         public float newNoteTimeDifference = 0f;
+
         // All ongoing notes that the point hits.
         public List<NoteElements> ongoingNotes =
             new List<NoteElements>();
     }
 
-    // If prioritizeNewNote, raycast will stop after finding
-    // a new note.
+    // For optimization, if prioritizeNewNote, raycast will stop
+    // after finding a new note.
+    // If !prioritizeNewNote, raycast will ignore all not-ongoing
+    // notes.
     private RaycastResult Raycast(Vector2 screenPoint,
         bool prioritizeNewNote)
     {
@@ -472,13 +493,15 @@ public class GameInputManager
             // If control reaches here, we probably hit a new
             // note, but there are a few more checks.
 
+            // Do we even care about new notes?
+            if (!prioritizeNewNote) return;
+
             // Have we already hit another new note?
             if (result.newNote != null) return;
 
             // Is the current time within the note's time window?
-            float correctTime = noteToCheck.note.time
-                + LatencyForNote(noteToCheck.note);
-            float difference = timer.GameTime - correctTime;
+            float difference = TimeDifferenceForNote(
+                noteToCheck.note);
             if (Mathf.Abs(difference) >
                 noteToCheck.note.timeWindow[Judgement.Miss])
             {
@@ -521,22 +544,128 @@ public class GameInputManager
     #region Keyboard events
     public void OnKeyDownOnLane(int lane)
     {
+        if (noteManager.notesInLane[lane].IsEmpty())
+        {
+            return;
+        }
 
+        NoteElements upcoming = noteManager.notesInLane[lane]
+            .First() as NoteElements;
+        if (ongoingNotes.ContainsKey(upcoming))
+        {
+            return;
+        }
+
+        CheckHitOnKeyboardNote(upcoming);
     }
 
     public void OnKeyHeldOnLane(int lane)
     {
-
+        NoteElements noteToMark = null;
+        foreach (KeyValuePair<NoteElements, bool> pair in
+            ongoingNoteIsHitOnThisFrame)
+        {
+            if (pair.Value == true) continue;
+            if (pair.Key.note.lane != lane) continue;
+            noteToMark = pair.Key;
+            break;
+        }
+        if (noteToMark != null)
+        {
+            ongoingNoteIsHitOnThisFrame[noteToMark] = true;
+        }
     }
 
     public void OnKeyDownOnAnyLane()
     {
+        // Find the earliest keyboard note.
 
+        List<NoteElements> upcomingInAllLanes = new
+            List<NoteElements>();
+        int earliestPulse = int.MaxValue;
+        foreach (NoteList list in noteManager.keyboardNotesInLane)
+        {
+            if (list.IsEmpty()) continue;
+            NoteElements upcoming = list.First() as NoteElements;
+            upcomingInAllLanes.Add(upcoming);
+            if (upcoming.note.pulse < earliestPulse)
+            {
+                earliestPulse = upcoming.note.pulse;
+            }
+        }
+        if (upcomingInAllLanes.Count == 0)
+        {
+            return;
+        }
+        List<NoteElements> earliestUpcoming = new List<NoteElements>();
+        foreach (NoteElements elements in upcomingInAllLanes)
+        {
+            if (elements.note.pulse == earliestPulse)
+            {
+                earliestUpcoming.Add(elements);
+            }
+        }
+
+        NoteElements earliest = null;
+        if (earliestUpcoming.Count == 1)
+        {
+            earliest = earliestUpcoming[0];
+        }
+        else
+        {
+            // Pick the first note that has no duration, if any.
+            foreach (NoteElements n in earliestUpcoming)
+            {
+                if (n.note.type == NoteType.RepeatHead ||
+                    n.note.type == NoteType.Repeat)
+                {
+                    earliest = n;
+                    break;
+                }
+            }
+            if (earliest == null)
+            {
+                earliest = earliestUpcoming[0];
+            }
+        }
+
+        CheckHitOnKeyboardNote(earliest);
     }
 
     public void OnKeyHeldOnAnyLane()
     {
+        NoteElements noteToMark = null;
+        foreach (KeyValuePair<NoteElements, bool> pair in
+            ongoingNoteIsHitOnThisFrame)
+        {
+            if (pair.Value == true) continue;
+            noteToMark = pair.Key;
+            break;
+        }
+        if (noteToMark != null)
+        {
+            ongoingNoteIsHitOnThisFrame[noteToMark] = true;
+        }
+    }
 
+    private void CheckHitOnKeyboardNote(NoteElements elements)
+    {
+        Note note = elements.note;
+
+        // Compare time.
+        float difference = TimeDifferenceForNote(note);
+        if (Mathf.Abs(difference) >
+            note.timeWindow[Judgement.Miss])
+        {
+            // The keystroke is too early or too late
+            // for this note, so it's an empty hit.
+            controller.EmptyHitForKeyboard(note);
+        }
+        else
+        {
+            // The keystroke lands on this note.
+            controller.HitNote(elements, difference);
+        }
     }
     #endregion
 

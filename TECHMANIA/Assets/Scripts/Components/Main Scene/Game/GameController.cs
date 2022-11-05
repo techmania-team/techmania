@@ -485,9 +485,9 @@ public class GameController : MonoBehaviour
             hidden: false, emptyHit: true);
     }
 
-    public void EmptyHitForKeyboard(NoteElements elements)
+    public void EmptyHitForKeyboard(Note note)
     {
-        keysoundPlayer.Play(elements.note,
+        keysoundPlayer.Play(note,
             hidden: false, emptyHit: true);
     }
     #endregion

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // Manages the BGA and backing track.
-// TODO: also manage hidden notes.
 public class GameBackground
 {
     private Pattern pattern;
