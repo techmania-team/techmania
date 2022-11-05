@@ -455,8 +455,18 @@ public class GameController : MonoBehaviour
         elements.Resolve();
     }
 
+    public void StopKeysoundIfPlaying(Note n)
+    {
+        keysoundPlayer.StopIfPlaying(n);
+    }
+
     public void EmptyHitForFinger(int lane)
     {
+        if (lane == GameLayout.kOutsideAllLanes)
+        {
+            return;
+        }
+
         // Find the upcoming note.
         NoteElements upcomingNote = null;
         switch (setup.patternAfterModifier.patternMetadata

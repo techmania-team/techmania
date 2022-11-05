@@ -311,11 +311,6 @@ public class GameInputManager
             }
         }
     }
-
-    private void UpdateOngoingNotes()
-    {
-        
-    }
     #endregion
 
     #region Timing calculation
@@ -542,7 +537,7 @@ public class GameInputManager
     #endregion
 
     #region Keyboard events
-    public void OnKeyDownOnLane(int lane)
+    private void OnKeyDownOnLane(int lane)
     {
         if (noteManager.notesInLane[lane].IsEmpty())
         {
@@ -559,7 +554,7 @@ public class GameInputManager
         CheckHitOnKeyboardNote(upcoming);
     }
 
-    public void OnKeyHeldOnLane(int lane)
+    private void OnKeyHeldOnLane(int lane)
     {
         NoteElements noteToMark = null;
         foreach (KeyValuePair<NoteElements, bool> pair in
@@ -576,7 +571,7 @@ public class GameInputManager
         }
     }
 
-    public void OnKeyDownOnAnyLane()
+    private void OnKeyDownOnAnyLane()
     {
         // Find the earliest keyboard note.
 
@@ -632,7 +627,7 @@ public class GameInputManager
         CheckHitOnKeyboardNote(earliest);
     }
 
-    public void OnKeyHeldOnAnyLane()
+    private void OnKeyHeldOnAnyLane()
     {
         NoteElements noteToMark = null;
         foreach (KeyValuePair<NoteElements, bool> pair in
@@ -685,6 +680,69 @@ public class GameInputManager
     public bool IsOngoing(NoteElements elements)
     {
         return ongoingNotes.ContainsKey(elements);
+    }
+
+    private void UpdateOngoingNotes()
+    {
+        foreach (KeyValuePair<NoteElements, bool> pair in
+               ongoingNoteIsHitOnThisFrame)
+        {
+            NoteElements elements = pair.Key;
+            Note note = elements.note;
+            bool hit = pair.Value;
+
+            // Has the note's duration finished?
+            float latency = LatencyForNote(note);
+            float endTime = 0f;
+            float gracePeriodLength = 0f;
+            if (note is HoldNote)
+            {
+                HoldNote holdNote = note as HoldNote;
+                endTime = holdNote.endTime + latency;
+                gracePeriodLength = holdNote.gracePeriodLength;
+            }
+            else if (note is DragNote)
+            {
+                DragNote dragNote = note as DragNote;
+                endTime = dragNote.endTime + latency;
+                gracePeriodLength = dragNote.gracePeriodLength;
+            }
+            if (timer.GameTime >= endTime)
+            {
+                // Resolve note.
+                controller.ResolveNote(elements,
+                    ongoingNotes[elements]);
+                ongoingNotes.Remove(elements);
+                continue;
+            }
+
+            // Update time of last input.
+            if (hit)
+            {
+                // Will create new element if not existing.
+                ongoingNoteLastInput[elements] = timer.GameTime;
+            }
+            else if (!GameController.autoPlay)
+            {
+                float lastInput = ongoingNoteLastInput[elements];
+                if (timer.GameTime > lastInput + gracePeriodLength)
+                {
+                    // No input on this note for too long, resolve
+                    // as MISS.
+                    controller.ResolveNote(elements, Judgement.Miss);
+                    controller.StopKeysoundIfPlaying(note);
+                    ongoingNotes.Remove(elements);
+                    ongoingNoteLastInput.Remove(elements);
+                }
+            }
+        }
+
+        // Prepare for next frame.
+        ongoingNoteIsHitOnThisFrame.Clear();
+        foreach (NoteElements elements in ongoingNotes.Keys)
+        {
+            ongoingNoteIsHitOnThisFrame.Add(elements, false);
+        }
     }
     #endregion
 }
