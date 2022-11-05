@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VFXSpawner : MonoBehaviour
+public class LegacyVFXSpawner : MonoBehaviour
 {
     public GameObject vfxPrefab;
 
@@ -34,7 +34,7 @@ public class VFXSpawner : MonoBehaviour
         {
             GameObject vfx = Instantiate(vfxPrefab, transform);
             vfx.GetComponent<VFXDrawer>().Initialize(
-                position, layer, loop);
+                position, layer, Scan.laneHeight, loop);
             layers.Add(vfx);
         }
         return layers;

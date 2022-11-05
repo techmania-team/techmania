@@ -181,7 +181,7 @@ public class SelectSkinPanel : MonoBehaviour
                         vfxPrefab, vfxContainer);
                     vfx.GetComponent<VFXDrawer>().Initialize(
                         notePreview.transform.position,
-                        layer, loop: false);
+                        layer, Scan.laneHeight, loop: false);
                     remainingVfxInstances.Add(vfx);
                 }
                 vfxInstances = remainingVfxInstances;

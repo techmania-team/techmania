@@ -12,6 +12,7 @@ public class VFXDrawer : MonoBehaviour
     public Material additiveMaterial;
 
     private SpriteSheet spriteSheet;
+    private float laneHeight;
     private bool loop;
 
     private RectTransform rect;
@@ -19,10 +20,11 @@ public class VFXDrawer : MonoBehaviour
     private float startTime;
 
     public void Initialize(Vector3 position,
-        SpriteSheet spriteSheet, bool loop)
+        SpriteSheet spriteSheet, float laneHeight, bool loop)
     {
         transform.position = position;
         this.spriteSheet = spriteSheet;
+        this.laneHeight = laneHeight;
         this.loop = loop;
         if (spriteSheet.additiveShader)
         {
@@ -35,7 +37,7 @@ public class VFXDrawer : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         image = GetComponent<Image>();
-        startTime = Game.Time;
+        startTime = Time.time;
 
         if (spriteSheet.sprites == null ||
             spriteSheet.sprites.Count == 0)
@@ -45,7 +47,7 @@ public class VFXDrawer : MonoBehaviour
         }
 
         image.sprite = spriteSheet.sprites[0];
-        float height = Scan.laneHeight * spriteSheet.scale;
+        float height = laneHeight * spriteSheet.scale;
         float width = spriteSheet.sprites[0].rect.width /
             spriteSheet.sprites[0].rect.height * height;
         rect.sizeDelta = new Vector2(width, height);
@@ -54,7 +56,7 @@ public class VFXDrawer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float time = Game.Time - startTime;
+        float time = Time.time - startTime;
         Sprite sprite = spriteSheet.GetSpriteForTime(time, loop);
         if (sprite == null)
         {

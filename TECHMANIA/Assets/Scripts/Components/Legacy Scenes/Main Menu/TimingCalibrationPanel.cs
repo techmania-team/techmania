@@ -266,7 +266,7 @@ public class TimingCalibrationPanel : MonoBehaviour
                     vfxPrefab, vfxContainer);
                 vfx.GetComponent<VFXDrawer>().Initialize(
                     notes[id].transform.position,
-                    layer, loop: false);
+                    layer, Scan.laneHeight, loop: false);
             }
 
             if (lanes[id] == 0)

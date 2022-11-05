@@ -82,7 +82,7 @@ public class Game : MonoBehaviour
     public GameObject hiddenNotePrefab;
 
     [Header("VFX")]
-    public VFXSpawner vfxSpawner;
+    public LegacyVFXSpawner vfxSpawner;
     public ComboText comboText;
 
     [Header("UI - Fever")]

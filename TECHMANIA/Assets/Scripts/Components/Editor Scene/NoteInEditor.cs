@@ -480,7 +480,6 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
                 -p.lane * PatternPanel.LaneHeight);
             pointsOnCurve.Add(pointOnCurve);
         }
-        // TODO: do we need to smooth these points?
 
         // Rotate note head.
         UIUtils.RotateToward(self: noteImage,
