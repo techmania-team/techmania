@@ -22,7 +22,9 @@ public class VFXDrawer : MonoBehaviour
     public void Initialize(Vector3 position,
         SpriteSheet spriteSheet, float laneHeight, bool loop)
     {
-        transform.position = position;
+        rect = GetComponent<RectTransform>();
+        rect.anchoredPosition = position;
+
         this.spriteSheet = spriteSheet;
         this.laneHeight = laneHeight;
         this.loop = loop;
@@ -35,7 +37,6 @@ public class VFXDrawer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rect = GetComponent<RectTransform>();
         image = GetComponent<Image>();
         startTime = Time.time;
 

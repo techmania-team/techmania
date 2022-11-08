@@ -36,6 +36,9 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
 
+    public VFXManager vfxManager;
+    // TODO: combo text manager goes here
+
     // TODO: when this changes, tell layout to reset scanlines' size.
     public static bool autoPlay;
     public static bool hitboxVisible;
@@ -327,6 +330,9 @@ public class GameController : MonoBehaviour
             this, layout, noteManager, timer);
         input.Prepare();
 
+        // Prepare for VFX. TODO: also combo text.
+        vfxManager.Prepare(layout.laneHeight);
+
         // TODO: Calculate Fever coefficient.
         // TODO: Initialize score.
 
@@ -364,6 +370,7 @@ public class GameController : MonoBehaviour
         layout.Dispose();
         noteManager.Dispose();
         input.Dispose();
+        vfxManager.Dispose();
     }
 
     public void UpdateBgBrightness()
@@ -375,6 +382,7 @@ public class GameController : MonoBehaviour
     {
         layout.ResetSize();
         noteManager.ResetSize();
+        vfxManager.ResetSize(layout.laneHeight);
     }
 
     // Update is called once per frame
@@ -430,7 +438,7 @@ public class GameController : MonoBehaviour
                     // Register an ongoing note.
                     input.RegisterOngoingNote(elements, judgement);
                     elements.SetOngoing();
-                    // TODO: spawn VFX for the ongoing stuff
+                    vfxManager.SpawnOngoingVFX(elements, judgement);
                 }
                 break;
             default:
@@ -449,7 +457,7 @@ public class GameController : MonoBehaviour
         noteManager.ResolveNote(elements);
 
         // TODO: update score, combo and fever.
-        // TODO: spawn VFX.
+        vfxManager.SpawnResolvingVFX(elements, judgement);
         // TODO: show combo text.
 
         elements.Resolve();
