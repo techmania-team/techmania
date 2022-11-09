@@ -35,6 +35,8 @@ public class GameController : MonoBehaviour
     private GameLayout layout;
     private NoteManager noteManager;
     private GameInputManager input;
+    // Accessible from Lua
+    public ScoreKeeper scoreKeeper { get; private set; }
 
     public VFXManager vfxManager;
     // TODO: combo text manager goes here
@@ -57,15 +59,6 @@ public class GameController : MonoBehaviour
     {
         instance = this;
     }
-
-    public void BeginLoading()
-    {
-        // Lock down the track so the theme can't change them later.
-        setup.lockedTrackFolder = string.Copy(setup.trackFolder);
-
-        StartCoroutine(LoadSequence());
-    }
-
     private IEnumerator LoadSequence()
     {
         Action<Status> reportLoadError = (Status status) =>
@@ -333,12 +326,24 @@ public class GameController : MonoBehaviour
         // Prepare for VFX. TODO: also combo text.
         vfxManager.Prepare(layout.laneHeight);
 
-        // TODO: Calculate Fever coefficient.
-        // TODO: Initialize score.
+        // Initialize scores.
+        scoreKeeper = new ScoreKeeper();
+        scoreKeeper.Prepare(setup.patternAfterModifier,
+            timer.firstScan, timer.lastScan,
+            playableNotes: noteManager.playableNotes);
 
         // Load complete; wait on theme to begin game.
         state.SetState(ThemeApi.GameState.State.LoadComplete);
         setup.onLoadComplete?.Function?.Call();
+    }
+
+    #region State machine
+    public void BeginLoading()
+    {
+        // Lock down the track so the theme can't change them later.
+        setup.lockedTrackFolder = string.Copy(setup.trackFolder);
+
+        StartCoroutine(LoadSequence());
     }
 
     public void Begin()
@@ -372,6 +377,7 @@ public class GameController : MonoBehaviour
         input.Dispose();
         vfxManager.Dispose();
     }
+    #endregion
 
     public void UpdateBgBrightness()
     {
@@ -393,11 +399,24 @@ public class GameController : MonoBehaviour
         if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update();
-            bg.Update(timer.BaseTime);
+            bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer);
             input.Update();
+
+            CheckForEndOfPattern();
         }
+    }
+
+    private void CheckForEndOfPattern()
+    {
+        if (timer.BaseTime <= timer.patternEndTime) return;
+        if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
+        if (!scoreKeeper.score.AllNotesResolved()) return;
+
+        // TODO: resolve Fever if in active state.
+        // TODO: trigger end of pattern.
+        Debug.Log("End of pattern.");
     }
 
     #region Responding to input

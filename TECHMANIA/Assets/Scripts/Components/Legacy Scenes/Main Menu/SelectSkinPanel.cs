@@ -187,7 +187,7 @@ public class SelectSkinPanel : MonoBehaviour
                 vfxInstances = remainingVfxInstances;
 
                 // Combo
-                Game.InjectFeverAndCombo(Game.FeverState.Idle,
+                Game.InjectFeverAndCombo(Game.FeverState.Building,
                     currentCombo: 123);
                 comboPreview.Show(null, Judgement.RainbowMax);
             }

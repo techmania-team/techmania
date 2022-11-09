@@ -9,6 +9,8 @@ public class GameTimer
     // The stopwatch provides the "base time", which drives
     // the backing track, BGA, hidden notes and auto-played notes.
     public float BaseTime { get; private set; }
+    // The base time of the previous frame.
+    public float PrevFrameBaseTime { get; private set; }
 
     private float offset;
     // Apply offset to BaseTime to get GameTime, which drives
@@ -39,9 +41,9 @@ public class GameTimer
 
     #region Pattern metadata
     private Pattern pattern;
-    private float endOfPatternBaseTime;
     public int firstScan { get; private set; }
     public int lastScan { get; private set; }
+    public float patternEndTime { get; private set; }
 
     // BaseTime is equal to this value when the stopwatch begins.
     private float initialTime;
@@ -109,7 +111,7 @@ public class GameTimer
         // To calculate the start and end time of the pattern,
         // also take backing track and BGA into account.
         float patternStartTime = firstNoteStartTime;
-        float patternEndTime = lastNoteEndTime;
+        patternEndTime = lastNoteEndTime;
         if (!string.IsNullOrEmpty(
             pattern.patternMetadata.backingTrack))
         {
@@ -117,7 +119,8 @@ public class GameTimer
                 patternEndTime, backingTrackLength);
         }
         if (!string.IsNullOrEmpty(
-            pattern.patternMetadata.bga))
+            pattern.patternMetadata.bga) &&
+            pattern.patternMetadata.waitForEndOfBga)
         {
             patternStartTime = Mathf.Min(patternStartTime,
                 (float)pattern.patternMetadata.bgaOffset);
@@ -137,11 +140,14 @@ public class GameTimer
 
     public void Begin()
     {
+        BaseTime = initialTime;
+        PrevFrameBaseTime = initialTime - 0.01f;
         stopwatch.Start();
     }
 
     public void Update()
     {
+        PrevFrameBaseTime = BaseTime;
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
         Pulse = pattern.TimeToPulse(BaseTime);

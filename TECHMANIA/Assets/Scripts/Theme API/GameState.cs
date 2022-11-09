@@ -102,8 +102,7 @@ namespace ThemeApi
             state = newState;
         }
 
-        public float feverValue;
-        // TODO: make the Score class read-only to Lua.
-        public Score score;
+        public ScoreKeeper scoreKeeper => GameController.instance
+            .scoreKeeper;
     }
 }

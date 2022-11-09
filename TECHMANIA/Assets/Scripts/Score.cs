@@ -10,11 +10,12 @@ public enum PerformanceMedal
     AbsolutePerfect
 }
 
+// TODO: make this read-only to Lua.
 public class Score
 {
-    private int totalNotes;
+    public int totalNotes { get; private set; }
     public Dictionary<Judgement, int> notesPerJudgement
-    { get; private set; }
+        { get; private set; }
     public bool stageFailed;
     public int totalFeverBonus { get; private set; }
     public int comboBonus { get; private set; }

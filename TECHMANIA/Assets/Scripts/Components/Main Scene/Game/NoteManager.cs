@@ -33,6 +33,7 @@ public class NoteManager
     public List<NoteList> keyboardNotesInLane { get; private set; }
 
     private int playableLanes;
+    public int playableNotes { get; private set; }
 
     public NoteManager(GameLayout layout)
     {
@@ -57,6 +58,8 @@ public class NoteManager
             mouseNotesInLane.Add(new NoteList());
             keyboardNotesInLane.Add(new NoteList());
         }
+
+        playableNotes = 0;
 
         // Spawn note elements in reverse order, so earlier notes
         // are drawn on top. However, the xyzInLane lists should still
@@ -103,6 +106,10 @@ public class NoteManager
                     template, layout);
                 layout.PlaceNoteElements(floatScan, intScan,
                     noteElements);
+
+                // Also count the number of playable notes; ScoreKeeper
+                // needs this number.
+                playableNotes++;
             }
 
             // Add to data structures.

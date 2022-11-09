@@ -111,18 +111,19 @@ public class GameBackground
     #endregion
 
     #region Update
-    public void Update(float baseTime)
+    public void Update(float prevFrameBaseTime, float baseTime)
     {
-        UpdateBackingTrack(baseTime);
-        UpdateBga(baseTime);
+        UpdateBackingTrack(prevFrameBaseTime, baseTime);
+        UpdateBga(prevFrameBaseTime, baseTime);
         UpdateHiddenNotes(baseTime);
     }
 
-    private void UpdateBackingTrack(float baseTime)
+    private void UpdateBackingTrack(float prevFrameBaseTime,
+        float baseTime)
     {
         if (backingTrack == null) return;
 
-        if (baseTime >= 0 && !backingSource.isPlaying)
+        if (prevFrameBaseTime < 0f && baseTime >= 0f)
         {
             AudioSourceManager.instance.PlayBackingTrack(
                 backingTrack,
@@ -134,11 +135,11 @@ public class GameBackground
         }
     }
 
-    private void UpdateBga(float baseTime)
+    private void UpdateBga(float prevFrameBaseTime, float baseTime)
     {
         if (bgaElement == null) return;
 
-        if (baseTime >= bgaOffset && !bgaElement.isPlaying)
+        if (prevFrameBaseTime < bgaOffset && baseTime >= bgaOffset)
         {
             bgaElement.time = baseTime - bgaOffset;
             bgaElement.Play();

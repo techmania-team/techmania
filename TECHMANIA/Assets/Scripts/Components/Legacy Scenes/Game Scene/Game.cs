@@ -128,7 +128,7 @@ public class Game : MonoBehaviour
 
     public enum FeverState
     {
-        Idle,  // Accummulates with MAXes
+        Building,  // Accummulates with MAXes
         Ready,  // No longer accummulates, awaiting activation
         Active  // Decreases with time
     }
@@ -772,7 +772,7 @@ public class Game : MonoBehaviour
         maxCombo = 0;
         score.Initialize(numPlayableNotes);
         hp = Ruleset.instance.maxHp;
-        feverState = FeverState.Idle;
+        feverState = FeverState.Building;
         feverAmount = 0f;
         switch (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme)
         {
@@ -1232,7 +1232,6 @@ public class Game : MonoBehaviour
     private void UpdateTime()
     {
         float oldBaseTime = BaseTime;
-        float oldTime = Time;
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
         FloatPulse = InternalGameSetup.patternAfterModifier.TimeToPulse(Time);
@@ -1347,7 +1346,7 @@ public class Game : MonoBehaviour
 
         if (feverState == FeverState.Active)
         {
-            feverState = FeverState.Idle;
+            feverState = FeverState.Building;
             score.FeverOff();
         }
         Curtain.DrawCurtainThenGoToScene("Result");
@@ -1883,7 +1882,7 @@ public class Game : MonoBehaviour
             feverAmount = 0f;
             feverTimer.Stop();
             feverTimer = null;
-            feverState = FeverState.Idle;
+            feverState = FeverState.Building;
             int feverBonus = score.FeverOff();
             feverBonusText.text = L10n.GetStringAndFormat(
                 "game_fever_bonus_text", feverBonus);
@@ -2349,7 +2348,7 @@ public class Game : MonoBehaviour
                     hp = Ruleset.instance.maxHp;
                 }
 
-                if (feverState == FeverState.Idle &&
+                if (feverState == FeverState.Building &&
                     (judgement == Judgement.RainbowMax ||
                      judgement == Judgement.Max))
                 {
@@ -2394,7 +2393,7 @@ public class Game : MonoBehaviour
                     StartCoroutine(StageFailedSequence());
                 }
 
-                if (feverState == FeverState.Idle ||
+                if (feverState == FeverState.Building ||
                     feverState == FeverState.Ready)
                 {
                     if (judgement == Judgement.Miss)
@@ -2405,7 +2404,7 @@ public class Game : MonoBehaviour
                     {
                         feverAmount *= 0.5f;
                     }
-                    feverState = FeverState.Idle;
+                    feverState = FeverState.Building;
                 }
             }
         }
