@@ -56,10 +56,19 @@ namespace ThemeApi
         public DynValue onNoteResolved;
         // No parameter.
         public DynValue onAllNotesResolved;
-        // Parameter: current Fever value from 0 to 1.
+        // No parameter.
+        public DynValue onFeverReady;
+        // No parameter. This is called whether auto fever is on or not.
+        public DynValue onFeverActivated;
+        // Parameter: current Fever value from 0 to 1. Only called
+        // when fever is active.
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
+        // Parameter undecided.
+        public DynValue onStageClear;
+        // Parameter undecided.
+        public DynValue onStageFailed;
 
         // Internal stuff
 

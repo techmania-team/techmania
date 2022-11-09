@@ -358,6 +358,7 @@ public class GameController : MonoBehaviour
         timer.Pause();
         bg.Pause();
         keysoundPlayer.Pause();
+        scoreKeeper.Pause();
     }
 
     public void Unpause()
@@ -365,6 +366,7 @@ public class GameController : MonoBehaviour
         timer.Unpause();
         bg.Unpause();
         keysoundPlayer.Unpause();
+        scoreKeeper.Unpause();
     }
 
     public void Conclude()
@@ -403,6 +405,7 @@ public class GameController : MonoBehaviour
             layout.Update(timer.Scan);
             noteManager.Update(timer);
             input.Update();
+            scoreKeeper.UpdateFever();
 
             CheckForEndOfPattern();
         }
@@ -414,8 +417,8 @@ public class GameController : MonoBehaviour
         if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
         if (!scoreKeeper.score.AllNotesResolved()) return;
 
-        // TODO: resolve Fever if in active state.
-        // TODO: trigger end of pattern.
+        scoreKeeper.DeactivateFever();
+        // TODO: stage clear.
         Debug.Log("End of pattern.");
     }
 
@@ -472,14 +475,19 @@ public class GameController : MonoBehaviour
     public void ResolveNote(NoteElements elements,
         Judgement judgement)
     {
-        // Remove note from lists.
         noteManager.ResolveNote(elements);
-
-        // TODO: update score, combo and fever.
+        scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxManager.SpawnResolvingVFX(elements, judgement);
         // TODO: show combo text.
-
         elements.Resolve();
+
+        Debug.Log($"Score: {scoreKeeper.score.CurrentScore()} combo: {scoreKeeper.currentCombo} hp: {scoreKeeper.hp} Fever: {scoreKeeper.feverAmount}");
+
+        if (scoreKeeper.hp <= 0 &&
+            Modifiers.instance.mode != Modifiers.Mode.NoFail)
+        {
+            // TODO: stage failed.
+        }
     }
 
     public void StopKeysoundIfPlaying(Note n)
