@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public class GameTimer
 {
     #region Time
@@ -50,6 +52,7 @@ public class GameTimer
     #endregion
 
     #region Methods
+    [MoonSharpHidden]
     public GameTimer(Pattern p)
     {
         stopwatch = new System.Diagnostics.Stopwatch();
@@ -58,6 +61,7 @@ public class GameTimer
         speed = 1f;
     }
 
+    [MoonSharpHidden]
     public void Prepare(float backingTrackLength,
         float bgaLength)
     {
@@ -138,6 +142,7 @@ public class GameTimer
         initialTime = pattern.PulseToTime(firstScan * PulsesPerScan);
     }
 
+    [MoonSharpHidden]
     public void Begin()
     {
         BaseTime = initialTime;
@@ -145,6 +150,7 @@ public class GameTimer
         stopwatch.Start();
     }
 
+    [MoonSharpHidden]
     public void Update()
     {
         PrevFrameBaseTime = BaseTime;
@@ -158,16 +164,19 @@ public class GameTimer
         IntScan = Mathf.FloorToInt(Scan);
     }
 
+    [MoonSharpHidden]
     public void Pause()
     {
         stopwatch.Stop();
     }
 
+    [MoonSharpHidden]
     public void Unpause()
     {
         stopwatch.Start();
     }
 
+    [MoonSharpHidden]
     public void Dispose()
     {
         stopwatch.Stop();

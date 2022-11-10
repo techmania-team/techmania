@@ -327,7 +327,7 @@ public class GameController : MonoBehaviour
         vfxManager.Prepare(layout.laneHeight);
 
         // Initialize scores.
-        scoreKeeper = new ScoreKeeper();
+        scoreKeeper = new ScoreKeeper(setup);
         scoreKeeper.Prepare(setup.patternAfterModifier,
             timer.firstScan, timer.lastScan,
             playableNotes: noteManager.playableNotes);
@@ -406,8 +406,16 @@ public class GameController : MonoBehaviour
             noteManager.Update(timer);
             input.Update();
             scoreKeeper.UpdateFever();
+            // TODO: check and handle combo ticks
 
             CheckForEndOfPattern();
+
+            if (state.state == ThemeApi.GameState.State.Ongoing)
+            {
+                // If game hasn't concluded from
+                // CheckForEndOfPattern, call the callback.
+                setup.onUpdate?.Function?.Call(timer);
+            }
         }
     }
 
@@ -418,8 +426,8 @@ public class GameController : MonoBehaviour
         if (!scoreKeeper.score.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
-        // TODO: stage clear.
-        Debug.Log("End of pattern.");
+        setup.onStageClear?.Function?.Call(scoreKeeper);
+        state.Conclude();
     }
 
     #region Responding to input
@@ -481,12 +489,19 @@ public class GameController : MonoBehaviour
         // TODO: show combo text.
         elements.Resolve();
 
-        Debug.Log($"Score: {scoreKeeper.score.CurrentScore()} combo: {scoreKeeper.currentCombo} hp: {scoreKeeper.hp} Fever: {scoreKeeper.feverAmount}");
+        setup.onNoteResolved?.Function?.Call(elements.note,
+            judgement, scoreKeeper);
+        if (scoreKeeper.score.AllNotesResolved())
+        {
+            setup.onAllNotesResolved?.Function?.Call(scoreKeeper);
+        }
 
         if (scoreKeeper.hp <= 0 &&
             Modifiers.instance.mode != Modifiers.Mode.NoFail)
         {
-            // TODO: stage failed.
+            scoreKeeper.score.stageFailed = true;
+            setup.onStageFailed?.Function?.Call(scoreKeeper);
+            state.Conclude();
         }
     }
 

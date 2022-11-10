@@ -119,6 +119,10 @@ namespace ThemeApi
             addType(tmEnums, typeof(Modifiers.Mode));
             addType(tmEnums, typeof(Modifiers.ControlOverride));
             addType(tmEnums, typeof(Modifiers.ScrollSpeed));
+            // Enums used by GameController and co.
+            addType(tmEnums, typeof(Judgement));
+            addType(tmEnums, typeof(PerformanceMedal));
+            addType(tmEnums, typeof(ScoreKeeper.FeverState));
 
             tm.@enum = tmEnums;
             apiTable["tm"] = UserData.Create(tm);

@@ -53,19 +53,34 @@ gamePanel.Initialize = function()
         gamePanel.BeginGame()
     end
 
-    tm.gameSetup.onUpdate = function()
+    tm.gameSetup.onUpdate = function(timer)
     end
 
-    tm.gameSetup.onNoteResolved = function()
+    tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+        
     end
 
-    tm.gameSetup.onAllNotesResolved = function()
+    tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
+        print("All notes resolved, combo: " .. tostring(scoreKeeper.currentCombo))
     end
 
-    tm.gameSetup.onFeverUpdate = function(fever)
+    tm.gameSetup.onFeverReady = function()
+    end
+
+    tm.gameSetup.onFeverActivated = function()
+    end
+
+    tm.gameSetup.onFeverUpdate = function(feverAmount)
     end
 
     tm.gameSetup.onFeverEnd = function(feverBonus)
+    end
+
+    tm.gameSetup.onStageClear = function(scoreKeeper)
+        print("Stage clear")
+    end
+
+    tm.gameSetup.onStageFailed = function(scoreKeeper)
     end
 end
 

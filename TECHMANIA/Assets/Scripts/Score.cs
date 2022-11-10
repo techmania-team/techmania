@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
 public enum PerformanceMedal
 {
@@ -11,12 +12,18 @@ public enum PerformanceMedal
 }
 
 // TODO: make this read-only to Lua.
+[MoonSharpUserData]
 public class Score
 {
     public int totalNotes { get; private set; }
     public Dictionary<Judgement, int> notesPerJudgement
         { get; private set; }
-    public bool stageFailed;
+    public bool stageFailed
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
     public int totalFeverBonus { get; private set; }
     public int comboBonus { get; private set; }
 
@@ -25,6 +32,7 @@ public class Score
     private int maxScore => Ruleset.instance.comboBonus ?
         290000 : 300000;
 
+    [MoonSharpHidden]
     public void Initialize(int totalNotes)
     {
         this.totalNotes = totalNotes;
@@ -40,12 +48,14 @@ public class Score
         feverActive = false;
     }
 
+    [MoonSharpHidden]
     public void FeverOn()
     {
         oneTimeFeverBonus = 0;
         feverActive = true;
     }
 
+    [MoonSharpHidden]
     // Returns the Fever bonus from this Fever activation.
     public int FeverOff()
     {
@@ -54,6 +64,7 @@ public class Score
         return oneTimeFeverBonus;
     }
 
+    [MoonSharpHidden]
     public void LogNote(Judgement j)
     {
         notesPerJudgement[j]++;
@@ -95,6 +106,12 @@ public class Score
             maxScore * maxMultiplier / totalNotes);
         score -= notesPerJudgement[Judgement.Max];
         return score;
+    }
+
+    public string GetRank()
+    {
+        if (stageFailed) return "F";
+        return ScoreToRank(CurrentScore());
     }
 
     public void CalculateComboBonus()

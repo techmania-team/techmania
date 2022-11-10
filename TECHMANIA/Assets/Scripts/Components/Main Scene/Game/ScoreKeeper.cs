@@ -7,6 +7,9 @@ using MoonSharp.Interpreter;
 // Keeps track of score, combo, HP and fever.
 public class ScoreKeeper
 {
+    // Reference to GameSetup so we can call callbacks.
+    private ThemeApi.GameSetup gameSetup;
+
     // Score
     public Score score { get; private set; }
 
@@ -29,6 +32,11 @@ public class ScoreKeeper
     private System.Diagnostics.Stopwatch feverTimer;
     public FeverState feverState { get; private set; }
     public float feverAmount { get; private set; }
+
+    public ScoreKeeper(ThemeApi.GameSetup gameSetup)
+    {
+        this.gameSetup = gameSetup;
+    }
 
     [MoonSharpHidden]
     public void Prepare(Pattern pattern, int firstScan, int lastScan,
@@ -64,6 +72,18 @@ public class ScoreKeeper
         // Other Fever fields.
         feverState = FeverState.Building;
         feverAmount = 0;
+    }
+
+    [MoonSharpHidden]
+    public void Pause()
+    {
+        feverTimer?.Stop();
+    }
+
+    [MoonSharpHidden]
+    public void Unpause()
+    {
+        feverTimer?.Start();
     }
 
     [MoonSharpHidden]
@@ -122,7 +142,7 @@ public class ScoreKeeper
                 {
                     feverState = FeverState.Ready;
                     feverAmount = 1f;
-                    // TODO: send fever ready event?
+                    gameSetup.onFeverReady?.Function?.Call();
                     if (Modifiers.instance.fever
                         == Modifiers.Fever.AutoFever)
                     {
@@ -165,44 +185,35 @@ public class ScoreKeeper
         if (feverState != FeverState.Active) return;
         feverAmount = 1f -
             (float)feverTimer.Elapsed.TotalSeconds * 0.1f;
+        gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
+
         if (feverAmount < 0f)
+        {
+            DeactivateFever();
+        }
+    }
+
+    private void ActivateFever()
+    {
+        feverState = FeverState.Active;
+        score.FeverOn();
+        feverTimer = new System.Diagnostics.Stopwatch();
+        feverTimer.Start();
+
+        gameSetup.onFeverActivated?.Function?.Call();
+    }
+
+    [MoonSharpHidden]
+    public void DeactivateFever()
+    {
+        if (feverState == FeverState.Active)
         {
             feverAmount = 0f;
             feverTimer.Stop();
             feverTimer = null;
             feverState = FeverState.Building;
             int feverBonus = score.FeverOff();
-            // TODO: send fever end event with fever bonus.
-        }
-    }
-
-    [MoonSharpHidden]
-    public void Pause()
-    {
-        feverTimer?.Stop();
-    }
-
-    [MoonSharpHidden]
-    public void Unpause()
-    {
-        feverTimer?.Start();
-    }
-
-    private void ActivateFever()
-    {
-        // TODO: send fever activated event
-        feverState = FeverState.Active;
-        score.FeverOn();
-        feverTimer = new System.Diagnostics.Stopwatch();
-        feverTimer.Start();
-    }
-
-    public void DeactivateFever()
-    {
-        if (feverState == FeverState.Active)
-        {
-            feverState = FeverState.Building;
-            score.FeverOff();
+            gameSetup.onFeverEnd?.Function?.Call(feverBonus);
         }
     }
 }
