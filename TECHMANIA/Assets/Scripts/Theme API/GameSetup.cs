@@ -61,8 +61,9 @@ namespace ThemeApi
         public DynValue onFeverReady;
         // No parameter. This is called whether auto fever is on or not.
         public DynValue onFeverActivated;
-        // Parameter: current Fever value from 0 to 1. Only called
-        // when fever is active.
+        // Parameter: current Fever value from 0 to 1. Called when
+        // Fever value updates from resolving a note, or when it is
+        // active and depletes with time.
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;

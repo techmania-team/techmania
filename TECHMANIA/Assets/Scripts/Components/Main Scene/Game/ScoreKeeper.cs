@@ -138,6 +138,7 @@ public class ScoreKeeper
                 }
 
                 feverAmount += feverDelta;
+                gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
                 if (feverAmount >= 1f)
                 {
                     feverState = FeverState.Ready;
@@ -165,6 +166,7 @@ public class ScoreKeeper
                         feverAmount *= 0.5f;
                         break;
                 }
+                gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
                 feverState = FeverState.Building;
             }
         }

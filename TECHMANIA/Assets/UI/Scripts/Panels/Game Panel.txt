@@ -57,20 +57,23 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
-        
+        gamePanel.UpdateScoreDisplay(
+            scoreKeeper.score.CurrentScore(),
+            scoreKeeper.maxCombo)
     end
 
     tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
-        print("All notes resolved, combo: " .. tostring(scoreKeeper.currentCombo))
     end
 
     tm.gameSetup.onFeverReady = function()
     end
 
     tm.gameSetup.onFeverActivated = function()
+        -- TODO: play sound
     end
 
     tm.gameSetup.onFeverUpdate = function(feverAmount)
+        gamePanel.UpdateFeverDisplay(feverAmount)
     end
 
     tm.gameSetup.onFeverEnd = function(feverBonus)
@@ -115,7 +118,9 @@ gamePanel.BeginGame = function()
     end
 
     panel.Q("top-bar").visible = true
+    gamePanel.UpdateScoreDisplay(0, 0)
     panel.Q("middle-fever-bar-bg").display = true
+    gamePanel.UpdateFeverDisplay(0)
     panel.Q("loading-bar-wrap").display = false
 
     tm.options.RestoreVSync()
@@ -143,6 +148,18 @@ gamePanel.Unpause = function()
         -- Only unpause after the menu has fully faded out.
         tm.game.Unpause()
     end)
+end
+
+gamePanel.UpdateScoreDisplay = function(score, maxCombo)
+    local topBar = gamePanel.panel.Q("top-bar")
+    topBar.Q("score-value").text = tostring(score)
+    topBar.Q("max-combo-value").text = tostring(maxCombo)
+end
+
+gamePanel.UpdateFeverDisplay = function(fever)
+    local style = StyleLengthInPercent(fever * 100)
+    gamePanel.panel.Q("top-bar").Q("fever-bar").style.width = style
+    gamePanel.panel.Q("middle-fever-bar").style.width = style
 end
 
 pauseMenu.Initialize = function()
