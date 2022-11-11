@@ -152,11 +152,15 @@ public class ScoreKeeper
                 }
             }
         }
-        else
+        else  // MISS or BREAK
         {
             if (feverState == FeverState.Building ||
                 feverState == FeverState.Ready)
             {
+                if (feverState == FeverState.Ready)
+                {
+                    gameSetup.onFeverUnready?.Function?.Call();
+                }
                 switch (judgement)
                 {
                     case Judgement.Miss:
@@ -195,8 +199,11 @@ public class ScoreKeeper
         }
     }
 
-    private void ActivateFever()
+    [MoonSharpHidden]
+    public void ActivateFever()
     {
+        if (feverState != FeverState.Ready) return;
+
         feverState = FeverState.Active;
         score.FeverOn();
         feverTimer = new System.Diagnostics.Stopwatch();

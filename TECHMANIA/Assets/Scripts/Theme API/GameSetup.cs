@@ -51,7 +51,7 @@ namespace ThemeApi
         // Callbacks during Ongoing state
 
         // Parameter: GameTimer
-        // Not called when paused.
+        // Also called when paused.
         public DynValue onUpdate;
         // Parameter: Note, Judgement, ScoreKeeper.
         public DynValue onNoteResolved;
@@ -59,7 +59,10 @@ namespace ThemeApi
         public DynValue onAllNotesResolved;
         // No parameter.
         public DynValue onFeverReady;
-        // No parameter. This is called whether auto fever is on or not.
+        // No parameter. Called when Fever leaves Ready state due to
+        // a MISS or BREAK.
+        public DynValue onFeverUnready;
+        // No parameter. Called whether auto fever is on or not.
         public DynValue onFeverActivated;
         // Parameter: current Fever value from 0 to 1. Called when
         // Fever value updates from resolving a note, or when it is

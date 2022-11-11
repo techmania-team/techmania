@@ -550,6 +550,11 @@ namespace ThemeApi
         {
             inner.SendToBack();
         }
+
+        public bool Equals(VisualElementWrap other)
+        {
+            return inner == other.inner;
+        }
         #endregion
 
         #region Custom mesh

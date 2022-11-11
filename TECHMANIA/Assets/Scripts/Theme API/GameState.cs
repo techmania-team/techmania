@@ -39,6 +39,7 @@ namespace ThemeApi
             GameController.instance.SetStateInstance(this);
         }
 
+        #region State changes
         private void CheckState(State expectedState, string methodName)
         {
             if (state == expectedState) return;
@@ -88,6 +89,20 @@ namespace ThemeApi
             GameController.instance.Conclude();
         }
 
+        [MoonSharpHidden]
+        public void SetLoadError()
+        {
+            state = State.LoadError;
+        }
+
+        [MoonSharpHidden]
+        public void SetLoadComplete()
+        {
+            state = State.LoadComplete;
+        }
+        #endregion
+
+        #region Other theme APIs
         public void UpdateBgBrightness()
         {
             CheckState(
@@ -96,13 +111,22 @@ namespace ThemeApi
             GameController.instance.UpdateBgBrightness();
         }
 
-        [MoonSharpHidden]
-        public void SetState(State newState)
+        public void ResetElementSizes()
         {
-            state = newState;
+            CheckState(
+                new List<State> { State.Ongoing, State.Paused },
+                "ResetSize");
+            GameController.instance.ResetElementSizes();
+        }
+
+        public void ActivateFever()
+        {
+            CheckState(State.Ongoing, "ActivateFever");
+            GameController.instance.ActivateFever();
         }
 
         public ScoreKeeper scoreKeeper => GameController.instance
             .scoreKeeper;
+        #endregion
     }
 }

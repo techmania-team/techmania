@@ -1,5 +1,7 @@
 gamePanel = {
-    panel = tm.root.Q("game-panel")
+    panel = tm.root.Q("game-panel"),
+    feverReadyCoroutine = nil,
+    feverBonusCoroutine = nil
 }
 
 pauseMenu = {
@@ -20,6 +22,7 @@ gamePanel.Initialize = function()
         end
         if (event.keyCode == unity.enum.keyCode.Space or
             event.keyCode == unity.enum.keyCode.Backspace) then
+            gamePanel.ActivateFever()
         end
     end)
 
@@ -28,9 +31,8 @@ gamePanel.Initialize = function()
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
+        gamePanel.ActivateFever()
     end)
-
-    -- TODO: update Fever instruction based on control scheme
 
     tm.gameSetup.bgContainer = panel.Q("bg-layer")
     tm.gameSetup.gameContainer = panel.Q("game-layer")
@@ -54,22 +56,84 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onUpdate = function(timer)
+        -- TODO: update FPS display.
     end
 
     tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
         gamePanel.UpdateScoreDisplay(
             scoreKeeper.score.CurrentScore(),
             scoreKeeper.maxCombo)
+        -- TODO: update judgement tally.
     end
 
     tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
+        -- Do nothing.
     end
 
     tm.gameSetup.onFeverReady = function()
+        if (gamePanel.feverReadyCoroutine != nil) then
+            tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+        end
+
+        -- Play the "Fever ready" animation.
+        gamePanel.feverReadyCoroutine = tm.StartCoroutine(function()
+            local feverBarBg = gamePanel.panel.Q("top-bar").Q("fever-bar-bg")
+            local highlight = feverBarBg.Q("highlight")
+            local feverOff = feverBarBg.Q("fever-off-text")
+            local feverReady = feverBarBg.Q("fever-ready-text")
+            local instructionTouch = feverBarBg.Q("fever-instruction-touch")
+            local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
+
+            function OneFlash()
+                local fadeTimer = 0.5
+                local timer = 0
+                local maxHighlightOpacity = 0.38
+                highlight.style.opacity = StyleFloat(maxHighlightOpacity)
+                while (timer < fadeTimer) do
+                    local progress = timer / fadeTimer
+                    highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(maxHighlightOpacity, 0, progress))
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                highlight.style.opacity = StyleFloat(0)
+                timer = 0
+                while (timer < fadeTimer) do
+                    local progress = timer / fadeTimer
+                    highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, maxHighlightOpacity, progress))
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                highlight.style.opacity = StyleFloat(0)
+            end
+
+            while (true) do
+                feverOff.display = false
+                feverReady.display = true
+                instructionTouch.display = false
+                instructionKeysKm.display = false
+
+                OneFlash()
+
+                feverOff.display = false
+                feverReady.display = false
+                instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
+                instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
+
+                OneFlash()
+            end
+        end)
+
+        -- Show "Fever" on middle bar.
+        panel.Q("middle-fever-bar-bg").Q("fever-ready-text").display = true
+    end
+
+    tm.gameSetup.onFeverUnready = function()
+        gamePanel.ShowFeverOff()
     end
 
     tm.gameSetup.onFeverActivated = function()
-        -- TODO: play sound
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"), tm.enum.audioChannel.SFX)
+        gamePanel.ShowFeverOff()
     end
 
     tm.gameSetup.onFeverUpdate = function(feverAmount)
@@ -77,6 +141,8 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onFeverEnd = function(feverBonus)
+        -- TODO: display fever bonus for 2s
+        gamePanel.ShowFeverOff()
     end
 
     tm.gameSetup.onStageClear = function(scoreKeeper)
@@ -84,6 +150,7 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onStageFailed = function(scoreKeeper)
+        print("Stage failed")
     end
 end
 
@@ -113,20 +180,31 @@ end
 
 gamePanel.BeginGame = function()
     local panel = gamePanel.panel
-    if (themeOptions.Get("backgroundScalingMode") == "FillGameArea") then
+
+    -- Relocate game area if necessary.
+    local scalingMode = themeOptions.Get("backgroundScalingMode")
+    local bgLayer = panel.Q("bg-layer")
+    if (scalingMode == "FillEntireScreen" and
+        bgLayer.parent.Equals(panel.Q("remaining-space"))) then
+        panel.InsertChild(0, panel.Q("bg-layer"))
+    elseif (scalingMode == "FillGameArea" and
+        bgLayer.parent.Equals(panel)) then
         panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
     end
 
-    panel.Q("top-bar").visible = true
+    local topBar = panel.Q("top-bar")
+    topBar.visible = true
     gamePanel.UpdateScoreDisplay(0, 0)
-    panel.Q("middle-fever-bar-bg").display = true
     gamePanel.UpdateFeverDisplay(0)
+    gamePanel.ShowFeverOff()
+    panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
+
     panel.Q("loading-bar-wrap").display = false
 
     tm.options.RestoreVSync()
     tm.game.Begin()
 
-    -- Give game panel focus so it can receive keyboard events
+    -- Give game panel focus so it can receive keyboard events.
     panel.Focus()
 end
 
@@ -150,6 +228,12 @@ gamePanel.Unpause = function()
     end)
 end
 
+gamePanel.ActivateFever = function()
+    if (tm.game.state != tm.enum.gameState.Ongoing) then return end
+    if (tm.game.scoreKeeper.feverState != tm.enum.feverState.Ready) then return end
+    tm.game.ActivateFever()
+end
+
 gamePanel.UpdateScoreDisplay = function(score, maxCombo)
     local topBar = gamePanel.panel.Q("top-bar")
     topBar.Q("score-value").text = tostring(score)
@@ -160,6 +244,27 @@ gamePanel.UpdateFeverDisplay = function(fever)
     local style = StyleLengthInPercent(fever * 100)
     gamePanel.panel.Q("top-bar").Q("fever-bar").style.width = style
     gamePanel.panel.Q("middle-fever-bar").style.width = style
+end
+
+gamePanel.ShowFeverOff = function()
+    if (gamePanel.feverReadyCoroutine != nil) then
+        tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+        gamePanel.feverReadyCoroutine = nil
+    end
+
+    local topBar = gamePanel.panel.Q("top-bar")
+
+    local feverBarBg = topBar.Q("fever-bar-bg")
+    feverBarBg.Q("highlight").style.opacity = StyleFloat(0)
+    feverBarBg.Q("fever-off-text").display = true
+    feverBarBg.Q("fever-ready-text").display = false
+    feverBarBg.Q("fever-instruction-touch").display = false
+    feverBarBg.Q("fever-instruction-keys-km").display = false
+
+    local middleFeverBarBg = gamePanel.panel.Q("middle-fever-bar-bg")
+    middleFeverBarBg.display = true
+    middleFeverBarBg.Q("fever-ready-text").display = false
+    -- Does not control Fever bonus.
 end
 
 pauseMenu.Initialize = function()

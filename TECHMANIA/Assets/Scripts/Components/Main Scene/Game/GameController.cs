@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
     private GameLayout layout;
     private NoteManager noteManager;
     private GameInputManager input;
-    // Accessible from Lua
+    // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
     public VFXManager vfxManager;
@@ -59,11 +59,12 @@ public class GameController : MonoBehaviour
     {
         instance = this;
     }
+
     private IEnumerator LoadSequence()
     {
         Action<Status> reportLoadError = (Status status) =>
         {
-            state.SetState(ThemeApi.GameState.State.LoadError);
+            state.SetLoadError();
             setup.onLoadError?.Function?.Call(status);
         };
         int filesLoaded = 0;
@@ -333,7 +334,7 @@ public class GameController : MonoBehaviour
             playableNotes: noteManager.playableNotes);
 
         // Load complete; wait on theme to begin game.
-        state.SetState(ThemeApi.GameState.State.LoadComplete);
+        state.SetLoadComplete();
         setup.onLoadComplete?.Function?.Call();
     }
 
@@ -381,18 +382,26 @@ public class GameController : MonoBehaviour
     }
     #endregion
 
+    #region Other theme APIs
     public void UpdateBgBrightness()
     {
         bg.UpdateBgBrightness();
     }
 
-    public void ResetSize()
+    public void ResetElementSizes()
     {
         layout.ResetSize();
         noteManager.ResetSize();
         vfxManager.ResetSize(layout.laneHeight);
     }
 
+    public void ActivateFever()
+    {
+        scoreKeeper.ActivateFever();
+    }
+    #endregion
+
+    #region Update
     // Update is called once per frame
     void Update()
     {
@@ -404,16 +413,16 @@ public class GameController : MonoBehaviour
             bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer);
-            input.Update();
+            input.Update();  // May cause stage failed.
             scoreKeeper.UpdateFever();
             // TODO: check and handle combo ticks
 
             CheckForEndOfPattern();
 
-            if (state.state == ThemeApi.GameState.State.Ongoing)
+            if (state.state != ThemeApi.GameState.State.Idle)
             {
                 // If game hasn't concluded from
-                // CheckForEndOfPattern, call the callback.
+                // CheckForEndOfPattern or failing, call the callback.
                 setup.onUpdate?.Function?.Call(timer);
             }
         }
@@ -429,6 +438,7 @@ public class GameController : MonoBehaviour
         setup.onStageClear?.Function?.Call(scoreKeeper);
         state.Conclude();
     }
+    #endregion
 
     #region Responding to input
     public void HitNote(NoteElements elements, float timeDifference)

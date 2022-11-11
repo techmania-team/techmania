@@ -202,6 +202,7 @@ public class NoteManager
             foreach (NoteElements elements in notesInScan[scan])
             {
                 elements.UpdateTime(timer);
+                // TODO: also update Fever overlay alpha.
             }
         };
         updateNotesInScan(timer.IntScan);
