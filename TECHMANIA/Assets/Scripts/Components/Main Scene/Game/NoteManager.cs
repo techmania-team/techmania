@@ -203,6 +203,7 @@ public class NoteManager
             {
                 elements.UpdateTime(timer);
                 // TODO: also update Fever overlay alpha.
+                // Refer to FeverOverlay.Update.
             }
         };
         updateNotesInScan(timer.IntScan);
@@ -233,6 +234,20 @@ public class NoteManager
                     break;
             }
         }
+    }
+
+    public NoteElements GetUpcoming(int lane, ControlScheme scheme)
+    {
+        NoteList listToCheck = scheme switch
+        {
+            ControlScheme.Touch => notesInLane[lane],
+            // Not actually used
+            ControlScheme.Keys => keyboardNotesInLane[lane],
+            ControlScheme.KM => mouseNotesInLane[lane],
+            _ => null
+        };
+        if (listToCheck.IsEmpty()) return null;
+        return listToCheck.First() as NoteElements;
     }
 
     public void Dispose()

@@ -307,12 +307,6 @@ public class GameInputManager
                 &&
                 !ongoingNotes.ContainsKey(upcoming))
             {
-                // TODO: this may cause stage failed, which calls
-                // Dispose(), which clears noteManager.notesInLane
-                // and causes an ArgumentOutOfRangeException in the
-                // next loop.
-                // The same also applies to hitting a MISS and
-                // losing an ongoing note.
                 controller.ResolveNote(upcoming, Judgement.Break);
             }
         }
@@ -354,6 +348,30 @@ public class GameInputManager
     {
         float correctTime = n.time + LatencyForNote(n);
         return timer.GameTime - correctTime;
+    }
+
+    public static Judgement TimeDifferenceToJudgement(
+        Note note, float timeDifference, float speed)
+    {
+        float absDifference = Mathf.Abs(timeDifference);
+        absDifference /= speed;
+
+        foreach (Judgement j in new List<Judgement>{
+            Judgement.RainbowMax,
+            Judgement.Max,
+            Judgement.Cool,
+            Judgement.Good,
+            Judgement.Miss
+        })
+        {
+            if (absDifference <= note.timeWindow[j])
+            {
+                return j;
+            }
+        }
+
+        // Control shouldn't reach here.
+        throw new System.Exception($"timeDifference {timeDifference} is outside of all time windows; cannot determine judgement.");
     }
     #endregion
 

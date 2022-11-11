@@ -417,19 +417,32 @@ public class GameController : MonoBehaviour
             scoreKeeper.UpdateFever();
             // TODO: check and handle combo ticks
 
-            CheckForEndOfPattern();
+            CheckForStageFailed();
+            CheckForStageClear();
 
             if (state.state != ThemeApi.GameState.State.Idle)
             {
-                // If game hasn't concluded from
-                // CheckForEndOfPattern or failing, call the callback.
+                // If game hasn't concluded from stage failed or
+                // stage clear, call the update callback.
                 setup.onUpdate?.Function?.Call(timer);
             }
         }
     }
 
-    private void CheckForEndOfPattern()
+    private void CheckForStageFailed()
     {
+        if (scoreKeeper.hp <= 0 &&
+            Modifiers.instance.mode != Modifiers.Mode.NoFail)
+        {
+            scoreKeeper.score.stageFailed = true;
+            setup.onStageFailed?.Function?.Call(scoreKeeper);
+            state.Conclude();
+        }
+    }
+
+    private void CheckForStageClear()
+    {
+        if (state.state != ThemeApi.GameState.State.Ongoing) return;
         if (timer.BaseTime <= timer.patternEndTime) return;
         if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
         if (!scoreKeeper.score.AllNotesResolved()) return;
@@ -443,24 +456,9 @@ public class GameController : MonoBehaviour
     #region Responding to input
     public void HitNote(NoteElements elements, float timeDifference)
     {
-        Judgement judgement = Judgement.Miss;
-        float absDifference = Mathf.Abs(timeDifference);
-        absDifference /= timer.speed;
-
-        foreach (Judgement j in new List<Judgement>{
-            Judgement.RainbowMax,
-            Judgement.Max,
-            Judgement.Cool,
-            Judgement.Good,
-            Judgement.Miss
-        })
-        {
-            if (absDifference <= elements.note.timeWindow[j])
-            {
-                judgement = j;
-                break;
-            }
-        }
+        Judgement judgement = GameInputManager
+            .TimeDifferenceToJudgement(elements.note,
+            timeDifference, timer.speed);
 
         switch (elements.note.type)
         {
@@ -505,14 +503,6 @@ public class GameController : MonoBehaviour
         {
             setup.onAllNotesResolved?.Function?.Call(scoreKeeper);
         }
-
-        if (scoreKeeper.hp <= 0 &&
-            Modifiers.instance.mode != Modifiers.Mode.NoFail)
-        {
-            scoreKeeper.score.stageFailed = true;
-            setup.onStageFailed?.Function?.Call(scoreKeeper);
-            state.Conclude();
-        }
     }
 
     public void StopKeysoundIfPlaying(Note n)
@@ -528,26 +518,9 @@ public class GameController : MonoBehaviour
         }
 
         // Find the upcoming note.
-        NoteElements upcomingNote = null;
-        switch (setup.patternAfterModifier.patternMetadata
-            .controlScheme)
-        {
-            case ControlScheme.Touch:
-                if (noteManager.notesInLane[lane].Count == 0)
-                    break;
-                upcomingNote = noteManager.notesInLane[lane].First()
-                    as NoteElements;
-                break;
-            case ControlScheme.Keys:
-                // Keys should not call this method.
-                break;
-            case ControlScheme.KM:
-                if (noteManager.mouseNotesInLane[lane].Count == 0) 
-                    break;
-                upcomingNote = noteManager.mouseNotesInLane[lane]
-                    .First() as NoteElements;
-                break;
-        }
+        NoteElements upcomingNote = noteManager.GetUpcoming(
+            lane,
+            setup.patternAfterModifier.patternMetadata.controlScheme);
 
         if (upcomingNote == null) return;
         if (input.IsOngoing(upcomingNote)) return;
