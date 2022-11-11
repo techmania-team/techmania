@@ -88,6 +88,7 @@ public class Score
         }
     }
 
+    // Does not take fever bonus and combo bonus into account.
     public int CurrentScore()
     {
         if (totalNotes == 0) return 0;

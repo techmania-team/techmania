@@ -141,8 +141,15 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onFeverEnd = function(feverBonus)
-        -- TODO: display fever bonus for 2s
         gamePanel.ShowFeverOff()
+        gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
+            local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")
+            -- TODO: localize this
+            bonusDisplay.text = "FEVER BONUS   +" .. tostring(feverBonus)
+            bonusDisplay.display = true
+            WaitForSeconds(2)
+            bonusDisplay.display = false
+        end)
     end
 
     tm.gameSetup.onStageClear = function(scoreKeeper)

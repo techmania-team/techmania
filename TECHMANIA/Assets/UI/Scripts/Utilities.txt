@@ -95,3 +95,11 @@ commonUI.ShowBgBrightnessSlider = function(container)
     controls.SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
     container.Q("value-display").text = tostring(selectTrackPanel.selectedTrackOptions.backgroundBrightness)
 end
+
+function WaitForSeconds(waitTime)
+    local timer = 0
+    while (timer < waitTime) do
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+end
