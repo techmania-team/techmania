@@ -412,8 +412,8 @@ public class GameController : MonoBehaviour
             timer.Update();
             bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
             layout.Update(timer.Scan);
-            noteManager.Update(timer);
-            input.Update();  // May cause stage failed.
+            noteManager.Update(timer, scoreKeeper);
+            input.Update();
             scoreKeeper.UpdateFever();
             // TODO: check and handle combo ticks
 

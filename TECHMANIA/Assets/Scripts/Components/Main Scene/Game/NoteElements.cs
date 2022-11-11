@@ -86,6 +86,7 @@ public class NoteElements : INoteHolder
     }
     // Affected by NoteOpacity modifiers.
     private float alphaUpperBound;
+    private float feverOverlayAlphaUpperBound;
     // If this note is controlled by some UI (eg. calibration)
     // instead of NoteManager / GameController.
     public bool controlledExternally;
@@ -380,7 +381,7 @@ public class NoteElements : INoteHolder
     {
         if (feverOverlay == null) return;
         feverOverlay.visible = v != Visibility.Hidden;
-        feverOverlay.style.opacity = VisibilityToAlpha(
+        feverOverlayAlphaUpperBound = VisibilityToAlpha(
             v, bypassNoteOpacityModifier);
     }
 
@@ -403,7 +404,7 @@ public class NoteElements : INoteHolder
     #endregion
 
     #region Update
-    public void UpdateTime(GameTimer timer)
+    public void UpdateTime(GameTimer timer, ScoreKeeper scoreKeeper)
     {
         if (state == State.Inactive || state == State.Resolved)
             return;
@@ -431,6 +432,7 @@ public class NoteElements : INoteHolder
         //    // sprites.
         //    //UpdateOngoingTrail();
         //}
+        UpdateFeverOverlay(timer.GameTime, scoreKeeper);
     }
 
     private void HitboxMatchNoteImageAlpha()
@@ -481,6 +483,23 @@ public class NoteElements : INoteHolder
         }
 
         alphaUpperBound = Mathf.SmoothStep(0f, 1f, alphaUpperBound);
+    }
+
+    private void UpdateFeverOverlay(float time,
+        ScoreKeeper scoreKeeper)
+    {
+        if (scoreKeeper.feverState != ScoreKeeper.FeverState.Active)
+        {
+            feverOverlay.style.opacity = 0f;
+            return;
+        }
+
+        feverOverlay.style.backgroundImage = new
+            StyleBackground(GlobalResource.vfxSkin.feverOverlay
+            .GetSpriteForTime(time, loop: true));
+        float alpha = Mathf.Min(1f, scoreKeeper.feverAmount * 6f);
+        alpha *= feverOverlayAlphaUpperBound;
+        feverOverlay.style.opacity = alpha;
     }
     #endregion
 

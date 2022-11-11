@@ -5,14 +5,12 @@ using UnityEngine.UI;
 
 public class FeverOverlay : MonoBehaviour
 {
-    private RectTransform rect;
     private Image image;  // May be enabled/disabled by NoteAppearance.
     private float noteAlpha;
 
     // Start is called before the first frame update
     void Start()
     {
-        rect = GetComponent<RectTransform>();
         image = GetComponent<Image>();
         image.color = Color.clear;
     }

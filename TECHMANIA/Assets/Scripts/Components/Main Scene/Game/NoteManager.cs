@@ -165,7 +165,7 @@ public class NoteManager
         }
     }
 
-    public void Update(GameTimer timer)
+    public void Update(GameTimer timer, ScoreKeeper scoreKeeper)
     {
         // Put notes in the upcoming scan in Prepare state if needed.
         if (notesInScan.ContainsKey(timer.IntScan + 1))
@@ -201,9 +201,7 @@ public class NoteManager
             if (!notesInScan.ContainsKey(scan)) return;
             foreach (NoteElements elements in notesInScan[scan])
             {
-                elements.UpdateTime(timer);
-                // TODO: also update Fever overlay alpha.
-                // Refer to FeverOverlay.Update.
+                elements.UpdateTime(timer, scoreKeeper);
             }
         };
         updateNotesInScan(timer.IntScan);
