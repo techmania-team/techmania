@@ -11,7 +11,7 @@ public enum PerformanceMedal
     AbsolutePerfect
 }
 
-// TODO: make this read-only to Lua.
+// Read-only to Lua.
 [MoonSharpUserData]
 public class Score
 {

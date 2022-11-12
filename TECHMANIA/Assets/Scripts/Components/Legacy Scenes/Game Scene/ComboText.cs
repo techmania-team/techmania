@@ -13,8 +13,10 @@ public class ComboText : MonoBehaviour
     public List<Image> comboDigits;
     public Animator animator;
 
-    private Transform noteToFollow;
+    private Transform transformToFollow;
+    private UnityEngine.UIElements.VisualElement elementToFollow;
 
+    private RectTransform rect;
     private SpriteSheet judgementSpriteSheet;
     private List<SpriteSheet> comboDigitSpriteSheet;
     private float startTime;
@@ -22,10 +24,12 @@ public class ComboText : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ResetSizes();
+        ResetSize();
         Hide();
 
-        noteToFollow = null;
+        transformToFollow = null;
+        elementToFollow = null;
+        rect = GetComponent<RectTransform>();
         judgementSpriteSheet = null;
         comboDigitSpriteSheet = new List<SpriteSheet>();
         foreach (Image i in comboDigits)
@@ -44,7 +48,7 @@ public class ComboText : MonoBehaviour
         return height / ratio;
     }
 
-    public void ResetSizes()
+    public void ResetSize()
     {
         if (GlobalResource.comboSkin != null)
         {
@@ -66,11 +70,12 @@ public class ComboText : MonoBehaviour
         comboDigits.ForEach(i => i.gameObject.SetActive(false));
     }
 
+    // Deprecated.
     public void Show(NoteObject n, Judgement judgement)
     {
         if (n != null)
         {
-            noteToFollow = n.GetComponent<NoteAppearance>()
+            transformToFollow = n.GetComponent<NoteAppearance>()
                 .noteImage.transform;
         }
         Follow();
@@ -155,18 +160,16 @@ public class ComboText : MonoBehaviour
             }
 
             // Turn off the left-most 0 digits.
-            bool seenAnyNonZeroDigit = false;
+            comboDigits.ForEach(i => i.gameObject.SetActive(true));
             for (int i = 0; i < comboDigits.Count; i++)
             {
                 if (digits[i] == 0)
                 {
-                    comboDigits[i].gameObject.SetActive(
-                        seenAnyNonZeroDigit);
+                    comboDigits[i].gameObject.SetActive(false);
                 }
                 else
                 {
-                    seenAnyNonZeroDigit = true;
-                    comboDigits[i].gameObject.SetActive(true);
+                    break;
                 }
             }
 
@@ -185,14 +188,136 @@ public class ComboText : MonoBehaviour
             comboDigits.ForEach(i => i.gameObject.SetActive(false));
         }
 
-        startTime = Game.Time;
+        startTime = Time.time;
+        UpdateSprites();
+        animator.SetTrigger("Activate");
+    }
+
+    public void Show(NoteElements n, Judgement judgement,
+        ScoreKeeper scoreKeeper)
+    {
+        if (n != null)
+        {
+            elementToFollow = n.noteImage;
+        }
+        Follow();
+
+        // Draw judgement.
+
+        List<SpriteSheet> comboDigitSpriteSheetList = null;
+        if (scoreKeeper.feverState == ScoreKeeper.FeverState.Active &&
+            (judgement == Judgement.RainbowMax ||
+             judgement == Judgement.Max ||
+             judgement == Judgement.Cool))
+        {
+            judgementSpriteSheet = GlobalResource.comboSkin
+                .feverMaxJudgement;
+            comboDigitSpriteSheetList = GlobalResource.comboSkin
+                .feverMaxDigits;
+        }
+        else
+        {
+            switch (judgement)
+            {
+                case Judgement.RainbowMax:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .rainbowMaxJudgement;
+                    comboDigitSpriteSheetList =
+                        GlobalResource.comboSkin
+                        .rainbowMaxDigits;
+                    break;
+                case Judgement.Max:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .maxJudgement;
+                    comboDigitSpriteSheetList =
+                        GlobalResource.comboSkin
+                        .maxDigits;
+                    break;
+                case Judgement.Cool:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .coolJudgement;
+                    comboDigitSpriteSheetList =
+                        GlobalResource.comboSkin
+                        .coolDigits;
+                    break;
+                case Judgement.Good:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .goodJudgement;
+                    comboDigitSpriteSheetList =
+                        GlobalResource.comboSkin
+                        .goodDigits;
+                    break;
+                case Judgement.Miss:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .missJudgement;
+                    break;
+                case Judgement.Break:
+                    judgementSpriteSheet = GlobalResource.comboSkin
+                        .breakJudgement;
+                    break;
+            }
+        }
+        judgementText.GetComponent<RectTransform>().sizeDelta =
+            new Vector2(GetWidth(judgementSpriteSheet),
+                0f);
+        judgementText.gameObject.SetActive(true);
+
+        // Draw combo, if applicable.
+
+        if (scoreKeeper.currentCombo > 0)
+        {
+            space.gameObject.SetActive(true);
+
+            List<int> digits = new List<int>();
+            int remainingCombo = scoreKeeper.currentCombo;
+            for (int i = 0; i < comboDigits.Count; i++)
+            {
+                digits.Insert(0, remainingCombo % 10);
+                remainingCombo /= 10;
+            }
+            for (int i = 0; i < comboDigits.Count; i++)
+            {
+                comboDigitSpriteSheet[i] =
+                    comboDigitSpriteSheetList[digits[i]];
+            }
+
+            // Turn off the left-most 0 digits.
+            comboDigits.ForEach(i => i.gameObject.SetActive(true));
+            for (int i = 0; i < comboDigits.Count; i++)
+            {
+                if (digits[i] == 0)
+                {
+                    comboDigits[i].gameObject.SetActive(false);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            for (int i = 0; i < comboDigits.Count; i++)
+            {
+                if (!comboDigits[i].gameObject.activeSelf) continue;
+                comboDigits[i].GetComponent<RectTransform>()
+                    .sizeDelta = new Vector2(
+                        GetWidth(comboDigitSpriteSheet[i]),
+                        0f);
+            }
+        }
+        else
+        {
+            space.gameObject.SetActive(false);
+            comboDigits.ForEach(i => i.gameObject.SetActive(false));
+        }
+
+        startTime = Time.time;
         UpdateSprites();
         animator.SetTrigger("Activate");
     }
 
     private void UpdateSprites()
     {
-        float time = Game.Time - startTime;
+        float time = Time.time - startTime;
 
         if (judgementText.gameObject.activeSelf)
         {
@@ -217,9 +342,15 @@ public class ComboText : MonoBehaviour
 
     private void Follow()
     {
-        if (noteToFollow != null)
+        if (elementToFollow != null)
         {
-            transform.position = noteToFollow.position;
+            Vector2 center = elementToFollow.worldBound.center;
+            center.y = Screen.height - center.y;
+            rect.anchoredPosition = center;
+        }
+        else if (transformToFollow != null)
+        {
+            transform.position = transformToFollow.position;
         }
     }
 }

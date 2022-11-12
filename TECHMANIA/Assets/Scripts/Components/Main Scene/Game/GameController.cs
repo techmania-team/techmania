@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour
     public ScoreKeeper scoreKeeper { get; private set; }
 
     public VFXManager vfxManager;
-    // TODO: combo text manager goes here
+    public ComboText comboText;
 
     // TODO: when this changes, tell layout to reset scanlines' size.
     public static bool autoPlay;
@@ -324,8 +324,10 @@ public class GameController : MonoBehaviour
             this, layout, noteManager, timer);
         input.Prepare();
 
-        // Prepare for VFX. TODO: also combo text.
+        // Prepare for VFX and combo text.
         vfxManager.Prepare(layout.laneHeight);
+        comboText.ResetSize();
+        comboText.Hide();
 
         // Initialize scores.
         scoreKeeper = new ScoreKeeper(setup);
@@ -379,6 +381,7 @@ public class GameController : MonoBehaviour
         noteManager.Dispose();
         input.Dispose();
         vfxManager.Dispose();
+        comboText.Hide();
     }
     #endregion
 
@@ -393,6 +396,7 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
         noteManager.ResetSize();
         vfxManager.ResetSize(layout.laneHeight);
+        comboText.ResetSize();
     }
 
     public void ActivateFever()
@@ -494,7 +498,7 @@ public class GameController : MonoBehaviour
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxManager.SpawnResolvingVFX(elements, judgement);
-        // TODO: show combo text.
+        comboText.Show(elements, judgement, scoreKeeper);
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,

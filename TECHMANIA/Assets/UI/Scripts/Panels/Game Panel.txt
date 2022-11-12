@@ -64,6 +64,7 @@ gamePanel.Initialize = function()
             scoreKeeper.score.CurrentScore(),
             scoreKeeper.maxCombo)
         -- TODO: update judgement tally.
+        -- TODO: update HP bar.
     end
 
     tm.gameSetup.onAllNotesResolved = function(scoreKeeper)

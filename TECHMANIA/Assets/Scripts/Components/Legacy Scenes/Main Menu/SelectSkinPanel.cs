@@ -311,7 +311,7 @@ public class SelectSkinPanel : MonoBehaviour
             // Combo preview
             if (GlobalResource.comboSkin != null)
             {
-                comboPreview.ResetSizes();
+                comboPreview.ResetSize();
             }
 
             // Timing

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: copy from LegacyVFXSpawner.
 public class VFXManager : MonoBehaviour
 {
     public GameObject vfxPrefab;
