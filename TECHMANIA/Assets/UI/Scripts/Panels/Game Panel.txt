@@ -9,6 +9,10 @@ pauseMenu = {
     menu = gamePanel.panel.Q("pause-menu")
 }
 
+function FillBar(barElement, amount)
+    barElement.style.width = StyleLengthInPercent(amount * 100)
+end
+
 gamePanel.Initialize = function()
     local panel = gamePanel.panel
 
@@ -60,11 +64,11 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+        gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
         gamePanel.UpdateScoreDisplay(
             scoreKeeper.score.CurrentScore(),
             scoreKeeper.maxCombo)
         -- TODO: update judgement tally.
-        -- TODO: update HP bar.
     end
 
     tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
@@ -202,6 +206,8 @@ gamePanel.BeginGame = function()
 
     local topBar = panel.Q("top-bar")
     topBar.visible = true
+    gamePanel.UpdateHpDisplay(1, 1)
+    topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
     gamePanel.UpdateScoreDisplay(0, 0)
     gamePanel.UpdateFeverDisplay(0)
     gamePanel.ShowFeverOff()
@@ -242,6 +248,10 @@ gamePanel.ActivateFever = function()
     tm.game.ActivateFever()
 end
 
+gamePanel.UpdateHpDisplay = function(hp, maxHp)
+    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hp / maxHp)
+end
+
 gamePanel.UpdateScoreDisplay = function(score, maxCombo)
     local topBar = gamePanel.panel.Q("top-bar")
     topBar.Q("score-value").text = tostring(score)
@@ -249,9 +259,8 @@ gamePanel.UpdateScoreDisplay = function(score, maxCombo)
 end
 
 gamePanel.UpdateFeverDisplay = function(fever)
-    local style = StyleLengthInPercent(fever * 100)
-    gamePanel.panel.Q("top-bar").Q("fever-bar").style.width = style
-    gamePanel.panel.Q("middle-fever-bar").style.width = style
+    FillBar(gamePanel.panel.Q("top-bar").Q("fever-bar"), fever)
+    FillBar(gamePanel.panel.Q("middle-fever-bar"), fever)
 end
 
 gamePanel.ShowFeverOff = function()
