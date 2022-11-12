@@ -159,10 +159,14 @@ gamePanel.Initialize = function()
 
     tm.gameSetup.onStageClear = function(scoreKeeper)
         print("Stage clear")
+        GamePanelToSelectTrackPanel()
+        -- TODO: transition to result panel
     end
 
     tm.gameSetup.onStageFailed = function(scoreKeeper)
         print("Stage failed")
+        GamePanelToSelectTrackPanel()
+        -- TODO: show "stage failed" screen, then transition to result panel
     end
 end
 

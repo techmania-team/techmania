@@ -12,6 +12,7 @@ namespace ThemeApi
         {
             // Waiting for Lua to fill in GameSetup and call
             // BeginLoading.
+            // Any state can transition to Idle by calling Conclude().
             Idle,
             // Transitions to LoadError or LoadComplete.
             // With each file loaded, fires onLoadProgress.
@@ -22,12 +23,14 @@ namespace ThemeApi
             // Theme can start the game now, which transitions to
             // Ongoing state.
             LoadComplete,
-            // Transitions to Paused and AllNotesResolved.
+            // Transitions to Paused and Complete.
             Ongoing,
             // Transitions to Ongoing.
             Paused,
-            // The game is complete, the score is available.
-            // Transitions to Idle state.
+            // The game is complete by either stage clear or
+            // stage failed. The game no longer updates or responds
+            // to input, and waits for Lua to call Conclude().
+            // Transitions to Idle.
             Complete
         }
         public State state { get; private set; }
@@ -100,13 +103,20 @@ namespace ThemeApi
         {
             state = State.LoadComplete;
         }
+
+        [MoonSharpHidden]
+        public void SetComplete()
+        {
+            state = State.Complete;
+        }
         #endregion
 
         #region Other theme APIs
         public void UpdateBgBrightness()
         {
             CheckState(
-                new List<State> { State.Ongoing, State.Paused },
+                new List<State>
+                { State.Ongoing, State.Paused, State.Complete },
                 "UpdateBgBrightness");
             GameController.instance.UpdateBgBrightness();
         }
@@ -114,7 +124,8 @@ namespace ThemeApi
         public void ResetElementSizes()
         {
             CheckState(
-                new List<State> { State.Ongoing, State.Paused },
+                new List<State>
+                { State.Ongoing, State.Paused, State.Complete },
                 "ResetSize");
             GameController.instance.ResetElementSizes();
         }

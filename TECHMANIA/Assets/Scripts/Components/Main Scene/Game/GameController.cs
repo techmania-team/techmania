@@ -424,9 +424,9 @@ public class GameController : MonoBehaviour
             CheckForStageFailed();
             CheckForStageClear();
 
-            if (state.state != ThemeApi.GameState.State.Idle)
+            if (state.state != ThemeApi.GameState.State.Complete)
             {
-                // If game hasn't concluded from stage failed or
+                // If game hasn't completed from stage failed or
                 // stage clear, call the update callback.
                 setup.onUpdate?.Function?.Call(timer);
             }
@@ -440,7 +440,7 @@ public class GameController : MonoBehaviour
         {
             scoreKeeper.score.stageFailed = true;
             setup.onStageFailed?.Function?.Call(scoreKeeper);
-            state.Conclude();
+            state.SetComplete();
         }
     }
 
@@ -453,7 +453,7 @@ public class GameController : MonoBehaviour
 
         scoreKeeper.DeactivateFever();
         setup.onStageClear?.Function?.Call(scoreKeeper);
-        state.Conclude();
+        state.SetComplete();
     }
     #endregion
 
