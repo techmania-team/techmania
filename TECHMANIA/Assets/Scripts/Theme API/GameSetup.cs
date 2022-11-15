@@ -50,8 +50,8 @@ namespace ThemeApi
 
         // Callbacks during Ongoing state
 
-        // Parameter: GameTimer
-        // Also called when paused.
+        // Parameter: GameTimer. Called every frame, in
+        // Ongoing and Paused states.
         public DynValue onUpdate;
         // Parameter: Note, Judgement, ScoreKeeper.
         public DynValue onNoteResolved;
@@ -70,11 +70,11 @@ namespace ThemeApi
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
-        // Parameter: ScoreKeeper. The game will automatically
-        // conclude immediately after calling this.
+        // Parameter: ScoreKeeper. The game will enter Complete state
+        // immediately after calling this.
         public DynValue onStageClear;
-        // Parameter: ScoreKeeper. The game will automatically
-        // conclude immediately after calling this.
+        // Parameter: ScoreKeeper. The game will enter Complete state
+        // immediately after calling this.
         public DynValue onStageFailed;
 
         // Internal stuff

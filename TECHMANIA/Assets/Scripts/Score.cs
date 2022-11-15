@@ -16,6 +16,7 @@ public enum PerformanceMedal
 public class Score
 {
     public int totalNotes { get; private set; }
+    [MoonSharpHidden]  // Lua can access with NumNotesWithJudgement
     public Dictionary<Judgement, int> notesPerJudgement
         { get; private set; }
     public bool stageFailed
@@ -85,6 +86,18 @@ public class Score
                         Ruleset.instance.feverBonusOnGood;
                     break;
             }
+        }
+    }
+
+    public int NumNotesWithJudgement(Judgement j)
+    {
+        if (notesPerJudgement.ContainsKey(j))
+        {
+            return notesPerJudgement[j];
+        }
+        else
+        {
+            return 0;
         }
     }
 

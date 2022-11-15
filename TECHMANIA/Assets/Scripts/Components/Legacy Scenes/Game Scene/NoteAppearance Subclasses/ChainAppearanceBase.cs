@@ -13,41 +13,41 @@ public class ChainAppearanceBase : NoteAppearance
     // also take away the path pointing to it. Therefore, it's
     // necessary for each Chain Head/Node to be aware of, and
     // eventually control, the next Chain Node.
+    //
+    // May be null.
     private GameObject nextChainNode;
     public void SetNextChainNode(GameObject nextChainNode)
     {
-        this.nextChainNode = null;
-        if (nextChainNode != null)
+        this.nextChainNode = nextChainNode;
+        if (nextChainNode == null) return;
+
+        nextChainNode.GetComponent<ChainNodeAppearance>()
+            .PointPathTowards(GetComponent<RectTransform>());
+        UIUtils.RotateToward(
+            noteImage.GetComponent<RectTransform>(),
+            selfPos: GetComponent<RectTransform>()
+                .anchoredPosition,
+            targetPos: nextChainNode
+                .GetComponent<RectTransform>()
+                .anchoredPosition);
+
+        if (nextChainNode.GetComponent<ChainNodeAppearance>()
+            .nextChainNode == null)
         {
-            this.nextChainNode = nextChainNode;
-            nextChainNode.GetComponent<ChainNodeAppearance>()
-                .PointPathTowards(GetComponent<RectTransform>());
+            // Next node is the last node in the chain, so we
+            // also rotate that node.
             UIUtils.RotateToward(
-                noteImage.GetComponent<RectTransform>(),
+                nextChainNode.GetComponent<NoteAppearance>()
+                    .noteImage.GetComponent<RectTransform>(),
                 selfPos: GetComponent<RectTransform>()
                     .anchoredPosition,
                 targetPos: nextChainNode
                     .GetComponent<RectTransform>()
                     .anchoredPosition);
-
-            if (nextChainNode.GetComponent<ChainNodeAppearance>()
-                .nextChainNode == null)
-            {
-                // Next node is the last node in the chain, so we
-                // also rotate that node.
-                UIUtils.RotateToward(
-                    nextChainNode.GetComponent<NoteAppearance>()
-                        .noteImage.GetComponent<RectTransform>(),
-                    selfPos: GetComponent<RectTransform>()
-                        .anchoredPosition,
-                    targetPos: nextChainNode
-                        .GetComponent<RectTransform>()
-                        .anchoredPosition);
-            }
         }
     }
 
-    protected void SetPathFromNextChainNodeVisibility(Visibility v)
+    private void SetPathFromNextChainNodeVisibility(Visibility v)
     {
         if (nextChainNode == null) return;
         nextChainNode.GetComponent<ChainNodeAppearance>()
