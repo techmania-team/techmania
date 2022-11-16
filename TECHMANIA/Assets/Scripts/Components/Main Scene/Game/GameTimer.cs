@@ -119,6 +119,10 @@ public class GameTimer
         if (!string.IsNullOrEmpty(
             pattern.patternMetadata.backingTrack))
         {
+            // Back up by 0.01s to make sure patternStartTime
+            // is strictly less than 0.
+            patternStartTime = Mathf.Min(
+                patternStartTime, -0.01f);
             patternEndTime = Mathf.Max(
                 patternEndTime, backingTrackLength);
         }
@@ -126,8 +130,11 @@ public class GameTimer
             pattern.patternMetadata.bga) &&
             pattern.patternMetadata.waitForEndOfBga)
         {
+            // Back up by 0.01s to make sure patternStartTime
+            // is strictly less than bgaOffset.
             patternStartTime = Mathf.Min(patternStartTime,
-                (float)pattern.patternMetadata.bgaOffset);
+                (float)pattern.patternMetadata.bgaOffset
+                - 0.01f);
             patternEndTime = Mathf.Max(patternEndTime,
                 bgaLength + (float)pattern.patternMetadata.bgaOffset);
         }
@@ -146,7 +153,6 @@ public class GameTimer
     public void Begin()
     {
         BaseTime = initialTime;
-        PrevFrameBaseTime = initialTime - 0.01f;
         stopwatch.Start();
     }
 

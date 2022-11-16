@@ -50,6 +50,7 @@ public class ComboText : MonoBehaviour
 
     public void ResetSize()
     {
+        // TODO: do we need to scale with the play area's size?
         if (GlobalResource.comboSkin != null)
         {
             comboTextLayout.anchoredPosition = new Vector2(
