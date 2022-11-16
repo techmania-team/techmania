@@ -87,6 +87,7 @@ public class NoteElements : INoteHolder
     // Affected by NoteOpacity modifiers.
     private float alphaUpperBound;
     private float feverOverlayAlphaUpperBound;
+    private float approachOverlayAlphaUpperBound;
     // If this note is controlled by some UI (eg. calibration)
     // instead of NoteManager / GameController.
     public bool controlledExternally;
@@ -363,7 +364,7 @@ public class NoteElements : INoteHolder
         {
             approachOverlay.visible =
                 v != Visibility.Hidden;
-            approachOverlay.style.opacity = VisibilityToAlpha(
+            approachOverlayAlphaUpperBound = VisibilityToAlpha(
                 v, bypassNoteOpacityModifier);
         }
 
@@ -433,6 +434,7 @@ public class NoteElements : INoteHolder
         //    //UpdateOngoingTrail();
         //}
         UpdateFeverOverlay(timer.GameTime, scoreKeeper);
+        UpdateApproachOverlay(timer.Scan);
     }
 
     private void HitboxMatchNoteImageAlpha()
@@ -500,6 +502,26 @@ public class NoteElements : INoteHolder
         float alpha = Mathf.Min(1f, scoreKeeper.feverAmount * 6f);
         alpha *= feverOverlayAlphaUpperBound;
         feverOverlay.style.opacity = alpha;
+    }
+
+    private void UpdateApproachOverlay(float currentScan)
+    {
+        const float kOverlayStart = -0.5f;
+        const float kOverlayEnd = 0f;
+
+        float distance = currentScan - floatScan;
+        if (distance < kOverlayStart || distance > kOverlayEnd)
+        {
+            approachOverlay.style.opacity = 0f;
+            return;
+        }
+
+        float t = Mathf.InverseLerp(kOverlayStart, kOverlayEnd, 
+            distance);
+        approachOverlay.style.backgroundImage = new StyleBackground(
+            GlobalResource.gameUiSkin.approachOverlay
+            .GetSpriteAtFloatIndex(t));
+        approachOverlay.style.opacity = approachOverlayAlphaUpperBound;
     }
     #endregion
 

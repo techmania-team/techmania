@@ -72,6 +72,9 @@ public class GameLayout
         // Make sure the game - where everything uses absolute
         // positioning - takes up the entirety of setup.gameContainer.
         layoutContainer.style.flexGrow = new StyleFloat(1f);
+        // But not go over.
+        layoutContainer.style.overflow = new StyleEnum<Overflow>(
+            Overflow.Hidden);
         // Layout becomes visible on Begin().
         layoutContainer.style.visibility = Visibility.Hidden;
         gameContainer.Add(layoutContainer);
