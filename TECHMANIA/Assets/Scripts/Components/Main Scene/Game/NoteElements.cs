@@ -537,4 +537,66 @@ public class NoteElements : INoteHolder
     #region Trail and hold extension
     // TODO: copy from NoteAppearance.
     #endregion
+
+    #region Rotation
+    private void CheckElementStyleIsInPercents(VisualElement e)
+    {
+        if (e.style.left.value.unit != LengthUnit.Percent ||
+            e.style.top.value.unit != LengthUnit.Percent)
+        {
+            throw new System.Exception($"Element {e.name}'s left aor top styles are not in unit Percent.");
+        }
+    }
+
+    private void RotateElementToward(VisualElement self,
+        Vector2 delta)
+    {
+        if (Mathf.Abs(delta.x) < Mathf.Epsilon &&
+            Mathf.Abs(delta.y) < Mathf.Epsilon)
+        {
+            // Do nothing.
+            return;
+        }
+
+        float angleInRadian = Mathf.Atan2(delta.y, delta.x);
+        self.style.rotate = new StyleRotate(new Rotate(new Angle(
+            angleInRadian, AngleUnit.Radian)));
+    }
+
+    private Vector2 DeltaBetween(VisualElement e1, VisualElement e2)
+    {
+        return new Vector2(
+            (e2.style.left.value.value - e1.style.left.value.value) *
+            layout.screenWidth,
+            (e2.style.top.value.value - e1.style.top.value.value) *
+            layout.scanHeight)
+            * 0.01f;
+    }
+
+    // Rotate "self" according to the angle from "selfAnchor" to
+    // "targetAnchor".
+    protected void RotateElementToward(VisualElement self,
+        VisualElement selfAnchor, VisualElement targetAnchor)
+    {
+        CheckElementStyleIsInPercents(selfAnchor);
+        CheckElementStyleIsInPercents(targetAnchor);
+
+        Vector2 delta = DeltaBetween(selfAnchor, targetAnchor);
+        RotateElementToward(self, delta);
+    }
+
+    // Rotate "self" according to the angle from "selfAnchor" to
+    // "targetAnchor". Also stretch "self" according to the distance
+    // between "selfAnchor" and "targetAnchor".
+    protected void RotateAndStretchElementToward(VisualElement self,
+        VisualElement selfAnchor, VisualElement targetAnchor)
+    {
+        CheckElementStyleIsInPercents(selfAnchor);
+        CheckElementStyleIsInPercents(targetAnchor);
+
+        Vector2 delta = DeltaBetween(selfAnchor, targetAnchor);
+        RotateElementToward(self, delta);
+        self.style.width = delta.magnitude;
+    }
+    #endregion
 }

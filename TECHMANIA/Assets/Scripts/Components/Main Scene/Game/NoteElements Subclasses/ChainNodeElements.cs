@@ -22,9 +22,12 @@ public class ChainNodeElements : ChainElementsBase
         pathToPreviousNote.style.opacity = VisibilityToAlpha(v);
     }
 
-    public void PointPathTowards(VisualElement previousNote)
+    public void PointPathTowards(TemplateContainer previousNote)
     {
         if (pathToPreviousNote == null) return;
+        RotateAndStretchElementToward(pathToPreviousNote,
+            selfAnchor: templateContainer,
+            targetAnchor: previousNote);
         //UIUtils.PointToward(pathToPreviousNote,
         //    selfPos: GetComponent<RectTransform>().anchoredPosition,
         //    targetPos: previousNote

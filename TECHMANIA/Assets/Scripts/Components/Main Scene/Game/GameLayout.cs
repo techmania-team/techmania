@@ -52,6 +52,7 @@ public class GameLayout
         pattern.patternMetadata.playableLanes;
 
     public float screenWidth => layoutContainer.resolvedStyle.width;
+    public float screenHeight => layoutContainer.resolvedStyle.height;
     public ScanDirection evenScanDirection => evenHalf.direction;
     public ScanDirection oddScanDirection => oddHalf.direction;
     public VisualElement evenScanNoteContainer =>
