@@ -22,6 +22,16 @@ public class ChainElementsBase : NoteElements
     public void SetNextChainNode(ChainNodeElements nextChainNode)
     {
         this.nextChainNode = nextChainNode;
+        RotateNoteImageAndPath();
+    }
+
+    protected override void TypeSpecificResetSize()
+    {
+        RotateNoteImageAndPath();
+    }
+
+    private void RotateNoteImageAndPath()
+    {
         if (nextChainNode == null) return;
 
         // Point path towards this note.

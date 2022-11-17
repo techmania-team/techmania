@@ -102,7 +102,10 @@ public class NoteElements : INoteHolder
     {
         InitializeSize();
         ResetHitbox();
+        TypeSpecificResetSize();
     }
+
+    protected virtual void TypeSpecificResetSize() { }
 
     #region Initialization
     public void Initialize(

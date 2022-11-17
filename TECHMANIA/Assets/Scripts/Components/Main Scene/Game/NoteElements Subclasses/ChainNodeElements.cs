@@ -13,6 +13,7 @@ public class ChainNodeElements : ChainElementsBase
     {
         pathToPreviousNote = templateContainer.Q(
             "path-to-previous-note");
+        SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
     }
 
     public void SetPathToPreviousChainNodeVisibility(Visibility v)
@@ -28,10 +29,6 @@ public class ChainNodeElements : ChainElementsBase
         RotateAndStretchElementToward(pathToPreviousNote,
             selfAnchor: templateContainer,
             targetAnchor: previousNote);
-        //UIUtils.PointToward(pathToPreviousNote,
-        //    selfPos: GetComponent<RectTransform>().anchoredPosition,
-        //    targetPos: previousNote
-        //        .GetComponent<RectTransform>().anchoredPosition);
     }
 
     protected override void TypeSpecificInitializeSize()

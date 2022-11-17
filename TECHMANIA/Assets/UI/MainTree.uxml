@@ -330,7 +330,7 @@
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
             <ui:VisualElement name="markers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="info-insert" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-            <ui:VisualElement name="game-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:VisualElement name="game-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; margin-top: 50px; margin-bottom: 100px; margin-left: 200px; margin-right: 300px; translate: 100px 50px; scale: 0.9 1.1; rotate: 20deg; border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgba(255, 255, 255, 255); border-right-color: rgba(255, 255, 255, 255); border-top-color: rgba(255, 255, 255, 255); border-bottom-color: rgba(255, 255, 255, 255);" />
             <ui:VisualElement name="middle-fever-bar-bg" picking-mode="Ignore" class="surface-8dp" style="height: 8px; align-items: center;">
                 <ui:VisualElement name="middle-fever-bar" picking-mode="Ignore" class="red-700" style="width: 80%; height: 100%;" />
                 <ui:Label tabindex="-1" text="FEVER" display-tooltip-when-elided="true" name="fever-ready-text" picking-mode="Ignore" class="text-headline-6" style="display: none;" />
