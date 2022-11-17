@@ -121,12 +121,13 @@ namespace ThemeApi
             GameController.instance.UpdateBgBrightness();
         }
 
+        // It's up to the theme to wait 1 frame for layout to update.
         public void ResetElementSizes()
         {
             CheckState(
                 new List<State>
                 { State.Ongoing, State.Paused, State.Complete },
-                "ResetSize");
+                "ResetElementSizes");
             GameController.instance.ResetElementSizes();
         }
 

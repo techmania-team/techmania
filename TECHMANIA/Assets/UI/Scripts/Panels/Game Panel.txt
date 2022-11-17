@@ -28,6 +28,28 @@ gamePanel.Initialize = function()
             event.keyCode == unity.enum.keyCode.Backspace) then
             gamePanel.ActivateFever()
         end
+        if (event.keyCode == unity.enum.keyCode.P) then
+            local gameLayer = panel.Q("game-layer")
+            gameLayer.style.marginLeft = unity.styleLength.__new(unity.random.value * 100)
+            gameLayer.style.marginTop = unity.styleLength.__new(unity.random.value * 100)
+            gameLayer.style.marginRight = unity.styleLength.__new(unity.random.value * 100)
+            gameLayer.style.marginBottom = unity.styleLength.__new(unity.random.value * 100)
+            gameLayer.style.translate = unity.styleTranslate.__new(unity.translate.__new(
+                unity.length.__new(unity.random.value * 100),
+                unity.length.__new(unity.random.value * 100),
+                0
+            ))
+            gameLayer.style.rotate = unity.styleRotate.__new(unity.rotate.__new(unity.angle.Degrees(unity.random.value * 360)))
+            gameLayer.style.scale = unity.styleScale.__new(unity.vector2.__new(
+                unity.random.value + 0.5,
+                unity.random.value + 0.5
+            ))
+            tm.StartCoroutine(function()
+                coroutine.yield()
+                tm.game.ResetElementSizes()
+            end)
+            
+        end
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()

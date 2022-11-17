@@ -141,6 +141,7 @@ namespace ThemeApi
             addType(unityTypes, typeof(Screen));
             addType(unityTypes, typeof(Resolution));
             addType(unityTypes, typeof(Mathf));
+            addType(unityTypes, typeof(UnityEngine.Random));
             addType(unityTypes, typeof(Vector2));
             addType(unityTypes, typeof(Vector3));
             addType(unityTypes, typeof(Color));
