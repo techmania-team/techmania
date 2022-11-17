@@ -127,6 +127,8 @@ public class NoteElements : INoteHolder
         approachOverlay = templateInstance.Q("approach-overlay");
         hitbox = templateInstance.Q("hitbox");
 
+        TypeSpecificInitialize();
+
         // Set up initial alphaUpperBound.
         alphaUpperBound = 1f;
         if (Modifiers.instance.noteOpacity ==
@@ -151,6 +153,10 @@ public class NoteElements : INoteHolder
             HitboxMatchNoteImageAlpha();
         }
     }
+
+    // For elements other than note head, fever overlay, approach
+    // overlay and hitbox.
+    protected virtual void TypeSpecificInitialize() { }
 
     private void InitializeForUI()
     {
@@ -490,6 +496,7 @@ public class NoteElements : INoteHolder
     private void UpdateFeverOverlay(float time,
         ScoreKeeper scoreKeeper)
     {
+        if (feverOverlay == null) return;
         if (scoreKeeper.feverState != ScoreKeeper.FeverState.Active)
         {
             feverOverlay.style.opacity = 0f;
@@ -506,6 +513,8 @@ public class NoteElements : INoteHolder
 
     private void UpdateApproachOverlay(float currentScan)
     {
+        if (approachOverlay == null) return;
+
         const float kOverlayStart = -0.5f;
         const float kOverlayEnd = 0f;
 

@@ -15,12 +15,16 @@ public class GameController : MonoBehaviour
     public class NoteTemplates
     {
         public VisualTreeAsset basicNote;
+        public VisualTreeAsset chainHead;
+        public VisualTreeAsset chainNode;
 
         public VisualTreeAsset GetForType(NoteType type)
         {
             return type switch
             {
                 NoteType.Basic => basicNote,
+                NoteType.ChainHead => chainHead,
+                NoteType.ChainNode => chainNode,
                 _ => null
             };
         }

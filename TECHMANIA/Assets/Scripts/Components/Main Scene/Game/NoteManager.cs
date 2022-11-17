@@ -60,6 +60,9 @@ public class NoteManager
         }
 
         playableNotes = 0;
+        ChainNodeElements lastCreatedChainNode = null;
+        //List<List<NoteObject>> unmanagedRepeatNotes =
+        //    new List<List<NoteObject>>();
 
         // Spawn note elements in reverse order, so earlier notes
         // are drawn on top. However, the xyzInLane lists should still
@@ -89,27 +92,44 @@ public class NoteManager
                 TemplateContainer template =
                     noteTemplates.GetForType(n.type)?.Instantiate();
 
-                bool supportedType = true;
-                switch (n.type)
+                noteElements = n.type switch
                 {
-                    case NoteType.Basic:
-                        noteElements = new BasicNoteElements(n);
-                        break;
+                    NoteType.Basic => new BasicNoteElements(n),
+                    NoteType.ChainHead => new ChainHeadElements(n),
+                    NoteType.ChainNode => new ChainNodeElements(n),
                     // TODO: other note types.
-                    default:
-                        noteElements = null;
-                        supportedType = false;
-                        break;
-                }
-                if (!supportedType) continue;
+                    _ => null
+                };
+                if (noteElements == null) continue;
+
                 noteElements.Initialize(floatScan, intScan,
                     template, layout);
                 layout.PlaceNoteElements(floatScan, intScan,
                     noteElements);
 
-                // Also count the number of playable notes; ScoreKeeper
+                // Count the number of playable notes; ScoreKeeper
                 // needs this number.
                 playableNotes++;
+
+                // Connect chain head / node to the node after it.
+                if (n.type == NoteType.ChainHead ||
+                    n.type == NoteType.ChainNode)
+                {
+                    (noteElements as ChainElementsBase)
+                        .SetNextChainNode(lastCreatedChainNode);
+                    if (n.type == NoteType.ChainHead)
+                    {
+                        lastCreatedChainNode = null;
+                    }
+                    else  // ChainNode
+                    {
+                        lastCreatedChainNode = noteElements
+                            as ChainNodeElements;
+                    }
+                }
+
+                // TODO: Establish management between repeat (hold) heads
+                // and repeat (hold) notes.
             }
 
             // Add to data structures.

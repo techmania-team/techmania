@@ -621,32 +621,32 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 84.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 24.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -27
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
@@ -1984,6 +1984,10 @@ MonoBehaviour:
     type: 3}
   noteTemplates:
     basicNote: {fileID: 9197481963319205126, guid: 36363bbd296f5fb439d97085a32d9033,
+      type: 3}
+    chainHead: {fileID: 9197481963319205126, guid: 013fe5e7cad0482418b8ea397782e3a1,
+      type: 3}
+    chainNode: {fileID: 9197481963319205126, guid: 667465cab0b100d43bc9e0eb9aad630f,
       type: 3}
   vfxManager: {fileID: 1865618701}
   comboText: {fileID: 680542345}
