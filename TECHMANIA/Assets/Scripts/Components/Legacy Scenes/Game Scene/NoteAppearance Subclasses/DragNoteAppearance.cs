@@ -143,7 +143,7 @@ public class DragNoteAppearance : NoteAppearance,
         float scanlineX = scanlineRef
             .GetComponent<RectTransform>().anchoredPosition.x -
             GetComponent<RectTransform>().anchoredPosition.x;
-        // Make sure scanline is before pointsOnCurve[1]; remove
+        // Make sure scanline is before visiblePointsOnCurve[1]; remove
         // points if necessary.
         while ((scanlineX - visiblePointsOnCurve[1].x)
             * curveXDirection >= 0f)
@@ -233,6 +233,7 @@ public class DragNoteAppearance : NoteAppearance,
             pointAfterHitbox, t);
     }
 
+    // For spawning VFX on resolve.
     public Vector3 GetCurveEndPosition()
     {
         return curveEnd.position;

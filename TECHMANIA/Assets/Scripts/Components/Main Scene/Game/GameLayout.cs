@@ -118,7 +118,9 @@ public class GameLayout
 
         foreach (ScanElements scan in scanElements)
         {
-            setSize(scan.scanline, skin.scanline);
+            setSize(scan.scanline,
+                (GameController.autoPlay ?
+                skin.autoPlayScanline : skin.scanline));
         }
     }
 

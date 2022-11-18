@@ -419,7 +419,9 @@ selectPatternPanel.Initialize = function()
     -- Set the function to draw radar graph. Actual drawing happens
     -- when selectPatternPanel.ShowPatternDetails calls ShowRadar.
     local radarElement = panel.Q("radar")
-    radarElement.SetMeshPainterFunction(function(element, painter)
+    radarElement.SetMeshGeneratorFunction(function(element, context)
+        local painter = context.painter2D
+        
         painter.lineWidth = 2
         painter.lineCap = unity.enum.lineCap.Round
         painter.lineJoin = unity.enum.lineJoin.Miter

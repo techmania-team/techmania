@@ -97,6 +97,7 @@ public class NoteManager
                     NoteType.Basic => new BasicNoteElements(n),
                     NoteType.ChainHead => new ChainHeadElements(n),
                     NoteType.ChainNode => new ChainNodeElements(n),
+                    NoteType.Drag => new DragNoteElements(n),
                     // TODO: other note types.
                     _ => null
                 };

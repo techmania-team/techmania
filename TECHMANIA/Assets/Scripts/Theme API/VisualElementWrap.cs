@@ -558,15 +558,15 @@ namespace ThemeApi
         #endregion
 
         #region Custom mesh
-        // Parameters: VisualElementWrap, Painter2D
+        // Parameters: VisualElementWrap, MeshGenerationContext
         // Call VisualElementWrap.contentRect for draw boundaries.
         // (0, 0) is top left, positions are in pixels.
-        public void SetMeshPainterFunction(DynValue function)
+        public void SetMeshGeneratorFunction(DynValue function)
         {
             inner.generateVisualContent =
                 (MeshGenerationContext context) =>
                 {
-                    function.Function.Call(this, context.painter2D);
+                    function.Function.Call(this, context);
                 };
         }
 

@@ -32,6 +32,9 @@ namespace ThemeApi
             UserData.RegisterType<Texture2D>();
             UserData.RegisterType<VisualTreeAsset>();
             UserData.RegisterType<VisualElement>();
+            UserData.RegisterType<MeshGenerationContext>();
+            UserData.RegisterType<MeshWriteData>();
+            UserData.RegisterType<Vertex>();
             UserData.RegisterType<Painter2D>();
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<UQueryState<VisualElement>>();
@@ -145,6 +148,7 @@ namespace ThemeApi
             addType(unityTypes, typeof(Vector2));
             addType(unityTypes, typeof(Vector3));
             addType(unityTypes, typeof(Color));
+            addType(unityTypes, typeof(Color32));
             addType(unityTypes, typeof(Angle));
             addType(unityTypes, typeof(StyleBackground));
             addType(unityTypes, typeof(Background));

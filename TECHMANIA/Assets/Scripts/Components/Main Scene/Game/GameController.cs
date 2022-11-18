@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
         public VisualTreeAsset basicNote;
         public VisualTreeAsset chainHead;
         public VisualTreeAsset chainNode;
+        public VisualTreeAsset dragNote;
 
         public VisualTreeAsset GetForType(NoteType type)
         {
@@ -25,6 +26,7 @@ public class GameController : MonoBehaviour
                 NoteType.Basic => basicNote,
                 NoteType.ChainHead => chainHead,
                 NoteType.ChainNode => chainNode,
+                NoteType.Drag => dragNote,
                 _ => null
             };
         }
