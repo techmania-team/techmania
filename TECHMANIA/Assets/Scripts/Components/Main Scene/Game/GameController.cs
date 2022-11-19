@@ -360,6 +360,8 @@ public class GameController : MonoBehaviour
         timer.Begin();
         bg.Begin();
         layout.Begin();
+
+        JumpToScan(timer.firstScan);
     }
 
     public void Pause()
@@ -408,6 +410,32 @@ public class GameController : MonoBehaviour
     public void ActivateFever()
     {
         scoreKeeper.ActivateFever();
+    }
+    #endregion
+
+    #region Jumping scans
+    public void JumpToScan(int scan)
+    {
+        // Clamp scan into bounds.
+        scan = Mathf.Clamp(scan, timer.firstScan, timer.lastScan);
+
+        timer.JumpToScan(scan);
+        noteManager.JumpToScan(timer.IntScan, timer.IntPulse);
+        input.JumpToScan();
+        scoreKeeper.JumpToScan();
+        vfxManager.JumpToScan();
+
+        // Play keysounds before the current time if they last enough.
+        foreach (NoteList l in noteManager.notesInLane)
+        {
+            l.ForEachRemoved((INoteHolder holder) =>
+            {
+                keysoundPlayer.PlayFromHalfway(holder.note,
+                    hidden: setup.patternAfterModifier.IsHidden(
+                        holder.note.lane),
+                    timer.BaseTime);
+            });
+        }
     }
     #endregion
 

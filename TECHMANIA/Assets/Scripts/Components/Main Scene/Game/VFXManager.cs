@@ -299,4 +299,9 @@ public class VFXManager : MonoBehaviour
             dragNoteToOngoingVfx.Clear();
         }
     }
+
+    public void JumpToScan()
+    {
+        Dispose();
+    }
 }

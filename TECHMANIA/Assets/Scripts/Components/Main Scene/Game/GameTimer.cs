@@ -152,7 +152,6 @@ public class GameTimer
     [MoonSharpHidden]
     public void Begin()
     {
-        BaseTime = initialTime;
         stopwatch.Start();
     }
 
@@ -186,6 +185,24 @@ public class GameTimer
     public void Dispose()
     {
         stopwatch.Stop();
+    }
+
+    [MoonSharpHidden]
+    public void JumpToScan(int scan)
+    {
+        IntScan = scan;
+        IntBeat = scan * pattern.patternMetadata.bps;
+        IntPulse = IntBeat * Pattern.pulsesPerBeat;
+        Scan = IntScan;
+        Beat = IntBeat;
+        Pulse = IntPulse;
+
+        // Reset initialTime so Update() continues to set the
+        // correct base time.
+        BaseTime = pattern.PulseToTime(IntPulse);
+        initialTime = BaseTime -
+            (float)stopwatch.Elapsed.TotalSeconds * speed;
+        // TODO: previousComboTick = Pulse
     }
     #endregion
 }

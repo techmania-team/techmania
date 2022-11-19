@@ -51,9 +51,9 @@ public class KeysoundPlayer
     {
         if (emptyHit && (
             n.type == NoteType.Hold ||
-            n.type == NoteType.Hold ||
-            n.type == NoteType.Hold ||
-            n.type == NoteType.Hold))
+            n.type == NoteType.RepeatHeadHold ||
+            n.type == NoteType.RepeatHold ||
+            n.type == NoteType.Drag))
         {
             // Don't play keysounds for empty hits when the upcoming
             // note is a long one.
@@ -76,6 +76,21 @@ public class KeysoundPlayer
             hidden,
             startTime: 0f,
             n.volumePercent, n.panPercent);
+        audioSourceOfNote[n] = source;
+    }
+
+    // Only play if the note's keysound starts before baseTime
+    // but ends after baseTime.
+    public void PlayFromHalfway(Note n, bool hidden, float baseTime)
+    {
+        if (string.IsNullOrEmpty(n.sound)) return;
+
+        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
+        if (n.time + clip.length <= baseTime) return;
+
+        float startTime = baseTime - n.time;
+        AudioSource source = sourceManager.PlayKeysound(clip,
+            hidden, startTime, n.volumePercent, n.panPercent);
         audioSourceOfNote[n] = source;
     }
 

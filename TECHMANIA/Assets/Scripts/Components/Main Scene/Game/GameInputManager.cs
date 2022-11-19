@@ -128,6 +128,13 @@ public class GameInputManager
         });
     }
 
+    public void JumpToScan()
+    {
+        ongoingNotes.Clear();
+        ongoingNoteIsHitOnThisFrame.Clear();
+        ongoingNoteLastInput.Clear();
+    }
+
     public void Dispose()
     {
         keysForLane.Clear();

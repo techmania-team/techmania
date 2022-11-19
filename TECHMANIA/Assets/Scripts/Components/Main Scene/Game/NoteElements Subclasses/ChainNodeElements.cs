@@ -13,11 +13,6 @@ public class ChainNodeElements : ChainElementsBase
     {
         pathToPreviousNote = templateContainer.Q(
             "path-to-previous-note");
-        // While SetPathToPreviousChainNodeVisibility is called by
-        // ChainElementsBase.TypeSpecificUpdateState, it's NOT called
-        // during initialization because chain heads / nodes don't
-        // yet have a next note while initializing.
-        SetPathToPreviousChainNodeVisibility(Visibility.Hidden);
     }
 
     public void SetPathToPreviousChainNodeVisibility(Visibility v)

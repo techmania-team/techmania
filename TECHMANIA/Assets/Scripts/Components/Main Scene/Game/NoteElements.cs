@@ -152,8 +152,8 @@ public class NoteElements : INoteHolder
         }
         else
         {
-            // TODO: move these calls to GameController.JumpToScan.
-            ResetToInactive();
+            // Intentionally not calling ResetToInactive();
+            // it will be called by GameController.JumpToScan.
             HitboxMatchNoteImageAlpha();
         }
     }

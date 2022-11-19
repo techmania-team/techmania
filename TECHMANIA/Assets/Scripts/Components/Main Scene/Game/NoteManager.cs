@@ -229,6 +229,50 @@ public class NoteManager
         updateNotesInScan(timer.IntScan + 1);
     }
 
+    public void JumpToScan(int scan, int pulse)
+    {
+        // Reset note lists.
+        System.Action<List<NoteList>> resetLists =
+            (List<NoteList> listOfList) =>
+            {
+                foreach (NoteList l in listOfList)
+                {
+                    l.Reset();
+                    l.RemoveUpTo(pulse);
+                }
+            };
+        resetLists(notesInLane);
+        resetLists(keyboardNotesInLane);
+        resetLists(mouseNotesInLane);
+
+        // Reset states of NoteElements.
+        foreach (KeyValuePair<int, List<NoteElements>> pair in 
+            notesInScan)
+        {
+            int thisScan = pair.Key;
+            foreach (NoteElements e in pair.Value)
+            {
+                e.ResetToInactive();
+                if (scan > thisScan)
+                {
+                    e.Resolve();
+                }
+                else if (scan == thisScan)
+                {
+                    e.Activate();
+                    // TODO: also activate trail and
+                    // repeat path extensions
+                }
+                else if (scan == thisScan - 1)
+                {
+                    e.Prepare();
+                    // TODO: also activate trail and
+                    // repeat path extensions
+                }
+            }
+        }
+    }
+
     public void ResolveNote(NoteElements elements)
     {
         int lane = elements.note.lane;

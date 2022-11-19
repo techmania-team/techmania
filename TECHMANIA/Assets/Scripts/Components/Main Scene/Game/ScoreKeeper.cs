@@ -186,6 +186,12 @@ public class ScoreKeeper
     }
 
     [MoonSharpHidden]
+    public void JumpToScan()
+    {
+        SetCombo(0);
+    }
+
+    [MoonSharpHidden]
     public void UpdateFever()
     {
         if (feverState != FeverState.Active) return;
