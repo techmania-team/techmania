@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Templates/Notes/Notes.uss?fileID=7433441132597879392&amp;guid=f8d6a106e16262d4595009c4ec36f0b4&amp;type=3#Notes" />
-    <ui:VisualElement name="curve" picking-mode="Ignore" style="left: -50px; top: -50px; right: -50px; bottom: -50px;" />
+    <ui:VisualElement name="curve" picking-mode="Ignore" />
+    <ui:VisualElement name="curve-end" picking-mode="Ignore" />
     <ui:VisualElement name="note-image" picking-mode="Ignore" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/ChainHead.png?fileID=2800000&amp;guid=5868df73bdc51fe43ac33f8dca7cbb67&amp;type=3#ChainHead&apos;); width: 80px; height: 80px;" />
     <ui:VisualElement name="fever-overlay" picking-mode="Ignore" style="width: 80px; height: 80px;" />
     <ui:VisualElement name="approach-overlay" picking-mode="Ignore" style="width: 80px; height: 80px;" />

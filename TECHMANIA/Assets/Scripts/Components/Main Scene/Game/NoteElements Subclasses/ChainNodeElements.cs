@@ -30,7 +30,7 @@ public class ChainNodeElements : ChainElementsBase
             targetAnchor: previousNote);
     }
 
-    protected override void TypeSpecificInitializeSize()
+    protected override void TypeSpecificInitializeSizeExceptHitbox()
     {
         pathToPreviousNote.style.height = layout.laneHeight *
             GlobalResource.noteSkin.chainPath.scale;

@@ -134,7 +134,7 @@ public class DragNoteAppearance : NoteAppearance,
         InitializeCurve();
     }
 
-    public void UpdateOngoingCurve()
+    private void UpdateOngoingCurve()
     {
         if (visiblePointsOnCurve.Count < 2)
         {
@@ -161,7 +161,7 @@ public class DragNoteAppearance : NoteAppearance,
         curve.SetVerticesDirty();
     }
 
-    public void PlaceNoteImageAndHitboxOnCurve()
+    private void PlaceNoteImageAndHitboxOnCurve()
     {
         RectTransform imageRect = noteImage
             .GetComponent<RectTransform>();

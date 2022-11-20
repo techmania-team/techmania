@@ -46,9 +46,11 @@ public class NoteElements : INoteHolder
         set { note = value; }
     }
 
-    private float floatScan;  // Disregards end-of-scan.
+    protected int intScan;  // Respects end-of-scan.
+    protected float floatScan;  // Disregards end-of-scan.
+    protected int bps;
     // Determines whether some elements are horizontally flipped.
-    private GameLayout.ScanDirection scanDirection;
+    protected GameLayout.ScanDirection scanDirection;
 
     public TemplateContainer templateContainer;
     public VisualElement noteImage;
@@ -100,22 +102,25 @@ public class NoteElements : INoteHolder
 
     public void ResetSize()
     {
-        InitializeSize();
+        InitializeSizeExceptHitBox();
         ResetHitbox();
         TypeSpecificResetSize();
     }
 
+    // Chain nodes reset note image orientation and paths.
     protected virtual void TypeSpecificResetSize() { }
 
     #region Initialization
     public void Initialize(
-        float floatScan, int intScan,
+        float floatScan, int intScan, int bps,
         TemplateContainer templateInstance,
         GameLayout layout)
     {
         // Determine scan direction.
         this.layout = layout;
         this.floatScan = floatScan;
+        this.intScan = intScan;
+        this.bps = bps;
         scanDirection = (intScan % 2 == 0) ?
             layout.evenScanDirection :
             layout.oddScanDirection;
@@ -143,7 +148,7 @@ public class NoteElements : INoteHolder
         }
 
         // Set up scale and size.
-        InitializeSize();
+        InitializeSizeExceptHitBox();
 
         // Initialize.
         if (controlledExternally)
@@ -165,14 +170,14 @@ public class NoteElements : INoteHolder
     private void InitializeForUI()
     {
         alphaUpperBound = 1f;
-        InitializeSize();
+        InitializeSizeExceptHitBox();
         Activate();
     }
 
     // Takes care of note image, fever overlay and approach overlay.
     // Not hitbox; that's by InitializeHitbox, and called when
     // setting Inactive state.
-    private void InitializeSize()
+    private void InitializeSizeExceptHitBox()
     {
         float scale = GetNoteImageScaleFromRuleset();
         float laneHeight = layout.laneHeight;
@@ -194,7 +199,7 @@ public class NoteElements : INoteHolder
             approachOverlay.style.height = laneHeight * scale;
         }
 
-        TypeSpecificInitializeSize();
+        TypeSpecificInitializeSizeExceptHitbox();
     }
 
     protected virtual float GetNoteImageScaleFromRuleset()
@@ -204,7 +209,7 @@ public class NoteElements : INoteHolder
     }
 
     // For paths and trails and stuff.
-    protected virtual void TypeSpecificInitializeSize() { }
+    protected virtual void TypeSpecificInitializeSizeExceptHitbox() { }
     #endregion
 
     #region Setting / Resetting Inactive state
@@ -215,15 +220,15 @@ public class NoteElements : INoteHolder
         ResetHitbox();
         // Drag notes need to reset curve; repeat heads need to
         // reset next unresolved note index.
-        TypeSpecificReset();
+        TypeSpecificResetToInactive();
         UpdateState();
     }
 
-    protected virtual void TypeSpecificReset() { }
+    protected virtual void TypeSpecificResetToInactive() { }
 
     // Not called during initialization because drag notes' hitbox
     // sizes change.
-    private void ResetHitbox()
+    protected void ResetHitbox()
     {
         if (hitbox == null) return;
         Vector2 hitboxScale = GetHitboxScaleFromRuleset();
@@ -571,7 +576,7 @@ public class NoteElements : INoteHolder
     {
         return new Vector2(
             (e2.style.left.value.value - e1.style.left.value.value) *
-            layout.screenWidth,
+            layout.gameContainerWidth,
             (e2.style.top.value.value - e1.style.top.value.value) *
             layout.scanHeight)
             * 0.01f;

@@ -51,8 +51,10 @@ public class GameLayout
             pattern.patternMetadata.playableLanes - 2]) /
         pattern.patternMetadata.playableLanes;
 
-    public float screenWidth => layoutContainer.resolvedStyle.width;
-    public float screenHeight => layoutContainer.resolvedStyle.height;
+    public float gameContainerWidth => 
+        layoutContainer.resolvedStyle.width;
+    public float gameContainerHeight => 
+        layoutContainer.resolvedStyle.height;
     public ScanDirection evenScanDirection => evenHalf.direction;
     public ScanDirection oddScanDirection => oddHalf.direction;
     public VisualElement evenScanNoteContainer =>
@@ -239,6 +241,23 @@ public class GameLayout
     private void PlaceElementHorizontally(VisualElement element,
         float relativeScan, ScanDirection scanDirection)
     {
+        float relativeX = RelativeScanToRelativeX(
+            relativeScan, scanDirection);
+        element.style.left = new StyleLength(new Length(
+            relativeX * 100f, LengthUnit.Percent));
+    }
+
+    private void PlaceElementVertically(VisualElement element,
+        int intScan, int lane)
+    {
+        float relativeY = LaneToRelativeY(lane, intScan);
+        element.style.top = new StyleLength(new Length(
+            relativeY * 100f, LengthUnit.Percent));
+    }
+
+    public float RelativeScanToRelativeX(float relativeScan,
+        ScanDirection scanDirection)
+    {
         float marginBeforeScan = Ruleset.instance
             .scanMarginBeforeFirstBeat;
         float marginAfterScan = Ruleset.instance
@@ -249,12 +268,10 @@ public class GameLayout
         {
             relativeX = 1f - relativeX;
         }
-        element.style.left = new StyleLength(new Length(
-            relativeX * 100f, LengthUnit.Percent));
+        return relativeX;
     }
 
-    private void PlaceElementVertically(VisualElement element,
-        int scan, int lane)
+    public float LaneToRelativeY(float lane, int intScan)
     {
         int playableLanes = pattern.patternMetadata.playableLanes;
         float relativeLaneHeight = (1f -
@@ -262,14 +279,13 @@ public class GameLayout
             Ruleset.instance.scanMarginMiddle[playableLanes - 2])
             / playableLanes;
 
-        HalfElements half = (scan % 2 == 0) ? evenHalf : oddHalf;
+        HalfElements half = (intScan % 2 == 0) ? evenHalf : oddHalf;
         float topOfLaneZero = (half == topHalf) ?
             Ruleset.instance.scanMarginTopBottom[playableLanes - 2] :
             Ruleset.instance.scanMarginMiddle[playableLanes - 2];
         float relativeY = topOfLaneZero + relativeLaneHeight *
             (lane + 0.5f);
-        element.style.top = new StyleLength(new Length(
-            relativeY * 100f, LengthUnit.Percent));
+        return relativeY;
     }
     #endregion
 
