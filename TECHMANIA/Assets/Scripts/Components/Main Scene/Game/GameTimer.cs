@@ -41,6 +41,14 @@ public class GameTimer
     public int IntScan { get; private set; }
     #endregion
 
+    #region Combo tick
+    private const int kComboTickInterval = 60;
+    // Combo ticks are pulses where each ongoing note increases
+    // combo by 1. Ongoing notes add 1 more combo when
+    // resolved. Combo ticks are, by default, 60 pulses apart.
+    private int previousComboTick;
+    #endregion
+
     #region Pattern metadata
     private Pattern pattern;
     public int firstScan { get; private set; }
@@ -156,7 +164,7 @@ public class GameTimer
     }
 
     [MoonSharpHidden]
-    public void Update()
+    public void Update(System.Action comboTickCallback)
     {
         PrevFrameBaseTime = BaseTime;
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
@@ -167,6 +175,13 @@ public class GameTimer
         IntPulse = Mathf.FloorToInt(Pulse);
         IntBeat = Mathf.FloorToInt(Beat);
         IntScan = Mathf.FloorToInt(Scan);
+
+        // Handle combo ticks.
+        while (previousComboTick + kComboTickInterval <= IntPulse)
+        {
+            previousComboTick += kComboTickInterval;
+            comboTickCallback();
+        }
     }
 
     [MoonSharpHidden]
@@ -196,13 +211,13 @@ public class GameTimer
         Scan = IntScan;
         Beat = IntBeat;
         Pulse = IntPulse;
+        previousComboTick = IntPulse;
 
         // Reset initialTime so Update() continues to set the
         // correct base time.
         BaseTime = pattern.PulseToTime(IntPulse);
         initialTime = BaseTime -
             (float)stopwatch.Elapsed.TotalSeconds * speed;
-        // TODO: previousComboTick = Pulse
     }
     #endregion
 }

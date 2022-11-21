@@ -447,13 +447,12 @@ public class GameController : MonoBehaviour
 
         if (state.state == ThemeApi.GameState.State.Ongoing)
         {
-            timer.Update();
+            timer.Update(comboTickCallback: ComboTick);
             bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
             layout.Update(timer.Scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();
             scoreKeeper.UpdateFever();
-            // TODO: check and handle combo ticks
 
             CheckForStageFailed();
             CheckForStageClear();
@@ -570,6 +569,22 @@ public class GameController : MonoBehaviour
     {
         keysoundPlayer.Play(note,
             hidden: false, emptyHit: true);
+    }
+    #endregion
+
+    #region Responding to time
+    public void ComboTick()
+    {
+        foreach (KeyValuePair<NoteElements, Judgement> pair in
+            input.ongoingNotes)
+        {
+            NoteElements elements = pair.Key;
+            Judgement judgement = pair.Value;
+            scoreKeeper.IncrementCombo();
+            comboText.Show(elements, judgement, scoreKeeper);
+
+            setup.onComboTick?.Function.Call(scoreKeeper.currentCombo);
+        }
     }
     #endregion
 }

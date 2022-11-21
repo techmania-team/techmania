@@ -186,6 +186,12 @@ public class ScoreKeeper
     }
 
     [MoonSharpHidden]
+    public void IncrementCombo()
+    {
+        SetCombo(currentCombo + 1);
+    }
+
+    [MoonSharpHidden]
     public void JumpToScan()
     {
         SetCombo(0);

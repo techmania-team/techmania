@@ -97,6 +97,13 @@ gamePanel.Initialize = function()
         -- Do nothing.
     end
 
+    tm.gameSetup.onComboTick = function(newCombo)
+        local scoreKeeper = tm.game.scoreKeeper
+        gamePanel.UpdateScoreDisplay(
+            scoreKeeper.score.CurrentScore(),
+            scoreKeeper.maxCombo)
+    end
+
     tm.gameSetup.onFeverReady = function()
         if (gamePanel.feverReadyCoroutine != nil) then
             tm.StopCoroutine(gamePanel.feverReadyCoroutine)

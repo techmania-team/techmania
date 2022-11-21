@@ -697,7 +697,11 @@ public class GameInputManager
 
     #region Ongoing notes
     // Value is the judgement at note's head.
-    private Dictionary<NoteElements, Judgement> ongoingNotes;
+    public Dictionary<NoteElements, Judgement> ongoingNotes
+    {
+        get;
+        private set;
+    }
     private Dictionary<NoteElements, bool> ongoingNoteIsHitOnThisFrame;
     private Dictionary<NoteElements, float> ongoingNoteLastInput;
 

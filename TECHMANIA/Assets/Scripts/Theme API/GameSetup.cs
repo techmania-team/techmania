@@ -57,6 +57,10 @@ namespace ThemeApi
         public DynValue onNoteResolved;
         // Parameter: ScoreKeeper.
         public DynValue onAllNotesResolved;
+        // Parameter: current combo. Called when an ongoing long note
+        // accumulates one more combo; has no meaningful change in
+        // score.
+        public DynValue onComboTick;
         // No parameter.
         public DynValue onFeverReady;
         // No parameter. Called when Fever leaves Ready state due to

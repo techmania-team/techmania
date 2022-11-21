@@ -328,13 +328,13 @@ public class DragNoteElements : NoteElements
             if (pattern.patternMetadata.controlScheme
                 == ControlScheme.Touch)
             {
-                //compensatedTime -= Options.instance
-                //    .touchLatencyMs * 0.001f;
+                compensatedTime -= Options.instance
+                    .touchLatencyMs * 0.001f;
             }
             else
             {
-                //compensatedTime -= Options.instance
-                //    .keyboardMouseLatencyMs * 0.001f;
+                compensatedTime -= Options.instance
+                    .keyboardMouseLatencyMs * 0.001f;
             }
         }
         float compensatedScan = pattern.TimeToPulse(
@@ -342,8 +342,7 @@ public class DragNoteElements : NoteElements
             pattern.patternMetadata.bps;
         float hitboxX = layout.RelativeScanToRelativeX(
             compensatedScan - intScan,
-            scanDirection);
-        hitboxX -= headPosition.x;
+            scanDirection) - headPosition.x;
         float hitboxY = pointList.InterpolateForY(hitboxX);
         setTranslate(hitbox, new Vector2(hitboxX, hitboxY));
     }
