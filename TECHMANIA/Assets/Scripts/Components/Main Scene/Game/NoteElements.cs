@@ -139,40 +139,38 @@ public class NoteElements : INoteHolder
 
         // Set up initial alphaUpperBound.
         alphaUpperBound = 1f;
-        if (Modifiers.instance.noteOpacity ==
-            Modifiers.NoteOpacity.FadeIn ||
-            Modifiers.instance.noteOpacity ==
-            Modifiers.NoteOpacity.FadeIn2)
+        if (!controlledExternally)
         {
-            alphaUpperBound = 0f;
+            if (Modifiers.instance.noteOpacity ==
+                Modifiers.NoteOpacity.FadeIn ||
+                Modifiers.instance.noteOpacity ==
+                Modifiers.NoteOpacity.FadeIn2)
+            {
+                alphaUpperBound = 0f;
+            }
         }
 
         // Set up scale and size.
         InitializeSizeExceptHitBox();
 
-        // Initialize.
+        // Set up hitbox alpha.
+        HitboxMatchNoteImageAlpha();
+
+        // Optionally set state.
         if (controlledExternally)
         {
-            InitializeForUI();
+            Activate();
         }
         else
         {
             // Intentionally not calling ResetToInactive();
             // it will be called by GameController.JumpToScan.
-            HitboxMatchNoteImageAlpha();
         }
     }
 
     // For elements other than note head, fever overlay, approach
     // overlay and hitbox.
     protected virtual void TypeSpecificInitialize() { }
-
-    private void InitializeForUI()
-    {
-        alphaUpperBound = 1f;
-        InitializeSizeExceptHitBox();
-        Activate();
-    }
 
     // Takes care of note image, fever overlay and approach overlay.
     // Not hitbox; that's by InitializeHitbox, and called when
@@ -548,7 +546,8 @@ public class NoteElements : INoteHolder
     #endregion
 
     #region Rotation
-    private void CheckElementStyleIsInPercents(VisualElement e)
+    private static void CheckElementStyleIsInPercents(
+        VisualElement e)
     {
         if (e.style.left.value.unit != LengthUnit.Percent ||
             e.style.top.value.unit != LengthUnit.Percent)
@@ -557,7 +556,7 @@ public class NoteElements : INoteHolder
         }
     }
 
-    private void RotateElementToward(VisualElement self,
+    private static void RotateElementToward(VisualElement self,
         Vector2 delta)
     {
         if (Mathf.Abs(delta.x) < Mathf.Epsilon &&
@@ -580,6 +579,17 @@ public class NoteElements : INoteHolder
             (e2.style.top.value.value - e1.style.top.value.value) *
             layout.scanHeight)
             * 0.01f;
+    }
+
+    protected void RotateElementToward(VisualElement self,
+        Vector2 selfRelativePosition, Vector2 targetRelativePosition)
+    {
+        Vector2 delta = new Vector2(
+            (targetRelativePosition.x - selfRelativePosition.x)
+            * layout.gameContainerWidth,
+            (targetRelativePosition.y - selfRelativePosition.y)
+            * layout.scanHeight);
+        RotateElementToward(self, delta);
     }
 
     // Rotate "self" according to the angle from "selfAnchor" to

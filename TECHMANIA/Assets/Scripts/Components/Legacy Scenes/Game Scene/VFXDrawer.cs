@@ -70,4 +70,10 @@ public class VFXDrawer : MonoBehaviour
             image.sprite = sprite;
         }
     }
+
+    public void SetPosition(Vector2 screenPoint)
+    {
+        if (rect == null) return;
+        rect.anchoredPosition = screenPoint;
+    }
 }

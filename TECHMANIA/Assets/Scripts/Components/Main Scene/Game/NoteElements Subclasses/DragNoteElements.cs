@@ -18,7 +18,6 @@ public class DragNoteElements : NoteElements
         curve.generateVisualContent = DrawCurve;
 
         InitializeCurve();
-        ResetCurve();
     }
 
     protected override void TypeSpecificResetToInactive()
@@ -117,14 +116,7 @@ public class DragNoteElements : NoteElements
     #region Curve
     // All positions relative to note head; units are relative
     // lengths to a scan's width and height.
-    // This list is generated on initialization and never changes.
-    // It's used to place hitbox while the note is ongoing.
-    private List<Vector2> pointsOnCurve;
-    // All positions relative to note head; units are relative
-    // lengths to a scan's width and height.
-    // This "list" (actually a view) updates while the note is
-    // ongoing, and gets converted to the curve's mesh.
-    private ListView<Vector2> visiblePointsOnCurve;
+    private DragPointList pointList;
     // -1 or 1.
     private float curveXDirection;
     private Texture curveTexture;
@@ -137,8 +129,7 @@ public class DragNoteElements : NoteElements
     private void InitializeCurve()
     {
         DragNote dragNote = note as DragNote;
-        pointsOnCurve = new List<Vector2>();
-        visiblePointsOnCurve = new ListView<Vector2>();
+        List<Vector2> points = new List<Vector2>();
 
         System.Func<float, float, Vector2> pulseLaneToPoint =
             (float pulse, float lane) =>
@@ -153,43 +144,54 @@ public class DragNoteElements : NoteElements
         Vector2 headPosition = pulseLaneToPoint(note.pulse, note.lane);
         foreach (FloatPoint p in dragNote.Interpolate())
         {
-            Vector2 pointOnCurve = pulseLaneToPoint(
+            points.Add(pulseLaneToPoint(
                 note.pulse + p.pulse,
-                note.lane + p.lane) - headPosition;
-            pointsOnCurve.Add(pointOnCurve);
+                note.lane + p.lane) - headPosition);
         }
+        pointList = new DragPointList(points);
 
-        curveEnd.style.left = pointsOnCurve[^1].x
-            * gameContainerWidthCopy;
-        curveEnd.style.top = pointsOnCurve[^1].y
-            * scanHeightCopy;
+        // Don't use gameContainerWidthCopy and scanHeightCopy here,
+        // as they are not yet set at this stage of initialization.
+        curveEnd.style.translate = new StyleTranslate(
+            new Translate(
+                new Length(points[^1].x * layout.gameContainerWidth),
+                new Length(points[^1].y * layout.scanHeight),
+                0f));
         curveXDirection = Mathf.Sign(
-            pointsOnCurve[^1].x - pointsOnCurve[0].x);
+            points[^1].x - points[0].x);
     }
 
     private void ResetCurve()
     {
-        visiblePointsOnCurve.Clear();
-        foreach (Vector2 v in pointsOnCurve)
-        {
-            visiblePointsOnCurve.Add(v);
-        }
+        pointList.Reset();
         curve.MarkDirtyRepaint();
-        PlaceNoteImageAndHitboxOnCurve();
+
+        System.Action<VisualElement> resetPosition =
+            (VisualElement e) =>
+            {
+                e.style.translate = new StyleTranslate(
+                    new Translate(
+                        new Length(0f), new Length(0f), 0f));
+            };
+        resetPosition(noteImage);
+        resetPosition(feverOverlay);
+        resetPosition(approachOverlay);
+        resetPosition(hitbox);
+        RotateNoteImage();
     }
 
     private void DrawCurve(MeshGenerationContext context)
     {
-        if (visiblePointsOnCurve == null ||
-            visiblePointsOnCurve.Count < 2) return;
+        if (pointList == null ||
+            pointList.Count < 2) return;
 
         // Convert relative positions to absolute ones.
-        Vector2[] points = new Vector2[visiblePointsOnCurve.Count];
-        for (int i = 0; i < visiblePointsOnCurve.Count; i++)
+        Vector2[] points = new Vector2[pointList.Count];
+        for (int i = 0; i < pointList.Count; i++)
         {
-            points[i].x = visiblePointsOnCurve[i].x
+            points[i].x = pointList[i].x
                 * gameContainerWidthCopy;
-            points[i].y = visiblePointsOnCurve[i].y
+            points[i].y = pointList[i].y
                 * scanHeightCopy;
         }
 
@@ -288,7 +290,7 @@ public class DragNoteElements : NoteElements
 
     private void UpdateOngoingCurve()
     {
-        if (visiblePointsOnCurve.Count < 2)
+        if (pointList.Count < 2)
         {
             return;
         }
@@ -322,12 +324,7 @@ public class DragNoteElements : NoteElements
         //    .anchoredPosition = visiblePointsOnCurve[0];
         //approachOverlay.GetComponent<RectTransform>()
         //     .anchoredPosition = visiblePointsOnCurve[0];
-        //if (visiblePointsOnCurve.Count > 1)
-        //{
-        //    UIUtils.RotateToward(imageRect,
-        //        selfPos: visiblePointsOnCurve[0],
-        //        targetPos: visiblePointsOnCurve[1]);
-        //}
+        RotateNoteImage();
 
         // To calculate the hitbox's position, we need to compensate
         // for latency.
@@ -383,6 +380,13 @@ public class DragNoteElements : NoteElements
         //    (pointAfterHitbox.x - pointBeforeHitbox.x);
         //hitbox.anchoredPosition = Vector2.Lerp(pointBeforeHitbox,
         //    pointAfterHitbox, t);
+    }
+
+    private void RotateNoteImage()
+    {
+        if (pointList.Count < 2) return;
+        RotateElementToward(noteImage,
+            pointList[0], pointList[1]);
     }
     #endregion
 }

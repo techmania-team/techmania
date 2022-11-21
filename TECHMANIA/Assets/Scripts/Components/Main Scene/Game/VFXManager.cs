@@ -40,6 +40,15 @@ public class VFXManager : MonoBehaviour
         // Reset size for VFXDrawer?
     }
 
+    private Vector2 VisualElementCenterToScreenPoint(
+        UnityEngine.UIElements.VisualElement element)
+    {
+        Vector2 screenPoint = element.worldBound.center;
+        // Reverse Y coordinate when passing a position to Canvas.
+        screenPoint.y = Screen.height - screenPoint.y;
+        return screenPoint;
+    }
+
     private List<GameObject> SpawnVfxAt(Vector3 position,
         List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
@@ -54,14 +63,19 @@ public class VFXManager : MonoBehaviour
         return layers;
     }
 
+    private List<GameObject> SpawnVfxAt(
+        UnityEngine.UIElements.VisualElement element,
+        List<SpriteSheet> spriteSheetLayers, bool loop = false)
+    {
+        return SpawnVfxAt(
+            VisualElementCenterToScreenPoint(element),
+            spriteSheetLayers, loop);
+    }
+
     private List<GameObject> SpawnVfxAt(NoteElements elements,
         List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
-        Vector2 screenPoint = elements.templateContainer
-            .worldBound.center;
-        // Reverse Y coordinate when passing a position to Canvas.
-        screenPoint.y = Screen.height - screenPoint.y;
-        return SpawnVfxAt(screenPoint,
+        return SpawnVfxAt(elements.templateContainer, 
             spriteSheetLayers, loop);
     }
 
@@ -183,11 +197,9 @@ public class VFXManager : MonoBehaviour
                 despawnVfx(dragNoteToOngoingVfx, elements);
                 if (!missOrBreak)
                 {
-                    // TODO: spawn dragComplete
-                    //SpawnVfxAt(
-                    //    note.GetComponent<DragNoteAppearance>()
-                    //        .GetCurveEndPosition(),
-                    //    GlobalResource.vfxSkin.dragComplete);
+                    SpawnVfxAt(
+                        (elements as DragNoteElements).curveEnd,
+                        GlobalResource.vfxSkin.dragComplete);
                 }
                 break;
             case NoteType.RepeatHead:
@@ -261,10 +273,9 @@ public class VFXManager : MonoBehaviour
         {
             foreach (GameObject o in pair.Value)
             {
-                // TODO: move towards note image
-                //o.transform.position =
-                //    pair.Key.GetComponent<NoteAppearance>()
-                //    .noteImage.transform.position;
+                o.GetComponent<VFXDrawer>().SetPosition(
+                    VisualElementCenterToScreenPoint(
+                        pair.Key.noteImage));
             }
         }
     }
