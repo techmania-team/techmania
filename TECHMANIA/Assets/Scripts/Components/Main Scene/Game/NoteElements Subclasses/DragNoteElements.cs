@@ -117,8 +117,6 @@ public class DragNoteElements : NoteElements
     // All positions relative to note head; units are relative
     // lengths to a scan's width and height.
     private DragPointList pointList;
-    // -1 or 1.
-    private float curveXDirection;
     private Texture curveTexture;
 
     private float scanHeightCopy;
@@ -157,8 +155,6 @@ public class DragNoteElements : NoteElements
                 new Length(points[^1].x * layout.gameContainerWidth),
                 new Length(points[^1].y * layout.scanHeight),
                 0f));
-        curveXDirection = Mathf.Sign(
-            points[^1].x - points[0].x);
     }
 
     private void ResetCurve()
