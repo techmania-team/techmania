@@ -48,7 +48,9 @@ public class NoteElements : INoteHolder
 
     protected int intScan;  // Respects end-of-scan.
     protected float floatScan;  // Disregards end-of-scan.
-    protected int bps;
+    // Some note types need additional metadata, such as
+    // control scheme and BPS.
+    protected Pattern pattern;
     // Determines whether some elements are horizontally flipped.
     protected GameLayout.ScanDirection scanDirection;
 
@@ -112,7 +114,8 @@ public class NoteElements : INoteHolder
 
     #region Initialization
     public void Initialize(
-        float floatScan, int intScan, int bps,
+        float floatScan, int intScan,
+        Pattern pattern,
         TemplateContainer templateInstance,
         GameLayout layout)
     {
@@ -120,7 +123,7 @@ public class NoteElements : INoteHolder
         this.layout = layout;
         this.floatScan = floatScan;
         this.intScan = intScan;
-        this.bps = bps;
+        this.pattern = pattern;
         scanDirection = (intScan % 2 == 0) ?
             layout.evenScanDirection :
             layout.oddScanDirection;

@@ -102,6 +102,8 @@ public class DragPointList
                 return;
             }
         }
+
+        throw new System.Exception("Unable to interpolate.");
     }
 
     public Vector2 this[int index]

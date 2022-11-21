@@ -104,8 +104,7 @@ public class NoteManager
                 if (noteElements == null) continue;
 
                 noteElements.Initialize(floatScan, intScan, 
-                    p.patternMetadata.bps,
-                    template, layout);
+                    p, template, layout);
                 layout.PlaceNoteElements(floatScan, intScan,
                     noteElements);
 

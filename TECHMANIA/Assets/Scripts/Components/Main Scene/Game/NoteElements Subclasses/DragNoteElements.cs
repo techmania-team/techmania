@@ -70,8 +70,8 @@ public class DragNoteElements : NoteElements
     {
         if (state == State.Ongoing)
         {
-            UpdateOngoingCurve();
-            PlaceNoteImageAndHitboxOnCurve();
+            UpdateOngoingCurve(timer.Scan);
+            PlaceNoteImageAndHitboxOnCurve(timer.GameTime);
         }
     }
 
@@ -117,6 +117,8 @@ public class DragNoteElements : NoteElements
     // All positions relative to note head; units are relative
     // lengths to a scan's width and height.
     private DragPointList pointList;
+    // Top and Left of the note in layout.
+    private Vector2 headPosition;
     private Texture curveTexture;
 
     private float scanHeightCopy;
@@ -132,14 +134,15 @@ public class DragNoteElements : NoteElements
         System.Func<float, float, Vector2> pulseLaneToPoint =
             (float pulse, float lane) =>
             {
-                float scan = pulse / Pattern.pulsesPerBeat / bps;
+                float scan = pulse / Pattern.pulsesPerBeat /
+                    pattern.patternMetadata.bps;
                 float relativeX = layout.RelativeScanToRelativeX(
                     scan - intScan, scanDirection);
                 float relativeY = layout.LaneToRelativeY(lane,
                     intScan);
                 return new Vector2(relativeX, relativeY);
             };
-        Vector2 headPosition = pulseLaneToPoint(note.pulse, note.lane);
+        headPosition = pulseLaneToPoint(note.pulse, note.lane);
         foreach (FloatPoint p in dragNote.Interpolate())
         {
             points.Add(pulseLaneToPoint(
@@ -284,98 +287,65 @@ public class DragNoteElements : NoteElements
         }
     }
 
-    private void UpdateOngoingCurve()
+    private void UpdateOngoingCurve(float floatScan)
     {
         if (pointList.Count < 2)
         {
             return;
         }
-        //float scanlineX = scanlineRef
-        //    .GetComponent<RectTransform>().anchoredPosition.x -
-        //    GetComponent<RectTransform>().anchoredPosition.x;
-        // Make sure scanline is before visiblePointsOnCurve[1]; remove
-        // points if necessary.
-        //while ((scanlineX - visiblePointsOnCurve[1].x)
-        //    * curveXDirection >= 0f)
-        //{
-        //    if (visiblePointsOnCurve.Count < 3) break;
-        //    visiblePointsOnCurve.RemoveFirst();
-        //}
-        // Interpolate visiblePointsOnCurve[0] and
-        // visiblePointsOnCurve[1].
-        //float t = (scanlineX - visiblePointsOnCurve[0].x) /
-        //    (visiblePointsOnCurve[1].x - visiblePointsOnCurve[0].x);
-        //visiblePointsOnCurve[0] = Vector2.Lerp(
-        //    visiblePointsOnCurve[0],
-        //    visiblePointsOnCurve[1], t);
+        float relativeX =
+            layout.RelativeScanToRelativeX(floatScan - intScan,
+            scanDirection);
+        pointList.SetStart(relativeX - headPosition.x);
         curve.MarkDirtyRepaint();
     }
 
-    private void PlaceNoteImageAndHitboxOnCurve()
+    private void PlaceNoteImageAndHitboxOnCurve(float gameTime)
     {
-        //RectTransform imageRect = noteImage
-        //    .GetComponent<RectTransform>();
-        //imageRect.anchoredPosition = visiblePointsOnCurve[0];
-        //feverOverlay.GetComponent<RectTransform>()
-        //    .anchoredPosition = visiblePointsOnCurve[0];
-        //approachOverlay.GetComponent<RectTransform>()
-        //     .anchoredPosition = visiblePointsOnCurve[0];
+        if (pointList.Count < 1) return;
+
+        System.Action<VisualElement, Vector2> setTranslate =
+            (VisualElement e, Vector2 translate) =>
+            {
+                e.style.translate = new StyleTranslate(
+                    new Translate(
+                        new Length(translate.x *
+                            gameContainerWidthCopy),
+                        new Length(translate.y *
+                            scanHeightCopy),
+                        0f));
+            };
+        setTranslate(noteImage, pointList[0]);
+        setTranslate(feverOverlay, pointList[0]);
+        setTranslate(approachOverlay, pointList[0]);
         RotateNoteImage();
 
         // To calculate the hitbox's position, we need to compensate
         // for latency.
-        //float compensatedTime = Game.Time;
-        //if (!Game.autoPlay)
-        //{
-        //    if (InternalGameSetup.patternAfterModifier.patternMetadata.controlScheme
-        //        == ControlScheme.Touch)
-        //    {
-        //        compensatedTime -= Options.instance.touchLatencyMs * 0.001f;
-        //    }
-        //    else
-        //    {
-        //        compensatedTime -= Options.instance.
-        //            keyboardMouseLatencyMs * 0.001f;
-        //    }
-        //}
-        //float compensatedPulse = InternalGameSetup.patternAfterModifier.TimeToPulse(
-        //    compensatedTime);
-        //float compensatedScanlineX = scanRef.FloatPulseToXPosition(
-        //    compensatedPulse) -
-        //    GetComponent<RectTransform>().anchoredPosition.x;
-
-        // Find the first point after the compensated scanline's
-        // position.
-        //int pointIndexAfterHitbox = -1;
-        //for (int i = 0; i < pointsOnCurve.Count; i++)
-        //{
-        //    if ((pointsOnCurve[i].x - compensatedScanlineX) *
-        //        curveXDirection >= 0f)
-        //    {
-        //        pointIndexAfterHitbox = i;
-        //        break;
-        //    }
-        //}
-        //if (pointIndexAfterHitbox < 0)
-        //{
-            // All points are before the compensated scanline.
-        //    pointIndexAfterHitbox = pointsOnCurve.Count - 1;
-        //}
-        //else if (pointIndexAfterHitbox == 0)
-        //{
-            // All points are after the compensated scanline.
-        //    pointIndexAfterHitbox = 1;
-        //}
-        // Interpolate pointsOnCurve[pointIndexAfterHitbox - 1]
-        // and pointsOnCurve[pointIndexAfterHitbox].
-        //Vector2 pointBeforeHitbox =
-        //    pointsOnCurve[pointIndexAfterHitbox - 1];
-        //Vector2 pointAfterHitbox =
-        //    pointsOnCurve[pointIndexAfterHitbox];
-        //float t = (compensatedScanlineX - pointBeforeHitbox.x) /
-        //    (pointAfterHitbox.x - pointBeforeHitbox.x);
-        //hitbox.anchoredPosition = Vector2.Lerp(pointBeforeHitbox,
-        //    pointAfterHitbox, t);
+        float compensatedTime = gameTime;
+        if (!GameController.autoPlay)
+        {
+            if (pattern.patternMetadata.controlScheme
+                == ControlScheme.Touch)
+            {
+                //compensatedTime -= Options.instance
+                //    .touchLatencyMs * 0.001f;
+            }
+            else
+            {
+                //compensatedTime -= Options.instance
+                //    .keyboardMouseLatencyMs * 0.001f;
+            }
+        }
+        float compensatedScan = pattern.TimeToPulse(
+            compensatedTime) / Pattern.pulsesPerBeat /
+            pattern.patternMetadata.bps;
+        float hitboxX = layout.RelativeScanToRelativeX(
+            compensatedScan - intScan,
+            scanDirection);
+        hitboxX -= headPosition.x;
+        float hitboxY = pointList.InterpolateForY(hitboxX);
+        setTranslate(hitbox, new Vector2(hitboxX, hitboxY));
     }
 
     private void RotateNoteImage()
