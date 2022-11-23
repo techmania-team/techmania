@@ -8,5 +8,32 @@ VisualElement {
     -unity-slice-top: 2;
     -unity-slice-right: 2;
     -unity-slice-bottom: 2;
-    -unity-background-image-tint-color: rgba(165, 214, 167, 255);
+    -unity-background-image-tint-color: rgb(165, 214, 167);
+}
+
+.align-left {
+    align-items: flex-start;
+    justify-content: center;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.end-position {
+    left: 100%;
+    top: 50%;
+    bottom: 50%;
+}
+
+.end-image {
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    right: -10px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.h-flipped {
+    scale: -1 1;
 }

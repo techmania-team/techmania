@@ -8,6 +8,9 @@ using UnityEngine.UI;
 //
 // Note that each hold extension has its own instance of
 // HoldTrailManager.
+//
+// IMPORTANT: ongoing trail has width 0 if note is not in
+// Ongoing state.
 public class HoldTrailManager : MonoBehaviour
 {
     public RectTransform durationTrail;
