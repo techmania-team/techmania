@@ -34,5 +34,7 @@ public class HoldNoteAppearance : NoteAppearance
     {
         noteImage.sprite = GlobalResource.noteSkin.holdHead
             .GetSpriteAtFloatIndex(Game.FloatBeat);
+        // Trail sprites are covered by HoldTrailManager.UpdateTrails,
+        // which calls HoldTrailManager.UpdateSprites.
     }
 }

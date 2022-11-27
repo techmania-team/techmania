@@ -1006,7 +1006,7 @@ public class Game : MonoBehaviour
             crossedScan <= lastScan;
             crossedScan++)
         {
-            HoldExtension extension = scanObjects[crossedScan]
+            LegacyHoldExtension extension = scanObjects[crossedScan]
                 .SpawnHoldExtension(extensionPrefab, holdNote);
             n.GetComponent<NoteAppearance>()
                 .RegisterHoldExtension(extension);

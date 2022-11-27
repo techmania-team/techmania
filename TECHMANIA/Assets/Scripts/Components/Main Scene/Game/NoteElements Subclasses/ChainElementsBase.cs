@@ -22,15 +22,10 @@ public class ChainElementsBase : NoteElements
     public void SetNextChainNode(ChainNodeElements nextChainNode)
     {
         this.nextChainNode = nextChainNode;
-        RotateNoteImageAndPath();
+        RotateNoteImageAndPathFromNextNode();
     }
 
-    protected override void TypeSpecificResetSize()
-    {
-        RotateNoteImageAndPath();
-    }
-
-    private void RotateNoteImageAndPath()
+    protected void RotateNoteImageAndPathFromNextNode()
     {
         if (nextChainNode == null) return;
 

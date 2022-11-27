@@ -34,6 +34,13 @@ public class ChainNodeElements : ChainElementsBase
     {
         pathToPreviousNote.style.height = layout.laneHeight *
             GlobalResource.noteSkin.chainPath.scale;
+        
+        // During initialization, this does nothing as there is no
+        // next node.
+        // When NoteManager calls SetNextChainNode, this will also be
+        // called.
+        // When resetting size, there is a next node, so this will work.
+        RotateNoteImageAndPathFromNextNode();
     }
 
     protected override float GetNoteImageScaleFromRuleset()

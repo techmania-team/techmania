@@ -233,7 +233,7 @@ public class NoteAppearance : MonoBehaviour
     protected void SetHoldExtensionVisibility(Visibility v)
     {
         if (holdExtensions == null) return;
-        foreach (HoldExtension e in holdExtensions)
+        foreach (LegacyHoldExtension e in holdExtensions)
         {
             e.SetVisibility(v);
         }
@@ -356,11 +356,13 @@ public class NoteAppearance : MonoBehaviour
             UpdateAlphaUpperBound();
             // Reset visibility of note parts every frame.
             UpdateState();
-            if (holdExtensions == null) return;
-            foreach (HoldExtension e in holdExtensions)
-            {
-                e.ResetVisibility();
-            }
+            // I don't think this part is necessary? UpdateState
+            // covers hold extensions.
+            //if (holdExtensions == null) return;
+            //foreach (LegacyHoldExtension e in holdExtensions)
+            //{
+            //    e.ResetVisibility();
+            //}
         }
         if (GetComponent<HoldTrailManager>() != null)
         {
@@ -457,11 +459,12 @@ public class NoteAppearance : MonoBehaviour
     #endregion
 
     #region Trail and hold extensions
-    private List<HoldExtension> holdExtensions;
+    private List<LegacyHoldExtension> holdExtensions;
 
+    // Part of Scan.SpawnNoteObject.
     public void InitializeTrail()
     {
-        holdExtensions = new List<HoldExtension>();
+        holdExtensions = new List<LegacyHoldExtension>();
         HoldNote holdNote = GetComponent<NoteObject>().note
             as HoldNote;
 
@@ -469,17 +472,18 @@ public class NoteAppearance : MonoBehaviour
             this, scanRef, scanlineRef, holdNote);
     }
 
-    public void RegisterHoldExtension(HoldExtension e)
+    public void RegisterHoldExtension(LegacyHoldExtension e)
     {
         holdExtensions.Add(e);
         e.RegisterNoteAppearance(this);
     }
 
+    // Part of Update.
     private void UpdateOngoingTrail()
     {
         GetComponent<HoldTrailManager>().UpdateTrails(
             state == State.Ongoing);
-        foreach (HoldExtension e in holdExtensions)
+        foreach (LegacyHoldExtension e in holdExtensions)
         {
             e.UpdateTrails(state == State.Ongoing);
         }
@@ -491,8 +495,7 @@ public class NoteAppearance : MonoBehaviour
     {
         if (holdExtensions.Count > 0)
         {
-            return holdExtensions[holdExtensions.Count - 1]
-                .durationTrailEnd.position;
+            return holdExtensions[^1].durationTrailEnd.position;
         }
         return GetComponent<HoldTrailManager>()
             .durationTrailEnd.position;

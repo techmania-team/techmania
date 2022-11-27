@@ -613,6 +613,7 @@ public class GameInputManager
         {
             if (list.IsEmpty()) continue;
             NoteElements upcoming = list.First() as NoteElements;
+            if (ongoingNotes.ContainsKey(upcoming)) continue;
             upcomingInAllLanes.Add(upcoming);
             if (upcoming.note.pulse < earliestPulse)
             {

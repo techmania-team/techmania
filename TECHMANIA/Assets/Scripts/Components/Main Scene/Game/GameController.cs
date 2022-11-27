@@ -18,6 +18,14 @@ public class GameController : MonoBehaviour
         public VisualTreeAsset chainHead;
         public VisualTreeAsset chainNode;
         public VisualTreeAsset dragNote;
+        public VisualTreeAsset holdNote;
+        public VisualTreeAsset holdExtension;
+        public VisualTreeAsset repeatHead;
+        public VisualTreeAsset repeatHeadHold;
+        public VisualTreeAsset repeatNote;
+        public VisualTreeAsset repeatHold;
+        public VisualTreeAsset repeatHoldExtension;
+        public VisualTreeAsset repeatPathExtension;
 
         public VisualTreeAsset GetForType(NoteType type)
         {
@@ -27,6 +35,11 @@ public class GameController : MonoBehaviour
                 NoteType.ChainHead => chainHead,
                 NoteType.ChainNode => chainNode,
                 NoteType.Drag => dragNote,
+                NoteType.Hold => holdNote,
+                NoteType.RepeatHead => repeatHead,
+                NoteType.RepeatHeadHold => repeatHeadHold,
+                NoteType.Repeat => repeatNote,
+                NoteType.RepeatHold => repeatHold,
                 _ => null
             };
         }
@@ -530,7 +543,7 @@ public class GameController : MonoBehaviour
     {
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
-        vfxManager.SpawnResolvingVFX(elements, judgement);
+        vfxManager.SpawnResolvedVFX(elements, judgement);
         comboText.Show(elements, judgement, scoreKeeper);
         elements.Resolve();
 

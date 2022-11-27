@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(HoldTrailManager))]
-public class HoldExtension : MonoBehaviour
+public class LegacyHoldExtension : MonoBehaviour
 {
+    // If the note is resolved but the Scan asks this extension
+    // to Prepare or Activate, do nothing.
     private NoteAppearance noteRef;
 
     #region HoldTrailManager wrapper
@@ -25,15 +27,7 @@ public class HoldExtension : MonoBehaviour
     public void SetVisibility(
         NoteAppearance.Visibility v)
     {
-        currentVisibility = v;
         GetComponent<HoldTrailManager>().SetVisibility(v);
-    }
-
-    // Used for fade in/out.
-    public void ResetVisibility()
-    {
-        GetComponent<HoldTrailManager>().SetVisibility(
-            currentVisibility);
     }
 
     public void UpdateTrails(bool ongoing)
@@ -42,13 +36,10 @@ public class HoldExtension : MonoBehaviour
     }
     #endregion
 
-    private NoteAppearance.Visibility currentVisibility;
-
     public void RegisterNoteAppearance(NoteAppearance noteRef)
     {
         this.noteRef = noteRef;
         GetComponent<HoldTrailManager>().noteRef = noteRef;
-        currentVisibility = NoteAppearance.Visibility.Hidden;
     }
 
     public void Activate()

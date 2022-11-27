@@ -140,8 +140,8 @@ public class HoldTrailManager : MonoBehaviour
         if (ongoingTrail != null)
         {
             Color ongoingTrailColor = new Color(1f, 1f, 1f,
-            noteRef.VisibilityToAlpha(v,
-            bypassNoteOpacityModifier: true));
+                noteRef.VisibilityToAlpha(v,
+                bypassNoteOpacityModifier: true));
             ongoingTrail.GetComponent<Image>().color = 
                 ongoingTrailColor;
         }

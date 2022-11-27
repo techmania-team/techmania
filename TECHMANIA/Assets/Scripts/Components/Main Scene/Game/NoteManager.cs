@@ -91,6 +91,7 @@ public class NoteManager
                 // Spawn elements for playable notes.
                 TemplateContainer template =
                     noteTemplates.GetForType(n.type)?.Instantiate();
+                if (template == null) continue;
 
                 noteElements = n.type switch
                 {
@@ -98,6 +99,7 @@ public class NoteManager
                     NoteType.ChainHead => new ChainHeadElements(n),
                     NoteType.ChainNode => new ChainNodeElements(n),
                     NoteType.Drag => new DragNoteElements(n),
+                    NoteType.Hold => new HoldNoteElements(n),
                     // TODO: other note types.
                     _ => null
                 };
@@ -111,6 +113,8 @@ public class NoteManager
                 // Count the number of playable notes; ScoreKeeper
                 // needs this number.
                 playableNotes++;
+
+                // TODO: spawn extensions.
 
                 // Connect chain head / node to the node after it.
                 if (n.type == NoteType.ChainHead ||

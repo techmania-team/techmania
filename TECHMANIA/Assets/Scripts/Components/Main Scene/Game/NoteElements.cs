@@ -16,10 +16,7 @@ using UnityEngine.UIElements;
 //
 // Each note type has a corresponding subclass, and NoteManager
 // contains references to the subclass instances instead of this
-// class (except for hidden notes). However, due to multiple note
-// types containing a hold trail, and C# not allowing multiple
-// inheritance, the logic to handle hold trails remains in this
-// base class.
+// class (except for hidden notes).
 //
 // Inheritance graph:
 // NoteElements
@@ -37,6 +34,25 @@ using UnityEngine.UIElements;
 //   |-- RepeatNoteElementsBase
 //         |-- RepeatNoteElements
 //         |-- RepeatHoldElements
+//
+// Due to multiple note types (hold, repeat head hold, repeat hold)
+// containing a note trail, and C# not allowing multiple
+// inheritance, these note types manage trails and extensions via
+// components:
+//
+// The note itself corresponds to an instance of HoldNoteElements /
+// RepeatHeadHoldElements / RepeatHoldElements, which manage the
+// note head only, and holds an instance of:
+// |
+// |-- HoldTrailAndExtensions, which manages trails and talks to
+//     extensions, and holds an instance of:
+//     |
+//     |-- HoldTrailElements, to update styles of trail elements
+//
+// A hold extension contains to an instance of HoldExtension,
+// which manages the extension itself, and holds an instance of:
+// |
+// |-- HoldTrailElements, to update styles of trail elements
 public class NoteElements : INoteHolder
 {
     public Note note;
@@ -96,6 +112,11 @@ public class NoteElements : INoteHolder
     // instead of NoteManager / GameController.
     public bool controlledExternally;
 
+    // Common behavior between hold, repeat head hold and
+    // repeat hold. Null for other types.
+    public HoldTrailAndExtensions holdTrailAndExtensions
+    { get; private set; }
+
     public NoteElements(Note note, bool controlledExternally = false)
     {
         this.note = note;
@@ -106,11 +127,7 @@ public class NoteElements : INoteHolder
     {
         InitializeSizeExceptHitBox();
         ResetHitbox();
-        TypeSpecificResetSize();
     }
-
-    // Chain nodes reset note image orientation and paths.
-    protected virtual void TypeSpecificResetSize() { }
 
     #region Initialization
     public void Initialize(
@@ -129,14 +146,23 @@ public class NoteElements : INoteHolder
             layout.oddScanDirection;
 
         // Set up the common VisualElements.
-        this.templateContainer = templateInstance;
-        templateInstance.AddToClassList("note-anchor");
-        templateInstance.pickingMode = PickingMode.Ignore;
+        templateContainer = templateInstance;
+        templateContainer.AddToClassList("note-anchor");
+        templateContainer.pickingMode = PickingMode.Ignore;
 
-        noteImage = templateInstance.Q("note-image");
-        feverOverlay = templateInstance.Q("fever-overlay");
-        approachOverlay = templateInstance.Q("approach-overlay");
-        hitbox = templateInstance.Q("hitbox");
+        noteImage = templateContainer.Q("note-image");
+        feverOverlay = templateContainer.Q("fever-overlay");
+        approachOverlay = templateContainer.Q("approach-overlay");
+        hitbox = templateContainer.Q("hitbox");
+
+        if (note.type == NoteType.Hold ||
+            note.type == NoteType.RepeatHeadHold ||
+            note.type == NoteType.RepeatHold)
+        {
+            holdTrailAndExtensions = new HoldTrailAndExtensions(this,
+                intScan, pattern.patternMetadata.bps, layout);
+            holdTrailAndExtensions.Initialize(templateContainer);
+        }
 
         TypeSpecificInitialize();
 
@@ -200,13 +226,15 @@ public class NoteElements : INoteHolder
             approachOverlay.style.height = laneHeight * scale;
         }
 
+        holdTrailAndExtensions?.InitializeSize();
         TypeSpecificInitializeSizeExceptHitbox();
     }
 
     protected virtual float GetNoteImageScaleFromRuleset()
     {
         // The base implementation is unused.
-        return 1f;
+        throw new System.NotImplementedException(
+            "NoteElements.GetNoteImageScaleFromRuleset should never be called.");
     }
 
     // For paths and trails and stuff.
@@ -219,6 +247,8 @@ public class NoteElements : INoteHolder
         state = State.Inactive;
         // Drag notes need to reset hitbox size.
         ResetHitbox();
+        // Ongoing trails need to reset to width zero.
+        holdTrailAndExtensions?.ResetToInactive();
         // Drag notes need to reset curve; repeat heads need to
         // reset next unresolved note index.
         TypeSpecificResetToInactive();
@@ -233,7 +263,10 @@ public class NoteElements : INoteHolder
     {
         if (hitbox == null) return;
         Vector2 hitboxScale = GetHitboxScaleFromRuleset();
-        SetHitboxScale(hitboxScale);
+
+        float laneHeight = layout.laneHeight;
+        hitbox.style.width = hitboxScale.x * laneHeight;
+        hitbox.style.height = hitboxScale.y * laneHeight;
     }
 
     // Chain heads, chain nodes and drag notes override this.
@@ -241,16 +274,6 @@ public class NoteElements : INoteHolder
     {
         return new Vector2(Ruleset.instance.hitboxWidth,
             Ruleset.instance.hitboxHeight);
-    }
-
-    // Called by InitializeHitbox, as well as drag notes.
-    protected void SetHitboxScale(Vector2 scale)
-    {
-        if (hitbox == null) return;
-
-        float laneHeight = layout.laneHeight;
-        hitbox.style.width = scale.x * laneHeight;
-        hitbox.style.height = scale.y * laneHeight;
     }
     #endregion
 
@@ -300,44 +323,10 @@ public class NoteElements : INoteHolder
     private void UpdateState()
     {
         TypeSpecificUpdateState();
-        UpdateTrailAndHoldExtension();
+        holdTrailAndExtensions?.UpdateState(state);
     }
 
     protected virtual void TypeSpecificUpdateState() { }
-
-    private void UpdateTrailAndHoldExtension()
-    {
-        //if (GetComponent<HoldTrailManager>() == null) return;
-
-        //switch (state)
-        //{
-        //    case State.Inactive:
-        //    case State.Resolved:
-        //    case State.PendingResolve:
-        //        SetDurationTrailVisibility(Visibility.Hidden);
-        //        SetHoldExtensionVisibility(Visibility.Hidden);
-        //        break;
-        //    case State.Prepare:
-        //        if (note.type == NoteType.Hold)
-        //        {
-        //            SetDurationTrailVisibility(
-        //                Visibility.Transparent);
-        //        }
-        //        else
-        //        {
-        //            SetDurationTrailVisibility(Visibility.Visible);
-        //        }
-        //        // Not set for extensions: these will be controlled
-        //        // by the scan they belong to.
-        //        break;
-        //    case State.Active:
-        //    case State.Ongoing:
-        //        SetDurationTrailVisibility(Visibility.Visible);
-        //        // Not set for extensions: these will be controlled
-        //        // by the scan they belong to.
-        //        break;
-        //}
-    }
     #endregion
 
     #region Visibility changes, called by TypeSpecificUpdateState
@@ -401,23 +390,6 @@ public class NoteElements : INoteHolder
         feverOverlayAlphaUpperBound = VisibilityToAlpha(
             v, bypassNoteOpacityModifier);
     }
-
-    protected void SetDurationTrailVisibility(Visibility v)
-    {
-        //HoldTrailManager holdTrailManager =
-        //    GetComponent<HoldTrailManager>();
-        //if (holdTrailManager == null) return;
-        //holdTrailManager.SetVisibility(v);
-    }
-
-    protected void SetHoldExtensionVisibility(Visibility v)
-    {
-        //if (holdExtensions == null) return;
-        //foreach (HoldExtension e in holdExtensions)
-        //{
-        //    e.SetVisibility(v);
-        //}
-    }
     #endregion
 
     #region Update
@@ -429,6 +401,7 @@ public class NoteElements : INoteHolder
 
         HitboxMatchNoteImageAlpha();
         UpdateSprites(timer);
+        holdTrailAndExtensions?.UpdateSprites(timer);
         TypeSpecificUpdate(timer);
         if ((state == State.Prepare || state == State.Active) &&
             Modifiers.instance.noteOpacity
@@ -437,18 +410,11 @@ public class NoteElements : INoteHolder
             UpdateAlphaUpperBound(timer.Scan);
             // Reset visibility of note parts every frame.
             UpdateState();
-            //if (holdExtensions == null) return;
-            //foreach (HoldExtension e in holdExtensions)
-            //{
-            //    e.ResetVisibility();
-            //}
         }
-        //if (GetComponent<HoldTrailManager>() != null)
-        //{
-        //    // Do this in all visible states because it updates
-        //    // sprites.
-        //    //UpdateOngoingTrail();
-        //}
+        if (state == State.Ongoing)
+        {
+            holdTrailAndExtensions?.UpdateOngoingTrail(timer);
+        }
         UpdateFeverOverlay(timer.GameTime, scoreKeeper);
         UpdateApproachOverlay(timer.Scan);
     }
@@ -542,10 +508,6 @@ public class NoteElements : INoteHolder
             .GetSpriteAtFloatIndex(t));
         approachOverlay.style.opacity = approachOverlayAlphaUpperBound;
     }
-    #endregion
-
-    #region Trail and hold extension
-    // TODO: copy from NoteAppearance.
     #endregion
 
     #region Rotation

@@ -140,7 +140,7 @@ public class VFXManager : MonoBehaviour
         }
     }
 
-    public void SpawnResolvingVFX(NoteElements elements,
+    public void SpawnResolvedVFX(NoteElements elements,
         Judgement judgement)
     {
         // Even if judgement is Miss or Break, we still need
@@ -186,11 +186,10 @@ public class VFXManager : MonoBehaviour
                 despawnVfx(holdNoteToOngoingTrailVfx, elements);
                 if (!missOrBreak)
                 {
-                    // TODO: spawn holdComplete
-                    //SpawnVfxAt(
-                    //    note.GetComponent<NoteAppearance>()
-                    //        .GetDurationTrailEndPosition(),
-                    //    GlobalResource.vfxSkin.holdComplete);
+                    SpawnVfxAt(
+                        elements.holdTrailAndExtensions
+                        .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.holdComplete);
                 }
                 break;
             case NoteType.Drag:
@@ -222,11 +221,10 @@ public class VFXManager : MonoBehaviour
                 despawnVfx(holdNoteToOngoingTrailVfx, elements);
                 if (!missOrBreak)
                 {
-                    // TODO: spawn repeatHoldComplete
-                    //SpawnVfxAt(
-                    //    note.GetComponent<NoteAppearance>()
-                    //        .GetDurationTrailEndPosition(),
-                    //    GlobalResource.vfxSkin.repeatHoldComplete);
+                    SpawnVfxAt(
+                        elements.holdTrailAndExtensions
+                        .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.repeatHoldComplete);
                 }
                 break;
             case NoteType.RepeatHold:
@@ -245,11 +243,10 @@ public class VFXManager : MonoBehaviour
                 despawnVfx(holdNoteToOngoingTrailVfx, elements);
                 if (!missOrBreak)
                 {
-                    // TODO: spawn repeatHoldComplete
-                    //SpawnVfxAt(
-                    //    note.GetComponent<NoteAppearance>()
-                    //        .GetDurationTrailEndPosition(),
-                    //    GlobalResource.vfxSkin.repeatHoldComplete);
+                    SpawnVfxAt(
+                        elements.holdTrailAndExtensions
+                        .GetDurationTrailEndPosition(),
+                        GlobalResource.vfxSkin.repeatHoldComplete);
                 }
                 break;
         }
@@ -262,10 +259,10 @@ public class VFXManager : MonoBehaviour
         {
             foreach (GameObject o in pair.Value)
             {
-                // TODO: move towards trail end
-                //o.transform.position =
-                //    pair.Key.GetComponent<NoteAppearance>()
-                //    .GetOngoingTrailEndPosition();
+                o.GetComponent<VFXDrawer>().SetPosition(
+                    VisualElementCenterToScreenPoint(
+                        pair.Key.holdTrailAndExtensions
+                        .GetOngoingTrailEndPosition()));
             }
         }
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in

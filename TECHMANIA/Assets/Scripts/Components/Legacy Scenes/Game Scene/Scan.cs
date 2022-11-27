@@ -39,7 +39,7 @@ public class Scan : MonoBehaviour
     // - Set Prepare and Active states based on scan change
     // - Set states based on scan jumping (NoteAppearance only)
     private List<NoteAppearance> noteAppearances;
-    private List<HoldExtension> holdExtensions;
+    private List<LegacyHoldExtension> holdExtensions;
     private List<RepeatPathExtension> repeatPathExtensions;
     public Scanline scanline { get; private set; }
 
@@ -76,7 +76,7 @@ public class Scan : MonoBehaviour
             * (1f - marginAbove - marginBelow) /
             Game.playableLanes;
         noteAppearances = new List<NoteAppearance>();
-        holdExtensions = new List<HoldExtension>();
+        holdExtensions = new List<LegacyHoldExtension>();
         repeatPathExtensions = new List<RepeatPathExtension>();
 
         scanline = GetComponentInChildren<Scanline>();
@@ -135,7 +135,7 @@ public class Scan : MonoBehaviour
         return noteObject;
     }
 
-    public HoldExtension SpawnHoldExtension(GameObject prefab,
+    public LegacyHoldExtension SpawnHoldExtension(GameObject prefab,
         HoldNote n)
     {
         GameObject o = Instantiate(prefab, transform);
@@ -149,7 +149,7 @@ public class Scan : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
-        HoldExtension extension = o.GetComponent<HoldExtension>();
+        LegacyHoldExtension extension = o.GetComponent<LegacyHoldExtension>();
         holdExtensions.Add(extension);
         extension.Initialize(this, scanline, n);
         
@@ -184,7 +184,7 @@ public class Scan : MonoBehaviour
         {
             o.Activate();
         }
-        foreach (HoldExtension e in holdExtensions)
+        foreach (LegacyHoldExtension e in holdExtensions)
         {
             e.Activate();
         }
@@ -208,7 +208,7 @@ public class Scan : MonoBehaviour
         {
             o.Prepare();
         }
-        foreach (HoldExtension e in holdExtensions)
+        foreach (LegacyHoldExtension e in holdExtensions)
         {
             e.Prepare();
         }
