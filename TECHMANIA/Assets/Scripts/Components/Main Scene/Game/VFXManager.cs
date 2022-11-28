@@ -18,6 +18,10 @@ public class VFXManager : MonoBehaviour
 
     private float laneHeight;
 
+    // To be passed to
+    // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
+    private GameTimer timer;  
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,9 +33,10 @@ public class VFXManager : MonoBehaviour
             new Dictionary<NoteElements, List<GameObject>>();
     }
 
-    public void Prepare(float laneHeight)
+    public void Prepare(float laneHeight, GameTimer timer)
     {
         ResetSize(laneHeight);
+        this.timer = timer;
     }
 
     public void ResetSize(float laneHeight)
@@ -262,7 +267,7 @@ public class VFXManager : MonoBehaviour
                 o.GetComponent<VFXDrawer>().SetPosition(
                     VisualElementCenterToScreenPoint(
                         pair.Key.holdTrailAndExtensions
-                        .GetOngoingTrailEndPosition()));
+                        .GetOngoingTrailEndPosition(timer.IntScan)));
             }
         }
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in

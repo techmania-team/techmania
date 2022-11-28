@@ -238,6 +238,30 @@ public class GameLayout
             intScan, elements.note.lane);
     }
 
+    public void PlaceExtension(int intScan, int lane,
+        TemplateContainer templateContainer)
+    {
+        // Place in hierarchy.
+        VisualElement noteContainer =
+            (intScan % 2 == 0) ? evenScanNoteContainer
+            : oddScanNoteContainer;
+        noteContainer.Add(templateContainer);
+
+        // Set position.
+        ScanDirection scanDirection = (intScan % 2 == 0) ?
+            evenScanDirection : oddScanDirection;
+        float relativeX = scanDirection switch
+        {
+            ScanDirection.Left => 1f,
+            ScanDirection.Right => 0f,
+            _ => 0f
+        };
+        templateContainer.style.left = new StyleLength(new Length(
+            relativeX * 100f, LengthUnit.Percent));
+        PlaceElementVertically(templateContainer,
+            intScan, lane);
+    }
+
     private void PlaceElementHorizontally(VisualElement element,
         float relativeScan, ScanDirection scanDirection)
     {

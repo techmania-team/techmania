@@ -62,7 +62,7 @@ public class NoteElements : INoteHolder
         set { note = value; }
     }
 
-    protected int intScan;  // Respects end-of-scan.
+    public int intScan { get; private set; }  // Respects end-of-scan.
     protected float floatScan;  // Disregards end-of-scan.
     // Some note types need additional metadata, such as
     // control scheme and BPS.

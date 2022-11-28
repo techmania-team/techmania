@@ -39,6 +39,10 @@ public class GameTimer
     public int IntPulse { get; private set; }
     public int IntBeat { get; private set; }
     public int IntScan { get; private set; }
+
+    // Scan numbers for the previous frame, for updating notes.
+    public float PrevFrameScan { get; private set; }
+    public int PrevFrameIntScan { get; private set; }
     #endregion
 
     #region Combo tick
@@ -127,10 +131,10 @@ public class GameTimer
         if (!string.IsNullOrEmpty(
             pattern.patternMetadata.backingTrack))
         {
-            // Back up by 0.01s to make sure patternStartTime
+            // Back up by 0.1s to make sure patternStartTime
             // is strictly less than 0.
             patternStartTime = Mathf.Min(
-                patternStartTime, -0.01f);
+                patternStartTime, -0.1f);
             patternEndTime = Mathf.Max(
                 patternEndTime, backingTrackLength);
         }
@@ -138,11 +142,11 @@ public class GameTimer
             pattern.patternMetadata.bga) &&
             pattern.patternMetadata.waitForEndOfBga)
         {
-            // Back up by 0.01s to make sure patternStartTime
+            // Back up by 0.1s to make sure patternStartTime
             // is strictly less than bgaOffset.
             patternStartTime = Mathf.Min(patternStartTime,
                 (float)pattern.patternMetadata.bgaOffset
-                - 0.01f);
+                - 0.1f);
             patternEndTime = Mathf.Max(patternEndTime,
                 bgaLength + (float)pattern.patternMetadata.bgaOffset);
         }
@@ -167,6 +171,9 @@ public class GameTimer
     public void Update(System.Action comboTickCallback)
     {
         PrevFrameBaseTime = BaseTime;
+        PrevFrameScan = Scan;
+        PrevFrameIntScan = IntScan;
+
         BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
         Pulse = pattern.TimeToPulse(BaseTime);

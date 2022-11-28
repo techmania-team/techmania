@@ -36,6 +36,8 @@ public class GameInputManager
         this.layout = layout;
         this.noteManager = noteManager;
         this.timer = timer;
+
+        noteManager.SetInput(this);
     }
 
     public void Prepare()
@@ -699,10 +701,7 @@ public class GameInputManager
     #region Ongoing notes
     // Value is the judgement at note's head.
     public Dictionary<NoteElements, Judgement> ongoingNotes
-    {
-        get;
-        private set;
-    }
+    { get; private set; }
     private Dictionary<NoteElements, bool> ongoingNoteIsHitOnThisFrame;
     private Dictionary<NoteElements, float> ongoingNoteLastInput;
 

@@ -43,6 +43,17 @@ public class GameController : MonoBehaviour
                 _ => null
             };
         }
+
+        public VisualTreeAsset GetHoldExtensionForType(NoteType type)
+        {
+            return type switch
+            {
+                NoteType.Hold => holdExtension,
+                NoteType.RepeatHeadHold => repeatHoldExtension,
+                NoteType.RepeatHold => repeatHoldExtension,
+                _ => null
+            };
+        }
     }
     public NoteTemplates noteTemplates;
 
@@ -328,7 +339,7 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
 
         // Spawn notes.
-        noteManager = new NoteManager(layout: layout);
+        noteManager = new NoteManager(layout);
         noteManager.Prepare(
             setup.patternAfterModifier,
             noteTemplates);
@@ -344,7 +355,7 @@ public class GameController : MonoBehaviour
         input.Prepare();
 
         // Prepare for VFX and combo text.
-        vfxManager.Prepare(layout.laneHeight);
+        vfxManager.Prepare(layout.laneHeight, timer);
         comboText.ResetSize();
         comboText.Hide();
 

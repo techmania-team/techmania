@@ -45,6 +45,9 @@ public class HoldTrailElements
 
     public void Initialize(TemplateContainer templateContainer)
     {
+        templateContainer.AddToClassList("note-anchor");
+        templateContainer.pickingMode = PickingMode.Ignore;
+
         trailContainer = templateContainer.Q("trail-container");
         totalTrail = trailContainer.Q("total-trail");
         ongoingTrail = totalTrail.Q("ongoing");
@@ -87,7 +90,7 @@ public class HoldTrailElements
         else
         {
             startRelativeX = layout.RelativeScanToRelativeX(
-                (float)startPulse / pulsesPerScan - intScan, 
+                (float)startPulse / pulsesPerScan - intScan,
                 scanDirection);
         }
         if (endsPastIntScan)

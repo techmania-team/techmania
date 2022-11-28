@@ -5,7 +5,8 @@ using UnityEngine.UIElements;
 
 public class NoteManager
 {
-    public GameLayout layout;
+    private GameLayout layout;
+    private GameInputManager input;
 
     // The main data structure to hold note elements, indexed
     // by lane.
@@ -32,6 +33,9 @@ public class NoteManager
     public List<NoteList> mouseNotesInLane { get; private set; }
     public List<NoteList> keyboardNotesInLane { get; private set; }
 
+    // Extensions.
+    private Dictionary<int, List<HoldExtension>> holdExtensionsInScan;
+
     private int playableLanes;
     public int playableNotes { get; private set; }
 
@@ -43,6 +47,17 @@ public class NoteManager
         notesInLane = new List<NoteList>();
         mouseNotesInLane = new List<NoteList>();
         keyboardNotesInLane = new List<NoteList>();
+        holdExtensionsInScan = new Dictionary<
+            int, List<HoldExtension>>();
+    }
+
+    // GameInputManager and NoteManager have a reference
+    // to each other, but GameInputManager is created latter.
+    // Therefore, GameInputManager calls this during construction
+    // to complete this circular reference.
+    public void SetInput(GameInputManager input)
+    {
+        this.input = input;
     }
 
     public void Prepare(Pattern p,
@@ -114,7 +129,14 @@ public class NoteManager
                 // needs this number.
                 playableNotes++;
 
-                // TODO: spawn extensions.
+                // Spawn hold extensions if necessary.
+                if (n.type == NoteType.Hold ||
+                    n.type == NoteType.RepeatHeadHold ||
+                    n.type == NoteType.RepeatHold)
+                {
+                    SpawnHoldExtensions(noteElements, noteTemplates,
+                        intScan, p.patternMetadata.bps);
+                }
 
                 // Connect chain head / node to the node after it.
                 if (n.type == NoteType.ChainHead ||
@@ -179,6 +201,43 @@ public class NoteManager
         }
     }
 
+    private void SpawnHoldExtensions(NoteElements elements,
+        GameController.NoteTemplates noteTemplates,
+        int intScan, int bps)
+    {
+        HoldNote holdNote = elements.note as HoldNote;
+        VisualTreeAsset template = noteTemplates
+            .GetHoldExtensionForType(holdNote.type);
+
+        // Which scan does this note end on?
+        // If a hold note ends at a scan divider, we don't
+        // want to spawn an unnecessary extension, thus the
+        // -1.
+        int pulsesPerScan = bps * Pattern.pulsesPerBeat;
+        int lastScan = (holdNote.pulse + holdNote.duration - 1)
+            / pulsesPerScan;
+
+        for (int scan = intScan + 1; scan <= lastScan; scan++)
+        {
+            TemplateContainer templateContainer =
+                template.Instantiate();
+
+            HoldExtension extension = new HoldExtension(elements,
+                scan, bps, layout);
+            if (!holdExtensionsInScan.ContainsKey(scan))
+            {
+                holdExtensionsInScan.Add(scan,
+                    new List<HoldExtension>());
+            }
+            holdExtensionsInScan[scan].Add(extension);
+
+            extension.trail.Initialize(templateContainer);
+            extension.trail.InitializeSize();
+            layout.PlaceExtension(scan, elements.note.lane,
+                templateContainer);
+        }
+    }
+
     public void ResetSize()
     {
         foreach (List<NoteElements> list in notesInScan.Values)
@@ -192,31 +251,40 @@ public class NoteManager
 
     public void Update(GameTimer timer, ScoreKeeper scoreKeeper)
     {
-        // Put notes in the upcoming scan in Prepare state if needed.
-        if (notesInScan.ContainsKey(timer.IntScan + 1))
+        // Put notes and extensions in the upcoming scan in
+        // Prepare state if needed.
+        if (timer.PrevFrameIntScan != timer.IntScan)
         {
-            foreach (NoteElements elements in
-                notesInScan[timer.IntScan + 1])
+            int nextScan = timer.IntScan + 1;
+            if (notesInScan.ContainsKey(nextScan))
             {
-                if (elements.state == NoteElements.State.Inactive)
-                {
-                    elements.Prepare();
-                }
+                notesInScan[nextScan].ForEach(
+                    e => e.Prepare());
+            }
+            if (holdExtensionsInScan.ContainsKey(nextScan))
+            {
+                holdExtensionsInScan[nextScan].ForEach(
+                    e => e.Prepare());
             }
         }
 
-        // Put notes in the upcoming scan in Active state if needed.
+        // Put notes and extensions in the upcoming scan in
+        // Active state if needed.
         float relativeScan = timer.Scan - timer.IntScan;
-        if (relativeScan > 0.875f &&
-            notesInScan.ContainsKey(timer.IntScan + 1))
+        float prevFrameRelativeScan = timer.PrevFrameScan -
+            timer.PrevFrameIntScan;
+        if (relativeScan >= 0.875f && prevFrameRelativeScan < 0.875f)
         {
-            foreach (NoteElements elements in
-                notesInScan[timer.IntScan + 1])
+            int nextScan = timer.IntScan + 1;
+            if (notesInScan.ContainsKey(nextScan))
             {
-                if (elements.state == NoteElements.State.Prepare)
-                {
-                    elements.Activate();
-                }
+                notesInScan[nextScan].ForEach(
+                    e => e.Activate());
+            }
+            if (holdExtensionsInScan.ContainsKey(nextScan))
+            {
+                holdExtensionsInScan[nextScan].ForEach(
+                    e => e.Activate());
             }
         }
 
@@ -224,13 +292,20 @@ public class NoteManager
         System.Action<int> updateNotesInScan = (int scan) =>
         {
             if (!notesInScan.ContainsKey(scan)) return;
-            foreach (NoteElements elements in notesInScan[scan])
-            {
-                elements.UpdateTime(timer, scoreKeeper);
-            }
+            notesInScan[scan].ForEach(e =>
+                e.UpdateTime(timer, scoreKeeper));
         };
         updateNotesInScan(timer.IntScan);
         updateNotesInScan(timer.IntScan + 1);
+
+        // Also update ongoing notes from earlier scans.
+        foreach (NoteElements elements in input.ongoingNotes.Keys)
+        {
+            if (elements.intScan < timer.IntScan)
+            {
+                elements.UpdateTime(timer, scoreKeeper);
+            }
+        }
     }
 
     public void JumpToScan(int scan, int pulse)
@@ -264,17 +339,30 @@ public class NoteManager
                 else if (scan == thisScan)
                 {
                     e.Activate();
-                    // TODO: also activate trail and
-                    // repeat path extensions
                 }
                 else if (scan == thisScan - 1)
                 {
                     e.Prepare();
-                    // TODO: also activate trail and
-                    // repeat path extensions
                 }
             }
         }
+
+        // Reset states of extensions.
+        foreach (KeyValuePair<int, List<HoldExtension>> pair in
+            holdExtensionsInScan)
+        {
+            int thisScan = pair.Key;
+            if (scan == thisScan)
+            {
+                pair.Value.ForEach(e => e.Activate());
+            }
+            else if (scan == thisScan - 1)
+            {
+                pair.Value.ForEach(e => e.Prepare());
+            }
+        }
+
+        // TODO: also reset states of repeat path extensions.
     }
 
     public void ResolveNote(NoteElements elements)
