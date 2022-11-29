@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RepeatPathExtension : MonoBehaviour
+public class LegacyRepeatPathExtension : MonoBehaviour
 {
     private NoteAppearance noteRef;
 

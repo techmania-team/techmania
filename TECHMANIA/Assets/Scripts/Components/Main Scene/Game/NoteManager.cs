@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 public class NoteManager
 {
     private GameLayout layout;
-    private GameInputManager input;
 
     // The main data structure to hold note elements, indexed
     // by lane.
@@ -49,15 +48,6 @@ public class NoteManager
         keyboardNotesInLane = new List<NoteList>();
         holdExtensionsInScan = new Dictionary<
             int, List<HoldExtension>>();
-    }
-
-    // GameInputManager and NoteManager have a reference
-    // to each other, but GameInputManager is created latter.
-    // Therefore, GameInputManager calls this during construction
-    // to complete this circular reference.
-    public void SetInput(GameInputManager input)
-    {
-        this.input = input;
     }
 
     public void Prepare(Pattern p,
@@ -115,7 +105,11 @@ public class NoteManager
                     NoteType.ChainNode => new ChainNodeElements(n),
                     NoteType.Drag => new DragNoteElements(n),
                     NoteType.Hold => new HoldNoteElements(n),
-                    // TODO: other note types.
+                    NoteType.RepeatHead => new RepeatHeadElements(n),
+                    NoteType.RepeatHeadHold => new 
+                        RepeatHeadHoldElements(n),
+                    NoteType.Repeat => new RepeatNoteElements(n),
+                    NoteType.RepeatHold => new RepeatHoldElements(n),
                     _ => null
                 };
                 if (noteElements == null) continue;
@@ -249,7 +243,8 @@ public class NoteManager
         }
     }
 
-    public void Update(GameTimer timer, ScoreKeeper scoreKeeper)
+    public void Update(GameTimer timer, ScoreKeeper scoreKeeper,
+        IEnumerable<NoteElements> ongoingNotes)
     {
         // Put notes and extensions in the upcoming scan in
         // Prepare state if needed.
@@ -299,7 +294,7 @@ public class NoteManager
         updateNotesInScan(timer.IntScan + 1);
 
         // Also update ongoing notes from earlier scans.
-        foreach (NoteElements elements in input.ongoingNotes.Keys)
+        foreach (NoteElements elements in ongoingNotes)
         {
             if (elements.intScan < timer.IntScan)
             {

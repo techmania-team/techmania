@@ -40,7 +40,7 @@ public class Scan : MonoBehaviour
     // - Set states based on scan jumping (NoteAppearance only)
     private List<NoteAppearance> noteAppearances;
     private List<LegacyHoldExtension> holdExtensions;
-    private List<RepeatPathExtension> repeatPathExtensions;
+    private List<LegacyRepeatPathExtension> repeatPathExtensions;
     public Scanline scanline { get; private set; }
 
     public static void InjectLaneHeight(float height)
@@ -77,7 +77,7 @@ public class Scan : MonoBehaviour
             Game.playableLanes;
         noteAppearances = new List<NoteAppearance>();
         holdExtensions = new List<LegacyHoldExtension>();
-        repeatPathExtensions = new List<RepeatPathExtension>();
+        repeatPathExtensions = new List<LegacyRepeatPathExtension>();
 
         scanline = GetComponentInChildren<Scanline>();
         scanline.scanNumber = scanNumber;
@@ -156,7 +156,7 @@ public class Scan : MonoBehaviour
         return extension;
     }
 
-    public RepeatPathExtension SpawnRepeatPathExtension(
+    public LegacyRepeatPathExtension SpawnRepeatPathExtension(
         GameObject prefab, NoteObject head, int lastRepeatNotePulse)
     {
         GameObject o = Instantiate(prefab, transform);
@@ -170,8 +170,8 @@ public class Scan : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(laneHeight, laneHeight);
 
-        RepeatPathExtension extension = 
-            o.GetComponent<RepeatPathExtension>();
+        LegacyRepeatPathExtension extension = 
+            o.GetComponent<LegacyRepeatPathExtension>();
         repeatPathExtensions.Add(extension);
         extension.Initialize(this, head, lastRepeatNotePulse);
 
@@ -188,7 +188,7 @@ public class Scan : MonoBehaviour
         {
             e.Activate();
         }
-        foreach (RepeatPathExtension e in repeatPathExtensions)
+        foreach (LegacyRepeatPathExtension e in repeatPathExtensions)
         {
             e.Activate();
         }
@@ -212,7 +212,7 @@ public class Scan : MonoBehaviour
         {
             e.Prepare();
         }
-        foreach (RepeatPathExtension e in repeatPathExtensions)
+        foreach (LegacyRepeatPathExtension e in repeatPathExtensions)
         {
             e.Prepare();
         }

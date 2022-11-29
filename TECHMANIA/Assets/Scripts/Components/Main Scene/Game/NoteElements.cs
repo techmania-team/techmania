@@ -35,6 +35,8 @@ using UnityEngine.UIElements;
 //         |-- RepeatNoteElements
 //         |-- RepeatHoldElements
 //
+// ================================================================
+//
 // Due to multiple note types (hold, repeat head hold, repeat hold)
 // containing a note trail, and C# not allowing multiple
 // inheritance, these note types manage trails and extensions via
@@ -53,6 +55,13 @@ using UnityEngine.UIElements;
 // which manages the extension itself, and holds an instance of:
 // |
 // |-- HoldTrailElements, to update styles of trail elements
+//
+// ================================================================
+//
+// Repeat head and repeat head hold manage repeat paths and
+// extensions. This can be done via RepeatHeadElementsBase, but we
+// make components anyway because they look nice next to hold trail
+// stuff.
 public class NoteElements : INoteHolder
 {
     public Note note;
@@ -116,6 +125,10 @@ public class NoteElements : INoteHolder
     // repeat hold. Null for other types.
     public HoldTrailAndExtensions holdTrailAndExtensions
     { get; private set; }
+    // Common behavior between repeat head and repeat head hold.
+    // Null for other types.
+    public RepeatPathAndExtensions repeatPathAndExtensions
+    { get; private set; }
 
     public NoteElements(Note note, bool controlledExternally = false)
     {
@@ -162,6 +175,13 @@ public class NoteElements : INoteHolder
             holdTrailAndExtensions = new HoldTrailAndExtensions(this,
                 intScan, pattern.patternMetadata.bps, layout);
             holdTrailAndExtensions.Initialize(templateContainer);
+        }
+        if (note.type == NoteType.RepeatHead ||
+            note.type == NoteType.RepeatHeadHold)
+        {
+            repeatPathAndExtensions = new RepeatPathAndExtensions(
+                this, intScan, pattern.patternMetadata.bps, layout);
+            repeatPathAndExtensions.Initialize(templateContainer);
         }
 
         TypeSpecificInitialize();
@@ -227,6 +247,7 @@ public class NoteElements : INoteHolder
         }
 
         holdTrailAndExtensions?.InitializeSize();
+        repeatPathAndExtensions?.InitializeSize();
         TypeSpecificInitializeSizeExceptHitbox();
     }
 
@@ -324,6 +345,7 @@ public class NoteElements : INoteHolder
     {
         TypeSpecificUpdateState();
         holdTrailAndExtensions?.UpdateState(state);
+        repeatPathAndExtensions?.UpdateState(state);
     }
 
     protected virtual void TypeSpecificUpdateState() { }
@@ -402,6 +424,7 @@ public class NoteElements : INoteHolder
         HitboxMatchNoteImageAlpha();
         UpdateSprites(timer);
         holdTrailAndExtensions?.UpdateSprites(timer);
+        repeatPathAndExtensions?.UpdateSprites(timer);
         TypeSpecificUpdate(timer);
         if ((state == State.Prepare || state == State.Active) &&
             Modifiers.instance.noteOpacity

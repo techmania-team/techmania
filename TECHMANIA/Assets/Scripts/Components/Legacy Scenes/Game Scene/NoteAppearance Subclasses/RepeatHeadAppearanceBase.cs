@@ -23,7 +23,7 @@ public class RepeatHeadAppearanceBase : NoteAppearance
     protected void SetRepeatPathExtensionVisibility(Visibility v)
     {
         if (repeatPathExtensions == null) return;
-        foreach (RepeatPathExtension e in repeatPathExtensions)
+        foreach (LegacyRepeatPathExtension e in repeatPathExtensions)
         {
             e.SetExtensionVisibility(v);
         }
@@ -70,7 +70,7 @@ public class RepeatHeadAppearanceBase : NoteAppearance
     {
         if (repeatPathExtensions != null)
         {
-            foreach (RepeatPathExtension extension in
+            foreach (LegacyRepeatPathExtension extension in
                 repeatPathExtensions)
             {
                 extension.UpdateSprites();
@@ -105,7 +105,7 @@ public class RepeatHeadAppearanceBase : NoteAppearance
     // A value equal to managedRepeatNotes.Count means
     // the head itself.
     private int nextUnresolvedRepeatNoteIndex;
-    private List<RepeatPathExtension> repeatPathExtensions;
+    private List<LegacyRepeatPathExtension> repeatPathExtensions;
 
     public void ManageRepeatNotes(List<NoteObject> repeatNotes)
     {
@@ -178,11 +178,11 @@ public class RepeatHeadAppearanceBase : NoteAppearance
         GetComponent<RepeatPathManager>().SetWidth(
             width, rightToLeft: endX < startX);
 
-        repeatPathExtensions = new List<RepeatPathExtension>();
+        repeatPathExtensions = new List<LegacyRepeatPathExtension>();
     }
 
     public void RegisterRepeatPathExtension(
-        RepeatPathExtension extension)
+        LegacyRepeatPathExtension extension)
     {
         repeatPathExtensions.Add(extension);
     }

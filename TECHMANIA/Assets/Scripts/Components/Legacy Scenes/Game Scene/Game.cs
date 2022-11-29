@@ -1051,7 +1051,7 @@ public class Game : MonoBehaviour
                 crossedScan <= lastScan;
                 crossedScan++)
             {
-                RepeatPathExtension extension =
+                LegacyRepeatPathExtension extension =
                     scanObjects[crossedScan]
                     .SpawnRepeatPathExtension(
                         repeatPathExtensionPrefab,

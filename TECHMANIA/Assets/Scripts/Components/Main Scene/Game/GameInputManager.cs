@@ -36,8 +36,6 @@ public class GameInputManager
         this.layout = layout;
         this.noteManager = noteManager;
         this.timer = timer;
-
-        noteManager.SetInput(this);
     }
 
     public void Prepare()
