@@ -34,6 +34,8 @@ public class NoteManager
 
     // Extensions.
     private Dictionary<int, List<HoldExtension>> holdExtensionsInScan;
+    private Dictionary<int, List<RepeatPathExtension>>
+        repeatPathExtensionsInScan;
 
     private int playableLanes;
     public int playableNotes { get; private set; }
@@ -48,6 +50,8 @@ public class NoteManager
         keyboardNotesInLane = new List<NoteList>();
         holdExtensionsInScan = new Dictionary<
             int, List<HoldExtension>>();
+        repeatPathExtensionsInScan = new Dictionary<
+            int, List<RepeatPathExtension>>();
     }
 
     public void Prepare(Pattern p,
@@ -66,8 +70,13 @@ public class NoteManager
 
         playableNotes = 0;
         ChainNodeElements lastCreatedChainNode = null;
-        //List<List<NoteObject>> unmanagedRepeatNotes =
-        //    new List<List<NoteObject>>();
+        List<List<RepeatNoteElementsBase>> unmanagedRepeatNotesInLane 
+            = new List<List<RepeatNoteElementsBase>>();
+        for (int i = 0; i < playableLanes; i++)
+        {
+            unmanagedRepeatNotesInLane.Add(new 
+                List<RepeatNoteElementsBase>());
+        }
 
         // Spawn note elements in reverse order, so earlier notes
         // are drawn on top. However, the xyzInLane lists should still
@@ -149,8 +158,27 @@ public class NoteManager
                     }
                 }
 
-                // TODO: Establish management between repeat (hold) heads
+                // Establish management between repeat (hold) heads
                 // and repeat (hold) notes.
+                if (n.type == NoteType.Repeat ||
+                    n.type == NoteType.RepeatHold)
+                {
+                    unmanagedRepeatNotesInLane[n.lane].Add(
+                        noteElements as RepeatNoteElementsBase);
+                }
+                else if (n.type == NoteType.RepeatHead ||
+                    n.type == NoteType.RepeatHeadHold)
+                {
+                    List<RepeatNoteElementsBase> unmanagedNotes =
+                        unmanagedRepeatNotesInLane[n.lane];
+                    unmanagedNotes.Reverse();
+                    ManageRepeatNotes(
+                        noteElements as RepeatHeadElementsBase,
+                        unmanagedNotes,
+                        noteTemplates.repeatPathExtension,
+                        intScan, p.patternMetadata.bps);
+                    unmanagedNotes.Clear();
+                }
             }
 
             // Add to data structures.
@@ -232,6 +260,80 @@ public class NoteManager
         }
     }
 
+    private void ManageRepeatNotes(RepeatHeadElementsBase head,
+        List<RepeatNoteElementsBase> unmanagedNotes,
+        VisualTreeAsset pathExtensionTemplate,
+        int intScanOfHead, int bps)
+    {
+        head.ManageRepeatNotes(unmanagedNotes);
+        NoteElements lastManagedNote = head;
+        if (unmanagedNotes.Count > 0)
+        {
+            lastManagedNote = unmanagedNotes[^1];
+        }
+
+        // To spawn repeat path extensions, first calculate which
+        // scan the last managed note is / ends on.
+        int pulseOfLastManagedNote = lastManagedNote.note.pulse;
+        int pulsesPerScan = bps * Pattern.pulsesPerBeat;
+        bool decrementedPulse = false;
+        if (lastManagedNote.note.type == NoteType.RepeatHeadHold ||
+            lastManagedNote.note.type == NoteType.RepeatHold)
+        {
+            pulseOfLastManagedNote +=
+                (lastManagedNote.note as HoldNote).duration;
+            // If a hold note ends at a scan divider, we don't
+            // want to spawn an unnecessary extension, thus the
+            // -1.
+            pulseOfLastManagedNote--;
+            decrementedPulse = true;
+        }
+        else
+        {
+            // If a repeat note ends at a scan divider and is
+            // end-of-scan, we don't want to spawn an unnecessary
+            // extension, thus the -1.
+            if (pulseOfLastManagedNote % pulsesPerScan == 0 &&
+                lastManagedNote.note.endOfScan)
+            {
+                pulseOfLastManagedNote--;
+                decrementedPulse = true;
+            }
+        }
+        int intScanOfLastManagedNote = pulseOfLastManagedNote
+            / pulsesPerScan;
+        if (decrementedPulse) pulseOfLastManagedNote++;
+
+        // Now we can spawn repeat extensions.
+        for (int scan = intScanOfHead;
+            scan <= intScanOfLastManagedNote; scan++)
+        {
+            TemplateContainer templateContainer =
+                pathExtensionTemplate.Instantiate();
+
+            RepeatPathExtension extension = new RepeatPathExtension(
+                head, scan, bps, layout);
+            if (!repeatPathExtensionsInScan.ContainsKey(scan))
+            {
+                repeatPathExtensionsInScan.Add(scan,
+                    new List<RepeatPathExtension>());
+            }
+            repeatPathExtensionsInScan[scan].Add(extension);
+
+            extension.path.Initialize(templateContainer);
+            layout.PlaceExtension(scan, head.note.lane,
+                templateContainer);
+        }
+
+        // Initialize the repeat path and all extensions regarding
+        // the last managed note, all at once.
+        head.repeatPathAndExtensions
+            .InitializeWithLastManagedNote(
+            pulseOfLastManagedNote, intScanOfLastManagedNote);
+        head.repeatPathAndExtensions
+            .PlaceAllPathsBehindManagedNotes(unmanagedNotes);
+    }
+
     public void ResetSize()
     {
         foreach (List<NoteElements> list in notesInScan.Values)
@@ -261,6 +363,11 @@ public class NoteManager
                 holdExtensionsInScan[nextScan].ForEach(
                     e => e.Prepare());
             }
+            if (repeatPathExtensionsInScan.ContainsKey(nextScan))
+            {
+                repeatPathExtensionsInScan[nextScan].ForEach(
+                    e => e.Prepare());
+            }
         }
 
         // Put notes and extensions in the upcoming scan in
@@ -279,6 +386,11 @@ public class NoteManager
             if (holdExtensionsInScan.ContainsKey(nextScan))
             {
                 holdExtensionsInScan[nextScan].ForEach(
+                    e => e.Activate());
+            }
+            if (repeatPathExtensionsInScan.ContainsKey(nextScan))
+            {
+                repeatPathExtensionsInScan[nextScan].ForEach(
                     e => e.Activate());
             }
         }
@@ -356,8 +468,19 @@ public class NoteManager
                 pair.Value.ForEach(e => e.Prepare());
             }
         }
-
-        // TODO: also reset states of repeat path extensions.
+        foreach (KeyValuePair<int, List<RepeatPathExtension>> pair in
+            repeatPathExtensionsInScan)
+        {
+            int thisScan = pair.Key;
+            if (scan == thisScan)
+            {
+                pair.Value.ForEach(e => e.Activate());
+            }
+            else if (scan == thisScan - 1)
+            {
+                pair.Value.ForEach(e => e.Prepare());
+            }
+        }
     }
 
     public void ResolveNote(NoteElements elements)

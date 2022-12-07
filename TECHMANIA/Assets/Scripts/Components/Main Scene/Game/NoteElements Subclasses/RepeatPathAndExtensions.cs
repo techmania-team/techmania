@@ -30,11 +30,21 @@ public class RepeatPathAndExtensions
     }
 
     public void InitializeWithLastManagedNote(
-        NoteElements lastManagedNote)
+        int pulseOfLastManagedNote, int intScanOfLastManagedNote)
     {
-        path.InitializeWithLastManagedNote(lastManagedNote);
+        path.InitializeWithLastManagedNote(
+            pulseOfLastManagedNote, intScanOfLastManagedNote);
         extensions.ForEach(e =>
-            e.path.InitializeWithLastManagedNote(lastManagedNote));
+            e.path.InitializeWithLastManagedNote(
+                pulseOfLastManagedNote, intScanOfLastManagedNote));
+    }
+
+    public void PlaceAllPathsBehindManagedNotes(
+        List<RepeatNoteElementsBase> managedNotes)
+    {
+        path.PlaceBehindManagedNotes(managedNotes);
+        extensions.ForEach(e =>
+            e.path.PlaceBehindManagedNotes(managedNotes));
     }
 
     public void InitializeSize()

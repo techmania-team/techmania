@@ -6,4 +6,6 @@ using UnityEngine.UIElements;
 public class RepeatNoteElements : RepeatNoteElementsBase
 {
     public RepeatNoteElements(Note n) : base(n) { }
+
+    // That's the whole class.
 }

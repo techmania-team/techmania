@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 // repeat path extensions.
 public class RepeatPathElements
 {
+    private TemplateContainer templateContainer;
     private VisualElement path;
     private VisualElement pathEnd;
 
@@ -36,15 +37,19 @@ public class RepeatPathElements
 
     // At time of initialization, at least for the note head,
     // the last managed note is not known yet.
+    // For heads, the templateContainer is of the head template;
+    // for repeat path extensions, the templateContainer is of the
+    // extension template.
     public void Initialize(TemplateContainer templateContainer)
     {
+        this.templateContainer = templateContainer;
         templateContainer.AddToClassList("note-anchor");
         templateContainer.pickingMode = PickingMode.Ignore;
 
         VisualElement pathContainer = templateContainer.Q(
             "path-container");
         path = pathContainer.Q("repeat-path");
-        pathEnd = path.Q("path-end");
+        pathEnd = path.Q("repeat-path-end");
 
         scanDirection = (intScan % 2 == 0) ?
             layout.evenScanDirection : layout.oddScanDirection;
@@ -78,30 +83,10 @@ public class RepeatPathElements
     // The second part of initialization when the last managed note
     // is known.
     public void InitializeWithLastManagedNote(
-        NoteElements lastManagedNote)
+        int pulseOfLastManagedNote, int intScanOfLastManagedNote)
     {
-        int endPulseOfIntScan = (intScan + 1) * pulsesPerScan;
-        int pulseOfLastManagedNote = lastManagedNote.note.pulse;
-        if (lastManagedNote.note.type == NoteType.RepeatHold)
-        {
-            pulseOfLastManagedNote +=
-                (lastManagedNote.note as HoldNote).pulse;
-        }
-
-        int endPulse = Mathf.Min(
-            endPulseOfIntScan, pulseOfLastManagedNote);
         bool endsPastIntScan =
-            pulseOfLastManagedNote > endPulseOfIntScan;
-
-        // A special case: if the last managed note is a repeat note
-        // (no hold), is on a scan boundary, and it's not end-of-scan,
-        // then this path should extend past the scan.
-        if (lastManagedNote.note.type == NoteType.Repeat &&
-            lastManagedNote.note.pulse == endPulseOfIntScan &&
-            !lastManagedNote.note.endOfScan)
-        {
-            endsPastIntScan = true;
-        }
+            intScanOfLastManagedNote > intScan;
 
         // Calculate relative width. This never changes even with
         // resetting size.
@@ -117,7 +102,7 @@ public class RepeatPathElements
         else
         {
             endRelativeX = layout.RelativeScanToRelativeX(
-                (float)endPulse / pulsesPerScan - intScan,
+                (float)pulseOfLastManagedNote / pulsesPerScan - intScan,
                 scanDirection);
         }
         relativeWidth = Mathf.Abs(endRelativeX - startRelativeX);
@@ -140,6 +125,27 @@ public class RepeatPathElements
             .sprites[0].rect;
         pathEnd.style.width = pathHeight *
             pathEndRect.width / pathEndRect.height;
+    }
+
+    // Because this adjusts the template container, it works on both
+    // heads and extensions.
+    public void PlaceBehindManagedNotes(List<RepeatNoteElementsBase>
+        managedNotes)
+    {
+        RepeatNoteElementsBase lastNoteUnderSameParent = null;
+        foreach (RepeatNoteElementsBase e in managedNotes)
+        {
+            if (templateContainer.parent == e.templateContainer.parent)
+            {
+                lastNoteUnderSameParent = e;
+            }
+        }
+
+        if (lastNoteUnderSameParent != null)
+        {
+            templateContainer.PlaceBehind(
+                lastNoteUnderSameParent.templateContainer);
+        }
     }
 
     public void SetVisibility(NoteElements.Visibility v)

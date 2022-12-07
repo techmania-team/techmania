@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class RepeatPathExtension
 {
-    private NoteElements noteElements;
+    private NoteElements headElements;
     public RepeatPathElements path { get; private set; }
 
-    public RepeatPathExtension(NoteElements noteElements, int intScan,
+    public RepeatPathExtension(NoteElements headElements, int intScan,
         int bps, GameLayout layout)
     {
-        this.noteElements = noteElements;
-        path = new RepeatPathElements(noteElements, intScan,
+        this.headElements = headElements;
+        path = new RepeatPathElements(headElements, intScan,
             bps, layout);
-        noteElements.repeatPathAndExtensions.RegisterPathExtension(
+        headElements.repeatPathAndExtensions.RegisterPathExtension(
             this);
     }
 
     public void Prepare()
     {
-        if (noteElements.state == NoteElements.State.Resolved)
+        if (headElements.state == NoteElements.State.Resolved)
         {
             return;
         }
@@ -28,7 +28,7 @@ public class RepeatPathExtension
 
     public void Activate()
     {
-        if (noteElements.state == NoteElements.State.Resolved)
+        if (headElements.state == NoteElements.State.Resolved)
         {
             return;
         }

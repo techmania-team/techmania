@@ -62,34 +62,19 @@ public class RepeatHeadElementsBase : NoteElements
     #region Managed notes
     // Repeat heads and repeat hold heads store references to
     // all repeat notes and repeat hold notes after it.
-    private List<NoteElements> managedNotes;
+    private List<RepeatNoteElementsBase> managedNotes;
     // kNoteHeadIndex means the head itself.
     private int nextUnresolvedRepeatNoteIndex;
     private const int kNoteHeadIndex = -1;
 
-    // TODO: reverse the list before calling, so that the notes
-    // are in the correct order.
-    // TODO: call RepeatPathAndExtensions.InitializeWithLastManagedNote.
-    public void ManageRepeatNotes(List<NoteElements> managedNotes)
+    public void ManageRepeatNotes(
+        List<RepeatNoteElementsBase> managedNotes)
     {
         // Clone the list because it will be cleared later.
-        managedNotes = new List<NoteElements>(managedNotes);
-        foreach (NoteElements e in managedNotes)
+        managedNotes = new List<RepeatNoteElementsBase>(managedNotes);
+        foreach (RepeatNoteElementsBase e in managedNotes)
         {
-            //TODO: n.GetComponent<RepeatNoteAppearanceBase>().repeatHead
-            //    = this;
-        }
-
-        // Adjust draw order so the head is drawn behind all
-        // managed notes.
-        foreach (NoteElements e in managedNotes)
-        {
-            if (templateContainer.parent ==
-                e.templateContainer.parent)
-            {
-                templateContainer.PlaceBehind(e.templateContainer);
-                break;
-            }
+            e.head = this;
         }
     }
 
