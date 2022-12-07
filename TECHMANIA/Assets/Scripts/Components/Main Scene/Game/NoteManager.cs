@@ -305,7 +305,7 @@ public class NoteManager
         if (decrementedPulse) pulseOfLastManagedNote++;
 
         // Now we can spawn repeat extensions.
-        for (int scan = intScanOfHead;
+        for (int scan = intScanOfHead + 1;
             scan <= intScanOfLastManagedNote; scan++)
         {
             TemplateContainer templateContainer =
@@ -330,6 +330,7 @@ public class NoteManager
         head.repeatPathAndExtensions
             .InitializeWithLastManagedNote(
             pulseOfLastManagedNote, intScanOfLastManagedNote);
+        head.repeatPathAndExtensions.InitializeSize();
         head.repeatPathAndExtensions
             .PlaceAllPathsBehindManagedNotes(unmanagedNotes);
     }

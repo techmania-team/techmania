@@ -341,7 +341,7 @@ public class NoteElements : INoteHolder
     #endregion
 
     // Called on initialization, update and state changes.
-    private void UpdateState()
+    protected void UpdateState()
     {
         TypeSpecificUpdateState();
         holdTrailAndExtensions?.UpdateState(state);

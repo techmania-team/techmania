@@ -106,9 +106,6 @@ public class RepeatPathElements
                 scanDirection);
         }
         relativeWidth = Mathf.Abs(endRelativeX - startRelativeX);
-
-        // Reset size now that relativeWidth is known.
-        InitializeSize();
     }
 
     public void InitializeSize()

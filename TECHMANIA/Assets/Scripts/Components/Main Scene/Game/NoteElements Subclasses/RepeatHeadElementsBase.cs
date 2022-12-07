@@ -12,7 +12,7 @@ public class RepeatHeadElementsBase : NoteElements
         state = State.PendingResolve;
         // Only fully resolved when all managed repeat notes
         // get resolved.
-        // ManagedRepeatNoteResolved();
+        ManagedNoteResolved();
     }
 
     protected override void TypeSpecificUpdateState()
@@ -71,7 +71,8 @@ public class RepeatHeadElementsBase : NoteElements
         List<RepeatNoteElementsBase> managedNotes)
     {
         // Clone the list because it will be cleared later.
-        managedNotes = new List<RepeatNoteElementsBase>(managedNotes);
+        this.managedNotes = new List<RepeatNoteElementsBase>(
+            managedNotes);
         foreach (RepeatNoteElementsBase e in managedNotes)
         {
             e.head = this;
@@ -100,7 +101,8 @@ public class RepeatHeadElementsBase : NoteElements
         nextUnresolvedRepeatNoteIndex++;
         if (nextUnresolvedRepeatNoteIndex >= managedNotes.Count)
         {
-            Resolve();
+            state = State.Resolved;
+            UpdateState();
         }
     }
     #endregion
