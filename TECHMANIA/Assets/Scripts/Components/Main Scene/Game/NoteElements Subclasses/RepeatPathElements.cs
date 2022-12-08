@@ -13,7 +13,7 @@ public class RepeatPathElements
 
     // Acquired on construction
 
-    private Note note;
+    private Note headNote;
     private int intScan;
     private int bps;
     private GameLayout layout;
@@ -29,7 +29,7 @@ public class RepeatPathElements
     public RepeatPathElements(NoteElements noteElements,
         int intScan, int bps, GameLayout layout)
     {
-        this.note = noteElements.note;
+        this.headNote = noteElements.note;
         this.intScan = intScan;
         this.bps = bps;
         this.layout = layout;
@@ -59,12 +59,21 @@ public class RepeatPathElements
 
         // Calculate startPulse and endPulse.
         int startPulseOfIntScan = intScan * pulsesPerScan;
-        int startPulseOfNote = note.pulse;
+        int startPulseOfNote = headNote.pulse;
 
         int startPulse = Mathf.Max(
             startPulseOfIntScan, startPulseOfNote);
         bool startsBeforeIntScan =
             startPulseOfNote < startPulseOfIntScan;
+
+        // Special case: if head is precisely on the start of this
+        // int scan and it's end-of-scan, then it's considered to be
+        // in the previous scan.
+        if (startPulseOfNote == startPulseOfIntScan &&
+            headNote.endOfScan)
+        {
+            startsBeforeIntScan = true;
+        }
 
         // Calculate startRelativeX. endRelativeX will be calculated
         // in InitializeWithLastManagedNote.
