@@ -346,8 +346,7 @@ public class NoteManager
         }
     }
 
-    public void Update(GameTimer timer, ScoreKeeper scoreKeeper,
-        IEnumerable<NoteElements> ongoingNotes)
+    public void Update(GameTimer timer, ScoreKeeper scoreKeeper)
     {
         // Put notes and extensions in the upcoming scan in
         // Prepare state if needed.
@@ -397,22 +396,13 @@ public class NoteManager
         }
 
         // Update notes with time, mainly to update sprites.
-        System.Action<int> updateNotesInScan = (int scan) =>
+        for (int scan = timer.IntScan - 2;
+            scan <= timer.IntScan + 2;
+            scan++)
         {
-            if (!notesInScan.ContainsKey(scan)) return;
+            if (!notesInScan.ContainsKey(scan)) continue;
             notesInScan[scan].ForEach(e =>
                 e.UpdateTime(timer, scoreKeeper));
-        };
-        updateNotesInScan(timer.IntScan);
-        updateNotesInScan(timer.IntScan + 1);
-
-        // Also update ongoing notes from earlier scans.
-        foreach (NoteElements elements in ongoingNotes)
-        {
-            if (elements.intScan < timer.IntScan)
-            {
-                elements.UpdateTime(timer, scoreKeeper);
-            }
         }
     }
 

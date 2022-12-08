@@ -474,8 +474,7 @@ public class GameController : MonoBehaviour
             timer.Update(comboTickCallback: ComboTick);
             bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
             layout.Update(timer.Scan);
-            noteManager.Update(timer, scoreKeeper, ongoingNotes:
-                input.ongoingNotes.Keys);
+            noteManager.Update(timer, scoreKeeper);
             input.Update();
             scoreKeeper.UpdateFever();
 
