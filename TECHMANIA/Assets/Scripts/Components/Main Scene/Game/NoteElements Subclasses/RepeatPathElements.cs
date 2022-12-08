@@ -138,19 +138,32 @@ public class RepeatPathElements
     public void PlaceBehindManagedNotes(List<RepeatNoteElementsBase>
         managedNotes)
     {
-        RepeatNoteElementsBase lastNoteUnderSameParent = null;
+        TemplateContainer lastElementUnderSameParent = null;
+        System.Action<TemplateContainer> checkTemplateContainer =
+            (TemplateContainer other) =>
+            {
+                if (templateContainer.parent == other.parent)
+                {
+                    lastElementUnderSameParent = other;
+                }
+            };
         foreach (RepeatNoteElementsBase e in managedNotes)
         {
-            if (templateContainer.parent == e.templateContainer.parent)
+            checkTemplateContainer(e.templateContainer);
+            if (e.holdTrailAndExtensions != null)
             {
-                lastNoteUnderSameParent = e;
+                foreach (HoldExtension extension in
+                    e.holdTrailAndExtensions.extensions)
+                {
+                    checkTemplateContainer(
+                        extension.trail.templateContainer);
+                }
             }
         }
 
-        if (lastNoteUnderSameParent != null)
+        if (lastElementUnderSameParent != null)
         {
-            templateContainer.PlaceBehind(
-                lastNoteUnderSameParent.templateContainer);
+            templateContainer.PlaceBehind(lastElementUnderSameParent);
         }
     }
 

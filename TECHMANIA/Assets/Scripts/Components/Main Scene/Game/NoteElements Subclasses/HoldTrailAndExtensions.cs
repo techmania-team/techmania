@@ -14,7 +14,7 @@ public class HoldTrailAndExtensions
     private NoteElements noteElements;
     private int intScan;
     private HoldTrailElements trail;
-    private List<HoldExtension> extensions;
+    public List<HoldExtension> extensions { get; private set; }
 
     public HoldTrailAndExtensions(NoteElements noteElements,
         int intScan, int bps, GameLayout layout)

@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 // hold notes and hold extensions.
 public class HoldTrailElements
 {
+    public TemplateContainer templateContainer { get; private set; }
     private VisualElement trailContainer;
     private VisualElement totalTrail;
     private VisualElement ongoingTrail;
@@ -45,6 +46,7 @@ public class HoldTrailElements
 
     public void Initialize(TemplateContainer templateContainer)
     {
+        this.templateContainer = templateContainer;
         templateContainer.AddToClassList("note-anchor");
         templateContainer.pickingMode = PickingMode.Ignore;
 
