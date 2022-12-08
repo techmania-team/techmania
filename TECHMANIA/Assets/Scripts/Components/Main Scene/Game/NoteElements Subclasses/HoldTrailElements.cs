@@ -83,6 +83,15 @@ public class HoldTrailElements
         bool endsPastIntScan =
             endPulseOfNote > endPulseOfIntScan;
 
+        // Special case: if note is precisely on the start of this
+        // int scan and it's end-of-scan, then it's considered to be
+        // in the previous scan.
+        if (startPulseOfNote == startPulseOfIntScan &&
+            note.endOfScan)
+        {
+            startsBeforeIntScan = true;
+        }
+
         // Calculate relative width. This never changes even with
         // resetting size.
         if (startsBeforeIntScan)
