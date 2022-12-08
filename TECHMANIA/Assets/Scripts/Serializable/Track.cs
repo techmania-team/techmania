@@ -678,7 +678,7 @@ public class Note
         int pulsesPerScan = Pattern.pulsesPerBeat * bps;
         int scan = pulse / pulsesPerScan;
         if (pulse % pulsesPerScan == 0 &&
-            endOfScan && scan > 0 &&
+            endOfScan &&
             type != NoteType.Drag)
         {
             scan--;
