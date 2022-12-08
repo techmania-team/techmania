@@ -129,18 +129,17 @@ public class VFXManager : MonoBehaviour
                         loop: true));
                 break;
             case NoteType.RepeatHold:
-                // TODO: Spawn the head VFX on repeat head.
-                //NoteObject repeatHead = elements
-                //    .GetComponent<RepeatNoteAppearanceBase>()
-                //    .repeatHead.GetComponent<NoteObject>();
-                //holdNoteToOngoingHeadVfx.Add(repeatHead,
-                //    SpawnVfxAt(repeatHead,
-                //        GlobalResource.vfxSkin.repeatHoldOngoingHead,
-                //        loop: true));
-                //holdNoteToOngoingTrailVfx.Add(elements,
-                //    SpawnVfxAt(elements,
-                //        GlobalResource.vfxSkin.repeatHoldOngoingTrail,
-                //        loop: true));
+                // Spawn the head VFX on repeat head.
+                NoteElements head = (elements as RepeatNoteElementsBase)
+                    .head;
+                holdNoteToOngoingHeadVfx.Add(head,
+                    SpawnVfxAt(head,
+                        GlobalResource.vfxSkin.repeatHoldOngoingHead,
+                        loop: true));
+                holdNoteToOngoingTrailVfx.Add(elements,
+                    SpawnVfxAt(elements,
+                        GlobalResource.vfxSkin.repeatHoldOngoingTrail,
+                        loop: true));
                 break;
         }
     }
@@ -215,11 +214,8 @@ public class VFXManager : MonoBehaviour
                 if (missOrBreak) break;
                 SpawnVfxAt(elements,
                     GlobalResource.vfxSkin.repeatNote);
-                // TODO: spawn repeatHead
-                //SpawnVfxAt(
-                //    note.GetComponent<RepeatNoteAppearanceBase>()
-                //        .repeatHead.GetComponent<NoteObject>(),
-                //    GlobalResource.vfxSkin.repeatHead);
+                SpawnVfxAt((elements as RepeatNoteElementsBase).head,
+                    GlobalResource.vfxSkin.repeatHead);
                 break;
             case NoteType.RepeatHeadHold:
                 despawnVfx(holdNoteToOngoingHeadVfx, elements);
@@ -233,18 +229,10 @@ public class VFXManager : MonoBehaviour
                 }
                 break;
             case NoteType.RepeatHold:
-                // TODO: despawn VFX on repeat head
-                //NoteObject repeatHeadNote = note
-                //    .GetComponent<RepeatNoteAppearanceBase>()
-                //    .repeatHead.GetComponent<NoteObject>();
-                //if (holdNoteToOngoingHeadVfx
-                //    .ContainsKey(repeatHeadNote))
-                //{
-                //    holdNoteToOngoingHeadVfx[repeatHeadNote].ForEach(
-                //        o => Destroy(o));
-                //    holdNoteToOngoingHeadVfx.Remove(
-                //        repeatHeadNote);
-                //}
+                // Despawn VFX on repeat head.
+                NoteElements head = (elements as RepeatNoteElementsBase)
+                    .head;
+                despawnVfx(holdNoteToOngoingHeadVfx, head);
                 despawnVfx(holdNoteToOngoingTrailVfx, elements);
                 if (!missOrBreak)
                 {

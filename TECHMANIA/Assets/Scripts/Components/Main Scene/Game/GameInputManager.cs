@@ -307,7 +307,6 @@ public class GameInputManager
             NoteElements upcoming = noteManager.notesInLane[lane]
                 .First() as NoteElements;
 
-            
             if (timer.GameTime > upcoming.note.time
                 + upcoming.note.timeWindow[Judgement.Miss]
                 + LatencyForNote(upcoming.note) * timer.speed
@@ -508,8 +507,13 @@ public class GameInputManager
             }
 
             NoteElements noteToCheck = elements;
-            // TODO: get the correct note to check for
-            // repeat heads
+            if (noteToCheck.note.type == NoteType.RepeatHead ||
+                noteToCheck.note.type == NoteType.RepeatHeadHold)
+            {
+                noteToCheck = (noteToCheck as RepeatHeadElementsBase)
+                    .GetFirstUnresolvedManagedNote();
+            }
+
             if (ongoingNotes.ContainsKey(noteToCheck))
             {
                 result.ongoingNotes.Add(noteToCheck);

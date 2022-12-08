@@ -552,6 +552,7 @@ public class GameController : MonoBehaviour
     public void ResolveNote(NoteElements elements,
         Judgement judgement)
     {
+        Debug.Log($"Resolving note at pulse {elements.note.pulse}, lane {elements.note.lane} with judgement {judgement}");
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxManager.SpawnResolvedVFX(elements, judgement);
