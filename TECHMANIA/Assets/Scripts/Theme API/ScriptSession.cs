@@ -5,6 +5,9 @@ using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System;
 
+// TODO: for Unity 2022.2:
+// - DrawText and DrawVectorImage in MeshGenerationContext
+// - gradientStroke property in Painter2D
 namespace ThemeApi
 {
     public static class ScriptSession
