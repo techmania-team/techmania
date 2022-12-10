@@ -20,7 +20,7 @@ public class GameInputManager
     private NoteManager noteManager;
     private GameTimer timer;
 
-    private List<List<KeyCode>> keysForLane;
+    public List<List<KeyCode>> keysForLane { get; private set; }
 
     public GameInputManager(
         Pattern pattern,

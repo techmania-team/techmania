@@ -66,7 +66,10 @@ public class OptionsPanel : MonoBehaviour
             resolutions.Add(r);
             if (r.width == Options.instance.width &&
                 r.height == Options.instance.height &&
-                r.refreshRate == Options.instance.refreshRate)
+                r.refreshRateRatio.numerator == 
+                    Options.instance.refreshRateNumerator &&
+                r.refreshRateRatio.denominator ==
+                    Options.instance.refreshRateDenominator)
             {
                 resolutionIndex = i;
             }
@@ -80,8 +83,10 @@ public class OptionsPanel : MonoBehaviour
                 resolutions[resolutionIndex].width;
             Options.instance.height =
                 resolutions[resolutionIndex].height;
-            Options.instance.refreshRate =
-                resolutions[resolutionIndex].refreshRate;
+            Options.instance.refreshRateNumerator =
+                resolutions[resolutionIndex].refreshRateRatio.numerator;
+            Options.instance.refreshRateDenominator =
+                resolutions[resolutionIndex].refreshRateRatio.denominator;
         }
     }
 
@@ -230,8 +235,10 @@ public class OptionsPanel : MonoBehaviour
         resolutionIndex = resolutionDropdown.value;
         Options.instance.width = resolutions[resolutionIndex].width;
         Options.instance.height = resolutions[resolutionIndex].height;
-        Options.instance.refreshRate =
-            resolutions[resolutionIndex].refreshRate;
+        Options.instance.refreshRateNumerator =
+            resolutions[resolutionIndex].refreshRateRatio.numerator;
+        Options.instance.refreshRateDenominator =
+            resolutions[resolutionIndex].refreshRateRatio.denominator;
 
         Options.instance.fullScreenMode =
             (FullScreenMode)fullscreenDropdown.value;

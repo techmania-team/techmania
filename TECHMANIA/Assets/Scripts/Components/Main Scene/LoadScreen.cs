@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// TODO: rename to BootScreen.
 public class LoadScreen : MonoBehaviour
 {
     public TextMeshProUGUI progressLine1;

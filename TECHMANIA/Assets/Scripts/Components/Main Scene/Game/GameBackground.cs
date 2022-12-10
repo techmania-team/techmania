@@ -45,8 +45,8 @@ public class GameBackground
     {
         bgContainer.style.backgroundImage =
             new StyleBackground(bgImage);
-        bgContainer.style.unityBackgroundScaleMode =
-            new StyleEnum<ScaleMode>(ScaleMode.ScaleAndCrop);
+        bgContainer.style.backgroundSize = new StyleBackgroundSize(
+            new BackgroundSize(BackgroundSizeType.Cover));
         bgContainer.style.unityBackgroundImageTintColor = Color.white;
     }
 

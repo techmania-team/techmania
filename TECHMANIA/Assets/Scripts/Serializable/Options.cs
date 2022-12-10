@@ -30,6 +30,9 @@ public class OptionsBase : SerializableClass<OptionsBase>
 //
 // Updates in version 3:
 // - Most appearance options are moved to theme-specific options.
+// - Replaced refreshRate with refreshRateNumerator and
+//   refreshRateDenominator, in line with Unity 2022.2 deprecating
+//   Resolution.refreshRate.
 [MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Options : OptionsBase
@@ -40,7 +43,8 @@ public class Options : OptionsBase
 
     public int width; 
     public int height;
-    public int refreshRate;
+    public uint refreshRateNumerator;
+    public uint refreshRateDenominator;
     public FullScreenMode fullScreenMode;
     public bool vSync;
 
@@ -137,7 +141,8 @@ public class Options : OptionsBase
 
         width = 0;
         height = 0;
-        refreshRate = 0;
+        refreshRateNumerator = 0;
+        refreshRateDenominator = 0;
         fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         vSync = false;
 
@@ -230,6 +235,42 @@ public class Options : OptionsBase
     #endregion
 
     #region Graphics
+    // This only changes options and does not apply the modified
+    // resolution or save to file.
+    public void SetDefaultResolutionIfInvalid()
+    {
+        foreach (Resolution r in Screen.resolutions)
+        {
+            if (r.width == width && r.height == height &&
+                r.refreshRateRatio.numerator == refreshRateNumerator &&
+                r.refreshRateRatio.denominator == refreshRateDenominator)
+            {
+                // Current resolution is valid; do nothing.
+                return;
+            }
+        }
+
+        Resolution def = Screen.resolutions[^1];
+        width = def.width;
+        height = def.height;
+        refreshRateNumerator = def.refreshRateRatio.numerator;
+        refreshRateDenominator = def.refreshRateRatio.denominator;
+    }
+
+    public Resolution GetCurrentResolutionAsObject()
+    {
+        return new Resolution()
+        {
+            width = this.width,
+            height = this.height,
+            refreshRateRatio = new RefreshRate()
+            {
+                numerator = refreshRateNumerator,
+                denominator = refreshRateDenominator
+            }
+        };
+    }
+
     public void ApplyGraphicSettings()
     {
 #if UNITY_IOS || UNITY_ANDROID
@@ -241,8 +282,12 @@ public class Options : OptionsBase
             Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 0;
 #else
-        Screen.SetResolution(width, height, fullScreenMode, 
-            refreshRate);
+        Screen.SetResolution(width, height, fullScreenMode,
+            new RefreshRate()
+            {
+                numerator = refreshRateNumerator,
+                denominator = refreshRateDenominator
+            });
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
     }
@@ -1044,7 +1089,8 @@ public class OptionsV2 : OptionsBase
         {
             width = width,
             height = height,
-            refreshRate = refreshRate,
+            refreshRateNumerator = (uint)refreshRate * 1000,
+            refreshRateDenominator = 1000,
             fullScreenMode = fullScreenMode,
             vSync = vSync,
 

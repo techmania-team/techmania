@@ -303,7 +303,7 @@ public class GameController : MonoBehaviour
 
         // Switches.
         autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
-        hitboxVisible = true;
+        hitboxVisible = false;
 
         // Keysound player.
         keysoundPlayer = new KeysoundPlayer(setup.assistTick);

@@ -56,10 +56,7 @@ end
 optionsPanel.Show = function()
     local panel = optionsPanel.panel
 
-    local currentResolution = unity.resolution.__new()
-    currentResolution.width = tm.options.width
-    currentResolution.height = tm.options.height
-    currentResolution.refreshRate = tm.options.refreshRate
+    local currentResolution = tm.options.GetCurrentResolutionAsObject()
     local resolutionDropdown = panel.Q("resolution").Q("dropdown")
     resolutionDropdown.SetValueWithoutNotify(currentResolution.ToString())
 
@@ -167,7 +164,8 @@ optionsPanel.Initialize = function()
             if (resolution.ToString() == event.newValue) then
                 tm.options.width = resolution.width
                 tm.options.height = resolution.height
-                tm.options.refreshRate = resolution.refreshRate
+                tm.options.refreshRateNumerator = resolution.refreshRateRatio.numerator
+                tm.options.refreshRateDenominator = resolution.refreshRateRatio.denominator
                 break
             end
         end

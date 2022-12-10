@@ -34,6 +34,7 @@ public class Startup : MonoBehaviour
         Paths.PrepareFolders();
 
         Options.RefreshInstance();
+        Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();
         Options.instance.ApplyAudioBufferSize();
         audioSourceManager.ApplyVolume();
