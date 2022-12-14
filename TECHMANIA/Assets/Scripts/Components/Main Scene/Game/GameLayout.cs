@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // Controls scanline and scan countdowns.
-// TODO: also touch feedback.
 public class GameLayout
 {
     private Pattern pattern;
     private float countdownLengthInScans;
 
-    public TemplateContainer layoutContainer { get; private set; }
+    private TemplateContainer layoutContainer;
+    public VisualElement inputFeedbackContainer { get; private set; }
 
     public enum ScanDirection
     {
@@ -81,6 +81,9 @@ public class GameLayout
         // Layout becomes visible on Begin().
         layoutContainer.style.visibility = Visibility.Hidden;
         gameContainer.Add(layoutContainer);
+
+        inputFeedbackContainer = layoutContainer.Q(
+            "input-feedback-container");
 
         System.Func<VisualElement, HalfElements> makeHalfElements =
             (VisualElement element) => new HalfElements()

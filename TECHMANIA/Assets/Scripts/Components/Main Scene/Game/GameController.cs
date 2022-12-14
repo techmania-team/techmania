@@ -56,6 +56,7 @@ public class GameController : MonoBehaviour
         }
     }
     public NoteTemplates noteTemplates;
+    public VisualTreeAsset inputFeedbackTemplate;
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
@@ -65,6 +66,7 @@ public class GameController : MonoBehaviour
     private GameLayout layout;
     private NoteManager noteManager;
     private GameInputManager input;
+    private InputFeedbackManager inputFeedback;
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
@@ -354,6 +356,12 @@ public class GameController : MonoBehaviour
             this, layout, noteManager, timer);
         input.Prepare();
 
+        // Prepare for input feedback.
+        inputFeedback = new InputFeedbackManager(
+            layout.inputFeedbackContainer, inputFeedbackTemplate, input);
+        inputFeedback.Prepare(
+            setup.patternAfterModifier.patternMetadata);
+
         // Prepare for VFX and combo text.
         vfxManager.Prepare(layout.laneHeight, timer);
         comboText.ResetSize();
@@ -476,6 +484,7 @@ public class GameController : MonoBehaviour
             layout.Update(timer.Scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();
+            inputFeedback.Update();
             scoreKeeper.UpdateFever();
 
             CheckForStageFailed();
