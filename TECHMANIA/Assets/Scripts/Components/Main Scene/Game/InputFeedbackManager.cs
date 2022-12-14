@@ -18,6 +18,15 @@ public class InputFeedbackManager
                 "input-feedback-anchor");
             element = templateContainer.Q("input-feedback");
             spawnTime = Time.time;
+
+            // While UI Toolkit doesn't support shaders, we can't
+            // draw feedbacks that request the additive shader.
+            if (GlobalResource.gameUiSkin.touchClickFeedback
+                .additiveShader)
+            {
+                element.style.display = new StyleEnum<DisplayStyle>(
+                    DisplayStyle.None);
+            }
         }
 
         public void ResetSize()
