@@ -482,4 +482,26 @@ public class GameLayout
         }
     }
     #endregion
+
+    // Meant for InputFeedbackManager; Keys only.
+    // Returns the position in inputFeedbackContainer to place an
+    // input feedback for the specified scan and lane.
+    public Vector2 GetPositionForKeyFeedback(float scan, int lane)
+    {
+        int intScan = Mathf.FloorToInt(scan);
+        float relativeScan = scan - intScan;
+        HalfElements half = (intScan % 2 == 0) ? evenHalf : oddHalf;
+        float x = RelativeScanToRelativeX(relativeScan, half.direction);
+        float y = LaneToRelativeY(lane, intScan);
+        if (half == topHalf)
+        {
+            y = Mathf.Lerp(0f, 0.5f, y);
+        }
+        else
+        {
+            y = Mathf.Lerp(0.5f, 1f, y);
+        }
+        return new Vector2(x * gameContainerWidth,
+            y * gameContainerHeight);
+    }
 }

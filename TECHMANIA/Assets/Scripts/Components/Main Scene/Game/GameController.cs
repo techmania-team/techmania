@@ -358,7 +358,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for input feedback.
         inputFeedback = new InputFeedbackManager(
-            layout.inputFeedbackContainer, inputFeedbackTemplate, input);
+            inputFeedbackTemplate, layout, input);
         inputFeedback.Prepare(
             setup.patternAfterModifier.patternMetadata);
 
@@ -484,7 +484,7 @@ public class GameController : MonoBehaviour
             layout.Update(timer.Scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();
-            inputFeedback.Update();
+            inputFeedback.Update(timer.Scan);
             scoreKeeper.UpdateFever();
 
             CheckForStageFailed();

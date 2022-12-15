@@ -43,11 +43,6 @@ public class InputFeedbackManager
             templateContainer.style.top = position.y;
         }
 
-        public void Dispose()
-        {
-            templateContainer.RemoveFromHierarchy();
-        }
-
         public void UpdateSprite()
         {
             float timeSinceSpawn = Time.time - spawnTime;
@@ -56,10 +51,16 @@ public class InputFeedbackManager
                 GlobalResource.gameUiSkin.touchClickFeedback
                 .GetSpriteForTime(timeSinceSpawn, loop: true));
         }
+
+        public void Dispose()
+        {
+            templateContainer.RemoveFromHierarchy();
+        }
     }
 
     private VisualElement feedbackContainer;
     private VisualTreeAsset feedbackTemplate;
+    private GameLayout layout;
     private GameInputManager inputManager;
 
     private ControlScheme controlScheme;
@@ -72,12 +73,13 @@ public class InputFeedbackManager
     private List<int> numKeysHeldOnLane;
     private int numMouseButtonsHeld;
 
-    public InputFeedbackManager(VisualElement feedbackContainer,
-        VisualTreeAsset feedbackTemplate,
+    public InputFeedbackManager(VisualTreeAsset feedbackTemplate,
+        GameLayout layout,
         GameInputManager inputManager)
     {
-        this.feedbackContainer = feedbackContainer;
+        this.feedbackContainer = layout.inputFeedbackContainer;
         this.feedbackTemplate = feedbackTemplate;
+        this.layout = layout;
         this.inputManager = inputManager;
     }
 
@@ -88,18 +90,21 @@ public class InputFeedbackManager
 
         idToFeedback = new Dictionary<int, InputFeedback>();
         numKeysHeldOnLane = new List<int>();
-        for (int i = 0; i < lanes; i++) numKeysHeldOnLane.Add(0);
+        for (int i = 0; i < lanes; i++)
+        {
+            numKeysHeldOnLane.Add(0);
+        }
         numMouseButtonsHeld = 0;
     }
 
     #region Update
-    public void Update()
+    public void Update(float scan)
     {
-        UpdateWithInput();
+        UpdateWithInput(scan);
         UpdateExistingFeedbacks();
     }
 
-    private void UpdateWithInput()
+    private void UpdateWithInput(float scan)
     {
         if (GameController.autoPlay)
         {
@@ -136,32 +141,66 @@ public class InputFeedbackManager
                 }
                 break;
             case ControlScheme.Keys:
-                // TODO
+                for (int lane = 0; lane < lanes; lane++)
+                {
+                    int numKeysHeldPreviousFrame =
+                        numKeysHeldOnLane[lane];
+                    foreach (KeyCode keyCode in
+                        inputManager.keysForLane[lane])
+                    {
+                        if (Input.GetKeyDown(keyCode))
+                        {
+                            numKeysHeldOnLane[lane]++;
+                        }
+                        else if (Input.GetKeyUp(keyCode))
+                        {
+                            numKeysHeldOnLane[lane]--;
+                        }
+                    }
+
+                    Vector2 position = layout
+                        .GetPositionForKeyFeedback(scan, lane);
+                    if (numKeysHeldPreviousFrame <= 0 &&
+                        numKeysHeldOnLane[lane] > 0)
+                    {
+                        SpawnFeedback(lane, position);
+                    }
+                    else if (numKeysHeldPreviousFrame > 0 &&
+                        numKeysHeldOnLane[lane] <= 0)
+                    {
+                        DisposeFeedback(lane);
+                    }
+                    else if (numKeysHeldOnLane[lane] > 0)
+                    {
+                        MoveFeedback(lane, position);
+                    }
+                }
                 break;
             case ControlScheme.KM:
                 {
                     Vector2 position = ThemeApi.VisualElementTransform
                         .ScreenSpaceToElementLocalSpace(
                         feedbackContainer, Input.mousePosition);
-                    int oldButtonsHeld = numMouseButtonsHeld;
+                    int numButtonsHeldPreviousFrame = 
+                        numMouseButtonsHeld;
                     for (int i = 0; i < 2; i++)
                     {
                         if (Input.GetMouseButtonDown(i))
                         {
                             numMouseButtonsHeld++;
                         }
-                        if (Input.GetMouseButtonUp(i))
+                        else if (Input.GetMouseButtonUp(i))
                         {
                             numMouseButtonsHeld--;
                         }
                     }
                     
-                    if (oldButtonsHeld <= 0 &&
+                    if (numButtonsHeldPreviousFrame <= 0 &&
                         numMouseButtonsHeld > 0)
                     {
                         SpawnFeedback(kMouseId, position);
                     }
-                    else if (oldButtonsHeld > 0 &&
+                    else if (numButtonsHeldPreviousFrame > 0 &&
                         numMouseButtonsHeld <= 0)
                     {
                         DisposeFeedback(kMouseId);
