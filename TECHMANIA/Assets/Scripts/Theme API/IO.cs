@@ -60,6 +60,13 @@ namespace ThemeApi
                 });
         }
 
+        public static UnityEngine.TextCore.Text.FontAsset
+            LoadFontFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent
+                <UnityEngine.TextCore.Text.FontAsset>(path);
+        }
+
         public static Track LoadFullTrack(string path)
         {
             return Track.LoadFromFile(path) as Track;

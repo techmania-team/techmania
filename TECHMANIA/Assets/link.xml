@@ -20,6 +20,9 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="UnityEngine.Color" preserve="all" />
     <type fullname="UnityEngine.Color32" preserve="all" />
     <type fullname="UnityEngine.FullScreenMode" preserve="all" />
+    <type fullname="UnityEngine.Gradient" preverse="all" />
+    <type fullname="UnityEngine.GradientColorKey" preverse="all" />
+    <type fullname="UnityEngine.GradientAlphaKey" preverse="all" />
   </assembly>
   <assembly fullname="UnityEngine.UIElementsModule">
     <type fullname="UnityEngine.UIElements.VisualTreeAsset" preserve="all" />
@@ -55,14 +58,20 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="UnityEngine.UIElements.FillRule" preserve="all" />
     <type fullname="UnityEngine.UIElements.AngleUnit" preserve="all" />
     <type fullname="UnityEngine.UIElements.ArcDirection" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ColorSpace" preserve="all" />
+    <type fullname="UnityEngine.UIElements.GradientMode" preserve="all" />
     <type fullname="UnityEngine.UIElements.StyleKeyword" preserve="all" />
     <type fullname="UnityEngine.UIElements.LengthUnit" preserve="all" />
     <type fullname="UnityEngine.UIElements.PropagationPhase" preserve="all" />
     <type fullname="UnityEngine.UIElements.KeyCode" preserve="all" />
+    <type fullname="UnityEngine.UIElements.VectorImage" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.AudioModule">
     <type fullname="UnityEngine.AudioSource" preserve="all" />
     <type fullname="UnityEngine.AudioClip" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.TextCoreTextEngineModule">
+    <type fullname="UnityEngine.TextCore.Text.FontAsset" preserve="all" />
   </assembly>
   <assembly fullname="mscorlib">
     <type fullname="System.String" preserve="all" />

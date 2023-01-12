@@ -5,9 +5,6 @@ using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System;
 
-// TODO: for Unity 2022.2:
-// - DrawText and DrawVectorImage in MeshGenerationContext
-// - gradientStroke property in Painter2D
 namespace ThemeApi
 {
     public static class ScriptSession
@@ -37,8 +34,6 @@ namespace ThemeApi
             UserData.RegisterType<VisualElement>();
             UserData.RegisterType<MeshGenerationContext>();
             UserData.RegisterType<MeshWriteData>();
-            UserData.RegisterType<Vertex>();
-            UserData.RegisterType<Painter2D>();
             UserData.RegisterType<PanelSettings>();
             UserData.RegisterType<UQueryState<VisualElement>>();
             UserData.RegisterType<IStyle>();
@@ -46,6 +41,7 @@ namespace ThemeApi
             UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<AudioSource>();
             UserData.RegisterType<AudioClip>();
+            UserData.RegisterType<UnityEngine.TextCore.Text.FontAsset>();
             
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
@@ -151,6 +147,7 @@ namespace ThemeApi
             addType(unityTypes, typeof(UnityEngine.Random));
             addType(unityTypes, typeof(Vector2));
             addType(unityTypes, typeof(Vector3));
+            addType(unityTypes, typeof(Vertex));
             addType(unityTypes, typeof(Color));
             addType(unityTypes, typeof(Color32));
             addType(unityTypes, typeof(Angle));
@@ -167,6 +164,12 @@ namespace ThemeApi
             addType(unityTypes, typeof(Rotate));
             addType(unityTypes, typeof(StyleScale));
             addType(unityTypes, typeof(Scale));
+            addType(unityTypes, typeof(Painter2D));
+            // Types used by Painter2D
+            addType(unityTypes, typeof(VectorImage));
+            addType(unityTypes, typeof(Gradient));
+            addType(unityTypes, typeof(GradientColorKey));
+            addType(unityTypes, typeof(GradientAlphaKey));
 
             // Expose Unity enums
             Table unityEnums = new Table(session);
@@ -178,6 +181,8 @@ namespace ThemeApi
             addType(unityEnums, typeof(FillRule));
             addType(unityEnums, typeof(AngleUnit));
             addType(unityEnums, typeof(ArcDirection));
+            addType(unityEnums, typeof(ColorSpace));
+            addType(unityEnums, typeof(GradientMode));
             // Enums used by styles
             addType(unityEnums, typeof(StyleKeyword));
             addType(unityEnums, typeof(LengthUnit));
