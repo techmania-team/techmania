@@ -467,7 +467,7 @@ PrefabInstance:
     - target: {fileID: 4922370464033949790, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: key
-      value: load_screen_revert_default_theme_button
+      value: boot_screen_revert_default_theme_button
       objectReference: {fileID: 0}
     - target: {fileID: 6181626877150152068, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
@@ -1777,7 +1777,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
   audioSourceManager: {fileID: 1505072944}
-  loadScreen: {fileID: 1622777474285759389}
+  bootScreen: {fileID: 1622777474285759389}
 --- !u!1001 &1505072943
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2270,7 +2270,7 @@ GameObject:
   - component: {fileID: 1622777474285759380}
   - component: {fileID: 1622777474285759389}
   m_Layer: 5
-  m_Name: Load Screen
+  m_Name: Boot Screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

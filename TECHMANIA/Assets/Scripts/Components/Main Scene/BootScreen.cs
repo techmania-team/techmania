@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // TODO: rename to BootScreen.
-public class LoadScreen : MonoBehaviour
+public class BootScreen : MonoBehaviour
 {
     public TextMeshProUGUI progressLine1;
     public TextMeshProUGUI progressLine2;
@@ -18,16 +18,16 @@ public class LoadScreen : MonoBehaviour
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;
 
-    public void StartLoading()
+    public void StartBooting()
     {
         themeDecided = false;
         revertPromptCoroutine = StartCoroutine(
             ShowRevertDefaultThemePrompt());
 
-        StartCoroutine(LoadSequence());
+        StartCoroutine(BootSequence());
     }
 
-    private IEnumerator LoadSequence()
+    private IEnumerator BootSequence()
     {
         bool loaded = false;
         GlobalResourceLoader.ProgressCallback progressCallback =
@@ -150,7 +150,7 @@ public class LoadScreen : MonoBehaviour
         for (int i = 5; i >= 1; i--)
         {
             revertMessage.text = L10n.GetStringAndFormat(
-                "load_screen_revert_default_theme_label", i);
+                "boot_screen_revert_default_theme_label", i);
             yield return new WaitForSeconds(1f);
         }
         revertButtonContainer.SetActive(false);

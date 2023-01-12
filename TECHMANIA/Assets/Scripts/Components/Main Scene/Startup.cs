@@ -6,7 +6,7 @@ public class Startup : MonoBehaviour
 {
     public TextAsset stringTable;
     public AudioSourceManager audioSourceManager;
-    public LoadScreen loadScreen;
+    public BootScreen bootScreen;
 
     private static void LoadRuleset()
     {
@@ -51,6 +51,6 @@ public class Startup : MonoBehaviour
         DiscordController.Start();
         DiscordController.SetActivity(DiscordActivityType.MainMenu);
 
-        loadScreen.StartLoading();
+        bootScreen.StartBooting();
     }
 }
