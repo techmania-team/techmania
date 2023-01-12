@@ -98,13 +98,19 @@ public class Options : OptionsBase
 
     public Modifiers modifiers;
 
-    // Per-track options.
-    // This should be a dictionary, but dictionaries are not
-    // directly serializable, and we don't expect more than a
-    // few hundred elements anyway.
-    public List<PerTrackOptions> perTrackOptions;
+    // Per-track options. Dictionary is keyed by GUID.
+    // Themes should access this with GetPerTrackOptions.
 
-    // Theme-specific
+    [MoonSharp.Interpreter.MoonSharpHidden]
+    public List<PerTrackOptions> perTrackOptions;
+    [NonSerialized]
+    [MoonSharp.Interpreter.MoonSharpHidden]
+    public Dictionary<string, PerTrackOptions> perTrackOptionsDict;
+
+    // Per-theme options. Dictionary is keyed by theme name, however
+    // themes can declare any name.
+    // TODO: maintain in-memory copy as
+    // Dictionary<string, Dictionary<string, string>>.
 
     [MoonSharp.Interpreter.MoonSharpHidden]
     public List<ThemeOptions> themeOptions;
@@ -178,6 +184,7 @@ public class Options : OptionsBase
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new List<PerTrackOptions>();
+        perTrackOptionsDict = new Dictionary<string, PerTrackOptions>();
 
         ThemeOptions defaultThemeOptions = new ThemeOptions(
             kDefaultTheme);
@@ -202,7 +209,12 @@ public class Options : OptionsBase
 
     protected override void PrepareToSerialize()
     {
-        RemoveDefaultPerTrackOptions();
+        PreparePerTrackOptionsToSerialize();
+    }
+
+    protected override void InitAfterDeserialize()
+    {
+        InitPerTrackOptionsAfterDeserialize();
     }
 
     public static int GetDefaultAudioBufferSize()
@@ -369,30 +381,33 @@ public class Options : OptionsBase
     #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
-        foreach (PerTrackOptions options in perTrackOptions)
+        if (!perTrackOptionsDict.ContainsKey(guid))
         {
-            if (options.trackGuid == guid) return options;
+            PerTrackOptions newOptions = new PerTrackOptions(guid);
+            perTrackOptionsDict.Add(guid, newOptions);
+            // At this time the new options are not written to disk.
         }
 
-        PerTrackOptions newOptions = new PerTrackOptions(guid);
-        perTrackOptions.Add(newOptions);  // Not written to disk yet.
-        return newOptions;
+        return perTrackOptionsDict[guid];
     }
 
-    private void RemoveDefaultPerTrackOptions()
+    private void InitPerTrackOptionsAfterDeserialize()
     {
-        List<PerTrackOptions> remainingOptions =
-            new List<PerTrackOptions>();
-        foreach (PerTrackOptions p in perTrackOptions)
+        perTrackOptionsDict.Clear();
+        foreach (PerTrackOptions o in perTrackOptions)
         {
-            if (!p.noVideo && p.backgroundBrightness == 
-                PerTrackOptions.kMaxBrightness)
-            {
-                continue;
-            }
-            remainingOptions.Add(p);
+            perTrackOptionsDict.Add(o.trackGuid, o);
         }
-        perTrackOptions = remainingOptions;
+    }
+
+    private void PreparePerTrackOptionsToSerialize()
+    {
+        perTrackOptions.Clear();
+        foreach (PerTrackOptions o in perTrackOptionsDict.Values)
+        {
+            if (o.SameAsDefault()) continue;
+            perTrackOptions.Add(o);
+        }
     }
     #endregion
 
@@ -810,6 +825,11 @@ public class PerTrackOptions
             noVideo = noVideo,
             backgroundBrightness = backgroundBrightness
         };
+    }
+
+    public bool SameAsDefault()
+    {
+        return !noVideo && backgroundBrightness == kMaxBrightness;
     }
 }
 
