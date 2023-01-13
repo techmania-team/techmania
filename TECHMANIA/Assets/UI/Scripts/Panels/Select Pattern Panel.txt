@@ -587,12 +587,9 @@ modifierSideSheet.Show = function()
     local sheet = modifierSideSheet.sheet
     modifierSideSheet.SetDropdownValues()
 
-    local themeOptions = tm.options.GetThemeOptions()
-    local showTally = false
-    if (themeOptions.Get("showJudgementTally") == "True") then
-        showTally = true
-    end
-    controls.SetToggleIsOn(sheet.Q("judgement-tally").Q("track"), showTally)
+    controls.SetToggleIsOn(
+        sheet.Q("judgement-tally").Q("track"),
+        themeOptions["showJudgementTally"] == "True")
 
     commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
 
@@ -738,16 +735,12 @@ modifierSideSheet.Initialize = function()
     InitializeDropdown("scroll-speed", "scrollSpeed")
 
     local judgementTallyKey = "showJudgementTally"
-    local themeOptions = tm.options.GetThemeOptions()
-    if (not themeOptions.Has(judgementTallyKey)) then
-        themeOptions.Add(judgementTallyKey, "False")
-    end
     bg.Q("judgement-tally").Q("track").RegisterCallback(eventType.Click, function()
-        local oldValue = themeOptions.Get(judgementTallyKey)
+        local oldValue = themeOptions[judgementTallyKey]
         if (oldValue == "True") then
-            themeOptions.Set(judgementTallyKey, "False")
+            themeOptions[judgementTallyKey] = "False"
         else
-            themeOptions.Set(judgementTallyKey, "True")
+            themeOptions[judgementTallyKey] = "True"
         end
     end)
 

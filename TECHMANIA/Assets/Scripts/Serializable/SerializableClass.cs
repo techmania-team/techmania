@@ -66,6 +66,8 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
     }
 
     // Throws FormatException or ArgumentException on failure.
+    // This will call T's constructor, then overwrite fields with
+    // ones in json.
     public static T Deserialize(string json, out bool upgraded)
     {
 #if UNITY_2022
@@ -153,6 +155,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         throw new NotImplementedException();
     }
     protected virtual void PrepareToSerialize() { }
+    // Called after construction, deserialization and any upgrades.
     protected virtual void InitAfterDeserialize() { }
 
     #region Culture

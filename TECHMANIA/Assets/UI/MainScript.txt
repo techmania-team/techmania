@@ -9,6 +9,8 @@ tm.l10n.Initialize(util.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
 
+themeOptions = tm.options.GetThemeOptions("Default")
+
 tm.ExecuteScript("Assets/UI/Scripts/Utilities.txt")
 tm.ExecuteScript("Assets/UI/Scripts/Fading.txt")
 tm.ExecuteScript("Assets/UI/Controls/Controls.txt")

@@ -1,11 +1,7 @@
-themeOptions = nil
-
 function InitializeThemeOptions()
-    themeOptions = tm.options.GetThemeOptions()
-
     function InitializeOneOption(key, defaultValue)
-        if (not themeOptions.Has(key)) then
-            themeOptions.Set(key, defaultValue)
+        if (not themeOptions.ContainsKey(key)) then
+            themeOptions.Add(key, defaultValue)
         end
     end
 
@@ -77,7 +73,7 @@ optionsPanel.Show = function()
 
     function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
-        controls.SetToggleIsOn(toggle, net.bool.Parse(themeOptions.Get(key)))
+        controls.SetToggleIsOn(toggle, net.bool.Parse(themeOptions[key]))
     end
     ShowThemeOptionToggle("show-loading-bar", "showLoadingBar")
     ShowThemeOptionToggle("show-fps", "showFps")
@@ -85,9 +81,9 @@ optionsPanel.Show = function()
     ShowThemeOptionToggle("show-lane-dividers", "showLaneDividers")
 
     local beatMarkersDropdown = panel.Q("beat-markers").Q("dropdown")
-    beatMarkersDropdown.SetValueWithoutNotify(optionsPanel.beatMarkersDisplayString[themeOptions.Get("beatMarkers")])
+    beatMarkersDropdown.SetValueWithoutNotify(optionsPanel.beatMarkersDisplayString[themeOptions["beatMarkers"]])
     local bgScalingDropdown = panel.Q("background-scaling").Q("dropdown")
-    bgScalingDropdown.SetValueWithoutNotify(optionsPanel.bgScalingDisplayString[themeOptions.Get("backgroundScalingMode")])
+    bgScalingDropdown.SetValueWithoutNotify(optionsPanel.bgScalingDisplayString[themeOptions["backgroundScalingMode"]])
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.options.ruleset])
@@ -217,14 +213,14 @@ optionsPanel.Initialize = function()
     function InitializeThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
         toggle.RegisterCallback(eventType.Click, function()
-            local oldValue = themeOptions.Get(key)
+            local oldValue = themeOptions[key]
             local newValue = ""
             if (oldValue == "True") then
                 newValue = "False"
             else
                 newValue = "True"
             end
-            themeOptions.Set(key, newValue)
+            themeOptions[key] = newValue
         end)
     end
     InitializeThemeOptionToggle("show-loading-bar", "showLoadingBar")
@@ -236,7 +232,7 @@ optionsPanel.Initialize = function()
         local dropdown = panel.Q(containerName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             enum = KeyFromValue(stringTable, event.newValue)
-            themeOptions.Set(key, enum)
+            themeOptions[key] = enum
         end)
     end
     InitializeThemeOptionDropdown("beat-markers", "beatMarkers", optionsPanel.beatMarkersDisplayString)

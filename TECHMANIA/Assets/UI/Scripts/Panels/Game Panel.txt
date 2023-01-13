@@ -198,7 +198,7 @@ gamePanel.StartLoading = function()
     panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
     panel.Q("middle-fever-bar-bg").display = false
-    panel.Q("loading-bar-wrap").display = themeOptions.Get("showLoadingBar") == "True"
+    panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
 
@@ -217,7 +217,7 @@ gamePanel.BeginGame = function()
     local panel = gamePanel.panel
 
     -- Relocate game area if necessary.
-    local scalingMode = themeOptions.Get("backgroundScalingMode")
+    local scalingMode = themeOptions["backgroundScalingMode"]
     local bgLayer = panel.Q("bg-layer")
     if (scalingMode == "FillEntireScreen" and
         bgLayer.parent.Equals(panel.Q("remaining-space"))) then
