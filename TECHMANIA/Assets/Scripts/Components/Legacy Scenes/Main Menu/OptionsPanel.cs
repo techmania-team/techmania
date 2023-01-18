@@ -385,7 +385,7 @@ public class OptionsPanel : MonoBehaviour
     {
         if (result[0] == '{')
         {
-            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+            ContentInfo info = Json.Deserialize<ContentInfo>(result);
             OnTracksFolderSelected(info.path);
         }
     }
@@ -394,7 +394,7 @@ public class OptionsPanel : MonoBehaviour
     {
         if (result[0] == '{')
         {
-            ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+            ContentInfo info = Json.Deserialize<ContentInfo>(result);
             OnSkinsFolderSelected(info.path);
         }
     }

@@ -328,10 +328,8 @@ public partial class Pattern
     {
 #if UNITY_2022
         PackAllNotes();
-        string json = UnityEngine.JsonUtility.ToJson(
-            this, prettyPrint: false);
-        Pattern clone = UnityEngine.JsonUtility
-            .FromJson<Pattern>(json);
+        string json = Json.Serialize(this, formatForFile: false);
+        Pattern clone = Json.Deserialize<Pattern>(json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         clone.UnpackAllNotes();
         return clone;

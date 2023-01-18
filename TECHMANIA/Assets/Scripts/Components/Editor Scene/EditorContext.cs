@@ -27,7 +27,7 @@ public class EditOperation
     public void TakeTrackSnapshot()
     {
         trackSnapsnotBeforeOp = EditorContext.track.Serialize(
-            optimizeForSaving: false);
+            formatForFile: false);
     }
     // It's up to EditorContext to take appropriate snapshot
     // upon undo/redo.

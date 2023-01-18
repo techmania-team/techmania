@@ -163,10 +163,8 @@ public class PatternV1
     public PatternV1 CloneWithDifferentGuid()
     {
 #if UNITY_2022
-        string json = UnityEngine.JsonUtility.ToJson(
-            this, prettyPrint: false);
-        PatternV1 clone = UnityEngine.JsonUtility
-            .FromJson<PatternV1>(json);
+        string json = Json.Serialize(this, formatForFile: false);
+        PatternV1 clone = Json.Deserialize<PatternV1>(json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         return clone;
 #else

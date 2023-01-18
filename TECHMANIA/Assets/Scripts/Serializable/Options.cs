@@ -110,8 +110,6 @@ public class Options : OptionsBase
     // Per-theme options. Dictionary is keyed by themes'
     // self-declared names.
     // Themes should access this with GetThemeOptions.
-    // TODO: maintain in-memory copy as
-    // Dictionary<string, Dictionary<string, string>>.
 
     [MoonSharp.Interpreter.MoonSharpHidden]
     public List<ThemeOptions> themeOptions;
@@ -370,8 +368,10 @@ public class Options : OptionsBase
             instance = LoadFromFile(
                 Paths.GetOptionsFilePath()) as Options;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Debug.LogError("An error occurred when loading options. See next error.");
+            Debug.LogException(ex);
             instance = new Options();
         }
     }

@@ -714,8 +714,7 @@ public partial class Pattern
     {
         // Minimize pattern, serialize, then convert to binary.
         MinimizedPattern miniP = new MinimizedPattern(this);
-        string json = UnityEngine.JsonUtility.ToJson(miniP,
-            prettyPrint: false);
+        string json = Json.Serialize(miniP, formatForFile: false);
         byte[] hashInput = Encoding.UTF8.GetBytes(json);
 
         // Compute hash.

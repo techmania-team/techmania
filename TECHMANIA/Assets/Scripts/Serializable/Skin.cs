@@ -175,6 +175,23 @@ public class NoteSkin : NoteSkinBase
     public NoteSkin()
     {
         version = kVersion;
+
+        basic = new SpriteSheet();
+        chainHead = new SpriteSheet();
+        chainNode = new SpriteSheet();
+        chainPath = new SpriteSheet();
+        dragHead = new SpriteSheet();
+        dragCurve = new SpriteSheet();
+        holdHead = new SpriteSheet();
+        holdTrail = new SpriteSheet();
+        holdTrailEnd = new SpriteSheet();
+        holdOngoingTrail = new SpriteSheet();
+        repeatHead = new SpriteSheet();
+        repeat = new SpriteSheet();
+        repeatHoldTrail = new SpriteSheet();
+        repeatHoldTrailEnd = new SpriteSheet();
+        repeatPath = new SpriteSheet();
+        repeatPathEnd = new SpriteSheet();
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
@@ -244,6 +261,22 @@ public class VfxSkin : VfxSkinBase
     public VfxSkin()
     {
         version = kVersion;
+
+        feverOverlay = new SpriteSheet();
+
+        basicMax = new List<SpriteSheet>();
+        basicCool = new List<SpriteSheet>();
+        basicGood = new List<SpriteSheet>();
+        dragOngoing = new List<SpriteSheet>();
+        dragComplete = new List<SpriteSheet>();
+        holdOngoingHead = new List<SpriteSheet>();
+        holdOngoingTrail = new List<SpriteSheet>();
+        holdComplete = new List<SpriteSheet>();
+        repeatHead = new List<SpriteSheet>();
+        repeatNote = new List<SpriteSheet>();
+        repeatHoldOngoingHead = new List<SpriteSheet>();
+        repeatHoldOngoingTrail = new List<SpriteSheet>();
+        repeatHoldComplete = new List<SpriteSheet>();
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
@@ -307,6 +340,29 @@ public class ComboSkin : ComboSkinBase
     public ComboSkin()
     {
         version = kVersion;
+
+        feverMaxJudgement = new SpriteSheet();
+        rainbowMaxJudgement = new SpriteSheet();
+        maxJudgement = new SpriteSheet();
+        coolJudgement = new SpriteSheet();
+        goodJudgement = new SpriteSheet();
+        missJudgement = new SpriteSheet();
+        breakJudgement = new SpriteSheet();
+
+        feverMaxDigits = new List<SpriteSheet>();
+        rainbowMaxDigits = new List<SpriteSheet>();
+        maxDigits = new List<SpriteSheet>();
+        coolDigits = new List<SpriteSheet>();
+        goodDigits = new List<SpriteSheet>();
+
+        for (int i = 0; i < 10; i++)
+        {
+            feverMaxDigits.Add(new SpriteSheet());
+            rainbowMaxDigits.Add(new SpriteSheet());
+            maxDigits.Add(new SpriteSheet());
+            coolDigits.Add(new SpriteSheet());
+            goodDigits.Add(new SpriteSheet());
+        }
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
@@ -373,6 +429,18 @@ public class GameUISkin : GameUISkinBase
 
     // Uses scale.
     public SpriteSheet approachOverlay;
+
+    public GameUISkin()
+    {
+        version = kVersion;
+
+        scanline = new SpriteSheet();
+        autoPlayScanline = new SpriteSheet();
+        scanCountdownBackground = new SpriteSheet();
+        scanCountdownNumbers = new SpriteSheet();
+        touchClickFeedback = new SpriteSheet();
+        approachOverlay = new SpriteSheet();
+    }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
     {

@@ -41,19 +41,11 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 {
     public string version;
 
-    public string Serialize(bool optimizeForSaving)
+    public string Serialize(bool formatForFile)
     {
         PrepareToSerialize();
 #if UNITY_2022
-        if (optimizeForSaving)
-        {
-            return JsonUtility.ToJson(this, prettyPrint: true)
-                .Replace("    ", "\t");
-        }
-        else
-        {
-            return JsonUtility.ToJson(this, prettyPrint: false);
-        }
+        return Json.Serialize(this, formatForFile);
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             GetType(),
@@ -71,7 +63,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
     public static T Deserialize(string json, out bool upgraded)
     {
 #if UNITY_2022
-        string version = JsonUtility.FromJson<T>(json).version;
+        string version = Json.Deserialize<T>(json).version;
         Type subclassType = null;
         string latestVersion = null;
 
@@ -103,7 +95,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         }
 
         // Deserialize, upgrade if necessary, initialize if necessary.
-        T t = JsonUtility.FromJson(json, subclassType) as T;
+        T t = Json.Deserialize(json, subclassType) as T;
         upgraded = false;
         while (t.version != latestVersion)
         {
@@ -125,13 +117,13 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public T Clone()
     {
-        return Deserialize(Serialize(optimizeForSaving: false));
+        return Deserialize(Serialize(formatForFile: false));
     }
 
     public void SaveToFile(string path)
     {
         System.IO.File.WriteAllText(path, Serialize(
-            optimizeForSaving: true));
+            formatForFile: true));
     }
 
     public static T LoadFromFile(string path, out bool upgraded)
