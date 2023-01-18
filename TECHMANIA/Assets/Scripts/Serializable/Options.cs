@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -33,6 +34,8 @@ public class OptionsBase : SerializableClass<OptionsBase>
 // - Replaced refreshRate with refreshRateNumerator and
 //   refreshRateDenominator, in line with Unity 2022.2 deprecating
 //   Resolution.refreshRate.
+// - Per-track options are now serialized as a dictionary.
+// TODO: serialize theme options as dictionary.
 [MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Options : OptionsBase
@@ -102,10 +105,7 @@ public class Options : OptionsBase
     // Themes should access this with GetPerTrackOptions.
 
     [MoonSharp.Interpreter.MoonSharpHidden]
-    public List<PerTrackOptions> perTrackOptions;
-    [NonSerialized]
-    [MoonSharp.Interpreter.MoonSharpHidden]
-    public Dictionary<string, PerTrackOptions> perTrackOptionsDict;
+    public Dictionary<string, PerTrackOptions> perTrackOptions;
 
     // Per-theme options. Dictionary is keyed by themes'
     // self-declared names.
@@ -186,8 +186,7 @@ public class Options : OptionsBase
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
-        perTrackOptions = new List<PerTrackOptions>();
-        perTrackOptionsDict = new Dictionary<string, PerTrackOptions>();
+        perTrackOptions = new Dictionary<string, PerTrackOptions>();
         themeOptions = new List<ThemeOptions>();
         themeOptionsDict = new Dictionary<string,
             Dictionary<string, string>>();
@@ -220,7 +219,6 @@ public class Options : OptionsBase
 
     protected override void InitAfterDeserialize()
     {
-        InitPerTrackOptionsAfterDeserialize();
         InitThemeOptionsAfterDeserialize();
     }
 
@@ -390,33 +388,27 @@ public class Options : OptionsBase
     #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
-        if (!perTrackOptionsDict.ContainsKey(guid))
+        if (!perTrackOptions.ContainsKey(guid))
         {
-            PerTrackOptions newOptions = new PerTrackOptions(guid);
-            perTrackOptionsDict.Add(guid, newOptions);
+            PerTrackOptions newOptions = new PerTrackOptions();
+            perTrackOptions.Add(guid, newOptions);
             // At this time the new options are not written to disk.
         }
 
-        return perTrackOptionsDict[guid];
-    }
-
-    private void InitPerTrackOptionsAfterDeserialize()
-    {
-        perTrackOptionsDict.Clear();
-        foreach (PerTrackOptions o in perTrackOptions)
-        {
-            perTrackOptionsDict.Add(o.trackGuid, o);
-        }
+        return perTrackOptions[guid];
     }
 
     private void PreparePerTrackOptionsToSerialize()
     {
-        perTrackOptions.Clear();
-        foreach (PerTrackOptions o in perTrackOptionsDict.Values)
+        Dictionary<string, PerTrackOptions> nonDefaultOptions
+            = new Dictionary<string, PerTrackOptions>();
+        foreach (KeyValuePair<string, PerTrackOptions> pair in 
+            perTrackOptions)
         {
-            if (o.SameAsDefault()) continue;
-            perTrackOptions.Add(o);
+            if (pair.Value.SameAsDefault()) continue;
+            nonDefaultOptions.Add(pair.Key, pair.Value);
         }
+        perTrackOptions = nonDefaultOptions;
     }
     #endregion
 
@@ -829,21 +821,19 @@ public class Modifiers
 [Serializable]
 public class PerTrackOptions
 {
-    public string trackGuid;
     public bool noVideo;
     public int backgroundBrightness;  // 0-10
     public const int kMaxBrightness = 10;
 
-    public PerTrackOptions(string trackGuid)
+    public PerTrackOptions()
     {
-        this.trackGuid = trackGuid;
         noVideo = false;
         backgroundBrightness = kMaxBrightness;
     }
 
     public PerTrackOptions Clone()
     {
-        return new PerTrackOptions(trackGuid)
+        return new PerTrackOptions()
         {
             noVideo = noVideo,
             backgroundBrightness = backgroundBrightness
@@ -968,6 +958,41 @@ public class ThemeOptions
     }
 }
 
+// For deserialization with OptionsV2 and OptionsV1.
+[Serializable]
+public class PerTrackOptionsWithGuid
+{
+    public string trackGuid;
+    public bool noVideo;
+    public int backgroundBrightness;  // 0-10
+    public const int kMaxBrightness = 10;
+
+    public PerTrackOptionsWithGuid(string trackGuid)
+    {
+        this.trackGuid = trackGuid;
+        noVideo = false;
+        backgroundBrightness = kMaxBrightness;
+    }
+
+    public PerTrackOptionsWithGuid Clone()
+    {
+        return new PerTrackOptionsWithGuid(trackGuid)
+        {
+            noVideo = noVideo,
+            backgroundBrightness = backgroundBrightness
+        };
+    }
+
+    public PerTrackOptions DropGuid()
+    {
+        return new PerTrackOptions()
+        {
+            noVideo = noVideo,
+            backgroundBrightness = backgroundBrightness
+        };
+    }
+}
+
 [Serializable]
 public class OptionsV2 : OptionsBase
 {
@@ -1057,7 +1082,7 @@ public class OptionsV2 : OptionsBase
     // This should be a dictionary, but dictionaries are not
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
-    public List<PerTrackOptions> perTrackOptions;
+    public List<PerTrackOptionsWithGuid> perTrackOptions;
 
     public OptionsV2()
     {
@@ -1107,7 +1132,7 @@ public class OptionsV2 : OptionsBase
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
-        perTrackOptions = new List<PerTrackOptions>();
+        perTrackOptions = new List<PerTrackOptionsWithGuid>();
         trackFilter = new TrackFilter();
     }
 
@@ -1149,14 +1174,14 @@ public class OptionsV2 : OptionsBase
 
             editorOptions = editorOptions.Clone(),
             modifiers = modifiers.Clone(),
-            perTrackOptions = new List<PerTrackOptions>(),
+            perTrackOptions = new Dictionary<string, PerTrackOptions>(),
 
             themeOptions = new List<ThemeOptions>(),
         };
 
-        foreach (PerTrackOptions o in perTrackOptions)
+        foreach (PerTrackOptionsWithGuid o in perTrackOptions)
         {
-            upgraded.perTrackOptions.Add(o.Clone());
+            upgraded.perTrackOptions.Add(o.trackGuid, o.DropGuid());
         }
 
         ThemeOptions defaultThemeOptions =
@@ -1257,7 +1282,7 @@ public class OptionsV1 : OptionsBase
     // This should be a dictionary, but dictionaries are not
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
-    public List<PerTrackOptions> perTrackOptions;
+    public List<PerTrackOptionsWithGuid> perTrackOptions;
 
     public OptionsV1()
     {
@@ -1300,7 +1325,7 @@ public class OptionsV1 : OptionsBase
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
-        perTrackOptions = new List<PerTrackOptions>();
+        perTrackOptions = new List<PerTrackOptionsWithGuid>();
         trackFilter = new TrackFilter();
     }
 
@@ -1350,9 +1375,9 @@ public class OptionsV1 : OptionsBase
 
             trackFilter = trackFilter.Clone(),
 
-            perTrackOptions = new List<PerTrackOptions>()
+            perTrackOptions = new List<PerTrackOptionsWithGuid>()
         };
-        foreach (PerTrackOptions o in perTrackOptions)
+        foreach (PerTrackOptionsWithGuid o in perTrackOptions)
         {
             upgraded.perTrackOptions.Add(o.Clone());
         }

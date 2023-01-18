@@ -80,6 +80,7 @@ public class Record
     }
 }
 
+// TODO: increment version number and serialize dictionary.
 [Serializable]
 [MoonSharpUserData]
 public class Records : RecordsBase
