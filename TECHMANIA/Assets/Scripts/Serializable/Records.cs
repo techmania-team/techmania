@@ -80,7 +80,6 @@ public class Record
     }
 }
 
-// TODO: increment version number and serialize dictionary.
 [Serializable]
 [MoonSharpUserData]
 public class Records : RecordsBase
@@ -88,10 +87,13 @@ public class Records : RecordsBase
     public const string kVersion = "1";
 
     // The format stored on disk.
+    [MoonSharpHidden]
     public List<Record> records;
 
-    // The format stored in memory.
+    // The format stored in memory. We don't serialize this dictionary
+    // directly because it's 2 levels deep.
     [NonSerialized]
+    [MoonSharpHidden]
     public Dictionary<Options.Ruleset, Dictionary<string, Record>> 
         recordDict;
 
