@@ -35,7 +35,6 @@ public class OptionsBase : SerializableClass<OptionsBase>
 //   refreshRateDenominator, in line with Unity 2022.2 deprecating
 //   Resolution.refreshRate.
 // - Per-track options are now serialized as a dictionary.
-// TODO: serialize theme options as dictionary.
 [MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Options : OptionsBase
@@ -108,15 +107,11 @@ public class Options : OptionsBase
     public Dictionary<string, PerTrackOptions> perTrackOptions;
 
     // Per-theme options. Dictionary is keyed by themes'
-    // self-declared names.
+    // self-declared names when calling GetThemeOptions.
     // Themes should access this with GetThemeOptions.
 
     [MoonSharp.Interpreter.MoonSharpHidden]
-    public List<ThemeOptions> themeOptions;
-    [NonSerialized]
-    [MoonSharp.Interpreter.MoonSharpHidden]
-    public Dictionary<string, Dictionary<string, string>> 
-        themeOptionsDict;
+    public Dictionary<string, Dictionary<string, string>> themeOptions;
 
     /* Default theme options
      * 
@@ -187,44 +182,49 @@ public class Options : OptionsBase
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
         perTrackOptions = new Dictionary<string, PerTrackOptions>();
-        themeOptions = new List<ThemeOptions>();
-        themeOptionsDict = new Dictionary<string,
+        themeOptions = new Dictionary<string,
             Dictionary<string, string>>();
 
-        ThemeOptions defaultThemeOptions = new ThemeOptions(
-            kDefaultTheme);
-        defaultThemeOptions.Add("showLoadingBar", true.ToString());
-        defaultThemeOptions.Add("showFps", false.ToString());
-        defaultThemeOptions.Add("showJudgementTally", false.ToString());
-        defaultThemeOptions.Add("showLaneDividers", false.ToString());
-        defaultThemeOptions.Add("beatMarkers", "Hidden");
-        defaultThemeOptions.Add("backgroundScalingMode",
-            "FillEntireScreen");
-        defaultThemeOptions.Add("pauseWhenGameLosesFocus",
-            true.ToString());
-        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders",
-            false.ToString());
-        defaultThemeOptions.Add("trackFilter.sortBasis",
-            TrackFilter.SortBasis.Title.ToString());
-        defaultThemeOptions.Add("trackFilter.sortOrder",
-            TrackFilter.SortOrder.Ascending.ToString());
-        themeOptions.Add(defaultThemeOptions);
+        Dictionary<string, string> defaultThemeOptions =
+            new Dictionary<string, string>
+            {
+                { "showLoadingBar", true.ToString() },
+                { "showFps", false.ToString() },
+                { "showJudgementTally", false.ToString() },
+                { "showLaneDividers", false.ToString() },
+                { "beatMarkers", "Hidden" },
+                {
+                    "backgroundScalingMode",
+                    "FillEntireScreen"
+                },
+                {
+                    "pauseWhenGameLosesFocus",
+                    true.ToString()
+                },
+                {
+                    "trackFilter.showTracksInAllFolders",
+                    false.ToString()
+                },
+                {
+                    "trackFilter.sortBasis",
+                    TrackFilter.SortBasis.Title.ToString()
+                },
+                {
+                    "trackFilter.sortOrder",
+                    TrackFilter.SortOrder.Ascending.ToString()
+                }
+            };
+        themeOptions.Add(kDefaultTheme, defaultThemeOptions);
     }
 
     protected override void PrepareToSerialize()
     {
         PreparePerTrackOptionsToSerialize();
-        PrepareThemeOptionsToSerialize();
     }
 
     protected override void InitAfterDeserialize()
     {
-        InitThemeOptionsAfterDeserialize();
-    }
-
-    public static int GetDefaultAudioBufferSize()
-    {
-        return AudioSettings.GetConfiguration().dspBufferSize;
+        // Do nothing
     }
 
     #region Offset & latency
@@ -335,6 +335,11 @@ public class Options : OptionsBase
             sfxVolumePercent));
     }
 
+    public static int GetDefaultAudioBufferSize()
+    {
+        return AudioSettings.GetConfiguration().dspBufferSize;
+    }
+
     // This resets the audio mixer, AND it only happens in
     // the standalone player. What the heck? Anyway always reset
     // the audio mixer after calling this.
@@ -368,7 +373,7 @@ public class Options : OptionsBase
         }
         catch (Exception ex)
         {
-            Debug.LogError("An error occurred when loading options. See next error.");
+            Debug.LogError("An error occurred when loading options. All options will be reverted to default. See next error for details.");
             Debug.LogException(ex);
             instance = new Options();
         }
@@ -415,32 +420,12 @@ public class Options : OptionsBase
     #region Per-theme options
     public Dictionary<string, string> GetThemeOptions(string themeName)
     {
-        if (!themeOptionsDict.ContainsKey(themeName))
+        if (!themeOptions.ContainsKey(themeName))
         {
-            themeOptionsDict.Add(themeName,
+            themeOptions.Add(themeName,
                 new Dictionary<string, string>());
         }
-        return themeOptionsDict[themeName];
-    }
-
-    private void InitThemeOptionsAfterDeserialize()
-    {
-        themeOptionsDict.Clear();
-        foreach (ThemeOptions o in themeOptions)
-        {
-            themeOptionsDict.Add(o.themeName, o.ToDictionary());
-        }
-    }
-
-    private void PrepareThemeOptionsToSerialize()
-    {
-        themeOptions.Clear();
-        foreach (KeyValuePair<string, Dictionary<string, string>>
-            pair in themeOptionsDict)
-        {
-            themeOptions.Add(ThemeOptions.FromDictionary(pair.Key,
-                pair.Value));
-        }
+        return themeOptions[themeName];
     }
     #endregion
 }
@@ -906,58 +891,6 @@ public class TrackFilter
     }
 }
 
-[MoonSharp.Interpreter.MoonSharpUserData]
-[Serializable]
-public class ThemeOptions
-{
-    public ThemeOptions(string themeName)
-    {
-        this.themeName = themeName;
-        pairs = new List<KVPair>();
-    }
-
-    public string themeName;
-    [Serializable]
-    public class KVPair
-    {
-        public string key;
-        public string value;
-        public KVPair(string key, string value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-    public List<KVPair> pairs;
-
-    public void Add(string key, string value)
-    {
-        pairs.Add(new KVPair(key, value));
-    }
-
-    public Dictionary<string, string> ToDictionary()
-    {
-        Dictionary<string, string> result =
-            new Dictionary<string, string>();
-        foreach (KVPair pair in pairs)
-        {
-            result.Add(pair.key, pair.value);
-        }
-        return result;
-    }
-
-    public static ThemeOptions FromDictionary(
-        string themeName, Dictionary<string, string> dict)
-    {
-        ThemeOptions options = new ThemeOptions(themeName);
-        foreach (KeyValuePair<string, string> pair in dict)
-        {
-            options.pairs.Add(new KVPair(pair.Key, pair.Value));
-        }
-        return options;
-    }
-}
-
 // For deserialization with OptionsV2 and OptionsV1.
 [Serializable]
 public class PerTrackOptionsWithGuid
@@ -1175,8 +1108,8 @@ public class OptionsV2 : OptionsBase
             editorOptions = editorOptions.Clone(),
             modifiers = modifiers.Clone(),
             perTrackOptions = new Dictionary<string, PerTrackOptions>(),
-
-            themeOptions = new List<ThemeOptions>(),
+            themeOptions = new Dictionary<string,
+                Dictionary<string, string>>()
         };
 
         foreach (PerTrackOptionsWithGuid o in perTrackOptions)
@@ -1184,28 +1117,48 @@ public class OptionsV2 : OptionsBase
             upgraded.perTrackOptions.Add(o.trackGuid, o.DropGuid());
         }
 
-        ThemeOptions defaultThemeOptions =
-            new ThemeOptions(Options.kDefaultTheme);
-        defaultThemeOptions.Add("showLoadingBar",
-            showLoadingBar.ToString());
-        defaultThemeOptions.Add("showFps", showFps.ToString());
-        defaultThemeOptions.Add("showJudgementTally",
-            showJudgementTally.ToString());
-        defaultThemeOptions.Add("showLaneDividers",
-            showLaneDividers.ToString());
-        defaultThemeOptions.Add("beatMarkers",
-            beatMarkers.ToString());
-        defaultThemeOptions.Add("backgroundScalingMode",
-            backgroundScalingMode.ToString());
-        defaultThemeOptions.Add("pauseWhenGameLosesFocus",
-            pauseWhenGameLosesFocus.ToString());
-        defaultThemeOptions.Add("trackFilter.showTracksInAllFolders",
-            trackFilter.showTracksInAllFolders.ToString());
-        defaultThemeOptions.Add("trackFilter.sortBasis",
-            trackFilter.sortBasis.ToString());
-        defaultThemeOptions.Add("trackFilter.sortOrder",
-            trackFilter.sortOrder.ToString());
-        upgraded.themeOptions.Add(defaultThemeOptions);
+        Dictionary<string, string> defaultThemeOptions =
+            new Dictionary<string, string>
+            {
+                {
+                    "showLoadingBar",
+                    showLoadingBar.ToString()
+                },
+                { "showFps", showFps.ToString() },
+                {
+                    "showJudgementTally",
+                    showJudgementTally.ToString()
+                },
+                {
+                    "showLaneDividers",
+                    showLaneDividers.ToString()
+                },
+                {
+                    "beatMarkers",
+                    beatMarkers.ToString()
+                },
+                {
+                    "backgroundScalingMode",
+                    backgroundScalingMode.ToString()
+                },
+                {
+                    "pauseWhenGameLosesFocus",
+                    pauseWhenGameLosesFocus.ToString()
+                },
+                {
+                    "trackFilter.showTracksInAllFolders",
+                    trackFilter.showTracksInAllFolders.ToString()
+                },
+                {
+                    "trackFilter.sortBasis",
+                    trackFilter.sortBasis.ToString()
+                },
+                {
+                    "trackFilter.sortOrder",
+                    trackFilter.sortOrder.ToString()
+                }
+            };
+        upgraded.themeOptions.Add(kDefaultTheme, defaultThemeOptions);
 
         return upgraded;
     }

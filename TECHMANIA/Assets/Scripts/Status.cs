@@ -41,7 +41,7 @@ public class Status
         string message = null,
         string path = null)
     {
-        UnityEngine.Debug.LogError($"An error occurred.\n" +
+        UnityEngine.Debug.LogError($"An error occurred; constructing Status object.\n" +
             $"Code: {code}\n" +
             $"Message: {message}\n" +
             $"Path: {path}");

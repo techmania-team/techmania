@@ -47,7 +47,8 @@ public static class Json
     private static void HandleError(object sender,
         Newtonsoft.Json.Serialization.ErrorEventArgs e)
     {
-        UnityEngine.Debug.LogError(e.ErrorContext.Error.Message);
+        UnityEngine.Debug.LogError("An error occurred during JSON serialization / deserialization: " +
+            e.ErrorContext.Error.Message);
     }
 
     private static Newtonsoft.Json.JsonSerializerSettings
