@@ -113,13 +113,27 @@ public static class Paths
         if (Options.instance.customDataLocation)
         {
 #if UNITY_ANDROID
-            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite) ||
+                !Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
             {
                 Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-            }
-            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
-            {
                 Permission.RequestUserPermission(Permission.ExternalStorageRead);
+
+                AndroidJavaClass version = new AndroidJavaClass("android.os.Build$VERSION");
+                int SDK_INT = version.GetStatic<int>("SDK_INT");
+
+                if (SDK_INT >= 30)
+                {
+                    AndroidJavaClass environment = new AndroidJavaClass("android.os.Environment");
+                    bool isExternalStorageManager = environment.CallStatic<bool>("isExternalStorageManager");
+                    if (!isExternalStorageManager)
+                    {
+                        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                        AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent", "android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION");
+                        activity.Call("startActivity", intent);
+                    }
+                }
             }
 #endif
             trackRootFolder = Options.instance.tracksFolderLocation;
