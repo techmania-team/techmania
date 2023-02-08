@@ -246,6 +246,18 @@ public class Options : OptionsBase
     {
         instance = backupInstance;
     }
+
+    public static void ResetCustomDataLocation ()
+    {
+        instance.customDataLocation = false;
+        instance.noteSkin = "Default";
+        instance.vfxSkin = "Default";
+        instance.comboSkin = "Default";
+        instance.gameUiSkin = "Default";
+        instance.tracksFolderLocation = "";
+        instance.skinsFolderLocation = "";
+        instance.SaveToFile(Paths.GetOptionsFilePath());
+    }
 #endregion
 
 #region Per-track options

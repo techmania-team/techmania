@@ -355,8 +355,34 @@ public class OptionsPanel : MonoBehaviour
 
     public void OnCustomDataLocationChanged()
     {
-        Options.instance.customDataLocation =
-            customDataLocation.isOn;
+        Options.instance.customDataLocation = customDataLocation.isOn;
+#if UNITY_ANDROID
+        if (Options.instance.customDataLocation)
+        {
+            StartCoroutine(Paths.AskForAndroidPermissions(OnAndroidPermissionAsked));
+        }
+        else
+        {
+            SetCustomLocation();
+        }
+#else
+        SetCustomLocation();
+#endif
+    }
+#if UNITY_ANDROID
+    private void OnAndroidPermissionAsked ()
+    {
+        if (!Paths.HasAndroidStoragePermissions())
+        {
+            Options.ResetCustomDataLocation();
+            customDataLocation.SetIsOnWithoutNotify(false);
+            MemoryToUI();
+        }
+        SetCustomLocation();
+    }
+#endif
+    private void SetCustomLocation ()
+    {
         if (Options.instance.customDataLocation)
         {
             if (string.IsNullOrEmpty(
@@ -377,7 +403,6 @@ public class OptionsPanel : MonoBehaviour
         MemoryToUI();
         Paths.ApplyCustomDataLocation();
     }
-
     public void OnTracksFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
