@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 
 // Each format version is a derived class of OptionsBase.
 
@@ -247,7 +248,7 @@ public class Options : OptionsBase
         instance = backupInstance;
     }
 
-    public static void ResetCustomDataLocation ()
+    public static IEnumerator ResetCustomDataLocation (bool reloadSkin = true)
     {
         instance.customDataLocation = false;
         instance.noteSkin = "Default";
@@ -257,6 +258,32 @@ public class Options : OptionsBase
         instance.tracksFolderLocation = "";
         instance.skinsFolderLocation = "";
         instance.SaveToFile(Paths.GetOptionsFilePath());
+
+        if (reloadSkin)
+        {
+            GlobalResourceLoader resourceLoader = UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>();
+
+            bool skinLoaded = false;
+            UnityAction<string> loadSkinCallback = (string error) =>
+            {
+                skinLoaded = true;
+            };
+
+            resourceLoader.LoadNoteSkin(null,
+                loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            resourceLoader.LoadVfxSkin(null, loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            resourceLoader.LoadComboSkin(null,
+                loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+            skinLoaded = false;
+            resourceLoader.LoadGameUiSkin(null, 
+                loadSkinCallback);
+            yield return new WaitUntil(() => skinLoaded);
+        }
     }
 #endregion
 

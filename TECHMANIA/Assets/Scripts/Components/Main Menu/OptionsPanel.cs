@@ -357,12 +357,13 @@ public class OptionsPanel : MonoBehaviour
     {
         Options.instance.customDataLocation = customDataLocation.isOn;
 #if UNITY_ANDROID
-        if (Options.instance.customDataLocation)
+        if (customDataLocation.isOn)
         {
             StartCoroutine(Paths.AskForAndroidPermissions(OnAndroidPermissionAsked));
         }
         else
         {
+            StartCoroutine(Options.ResetCustomDataLocation(true));
             SetCustomLocation();
         }
 #else
@@ -374,9 +375,8 @@ public class OptionsPanel : MonoBehaviour
     {
         if (!Paths.HasAndroidStoragePermissions())
         {
-            Options.ResetCustomDataLocation();
             customDataLocation.SetIsOnWithoutNotify(false);
-            MemoryToUI();
+            StartCoroutine(Options.ResetCustomDataLocation(true));
         }
         SetCustomLocation();
     }
