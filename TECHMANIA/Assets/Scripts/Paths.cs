@@ -5,9 +5,6 @@ using System.IO;
 using System.Text;
 using UnityEngine.Events;
 using System;
-#if UNITY_ANDROID
-using UnityEngine.Android;
-#endif
 
 public static class Paths
 {
@@ -46,10 +43,6 @@ public static class Paths
     private static string skinFolder;
     private static string streamingSkinFolder;
     private static string dataFolder;
-
-#if UNITY_ANDROID
-    public static bool isAndroidR;
-#endif
 
     public static void PrepareFolders()
     {
@@ -110,10 +103,6 @@ public static class Paths
             "TECHMANIA");
 #endif
         Directory.CreateDirectory(dataFolder);
-
-#if UNITY_ANDROID
-        isAndroidR = new AndroidJavaClass("android.os.Build$VERSION").GetStatic<int>("SDK_INT") >= 30;
-#endif
     }
 
     public static void ApplyCustomDataLocation()
@@ -384,44 +373,4 @@ public static class Paths
         return absolutePath;
     }
     #endregion
-
-#if UNITY_ANDROID
-    #region Android Permissions
-    // Check whether Android R has permission to read non media files (.tech, .json, etc) or not.
-    public static bool IsAndroidExternalStorageManager ()
-    {
-        return new AndroidJavaClass("android.os.Environment").CallStatic<bool>("isExternalStorageManager");
-    }
-
-    // Permission.RequestUserPermission works asynchroniously on Android.
-    // so we use IEnumerator and yield to wait for the user to accept the permission.
-    public static IEnumerator AskForAndroidPermissions(Action callback)
-    {
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite) ||
-            !Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
-        {
-            // Request manage external access to read non media files (.tech, .json, etc) on Android R.
-            if (isAndroidR && !IsAndroidExternalStorageManager())
-            {
-                AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-                AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent", "android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION");
-                activity.Call("startActivity", intent);
-                yield return new WaitForEndOfFrame();
-            }
-
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-            yield return new WaitForEndOfFrame();
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-            yield return new WaitForEndOfFrame();
-        }
-
-        callback?.Invoke();
-    }
-    public static bool HasAndroidStoragePermissions()
-    {
-        return isAndroidR ? IsAndroidExternalStorageManager() : Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead) && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite);
-    }
-    #endregion
-#endif
 }
