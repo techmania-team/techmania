@@ -15,6 +15,10 @@ fpsCounter = {
     timeAtLastReport = 0
 }
 
+judgementTally = {
+    displays = gamePanel.panel.Q("judgement-tally").Q("judgement-values")
+}
+
 function FillBar(barElement, amount)
     barElement.style.width = StyleLengthInPercent(amount * 100)
 end
@@ -86,7 +90,7 @@ gamePanel.Initialize = function()
         gamePanel.UpdateScoreDisplay(
             scoreKeeper.score.CurrentScore(),
             scoreKeeper.maxCombo)
-        -- TODO: update judgement tally.
+        judgementTally.Update(scoreKeeper.score)
     end
 
     tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
@@ -244,6 +248,7 @@ gamePanel.BeginGame = function()
 
     panel.Q("fps-counter").display = themeOptions["showFps"] == "True"
     panel.Q("judgement-tally").display = themeOptions["showJudgementTally"] == "True"
+    judgementTally.Reset()
 
     panel.Q("loading-bar-wrap").display = false
 
@@ -365,6 +370,24 @@ fpsCounter.Update = function()
         fpsCounter.display.text = net.string.Format("{0:F2} FPS", fps)
         fpsCounter.timeAtLastReport = unity.time.timeSinceLevelLoad
     end
+end
+
+judgementTally.Reset = function()
+    judgementTally.displays.Q("rmax").text = "0"
+    judgementTally.displays.Q("max").text = "0"
+    judgementTally.displays.Q("cool").text = "0"
+    judgementTally.displays.Q("good").text = "0"
+    judgementTally.displays.Q("miss").text = "0"
+    judgementTally.displays.Q("break").text = "0"
+end
+
+judgementTally.Update = function(score)
+    judgementTally.displays.Q("rmax").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
+    judgementTally.displays.Q("max").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Max))
+    judgementTally.displays.Q("cool").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Cool))
+    judgementTally.displays.Q("good").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Good))
+    judgementTally.displays.Q("miss").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Miss))
+    judgementTally.displays.Q("break").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Break))
 end
 
 gamePanel.Initialize()
