@@ -197,13 +197,13 @@ gamePanel.StartLoading = function()
     panel.Q("top-bar").Q("back-button").display = false
     panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
+    panel.Q("fps-display").display = false
+    panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
 
-    -- TODO: respond to showFps option
-    -- TODO: respond to showJudgementTally option
     -- TODO: respond to showLaneDividers option
     -- TODO: respond to beatMarkers option
 
@@ -235,6 +235,9 @@ gamePanel.BeginGame = function()
     gamePanel.UpdateFeverDisplay(0)
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
+
+    panel.Q("fps-display").display = themeOptions["showFps"] == "True"
+    panel.Q("judgement-tally").display = themeOptions["showJudgementTally"] == "True"
 
     panel.Q("loading-bar-wrap").display = false
 

@@ -283,3 +283,13 @@
     width: 80px;
     -unity-text-align: upper-center;
 }
+
+#game-panel #judgement-types Label {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+#game-panel #judgement-values Label {
+    flex-grow: 1;
+    -unity-text-align: middle-right;
+}
