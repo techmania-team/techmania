@@ -32,6 +32,11 @@ namespace ThemeApi
             return string.Format(format, arg);
         }
 
+        public static string Format(string format, double arg)
+        {
+            return string.Format(format, arg);
+        }
+
         public static string Format(string format, string arg1,
             string arg2)
         {
@@ -47,7 +52,7 @@ namespace ThemeApi
         public static string Format(string format, string arg1,
             string arg2, string arg3, string arg4)
         {
-            return string.Format(format, arg1, arg2, arg4);
+            return string.Format(format, arg1, arg2, arg3, arg4);
         }
 
         public static int IndexOf(string s, string value)

@@ -330,7 +330,7 @@
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
             <ui:VisualElement name="markers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
             <ui:VisualElement name="info-insert" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
-                <ui:VisualElement name="fps-display" picking-mode="Ignore" class="surface-8dp" style="position: absolute; right: 0; bottom: 0; width: 180px; height: 40px;">
+                <ui:VisualElement name="fps-counter" picking-mode="Ignore" class="surface-8dp" style="position: absolute; right: 0; bottom: 0; width: 180px; height: 40px;">
                     <ui:Label tabindex="-1" text="1234.56 FPS" display-tooltip-when-elided="true" name="fps-value" picking-mode="Ignore" class="text-body" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="surface-8dp" style="position: absolute; right: 0; bottom: 60px; width: 180px; height: 250px;">

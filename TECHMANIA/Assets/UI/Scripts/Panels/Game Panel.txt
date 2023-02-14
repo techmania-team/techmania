@@ -9,6 +9,12 @@ pauseMenu = {
     menu = gamePanel.panel.Q("pause-menu")
 }
 
+fpsCounter = {
+    display = gamePanel.panel.Q("fps-counter").Q("fps-value"),
+    reportInterval = 0.2,
+    timeAtLastReport = 0
+}
+
 function FillBar(barElement, amount)
     barElement.style.width = StyleLengthInPercent(amount * 100)
 end
@@ -72,7 +78,7 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onUpdate = function(timer)
-        -- TODO: update FPS display.
+        fpsCounter.Update()
     end
 
     tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
@@ -197,7 +203,7 @@ gamePanel.StartLoading = function()
     panel.Q("top-bar").Q("back-button").display = false
     panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
-    panel.Q("fps-display").display = false
+    panel.Q("fps-counter").display = false
     panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
@@ -236,7 +242,7 @@ gamePanel.BeginGame = function()
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
 
-    panel.Q("fps-display").display = themeOptions["showFps"] == "True"
+    panel.Q("fps-counter").display = themeOptions["showFps"] == "True"
     panel.Q("judgement-tally").display = themeOptions["showJudgementTally"] == "True"
 
     panel.Q("loading-bar-wrap").display = false
@@ -348,5 +354,19 @@ pauseMenu.Show = function()
     commonUI.ShowVolumeSliders(pauseMenu.menu)
 end
 
+fpsCounter.Initialize = function()
+    fpsCounter.display.text = ""
+end
+
+fpsCounter.Update = function()
+    if (unity.mathf.Floor(fpsCounter.timeAtLastReport / fpsCounter.reportInterval) !=
+        unity.mathf.Floor(unity.time.timeSinceLevelLoad / fpsCounter.reportInterval)) then
+        local fps = 1 / unity.time.smoothDeltaTime
+        fpsCounter.display.text = net.string.Format("{0:F2} FPS", fps)
+        fpsCounter.timeAtLastReport = unity.time.timeSinceLevelLoad
+    end
+end
+
 gamePanel.Initialize()
 pauseMenu.Initialize()
+fpsCounter.Initialize()
