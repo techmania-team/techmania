@@ -207,20 +207,13 @@ gamePanel.StartLoading = function()
     panel.Q("top-bar").Q("back-button").display = false
     panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
     panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
+    panel.Q("markers").display = false
     panel.Q("fps-counter").display = false
     panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
-
-    -- TODO: respond to showLaneDividers option
-    -- TODO: respond to beatMarkers option
-
-    local newElement = tm.CreateEmptyVisualElement()
-    newElement.AddToClassList("lane-divider")
-    newElement.pickable = false
-    panel.Q("markers").Q("top-half").Q("lane-dividers").AddChild(newElement)
 
     tm.options.TemporarilyDisableVSync()
     
@@ -242,6 +235,7 @@ gamePanel.BeginGame = function()
         panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
     end
 
+    -- Initialize top bar and middle fever bar.
     local topBar = panel.Q("top-bar")
     topBar.visible = true
     gamePanel.UpdateHpDisplay(1, 1)
@@ -251,12 +245,103 @@ gamePanel.BeginGame = function()
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
 
+    -- Despawn all lane dividers and beat markers.
+    local markersContainer = panel.Q("markers")
+    local topLaneDividersWrap = markersContainer.Q("top-half").Q("lane-dividers-wrap")
+    local topBeatMarkersWrap = markersContainer.Q("top-half").Q("beat-markers-wrap")
+    local bottomLaneDividersWrap = markersContainer.Q("bottom-half").Q("lane-dividers-wrap")
+    local bottomBeatMarkersWrap = markersContainer.Q("bottom-half").Q("beat-markers-wrap")
+    topLaneDividersWrap.Q("lane-dividers").RemoveAllChildren()
+    topBeatMarkersWrap.Q("beat-markers").RemoveAllChildren()
+    bottomLaneDividersWrap.Q("lane-dividers").RemoveAllChildren()
+    bottomBeatMarkersWrap.Q("beat-markers").RemoveAllChildren()
+    markersContainer.display = true
+
+    -- Display lane dividers, if requested.
+    if (themeOptions["showLaneDividers"] == "True") then
+        local lanes = selectPatternPanel.selectedPattern.patternMetadata.playableLanes
+        local indexInMarginArray = lanes - 1  -- Lua arrays are 1-index
+        local marginTopBottom = tm.ruleset.scanMarginTopBottom[indexInMarginArray] * 100
+        local marginMiddle = tm.ruleset.scanMarginMiddle[indexInMarginArray] * 100
+
+        topLaneDividersWrap.Q("top-margin").style.height = StyleLengthInPercent(marginTopBottom)
+        topLaneDividersWrap.Q("bottom-margin").style.height = StyleLengthInPercent(marginMiddle)
+        bottomLaneDividersWrap.Q("top-margin").style.height = StyleLengthInPercent(marginMiddle)
+        bottomLaneDividersWrap.Q("bottom-margin").style.height = StyleLengthInPercent(marginTopBottom)
+
+        local topLaneDividers = topLaneDividersWrap.Q("lane-dividers")
+        local bottomLaneDividers = bottomLaneDividersWrap.Q("lane-dividers")
+        for i = 1, lanes + 1 do
+            local divider = topLaneDividers.AddEmptyChild()
+            divider.pickable = false
+            divider.AddToClassList("lane-divider")
+
+            divider = bottomLaneDividers.AddEmptyChild()
+            divider.pickable = false
+            divider.AddToClassList("lane-divider")
+        end
+        topLaneDividers.Children()[1].visible = false
+        topLaneDividers.Children()[lanes + 1].visible = false
+        bottomLaneDividers.Children()[1].visible = false
+        bottomLaneDividers.Children()[lanes + 1].visible = false
+    end
+
+    -- Display beat markers, if requested.
+    if (themeOptions["beatMarkers"] != "Hidden") then
+        local bps = selectPatternPanel.selectedPattern.patternMetadata.bps
+        local marginBeforeFirstBeat = tm.ruleset.scanMarginBeforeFirstBeat * 100
+        local marginAfterLastBeat = tm.ruleset.scanMarginAfterLastBeat * 100
+        local scanDirection = tm.options.modifiers.scanDirection
+
+        if (scanDirection == tm.enum.scanDirection.Normal or
+            scanDirection == tm.enum.scanDirection.RR) then
+            topBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            topBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        else
+            topBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            topBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        end
+
+        if (scanDirection == tm.enum.scanDirection.RR or
+            scanDirection == tm.enum.scanDirection.LR) then
+            bottomBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            bottomBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        else
+            bottomBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            bottomBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        end
+
+        local topBeatMarkers = topBeatMarkersWrap.Q("beat-markers")
+        local bottomBeatMarkers = bottomBeatMarkersWrap.Q("beat-markers")
+        for i = 1, bps + 1 do
+            local beatMarker = topBeatMarkers.AddEmptyChild()
+            beatMarker.pickable = false
+            beatMarker.AddToClassList("beat-marker")
+
+            beatMarker = bottomBeatMarkers.AddEmptyChild()
+            beatMarker.pickable = false
+            beatMarker.AddToClassList("beat-marker")
+
+            if (themeOptions["beatMarkers"] == "ShowHalfBeatMarkers" and
+                i < bps + 1) then
+                local halfBeatMarker = topBeatMarkers.AddEmptyChild()
+                halfBeatMarker.pickable = false
+                halfBeatMarker.AddToClassList("half-beat-marker")
+
+                halfBeatMarker = bottomBeatMarkers.AddEmptyChild()
+                halfBeatMarker.pickable = false
+                halfBeatMarker.AddToClassList("half-beat-marker")
+            end
+        end
+    end
+
+    -- Initialize info insert.
     panel.Q("fps-counter").display = themeOptions["showFps"] == "True"
     panel.Q("judgement-tally").display = themeOptions["showJudgementTally"] == "True"
     judgementTally.Reset()
 
+    -- Begin game.
     panel.Q("loading-bar-wrap").display = false
-
     tm.options.RestoreVSync()
     tm.game.Begin()
 
