@@ -6496,6 +6496,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6302898970886363750, guid: fa88c12fa63ce364493e6422557d843d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6330004822642824474, guid: fa88c12fa63ce364493e6422557d843d,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -6504,7 +6509,7 @@ PrefabInstance:
     - target: {fileID: 6562056916432583927, guid: fa88c12fa63ce364493e6422557d843d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7483350746651861666, guid: fa88c12fa63ce364493e6422557d843d,
         type: 3}
@@ -7026,12 +7031,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8716285239470042858, guid: fa88c12fa63ce364493e6422557d843d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.38039216
+      objectReference: {fileID: 0}
     - target: {fileID: 8896286633148946927, guid: fa88c12fa63ce364493e6422557d843d,
         type: 3}
       propertyPath: m_Name
       value: Scan Background
       objectReference: {fileID: 0}
     - target: {fileID: 8938174544847909107, guid: fa88c12fa63ce364493e6422557d843d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8963903309287724987, guid: fa88c12fa63ce364493e6422557d843d,
         type: 3}
       propertyPath: m_IsActive
       value: 1

@@ -217,6 +217,11 @@ gamePanel.StartLoading = function()
     -- TODO: respond to showLaneDividers option
     -- TODO: respond to beatMarkers option
 
+    local newElement = tm.CreateEmptyVisualElement()
+    newElement.AddToClassList("lane-divider")
+    newElement.pickable = false
+    panel.Q("markers").Q("top-half").Q("lane-dividers").AddChild(newElement)
+
     tm.options.TemporarilyDisableVSync()
     
     -- tm.game.BeginLoading() will be called by navigation,

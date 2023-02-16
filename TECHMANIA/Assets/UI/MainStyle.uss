@@ -293,3 +293,19 @@
     flex-grow: 1;
     -unity-text-align: middle-right;
 }
+
+#game-panel #markers .lane-divider {
+    height: 4px;
+    background-color: var(--disabled-text-color);
+}
+
+#game-panel #markers .beat-marker {
+    width: 4px;
+    background-color: var(--disabled-text-color);
+}
+
+#game-panel #markers .half-beat-marker {
+    width: 2px;
+    background-image: url('project://database/Assets/UI/Images/DottedLine.png?fileID=2800000&guid=ef4bfbe9cfa688d4f83f5290d23698cc&type=3#DottedLine');
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}

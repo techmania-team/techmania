@@ -284,7 +284,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
+    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: flex;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">
@@ -328,7 +328,32 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
-            <ui:VisualElement name="markers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:VisualElement name="markers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+                <ui:VisualElement name="top-half" picking-mode="Ignore" style="flex-grow: 1;">
+                    <ui:VisualElement name="lane-dividers-wrap" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+                        <ui:VisualElement name="top-margin" picking-mode="Ignore" style="height: 5%;" />
+                        <ui:VisualElement name="lane-dividers" picking-mode="Ignore" style="flex-grow: 1; justify-content: space-between;" />
+                        <ui:VisualElement name="bottom-margin" picking-mode="Ignore" style="height: 5%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="beat-markers-wrap" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                        <ui:VisualElement name="left-margin" picking-mode="Ignore" style="width: 15%;" />
+                        <ui:VisualElement name="beat-markers" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row; justify-content: space-between;" />
+                        <ui:VisualElement name="right-margin" picking-mode="Ignore" style="width: 10%;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="bottom-half" picking-mode="Ignore" style="flex-grow: 1;">
+                    <ui:VisualElement name="lane-dividers-wrap" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+                        <ui:VisualElement name="top-margin" picking-mode="Ignore" style="height: 5%;" />
+                        <ui:VisualElement name="lane-dividers" picking-mode="Ignore" style="flex-grow: 1; justify-content: space-between;" />
+                        <ui:VisualElement name="bottom-margin" picking-mode="Ignore" style="height: 5%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="beat-markers-wrap" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                        <ui:VisualElement name="left-margin" picking-mode="Ignore" style="width: 15%;" />
+                        <ui:VisualElement name="beat-markers" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row; justify-content: space-between;" />
+                        <ui:VisualElement name="right-margin" picking-mode="Ignore" style="width: 10%;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:VisualElement name="info-insert" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
                 <ui:VisualElement name="fps-counter" picking-mode="Ignore" class="surface-8dp" style="position: absolute; right: 0; bottom: 0; width: 180px; height: 40px;">
                     <ui:Label tabindex="-1" text="1234.56 FPS" display-tooltip-when-elided="true" name="fps-value" picking-mode="Ignore" class="text-body" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />

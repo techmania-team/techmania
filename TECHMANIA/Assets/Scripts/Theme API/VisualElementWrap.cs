@@ -500,6 +500,13 @@ namespace ThemeApi
             return new VisualElementWrap(templateContainer);
         }
 
+        public VisualElementWrap AddEmptyChild()
+        {
+            VisualElement newElement = new VisualElement();
+            inner.Add(newElement);
+            return new VisualElementWrap(newElement);
+        }
+
         public void RemoveFromHierarchy()
         {
             CallbackRegistry.RemoveAllCallbackOn(inner);
