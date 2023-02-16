@@ -457,7 +457,7 @@ fpsCounter.Update = function()
     if (unity.mathf.Floor(fpsCounter.timeAtLastReport / fpsCounter.reportInterval) !=
         unity.mathf.Floor(unity.time.timeSinceLevelLoad / fpsCounter.reportInterval)) then
         local fps = 1 / unity.time.smoothDeltaTime
-        fpsCounter.display.text = net.string.Format("{0:F2} FPS", fps)
+        fpsCounter.display.text = net.string.DoubleToString(fps, "F2") .. " FPS"
         fpsCounter.timeAtLastReport = unity.time.timeSinceLevelLoad
     end
 end

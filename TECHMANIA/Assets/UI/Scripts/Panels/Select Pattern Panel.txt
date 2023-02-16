@@ -170,7 +170,7 @@ selectPatternPanel.ShowPatternDetails = function()
         if (unity.mathf.Abs(rounded - bpm) < unity.mathf.Epsilon) then
             return tostring(rounded)
         else
-            return net.string.Format("{0:F2}", bpm)
+            return net.string.DoubleToString(bpm, "F2")
         end
     end
     if (minBpm < maxBpm) then

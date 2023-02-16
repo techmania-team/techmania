@@ -27,12 +27,12 @@ namespace ThemeApi
             return s.EndsWith(value);
         }
 
-        public static string Format(string format, string arg)
+        public static string DoubleToString(double d, string format)
         {
-            return string.Format(format, arg);
+            return d.ToString(format);
         }
 
-        public static string Format(string format, double arg)
+        public static string Format(string format, string arg)
         {
             return string.Format(format, arg);
         }
