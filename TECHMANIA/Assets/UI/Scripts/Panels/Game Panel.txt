@@ -38,18 +38,6 @@ gamePanel.Initialize = function()
             event.keyCode == unity.enum.keyCode.Backspace) then
             gamePanel.ActivateFever()
         end
-        if (event.keyCode == unity.enum.keyCode.P) then
-            tm.StartCoroutine(function()
-                local gameLayer = panel.Q("game-layer")
-                gameLayer.style.scale = unity.styleScale.__new(unity.vector2.__new(0.51, 0.51))
-                local angleDegrees = 0
-                while (true) do
-                    gameLayer.style.rotate = unity.styleRotate.__new(unity.rotate.__new(unity.angle.Degrees(angleDegrees)))
-                    angleDegrees = angleDegrees + unity.time.deltaTime * 60
-                    coroutine.yield()
-                end
-            end)
-        end
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
@@ -178,8 +166,7 @@ gamePanel.Initialize = function()
         gamePanel.ShowFeverOff()
         gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
             local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")
-            -- TODO: localize this
-            bonusDisplay.text = "FEVER BONUS   +" .. tostring(feverBonus)
+            bonusDisplay.text = net.string.Format(tm.l10n.GetString("game_panel_fever_bonus_format"), tostring(feverBonus))
             bonusDisplay.display = true
             WaitForSeconds(2)
             bonusDisplay.display = false
