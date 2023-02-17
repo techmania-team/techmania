@@ -146,8 +146,6 @@ controls = {
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
 function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
-    local transitionTime = 0.2
-
     from.display = true
     to.display = false
     FadeOutCoroutine(from, length, 0)

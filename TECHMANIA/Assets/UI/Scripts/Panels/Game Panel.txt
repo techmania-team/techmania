@@ -180,9 +180,23 @@ gamePanel.Initialize = function()
     end
 
     tm.gameSetup.onStageFailed = function(scoreKeeper)
-        print("Stage failed")
-        GamePanelToSelectTrackPanel()
-        -- TODO: show "stage failed" screen, then transition to result panel
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"), tm.enum.audioChannel.SFX)
+        tm.StartCoroutine(function()
+            local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
+            local timer = 0
+            local animationLength = 0.25
+            stageFailedPanel.style.bottom = StyleLengthInPercent(100)
+            while (timer < animationLength) do
+                local progress = timer / animationLength
+                stageFailedPanel.style.bottom = StyleLengthInPercent(unity.mathf.SmoothStep(100, 0, progress))
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+            stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+            WaitForSeconds(3.75)  -- Total wait is 4 seconds
+            GamePanelToSelectTrackPanel()
+            -- TODO: transition to result panel instead
+        end)
     end
 end
 
@@ -201,6 +215,7 @@ gamePanel.StartLoading = function()
     panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
+    panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
 
     tm.options.TemporarilyDisableVSync()
     
