@@ -193,6 +193,7 @@ gamePanel.Initialize = function()
                 coroutine.yield()
             end
             stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+            tm.game.Conclude()
             WaitForSeconds(3.75)  -- Total wait is 4 seconds
             GamePanelToSelectTrackPanel()
             -- TODO: transition to result panel instead

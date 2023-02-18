@@ -618,6 +618,7 @@
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
+    <ui:VisualElement name="curtain" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none;" />
     <ui:VisualElement name="alert-box-background" class="dialog-background" style="display: none;">
         <ui:VisualElement name="alert-box" class="surface-8dp dialog" style="width: 700px; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 35px;">
             <ui:Label text="123123123&#10;123123123&#10;123123123&#10;123123123" display-tooltip-when-elided="true" name="alert-text" picking-mode="Ignore" class="text-body" />

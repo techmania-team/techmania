@@ -152,7 +152,7 @@ function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     from.display = false
 
     to.display = true
-    to.style.opacity = unity.styleFloat.__new(0)
+    to.style.opacity = StyleFloat(0)
     coroutine.yield()
     if (toPanelInitializer != nil) then toPanelInitializer() end
 
@@ -186,12 +186,37 @@ panelTransition = {
         end)
     end,
 
-    Fade = function(from, to, toPanelInitializer)
+    FadeToBlack = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
-            TransitionPanelCoroutine(from, to,
-                0,  -- length
-                toPanelInitializer
-            )
+            local curtain = tm.root.Q("curtain")
+            curtain.style.opacity = StyleFloat(0)
+            curtain.display = true
+
+            local fadeTime = 0.2
+            local timer = 0
+            while (timer < fadeTime) do
+                local progress = timer / fadeTime
+                curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, 1, progress))
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+            curtain.style.opacity = StyleFloat(1)
+
+            from.display = false
+            to.display = true
+            to.style.opacity = StyleFloat(1)
+            to.style.translate = StyleTranslate(0, 0)
+            coroutine.yield()
+            if (toPanelInitializer != nil) then toPanelInitializer() end
+
+            timer = 0
+            while (timer < fadeTime) do
+                local progress = timer / fadeTime
+                curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(1, 0, progress))
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+            curtain.display = false
         end)
     end
 }
