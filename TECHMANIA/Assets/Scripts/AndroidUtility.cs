@@ -5,6 +5,22 @@ using UnityEngine.Android;
 
 public class AndroidUtility
 {
+    // Android 11 (Android R) introduces new privacy restrictions.
+    // We have to check user's device version and use different methods to request permissions and access files.
+    // https://developer.android.com/about/versions/11/privacy/permissions
+    // https://developer.android.com/about/versions/11/privacy/storage
+    //
+    // Non-media files (like txt, pdf, csv, ...) can be accessed on Android 11 if and only if:
+    // - The text files are in the → ASD (App Specific Directory) in the → Private dir (i.e. were saved there), OR
+    // - The text files are in one of the Shared folders /Documents or /Download AND these files were created by the app itself, OR
+    // - SAF (Storage Access Framework) is used, OR
+    // - MANAGE_EXTERNAL_STORAGE permission is requested and granted.
+    // https://community.appinventor.mit.edu/t/how-to-access-non-media-media-files-on-android-11/54828
+    //
+    // SAF on Android 11 also has some limitations:
+    // https://developer.android.com/training/data-storage/shared/documents-files#document-tree-access-restrictions
+    // 
+    // So we have to request MANAGE_EXTERNAL_STORAGE permission on Android 11 to access data from wherever user wants.
     public static bool isAndroidR;
     public static void CheckVersion ()
     {
