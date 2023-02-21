@@ -45,7 +45,7 @@ public class AndroidUtility
                 AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
                 AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent", "android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION");
                 activity.Call("startActivity", intent);
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(0.02f);
             }
         }
         else
@@ -54,9 +54,9 @@ public class AndroidUtility
                 !Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
             {
                 Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(0.02f);
                 Permission.RequestUserPermission(Permission.ExternalStorageRead);
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(0.02f);
             }
         }
 
