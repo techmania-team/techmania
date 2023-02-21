@@ -36,11 +36,10 @@ public class AndroidUtility
     // so we use IEnumerator and yield to wait for the user to accept the permission.
     public static IEnumerator AskForPermissions(Action callback)
     {
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite) ||
-            !Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+        if (isAndroidR)
         {
             // Request manage external access to read non media files (.tech, .json, etc) on Android R.
-            if (isAndroidR && !IsExternalStorageManager())
+            if (!IsExternalStorageManager())
             {
                 AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
                 AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
@@ -48,11 +47,17 @@ public class AndroidUtility
                 activity.Call("startActivity", intent);
                 yield return new WaitForEndOfFrame();
             }
-
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-            yield return new WaitForEndOfFrame();
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-            yield return new WaitForEndOfFrame();
+        }
+        else
+        {
+            if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite) ||
+                !Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+            {
+                Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+                yield return new WaitForEndOfFrame();
+                Permission.RequestUserPermission(Permission.ExternalStorageRead);
+                yield return new WaitForEndOfFrame();
+            }
         }
 
         callback?.Invoke();
