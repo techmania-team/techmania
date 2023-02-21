@@ -27,7 +27,7 @@ public class AndroidUtility
         isAndroidR = new AndroidJavaClass("android.os.Build$VERSION").GetStatic<int>("SDK_INT") >= 30;
     }
     // Check whether Android R has permission to read non media files (.tech, .json, etc) or not.
-    public static bool IsExternalStorageManager ()
+    private static bool IsExternalStorageManager ()
     {
         return new AndroidJavaClass("android.os.Environment").CallStatic<bool>("isExternalStorageManager");
     }
