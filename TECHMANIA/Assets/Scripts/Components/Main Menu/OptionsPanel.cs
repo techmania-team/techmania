@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -24,6 +24,7 @@ public class OptionsPanel : MonoBehaviour
     [Header("Appearance")]
     public TMP_Dropdown languageDropdown;
     public TextAsset stringTable;
+    public Button selectSkinButton;
     public Toggle showLoadingBarToggle;
     public Toggle showFpsToggle;
     public Toggle showJudgementTallyToggle;
@@ -364,6 +365,7 @@ public class OptionsPanel : MonoBehaviour
         else
         {
             Options.ResetCustomDataLocation();
+            selectSkinButton.interactable = false;
             StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
             SetCustomLocation();
         }
@@ -378,6 +380,7 @@ public class OptionsPanel : MonoBehaviour
         {
             customDataLocation.SetIsOnWithoutNotify(false);
             Options.ResetCustomDataLocation();
+            selectSkinButton.interactable = false;
             StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
         }
         SetCustomLocation();
@@ -473,6 +476,7 @@ public class OptionsPanel : MonoBehaviour
 #if UNITY_ANDROID
     private void OnAndroidSkinReloaded ()
     {
+        selectSkinButton.interactable = true;
     }
 #endif
     public void OnPauseWhenGameLosesFocusChanged()
