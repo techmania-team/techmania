@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -359,11 +359,12 @@ public class OptionsPanel : MonoBehaviour
 #if UNITY_ANDROID
         if (customDataLocation.isOn)
         {
-            StartCoroutine(Paths.AskForAndroidPermissions(OnAndroidPermissionAsked));
+            StartCoroutine(AndroidUtility.AskForPermissions(OnAndroidPermissionAsked));
         }
         else
         {
-            StartCoroutine(Options.ResetCustomDataLocation(true));
+            Options.ResetCustomDataLocation();
+            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
             SetCustomLocation();
         }
 #else
@@ -373,10 +374,11 @@ public class OptionsPanel : MonoBehaviour
 #if UNITY_ANDROID
     private void OnAndroidPermissionAsked ()
     {
-        if (!Paths.HasAndroidStoragePermissions())
+        if (!AndroidUtility.HasStoragePermissions())
         {
             customDataLocation.SetIsOnWithoutNotify(false);
-            StartCoroutine(Options.ResetCustomDataLocation(true));
+            Options.ResetCustomDataLocation();
+            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
         }
         SetCustomLocation();
     }
@@ -468,7 +470,11 @@ public class OptionsPanel : MonoBehaviour
         MemoryToUI();
         Paths.ApplyCustomDataLocation();
     }
-
+#if UNITY_ANDROID
+    private void OnAndroidSkinReloaded ()
+    {
+    }
+#endif
     public void OnPauseWhenGameLosesFocusChanged()
     {
         Options.instance.pauseWhenGameLosesFocus =

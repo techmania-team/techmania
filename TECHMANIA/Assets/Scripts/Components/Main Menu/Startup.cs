@@ -13,17 +13,18 @@ public class Startup : MonoBehaviour
         SpriteSheet.PrepareEmptySpriteSheet();
         Records.RefreshInstance();
 #if UNITY_ANDROID
+        AndroidUtility.CheckVersion();
         // Ask for storage permission before loading resource if custom data location is set
         if (Options.instance.customDataLocation)
         {
-            StartCoroutine(Paths.AskForAndroidPermissions(OnAndroidPermissionAsked));
+            StartCoroutine(AndroidUtility.AskForPermissions(OnAndroidPermissionAsked));
         }
         else
         {
             // This prevents loading custom skins from streaming assets at startup.
             // Android Play Games may sync your options after reinstall the game.
             // So we have to reset skins if custom data location is not set but using custom skins.
-            StartCoroutine(Options.ResetCustomDataLocation(false));
+            Options.ResetCustomDataLocation();
             LoadResources();
         }
 #else
@@ -37,7 +38,7 @@ public class Startup : MonoBehaviour
     {
         Paths.ApplyCustomDataLocation();
         BetterStreamingAssets.Initialize();
-        GetComponent<GlobalResourceLoader>().StartLoading();
+        StartCoroutine(GetComponent<GlobalResourceLoader>().LoadResources(reload: false, finishCallback: null));
     }
 
 #if UNITY_ANDROID
@@ -45,9 +46,9 @@ public class Startup : MonoBehaviour
     {
         // Turn off custom data location and reset skins if user denied permission.
         // Otherwise. there will be an error while loading skins.
-        if (!Paths.HasAndroidStoragePermissions())
+        if (!AndroidUtility.HasStoragePermissions())
         {
-            StartCoroutine(Options.ResetCustomDataLocation(false));
+            Options.ResetCustomDataLocation();
         }
         LoadResources();
     }
