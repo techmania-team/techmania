@@ -248,16 +248,17 @@ public class Options : OptionsBase
         instance = backupInstance;
     }
 
-    public static void ResetCustomDataLocation ()
+    public void ResetCustomDataLocation ()
     {
-        instance.customDataLocation = false;
-        instance.noteSkin = "Default";
-        instance.vfxSkin = "Default";
-        instance.comboSkin = "Default";
-        instance.gameUiSkin = "Default";
-        instance.tracksFolderLocation = "";
-        instance.skinsFolderLocation = "";
-        instance.SaveToFile(Paths.GetOptionsFilePath());
+        Debug.Log("Resetting custom data location.");
+        customDataLocation = false;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        SaveToFile(Paths.GetOptionsFilePath());
     }
 #endregion
 

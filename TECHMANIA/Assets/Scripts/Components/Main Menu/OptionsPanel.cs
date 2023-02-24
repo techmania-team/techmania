@@ -364,7 +364,7 @@ public class OptionsPanel : MonoBehaviour
         }
         else
         {
-            Options.ResetCustomDataLocation();
+            Options.instance.ResetCustomDataLocation();
             selectSkinButton.interactable = false;
             StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
             SetCustomLocation();
@@ -379,7 +379,7 @@ public class OptionsPanel : MonoBehaviour
         if (!AndroidUtility.HasStoragePermissions())
         {
             customDataLocation.SetIsOnWithoutNotify(false);
-            Options.ResetCustomDataLocation();
+            Options.instance.ResetCustomDataLocation();
             selectSkinButton.interactable = false;
             StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
         }
