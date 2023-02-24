@@ -16,7 +16,6 @@ public class GlobalResourceLoader : MonoBehaviour
     public State state { get; private set; }
     public string error { get; private set; }
     public string statusText { get; private set; }
-    private IEnumerator coroutine;
 
     public IEnumerator LoadResources(bool reload, Action finishCallback = null)
     {
