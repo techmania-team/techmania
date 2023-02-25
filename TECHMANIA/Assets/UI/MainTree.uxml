@@ -284,7 +284,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
+    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: flex;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">
@@ -296,7 +296,7 @@
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement name="top-bar-content" picking-mode="Ignore" style="flex-grow: 1;">
-                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
                     <ui:VisualElement name="hp-bar-wrap" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; padding-right: 50px; padding-top: 20px; padding-bottom: 20px;">
                         <ui:VisualElement name="hp-bar-bg" picking-mode="Ignore" class="surface" style="flex-grow: 1; flex-direction: row;">
                             <ui:Label tabindex="-1" text="No fail" display-tooltip-when-elided="true" name="no-fail-indicator" picking-mode="Ignore" class="text-headline-6" style="position: absolute; left: 50px; top: 0; right: 0; bottom: 0; -unity-text-align: middle-left;" />
@@ -324,7 +324,18 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                    <ui:VisualElement name="scan-number" picking-mode="Ignore" class="section">
+                        <ui:VisualElement name="left-button-wrap" style="background-color: rgba(0, 0, 0, 0);" />
+                        <ui:VisualElement name="center-display" picking-mode="Ignore" style="background-color: rgba(0, 0, 0, 0);">
+                            <ui:Label tabindex="-1" text="Scan" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-subtitle" />
+                            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="loop-control" picking-mode="Ignore" class="section" />
+                    <ui:VisualElement name="speed-control" picking-mode="Ignore" class="section" />
+                    <ui:VisualElement name="options" picking-mode="Ignore" class="section" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="remaining-space" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; display: flex;">
