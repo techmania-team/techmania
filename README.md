@@ -15,9 +15,15 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
 * Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
 * Some included tracks in the releases are under separate licenses:
-  * f for fun is released under the [CC BY-NC-ND 4.0 License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
-  * Yin-Yang Specialist (MUG ver) is released under the [CC BY-NC-NA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
-  * v (Game Mix) is released under the [CC BY-NC-SA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+|Track name|License|
+|-|-|
+|f for fun|[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)|
+|Yin-Yang Specialist (MUG ver)|[CC BY-NC-NA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)|
+|v (Game Mix)|[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)|
+|TAKE OUT|[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)|
+|Run 4 Cover|[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)|
+|Ash Barrens|[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)|
 
 ## Roadmap and progress
 Refer to the [Kanban](https://github.com/techmania-team/techmania/projects/1).
@@ -41,7 +47,7 @@ Per the MIT license, you are free to produce any Content with TECHMANIA, includi
 * If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
 * If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
 * If your Content is commercial, additional limitations apply:
-  * Your Content cannot feature the official tracks f for fun, Yin-Yang Specialist (MUG ver) and v (Game Mix).
+  * Your Content cannot feature any [official tracks](#licensing).
   * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/Sfx/Fever.wav). You can swap the sound with one that allows commercial use, make a custom build, and produce Content from that build.
 
 ## Feedback
