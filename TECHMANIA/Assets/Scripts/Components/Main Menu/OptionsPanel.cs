@@ -366,13 +366,15 @@ public class OptionsPanel : MonoBehaviour
         {
             Options.instance.ResetCustomDataLocation();
             selectSkinButton.interactable = false;
-            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
+            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>()
+                .LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
             SetCustomLocation();
         }
 #else
         SetCustomLocation();
 #endif
     }
+
 #if UNITY_ANDROID
     private void OnAndroidPermissionAsked ()
     {
@@ -381,11 +383,13 @@ public class OptionsPanel : MonoBehaviour
             customDataLocation.SetIsOnWithoutNotify(false);
             Options.instance.ResetCustomDataLocation();
             selectSkinButton.interactable = false;
-            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>().LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
+            StartCoroutine(UnityEngine.Object.FindObjectOfType<GlobalResourceLoader>()
+                .LoadResources(reload: true, finishCallback: OnAndroidSkinReloaded));
         }
         SetCustomLocation();
     }
 #endif
+
     private void SetCustomLocation ()
     {
         if (Options.instance.customDataLocation)
@@ -411,7 +415,8 @@ public class OptionsPanel : MonoBehaviour
     public void OnTracksFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidTracksFolderSelected", "", true);
+        AndroidPlugin.OpenStorageFolder(gameObject.name,
+            "OnAndroidTracksFolderSelected", "", true);
 #else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
@@ -427,7 +432,8 @@ public class OptionsPanel : MonoBehaviour
     public void OnSkinsFolderBrowseButtonClick()
     {
 #if UNITY_ANDROID
-        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnAndroidSkinsFolderSelected", "", true);
+        AndroidPlugin.OpenStorageFolder(gameObject.name,
+            "OnAndroidSkinsFolderSelected", "", true);
 #else
         string[] folders = SFB.StandaloneFileBrowser
             .OpenFolderPanel("",
@@ -473,12 +479,14 @@ public class OptionsPanel : MonoBehaviour
         MemoryToUI();
         Paths.ApplyCustomDataLocation();
     }
+
 #if UNITY_ANDROID
     private void OnAndroidSkinReloaded ()
     {
         selectSkinButton.interactable = true;
     }
 #endif
+
     public void OnPauseWhenGameLosesFocusChanged()
     {
         Options.instance.pauseWhenGameLosesFocus =

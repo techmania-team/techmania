@@ -222,6 +222,19 @@ public class Options : OptionsBase
         QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
     }
 
+    public void ResetCustomDataLocation ()
+    {
+        Debug.Log("Resetting custom data location.");
+        customDataLocation = false;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        SaveToFile(Paths.GetOptionsFilePath());
+    }
+
 #region Instance
     public static Options instance { get; private set; }
     private static Options backupInstance;
@@ -246,19 +259,6 @@ public class Options : OptionsBase
     public static void RestoreBackup()
     {
         instance = backupInstance;
-    }
-
-    public void ResetCustomDataLocation ()
-    {
-        Debug.Log("Resetting custom data location.");
-        customDataLocation = false;
-        noteSkin = "Default";
-        vfxSkin = "Default";
-        comboSkin = "Default";
-        gameUiSkin = "Default";
-        tracksFolderLocation = "";
-        skinsFolderLocation = "";
-        SaveToFile(Paths.GetOptionsFilePath());
     }
 #endregion
 
