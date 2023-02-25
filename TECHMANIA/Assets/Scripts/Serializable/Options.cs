@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 
 // Each format version is a derived class of OptionsBase.
 
@@ -245,6 +246,19 @@ public class Options : OptionsBase
     public static void RestoreBackup()
     {
         instance = backupInstance;
+    }
+
+    public void ResetCustomDataLocation ()
+    {
+        Debug.Log("Resetting custom data location.");
+        customDataLocation = false;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        SaveToFile(Paths.GetOptionsFilePath());
     }
 #endregion
 

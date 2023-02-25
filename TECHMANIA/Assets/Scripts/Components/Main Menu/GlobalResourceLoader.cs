@@ -17,13 +17,13 @@ public class GlobalResourceLoader : MonoBehaviour
     public string error { get; private set; }
     public string statusText { get; private set; }
 
-    public void StartLoading()
+    public IEnumerator LoadResources(bool reload, Action finishCallback = null)
     {
-        StartCoroutine(LoadResourcesOnStartUp());
-    }
+        if (reload)
+        {
+            GlobalResource.loaded = false;
+        }
 
-    private IEnumerator LoadResourcesOnStartUp()
-    {
         state = State.Loading;
         error = null;
         statusText = "";
@@ -76,6 +76,8 @@ public class GlobalResourceLoader : MonoBehaviour
             error = lastError;
             state = State.Error;
         }
+
+        finishCallback?.Invoke();
     }
 
     // completeCallback's argument is error message; null if no error.
