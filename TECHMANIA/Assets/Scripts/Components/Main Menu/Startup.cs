@@ -38,7 +38,8 @@ public class Startup : MonoBehaviour
     {
         Paths.ApplyCustomDataLocation();
         BetterStreamingAssets.Initialize();
-        StartCoroutine(GetComponent<GlobalResourceLoader>().LoadResources(reload: false, finishCallback: null));
+        StartCoroutine(GetComponent<GlobalResourceLoader>().LoadResources(
+            reload: false, finishCallback: null));
     }
 
 #if UNITY_ANDROID
