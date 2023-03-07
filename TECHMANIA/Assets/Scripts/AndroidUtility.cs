@@ -38,24 +38,25 @@ public class AndroidUtility
     // so we use IEnumerator and yield to wait for the user to accept the permission.
     public static IEnumerator AskForPermissions(Action callback)
     {
-        if (HasStoragePermissions()) yield break;
-
-        if (isAndroidR)
+        if (!HasStoragePermissions())
         {
-            // Request manage external access to read non media files (.tech, .json, etc) on Android R.
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent",
-                "android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION");
-            activity.Call("startActivity", intent);
-            yield return null;
-        }
-        else
-        {
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-            yield return null;
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-            yield return null;
+            if (isAndroidR)
+            {
+                // Request manage external access to read non media files (.tech, .json, etc) on Android R.
+                AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent",
+                    "android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION");
+                activity.Call("startActivity", intent);
+                yield return null;
+            }
+            else
+            {
+                Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+                yield return null;
+                Permission.RequestUserPermission(Permission.ExternalStorageRead);
+                yield return null;
+            }
         }
 
         callback?.Invoke();
