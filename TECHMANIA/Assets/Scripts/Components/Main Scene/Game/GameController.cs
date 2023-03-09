@@ -452,9 +452,9 @@ public class GameController : MonoBehaviour
         // Clamp scan into bounds.
         scan = Mathf.Clamp(scan, timer.firstScan, timer.lastScan);
 
-        // TODO: tell GameBackground to seek in backing track and BGA.
-
+        // Update components.
         timer.JumpToScan(scan);
+        bg.Seek(timer.baseTime);
         noteManager.JumpToScan(timer.intScan, timer.intPulse);
         input.JumpToScan();
         scoreKeeper.JumpToScan();
@@ -484,7 +484,7 @@ public class GameController : MonoBehaviour
         if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update(comboTickCallback: ComboTick);
-            bg.Update(timer.prevFrameBaseTime, timer.baseTime);
+            bg.Update(timer.baseTime);
             layout.Update(timer.scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();

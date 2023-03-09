@@ -111,47 +111,36 @@ public class GameBackground
     #endregion
 
     #region Update
-    public void Update(float prevFrameBaseTime, float baseTime)
+    public void Update(float baseTime)
     {
-        UpdateBackingTrack(prevFrameBaseTime, baseTime);
-        UpdateBga(prevFrameBaseTime, baseTime);
+        UpdateBackingTrack(baseTime);
+        UpdateBga(baseTime);
         UpdateHiddenNotes(baseTime);
     }
 
-    private void UpdateBackingTrack(float prevFrameBaseTime,
-        float baseTime)
+    private void UpdateBackingTrack(float baseTime)
     {
         if (backingTrack == null) return;
 
-        if (prevFrameBaseTime < 0f && baseTime >= 0f)
+        if (baseTime >= 0f && !backingSource.isPlaying)
         {
             AudioSourceManager.instance.PlayBackingTrack(
                 backingTrack,
                 startTime: baseTime);
         }
-        else if (baseTime < 0 && backingSource.isPlaying)
-        {
-            backingSource.Stop();
-        }
     }
 
-    private void UpdateBga(float prevFrameBaseTime, float baseTime)
+    private void UpdateBga(float baseTime)
     {
         if (bgaElement == null) return;
 
-        if (prevFrameBaseTime < bgaOffset && baseTime >= bgaOffset)
+        if (baseTime >= bgaOffset && !bgaElement.isPlaying)
         {
             bgaElement.time = baseTime - bgaOffset;
             bgaElement.Play();
             bgaCovered = false;
-            UpdateBgBrightness();
         }
-        else if (baseTime < bgaOffset && bgaElement.isPlaying)
-        {
-            bgaElement.Pause();
-            bgaCovered = true;
-            UpdateBgBrightness();
-        }
+        UpdateBgBrightness();
     }
 
     private void UpdateHiddenNotes(float baseTime)
@@ -169,6 +158,63 @@ public class GameBackground
                 hidden: musicChannel, emptyHit: false);
             noteManager.ResolveNote(upcomingNote);
         }
+    }
+    #endregion
+
+    #region Seek
+    public void Seek(float baseTime)
+    {
+        SeekBackingTrack(baseTime);
+        SeekBga(baseTime);
+    }
+
+    public void SeekBackingTrack(float baseTime)
+    {
+        if (backingTrack == null) return;
+
+        if (baseTime >= 0f)
+        {
+            if (backingSource.isPlaying)
+            {
+                backingSource.time = baseTime;
+            }
+            else
+            {
+                AudioSourceManager.instance.PlayBackingTrack(
+                    backingTrack,
+                    startTime: baseTime);
+            }
+        }
+        else if (backingSource.isPlaying)
+        {
+            backingSource.Stop();
+        }
+    }
+
+    public void SeekBga(float baseTime)
+    {
+        if (bgaElement == null) return;
+
+        if (baseTime >= bgaOffset)
+        {
+            if (bgaElement.isPlaying)
+            {
+                bgaElement.time = baseTime;
+            }
+            else
+            {
+                bgaElement.time = baseTime - bgaOffset;
+                bgaElement.Play();
+                bgaCovered = false;
+            }
+        }
+        else if (bgaElement.isPlaying)
+        {
+            bgaElement.Pause();
+            bgaCovered = true;
+        }
+
+        UpdateBgBrightness();
     }
     #endregion
 
