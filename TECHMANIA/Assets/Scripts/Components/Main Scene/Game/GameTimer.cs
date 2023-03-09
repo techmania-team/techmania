@@ -10,39 +10,40 @@ public class GameTimer
     private System.Diagnostics.Stopwatch stopwatch;
     // The stopwatch provides the "base time", which drives
     // the backing track, BGA, hidden notes and auto-played notes.
-    public float BaseTime { get; private set; }
+    public float baseTime { get; private set; }
     // The base time of the previous frame.
-    public float PrevFrameBaseTime { get; private set; }
+    public float prevFrameBaseTime { get; private set; }
 
     private float offset;
     // Apply offset to BaseTime to get GameTime, which drives
     // scanlines and playable notes.
-    public float GameTime
+    public float gameTime
     {
         get
         {
-            if (GameController.autoPlay) return BaseTime;
-            return BaseTime - offset;
+            if (GameController.autoPlay) return baseTime;
+            return baseTime - offset;
         }
     }
 
-    public float speed { get; private set; }
+    public int speedPercent { get; private set; }
+    public float speed => speedPercent * 0.01f;
     #endregion
 
     #region Pulse, beat, scan
-    public int PulsesPerScan { get; private set; }
-    public float Pulse { get; private set; }
-    public float Beat { get; private set; }
-    public float Scan { get; private set; }
+    public int pulsesPerScan { get; private set; }
+    public float pulse { get; private set; }
+    public float beat { get; private set; }
+    public float scan { get; private set; }
 
     // The same numbers rounded down, for convenience.
-    public int IntPulse { get; private set; }
-    public int IntBeat { get; private set; }
-    public int IntScan { get; private set; }
+    public int intPulse { get; private set; }
+    public int intBeat { get; private set; }
+    public int intScan { get; private set; }
 
     // Scan numbers for the previous frame, for updating notes.
-    public float PrevFrameScan { get; private set; }
-    public int PrevFrameIntScan { get; private set; }
+    public float prevFrameScan { get; private set; }
+    public int prevFrameIntScan { get; private set; }
     #endregion
 
     #region Combo tick
@@ -69,8 +70,8 @@ public class GameTimer
     {
         stopwatch = new System.Diagnostics.Stopwatch();
         pattern = p;
-        PulsesPerScan = Pattern.pulsesPerBeat * p.patternMetadata.bps;
-        speed = 1f;
+        pulsesPerScan = Pattern.pulsesPerBeat * p.patternMetadata.bps;
+        speedPercent = 100;
     }
 
     [MoonSharpHidden]
@@ -154,11 +155,11 @@ public class GameTimer
         // Calculate first and last scan.
         firstScan = Mathf.FloorToInt(
             pattern.TimeToPulse(patternStartTime) /
-            PulsesPerScan);
+            pulsesPerScan);
         lastScan = Mathf.FloorToInt(
             pattern.TimeToPulse(patternEndTime) /
-            PulsesPerScan);
-        initialTime = pattern.PulseToTime(firstScan * PulsesPerScan);
+            pulsesPerScan);
+        initialTime = pattern.PulseToTime(firstScan * pulsesPerScan);
     }
 
     [MoonSharpHidden]
@@ -170,21 +171,21 @@ public class GameTimer
     [MoonSharpHidden]
     public void Update(System.Action comboTickCallback)
     {
-        PrevFrameBaseTime = BaseTime;
-        PrevFrameScan = Scan;
-        PrevFrameIntScan = IntScan;
+        prevFrameBaseTime = baseTime;
+        prevFrameScan = scan;
+        prevFrameIntScan = intScan;
 
-        BaseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
+        baseTime = (float)stopwatch.Elapsed.TotalSeconds * speed
             + initialTime;
-        Pulse = pattern.TimeToPulse(BaseTime);
-        Beat = Pulse / Pattern.pulsesPerBeat;
-        Scan = Pulse / PulsesPerScan;
-        IntPulse = Mathf.FloorToInt(Pulse);
-        IntBeat = Mathf.FloorToInt(Beat);
-        IntScan = Mathf.FloorToInt(Scan);
+        pulse = pattern.TimeToPulse(baseTime);
+        beat = pulse / Pattern.pulsesPerBeat;
+        scan = pulse / pulsesPerScan;
+        intPulse = Mathf.FloorToInt(pulse);
+        intBeat = Mathf.FloorToInt(beat);
+        intScan = Mathf.FloorToInt(scan);
 
         // Handle combo ticks.
-        while (previousComboTick + kComboTickInterval <= IntPulse)
+        while (previousComboTick + kComboTickInterval <= intPulse)
         {
             previousComboTick += kComboTickInterval;
             comboTickCallback();
@@ -212,18 +213,18 @@ public class GameTimer
     [MoonSharpHidden]
     public void JumpToScan(int scan)
     {
-        IntScan = scan;
-        IntBeat = scan * pattern.patternMetadata.bps;
-        IntPulse = IntBeat * Pattern.pulsesPerBeat;
-        Scan = IntScan;
-        Beat = IntBeat;
-        Pulse = IntPulse;
-        previousComboTick = IntPulse;
+        intScan = scan;
+        intBeat = scan * pattern.patternMetadata.bps;
+        intPulse = intBeat * Pattern.pulsesPerBeat;
+        this.scan = intScan;
+        beat = intBeat;
+        pulse = intPulse;
+        previousComboTick = intPulse;
 
         // Reset initialTime so Update() continues to set the
         // correct base time.
-        BaseTime = pattern.PulseToTime(IntPulse);
-        initialTime = BaseTime -
+        baseTime = pattern.PulseToTime(intPulse);
+        initialTime = baseTime -
             (float)stopwatch.Elapsed.TotalSeconds * speed;
     }
     #endregion

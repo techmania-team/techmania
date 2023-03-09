@@ -255,7 +255,7 @@ public class VFXManager : MonoBehaviour
                 o.GetComponent<VFXDrawer>().SetPosition(
                     VisualElementCenterToScreenPoint(
                         pair.Key.holdTrailAndExtensions
-                        .GetOngoingTrailEndPosition(timer.IntScan)));
+                        .GetOngoingTrailEndPosition(timer.intScan)));
             }
         }
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in

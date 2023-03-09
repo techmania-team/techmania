@@ -60,7 +60,8 @@ public class GameController : MonoBehaviour
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
-    private GameTimer timer;
+    // Accessible from Lua via GameState.timer
+    public GameTimer timer { get; private set; }
     private GameBackground bg;
     private KeysoundPlayer keysoundPlayer;
     private GameLayout layout;
@@ -451,8 +452,11 @@ public class GameController : MonoBehaviour
         // Clamp scan into bounds.
         scan = Mathf.Clamp(scan, timer.firstScan, timer.lastScan);
 
+        // TODO: stop all keysounds.
+        // TODO: tell GameBackground to seek in backing track and BGA.
+
         timer.JumpToScan(scan);
-        noteManager.JumpToScan(timer.IntScan, timer.IntPulse);
+        noteManager.JumpToScan(timer.intScan, timer.intPulse);
         input.JumpToScan();
         scoreKeeper.JumpToScan();
         vfxManager.JumpToScan();
@@ -465,7 +469,7 @@ public class GameController : MonoBehaviour
                 keysoundPlayer.PlayFromHalfway(holder.note,
                     hidden: setup.patternAfterModifier.IsHidden(
                         holder.note.lane),
-                    timer.BaseTime);
+                    timer.baseTime);
             });
         }
     }
@@ -480,11 +484,11 @@ public class GameController : MonoBehaviour
         if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update(comboTickCallback: ComboTick);
-            bg.Update(timer.PrevFrameBaseTime, timer.BaseTime);
-            layout.Update(timer.Scan);
+            bg.Update(timer.prevFrameBaseTime, timer.baseTime);
+            layout.Update(timer.scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();
-            inputFeedback.Update(timer.Scan);
+            inputFeedback.Update(timer.scan);
             scoreKeeper.UpdateFever();
 
             CheckForStageFailed();
@@ -513,7 +517,7 @@ public class GameController : MonoBehaviour
     private void CheckForStageClear()
     {
         if (state.state != ThemeApi.GameState.State.Ongoing) return;
-        if (timer.BaseTime <= timer.patternEndTime) return;
+        if (timer.baseTime <= timer.patternEndTime) return;
         if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
         if (!scoreKeeper.score.AllNotesResolved()) return;
 

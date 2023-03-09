@@ -160,7 +160,7 @@ public class HoldTrailElements
     public void UpdateTrails(GameTimer timer)
     {
         float currentTimeRelativeX = layout.RelativeScanToRelativeX(
-            timer.Scan - intScan, scanDirection);
+            timer.scan - intScan, scanDirection);
         float proportion = (currentTimeRelativeX - startRelativeX)
             / (endRelativeX - startRelativeX);
         proportion = Mathf.Clamp01(proportion);
@@ -169,7 +169,7 @@ public class HoldTrailElements
 
     public void UpdateSprites(GameTimer timer)
     {
-        float beat = timer.Beat;
+        float beat = timer.beat;
 
         Sprite durationTrailSprite;
         Sprite durationTrailEndSprite;

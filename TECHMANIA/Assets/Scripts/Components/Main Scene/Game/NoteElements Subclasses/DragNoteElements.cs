@@ -70,8 +70,8 @@ public class DragNoteElements : NoteElements
     {
         if (state == State.Ongoing)
         {
-            UpdateOngoingCurve(timer.Scan);
-            PlaceNoteImageAndHitboxOnCurve(timer.GameTime);
+            UpdateOngoingCurve(timer.scan);
+            PlaceNoteImageAndHitboxOnCurve(timer.gameTime);
         }
     }
 

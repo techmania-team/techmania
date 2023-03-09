@@ -111,6 +111,28 @@ namespace ThemeApi
         }
         #endregion
 
+        #region Practice mode APIs
+        private void CheckPracticeMode(string methodName)
+        {
+            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+            {
+                throw new System.Exception($"{methodName} can only be called in practice mode.");
+            }
+        }
+
+        // scan will be clamped into the pattern's bounds.
+        public void JumpToScan(int scan)
+        {
+            CheckPracticeMode("JumpToScan");
+            GameController.instance.JumpToScan(scan);
+        }
+
+        public void SetSpeed(int speedPercent)
+        {
+            CheckPracticeMode("SetSpeed");
+        }
+        #endregion
+
         #region Other theme APIs
         public void UpdateBgBrightness()
         {
@@ -139,6 +161,7 @@ namespace ThemeApi
 
         public ScoreKeeper scoreKeeper => GameController.instance
             .scoreKeeper;
+        public GameTimer timer => GameController.instance.timer;
         #endregion
     }
 }

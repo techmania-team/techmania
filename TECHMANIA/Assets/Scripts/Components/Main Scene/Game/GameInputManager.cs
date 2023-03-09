@@ -291,7 +291,7 @@ public class GameInputManager
             NoteElements upcoming = noteManager.notesInLane[lane]
                 .First() as NoteElements;
 
-            if (timer.GameTime >= upcoming.note.time &&
+            if (timer.gameTime >= upcoming.note.time &&
                 !ongoingNotes.ContainsKey(upcoming))
             {
                 controller.HitNote(upcoming, 0f);
@@ -307,7 +307,7 @@ public class GameInputManager
             NoteElements upcoming = noteManager.notesInLane[lane]
                 .First() as NoteElements;
 
-            if (timer.GameTime > upcoming.note.time
+            if (timer.gameTime > upcoming.note.time
                 + upcoming.note.timeWindow[Judgement.Miss]
                 + LatencyForNote(upcoming.note) * timer.speed
                 &&
@@ -353,7 +353,7 @@ public class GameInputManager
     private float TimeDifferenceForNote(Note n)
     {
         float correctTime = n.time + LatencyForNote(n);
-        return timer.GameTime - correctTime;
+        return timer.gameTime - correctTime;
     }
 
     public static Judgement TimeDifferenceToJudgement(
@@ -544,8 +544,8 @@ public class GameInputManager
         };
 
         // Raycast on notes in the surrounding scans.
-        for (int scan = timer.IntScan - 2;
-            scan <= timer.IntScan + 2;
+        for (int scan = timer.intScan - 2;
+            scan <= timer.intScan + 2;
             scan++)
         {
             if (!noteManager.notesInScan.ContainsKey(scan))
@@ -744,7 +744,7 @@ public class GameInputManager
                 endTime = dragNote.endTime + latency;
                 gracePeriodLength = dragNote.gracePeriodLength;
             }
-            if (timer.GameTime >= endTime)
+            if (timer.gameTime >= endTime)
             {
                 // Resolve note.
                 controller.ResolveNote(elements,
@@ -757,12 +757,12 @@ public class GameInputManager
             if (hit)
             {
                 // Will create new element if not existing.
-                ongoingNoteLastInput[elements] = timer.GameTime;
+                ongoingNoteLastInput[elements] = timer.gameTime;
             }
             else if (!GameController.autoPlay)
             {
                 float lastInput = ongoingNoteLastInput[elements];
-                if (timer.GameTime > lastInput + gracePeriodLength)
+                if (timer.gameTime > lastInput + gracePeriodLength)
                 {
                     // No input on this note for too long, resolve
                     // as MISS.

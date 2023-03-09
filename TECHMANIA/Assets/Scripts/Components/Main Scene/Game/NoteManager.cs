@@ -350,9 +350,9 @@ public class NoteManager
     {
         // Put notes and extensions in the upcoming scan in
         // Prepare state if needed.
-        if (timer.PrevFrameIntScan != timer.IntScan)
+        if (timer.prevFrameIntScan != timer.intScan)
         {
-            int nextScan = timer.IntScan + 1;
+            int nextScan = timer.intScan + 1;
             if (notesInScan.ContainsKey(nextScan))
             {
                 notesInScan[nextScan].ForEach(
@@ -372,12 +372,12 @@ public class NoteManager
 
         // Put notes and extensions in the upcoming scan in
         // Active state if needed.
-        float relativeScan = timer.Scan - timer.IntScan;
-        float prevFrameRelativeScan = timer.PrevFrameScan -
-            timer.PrevFrameIntScan;
+        float relativeScan = timer.scan - timer.intScan;
+        float prevFrameRelativeScan = timer.prevFrameScan -
+            timer.prevFrameIntScan;
         if (relativeScan >= 0.875f && prevFrameRelativeScan < 0.875f)
         {
-            int nextScan = timer.IntScan + 1;
+            int nextScan = timer.intScan + 1;
             if (notesInScan.ContainsKey(nextScan))
             {
                 notesInScan[nextScan].ForEach(
@@ -396,8 +396,8 @@ public class NoteManager
         }
 
         // Update notes with time, mainly to update sprites.
-        for (int scan = timer.IntScan - 2;
-            scan <= timer.IntScan + 2;
+        for (int scan = timer.intScan - 2;
+            scan <= timer.intScan + 2;
             scan++)
         {
             if (!notesInScan.ContainsKey(scan)) continue;

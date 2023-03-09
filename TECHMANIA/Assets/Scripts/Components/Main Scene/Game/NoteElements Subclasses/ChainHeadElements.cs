@@ -16,7 +16,7 @@ public class ChainHeadElements : ChainElementsBase
         noteImage.style.backgroundImage = new
             UnityEngine.UIElements.StyleBackground(
             GlobalResource.noteSkin.chainHead
-            .GetSpriteAtFloatIndex(timer.Beat));
+            .GetSpriteAtFloatIndex(timer.beat));
     }
 
     protected override Vector2 GetHitboxScaleFromRuleset()

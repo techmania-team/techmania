@@ -174,7 +174,7 @@ public class RepeatPathElements
 
     public void UpdateSprites(GameTimer timer)
     {
-        float beat = timer.Beat;
+        float beat = timer.beat;
         path.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.repeatPath
             .GetSpriteAtFloatIndex(beat));

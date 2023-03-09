@@ -19,6 +19,12 @@ judgementTally = {
     displays = gamePanel.panel.Q("judgement-tally").Q("judgement-values")
 }
 
+practiceMode = {
+    practiceTopBar = gamePanel.panel.Q("practice-top-bar"),
+    loopStart = 0,
+    loopEnd = 0
+}
+
 function FillBar(barElement, amount)
     barElement.style.width = StyleLengthInPercent(amount * 100)
 end
@@ -38,6 +44,8 @@ gamePanel.Initialize = function()
             event.keyCode == unity.enum.keyCode.Backspace) then
             gamePanel.ActivateFever()
         end
+
+        -- TODO: practice mode shortcuts
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
@@ -48,157 +56,163 @@ gamePanel.Initialize = function()
         gamePanel.ActivateFever()
     end)
 
-    tm.gameSetup.bgContainer = panel.Q("bg-layer")
-    tm.gameSetup.gameContainer = panel.Q("game-layer")
-    tm.gameSetup.vfxComboContainer = nil  -- Unused
-    tm.gameSetup.assistTick = util.io.LoadAudioFromTheme("Assets/UI/SFX/Assist Tick.wav")
+    function InitializeGameSetup()
+        tm.gameSetup.bgContainer = panel.Q("bg-layer")
+        tm.gameSetup.gameContainer = panel.Q("game-layer")
+        tm.gameSetup.vfxComboContainer = nil  -- Unused
+        tm.gameSetup.assistTick = util.io.LoadAudioFromTheme("Assets/UI/SFX/Assist Tick.wav")
 
-    tm.gameSetup.onLoadProgress = function(progress)
-        local percent = progress.filesLoaded * 100 / progress.totalFiles
-        controls.SetProgressBar(panel.Q("loading-progress"), percent)
-    end
-
-    tm.gameSetup.onLoadError = function(status)
-        tm.game.Conclude()
-        alertBox.Alert(status.errorMessage, nil, function()
-            GamePanelToSelectTrackPanel()
-        end)
-    end
-
-    tm.gameSetup.onLoadComplete = function()
-        gamePanel.BeginGame()
-    end
-
-    tm.gameSetup.onUpdate = function(timer)
-        fpsCounter.Update()
-    end
-
-    tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
-        gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
-        gamePanel.UpdateScoreDisplay(
-            scoreKeeper.score.CurrentScore(),
-            scoreKeeper.maxCombo)
-        judgementTally.Update(scoreKeeper.score)
-    end
-
-    tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
-        -- Do nothing.
-    end
-
-    tm.gameSetup.onComboTick = function(newCombo)
-        local scoreKeeper = tm.game.scoreKeeper
-        gamePanel.UpdateScoreDisplay(
-            scoreKeeper.score.CurrentScore(),
-            scoreKeeper.maxCombo)
-    end
-
-    tm.gameSetup.onFeverReady = function()
-        if (gamePanel.feverReadyCoroutine != nil) then
-            tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+        tm.gameSetup.onLoadProgress = function(progress)
+            local percent = progress.filesLoaded * 100 / progress.totalFiles
+            controls.SetProgressBar(panel.Q("loading-progress"), percent)
         end
 
-        -- Play the "Fever ready" animation.
-        gamePanel.feverReadyCoroutine = tm.StartCoroutine(function()
-            local feverBarBg = gamePanel.panel.Q("top-bar").Q("fever-bar-bg")
-            local highlight = feverBarBg.Q("highlight")
-            local feverOff = feverBarBg.Q("fever-off-text")
-            local feverReady = feverBarBg.Q("fever-ready-text")
-            local instructionTouch = feverBarBg.Q("fever-instruction-touch")
-            local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
-
-            function OneFlash()
-                local fadeTimer = 0.5
-                local timer = 0
-                local maxHighlightOpacity = 0.38
-                highlight.style.opacity = StyleFloat(maxHighlightOpacity)
-                while (timer < fadeTimer) do
-                    local progress = timer / fadeTimer
-                    highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(maxHighlightOpacity, 0, progress))
-                    timer = timer + unity.time.deltaTime
-                    coroutine.yield()
-                end
-                highlight.style.opacity = StyleFloat(0)
-                timer = 0
-                while (timer < fadeTimer) do
-                    local progress = timer / fadeTimer
-                    highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, maxHighlightOpacity, progress))
-                    timer = timer + unity.time.deltaTime
-                    coroutine.yield()
-                end
-                highlight.style.opacity = StyleFloat(0)
-            end
-
-            while (true) do
-                feverOff.display = false
-                feverReady.display = true
-                instructionTouch.display = false
-                instructionKeysKm.display = false
-
-                OneFlash()
-
-                feverOff.display = false
-                feverReady.display = false
-                instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
-                instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
-
-                OneFlash()
-            end
-        end)
-
-        -- Show "Fever" on middle bar.
-        panel.Q("middle-fever-bar-bg").Q("fever-ready-text").display = true
-    end
-
-    tm.gameSetup.onFeverUnready = function()
-        gamePanel.ShowFeverOff()
-    end
-
-    tm.gameSetup.onFeverActivated = function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"), tm.enum.audioChannel.SFX)
-        gamePanel.ShowFeverOff()
-    end
-
-    tm.gameSetup.onFeverUpdate = function(feverAmount)
-        gamePanel.UpdateFeverDisplay(feverAmount)
-    end
-
-    tm.gameSetup.onFeverEnd = function(feverBonus)
-        gamePanel.ShowFeverOff()
-        gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
-            local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")
-            bonusDisplay.text = net.string.Format(tm.l10n.GetString("game_panel_fever_bonus_format"), tostring(feverBonus))
-            bonusDisplay.display = true
-            WaitForSeconds(2)
-            bonusDisplay.display = false
-        end)
-    end
-
-    tm.gameSetup.onStageClear = function(scoreKeeper)
-        print("Stage clear")
-        GamePanelToSelectTrackPanel()
-        -- TODO: transition to result panel
-    end
-
-    tm.gameSetup.onStageFailed = function(scoreKeeper)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"), tm.enum.audioChannel.SFX)
-        tm.StartCoroutine(function()
-            local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
-            local timer = 0
-            local animationLength = 0.25
-            stageFailedPanel.style.bottom = StyleLengthInPercent(100)
-            while (timer < animationLength) do
-                local progress = timer / animationLength
-                stageFailedPanel.style.bottom = StyleLengthInPercent(unity.mathf.SmoothStep(100, 0, progress))
-                timer = timer + unity.time.deltaTime
-                coroutine.yield()
-            end
-            stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+        tm.gameSetup.onLoadError = function(status)
             tm.game.Conclude()
-            WaitForSeconds(3.75)  -- Total wait is 4 seconds
+            alertBox.Alert(status.errorMessage, nil, function()
+                GamePanelToSelectTrackPanel()
+            end)
+        end
+
+        tm.gameSetup.onLoadComplete = function()
+            gamePanel.BeginGame()
+        end
+
+        tm.gameSetup.onUpdate = function(timer)
+            fpsCounter.Update()
+            if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
+                practiceMode.Update()
+            end
+        end
+
+        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+            gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
+            gamePanel.UpdateScoreDisplay(
+                scoreKeeper.score.CurrentScore(),
+                scoreKeeper.maxCombo)
+            judgementTally.Update(scoreKeeper.score)
+        end
+
+        tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
+            -- Do nothing.
+        end
+
+        tm.gameSetup.onComboTick = function(newCombo)
+            local scoreKeeper = tm.game.scoreKeeper
+            gamePanel.UpdateScoreDisplay(
+                scoreKeeper.score.CurrentScore(),
+                scoreKeeper.maxCombo)
+        end
+
+        tm.gameSetup.onFeverReady = function()
+            if (gamePanel.feverReadyCoroutine != nil) then
+                tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+            end
+
+            -- Play the "Fever ready" animation.
+            gamePanel.feverReadyCoroutine = tm.StartCoroutine(function()
+                local feverBarBg = gamePanel.panel.Q("top-bar").Q("fever-bar-bg")
+                local highlight = feverBarBg.Q("highlight")
+                local feverOff = feverBarBg.Q("fever-off-text")
+                local feverReady = feverBarBg.Q("fever-ready-text")
+                local instructionTouch = feverBarBg.Q("fever-instruction-touch")
+                local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
+
+                function OneFlash()
+                    local fadeTimer = 0.5
+                    local timer = 0
+                    local maxHighlightOpacity = 0.38
+                    highlight.style.opacity = StyleFloat(maxHighlightOpacity)
+                    while (timer < fadeTimer) do
+                        local progress = timer / fadeTimer
+                        highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(maxHighlightOpacity, 0, progress))
+                        timer = timer + unity.time.deltaTime
+                        coroutine.yield()
+                    end
+                    highlight.style.opacity = StyleFloat(0)
+                    timer = 0
+                    while (timer < fadeTimer) do
+                        local progress = timer / fadeTimer
+                        highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, maxHighlightOpacity, progress))
+                        timer = timer + unity.time.deltaTime
+                        coroutine.yield()
+                    end
+                    highlight.style.opacity = StyleFloat(0)
+                end
+
+                while (true) do
+                    feverOff.display = false
+                    feverReady.display = true
+                    instructionTouch.display = false
+                    instructionKeysKm.display = false
+
+                    OneFlash()
+
+                    feverOff.display = false
+                    feverReady.display = false
+                    instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
+                    instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
+
+                    OneFlash()
+                end
+            end)
+
+            -- Show "Fever" on middle bar.
+            panel.Q("middle-fever-bar-bg").Q("fever-ready-text").display = true
+        end
+
+        tm.gameSetup.onFeverUnready = function()
+            gamePanel.ShowFeverOff()
+        end
+
+        tm.gameSetup.onFeverActivated = function()
+            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"), tm.enum.audioChannel.SFX)
+            gamePanel.ShowFeverOff()
+        end
+
+        tm.gameSetup.onFeverUpdate = function(feverAmount)
+            gamePanel.UpdateFeverDisplay(feverAmount)
+        end
+
+        tm.gameSetup.onFeverEnd = function(feverBonus)
+            gamePanel.ShowFeverOff()
+            gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
+                local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")
+                bonusDisplay.text = net.string.Format(tm.l10n.GetString("game_panel_fever_bonus_format"), tostring(feverBonus))
+                bonusDisplay.display = true
+                WaitForSeconds(2)
+                bonusDisplay.display = false
+            end)
+        end
+
+        tm.gameSetup.onStageClear = function(scoreKeeper)
+            print("Stage clear")
             GamePanelToSelectTrackPanel()
-            -- TODO: transition to result panel instead
-        end)
+            -- TODO: transition to result panel
+        end
+
+        tm.gameSetup.onStageFailed = function(scoreKeeper)
+            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"), tm.enum.audioChannel.SFX)
+            tm.StartCoroutine(function()
+                local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
+                local timer = 0
+                local animationLength = 0.25
+                stageFailedPanel.style.bottom = StyleLengthInPercent(100)
+                while (timer < animationLength) do
+                    local progress = timer / animationLength
+                    stageFailedPanel.style.bottom = StyleLengthInPercent(unity.mathf.SmoothStep(100, 0, progress))
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+                tm.game.Conclude()
+                WaitForSeconds(3.75)  -- Total wait is 4 seconds
+                GamePanelToSelectTrackPanel()
+                -- TODO: transition to result panel instead
+            end)
+        end
     end
+    InitializeGameSetup()
 end
 
 gamePanel.StartLoading = function()
@@ -483,6 +497,48 @@ judgementTally.Update = function(score)
     judgementTally.displays.Q("break").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Break))
 end
 
+practiceMode.Initialize = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+
+    practiceTopBar.Q("prev-scan-button").RegisterCallback(eventType.Click, function()
+        local intScan = tm.game.timer.intScan
+        local floatScanFraction = tm.game.timer.scan - intScan
+        if (floatScanFraction > 0.25) then
+            tm.game.JumpToScan(intScan)
+        else
+            tm.game.JumpToScan(intScan - 1)
+        end
+    end)
+
+    practiceTopBar.Q("next-scan-button").RegisterCallback(eventType.Click, function()
+        local scan = tm.game.timer.intScan
+        tm.game.JumpToScan(scan + 1)
+    end)
+
+    practiceTopBar.Q("set-loop-start-button").RegisterCallback(eventType.Click, function()
+    end)
+
+    practiceTopBar.Q("set-loop-end-button").RegisterCallback(eventType.Click, function()
+    end)
+
+    practiceTopBar.Q("reset-loop-button").RegisterCallback(eventType.Click, function()
+    end)
+
+    practiceTopBar.Q("decrease-speed-button").RegisterCallback(eventType.Click, function()
+    end)
+
+    practiceTopBar.Q("increase-speed-button").RegisterCallback(eventType.Click, function()
+    end)
+end
+
+practiceMode.Update = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+
+    practiceTopBar.Q("scan-number").Q("center-display").Q("value").text = net.string.Format(
+        "{0} / {1}", tm.game.timer.intScan, tm.game.timer.lastScan)
+end
+
 gamePanel.Initialize()
 pauseMenu.Initialize()
 fpsCounter.Initialize()
+practiceMode.Initialize()

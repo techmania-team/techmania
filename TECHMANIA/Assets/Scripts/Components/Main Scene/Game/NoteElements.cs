@@ -430,7 +430,7 @@ public class NoteElements : INoteHolder
             Modifiers.instance.noteOpacity
             != Modifiers.NoteOpacity.Normal)
         {
-            UpdateAlphaUpperBound(timer.Scan);
+            UpdateAlphaUpperBound(timer.scan);
             // Reset visibility of note parts every frame.
             UpdateState();
         }
@@ -438,8 +438,8 @@ public class NoteElements : INoteHolder
         {
             holdTrailAndExtensions?.UpdateOngoingTrail(timer);
         }
-        UpdateFeverOverlay(timer.GameTime, scoreKeeper);
-        UpdateApproachOverlay(timer.Scan);
+        UpdateFeverOverlay(timer.gameTime, scoreKeeper);
+        UpdateApproachOverlay(timer.scan);
     }
 
     private void HitboxMatchNoteImageAlpha()

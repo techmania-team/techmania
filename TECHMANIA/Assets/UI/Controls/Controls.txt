@@ -24,6 +24,10 @@ end
 
 function SetUpClickSound(element)
     if (element.ClassListContains("special-click-sfx")) then return end
+    if (element.ClassListContains("silent")) then return end
+    -- For toggles, we can't attach the silent class to #track inside an instance, so
+    -- we check the parent element.
+    if (element != tm.root and element.parent.ClassListContains("silent")) then return end
     local sfxName = "Assets/UI/SFX/Click.wav"
     if (element.name == "back-button" or
         element.name == "cancel-button") then

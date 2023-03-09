@@ -48,6 +48,6 @@ public class RepeatNoteElementsBase : NoteElements
     {
         noteImage.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.repeat.GetSpriteAtFloatIndex(
-                timer.Beat));
+                timer.beat));
     }
 }

@@ -56,7 +56,7 @@ public class RepeatHeadElementsBase : NoteElements
     {
         noteImage.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.repeatHead
-            .GetSpriteAtFloatIndex(timer.Beat));
+            .GetSpriteAtFloatIndex(timer.beat));
     }
 
     #region Managed notes

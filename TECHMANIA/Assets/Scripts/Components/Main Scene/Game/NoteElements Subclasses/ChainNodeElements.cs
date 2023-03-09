@@ -52,10 +52,10 @@ public class ChainNodeElements : ChainElementsBase
     {
         noteImage.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.chainNode
-            .GetSpriteAtFloatIndex(timer.Beat));
+            .GetSpriteAtFloatIndex(timer.beat));
         pathToPreviousNote.style.backgroundImage = new
             StyleBackground(GlobalResource.noteSkin.chainPath
-            .GetSpriteAtFloatIndex(timer.Beat));
+            .GetSpriteAtFloatIndex(timer.beat));
     }
 
     protected override Vector2 GetHitboxScaleFromRuleset()

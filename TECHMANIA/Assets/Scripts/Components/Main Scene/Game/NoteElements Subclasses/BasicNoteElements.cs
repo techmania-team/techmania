@@ -39,6 +39,6 @@ public class BasicNoteElements : NoteElements
         noteImage.style.backgroundImage = new 
             UnityEngine.UIElements.StyleBackground(
             GlobalResource.noteSkin.basic
-            .GetSpriteAtFloatIndex(timer.Beat));
+            .GetSpriteAtFloatIndex(timer.beat));
     }
 }
