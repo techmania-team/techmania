@@ -452,7 +452,6 @@ public class GameController : MonoBehaviour
         // Clamp scan into bounds.
         scan = Mathf.Clamp(scan, timer.firstScan, timer.lastScan);
 
-        // TODO: stop all keysounds.
         // TODO: tell GameBackground to seek in backing track and BGA.
 
         timer.JumpToScan(scan);
@@ -462,6 +461,7 @@ public class GameController : MonoBehaviour
         vfxManager.JumpToScan();
 
         // Play keysounds before the current time if they last enough.
+        keysoundPlayer.StopAll();
         foreach (NoteList l in noteManager.notesInLane)
         {
             l.ForEachRemoved((INoteHolder holder) =>

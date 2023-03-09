@@ -105,4 +105,9 @@ public class KeysoundPlayer
             audioSourceOfNote.Remove(n);
         }
     }
+
+    public void StopAll()
+    {
+        Dispose();
+    }
 }
