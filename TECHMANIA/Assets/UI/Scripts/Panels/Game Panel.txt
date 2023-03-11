@@ -45,7 +45,9 @@ gamePanel.Initialize = function()
             gamePanel.ActivateFever()
         end
 
-        -- TODO: practice mode shortcuts
+        if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
+            practiceMode.HandleKeyDown(event.keyCode)
+        end
     end)
 
     panel.Q("pause-button").RegisterCallback(eventType.Click, function()
@@ -507,51 +509,44 @@ practiceMode.Initialize = function()
     local practiceTopBar = practiceMode.practiceTopBar
 
     practiceTopBar.Q("prev-scan-button").RegisterCallback(eventType.Click, function()
-        local intScan = tm.game.timer.intScan
-        local floatScanFraction = tm.game.timer.scan - intScan
-        if (floatScanFraction > 0.25) then
-            tm.game.JumpToScan(intScan)
-        else
-            tm.game.JumpToScan(intScan - 1)
-        end
+        practiceMode.controls.JumpToPrevScan()
     end)
-
     practiceTopBar.Q("next-scan-button").RegisterCallback(eventType.Click, function()
-        local scan = tm.game.timer.intScan
-        tm.game.JumpToScan(scan + 1)
+        practiceMode.controls.JumpToNextScan()
     end)
-
     practiceTopBar.Q("set-loop-start-button").RegisterCallback(eventType.Click, function()
-        local scan = tm.game.timer.intScan
-        if (scan > tm.game.timer.lastScan) then scan = tm.game.timer.lastScan end
-        practiceMode.loopStart = scan
-        if (practiceMode.loopEnd < practiceMode.loopStart) then
-            practiceMode.loopEnd = tm.game.timer.lastScan
-        end
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.controls.SetLoopStart()
     end)
-
     practiceTopBar.Q("set-loop-end-button").RegisterCallback(eventType.Click, function()
-        local scan = tm.game.timer.intScan
-        if (scan < tm.game.timer.firstScan) then scan = tm.game.timer.firstScan end
-        practiceMode.loopEnd = scan
-        if (practiceMode.loopEnd < practiceMode.loopStart) then
-            practiceMode.loopStart = tm.game.timer.firstScan
-        end
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.controls.SetLoopEnd()
     end)
-
     practiceTopBar.Q("reset-loop-button").RegisterCallback(eventType.Click, function()
-        practiceMode.loopStart = tm.game.timer.firstScan
-        practiceMode.loopEnd = tm.game.timer.lastScan
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.controls.ResetLoop()
     end)
-
     practiceTopBar.Q("decrease-speed-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.DecreaseSpeed()
     end)
-
     practiceTopBar.Q("increase-speed-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.IncreaseSpeed()
     end)
+end
+
+practiceMode.HandleKeyDown = function(keyCode)
+    if (keyCode == unity.enum.keyCode.F3) then
+        practiceMode.controls.JumpToPrevScan()
+    elseif (keyCode == unity.enum.keyCode.F4) then
+        practiceMode.controls.JumpToNextScan()
+    elseif (keyCode == unity.enum.keyCode.F5) then
+        practiceMode.controls.SetLoopStart()
+    elseif (keyCode == unity.enum.keyCode.F6) then
+        practiceMode.controls.SetLoopEnd()
+    elseif (keyCode == unity.enum.keyCode.F7) then
+        practiceMode.controls.ResetLoop()
+    elseif (keyCode == unity.enum.keyCode.F9) then
+        practiceMode.controls.DecreaseSpeed()
+    elseif (keyCode == unity.enum.keyCode.F10) then
+        practiceMode.controls.IncreaseSpeed()
+    end
 end
 
 practiceMode.BeginGame = function()
@@ -576,6 +571,55 @@ practiceMode.UpdateLoopDisplay = function()
     practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
         "{0} - {1}", practiceMode.loopStart, practiceMode.loopEnd)
 end
+
+practiceMode.controls = {
+    JumpToPrevScan = function()
+        local intScan = tm.game.timer.intScan
+        local floatScanFraction = tm.game.timer.scan - intScan
+        if (floatScanFraction > 0.25) then
+            tm.game.JumpToScan(intScan)
+        else
+            tm.game.JumpToScan(intScan - 1)
+        end
+    end,
+
+    JumpToNextScan = function()
+        local scan = tm.game.timer.intScan
+        tm.game.JumpToScan(scan + 1)
+    end,
+
+    SetLoopStart = function()
+        local scan = tm.game.timer.intScan
+        if (scan > tm.game.timer.lastScan) then scan = tm.game.timer.lastScan end
+        practiceMode.loopStart = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopEnd = tm.game.timer.lastScan
+        end
+        practiceMode.UpdateLoopDisplay()
+    end,
+
+    SetLoopEnd = function()
+        local scan = tm.game.timer.intScan
+        if (scan < tm.game.timer.firstScan) then scan = tm.game.timer.firstScan end
+        practiceMode.loopEnd = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopStart = tm.game.timer.firstScan
+        end
+        practiceMode.UpdateLoopDisplay()
+    end,
+
+    ResetLoop = function()
+        practiceMode.loopStart = tm.game.timer.firstScan
+        practiceMode.loopEnd = tm.game.timer.lastScan
+        practiceMode.UpdateLoopDisplay()
+    end,
+
+    DecreaseSpeed = function()
+    end,
+
+    IncreaseSpeed = function()
+    end
+}
 
 gamePanel.Initialize()
 pauseMenu.Initialize()
