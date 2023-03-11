@@ -228,6 +228,7 @@ gamePanel.StartLoading = function()
     panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
     panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
+    controls.SetProgressBar(panel.Q("loading-progress"), 0)
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
     panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
@@ -240,6 +241,11 @@ end
 
 gamePanel.BeginGame = function()
     local panel = gamePanel.panel
+
+    -- Prepare practice mode, specifically the loop, if necessary.
+    if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
+        practiceMode.BeginGame()
+    end
 
     -- Relocate game area if necessary.
     local scalingMode = themeOptions["backgroundScalingMode"]
@@ -516,12 +522,29 @@ practiceMode.Initialize = function()
     end)
 
     practiceTopBar.Q("set-loop-start-button").RegisterCallback(eventType.Click, function()
+        local scan = tm.game.timer.intScan
+        if (scan > tm.game.timer.lastScan) then scan = tm.game.timer.lastScan end
+        practiceMode.loopStart = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopEnd = tm.game.timer.lastScan
+        end
+        practiceMode.UpdateLoopDisplay()
     end)
 
     practiceTopBar.Q("set-loop-end-button").RegisterCallback(eventType.Click, function()
+        local scan = tm.game.timer.intScan
+        if (scan < tm.game.timer.firstScan) then scan = tm.game.timer.firstScan end
+        practiceMode.loopEnd = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopStart = tm.game.timer.firstScan
+        end
+        practiceMode.UpdateLoopDisplay()
     end)
 
     practiceTopBar.Q("reset-loop-button").RegisterCallback(eventType.Click, function()
+        practiceMode.loopStart = tm.game.timer.firstScan
+        practiceMode.loopEnd = tm.game.timer.lastScan
+        practiceMode.UpdateLoopDisplay()
     end)
 
     practiceTopBar.Q("decrease-speed-button").RegisterCallback(eventType.Click, function()
@@ -531,11 +554,27 @@ practiceMode.Initialize = function()
     end)
 end
 
+practiceMode.BeginGame = function()
+    practiceMode.loopStart = tm.game.timer.firstScan
+    practiceMode.loopEnd = tm.game.timer.lastScan
+    practiceMode.UpdateLoopDisplay()
+end
+
 practiceMode.Update = function()
     local practiceTopBar = practiceMode.practiceTopBar
 
     practiceTopBar.Q("scan-number").Q("center-display").Q("value").text = net.string.Format(
         "{0} / {1}", tm.game.timer.intScan, tm.game.timer.lastScan)
+
+    if (tm.game.timer.intScan > practiceMode.loopEnd) then
+        tm.game.JumpToScan(practiceMode.loopStart)
+    end
+end
+
+practiceMode.UpdateLoopDisplay = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+    practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
+        "{0} - {1}", practiceMode.loopStart, practiceMode.loopEnd)
 end
 
 gamePanel.Initialize()
