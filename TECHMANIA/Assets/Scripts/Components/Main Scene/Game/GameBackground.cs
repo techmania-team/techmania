@@ -56,8 +56,7 @@ public class GameBackground
     }
 
     public void SetBga(ThemeApi.VideoElement element,
-        bool loop,
-        float offset)
+        bool loop, float offset)
     {
         bgaElement = element;
         bgaOffset = offset;
@@ -222,7 +221,7 @@ public class GameBackground
     {
         float alpha = (float)trackOptions.backgroundBrightness /
             PerTrackOptions.kMaxBrightness;
-        if (bgaCovered) alpha = 0f;
+        if (bgaElement != null && bgaCovered) alpha = 0f;
         bgContainer.style.unityBackgroundImageTintColor =
             new StyleColor(new Color(1f, 1f, 1f, alpha));
     }
