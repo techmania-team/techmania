@@ -415,6 +415,8 @@ public class GameController : MonoBehaviour
 
     public void Conclude()
     {
+        AudioSourceManager.instance.SetSpeed(1f);
+
         timer.Dispose();
         bg.Conclude();
         keysoundPlayer.Dispose();
@@ -443,6 +445,20 @@ public class GameController : MonoBehaviour
     public void ActivateFever()
     {
         scoreKeeper.ActivateFever();
+    }
+
+    public void SetSpeed(int speedPercent)
+    {
+        if (speedPercent <= 0)
+        {
+            throw new Exception("Cannot set game speed to 0 or negative.");
+        }
+
+        // It's up to GameState.SetSpeed to check if we are in
+        // practice mode.
+        timer.SetSpeed(speedPercent);
+        AudioSourceManager.instance.SetSpeed(timer.speed);
+        bg.SetBgaSpeed(timer.speed);
     }
     #endregion
 

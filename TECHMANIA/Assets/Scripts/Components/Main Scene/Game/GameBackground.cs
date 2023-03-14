@@ -225,4 +225,10 @@ public class GameBackground
         bgContainer.style.unityBackgroundImageTintColor =
             new StyleColor(new Color(1f, 1f, 1f, alpha));
     }
+
+    public void SetBgaSpeed(float speed)
+    {
+        if (bgaElement == null) return;
+        bgaElement.player.playbackSpeed = speed;
+    }
 }

@@ -552,7 +552,7 @@ end
 practiceMode.BeginGame = function()
     practiceMode.loopStart = tm.game.timer.firstScan
     practiceMode.loopEnd = tm.game.timer.lastScan
-    practiceMode.UpdateLoopDisplay()
+    practiceMode.UpdateUi()
 end
 
 practiceMode.Update = function()
@@ -566,10 +566,26 @@ practiceMode.Update = function()
     end
 end
 
-practiceMode.UpdateLoopDisplay = function()
+practiceMode.UpdateUi = function()
     local practiceTopBar = practiceMode.practiceTopBar
     practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
         "{0} - {1}", practiceMode.loopStart, practiceMode.loopEnd)
+
+    -- For speed display, we have to be more delicate in order to not show something like "0.799999999685x".
+    local speedString = ""
+    if (tm.game.timer.speedPercent == 100) then
+        speedString = "1x"
+    elseif (tm.game.timer.speedPercent == 200) then
+        speedString = "2x"
+    else
+        speedString = tostring(tm.game.timer.speedPercent)
+        if (tm.game.timer.speedPercent < 100) then speedString = "0" .. speedString end
+        local wholePart = string.sub(speedString, 1, 1)
+        local fracPart = string.sub(speedString, 2, 3)
+        if (string.sub(fracPart, 2, 2) == "0") then fracPart = string.sub(fracPart, 1, 1) end
+        speedString = wholePart .. "." .. fracPart .. "x"
+    end
+    practiceTopBar.Q("speed-control").Q("center-display").Q("value").text = speedString
 end
 
 practiceMode.controls = {
@@ -595,7 +611,7 @@ practiceMode.controls = {
         if (practiceMode.loopEnd < practiceMode.loopStart) then
             practiceMode.loopEnd = tm.game.timer.lastScan
         end
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.UpdateUi()
     end,
 
     SetLoopEnd = function()
@@ -605,19 +621,29 @@ practiceMode.controls = {
         if (practiceMode.loopEnd < practiceMode.loopStart) then
             practiceMode.loopStart = tm.game.timer.firstScan
         end
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.UpdateUi()
     end,
 
     ResetLoop = function()
         practiceMode.loopStart = tm.game.timer.firstScan
         practiceMode.loopEnd = tm.game.timer.lastScan
-        practiceMode.UpdateLoopDisplay()
+        practiceMode.UpdateUi()
     end,
 
     DecreaseSpeed = function()
+        local speedPercent = tm.game.timer.speedPercent
+        speedPercent = speedPercent - 5
+        if (speedPercent < 50) then speedPercent = 50 end
+        tm.game.SetSpeed(speedPercent)
+        practiceMode.UpdateUi()
     end,
 
     IncreaseSpeed = function()
+        local speedPercent = tm.game.timer.speedPercent
+        speedPercent = speedPercent + 5
+        if (speedPercent > 200) then speedPercent = 200 end
+        tm.game.SetSpeed(speedPercent)
+        practiceMode.UpdateUi()
     end
 }
 

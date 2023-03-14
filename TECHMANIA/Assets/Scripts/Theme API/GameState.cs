@@ -130,6 +130,7 @@ namespace ThemeApi
         public void SetSpeed(int speedPercent)
         {
             CheckPracticeMode("SetSpeed");
+            GameController.instance.SetSpeed(speedPercent);
         }
         #endregion
 
@@ -159,8 +160,10 @@ namespace ThemeApi
             GameController.instance.ActivateFever();
         }
 
+        // Available in states LoadComplete, Ongoing and Paused.
         public ScoreKeeper scoreKeeper => GameController.instance
             .scoreKeeper;
+        // Available in states LoadComplete, Ongoing and Paused.
         public GameTimer timer => GameController.instance.timer;
         #endregion
     }

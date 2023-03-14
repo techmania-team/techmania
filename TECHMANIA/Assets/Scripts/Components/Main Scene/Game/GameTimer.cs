@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
+using System;
 
 [MoonSharpUserData]
 public class GameTimer
@@ -224,6 +225,18 @@ public class GameTimer
         // Reset initialTime so Update() continues to set the
         // correct base time.
         baseTime = pattern.PulseToTime(intPulse);
+        ResetInitialTime();
+    }
+
+    [MoonSharpHidden]
+    public void SetSpeed(int speedPercent)
+    {
+        this.speedPercent = speedPercent;
+        ResetInitialTime();
+    }
+
+    private void ResetInitialTime()
+    {
         initialTime = baseTime -
             (float)stopwatch.Elapsed.TotalSeconds * speed;
     }
