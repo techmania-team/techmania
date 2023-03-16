@@ -91,6 +91,8 @@ public class Options : OptionsBase
     // these paths.
     public string tracksFolderLocation;
     public string skinsFolderLocation;
+    // Call TurnOn/OffDiscordRichPresence instead of setting this
+    // directly.
     public bool discordRichPresence;
 
     // Editor options
@@ -372,6 +374,24 @@ public class Options : OptionsBase
     {
         float volume = volumePercent * 0.01f;
         return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
+    }
+    #endregion
+
+    #region Discord
+    // Call this instead of setting discordRichPresence directly,
+    // or rich presence will not immediately appear in Discord.
+    public void TurnOnDiscordRichPresence()
+    {
+        discordRichPresence = true;
+        DiscordController.Start();
+    }
+
+    // Call this instead of setting discordRichPresence directly,
+    // or rich presence will not immediately disappear in Discord.
+    public void TurnOffDiscordRichPresence()
+    {
+        discordRichPresence = false;
+        DiscordController.Dispose();
     }
     #endregion
 

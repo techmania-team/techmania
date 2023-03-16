@@ -32,7 +32,10 @@ public class DiscordController
             discord = new Discord.Discord(802017593086836767,
                 (UInt64)Discord.CreateFlags.NoRequireDiscord);
         }
-        catch {}
+        catch (Exception ex)
+        {
+            UnityEngine.Debug.LogException(ex);
+        }
     }
     
     public static void RunCallbacks ()
@@ -177,4 +180,34 @@ public class DiscordController
                 return "";
         }
     }
+
+    #region Theme API
+    private static bool showingElapsedTime = false;
+
+    public static void SetActivity(
+        string details, string state, bool showElapsedTime = false)
+    {
+        Discord.Activity activity = new Discord.Activity
+        {
+            Details = details,
+            State = state,
+            Assets =
+            {
+                LargeImage = "techmania"
+            }
+        };
+        if (showElapsedTime)
+        {
+            if (!showingElapsedTime)
+            {
+                // Capture start time.
+                timeStart = DateTimeOffset.UtcNow;
+            }
+            activity.Timestamps.Start = timeStart.ToUnixTimeSeconds();
+        }
+        discord.GetActivityManager().UpdateActivity(
+            activity, (result) => { });
+        showingElapsedTime = showElapsedTime;
+    }
+    #endregion
 }

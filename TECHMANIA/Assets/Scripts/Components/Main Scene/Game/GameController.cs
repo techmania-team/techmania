@@ -74,7 +74,9 @@ public class GameController : MonoBehaviour
     public VFXManager vfxManager;
     public ComboText comboText;
 
+    [HideInInspector]
     public bool autoPlay;
+    [HideInInspector]
     public bool showHitbox;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)

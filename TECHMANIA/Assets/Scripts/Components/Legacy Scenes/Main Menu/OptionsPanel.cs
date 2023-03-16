@@ -466,23 +466,20 @@ public class OptionsPanel : MonoBehaviour
 
     public void OnDiscordRichPresenceChanged()
     {
-        Options.instance.discordRichPresence =
-            discordRichPresenceToggle.isOn;
-        if (Options.instance.discordRichPresence)
+        if (discordRichPresenceToggle.isOn)
         {
-            DiscordController.Start();
+            Options.instance.TurnOnDiscordRichPresence();
             DiscordController.SetActivity(DiscordActivityType.Options);
         }
         else
         {
-            DiscordController.Dispose();
+            Options.instance.TurnOffDiscordRichPresence();
         }
     }
 
     public void OnDiscordRichPresenceReconnectButtonClick()
     {
-        DiscordController.Start();
-        DiscordController.SetActivity(DiscordActivityType.Options);
+        Options.instance.TurnOnDiscordRichPresence();
     } 
     #endregion
 }

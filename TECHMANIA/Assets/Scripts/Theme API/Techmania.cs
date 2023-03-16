@@ -110,6 +110,21 @@ namespace ThemeApi
             CoroutineRunner.Stop(id);
         }
 
+        // Does nothing if Discord Rich Presence is turned off
+        // from options, or running on unsupported platform.
+        //
+        // If details and state are both set, details is shown
+        // above state.
+        //
+        // If multiple calls are made with showElapsedTime = true,
+        // the 2nd call and onwards will not reset the elapsed time.
+        public void SetDiscordActivity(string details, string state,
+            bool showElapsedTime = false)
+        {
+            DiscordController.SetActivity(details, state,
+                showElapsedTime);
+        }
+
         // Returns one of "Windows", "Linux", "macOS", "Android"
         // "iOS", and "Unknown".
         public string GetPlatform()
