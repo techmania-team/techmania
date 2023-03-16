@@ -190,7 +190,7 @@ public class GameInputManager
         // judgement on the note head.
         // [2] takes a lane number in Keys, works on any lane in KM.
 
-        if (GameController.autoPlay)
+        if (controller.autoPlay)
         {
             HandleAutoPlay();
         }
@@ -347,7 +347,7 @@ public class GameInputManager
     {
         int latencyMs = Options.instance.GetLatencyForDevice(
             DeviceForNote(n));
-        return GameController.autoPlay ? 0f : latencyMs * 0.001f;
+        return controller.autoPlay ? 0f : latencyMs * 0.001f;
     }
 
     private float TimeDifferenceForNote(Note n)
@@ -759,7 +759,7 @@ public class GameInputManager
                 // Will create new element if not existing.
                 ongoingNoteLastInput[elements] = timer.gameTime;
             }
-            else if (!GameController.autoPlay)
+            else if (!controller.autoPlay)
             {
                 float lastInput = ongoingNoteLastInput[elements];
                 if (timer.gameTime > lastInput + gracePeriodLength)

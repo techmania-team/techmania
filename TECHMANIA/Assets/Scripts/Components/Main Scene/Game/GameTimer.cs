@@ -22,7 +22,7 @@ public class GameTimer
     {
         get
         {
-            if (GameController.autoPlay) return baseTime;
+            if (GameController.instance.autoPlay) return baseTime;
             return baseTime - offset;
         }
     }

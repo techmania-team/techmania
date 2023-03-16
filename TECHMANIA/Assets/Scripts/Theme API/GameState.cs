@@ -132,6 +132,27 @@ namespace ThemeApi
             CheckPracticeMode("SetSpeed");
             GameController.instance.SetSpeed(speedPercent);
         }
+
+        public bool autoPlay
+        {
+            get => GameController.instance.autoPlay;
+            set
+            {
+                CheckPracticeMode("autoPlay");
+                GameController.instance.autoPlay = value;
+                ResetElementSizes();
+            }
+        }
+
+        public bool showHitbox
+        {
+            get => GameController.instance.showHitbox;
+            set
+            {
+                CheckPracticeMode("showHitbox");
+                GameController.instance.showHitbox = value;
+            }
+        }
         #endregion
 
         #region Other theme APIs

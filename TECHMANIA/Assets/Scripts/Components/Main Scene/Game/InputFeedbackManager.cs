@@ -106,13 +106,16 @@ public class InputFeedbackManager
 
     private void UpdateWithInput(float scan)
     {
-        if (GameController.autoPlay)
+        if (GameController.instance.autoPlay)
         {
-            foreach (InputFeedback feedback in idToFeedback.Values)
+            if (idToFeedback.Count > 0)
             {
-                feedback.Dispose();
+                foreach (InputFeedback feedback in idToFeedback.Values)
+                {
+                    feedback.Dispose();
+                }
+                idToFeedback.Clear();
             }
-            idToFeedback.Clear();
             return;
         }
 

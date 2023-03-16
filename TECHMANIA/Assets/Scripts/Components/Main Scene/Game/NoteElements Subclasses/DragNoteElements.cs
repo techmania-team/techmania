@@ -323,7 +323,7 @@ public class DragNoteElements : NoteElements
         // To calculate the hitbox's position, we need to compensate
         // for latency.
         float compensatedTime = gameTime;
-        if (!GameController.autoPlay)
+        if (!GameController.instance.autoPlay)
         {
             if (pattern.patternMetadata.controlScheme
                 == ControlScheme.Touch)

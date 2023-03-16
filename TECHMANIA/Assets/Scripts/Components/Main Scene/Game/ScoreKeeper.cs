@@ -130,7 +130,7 @@ public class ScoreKeeper
                 judgement == Judgement.Max))
             {
                 float feverDelta = feverCoefficient / score.totalNotes;
-                if (GameController.autoPlay) feverDelta = 0f;
+                if (GameController.instance.autoPlay) feverDelta = 0f;
                 if (Modifiers.instance.fever == 
                     Modifiers.Fever.FeverOff)
                 {

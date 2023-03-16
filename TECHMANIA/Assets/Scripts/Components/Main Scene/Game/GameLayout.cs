@@ -124,7 +124,7 @@ public class GameLayout
         foreach (ScanElements scan in scanElements)
         {
             setSize(scan.scanline,
-                (GameController.autoPlay ?
+                (GameController.instance.autoPlay ?
                 skin.autoPlayScanline : skin.scanline));
         }
     }
@@ -333,7 +333,7 @@ public class GameLayout
         // Update scanline.
 
         GameUISkin skin = GlobalResource.gameUiSkin;
-        Sprite scanlineSprite = GameController.autoPlay ?
+        Sprite scanlineSprite = GameController.instance.autoPlay ?
             skin.autoPlayScanline.GetSpriteAtFloatIndex(scan) :
             skin.scanline.GetSpriteAtFloatIndex(scan);
         float scanlineAlpha = ScanlineAlpha(scan);

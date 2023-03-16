@@ -529,6 +529,12 @@ practiceMode.Initialize = function()
     practiceTopBar.Q("increase-speed-button").RegisterCallback(eventType.Click, function()
         practiceMode.controls.IncreaseSpeed()
     end)
+    practiceTopBar.Q("auto-play-wrap").Q("track").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.ToggleAutoPlay()
+    end)
+    practiceTopBar.Q("show-hitbox-wrap").Q("track").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.ToggleShowHitbox()
+    end)
 end
 
 practiceMode.HandleKeyDown = function(keyCode)
@@ -546,6 +552,10 @@ practiceMode.HandleKeyDown = function(keyCode)
         practiceMode.controls.DecreaseSpeed()
     elseif (keyCode == unity.enum.keyCode.F10) then
         practiceMode.controls.IncreaseSpeed()
+    elseif (keyCode == unity.enum.keyCode.F11) then
+        practiceMode.controls.ToggleAutoPlay()
+    elseif (keyCode == unity.enum.keyCode.F12) then
+        practiceMode.controls.ToggleShowHitbox()
     end
 end
 
@@ -553,6 +563,13 @@ practiceMode.BeginGame = function()
     practiceMode.loopStart = tm.game.timer.firstScan
     practiceMode.loopEnd = tm.game.timer.lastScan
     practiceMode.UpdateUi()
+
+    -- Toggles are only updated on begin. They will update themselves when the player clicks them.
+    local optionToggles = practiceMode.practiceTopBar.Q("options")
+    local autoPlayToggle = optionToggles.Q("auto-play-wrap").Q("Toggle")
+    controls.SetToggleIsOn(autoPlayToggle.Q("track"), tm.game.autoPlay)
+    local showHitboxToggle = optionToggles.Q("show-hitbox-wrap").Q("Toggle")
+    controls.SetToggleIsOn(showHitboxToggle.Q("track"), tm.game.showHitbox)
 end
 
 practiceMode.Update = function()
@@ -644,6 +661,14 @@ practiceMode.controls = {
         if (speedPercent > 200) then speedPercent = 200 end
         tm.game.SetSpeed(speedPercent)
         practiceMode.UpdateUi()
+    end,
+
+    ToggleAutoPlay = function()
+        tm.game.autoPlay = not tm.game.autoPlay
+    end,
+
+    ToggleShowHitbox = function()
+        tm.game.showHitbox = not tm.game.showHitbox
     end
 }
 

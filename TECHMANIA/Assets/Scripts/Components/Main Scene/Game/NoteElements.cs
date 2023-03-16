@@ -447,7 +447,7 @@ public class NoteElements : INoteHolder
         if (hitbox == null) return;
 
         float alpha = noteImage.style.opacity.value;
-        if (!GameController.hitboxVisible) alpha = 0f;
+        if (!GameController.instance.showHitbox) alpha = 0f;
         hitbox.style.opacity = alpha;
     }
 

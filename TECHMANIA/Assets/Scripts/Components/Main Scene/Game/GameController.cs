@@ -74,9 +74,8 @@ public class GameController : MonoBehaviour
     public VFXManager vfxManager;
     public ComboText comboText;
 
-    // TODO: when this changes, tell layout to reset scanlines' size.
-    public static bool autoPlay;
-    public static bool hitboxVisible;
+    public bool autoPlay;
+    public bool showHitbox;
 
     public void SetSetupInstance(ThemeApi.GameSetup s)
     {
@@ -306,7 +305,7 @@ public class GameController : MonoBehaviour
 
         // Switches.
         autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
-        hitboxVisible = false;
+        showHitbox = false;
 
         // Keysound player.
         keysoundPlayer = new KeysoundPlayer(setup.assistTick);
