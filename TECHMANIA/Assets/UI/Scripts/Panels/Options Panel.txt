@@ -100,6 +100,9 @@ optionsPanel.Show = function()
         tm.options.keyboardMouseLatencyMs .. " ms"
 
     ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
+
+    local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
+    controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
 end
 
 optionsPanel.Initialize = function()
@@ -282,6 +285,16 @@ optionsPanel.Initialize = function()
     end)
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
+
+    local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
+    discordRichPresenceToggle.RegisterCallback(eventType.Click, function()
+        if (controls.IsToggleOn(discordRichPresenceToggle)) then
+            tm.options.TurnOnDiscordRichPresence()
+            -- TODO: call tm.SetDiscordActivity(string details, string state, bool showElapsedTime)
+        else
+            tm.options.TurnOffDiscordRichPresence()
+        end
+    end)
 end
 
 InitializeThemeOptions()
