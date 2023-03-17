@@ -218,6 +218,25 @@ gamePanel.Initialize = function()
 end
 
 gamePanel.StartLoading = function()
+    -- Discord activity
+    local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
+    local metadata = selectPatternPanel.selectedPattern.patternMetadata
+    local controlSchemeString
+    if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_touch")
+    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_keys")
+    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_km")
+    end
+    local discordActivity = net.string.format(discordActivityFormat,
+        metadata.playableLanes,
+        controlSchemeString,
+        metadata.level)
+    tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
+        discordActivity,
+        true)  -- show elapsed time
+
     local panel = gamePanel.panel
 
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space

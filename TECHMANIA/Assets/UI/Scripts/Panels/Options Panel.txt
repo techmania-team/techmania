@@ -50,6 +50,8 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
 end
 
 optionsPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_options"))
+
     local panel = optionsPanel.panel
 
     local currentResolution = tm.options.GetCurrentResolutionAsObject()

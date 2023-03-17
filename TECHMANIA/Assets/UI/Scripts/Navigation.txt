@@ -1,9 +1,15 @@
-function SetUpNavigation()
-    local mainMenu = tm.root.Q("main-menu")
+mainMenu = {
+    panel = tm.root.Q("main-menu"),
 
-    mainMenu.Q("start-button").RegisterCallback(eventType.Click, function()
+    Show = function()
+        tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_main_menu"))
+    end
+}
+
+function SetUpNavigation()
+    mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromRight(
-            mainMenu,
+            mainMenu.panel,
             selectTrackPanel.panel
         )
         selectTrackPanel.Show()
@@ -11,9 +17,11 @@ function SetUpNavigation()
     selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromLeft(
             selectTrackPanel.panel,
-            mainMenu
+            mainMenu.panel
         )
+        mainMenu.Show()
     end)
+
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
     selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
@@ -22,7 +30,9 @@ function SetUpNavigation()
             selectTrackPanel.panel
         )
         selectPatternPanel.StopPreviewTrackPlayback()
+        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
     end)
+
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
         panelTransition.FadeToBlack(
             selectPatternPanel.panel,
@@ -35,9 +45,12 @@ function SetUpNavigation()
         )
         selectPatternPanel.StopPreviewTrackPlayback()
     end)
-    mainMenu.Q("options-button").RegisterCallback(eventType.Click, function()
+    -- game panel --> select track panel can happen on multiple occasions, so it's a separate
+    -- function, found below.
+
+    mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromRight(
-            mainMenu,
+            mainMenu.panel,
             optionsPanel.panel
         )
         optionsPanel.Show()
@@ -45,23 +58,28 @@ function SetUpNavigation()
     optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromLeft(
             optionsPanel.panel,
-            mainMenu
+            mainMenu.panel
         )
         tm.options.SaveToFile()
+        mainMenu.Show()
     end)
-    mainMenu.Q("information-button").RegisterCallback(eventType.Click, function()
+
+    mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromRight(
-            mainMenu,
+            mainMenu.panel,
             infoPanel.panel
         )
+        infoPanel.Show()
     end)
     infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromLeft(
             infoPanel.panel,
-            mainMenu
+            mainMenu.panel
         )
+        mainMenu.Show()
     end)
-    mainMenu.Q("quit-button").RegisterCallback(eventType.Click, function()
+
+    mainMenu.panel.Q("quit-button").RegisterCallback(eventType.Click, function()
         tm.Quit()
     end)
 end
@@ -95,5 +113,5 @@ function GamePanelToSelectTrackPanel()
             end
         end
     )
-    selectTrackPanel.Show()
+    selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
 end

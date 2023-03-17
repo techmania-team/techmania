@@ -248,12 +248,18 @@ selectTrackPanel.RefreshAllCards = function()
 end
 
 selectTrackPanel.Show = function()
+    selectTrackPanel.SetDiscordActivity()
+
     if (selectTrackPanel.needsRefresh) then
-        selectTrackPanel.Refresh()
+        selectTrackPanel.Refresh()  -- Will call Show when done
         return
     end
     selectTrackPanel.RefreshAllCards()
     selectTrackPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedTrack
+end
+
+selectTrackPanel.SetDiscordActivity = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
 end
 
 selectTrackPanel.Refresh = function()

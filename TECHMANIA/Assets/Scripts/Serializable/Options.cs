@@ -93,7 +93,12 @@ public class Options : OptionsBase
     public string skinsFolderLocation;
     // Call TurnOn/OffDiscordRichPresence instead of setting this
     // directly.
-    public bool discordRichPresence;
+    public bool discordRichPresence
+    {
+        get;
+        [MoonSharp.Interpreter.MoonSharpHidden]
+        set;
+    }
 
     // Editor options
 

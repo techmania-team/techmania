@@ -297,6 +297,8 @@ selectPatternPanel.ShowControlSchemeIcons = function()
 end
 
 selectPatternPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_pattern"))
+
     local panel = selectPatternPanel.panel
     local track = selectTrackPanel.selectedFullTrack
 

@@ -40,4 +40,8 @@ infoPanel.Initialize = function()
     panel.Q("localization-text").text = localizerCredit
 end
 
+infoPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_information"))
+end
+
 infoPanel.Initialize()
