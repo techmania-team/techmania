@@ -510,6 +510,28 @@
             <ui:Label tabindex="-1" text="STAGE FAILED" display-tooltip-when-elided="true" name="stage-failed" picking-mode="Ignore" class="text-headline-1" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel">
+        <AttributeOverrides element-name="title" text="Result" />
+        <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center; justify-content: center;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 900px;">
+                <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 260px; margin-bottom: 20px;" />
+                <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 600px; flex-direction: row;">
+                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="elevation-1dp" style="width: 400px; margin-right: 20px;" />
+                    <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1;">
+                        <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap;">
+                            <ui:VisualElement name="total-score" picking-mode="Ignore" class="elevation-1dp" style="width: 280px; height: 150px; margin-bottom: 20px; margin-right: 20px;" />
+                            <ui:VisualElement name="rank" picking-mode="Ignore" class="elevation-1dp" style="width: 180px; height: 150px; margin-bottom: 20px;" />
+                            <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="width: 280px; height: 140px; margin-bottom: 20px; margin-right: 20px;" />
+                            <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 180px; height: 140px; margin-bottom: 20px;" />
+                            <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="width: 100%; height: 120px;" />
+                        </ui:VisualElement>
+                        <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="margin-top: 20px;" />
+                        <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-contained" style="margin-top: 20px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Instance>
     <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
