@@ -501,7 +501,7 @@ public class GameController : MonoBehaviour
         if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update(comboTickCallback: ComboTick);
-            bg.Update(timer.baseTime);
+            bg.Update(timer.baseTime, timer.prevFrameBaseTime);
             layout.Update(timer.scan);
             noteManager.Update(timer, scoreKeeper);
             input.Update();
