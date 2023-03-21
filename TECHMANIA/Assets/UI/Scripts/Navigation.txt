@@ -48,6 +48,28 @@ function SetUpNavigation()
     -- game panel --> select track panel can happen on multiple occasions, so it's a separate
     -- function, found below.
 
+    -- game panel --> result panel can happen on multiple occasions, so it's a separate function,
+    -- found below.
+    resultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click, function()
+        panelTransition.FadeToBlack(
+            resultPanel.panel,
+            gamePanel.panel,
+            function()
+                -- Only start loading after the game panel appears, in order
+                -- for layout to work.
+                tm.game.BeginLoading()
+            end
+        )
+    end)
+    resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        panelTransition.FromRight(
+            resultPanel.panel,
+            selectTrackPanel.panel
+        )
+        selectPatternPanel.StopPreviewTrackPlayback()
+        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
+    end)
+
     mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromRight(
             mainMenu.panel,
@@ -114,4 +136,19 @@ function GamePanelToSelectTrackPanel()
         end
     )
     selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
+end
+
+function GamePanelToResultPanel()
+    panelTransition.FadeToBlack(
+        gamePanel.panel,
+        resultPanel.panel,
+        function()
+            -- This causes the BGA to unload so it should happen
+            -- after the game panel has faded out.
+            if (tm.game.state != tm.enum.gameState.Idle) then
+                tm.game.Conclude()
+            end
+        end
+    )
+    resultPanel.Show()
 end

@@ -1,0 +1,9 @@
+resultPanel = {
+    panel = tm.root.Q("result-panel"),
+    scoreKeeper = nil  -- to be set by game panel
+}
+
+-- There is no Initialize, all navigation is set up in Navigation.txt
+
+resultPanel.Show = function()
+end

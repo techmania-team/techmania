@@ -511,7 +511,7 @@
             <ui:Label tabindex="-1" text="STAGE FAILED" display-tooltip-when-elided="true" name="stage-failed" picking-mode="Ignore" class="text-headline-1" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel">
+    <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Result" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center; justify-content: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 900px;">
@@ -590,6 +590,7 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
         </ui:VisualElement>
     </ui:Instance>
     <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">

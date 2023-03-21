@@ -188,9 +188,8 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(scoreKeeper)
-            print("Stage clear")
-            GamePanelToSelectTrackPanel()
-            -- TODO: transition to result panel
+            resultPanel.scoreKeeper = tm.game.scoreKeeper
+            GamePanelToResultPanel()
         end
 
         tm.gameSetup.onStageFailed = function(scoreKeeper)
@@ -207,10 +206,10 @@ gamePanel.Initialize = function()
                     coroutine.yield()
                 end
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+                resultPanel.scoreKeeper = tm.game.scoreKeeper
                 tm.game.Conclude()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
-                GamePanelToSelectTrackPanel()
-                -- TODO: transition to result panel instead
+                GamePanelToResultPanel()
             end)
         end
     end

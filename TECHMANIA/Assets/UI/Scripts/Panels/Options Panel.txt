@@ -50,7 +50,7 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
 end
 
 optionsPanel.Show = function()
-    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_options"))
+    optionsPanel.SetDiscordActivity()
 
     local panel = optionsPanel.panel
 
@@ -105,6 +105,10 @@ optionsPanel.Show = function()
 
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
+end
+
+optionsPanel.SetDiscordActivity = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_options"))
 end
 
 optionsPanel.Initialize = function()
@@ -292,7 +296,7 @@ optionsPanel.Initialize = function()
     discordRichPresenceToggle.RegisterCallback(eventType.Click, function()
         if (controls.IsToggleOn(discordRichPresenceToggle)) then
             tm.options.TurnOnDiscordRichPresence()
-            -- TODO: call tm.SetDiscordActivity(string details, string state, bool showElapsedTime)
+            optionsPanel.SetDiscordActivity()
         else
             tm.options.TurnOffDiscordRichPresence()
         end
