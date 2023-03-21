@@ -92,5 +92,9 @@ namespace ThemeApi
         public Pattern patternBeforeModifier;
         [MoonSharpHidden]
         public Pattern patternAfterModifier;
+        [MoonSharpHidden]
+        public bool anySpecialModifier;
+        [MoonSharpHidden]
+        public Options.Ruleset ruleset;
     }
 }

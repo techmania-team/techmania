@@ -121,6 +121,11 @@ namespace ThemeApi
         {
             GameController.instance.StopBga();
         }
+
+        public bool ScoreIsValid()
+        {
+            return GameController.instance.ScoreIsValid();
+        }
         #endregion
 
         #region Practice mode APIs

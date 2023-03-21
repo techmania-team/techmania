@@ -129,7 +129,6 @@ public class Score
         return ScoreToRank(CurrentScore());
     }
 
-    // Will be automatically called
     public void CalculateComboBonus()
     {
         if (!Ruleset.instance.comboBonus)

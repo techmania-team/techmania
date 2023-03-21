@@ -33,6 +33,7 @@ public class ScoreKeeper
     public FeverState feverState { get; private set; }
     public float feverAmount { get; private set; }
 
+    [MoonSharpHidden]
     public ScoreKeeper(ThemeApi.GameSetup gameSetup)
     {
         this.gameSetup = gameSetup;

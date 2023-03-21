@@ -7,7 +7,8 @@ resultPanel = {
 resultPanel.Show = function()
     local panel = resultPanel.panel
     local trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
-    local patternMetadata = selectPatternPanel.selectedPattern.patternMetadata
+    local pattern = selectedPatternPanel.selectedPattern
+    local patternMetadata = pattern.patternMetadata
     local scoreKeeper = tm.game.scoreKeeper
 
     -- Panel title
@@ -67,11 +68,19 @@ resultPanel.Show = function()
 
     local rank = "F"
     if (not scoreKeeper.score.stageFailed) then
-        rank = scoreKeeper.score.ScoreToRank(score)
+        rank = ScoreToRank(score)
     end
     panel.Q("rank").Q("value").text = rank
 
-    -- TODO: record
+    -- Record
+    local record = tm.records.GetRecord(pattern)
+    local recordString = "---"
+    if (record != nil) then
+        recordString = record.GetScore() .. "   " ... ScoreToRank(record.GetScore())
+    end
+    panel.Q("my-record").Q("value").text = recordString
+
+    -- TODO: Potential new record
 
     -- Ruleset
     local rulesetString = ""
@@ -91,8 +100,6 @@ resultPanel.Show = function()
 
     -- Modifiers
     panel.Q("modifiers").Q("content").text = CurrentModifiersToString(false)  -- don't include "no video"
-
-    -- TODO: save records if stage clear
 
     tm.game.Conclude()
 end

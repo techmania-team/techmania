@@ -97,6 +97,7 @@ public class Records : RecordsBase
     public Dictionary<Options.Ruleset, Dictionary<string, Record>> 
         recordDict;
 
+    [MoonSharpHidden]
     public Records()
     {
         version = kVersion;
@@ -165,6 +166,7 @@ public class Records : RecordsBase
     // If the score is invalid for any reason (modifiers,
     // stage failed, etc.), pass in null. currentRecord can also
     // be null.
+    [MoonSharpHidden]
     public void UpdateRecord(Pattern p, Score s,
         Record currentRecord, out bool newRecord)
     {
@@ -247,7 +249,10 @@ public class Records : RecordsBase
     }
 
     #region Instance
+    [MoonSharpHidden]
     public static Records instance { get; private set; }
+
+    [MoonSharpHidden]
     public static void RefreshInstance()
     {
         try

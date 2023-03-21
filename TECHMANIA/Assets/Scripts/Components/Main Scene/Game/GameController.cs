@@ -383,8 +383,15 @@ public class GameController : MonoBehaviour
     #region State machine
     public void BeginLoading()
     {
-        // Lock down the track so the theme can't change them later.
+        // Lock down certain fields so the theme can't
+        // change them later.
+        //
+        // No need to lock down the actual track and patterns yet,
+        // as the theme cannot modify them on disk yet.
         setup.lockedTrackFolder = string.Copy(setup.trackFolder);
+        setup.anySpecialModifier = Modifiers.instance
+            .HasAnySpecialModifier();
+        setup.ruleset = Options.instance.ruleset;
 
         StartCoroutine(LoadSequence());
     }
@@ -437,6 +444,13 @@ public class GameController : MonoBehaviour
     public void StopBga()
     {
         bg.StopBga();
+    }
+
+    public bool ScoreIsValid()
+    {
+        return !setup.anySpecialModifier &&
+            setup.ruleset != Options.Ruleset.Custom &&
+            !scoreKeeper.score.stageFailed;
     }
     #endregion
 
