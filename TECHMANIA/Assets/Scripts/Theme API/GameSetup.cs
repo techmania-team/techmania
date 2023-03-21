@@ -74,11 +74,11 @@ namespace ThemeApi
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
-        // Parameter: ScoreKeeper. The game will enter Complete state
-        // immediately after calling this.
+        // Parameter: ScoreKeeper. The game will be in Complete state
+        // when this is called.
         public DynValue onStageClear;
-        // Parameter: ScoreKeeper. The game will enter Complete state
-        // immediately after calling this.
+        // Parameter: ScoreKeeper. The game will be in Complete state
+        // when this is called.
         public DynValue onStageFailed;
 
         // Internal stuff

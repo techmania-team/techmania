@@ -187,6 +187,8 @@ public class DiscordController
     public static void SetActivity(
         string details, string state, bool showElapsedTime = false)
     {
+        if (discord == null || !SupportedOnCurrentPlatform()) return;
+
         Discord.Activity activity = new Discord.Activity
         {
             Details = details,

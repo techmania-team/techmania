@@ -427,6 +427,17 @@ public class GameController : MonoBehaviour
         vfxManager.Dispose();
         comboText.Hide();
     }
+
+    public void StopAllAudio()
+    {
+        bg.StopBackingTrack();
+        keysoundPlayer.StopAll();
+    }
+
+    public void StopBga()
+    {
+        bg.StopBga();
+    }
     #endregion
 
     #region Other theme APIs
@@ -526,8 +537,8 @@ public class GameController : MonoBehaviour
             Modifiers.instance.mode != Modifiers.Mode.NoFail)
         {
             scoreKeeper.score.stageFailed = true;
-            setup.onStageFailed?.Function?.Call(scoreKeeper);
             state.SetComplete();
+            setup.onStageFailed?.Function?.Call(scoreKeeper);
         }
     }
 
@@ -539,8 +550,8 @@ public class GameController : MonoBehaviour
         if (!scoreKeeper.score.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
-        setup.onStageClear?.Function?.Call(scoreKeeper);
         state.SetComplete();
+        setup.onStageClear?.Function?.Call(scoreKeeper);
     }
     #endregion
 

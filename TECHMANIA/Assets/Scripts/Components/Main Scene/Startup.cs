@@ -48,7 +48,6 @@ public class Startup : MonoBehaviour
         Records.RefreshInstance();
 
         DiscordController.Start();
-        DiscordController.SetActivity(DiscordActivityType.MainMenu);
 
 #if UNITY_ANDROID
         AndroidUtility.CheckVersion();

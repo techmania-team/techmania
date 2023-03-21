@@ -109,6 +109,18 @@ namespace ThemeApi
         {
             state = State.Complete;
         }
+
+        // Useful in Complete state.
+        public void StopAllAudio()
+        {
+            GameController.instance.StopAllAudio();
+        }
+
+        // Useful in Complete state.
+        public void StopBga()
+        {
+            GameController.instance.StopBga();
+        }
         #endregion
 
         #region Practice mode APIs

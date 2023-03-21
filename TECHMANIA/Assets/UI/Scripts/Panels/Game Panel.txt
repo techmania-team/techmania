@@ -188,7 +188,6 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(scoreKeeper)
-            resultPanel.scoreKeeper = tm.game.scoreKeeper
             GamePanelToResultPanel()
         end
 
@@ -206,8 +205,7 @@ gamePanel.Initialize = function()
                     coroutine.yield()
                 end
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
-                resultPanel.scoreKeeper = tm.game.scoreKeeper
-                tm.game.Conclude()
+                tm.game.StopAllAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
                 GamePanelToResultPanel()
             end)
@@ -216,7 +214,7 @@ gamePanel.Initialize = function()
     InitializeGameSetup()
 end
 
-gamePanel.StartLoading = function()
+gamePanel.Show = function()
     -- Discord activity
     local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
     local metadata = selectPatternPanel.selectedPattern.patternMetadata
@@ -475,7 +473,7 @@ pauseMenu.Initialize = function()
 
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
-        gamePanel.StartLoading()
+        gamePanel.Show()
         tm.game.BeginLoading()
     end)
 

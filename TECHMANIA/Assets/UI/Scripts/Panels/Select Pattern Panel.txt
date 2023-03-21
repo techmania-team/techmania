@@ -414,8 +414,7 @@ selectPatternPanel.Initialize = function()
         -- Save options
         tm.options.SaveToFile()
 
-        -- Begin loading
-        gamePanel.StartLoading()
+        -- Navigation.txt will handle loading
     end)
 
     -- Set the function to draw radar graph. Actual drawing happens

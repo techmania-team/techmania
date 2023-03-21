@@ -1,9 +1,15 @@
 resultPanel = {
-    panel = tm.root.Q("result-panel"),
-    scoreKeeper = nil  -- to be set by game panel
+    panel = tm.root.Q("result-panel")
 }
 
 -- There is no Initialize, all navigation is set up in Navigation.txt
 
 resultPanel.Show = function()
+    local track = selectTrackPanel.selectedFullTrack
+    local pattern = selectPatternPanel.selectedPattern
+    local scoreKeeper = tm.game.scoreKeeper
+
+    -- TODO: display all the things
+
+    tm.game.Conclude()
 end

@@ -107,6 +107,16 @@ public class GameBackground
         backingTrack?.UnloadAudioData();
         bgaElement?.Dispose();
     }
+
+    public void StopBackingTrack()
+    {
+        if (backingTrack != null) backingSource.Stop();
+    }
+
+    public void StopBga()
+    {
+        bgaElement?.Stop();
+    }
     #endregion
 
     #region Update

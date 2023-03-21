@@ -44,6 +44,7 @@ function SetUpNavigation()
             end
         )
         selectPatternPanel.StopPreviewTrackPlayback()
+        gamePanel.Show()
     end)
     -- game panel --> select track panel can happen on multiple occasions, so it's a separate
     -- function, found below.
@@ -60,6 +61,7 @@ function SetUpNavigation()
                 tm.game.BeginLoading()
             end
         )
+        gamePanel.Show()
     end)
     resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click, function()
         panelTransition.FromRight(
@@ -141,14 +143,7 @@ end
 function GamePanelToResultPanel()
     panelTransition.FadeToBlack(
         gamePanel.panel,
-        resultPanel.panel,
-        function()
-            -- This causes the BGA to unload so it should happen
-            -- after the game panel has faded out.
-            if (tm.game.state != tm.enum.gameState.Idle) then
-                tm.game.Conclude()
-            end
-        end
+        resultPanel.panel
     )
     resultPanel.Show()
 end
