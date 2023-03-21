@@ -12,6 +12,7 @@ public enum PerformanceMedal
 }
 
 // Read-only to Lua.
+// TODO: merge this class into ScoreKeeper.
 [MoonSharpUserData]
 public class Score
 {
@@ -128,6 +129,7 @@ public class Score
         return ScoreToRank(CurrentScore());
     }
 
+    // Will be automatically called
     public void CalculateComboBonus()
     {
         if (!Ruleset.instance.comboBonus)

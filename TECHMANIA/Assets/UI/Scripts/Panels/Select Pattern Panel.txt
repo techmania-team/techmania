@@ -127,6 +127,82 @@ function RadarAngleForVertex(i)
     return (-90 + 72 * i) * unity.mathf.Deg2Rad
 end
 
+function SetUpControlSchemeIcon(originalScheme, iconContainer)
+    local overrideScheme = originalScheme
+    if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
+        overrideScheme = tm.enum.controlScheme.Touch
+    elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
+        overrideScheme = tm.enum.controlScheme.Keys
+    elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
+        overrideScheme = tm.enum.controlScheme.KM
+    end
+
+    if (overrideScheme == originalScheme) then
+        iconContainer.RemoveFromClassList("scheme-override")
+        iconContainer.AddToClassList("scheme-no-override")
+    else
+        iconContainer.RemoveFromClassList("scheme-no-override")
+        iconContainer.AddToClassList("scheme-override")
+    end
+    local scheme = overrideScheme
+
+    iconContainer.Q("touch-icon").display = scheme == tm.enum.controlScheme.Touch
+    iconContainer.Q("keys-icon").display = scheme == tm.enum.controlScheme.Keys
+    iconContainer.Q("km-icon").display = scheme == tm.enum.controlScheme.KM
+end
+
+-- To be reusable, this function does not:
+-- * set up scrolling text
+-- * display performance medal
+function SetUpPatternBanner(patternMetadata, banner)
+    -- Lanes icon
+    banner.Q("2l-icon").display = patternMetadata.playableLanes == 2
+    banner.Q("3l-icon").display = patternMetadata.playableLanes == 3
+    banner.Q("4l-icon").display = patternMetadata.playableLanes == 4
+
+    -- Scheme icon
+    SetUpControlSchemeIcon(patternMetadata.controlScheme, banner.Q("scheme-icon-container"))
+
+    -- Text
+    banner.Q("level").text = patternMetadata.level
+    banner.Q("pattern-name").text = patternMetadata.patternName
+end
+
+function CurrentModifiersToString(includeNoVideo)
+    local allSegments = {}
+    function CheckAndAddSegment(modifierKey, isSpecial)
+        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
+        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
+        local segment = selectPatternPanel.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        if (isSpecial) then
+            segment = "<color=#CF6679>" .. segment .. "</color>"
+        end
+        table.insert(allSegments, segment)
+    end
+    CheckAndAddSegment("noteOpacity", false)
+    CheckAndAddSegment("scanlineOpacity", false)
+    CheckAndAddSegment("scanDirection", false)
+    CheckAndAddSegment("notePosition", false)
+    CheckAndAddSegment("scanPosition", false)
+    CheckAndAddSegment("fever", false)
+    CheckAndAddSegment("keysound", false)
+    CheckAndAddSegment("assistTick", false)
+    if (includeNoVideo and
+        selectTrackPanel.selectedTrackOptions != nil and
+        selectTrackPanel.selectedTrackOptions.noVideo) then
+        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
+    end
+    CheckAndAddSegment("mode", true)
+    CheckAndAddSegment("controlOverride", true)
+    CheckAndAddSegment("scrollSpeed", true)
+
+    if (#allSegments == 0) then
+        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
+    end
+
+    return net.string.Join(" / ", allSegments)
+end
+
 -- Currently selected pattern may be nil.
 selectPatternPanel.ShowPatternDetails = function()
     local pattern = selectPatternPanel.selectedPattern
@@ -231,69 +307,7 @@ end
 
 selectPatternPanel.ShowCurrentModifiers = function()
     local container = selectPatternPanel.panel.Q("modifier-display").Q("container")
-    local content = container.Q("content")
-
-    local allSegments = {}
-    function CheckAndAddSegment(modifierKey, isSpecial)
-        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
-        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
-        local segment = selectPatternPanel.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
-        if (isSpecial) then
-            segment = "<color=#CF6679>" .. segment .. "</color>"
-        end
-        table.insert(allSegments, segment)
-    end
-    CheckAndAddSegment("noteOpacity", false)
-    CheckAndAddSegment("scanlineOpacity", false)
-    CheckAndAddSegment("scanDirection", false)
-    CheckAndAddSegment("notePosition", false)
-    CheckAndAddSegment("scanPosition", false)
-    CheckAndAddSegment("fever", false)
-    CheckAndAddSegment("keysound", false)
-    CheckAndAddSegment("assistTick", false)
-    if (selectTrackPanel.selectedTrackOptions != nil and selectTrackPanel.selectedTrackOptions.noVideo) then
-        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
-    end
-    CheckAndAddSegment("mode", true)
-    CheckAndAddSegment("controlOverride", true)
-    CheckAndAddSegment("scrollSpeed", true)
-
-    if (#allSegments == 0) then
-        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
-    end
-
-    content.text = net.string.Join(" / ", allSegments)
-    controls.SetUpScrollingText(container)
-end
-
-selectPatternPanel.ShowControlSchemeIcons = function()
-    for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
-        local scheme = pattern.patternMetadata.controlScheme
-        local radioButton = selectPatternPanel.allPatternRadioButtons[index]
-
-        local overrideScheme = scheme
-        if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
-            overrideScheme = tm.enum.controlScheme.Touch
-        elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
-            overrideScheme = tm.enum.controlScheme.Keys
-        elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
-            overrideScheme = tm.enum.controlScheme.KM
-        end
-
-        local iconContainer = radioButton.Q("scheme-icon-container")
-        if (overrideScheme == scheme) then
-            iconContainer.RemoveFromClassList("scheme-override")
-            iconContainer.AddToClassList("scheme-no-override")
-        else
-            iconContainer.RemoveFromClassList("scheme-no-override")
-            iconContainer.AddToClassList("scheme-override")
-        end
-        scheme = overrideScheme
-
-        radioButton.Q("touch-icon").display = scheme == tm.enum.controlScheme.Touch
-        radioButton.Q("keys-icon").display = scheme == tm.enum.controlScheme.Keys
-        radioButton.Q("km-icon").display = scheme == tm.enum.controlScheme.KM
-    end
+    container.Q("content").text = CurrentModifiersToString(true)  -- include "no video"
 end
 
 selectPatternPanel.Show = function()
@@ -324,16 +338,10 @@ selectPatternPanel.Show = function()
         table.insert(selectPatternPanel.allPatternRadioButtons, radioButton)
         controls.SetUpButtonSounds(radioButton)
 
-        local metadata = pattern.patternMetadata
-
-        radioButton.Q("2l-icon").display = metadata.playableLanes == 2
-        radioButton.Q("3l-icon").display = metadata.playableLanes == 3
-        radioButton.Q("4l-icon").display = metadata.playableLanes == 4
-        -- Control scheme icons are controlled separately in selectPatternPanel.ShowControlSchemeIcons.
-        radioButton.Q("level").text = metadata.level
-        radioButton.Q("pattern-name").text = metadata.patternName
+        SetUpPatternBanner(pattern.patternMetadata, radioButton.Q("pattern-banner"))
         controls.SetUpScrollingText(radioButton.Q("pattern-name-container"))
 
+        -- Medal
         local record = tm.records.GetRecord(pattern)
         local medal = ""
         if (record != nil) then
@@ -359,7 +367,6 @@ selectPatternPanel.Show = function()
         end, pattern)
     end
     controls.SetRadioButton(nil, selectPatternPanel.allPatternRadioButtons)
-    selectPatternPanel.ShowControlSchemeIcons()
 
     -- Initialize details when no pattern is selected.
     selectPatternPanel.selectedPattern = nil
@@ -731,7 +738,11 @@ modifierSideSheet.Initialize = function()
     InitializeDropdown("mode", "mode")
     InitializeDropdown("control-override", "controlOverride")
     bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()
-        selectPatternPanel.ShowControlSchemeIcons()
+        -- Update control scheme icons of all patterns
+        for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
+            local radioButton = selectPatternPanel.allPatternRadioButtons[index]
+            SetUpControlSchemeIcon(pattern.patternMetadata.controlScheme, radioButton.Q("pattern-banner").Q("scheme-icon-container"))
+        end
     end)
     InitializeDropdown("scroll-speed", "scrollSpeed")
 

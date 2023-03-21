@@ -10,6 +10,14 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
 ,control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
 ,,,,,,
+"Shown when the score is 300,000.",performance_medal_absolute_perfect,ABSOLUTE PERFECT,绝对完美,ABSOLUTE PERFECT,ABSOLUTE PERFECT,ABSOLUTE PERFECT
+,performance_medal_perfect_play,PERFECT PLAY,完美,PERFECT PLAY,PERFECT PLAY,PERFECT PLAY
+,performance_medal_all_combo,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
+,,,,,,
+,ruleset_standard,Standard,标准,標準,スタンダード,표준
+,ruleset_legacy,Legacy,经典,經典,レガシー,레거시
+,ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
+,,,,,,
 ,discord_state_main_menu,Main Menu,主菜单,主選單,メインメニュー,메인 메뉴
 ,discord_state_options,Options,设置,設定,オプション,설정 변경 중
 ,discord_state_information,Information,须知,須知,情報,정보
@@ -191,6 +199,9 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#game-panel #pause-menu #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
 ,#game-panel #pause-menu #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
 ,,,,,,
+,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,STAGE CLEARED,STAGE CLEARED
+,result_panel_stage_failed_title,Stage Failed,挑战失败,STAGE FAILED,STAGE FAILED,STAGE FAILED
+,,,,,,
 ,#options-panel #title,Options,设置,設定,オプション,설정
 ,#options-panel #graphics-header,Graphics,图像,影像,グラフィック,그래픽
 ,#options-panel #resolution #label,Resolution,分辨率,解析度,解像度,화면 해상도
@@ -229,9 +240,6 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
 ,#options-panel #miscellaneous-header,Miscellaneous,其他,其他,その他,기타
 ,#options-panel #ruleset #label,Ruleset,规则,規則,ルールセット,규칙
-,ruleset_standard,Standard,标准,標準,スタンダード,표준
-,ruleset_legacy,Legacy,经典,經典,レガシー,레거시
-,ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,custom_ruleset_not_found_error_format,"The ruleset file (expected at {0}) is not found. Please make sure the file exists, and then try again.",找不到规则文件（{0}）。请确保此文件存在，然后重试。,找不到規則檔案（{0}）。請確認檔案存在後再試一次。,ルールセットファイル（{0}）が見つかりません。ファイルが存在するか確認してからもう一度試してください。,규칙 정의 파일을 {0}에서 찾지 못했습니다. 파일이 올바른 경로에 있는지 확인하고 다시 시도하십시오.
 ,#options-panel #custom-data-location #label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
 ,#options-panel #tracks-folder-location #label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더

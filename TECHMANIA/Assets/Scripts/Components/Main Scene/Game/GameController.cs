@@ -537,6 +537,7 @@ public class GameController : MonoBehaviour
             Modifiers.instance.mode != Modifiers.Mode.NoFail)
         {
             scoreKeeper.score.stageFailed = true;
+            scoreKeeper.score.CalculateComboBonus();
             state.SetComplete();
             setup.onStageFailed?.Function?.Call(scoreKeeper);
         }
@@ -550,6 +551,7 @@ public class GameController : MonoBehaviour
         if (!scoreKeeper.score.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
+        scoreKeeper.score.CalculateComboBonus();
         state.SetComplete();
         setup.onStageClear?.Function?.Call(scoreKeeper);
     }

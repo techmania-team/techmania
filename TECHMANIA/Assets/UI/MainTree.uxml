@@ -572,7 +572,7 @@
                             <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="width: 280px; height: 140px; margin-bottom: 20px; margin-right: 20px;">
                                 <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
                                 <ui:Label tabindex="-1" text="123456   S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
-                                <ui:Label tabindex="-1" text="ALL COMBO" display-tooltip-when-elided="true" name="medal" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
+                                <ui:Label tabindex="-1" text="NEW RECORD" display-tooltip-when-elided="true" name="new-record-indicator" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
                             </ui:VisualElement>
                             <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 180px; height: 140px; margin-bottom: 20px;">
                                 <ui:Label tabindex="-1" text="Ruleset" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
@@ -581,7 +581,7 @@
                             <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="width: 100%; height: 120px; padding-left: 20px; padding-right: 20px;">
                                 <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
                                 <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="margin-top: 10px; height: 40px;">
-                                    <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" />
+                                    <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: upper-center;" />
                                 </ui:ScrollView>
                             </ui:VisualElement>
                         </ui:VisualElement>
