@@ -109,14 +109,14 @@ namespace ThemeApi
         {
             state = State.Complete;
         }
+        #endregion
 
-        // Useful in Complete state.
+        #region APIs available in Complete state
         public void StopAllAudio()
         {
             GameController.instance.StopAllAudio();
         }
 
-        // Useful in Complete state.
         public void StopBga()
         {
             GameController.instance.StopBga();
@@ -125,6 +125,23 @@ namespace ThemeApi
         public bool ScoreIsValid()
         {
             return GameController.instance.ScoreIsValid();
+        }
+
+        // Returns true if the current score is valid, AND it's
+        // greater than the current record on the pattern,
+        // if one exists.
+        public bool ScoreIsNewRecord()
+        {
+            CheckState(State.Complete, "ScoreIsNewRecord");
+            return GameController.instance.ScoreIsNewRecord();
+        }
+
+        // Updates the score and medal on the current pattern separately.
+        // Does not save to disk; call Records.SaveToDisk() to do that.
+        public void UpdateRecord()
+        {
+            CheckState(State.Complete, "UpdateRecord");
+            GameController.instance.UpdateRecord();
         }
         #endregion
 

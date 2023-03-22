@@ -152,6 +152,10 @@ public class GameController : MonoBehaviour
         setup.patternAfterModifier = setup.patternBeforeModifier
             .ApplyModifiers(Modifiers.instance);
 
+        // Calculate fingerprints in preparation for records.
+        setup.patternBeforeModifier.CalculateFingerprint();
+        setup.patternAfterModifier.CalculateFingerprint();
+
         // Step 0: calculate the number of files to load.
         totalFiles =
             1 +  // Background image
@@ -434,7 +438,9 @@ public class GameController : MonoBehaviour
         vfxManager.Dispose();
         comboText.Hide();
     }
+    #endregion
 
+    #region APIs available in Complete state
     public void StopAllAudio()
     {
         bg.StopBackingTrack();
@@ -451,6 +457,29 @@ public class GameController : MonoBehaviour
         return !setup.anySpecialModifier &&
             setup.ruleset != Options.Ruleset.Custom &&
             !scoreKeeper.score.stageFailed;
+    }
+
+    public bool ScoreIsNewRecord()
+    {
+        if (!ScoreIsValid()) return false;
+        Record currentRecord = Records.instance.GetRecord(
+            setup.patternBeforeModifier, setup.ruleset);
+        if (currentRecord == null) return true;
+        int currentScore = currentRecord.score;
+        int newScore = scoreKeeper.score.CurrentScore() +
+            scoreKeeper.score.totalFeverBonus +
+            scoreKeeper.score.comboBonus;
+
+        return newScore > currentScore;
+    }
+
+    public void UpdateRecord()
+    {
+        if (!ScoreIsValid()) return;
+        Records.instance.UpdateRecord(
+            setup.patternBeforeModifier,
+            setup.ruleset,
+            scoreKeeper.score);
     }
     #endregion
 

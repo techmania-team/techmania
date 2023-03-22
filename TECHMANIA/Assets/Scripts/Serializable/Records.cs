@@ -7,7 +7,13 @@ using MoonSharp.Interpreter;
 
 [Serializable]
 [FormatVersion(Records.kVersion, typeof(Records), isLatest: true)]
-public class RecordsBase : SerializableClass<RecordsBase> { }
+public class RecordsBase : SerializableClass<RecordsBase>
+{
+    public void SaveToFile()
+    {
+        SaveToFile(Paths.GetRecordsFilePath());
+    }
+}
 
 [Serializable]
 [MoonSharpUserData]
@@ -92,6 +98,7 @@ public class Records : RecordsBase
 
     // The format stored in memory. We don't serialize this dictionary
     // directly because it's 2 levels deep.
+    // string is guid.
     [NonSerialized]
     [MoonSharpHidden]
     public Dictionary<Options.Ruleset, Dictionary<string, Record>> 
@@ -125,27 +132,6 @@ public class Records : RecordsBase
         }
 
         Record r = dict[p.patternMetadata.guid];
-
-        bool checkFingerprint = true;
-        switch (r.gameVersion)
-        {
-            case "1.0 beta":
-                // There were ruleset changes between 1.0 beta and
-                // 1.0.
-                return null;
-            case "1.0":
-            case "1.0.1":
-                // Records on these versions were not calculated
-                // with MinimizedPattern. They will be fixed by
-                // UpdateRecord.
-                checkFingerprint = false;
-                break;
-        }
-
-        if (!checkFingerprint)
-        {
-            return r;
-        }
         if (string.IsNullOrEmpty(p.fingerprint))
         {
             p.CalculateFingerprint();
@@ -166,8 +152,12 @@ public class Records : RecordsBase
     // If the score is invalid for any reason (modifiers,
     // stage failed, etc.), pass in null. currentRecord can also
     // be null.
+    //
+    // This method has special treatment for records set in 1.0 and
+    // 1.0.1. It is now deprecated.
     [MoonSharpHidden]
-    public void UpdateRecord(Pattern p, Score s,
+    [Obsolete]
+    public void LegacyUpdateRecord(Pattern p, Score s,
         Record currentRecord, out bool newRecord)
     {
         p.CheckFingerprintCalculated();
@@ -221,6 +211,59 @@ public class Records : RecordsBase
         {
             recordDict[updatedRecord.ruleset][updatedRecord.guid]
                 = updatedRecord;
+        }
+    }
+
+    [MoonSharpHidden]
+    public void UpdateRecord(Pattern p, Options.Ruleset ruleset,
+        Score s)
+    {
+        p.CheckFingerprintCalculated();
+
+        if (ruleset == Options.Ruleset.Custom)
+        {
+            return;
+        }
+
+        string guid = p.patternMetadata.guid;
+        int totalScore = s.CurrentScore() + s.totalFeverBonus +
+            s.comboBonus;
+        Record record = GetRecord(p, ruleset);
+        if (record == null)
+        {
+            // If no record, it may be due to wrong fingerprint.
+            // To handle that, we delete the existing record on the
+            // guid, if any.
+            Dictionary<string, Record> dict = recordDict[ruleset];
+            
+            if (dict.ContainsKey(guid))
+            {
+                dict.Remove(guid);
+            }
+
+            // Now we create a new record.
+            record = new Record()
+            {
+                guid = guid,
+                fingerprint = p.fingerprint,
+                ruleset = Options.instance.ruleset,
+                score = totalScore,
+                medal = s.Medal(),
+                gameVersion = Application.version
+            };
+        }
+        else
+        {
+            // If there is an existing record, we update its score
+            // and/or medal if necessary.
+            if (totalScore > record.score)
+            {
+                record.score = totalScore;
+            }
+            if (s.Medal() > record.medal)
+            {
+                record.medal = s.Medal();
+            }
         }
     }
 

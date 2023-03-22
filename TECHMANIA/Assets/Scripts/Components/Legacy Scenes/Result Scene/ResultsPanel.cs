@@ -120,11 +120,13 @@ public class ResultsPanel : MonoBehaviour
         }
 
         bool newRecord;
-        Records.instance.UpdateRecord(
+#pragma warning disable CS0612 // Type or member is obsolete
+        Records.instance.LegacyUpdateRecord(
             InternalGameSetup.patternBeforeApplyingModifier,
             scoreForRecord,
             record,
             out newRecord);
+#pragma warning restore CS0612 // Type or member is obsolete
         newRecordMedalText.SetActive(newRecord);
         Records.instance.SaveToFile(Paths.GetRecordsFilePath());
 
