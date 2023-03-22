@@ -7,7 +7,7 @@ resultPanel = {
 resultPanel.Show = function()
     local panel = resultPanel.panel
     local trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
-    local pattern = selectedPatternPanel.selectedPattern
+    local pattern = selectPatternPanel.selectedPattern
     local patternMetadata = pattern.patternMetadata
     local scoreKeeper = tm.game.scoreKeeper
 
@@ -76,11 +76,17 @@ resultPanel.Show = function()
     local record = tm.records.GetRecord(pattern)
     local recordString = "---"
     if (record != nil) then
-        recordString = record.GetScore() .. "   " ... ScoreToRank(record.GetScore())
+        recordString = record.GetScore() .. "   " .. ScoreToRank(record.GetScore())
     end
     panel.Q("my-record").Q("value").text = recordString
-
-    -- TODO: Potential new record
+    
+    if (tm.game.ScoreIsValid() and tm.game.ScoreIsNewRecord()) then
+        panel.Q("my-record").Q("new-record-indicator").display = true
+        tm.game.UpdateRecord()
+        tm.records.SaveToFile()
+    else
+        panel.Q("my-record").Q("new-record-indicator").display = false
+    end
 
     -- Ruleset
     local rulesetString = ""

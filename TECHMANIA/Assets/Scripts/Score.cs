@@ -13,6 +13,8 @@ public enum PerformanceMedal
 
 // Read-only to Lua.
 // TODO: merge this class into ScoreKeeper.
+// TODO: add a properly named API to provide CurrentScore() +
+// totalFeverBonus + comboBonus.
 [MoonSharpUserData]
 public class Score
 {

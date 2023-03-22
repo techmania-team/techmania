@@ -251,6 +251,7 @@ public class Records : RecordsBase
                 medal = s.Medal(),
                 gameVersion = Application.version
             };
+            dict.Add(guid, record);
         }
         else
         {
