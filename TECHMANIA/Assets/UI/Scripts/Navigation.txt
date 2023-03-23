@@ -12,6 +12,7 @@ function SetUpNavigation()
             mainMenu.panel,
             selectTrackPanel.panel
         )
+        selectTrackPanel.inEditor = false
         selectTrackPanel.Show()
     end)
     selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
@@ -70,6 +71,15 @@ function SetUpNavigation()
         )
         selectPatternPanel.StopPreviewTrackPlayback()
         selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
+    end)
+
+    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+        panelTransition.FromRight(
+            mainMenu.panel,
+            selectTrackPanel.panel
+        )
+        selectTrackPanel.inEditor = true
+        selectTrackPanel.Show()
     end)
 
     mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()

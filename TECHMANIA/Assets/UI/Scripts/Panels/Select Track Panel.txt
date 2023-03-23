@@ -3,6 +3,7 @@ selectTrackPanel = {
 
     location = "",
     needsRefresh = false,
+    inEditor = false,
 
     filter = {
         keywords = {},
@@ -177,6 +178,7 @@ selectTrackPanel.RefreshAllCards = function()
             local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
             card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
             card.Q("error-icon").visible = false
+            card.Q("new-track-icon").visible = false
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
             LoadAndShowEyecatch(eyecatchPath, card.Q("eyecatch"))
             controls.SetUpButtonSounds(card)
@@ -208,6 +210,7 @@ selectTrackPanel.RefreshAllCards = function()
         card.Q("eyecatch").visible = false
         card.Q("default-eyecatch").visible = false
         card.Q("error-icon").visible = true
+        card.Q("new-track-icon").visible = false
         controls.SetUpButtonSounds(card)
         local errorMessage = ""
         if (trackWithError.type == "Load") then
@@ -227,6 +230,22 @@ selectTrackPanel.RefreshAllCards = function()
         card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
             alertBox.Alert(errorMessage)
         end, errorMessage)
+    end
+
+    if (selectTrackPanel.inEditor) then
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = false
+        card.Q("new-track-icon").visible = true
+        controls.SetUpButtonSounds(card)
+        card.Q("name").text = tm.l10n.GetString("select_track_new_track_card_title")
+        card.Q("artist").text = ""
+        controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("artist-container"))
+        card.RegisterCallback(eventType.Click, function()
+            -- TODO: show new track dialog
+        end)
     end
 
     if (hiddenTracks > 0) then

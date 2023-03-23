@@ -27,6 +27,14 @@
     -unity-background-image-tint-color: var(--error-color);
 }
 
+#track-card #new-track-icon {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-image: url('project://database/Assets/UI/Images/baseline_add_white_48dp.png?fileID=2800000&guid=39387d51d5e88f8428418daed0ba35e2&type=3#baseline_add_white_48dp');
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
 #track-card #name-container {
     position: absolute;
     left: 10px;
