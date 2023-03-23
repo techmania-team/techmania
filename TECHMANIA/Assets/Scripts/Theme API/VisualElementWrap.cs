@@ -289,10 +289,10 @@ namespace ThemeApi
             PointerDown,
             PointerUp,
             PointerMove,
-            PointerEnter,
-            PointerLeave,
-            PointerOver,
-            PointerOut,
+            PointerEnter,  // pointer enters element or any descendant
+            PointerLeave,  // pointer leaves element and all descendants
+            PointerOver,  // pointer enters element but not descendant
+            PointerOut,  // pointer leaves element
             PointerStationary,
             PointerCancel,
             Click,
@@ -322,7 +322,10 @@ namespace ThemeApi
                 EventType.KeyDown => typeof(KeyDownEvent),
                 EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
+                EventType.PointerEnter => typeof(PointerEnterEvent),
+                EventType.PointerLeave => typeof(PointerLeaveEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),
+                EventType.PointerOut => typeof(PointerOutEvent),
                 EventType.Click => typeof(ClickEvent),
                 EventType.FrameUpdate => typeof(FrameUpdateEvent),
                 EventType.ApplicationFocus =>

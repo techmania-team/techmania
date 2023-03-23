@@ -38,8 +38,8 @@ function SetUpClickSound(element)
     end)
 end
 
-function SetUpPointerOverSound(element)
-    element.RegisterCallback(eventType.PointerOver, function (element)
+function SetUpPointerEnterSound(element)
+    element.RegisterCallback(eventType.PointerEnter, function (element)
         if (element.enabledInHierarchy) then
             tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"), tm.enum.audioChannel.SFX)
         end
@@ -83,7 +83,7 @@ function InitializeControls()
 
     -- Sliders
     tm.root.Query(nil, "slider").ForEach(function (element)
-        SetUpPointerOverSound(element)
+        SetUpPointerEnterSound(element)
     end)
 
     -- Scrolling texts
@@ -116,7 +116,7 @@ controls = {
 
     SetUpButtonSounds = function(element)
         SetUpClickSound(element)
-        SetUpPointerOverSound(element)
+        SetUpPointerEnterSound(element)
     end,
 
     SetRadioButton = function(onButton, buttonsInGroup)
