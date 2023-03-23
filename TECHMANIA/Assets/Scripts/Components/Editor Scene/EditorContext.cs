@@ -71,7 +71,7 @@ public class EditTransaction
     public List<EditOperation> ops;
 }
 
-public class EditorContext : MonoBehaviour
+public class EditorContext
 {
     public static Track track;
     // Full path of the track.tech file.

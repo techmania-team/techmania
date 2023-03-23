@@ -12,8 +12,6 @@ public class BootScreen : MonoBehaviour
     public TextMeshProUGUI revertMessage;
     public MessageDialog messageDialog;
 
-    public UIDocument uiDocument;
-
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;
 
@@ -99,7 +97,7 @@ public class BootScreen : MonoBehaviour
         yield return new WaitUntil(() =>
             !messageDialog.gameObject.activeSelf);
 
-        // Display UIDocument.
+        // Load main tree and main script.
         string mainTreePath = "assets/ui/maintree.uxml";
         VisualTreeAsset mainTree = GlobalResource.GetThemeContent
             <VisualTreeAsset>(mainTreePath);
@@ -117,8 +115,12 @@ public class BootScreen : MonoBehaviour
             yield break;
         }
 
-        uiDocument.visualTreeAsset = GlobalResource
-            .themeContent[mainTreePath] as VisualTreeAsset;
+        // Display UIDocument.
+        TopLevelObjects.instance.mainUiDocument.visualTreeAsset
+            = GlobalResource.themeContent[mainTreePath]
+            as VisualTreeAsset;
+
+        // Execute main script.
         ThemeApi.ScriptSession.Prepare();
         try
         {
@@ -130,9 +132,14 @@ public class BootScreen : MonoBehaviour
             yield break;
         }
 
-        UnityEngine.EventSystems.EventSystem.current.gameObject
+        // If everything worked up to this point, we can hide
+        // main canvas and finish the boot sequence.
+        TopLevelObjects.instance.eventSystem.gameObject
             .SetActive(false);
-        GetComponentInParent<Canvas>().gameObject.SetActive(false);
+        TopLevelObjects.instance.mainCanvas.gameObject
+            .SetActive(false);
+        TopLevelObjects.instance.editorCanvas.gameObject
+            .SetActive(false);
     }
 
     private IEnumerator ShowRevertDefaultThemePrompt()

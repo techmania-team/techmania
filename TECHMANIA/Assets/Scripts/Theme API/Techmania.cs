@@ -26,6 +26,7 @@ namespace ThemeApi
             gameSetup = new GameSetup();
             game = new GameState();
             paths = new Paths();
+            editor = new EditorInterface();
 
             audio = new AudioManager();
 
@@ -58,6 +59,7 @@ namespace ThemeApi
         public GameSetup gameSetup { get; private set; }
         public GameState game { get; private set; }
         public Paths paths { get; private set; }
+        public EditorInterface editor { get; private set; }
         #endregion
 
         #region Audio and video

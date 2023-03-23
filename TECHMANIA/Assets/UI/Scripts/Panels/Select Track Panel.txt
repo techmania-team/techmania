@@ -192,11 +192,20 @@ selectTrackPanel.RefreshAllCards = function()
             controls.SetUpScrollingText(card.Q("name-container"))
             controls.SetUpScrollingText(card.Q("artist-container"))
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
-                -- Load full track and navigate to select pattern panel.
-                selectTrackPanel.selectedTrackFolder = trackInFolder.folder
-                local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
-                selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
-                SelectTrackToSelectPatternPanel()
+                if (selectTrackPanel.inEditor) then
+                    tm.StartCoroutine(function()
+                        FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
+                            function()
+                                tm.editor.LaunchOnTrack(trackInFolder.folder)
+                            end)
+                    end)
+                else
+                    -- Load full track and navigate to select pattern panel.
+                    selectTrackPanel.selectedTrackFolder = trackInFolder.folder
+                    local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
+                    selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
+                    SelectTrackToSelectPatternPanel()
+                end
             end, trackInFolder)
 
             if (selectTrackPanel.selectedFullTrack != nil and
@@ -476,8 +485,15 @@ newTrackDialog.Initialize = function()
 
     bg.display = false
     dialog.Q("create-button").RegisterCallback(eventType.Click, function()
-        FadeOutDialog(bg, dialog, function()
-            -- TODO: enter editor
+        -- TODO: call tm.editor.CreateNewTrack and report error if any
+        tm.StartCoroutine(function()
+            FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
+                function()
+                    -- When the panel fully disappears, hide the new track dialog so
+                    -- it's not visible when we return
+                    bg.display = false
+                    tm.editor.LaunchOnTrack("")  -- TODO: pass in newly created track
+                end)
         end)
     end)
     dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
