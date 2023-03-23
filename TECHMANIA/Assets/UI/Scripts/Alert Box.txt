@@ -12,6 +12,8 @@ function FadeInDialog(bg, dialog)
     end)
 end
 
+-- finishCallback will be called after the dialog fully fades out
+-- and bg disappears.
 function FadeOutDialog(bg, dialog, finishCallback)
     tm.StartCoroutine(function()
         FadeOutCoroutine(dialog, 0, -100, function()

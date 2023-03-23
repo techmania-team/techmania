@@ -7,7 +7,7 @@
 }
 
 .surface-8dp {
-    background-color: rgb(47, 47, 47);
+    background-color: var(--8dp-on-surface);
 }
 
 .elevation-1dp {
@@ -119,7 +119,7 @@
 }
 
 .dialog-button-container {
-    height: 95px;
+    height: 55px;
     flex-direction: row-reverse;
     align-items: flex-end;
 }

@@ -26,6 +26,11 @@ filterSideSheet = {
     sheet = selectTrackPanel.panel.Q("filter-sidesheet-background").Q("filter-sidesheet")
 }
 
+newTrackDialog = {
+    bg = selectTrackPanel.panel.Q("new-track-dialog-bg"),
+    dialog = selectTrackPanel.panel.Q("new-track-dialog-bg").Q("new-track-dialog")
+}
+
 function CompareTracks(t1, t2)
     local basis1, basis2
 
@@ -244,7 +249,7 @@ selectTrackPanel.RefreshAllCards = function()
         controls.SetUpScrollingText(card.Q("name-container"))
         controls.SetUpScrollingText(card.Q("artist-container"))
         card.RegisterCallback(eventType.Click, function()
-            -- TODO: show new track dialog
+            FadeInDialog(newTrackDialog.bg, newTrackDialog.dialog)
         end)
     end
 
@@ -465,5 +470,30 @@ filterSideSheet.Initialize = function()
     end)
 end
 
+newTrackDialog.Initialize = function()
+    local bg = newTrackDialog.bg
+    local dialog = newTrackDialog.dialog
+
+    bg.display = false
+    dialog.Q("create-button").RegisterCallback(eventType.Click, function()
+        FadeOutDialog(bg, dialog, function()
+            -- TODO: enter editor
+        end)
+    end)
+    dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
+        FadeOutDialog(bg, dialog)
+    end)
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        FadeOutDialog(bg, dialog)
+    end)
+
+    dialog.RegisterCallback(eventType.Click, function(_, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+end
+
 selectTrackPanel.Initialize()
 filterSideSheet.Initialize()
+newTrackDialog.Initialize()
