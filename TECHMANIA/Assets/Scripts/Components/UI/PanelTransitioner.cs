@@ -19,8 +19,7 @@ public class PanelTransitioner : MonoBehaviour
         transitioning = false;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
         instance = this;
     }
@@ -39,6 +38,7 @@ public class PanelTransitioner : MonoBehaviour
         return Mathf.Lerp(from, to, Mathf.Pow(t, 0.6f));
     }
 
+    // from may be null.
     private IEnumerator InternalTransitionTo(Panel from, Panel to,
         TransitionToPanel.Direction direction)
     {
@@ -52,8 +52,8 @@ public class PanelTransitioner : MonoBehaviour
                 .target = from;
         }
 
-        CanvasGroup fromGroup = from.GetComponent<CanvasGroup>();
-        RectTransform fromRect = from.GetComponent<RectTransform>();
+        CanvasGroup fromGroup = from?.GetComponent<CanvasGroup>();
+        RectTransform fromRect = from?.GetComponent<RectTransform>();
         CanvasGroup toGroup = to.GetComponent<CanvasGroup>();
         RectTransform toRect = to.GetComponent<RectTransform>();
 
@@ -71,17 +71,20 @@ public class PanelTransitioner : MonoBehaviour
         }
         float fromRectDestination = -toRectSource;
 
-        for (float time = 0f; time < kLength; time += Time.deltaTime)
+        if (from != null)
         {
-            float progress = time / kLength;
-            fromGroup.alpha = 1f - progress;
-            fromRect.anchoredPosition = new Vector2(
-                Damp(0f, fromRectDestination, progress),
-                0f);
-            yield return null;
+            for (float time = 0f; time < kLength; time += Time.deltaTime)
+            {
+                float progress = time / kLength;
+                fromGroup.alpha = 1f - progress;
+                fromRect.anchoredPosition = new Vector2(
+                    Damp(0f, fromRectDestination, progress),
+                    0f);
+                yield return null;
+            }
+            fromGroup.alpha = 0f;
+            from.gameObject.SetActive(false);
         }
-        fromGroup.alpha = 0f;
-        from.gameObject.SetActive(false);
 
         to.gameObject.SetActive(true);
         toGroup.alpha = 0f;

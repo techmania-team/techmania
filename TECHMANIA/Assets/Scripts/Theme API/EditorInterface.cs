@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
+using System.IO;
 
 namespace ThemeApi
 {
@@ -15,8 +16,22 @@ namespace ThemeApi
                 .SetActive(false);
             TopLevelObjects.instance.editorCanvas.gameObject
                 .SetActive(true);
-            // TODO: set EditorContext
-            // TODO: show select track panel
+            TopLevelObjects.instance.eventSystem.gameObject
+                .SetActive(true);
+
+            // Set EditorContext
+            EditorContext.trackPath = Path.Combine(trackFolder,
+                Paths.kTrackFilename);
+            EditorContext.track = Track.LoadFromFile(
+                EditorContext.trackPath) as Track;
+            EditorContext.Reset();
+
+            // Show select track panel
+            Panel.current = null;
+            PanelTransitioner.TransitionTo(
+                TopLevelObjects.instance.trackSetupPanel
+                .GetComponent<Panel>(), 
+                TransitionToPanel.Direction.Right);
         }
 
         // In Lua, this function returns 2 values, the Status
