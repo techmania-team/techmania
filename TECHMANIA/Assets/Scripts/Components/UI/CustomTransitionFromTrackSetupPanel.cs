@@ -48,6 +48,7 @@ public class CustomTransitionFromTrackSetupPanel : TransitionToPanel
             }
         }
 
-        PanelTransitioner.TransitionTo(target, targetAppearsFrom);
+        PanelTransitioner.TransitionTo(null, Direction.Left,
+            callbackOnFinish: EditorContext.exitCallback);
     }
 }

@@ -19,4 +19,21 @@ public class TopLevelObjects : MonoBehaviour
     {
         instance = this;
     }
+
+    #region UI document
+    // We cannot disable/enable the UIDocument component or its
+    // GameObject, doing so will clear all contents.
+    // https://forum.unity.com/threads/does-uidocument-clear-contents-when-disabled.1097659/
+    public void HideUiDocument()
+    {
+        mainUiDocument.rootVisualElement.style.display = 
+            DisplayStyle.None;
+    }
+
+    public void ShowUiDocument()
+    {
+        mainUiDocument.rootVisualElement.style.display =
+            DisplayStyle.Flex;
+    }
+    #endregion
 }

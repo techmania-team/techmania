@@ -73,6 +73,8 @@ public class EditTransaction
 
 public class EditorContext
 {
+    public static System.Action exitCallback;
+
     public static Track track;
     // Full path of the track.tech file.
     public static string trackPath;

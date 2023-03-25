@@ -194,6 +194,8 @@ selectTrackPanel.RefreshAllCards = function()
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 if (selectTrackPanel.inEditor) then
                     tm.StartCoroutine(function()
+                        -- Returning from the editor is set up in
+                        -- selectTrackPanel.Initialize()
                         FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
                             function()
                                 tm.editor.LaunchOnTrack(trackInFolder.folder)
@@ -362,6 +364,13 @@ selectTrackPanel.Initialize = function()
     panel.Q("open-button").RegisterCallback(eventType.Click, function()
         tm.OpenURL(selectTrackPanel.location)
     end)
+
+    tm.editor.onExit = function()
+        tm.StartCoroutine(function()
+            FadeInCoroutine(selectTrackPanel.panel, -100, 0)
+        end)
+        selectTrackPanel.Show()
+    end
 end
 
 filterSideSheet.SetDropdownValues = function()
