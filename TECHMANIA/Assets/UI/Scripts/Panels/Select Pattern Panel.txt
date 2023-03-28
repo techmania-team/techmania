@@ -293,11 +293,11 @@ selectPatternPanel.ShowPatternDetails = function()
         if (medal == "NoMedal") then
             panel.Q("record").Q("medal-text").text = ""
         elseif (medal == "AllCombo") then
-            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("full_combo_medal")
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_all_combo")
         elseif (medal == "PerfectPlay") then
-            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("perfect_play_medal")
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_perfect_play")
         elseif (medal == "AbsolutePerfect") then
-            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("absolute_perfect_medal")
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_absolute_perfect")
         end
     end
 

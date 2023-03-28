@@ -769,7 +769,6 @@ public class PatternPanel : MonoBehaviour
     #region Events From Workspace and NoteObjects
     public void OnWorkspaceScrollRectValueChanged()
     {
-        Debug.Log("value changed: " + workspaceScrollRect.horizontalNormalizedPosition + ", " + workspaceScrollRect.verticalNormalizedPosition);
         RefreshNotesInViewport();
         SynchronizeScrollRects();
     }

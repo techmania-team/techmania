@@ -108,9 +108,21 @@ Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred whe
 ,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
 ,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드 + 마우스)
 ,,,,,,
-"Shown when the score is 300,000.",absolute_perfect_medal,ABSOLUTE PERFECT,绝对完美,ABSOLUTE PERFECT,ABSOLUTE PERFECT,ABSOLUTE PERFECT
-,perfect_play_medal,PERFECT PLAY,完美,PERFECT PLAY,PERFECT PLAY,PERFECT PLAY
-,full_combo_medal,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
+,#select-track-panel #new-track-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
+,#select-track-panel #new-track-dialog #artist-field #mini-label,Artist,艺术家,演出者,アーティスト,아티스트
+,#select-track-panel #new-track-dialog #create-button,CREATE,新建,新增,作成,생성
+,#select-track-panel #new-track-dialog #cancel-button,CANCEL,取消,取消,キャンセル,취소
+{0} is a folder or file's full path.,new_track_error_format,"An error occurred when creating or writing to {0}:
+
+{1}","写入{0}时发生错误：
+
+{1}","儲存 {0} 時發生錯誤：
+
+{1}","{0} の書き込み中にエラーが発生しました：
+
+{1}","{0}을/를 생성하는 중 오류가 발생했습니다.
+
+{1}"
 ,,,,,,
 ,#select-pattern-panel #top-bar #title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
 ,#select-pattern-panel #pattern-list #no-pattern-text,This track does not contain any pattern.,本曲目不包含任何谱面。,本歌曲不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.

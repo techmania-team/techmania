@@ -494,16 +494,28 @@ newTrackDialog.Initialize = function()
 
     bg.display = false
     dialog.Q("create-button").RegisterCallback(eventType.Click, function()
-        -- TODO: call tm.editor.CreateNewTrack and report error if any
-        tm.StartCoroutine(function()
-            FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
-                function()
-                    -- When the panel fully disappears, hide the new track dialog so
-                    -- it's not visible when we return
-                    bg.display = false
-                    tm.editor.LaunchOnTrack("")  -- TODO: pass in newly created track
-                end)
-        end)
+        local title = dialog.Q("title-field").Q("text-field").stringValue
+        local artist = dialog.Q("artist-field").Q("text-field").stringValue
+        local status, newTrackFolder = tm.editor.CreateNewTrack(selectTrackPanel.location, title, artist)
+        if (status.Ok()) then
+            tm.StartCoroutine(function()
+                FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
+                    function()
+                        -- When the panel fully disappears, hide the new track dialog so
+                        -- it's not visible when we return
+                        bg.display = false
+                        tm.editor.LaunchOnTrack(newTrackFolder)  -- TODO: pass in newly created track
+                    end)
+            end)
+        else
+            FadeOutDialog(bg, dialog)
+            alertBox.Alert(
+                tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(
+                    net.string.Format(
+                        tm.l10n.GetString("new_track_error_format"),
+                        status.filePath,
+                        status.errorMessage))))
+        end
     end)
     dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
         FadeOutDialog(bg, dialog)

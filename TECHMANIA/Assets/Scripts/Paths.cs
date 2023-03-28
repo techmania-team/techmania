@@ -401,6 +401,8 @@ public class Paths
 
     public static string Combine(string path1, string path2)
     {
+        if (path1 == null) path1 = "";
+        if (path2 == null) path2 = "";
         return System.IO.Path.Combine(path1, path2);
     }
     #endregion

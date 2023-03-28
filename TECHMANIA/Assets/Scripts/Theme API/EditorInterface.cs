@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
+using System;
 
 namespace ThemeApi
 {
@@ -44,10 +45,51 @@ namespace ThemeApi
 
         // In Lua, this function returns 2 values, the Status
         // and newTrackFolder.
+        // If successful, this will update the track lists in
+        // tm.resources.
         public Status CreateNewTrack(string parentFolder,
             string title, string artist, out string newTrackFolder)
         {
-            newTrackFolder = "";
+            // Attempt to create track directory. Contains timestamp
+            // so collisions are very unlikely.
+            string filteredTitle = Paths.
+                RemoveCharsNotAllowedOnFileSystem(title);
+            string filteredArtist = Paths
+                .RemoveCharsNotAllowedOnFileSystem(artist);
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            newTrackFolder = Path.Combine(parentFolder,
+                $"{filteredArtist} - {filteredTitle} - {timestamp}");
+            try
+            {
+                Directory.CreateDirectory(newTrackFolder);
+            }
+            catch (Exception e)
+            {
+                return Status.FromException(e, newTrackFolder);
+            }
+
+            // Create empty track.
+            Track track = new Track(title, artist);
+            string filename = Path.Combine(newTrackFolder, 
+                Paths.kTrackFilename);
+            try
+            {
+                track.SaveToFile(filename);
+            }
+            catch (Exception e)
+            {
+                return Status.FromException(e, filename);
+            }
+
+            // Update in-memory track list.
+            GlobalResource.trackList[parentFolder].Add(
+                new GlobalResource.TrackInFolder()
+            {
+                folder = newTrackFolder,
+                minimizedTrack = Track.Minimize(track)
+            });
+
             return Status.OKStatus();
         }
 

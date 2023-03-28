@@ -188,19 +188,6 @@ Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,正�
 ,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,無法讀取 {0}。這個檔案可能損壞，或是不支援的格式。,{0} を読み込めません。正しくないファイルまたは対応していないファイル形式です。,{0}을/를 불러올 수 없습니다. 파일이 잘못되었거나 지원하지 않는 형식입니다.
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
-,new_track_dialog_create_button,Create,新建,新增,作成,생성
-,new_track_dialog_cancel_button,Cancel,取消,取消,キャンセル,취소
-{0} is a folder or file's full path.,new_track_error_format,"An error occurred when creating or writing to {0}:
-
-{1}","写入{0}时发生错误：
-
-{1}","儲存 {0} 時發生錯誤：
-
-{1}","{0} の書き込み中にエラーが発生しました：
-
-{1}","{0}을/를 생성하는 중 오류가 발생했습니다.
-
-{1}"
 ,,,,,,
 "Most dropdowns (eg. Backing track, BGA) in the
 editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,(無),(なし),(None)
@@ -272,6 +259,7 @@ files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} 
 ,track_setup_metadata_tab_additional_credit_label,Additional credits,其他制作人,其他演出者,その他,비고
 ,track_setup_metadata_tab_preview_header,Preview,预览,預覽,プレビュー,프리뷰
 ,track_setup_metadata_tab_eyecatch_image_label,Eyecatch image,封面,封面圖,アイキャッチイメージ,커버 이미지
+,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
 ,track_setup_metadata_tab_preview_track_label,Preview track,预览曲,預覽歌曲,プレビューオーディオ,미리듣기 음악
 ,track_setup_metadata_tab_preview_start_label,Preview start,预览开始时间,預覽開始時間,プレビュー開始時点,미리듣기 시작 시점
 ,track_setup_metadata_tab_preview_end_label,Preview end,预览结束时间,預覽結束時間,プレビュー終了時点,미리듣기 종료 시점
