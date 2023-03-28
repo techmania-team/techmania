@@ -25,6 +25,8 @@ namespace ThemeApi
         {
             L10n.SetLocale(Options.instance.locale,
                 L10n.Instance.Theme);
+            L10n.SetLocale(Options.instance.locale,
+                L10n.Instance.System);  // For editor
             foreach (KeyValuePair<string, string> s in
                 L10n.themeInstance.current.strings)
             {
