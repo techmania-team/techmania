@@ -115,42 +115,44 @@ navigation = {
     end,
 
     EditorSelectTrackPanelToEditor = function(trackFolder)
-        tm.StartCoroutine(function()
-            -- Returning from the editor is set up in
-            -- selectTrackPanel.Initialize()
-            FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
-                function()
-                    selectTrackPanel.panel.display = false
-                    tm.editor.LaunchOnTrack(trackFolder)
-                end)
-        end)
+        panelTransition.FromRight(
+            selectTrackPanel.panel,
+            nil,
+            function()
+                tm.editor.LaunchOnTrack(trackFolder)
+            end
+        )
     end,
     EditorToEditorSelectTrackPanel = function()
-        selectTrackPanel.panel.display = true
-        tm.StartCoroutine(function()
-            FadeInCoroutine(selectTrackPanel.panel, -100, 0)
-        end)
+        panelTransition.FromLeft(
+            nil,
+            selectTrackPanel.panel
+        )
         selectTrackPanel.Show()
     end,
 
     EditorToGamePanel = function()
+        panelTransition.FromRight(
+            nil,
+            gamePanel.panel,
+            function()
+                -- Only start loading after the game panel appears, in order
+                -- for layout to work.
+                tm.game.BeginLoading()
+            end
+        )
         gamePanel.inEditor = true
-        gamePanel.panel.display = true
-        tm.StartCoroutine(function()
-            FadeInCoroutine(gamePanel.panel, -100, 0)
-            -- TODO: start loading
-        end)
         gamePanel.Show()
     end,
     GamePanelToEditor = function()
-        tm.StartCoroutine(function()
-            FadeOutCoroutine(gamePanel.panel, -100, 0,
-                function()
-                    gamePanel.panel.display = false
-                    tm.game.Conclude()
-                    tm.editor.ReturnFromPreview()
-                end)
-        end)
+        panelTransition.FromLeft(
+            gamePanel.panel,
+            nil,
+            function()
+                tm.game.Conclude()
+                tm.editor.ReturnFromPreview()
+            end
+        )
     end,
 
     MainMenuToOptionsPanel = function()

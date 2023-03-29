@@ -149,7 +149,7 @@ controls = {
 
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
--- Both "from" and "to" can be nil.
+-- "from", "to" and toPanelInitializer can all be nil.
 function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     if (to != nil) then to.display = false end
 
@@ -162,9 +162,14 @@ function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     if (to != nil) then
         to.display = true
         to.style.opacity = StyleFloat(0)
-        coroutine.yield()
-        if (toPanelInitializer != nil) then toPanelInitializer() end
+    end
 
+    if (toPanelInitializer != nil) then
+        coroutine.yield()
+        toPanelInitializer()
+    end
+
+    if (to != nil) then
         FadeInCoroutine(to, -length, 0)
     end
 end
