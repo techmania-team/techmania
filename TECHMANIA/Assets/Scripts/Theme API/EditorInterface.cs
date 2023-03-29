@@ -20,6 +20,18 @@ namespace ThemeApi
                 .SetActive(true);
 
             // Set EditorContext
+            EditorContext.previewCallback = () =>
+            {
+                TopLevelObjects.instance.ShowUiDocument();
+                TopLevelObjects.instance.editorCanvas.gameObject
+                    .SetActive(false);
+                TopLevelObjects.instance.eventSystem.gameObject
+                    .SetActive(false);
+                onPreview.Function.Call(
+                    EditorContext.trackFolder,
+                    EditorContext.track,
+                    EditorContext.Pattern);
+            };
             EditorContext.exitCallback = () =>
             {
                 TopLevelObjects.instance.ShowUiDocument();
@@ -101,7 +113,12 @@ namespace ThemeApi
 
         #region Editor preview
         // When user enters editor preview, editor will fade out,
-        // then call this callback. Parameter: to be determined.
+        // then call this callback.
+        //
+        // Parameters:
+        // - Track folder as string
+        // - Track
+        // - Pattern
         public DynValue onPreview;
 
         public void ReturnFromPreview()

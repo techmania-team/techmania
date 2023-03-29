@@ -73,6 +73,7 @@ public class EditTransaction
 
 public class EditorContext
 {
+    public static System.Action previewCallback;
     public static System.Action exitCallback;
 
     public static Track track;

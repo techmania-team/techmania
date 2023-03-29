@@ -14,7 +14,7 @@ namespace ThemeApi
             GameController.instance.SetSetupInstance(this);
         }
 
-        // Track and pattern
+        // Track and pattern (unused in editor preview)
 
         // The folder that contains the track.tech file.
         public string trackFolder;

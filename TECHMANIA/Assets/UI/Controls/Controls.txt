@@ -149,18 +149,24 @@ controls = {
 
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
+-- Both "from" and "to" can be nil.
 function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
-    from.display = true
-    to.display = false
-    FadeOutCoroutine(from, length, 0)
-    from.display = false
+    if (to != nil) then to.display = false end
 
-    to.display = true
-    to.style.opacity = StyleFloat(0)
-    coroutine.yield()
-    if (toPanelInitializer != nil) then toPanelInitializer() end
+    if (from != nil) then
+        from.display = true
+        FadeOutCoroutine(from, length, 0)
+        from.display = false
+    end
 
-    FadeInCoroutine(to, -length, 0)
+    if (to != nil) then
+        to.display = true
+        to.style.opacity = StyleFloat(0)
+        coroutine.yield()
+        if (toPanelInitializer != nil) then toPanelInitializer() end
+
+        FadeInCoroutine(to, -length, 0)
+    end
 end
 
 panelTransition = {

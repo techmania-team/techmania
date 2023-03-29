@@ -193,20 +193,13 @@ selectTrackPanel.RefreshAllCards = function()
             controls.SetUpScrollingText(card.Q("artist-container"))
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 if (selectTrackPanel.inEditor) then
-                    tm.StartCoroutine(function()
-                        -- Returning from the editor is set up in
-                        -- selectTrackPanel.Initialize()
-                        FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
-                            function()
-                                tm.editor.LaunchOnTrack(trackInFolder.folder)
-                            end)
-                    end)
+                    navigation.EditorSelectTrackPanelToEditor(trackInFolder.folder)
                 else
                     -- Load full track and navigate to select pattern panel.
                     selectTrackPanel.selectedTrackFolder = trackInFolder.folder
                     local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
                     selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
-                    SelectTrackToSelectPatternPanel()
+                    navigation.SelectTrackPanelToSelectPatternPanel()
                 end
             end, trackInFolder)
 
@@ -364,13 +357,6 @@ selectTrackPanel.Initialize = function()
     panel.Q("open-button").RegisterCallback(eventType.Click, function()
         tm.OpenURL(selectTrackPanel.location)
     end)
-
-    tm.editor.onExit = function()
-        tm.StartCoroutine(function()
-            FadeInCoroutine(selectTrackPanel.panel, -100, 0)
-        end)
-        selectTrackPanel.Show()
-    end
 end
 
 filterSideSheet.SetDropdownValues = function()

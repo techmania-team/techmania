@@ -6,35 +6,49 @@ mainMenu = {
     end
 }
 
-function SetUpNavigation()
-    mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click, function()
+navigation = {
+    MainMenuToSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
             selectTrackPanel.panel
         )
         selectTrackPanel.inEditor = false
         selectTrackPanel.Show()
-    end)
-    selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+    end,
+    SelectTrackPanelToMainMenu = function()
         panelTransition.FromLeft(
             selectTrackPanel.panel,
             mainMenu.panel
         )
         mainMenu.Show()
-    end)
+    end,
 
-    -- select track panel --> select pattern panel is registered on track cards,
-    -- handled by Select Track Panel.txt
-    selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+    SelectTrackPanelToSelectPatternPanel = function()
+        panelTransition.FromRight(
+            selectTrackPanel.panel,
+            selectPatternPanel.panel,
+            function()
+                -- This has to be called 1 frame after selectPatternPanel
+                -- displays so the radar can be initialized properly.
+                selectPatternPanel.InitializeRadar()
+                -- This has to be called after selectPatternPanel displays
+                -- so the load audio callback can check whether the panel
+                -- displays to decide whether to play the audio.
+                selectPatternPanel.StartPreviewTrackPlayback()
+            end
+        )
+        selectPatternPanel.Show()
+    end,
+    SelectPatternPanelToSelectTrackPanel = function()
         panelTransition.FromLeft(
             selectPatternPanel.panel,
             selectTrackPanel.panel
         )
         selectPatternPanel.StopPreviewTrackPlayback()
         selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
-    end)
+    end,
 
-    selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
+    SelectPatternPanelToGamePanel = function()
         panelTransition.FadeToBlack(
             selectPatternPanel.panel,
             gamePanel.panel,
@@ -45,14 +59,32 @@ function SetUpNavigation()
             end
         )
         selectPatternPanel.StopPreviewTrackPlayback()
+        gamePanel.inEditor = false
         gamePanel.Show()
-    end)
-    -- game panel --> select track panel can happen on multiple occasions, so it's a separate
-    -- function, found below.
+    end,
+    GamePanelToSelectTrackPanel = function()
+        panelTransition.FadeToBlack(
+            gamePanel.panel,
+            selectTrackPanel.panel,
+            function()
+                -- This causes the BGA to unload so it should happen
+                -- after the game panel has faded out.
+                if (tm.game.state != tm.enum.gameState.Idle) then
+                    tm.game.Conclude()
+                end
+            end
+        )
+        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
+    end,
 
-    -- game panel --> result panel can happen on multiple occasions, so it's a separate function,
-    -- found below.
-    resultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click, function()
+    GamePanelToResultPanel = function()
+        panelTransition.FadeToBlack(
+            gamePanel.panel,
+            resultPanel.panel
+        )
+        resultPanel.Show()
+    end,
+    ResultPanelToGamePanel = function()
         panelTransition.FadeToBlack(
             resultPanel.panel,
             gamePanel.panel,
@@ -63,97 +95,145 @@ function SetUpNavigation()
             end
         )
         gamePanel.Show()
-    end)
-    resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click, function()
+    end,
+    ResultPanelToSelectTrackPanel = function()
         panelTransition.FromRight(
             resultPanel.panel,
             selectTrackPanel.panel
         )
         selectPatternPanel.StopPreviewTrackPlayback()
         selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
-    end)
+    end,
 
-    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+    MainMenuToEditorSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
             selectTrackPanel.panel
         )
         selectTrackPanel.inEditor = true
         selectTrackPanel.Show()
-    end)
+    end,
 
-    mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
+    EditorSelectTrackPanelToEditor = function(trackFolder)
+        tm.StartCoroutine(function()
+            -- Returning from the editor is set up in
+            -- selectTrackPanel.Initialize()
+            FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
+                function()
+                    selectTrackPanel.panel.display = false
+                    tm.editor.LaunchOnTrack(trackFolder)
+                end)
+        end)
+    end,
+    EditorToEditorSelectTrackPanel = function()
+        selectTrackPanel.panel.display = true
+        tm.StartCoroutine(function()
+            FadeInCoroutine(selectTrackPanel.panel, -100, 0)
+        end)
+        selectTrackPanel.Show()
+    end,
+
+    EditorToGamePanel = function()
+        gamePanel.inEditor = true
+        gamePanel.panel.display = true
+        tm.StartCoroutine(function()
+            FadeInCoroutine(gamePanel.panel, -100, 0)
+            -- TODO: start loading
+        end)
+        gamePanel.Show()
+    end,
+    GamePanelToEditor = function()
+        tm.StartCoroutine(function()
+            FadeOutCoroutine(gamePanel.panel, -100, 0,
+                function()
+                    gamePanel.panel.display = false
+                    tm.game.Conclude()
+                    tm.editor.ReturnFromPreview()
+                end)
+        end)
+    end,
+
+    MainMenuToOptionsPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
             optionsPanel.panel
         )
         optionsPanel.Show()
-    end)
-    optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+    end,
+    OptionsPanelToMainMenu = function()
         panelTransition.FromLeft(
             optionsPanel.panel,
             mainMenu.panel
         )
         tm.options.SaveToFile()
         mainMenu.Show()
-    end)
+    end,
 
-    mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click, function()
+    MainMenuToInformationPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
             infoPanel.panel
         )
         infoPanel.Show()
-    end)
-    infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+    end,
+    InformationPanelToMainMenu = function()
         panelTransition.FromLeft(
             infoPanel.panel,
             mainMenu.panel
         )
         mainMenu.Show()
-    end)
+    end
+}
+
+function SetUpNavigation()
+    mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click,
+        navigation.MainMenuToSelectTrackPanel)
+    selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.SelectTrackPanelToMainMenu)
+
+    -- select track panel --> select pattern panel is registered on track cards,
+    -- handled by Select Track Panel.txt
+    selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.SelectPatternPanelToSelectTrackPanel)
+
+    selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click,
+        navigation.SelectPatternPanelToGamePanel)
+    -- game panel --> select track panel can happen on multiple occasions, so it's a separate
+    -- function, found below.
+
+    -- game panel --> result panel can happen on multiple occasions, so it's a separate function,
+    -- found below.
+    resultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click,
+        navigation.ResultPanelToGamePanel)
+    resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click,
+        navigation.ResultPanelToSelectTrackPanel)
+
+    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click,
+        navigation.MainMenuToEditorSelectTrackPanel)
+    -- select track panel (editor) --> editor is registered on track cards,
+    -- handled by Select Track Panel.txt
+    tm.editor.onExit = navigation.EditorToEditorSelectTrackPanel
+
+    tm.editor.onPreview = function(trackFolder, track, pattern)
+        selectTrackPanel.selectedTrackFolder = trackFolder
+        selectTrackPanel.selectedFullTrack = track
+        selectPatternPanel.selectedPattern = pattern
+        navigation.EditorToGamePanel()
+    end
+    gamePanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.GamePanelToEditor)
+
+    mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click,
+        navigation.MainMenuToOptionsPanel)
+    optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.OptionsPanelToMainMenu)
+
+    mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click,
+        navigation.MainMenuToInformationPanel)
+    infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.InformationPanelToMainMenu)
 
     mainMenu.panel.Q("quit-button").RegisterCallback(eventType.Click, function()
         tm.Quit()
     end)
-end
-
-function SelectTrackToSelectPatternPanel()
-    panelTransition.FromRight(
-        selectTrackPanel.panel,
-        selectPatternPanel.panel,
-        function()
-            -- This has to be called 1 frame after selectPatternPanel
-            -- displays so the radar can be initialized properly.
-            selectPatternPanel.InitializeRadar()
-            -- This has to be called after selectPatternPanel displays
-            -- so the load audio callback can check whether the panel
-            -- displays to decide whether to play the audio.
-            selectPatternPanel.StartPreviewTrackPlayback()
-        end
-    )
-    selectPatternPanel.Show()
-end
-
-function GamePanelToSelectTrackPanel()
-    panelTransition.FadeToBlack(
-        gamePanel.panel,
-        selectTrackPanel.panel,
-        function()
-            -- This causes the BGA to unload so it should happen
-            -- after the game panel has faded out.
-            if (tm.game.state != tm.enum.gameState.Idle) then
-                tm.game.Conclude()
-            end
-        end
-    )
-    selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
-end
-
-function GamePanelToResultPanel()
-    panelTransition.FadeToBlack(
-        gamePanel.panel,
-        resultPanel.panel
-    )
-    resultPanel.Show()
 end
