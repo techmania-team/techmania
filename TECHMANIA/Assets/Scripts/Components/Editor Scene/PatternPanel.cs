@@ -1510,16 +1510,15 @@ public class PatternPanel : MonoBehaviour
 
     public void OnPreviewButtonClicked()
     {
-        InternalGameSetup.track = EditorContext.track;
-        InternalGameSetup.trackPath = EditorContext.trackPath;
-        InternalGameSetup.patternAfterModifier = EditorContext.Pattern;
-        InternalGameSetup.beginningScanInEditorPreview =
+        EditorContext.previewStartingScan =
             Mathf.FloorToInt(
                 scanline.floatPulse / 
                 Pattern.pulsesPerBeat /
-                InternalGameSetup.patternAfterModifier.patternMetadata.bps);
+                EditorContext.Pattern.patternMetadata.bps);
         scanlinePulseBeforePreview = scanline.floatPulse;
-        previewButton.GetComponent<TransitionToPanel>().Invoke();
+
+        previewButton.GetComponent<CustomTransitionToEditorPreview>()
+            .Invoke();
     }
 
     public void OnInspectButtonClick()

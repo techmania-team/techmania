@@ -93,7 +93,7 @@ namespace ThemeApi
         [MoonSharpHidden]
         public Pattern patternAfterModifier;
         [MoonSharpHidden]
-        public bool anySpecialModifier;
+        public bool anySpecialModifier;  // TODO: make copy of modifiers so we can override this in editor preview
         [MoonSharpHidden]
         public Options.Ruleset ruleset;
     }

@@ -117,40 +117,49 @@ public class GameController : MonoBehaviour
 
         // Load track, track options and pattern. These are all
         // synchronous.
-        string trackPath = Paths.Combine(setup.lockedTrackFolder,
-            Paths.kTrackFilename);
-        Track track;
-        try
+        if (EditorContext.inPreview)
         {
-            track = Track.LoadFromFile(trackPath) as Track;
+            setup.trackOptions = new PerTrackOptions();
+            setup.patternBeforeModifier = EditorContext.Pattern;
+            setup.patternAfterModifier = EditorContext.Pattern;
         }
-        catch (Exception ex)
+        else
         {
-            reportLoadError(Status.FromException(ex));
-            yield break;
-        }
-
-        setup.trackOptions = Options.instance.GetPerTrackOptions(
-            track.trackMetadata.guid);
-
-        setup.patternBeforeModifier = null;
-        foreach (Pattern p in track.patterns)
-        {
-            if (p.patternMetadata.guid == setup.patternGuid)
+            string trackPath = Paths.Combine(setup.lockedTrackFolder,
+                Paths.kTrackFilename);
+            Track track;
+            try
             {
-                setup.patternBeforeModifier = p;
-                break;
+                track = Track.LoadFromFile(trackPath) as Track;
             }
+            catch (Exception ex)
+            {
+                reportLoadError(Status.FromException(ex));
+                yield break;
+            }
+
+            setup.trackOptions = Options.instance.GetPerTrackOptions(
+                track.trackMetadata.guid);
+
+            setup.patternBeforeModifier = null;
+            foreach (Pattern p in track.patterns)
+            {
+                if (p.patternMetadata.guid == setup.patternGuid)
+                {
+                    setup.patternBeforeModifier = p;
+                    break;
+                }
+            }
+            if (setup.patternBeforeModifier == null)
+            {
+                reportLoadError(Status.Error(
+                    Status.Code.NotFound,
+                    "The specified pattern is not found in the track."));
+                yield break;
+            }
+            setup.patternAfterModifier = setup.patternBeforeModifier
+                .ApplyModifiers(Modifiers.instance);
         }
-        if (setup.patternBeforeModifier == null)
-        {
-            reportLoadError(Status.Error(
-                Status.Code.NotFound,
-                "The specified pattern is not found in the track."));
-            yield break;
-        }
-        setup.patternAfterModifier = setup.patternBeforeModifier
-            .ApplyModifiers(Modifiers.instance);
 
         // Calculate fingerprints in preparation for records.
         setup.patternBeforeModifier.CalculateFingerprint();
@@ -392,9 +401,18 @@ public class GameController : MonoBehaviour
         //
         // No need to lock down the actual track and patterns yet,
         // as the theme cannot modify them on disk yet.
-        setup.lockedTrackFolder = string.Copy(setup.trackFolder);
-        setup.anySpecialModifier = Modifiers.instance
-            .HasAnySpecialModifier();
+        if (EditorContext.inPreview)
+        {
+            setup.lockedTrackFolder = string.Copy(
+                EditorContext.trackFolder);
+            setup.anySpecialModifier = true;
+        }
+        else
+        {
+            setup.lockedTrackFolder = string.Copy(setup.trackFolder);
+            setup.anySpecialModifier = Modifiers.instance
+                .HasAnySpecialModifier();
+        }
         setup.ruleset = Options.instance.ruleset;
 
         StartCoroutine(LoadSequence());
@@ -406,7 +424,14 @@ public class GameController : MonoBehaviour
         bg.Begin();
         layout.Begin();
 
-        JumpToScan(timer.firstScan);
+        if (EditorContext.inPreview)
+        {
+            JumpToScan(EditorContext.previewStartingScan);
+        }
+        else
+        {
+            JumpToScan(timer.firstScan);
+        }
     }
 
     public void Pause()

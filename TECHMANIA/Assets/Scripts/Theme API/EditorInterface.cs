@@ -22,6 +22,8 @@ namespace ThemeApi
             // Set EditorContext
             EditorContext.previewCallback = () =>
             {
+                EditorContext.inPreview = true;
+
                 TopLevelObjects.instance.ShowUiDocument();
                 TopLevelObjects.instance.editorCanvas.gameObject
                     .SetActive(false);
@@ -30,7 +32,8 @@ namespace ThemeApi
                 onPreview.Function.Call(
                     EditorContext.trackFolder,
                     EditorContext.track,
-                    EditorContext.Pattern);
+                    EditorContext.Pattern,
+                    EditorContext.previewStartingScan);
             };
             EditorContext.exitCallback = () =>
             {
@@ -119,11 +122,26 @@ namespace ThemeApi
         // - Track folder as string
         // - Track
         // - Pattern
+        // - Starting scan
+        //
+        // These parameters are only for informational purposes.
+        // Theme API will set up the game correctly; the theme doesn't
+        // have to do anything about them.
         public DynValue onPreview;
 
         public void ReturnFromPreview()
         {
+            EditorContext.inPreview = false;
 
+            TopLevelObjects.instance.HideUiDocument();
+            TopLevelObjects.instance.editorCanvas.gameObject
+                .SetActive(true);
+            TopLevelObjects.instance.eventSystem.gameObject
+                .SetActive(true);
+            PanelTransitioner.TransitionTo(
+                TopLevelObjects.instance.patternPanel
+                    .GetComponent<Panel>(),
+                TransitionToPanel.Direction.Left);
         }
         #endregion
     }

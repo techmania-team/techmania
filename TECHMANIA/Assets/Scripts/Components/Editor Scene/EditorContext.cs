@@ -73,8 +73,11 @@ public class EditTransaction
 
 public class EditorContext
 {
+    // Parameter: starting scan
     public static System.Action previewCallback;
     public static System.Action exitCallback;
+    public static bool inPreview;
+    public static int previewStartingScan;
 
     public static Track track;
     // Full path of the track.tech file.

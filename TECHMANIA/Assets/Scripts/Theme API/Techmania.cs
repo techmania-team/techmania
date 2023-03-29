@@ -32,6 +32,8 @@ namespace ThemeApi
 
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
+
+            EditorContext.inPreview = false;
         }
 
         #region UIDocument exposure
