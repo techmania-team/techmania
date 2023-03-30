@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Templates/Finger%20Indicator.uss?fileID=7433441132597879392&amp;guid=f9de10a73360d6040a7dfd604e4ed289&amp;type=3#Finger Indicator" />
+    <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <ui:VisualElement name="indicator" picking-mode="Ignore">
+        <ui:Label tabindex="-1" text="Finger #0" display-tooltip-when-elided="true" name="finger-number" picking-mode="Ignore" class="text-subtitle" />
+    </ui:VisualElement>
+</ui:UXML>

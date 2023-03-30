@@ -9,6 +9,7 @@
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
+    <ui:Template name="Finger Indicator" src="project://database/Assets/UI/Templates/Finger%20Indicator.uxml?fileID=9197481963319205126&amp;guid=e500b17366931d44dbde2637a8a3b9d6&amp;type=3#Finger Indicator" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
@@ -750,6 +751,15 @@
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
             </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:Instance template="Panel" name="touchscreen-test-panel" picking-mode="Ignore" class="panel">
+        <AttributeOverrides element-name="title" text="Touchscreen test" />
+        <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content">
+            <ui:VisualElement name="finger-indicators" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+                <ui:Instance template="Finger Indicator" name="anchor" picking-mode="Ignore" class="anchor" style="left: 500px; top: 300px;" />
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="Touch anywhere on the screen. Circles should appear around your fingertips." display-tooltip-when-elided="true" name="instructions" picking-mode="Ignore" class="text-body" style="position: absolute; bottom: 20px; left: 0; right: 0; -unity-text-align: upper-center;" />
         </ui:VisualElement>
     </ui:Instance>
     <ui:Instance template="Panel" name="information-panel" class="panel" style="display: none;">
