@@ -55,6 +55,13 @@ gamePanel.Initialize = function()
         end
     end)
 
+    panel.RegisterCallback(eventType.ApplicationFocus, function(element, event)
+        if (themeOptions["pauseWhenGameLosesFocus"] == "False") then return end
+        if (event.focus) then return end
+        if (gamePanel.inEditor) then return end
+        gamePanel.Pause(true)  -- silent
+    end)
+
     panel.Q("top-bar").Q("pause-button").RegisterCallback(eventType.Click, function()
         gamePanel.Pause()
     end)
@@ -402,12 +409,15 @@ gamePanel.BeginGame = function()
     panel.Focus()
 end
 
-gamePanel.Pause = function()
+gamePanel.Pause = function(silent)  -- boolean
     if (tm.game.state != tm.enum.gameState.Ongoing) then return end
 
+    if (silent == nil) then silent = false end
     local bg = pauseMenu.bg
     local menu = pauseMenu.menu
-    tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
+    if (not silent) then
+        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
+    end
     tm.game.Pause()
     FadeInDialog(bg, menu)
     pauseMenu.Show()

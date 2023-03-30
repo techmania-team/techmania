@@ -95,8 +95,6 @@ namespace ThemeApi
         [MoonSharpHidden]
         public Modifiers modifiers;
         [MoonSharpHidden]
-        public bool anySpecialModifier;  // TODO: make copy of modifiers so we can override this in editor preview
-        [MoonSharpHidden]
         public Options.Ruleset ruleset;
     }
 }
