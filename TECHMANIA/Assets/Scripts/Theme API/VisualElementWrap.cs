@@ -598,6 +598,20 @@ namespace ThemeApi
                 inner.focusController.focusedElement as VisualElement);
         }
         #endregion
+
+        #region Transform
+        public Vector2 ScreenSpaceToLocalSpace(Vector2 screenSpace)
+        {
+            return VisualElementTransform
+                .ScreenSpaceToElementLocalSpace(inner, screenSpace);
+        }
+
+        public bool ContainsPointInScreenSpace(Vector2 screenSpace)
+        {
+            return VisualElementTransform
+                .ElementContainsPointInScreenSpace(inner, screenSpace);
+        }
+        #endregion
     }
 
     [MoonSharpUserData]
