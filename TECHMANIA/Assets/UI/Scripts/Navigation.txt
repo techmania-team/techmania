@@ -171,6 +171,20 @@ navigation = {
         mainMenu.Show()
     end,
 
+    OptionsPanelToTouchscreenTestPanel = function()
+        panelTransition.FromRight(
+            optionsPanel.panel,
+            touchscreenTestPanel.panel
+        )
+        touchscreenTestPanel.Show()
+    end,
+    TouchscreenTestPanelToOptionsPanel = function()
+        panelTransition.FromLeft(
+            touchscreenTestPanel.panel,
+            optionsPanel.panel
+        )
+    end,
+
     MainMenuToInformationPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
@@ -229,6 +243,11 @@ function SetUpNavigation()
         navigation.MainMenuToOptionsPanel)
     optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
         navigation.OptionsPanelToMainMenu)
+
+    optionsPanel.panel.Q("touchscreen-test").Q("button").RegisterCallback(eventType.Click,
+        navigation.OptionsPanelToTouchscreenTestPanel)
+    touchscreenTestPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.TouchscreenTestPanelToOptionsPanel)
 
     mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click,
         navigation.MainMenuToInformationPanel)

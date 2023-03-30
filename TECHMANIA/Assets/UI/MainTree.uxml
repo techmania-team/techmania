@@ -753,7 +753,7 @@
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="touchscreen-test-panel" picking-mode="Ignore" class="panel">
+    <ui:Instance template="Panel" name="touchscreen-test-panel" picking-mode="Ignore" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Touchscreen test" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content">
             <ui:VisualElement name="finger-indicators" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
