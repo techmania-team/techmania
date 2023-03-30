@@ -148,7 +148,8 @@ namespace ThemeApi
         #region Practice mode APIs
         private void CheckPracticeMode(string methodName)
         {
-            if (Modifiers.instance.mode != Modifiers.Mode.Practice)
+            if (GameController.instance.modifiers.mode != 
+                Modifiers.Mode.Practice)
             {
                 throw new System.Exception($"{methodName} can only be called in practice mode.");
             }

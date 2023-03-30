@@ -133,7 +133,7 @@ public class GameLayout
         VisualTreeAsset scanlineTemplate)
     {
         // Respond to scan direction.
-        switch (Modifiers.instance.scanDirection)
+        switch (GameController.instance.modifiers.scanDirection)
         {
             case Modifiers.ScanDirection.Normal:
                 topHalf.direction = ScanDirection.Right;
@@ -170,7 +170,7 @@ public class GameLayout
         setUpFlip(bottomHalf);
 
         // Respond to swap.
-        switch (Modifiers.instance.scanPosition)
+        switch (GameController.instance.modifiers.scanPosition)
         {
             case Modifiers.ScanPosition.Normal:
                 evenHalf = bottomHalf;
@@ -389,7 +389,7 @@ public class GameLayout
     private float ScanlineAlpha(float scan)
     {
         float alpha = 1f;
-        switch (Modifiers.instance.scanlineOpacity)
+        switch (GameController.instance.modifiers.scanlineOpacity)
         {
             case Modifiers.ScanlineOpacity.Normal:
                 return 1f;

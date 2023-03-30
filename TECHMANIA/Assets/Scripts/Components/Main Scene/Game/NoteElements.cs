@@ -190,9 +190,9 @@ public class NoteElements : INoteHolder
         alphaUpperBound = 1f;
         if (!controlledExternally)
         {
-            if (Modifiers.instance.noteOpacity ==
+            if (GameController.instance.modifiers.noteOpacity ==
                 Modifiers.NoteOpacity.FadeIn ||
-                Modifiers.instance.noteOpacity ==
+                GameController.instance.modifiers.noteOpacity ==
                 Modifiers.NoteOpacity.FadeIn2)
             {
                 alphaUpperBound = 0f;
@@ -360,7 +360,7 @@ public class NoteElements : INoteHolder
         {
             case Visibility.Visible: alpha = 1f; break;
             case Visibility.Transparent:
-                if (Modifiers.instance.noteOpacity ==
+                if (GameController.instance.modifiers.noteOpacity ==
                     Modifiers.NoteOpacity.Normal)
                 {
                     alpha = 0.6f;
@@ -427,7 +427,7 @@ public class NoteElements : INoteHolder
         repeatPathAndExtensions?.UpdateSprites(timer);
         TypeSpecificUpdate(timer);
         if ((state == State.Prepare || state == State.Active) &&
-            Modifiers.instance.noteOpacity
+            GameController.instance.modifiers.noteOpacity
             != Modifiers.NoteOpacity.Normal)
         {
             UpdateAlphaUpperBound(timer.scan);
@@ -457,11 +457,11 @@ public class NoteElements : INoteHolder
 
     private void UpdateAlphaUpperBound(float currentScan)
     {
-        if (Modifiers.instance.noteOpacity
+        if (GameController.instance.modifiers.noteOpacity
             == Modifiers.NoteOpacity.Normal) return;
 
         float correctScan = floatScan;
-        switch (Modifiers.instance.noteOpacity)
+        switch (GameController.instance.modifiers.noteOpacity)
         {
             case Modifiers.NoteOpacity.FadeOut:
                 alphaUpperBound = Mathf.InverseLerp(

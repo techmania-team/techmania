@@ -60,6 +60,7 @@ public class GameController : MonoBehaviour
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
+    public Modifiers modifiers => setup.modifiers;
     // Accessible from Lua via GameState.timer
     public GameTimer timer { get; private set; }
     private GameBackground bg;
@@ -158,7 +159,7 @@ public class GameController : MonoBehaviour
                 yield break;
             }
             setup.patternAfterModifier = setup.patternBeforeModifier
-                .ApplyModifiers(Modifiers.instance);
+                .ApplyModifiers(setup.modifiers);
         }
 
         // Calculate fingerprints in preparation for records.
@@ -319,7 +320,7 @@ public class GameController : MonoBehaviour
         // A few more synchronous loading steps.
 
         // Switches.
-        autoPlay = Modifiers.instance.mode == Modifiers.Mode.AutoPlay;
+        autoPlay = setup.modifiers.mode == Modifiers.Mode.AutoPlay;
         showHitbox = false;
 
         // Keysound player.
@@ -405,13 +406,15 @@ public class GameController : MonoBehaviour
         {
             setup.lockedTrackFolder = string.Copy(
                 EditorContext.trackFolder);
-            setup.anySpecialModifier = true;
+            setup.modifiers = new Modifiers()
+            {
+                mode = Modifiers.Mode.Practice
+            };
         }
         else
         {
             setup.lockedTrackFolder = string.Copy(setup.trackFolder);
-            setup.anySpecialModifier = Modifiers.instance
-                .HasAnySpecialModifier();
+            setup.modifiers = Modifiers.instance.Clone();
         }
         setup.ruleset = Options.instance.ruleset;
 
@@ -479,7 +482,7 @@ public class GameController : MonoBehaviour
 
     public bool ScoreIsValid()
     {
-        return !setup.anySpecialModifier &&
+        return !setup.modifiers.HasAnySpecialModifier() &&
             setup.ruleset != Options.Ruleset.Custom &&
             !scoreKeeper.score.stageFailed;
     }
@@ -602,7 +605,7 @@ public class GameController : MonoBehaviour
     private void CheckForStageFailed()
     {
         if (scoreKeeper.hp <= 0 &&
-            Modifiers.instance.mode != Modifiers.Mode.NoFail)
+            setup.modifiers.mode != Modifiers.Mode.NoFail)
         {
             scoreKeeper.score.stageFailed = true;
             scoreKeeper.score.CalculateComboBonus();
@@ -615,7 +618,7 @@ public class GameController : MonoBehaviour
     {
         if (state.state != ThemeApi.GameState.State.Ongoing) return;
         if (timer.baseTime <= timer.patternEndTime) return;
-        if (Modifiers.instance.mode == Modifiers.Mode.Practice) return;
+        if (setup.modifiers.mode == Modifiers.Mode.Practice) return;
         if (!scoreKeeper.score.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();

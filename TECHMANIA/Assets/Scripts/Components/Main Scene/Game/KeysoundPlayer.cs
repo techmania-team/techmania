@@ -59,7 +59,7 @@ public class KeysoundPlayer
             // note is a long one.
             return;
         }
-        if (Modifiers.instance.assistTick == 
+        if (GameController.instance.modifiers.assistTick == 
             Modifiers.AssistTick.AssistTick && !hidden && !emptyHit)
         {
             sourceManager.PlaySfx(assistTick);

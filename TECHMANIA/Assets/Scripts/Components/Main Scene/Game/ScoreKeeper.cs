@@ -103,7 +103,8 @@ public class ScoreKeeper
             SetCombo(0);
         }
 
-        if (Modifiers.instance.mode == Modifiers.Mode.Practice)
+        if (GameController.instance.modifiers.mode == 
+            Modifiers.Mode.Practice)
         {
             // Score, HP and Fever don't update in Practice mode.
             return;
@@ -132,7 +133,7 @@ public class ScoreKeeper
             {
                 float feverDelta = feverCoefficient / score.totalNotes;
                 if (GameController.instance.autoPlay) feverDelta = 0f;
-                if (Modifiers.instance.fever == 
+                if (GameController.instance.modifiers.fever == 
                     Modifiers.Fever.FeverOff)
                 {
                     feverDelta = 0;
@@ -145,7 +146,7 @@ public class ScoreKeeper
                     feverState = FeverState.Ready;
                     feverAmount = 1f;
                     gameSetup.onFeverReady?.Function?.Call();
-                    if (Modifiers.instance.fever
+                    if (GameController.instance.modifiers.fever
                         == Modifiers.Fever.AutoFever)
                     {
                         ActivateFever();
