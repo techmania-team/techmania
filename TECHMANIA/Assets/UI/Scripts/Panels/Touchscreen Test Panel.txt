@@ -1,11 +1,32 @@
 touchscreenTestPanel = {
-    panel = tm.root.Q("touchscreen-test-panel")
+    panel = tm.root.Q("touchscreen-test-panel"),
+
+    -- Table, key is finger ID, value is VisualElementWrap of indicator
+    indicatorElements = {}
 }
 
 touchscreenTestPanel.Show = function()
+    indicatorElements = {}
+
+    -- TODO: delete all indicator instances
 end
 
 touchscreenTestPanel.Initialize = function()
+    local panel = touchscreenTestPanel.panel
+    panel.RegisterCallback(eventType.FrameUpdate, function()
+        if (not panel.display) then return end
+        for i = 0, unity.input.touchCount - 1 do
+            local touch = unity.input.GetTouch(i)
+            if (touch.phase == unity.enum.touchPhase.Began) then
+                print("Touch began: " .. touch.fingerId)
+            elseif (touch.phase == unity.enum.touchPhase.Ended or
+                touch.phase == unity.enum.touchPhase.Canceled) then
+                print("Touch ended: " .. touch.fingerId)
+            elseif (touch.phase == unity.enum.touchPhase.Moved or
+                touch.phase == unity.enum.touchPhase.Stationary) then
+            end
+        end
+    end)
 end
 
 touchscreenTestPanel.Initialize()

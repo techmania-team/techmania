@@ -143,6 +143,8 @@ namespace ThemeApi
             Table unityTypes = new Table(session);
             addType(unityTypes, typeof(Time));
             addType(unityTypes, typeof(Screen));
+            addType(unityTypes, typeof(Input));
+            addType(unityTypes, typeof(Touch));
             addType(unityTypes, typeof(Resolution));
             addType(unityTypes, typeof(RefreshRate));
             addType(unityTypes, typeof(Mathf));
@@ -177,6 +179,8 @@ namespace ThemeApi
             Table unityEnums = new Table(session);
             // Enums used by Options
             addType(unityEnums, typeof(FullScreenMode));
+            // Enums used by Input
+            addType(unityEnums, typeof(TouchPhase));
             // Enums used by Painter2D
             addType(unityEnums, typeof(LineCap));
             addType(unityEnums, typeof(LineJoin));
