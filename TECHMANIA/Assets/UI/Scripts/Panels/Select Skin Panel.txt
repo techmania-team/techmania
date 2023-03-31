@@ -23,6 +23,12 @@ selectSkinPanel.Show = function()
 
     local reloadToggle = panel.Q("reload-skins").Q("track")
     controls.SetToggleIsOn(reloadToggle, tm.options.reloadSkinsWhenLoadingPattern)
+
+    tm.skinPreview.Begin()
+end
+
+selectSkinPanel.Hide = function()
+    tm.skinPreview.Conclude()
 end
 
 selectSkinPanel.Initialize = function()
@@ -44,6 +50,13 @@ selectSkinPanel.Initialize = function()
     reloadToggle.RegisterCallback(eventType.Click, function()
         tm.options.reloadSkinsWhenLoadingPattern = not tm.options.reloadSkinsWhenLoadingPattern
     end)
+
+    -- Set up SkinPreview
+    tm.skinPreview.previewContainer = panel.Q("preview-container")
+    tm.skinPreview.bpm = 120
+    tm.skinPreview.lanes = 3
+    tm.skinPreview.judgement = tm.enum.judgement.RainbowMax
+    tm.skinPreview.combo = 123
 end
 
 selectSkinPanel.Initialize()

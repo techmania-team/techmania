@@ -10,8 +10,6 @@ public class GameController : MonoBehaviour
 
     public VisualTreeAsset layoutTemplate;
     public VisualTreeAsset scanlineTemplate;
-    public VisualTreeAsset skinPreviewTemplate;
-    public VisualTreeAsset calibrationPreviewTemplate;
 
     [Serializable]
     public class NoteTemplates

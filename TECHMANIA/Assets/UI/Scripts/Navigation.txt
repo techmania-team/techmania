@@ -188,14 +188,21 @@ navigation = {
     OptionsPanelToSelectSkinPanel = function()
         panelTransition.FromRight(
             optionsPanel.panel,
-            selectSkinPanel.panel
+            selectSkinPanel.panel,
+            function()
+                -- Begin the skin preview after the panel becomes visible,
+                -- so the API can properly set up layout.
+                selectSkinPanel.Show()
+            end
         )
-        selectSkinPanel.Show()
     end,
     SelectSkinPanelToOptionsPanel = function()
         panelTransition.FromLeft(
             selectSkinPanel.panel,
-            optionsPanel.panel
+            optionsPanel.panel,
+            function()
+                selectSkinPanel.Hide()
+            end
         )
     end,
 

@@ -62,6 +62,7 @@ namespace ThemeApi
         public GameState game { get; private set; }
         public Paths paths { get; private set; }
         public EditorInterface editor { get; private set; }
+        public SkinPreview skinPreview => SkinPreview.instance;
         #endregion
 
         #region Audio and video

@@ -9023,32 +9023,32 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 84.4
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 24.01
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -27
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -46852,6 +46852,7 @@ GameObject:
   - component: {fileID: 1527373382}
   - component: {fileID: 1527373383}
   - component: {fileID: 1527373384}
+  - component: {fileID: 1527373385}
   m_Layer: 5
   m_Name: Main UIDocument
   m_TagString: Untagged
@@ -46930,9 +46931,6 @@ MonoBehaviour:
     type: 3}
   scanlineTemplate: {fileID: 9197481963319205126, guid: 5832688611e48a7408bd8c077aafc8f7,
     type: 3}
-  skinPreviewTemplate: {fileID: 9197481963319205126, guid: 63f25639cf42fde48b0668323db1be45,
-    type: 3}
-  calibrationPreviewTemplate: {fileID: 0}
   noteTemplates:
     basicNote: {fileID: 9197481963319205126, guid: 36363bbd296f5fb439d97085a32d9033,
       type: 3}
@@ -46964,6 +46962,24 @@ MonoBehaviour:
   comboText: {fileID: 680542345}
   autoPlay: 0
   showHitbox: 0
+--- !u!114 &1527373385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527373379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a01a63484b08fb546aff9a651a6a4ab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinPreviewTemplate: {fileID: 9197481963319205126, guid: 63f25639cf42fde48b0668323db1be45,
+    type: 3}
+  bpm: 0
+  lanes: 0
+  judgement: 0
+  combo: 0
 --- !u!1 &1528729325
 GameObject:
   m_ObjectHideFlags: 0
