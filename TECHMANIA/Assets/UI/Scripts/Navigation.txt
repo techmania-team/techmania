@@ -185,6 +185,20 @@ navigation = {
         )
     end,
 
+    OptionsPanelToSelectSkinPanel = function()
+        panelTransition.FromRight(
+            optionsPanel.panel,
+            selectSkinPanel.panel
+        )
+        touchscreenTestPanel.Show()
+    end,
+    SelectSkinPanelToOptionsPanel = function()
+        panelTransition.FromLeft(
+            selectSkinPanel.panel,
+            optionsPanel.panel
+        )
+    end,
+
     MainMenuToInformationPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
@@ -248,6 +262,11 @@ function SetUpNavigation()
         navigation.OptionsPanelToTouchscreenTestPanel)
     touchscreenTestPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
         navigation.TouchscreenTestPanelToOptionsPanel)
+
+    optionsPanel.panel.Q("skins").Q("button").RegisterCallback(eventType.Click,
+        navigation.OptionsPanelToSelectSkinPanel)
+    selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        navigation.SelectSkinPanelToOptionsPanel)
 
     mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click,
         navigation.MainMenuToInformationPanel)
