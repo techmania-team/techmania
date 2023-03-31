@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
+using System.IO;
 
 [MoonSharpUserData]
 public class GlobalResource
@@ -11,6 +12,77 @@ public class GlobalResource
     public static VfxSkin vfxSkin;
     public static ComboSkin comboSkin;
     public static GameUISkin gameUiSkin;
+
+    public static List<string> AllNoteSkins()
+    {
+        return AllSkinsInFolder(
+            Paths.GetNoteSkinRootFolder(),
+            Paths.GetStreamingNoteSkinRootFolder());
+    }
+
+    public static List<string> AllVfxSkins()
+    {
+        return AllSkinsInFolder(
+            Paths.GetVfxSkinRootFolder(),
+            Paths.GetStreamingVfxSkinRootFolder());
+    }
+
+    public static List<string> AllComboSkins()
+    {
+        return AllSkinsInFolder(
+            Paths.GetComboSkinRootFolder(),
+            Paths.GetStreamingComboSkinRootFolder());
+    }
+
+    public static List<string> AllGameUiSkins()
+    {
+        return AllSkinsInFolder(
+            Paths.GetGameUiSkinRootFolder(),
+            Paths.GetStreamingGameUiSkinRootFolder());
+    }
+
+    private static List<string> AllSkinsInFolder(string skinFolder,
+        string streamingSkinFolder)
+    {
+        List<string> skinNames = new List<string>();
+
+        // Enumerate skins in the skin folder.
+        try
+        {
+            foreach (string folder in
+                Directory.EnumerateDirectories(skinFolder))
+            {
+                // folder does not end in directory separator.
+                string skinName = Path.GetFileName(folder);
+                skinNames.Add(skinName);
+            }
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // Silently ignore.
+        }
+
+        // Enumerate skins in the streaming assets folder.
+        if (BetterStreamingAssets.DirectoryExists(
+            Paths.RelativePathInStreamingAssets(streamingSkinFolder)))
+        {
+            foreach (string relativeFilename in
+                BetterStreamingAssets.GetFiles(
+                Paths.RelativePathInStreamingAssets(
+                    streamingSkinFolder),
+                Paths.kSkinFilename,
+                SearchOption.AllDirectories))
+            {
+                string folder = Path.GetDirectoryName(
+                    relativeFilename);
+                string skinName = Path.GetFileName(folder);
+                skinNames.Add(skinName);
+            }
+        }
+
+        skinNames.Sort();
+        return skinNames;
+    }
     #endregion
 
     #region Track list

@@ -190,7 +190,7 @@ navigation = {
             optionsPanel.panel,
             selectSkinPanel.panel
         )
-        touchscreenTestPanel.Show()
+        selectSkinPanel.Show()
     end,
     SelectSkinPanelToOptionsPanel = function()
         panelTransition.FromLeft(

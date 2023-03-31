@@ -3,9 +3,47 @@ selectSkinPanel = {
 }
 
 selectSkinPanel.Show = function()
+    local panel = selectSkinPanel.panel
+
+    function SetSkinDropdown(elementName, keyInOption, allSkinNames)
+        local dropdown = panel.Q(elementName).Q("dropdown")
+        local currentSkinName = tm.options[keyInOption]
+        dropdown.SetValueWithoutNotify(currentSkinName)
+        dropdown.choices = allSkinNames
+    end
+
+    SetSkinDropdown("note-skin", "noteSkin",
+        tm.resources.AllNoteSkins())
+    SetSkinDropdown("vfx-skin", "vfxSkin",
+        tm.resources.AllVfxSkins())
+    SetSkinDropdown("combo-skin", "comboSkin",
+        tm.resources.AllComboSkins())
+    SetSkinDropdown("game-ui-skin", "gameUiSkin",
+        tm.resources.AllGameUiSkins())
+
+    local reloadToggle = panel.Q("reload-skins").Q("track")
+    controls.SetToggleIsOn(reloadToggle, tm.options.reloadSkinsWhenLoadingPattern)
 end
 
 selectSkinPanel.Initialize = function()
+    local panel = selectSkinPanel.panel
+
+    function InitializeSkinDropdown(elementName, keyInOption)
+        local dropdown = panel.Q(elementName).Q("dropdown")
+        dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.options[keyInOption] = event.newValue
+        end)
+    end
+
+    InitializeSkinDropdown("note-skin", "noteSkin")
+    InitializeSkinDropdown("vfx-skin", "vfxSkin")
+    InitializeSkinDropdown("combo-skin", "comboSkin")
+    InitializeSkinDropdown("game-ui-skin", "gameUiSkin")
+
+    local reloadToggle = panel.Q("reload-skins").Q("track")
+    reloadToggle.RegisterCallback(eventType.Click, function()
+        tm.options.reloadSkinsWhenLoadingPattern = not tm.options.reloadSkinsWhenLoadingPattern
+    end)
 end
 
 selectSkinPanel.Initialize()
