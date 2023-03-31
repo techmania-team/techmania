@@ -762,7 +762,7 @@
             <ui:Label tabindex="-1" text="Touch anywhere on the screen. Circles should appear around your fingertips." display-tooltip-when-elided="true" name="instructions" picking-mode="Ignore" class="text-body" style="position: absolute; bottom: 20px; left: 0; right: 0; -unity-text-align: upper-center;" />
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="select-skin-panel" picking-mode="Ignore" class="panel" style="display: none;">
+    <ui:Instance template="Panel" name="select-skin-panel" picking-mode="Ignore" class="panel" style="display: flex;">
         <AttributeOverrides element-name="title" text="Select Skins" />
         <ui:VisualElement picking-mode="Ignore" name="content" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 800px; margin-top: 20px;">
