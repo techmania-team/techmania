@@ -48,6 +48,33 @@ navigation = {
         selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
     end,
 
+    SelectPatternPanelToSelectSkinPanel = function()
+        panelTransition.FromRight(
+            selectPatternPanel.panel,
+            selectSkinPanel.panel,
+            function()
+                -- Begin the skin preview after the panel becomes visible,
+                -- so the API can properly set up layout.
+                selectSkinPanel.Show()
+            end
+        )
+        selectPatternPanel.StopPreviewTrackPlayback()
+        selectSkinPanel.panelToGoBackTo = selectPatternPanel
+    end,
+    SelectSkinPanelToSelectPatternPanel = function()
+        panelTransition.FromLeft(
+            selectSkinPanel.panel,
+            selectPatternPanel.panel,
+            function()
+                selectSkinPanel.Hide()
+                -- This has to be called after selectPatternPanel displays
+                -- so the load audio callback can check whether the panel
+                -- displays to decide whether to play the audio.
+                selectPatternPanel.StartPreviewTrackPlayback()
+            end
+        )
+    end,
+
     SelectPatternPanelToGamePanel = function()
         panelTransition.FadeToBlack(
             selectPatternPanel.panel,
@@ -195,6 +222,7 @@ navigation = {
                 selectSkinPanel.Show()
             end
         )
+        selectSkinPanel.panelToGoBackTo = optionsPanel
     end,
     SelectSkinPanelToOptionsPanel = function()
         panelTransition.FromLeft(
@@ -223,6 +251,14 @@ navigation = {
 }
 
 function SetUpNavigation()
+    function GoBackFromSelectSkinPanel()
+        if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
+            navigation.SelectSkinPanelToSelectPatternPanel()
+        elseif (selectSkinPanel.panelToGoBackTo == optionsPanel) then
+            navigation.SelectSkinPanelToOptionsPanel()
+        end
+    end
+
     mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click,
         navigation.MainMenuToSelectTrackPanel)
     selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
@@ -232,6 +268,11 @@ function SetUpNavigation()
     -- handled by Select Track Panel.txt
     selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
         navigation.SelectPatternPanelToSelectTrackPanel)
+
+    selectPatternPanel.panel.Q("modifier-sidesheet").Q("skins").Q("select-button").RegisterCallback(eventType.Click,
+        navigation.SelectPatternPanelToSelectSkinPanel)
+    selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
+        GoBackFromSelectSkinPanel)
 
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click,
         navigation.SelectPatternPanelToGamePanel)
@@ -272,8 +313,7 @@ function SetUpNavigation()
 
     optionsPanel.panel.Q("skins").Q("button").RegisterCallback(eventType.Click,
         navigation.OptionsPanelToSelectSkinPanel)
-    selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.SelectSkinPanelToOptionsPanel)
+    -- Select skin panel --> options panel is covered in GoBackFromSelectSkinPanel()
 
     mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click,
         navigation.MainMenuToInformationPanel)

@@ -1,5 +1,9 @@
 selectSkinPanel = {
-    panel = tm.root.Q("select-skin-panel")
+    panel = tm.root.Q("select-skin-panel"),
+
+    -- Both options panel and select pattern panel can transition here,
+    -- so we need to remember where to go when transitioning back
+    panelToGoBackTo = nil
 }
 
 selectSkinPanel.Show = function()

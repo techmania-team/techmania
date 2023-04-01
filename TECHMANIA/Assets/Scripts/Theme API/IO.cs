@@ -22,7 +22,7 @@ namespace ThemeApi
                 (Status status, Texture2D texture) =>
                 {
                     if (callback.IsNil()) return;
-                    callback?.Function.Call(status, texture);
+                    callback.Function.Call(status, texture);
                 });
         }
 
@@ -92,7 +92,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
 
@@ -113,7 +113,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
 
@@ -131,7 +131,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
 
@@ -149,7 +149,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
 
@@ -167,7 +167,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
 
@@ -185,7 +185,7 @@ namespace ThemeApi
                 completeCallback: (Status status) =>
                 {
                     if (completeCallback.IsNil()) return;
-                    completeCallback?.Function.Call(status);
+                    completeCallback.Function.Call(status);
                 });
         }
     }
