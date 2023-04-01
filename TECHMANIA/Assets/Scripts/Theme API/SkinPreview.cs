@@ -12,9 +12,15 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class SkinPreview : MonoBehaviour
     {
+        [MoonSharpHidden]
         public static SkinPreview instance;
 
+        [MoonSharpHidden]
         public VisualTreeAsset skinPreviewTemplate;
+        [MoonSharpHidden]
+        public VFXManager vfxManager;
+        [MoonSharpHidden]
+        public ComboText comboText;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;
@@ -26,8 +32,11 @@ namespace ThemeApi
         public Judgement judgement;
         [HideInInspector]
         public int combo;
+        [HideInInspector]
+        public bool fever;
 
         private bool running;
+        private float prevFrameBeat;
         private float scanHeight => 
             previewContainer.resolvedStyle.height;
         private float laneHeight => scanHeight / lanes;
@@ -68,6 +77,8 @@ namespace ThemeApi
             ResetSize();
 
             stopwatch = new Stopwatch();
+            stopwatch.Start();
+            prevFrameBeat = 0f;
 
             running = true;
         }
@@ -86,21 +97,50 @@ namespace ThemeApi
             float noteScale = GlobalResource.noteSkin.basic.scale;
             noteImage.style.width = laneHeight * noteScale;
             noteImage.style.height = laneHeight * noteScale;
+
+            vfxManager.ResetSize(laneHeight);
+            comboText.ResetSize();
         }
 
         private void Update()
         {
             if (!running) return;
 
-            // TODO: move scanline
-            // TODO: animate scanline and note
-            // TODO: spawn VFX and combo on resolve
+            // Calculate time
+            const int bps = 4;
+            float beat = (float)stopwatch.Elapsed.TotalMinutes * bpm;
+            beat = beat % bps;
+            float scan = beat / bps;
+            
+            // Move scanline
+            scanlineAnchor.style.left = new StyleLength(new Length(
+                scan * 100f, LengthUnit.Percent));
+
+            // Animate scanline and note
+            scanline.style.backgroundImage = new StyleBackground(
+                GlobalResource.gameUiSkin.scanline
+                .GetSpriteAtFloatIndex(scan));
+            noteImage.visible = beat < bps / 2;
+            noteImage.style.backgroundImage = new StyleBackground(
+                GlobalResource.noteSkin.basic.GetSpriteAtFloatIndex(
+                    beat % 1f));
+
+            // Spawn VFX and combo on beat 2
+            if (beat >= bps / 2 && prevFrameBeat < bps / 2)
+            {
+                vfxManager.SpawnOneShotVFX(noteAnchor, judgement);
+                comboText.Show(noteImage, judgement, fever, combo);
+            }
+            prevFrameBeat = beat;
         }
 
         public void Conclude()
         {
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
+            vfxManager.Dispose();
+            comboText.Hide();
+
             running = false;
         }
     }

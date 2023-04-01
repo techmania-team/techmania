@@ -4,13 +4,14 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class ComboText : MonoBehaviour
 {
     public RectTransform comboTextLayout;
-    public Image judgementText;
+    public UnityEngine.UI.Image judgementText;
     public RectTransform space;
-    public List<Image> comboDigits;
+    public List<UnityEngine.UI.Image> comboDigits;
     public Animator animator;
 
     private Transform transformToFollow;
@@ -32,7 +33,7 @@ public class ComboText : MonoBehaviour
         rect = GetComponent<RectTransform>();
         judgementSpriteSheet = null;
         comboDigitSpriteSheet = new List<SpriteSheet>();
-        foreach (Image i in comboDigits)
+        foreach (UnityEngine.UI.Image i in comboDigits)
         {
             comboDigitSpriteSheet.Add(null);
         }
@@ -194,19 +195,27 @@ public class ComboText : MonoBehaviour
         animator.SetTrigger("Activate");
     }
 
-    public void Show(NoteElements n, Judgement judgement,
+    public void Show(VisualElement noteImage, Judgement judgement,
         ScoreKeeper scoreKeeper)
     {
-        if (n != null)
+        Show(noteImage, judgement,
+            scoreKeeper.feverState == ScoreKeeper.FeverState.Active,
+            scoreKeeper.currentCombo);
+    }
+
+    public void Show(VisualElement noteImage, Judgement judgement,
+        bool fever, int combo)
+    {
+        if (noteImage != null)
         {
-            elementToFollow = n.noteImage;
+            elementToFollow = noteImage;
         }
         Follow();
 
         // Draw judgement.
 
         List<SpriteSheet> comboDigitSpriteSheetList = null;
-        if (scoreKeeper.feverState == ScoreKeeper.FeverState.Active &&
+        if (fever &&
             (judgement == Judgement.RainbowMax ||
              judgement == Judgement.Max ||
              judgement == Judgement.Cool))
@@ -265,12 +274,14 @@ public class ComboText : MonoBehaviour
 
         // Draw combo, if applicable.
 
-        if (scoreKeeper.currentCombo > 0)
+        if (judgement != Judgement.Miss &&
+            judgement != Judgement.Break &&
+            combo > 0)
         {
             space.gameObject.SetActive(true);
 
             List<int> digits = new List<int>();
-            int remainingCombo = scoreKeeper.currentCombo;
+            int remainingCombo = combo;
             for (int i = 0; i < comboDigits.Count; i++)
             {
                 digits.Insert(0, remainingCombo % 10);

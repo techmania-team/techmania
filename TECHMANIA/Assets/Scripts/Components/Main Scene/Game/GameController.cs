@@ -669,7 +669,7 @@ public class GameController : MonoBehaviour
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxManager.SpawnResolvedVFX(elements, judgement);
-        comboText.Show(elements, judgement, scoreKeeper);
+        comboText.Show(elements.noteImage, judgement, scoreKeeper);
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,
@@ -719,7 +719,7 @@ public class GameController : MonoBehaviour
             NoteElements elements = pair.Key;
             Judgement judgement = pair.Value;
             scoreKeeper.IncrementCombo();
-            comboText.Show(elements, judgement, scoreKeeper);
+            comboText.Show(elements.noteImage, judgement, scoreKeeper);
 
             setup.onComboTick?.Function.Call(scoreKeeper.currentCombo);
         }

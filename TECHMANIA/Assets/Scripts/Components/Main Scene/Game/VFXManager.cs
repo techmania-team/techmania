@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class VFXManager : MonoBehaviour
 {
@@ -241,6 +242,30 @@ public class VFXManager : MonoBehaviour
                         .GetDurationTrailEndPosition(),
                         GlobalResource.vfxSkin.repeatHoldComplete);
                 }
+                break;
+        }
+    }
+
+    // For use in skin preview and calibration preview.
+    // - Only supports note types basic, chain head and chain node
+    // - Only supports judgements rainbow MAX, MAX, COOL and GOOD
+    public void SpawnOneShotVFX(VisualElement element,
+        Judgement judgement)
+    {
+        switch (judgement)
+        {
+            case Judgement.RainbowMax:
+            case Judgement.Max:
+                SpawnVfxAt(element,
+                    GlobalResource.vfxSkin.basicMax);
+                break;
+            case Judgement.Cool:
+                SpawnVfxAt(element,
+                    GlobalResource.vfxSkin.basicCool);
+                break;
+            case Judgement.Good:
+                SpawnVfxAt(element,
+                    GlobalResource.vfxSkin.basicGood);
                 break;
         }
     }
