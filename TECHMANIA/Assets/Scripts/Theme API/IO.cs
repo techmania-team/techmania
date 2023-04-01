@@ -21,7 +21,8 @@ namespace ThemeApi
             ResourceLoader.LoadImage(path,
                 (Status status, Texture2D texture) =>
                 {
-                    callback.Function.Call(status, texture);
+                    if (callback.IsNil()) return;
+                    callback?.Function.Call(status, texture);
                 });
         }
 
@@ -37,6 +38,7 @@ namespace ThemeApi
             ResourceLoader.LoadAudio(path,
                 (Status status, AudioClip clip) =>
                 {
+                    if (callback.IsNil()) return;
                     callback.Function.Call(status, clip);
                 });
         }
@@ -56,6 +58,7 @@ namespace ThemeApi
             VideoElement.CreateFromFile(path,
                 callback: (Status status, VideoElement element) =>
                 {
+                    if (callback.IsNil()) return;
                     callback.Function.Call(status, element);
                 });
         }
@@ -82,12 +85,14 @@ namespace ThemeApi
             GlobalResourceLoader.GetInstance().LoadTrackList(
                 progressCallback: (string currentlyLoadingFile) =>
                 {
+                    if (progressCallback.IsNil()) return;
                     progressCallback.Function.Call(
                         currentlyLoadingFile);
                 },
                 completeCallback: (Status status) =>
                 {
-                    completeCallback.Function.Call(status);
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
                 });
         }
 
@@ -101,12 +106,86 @@ namespace ThemeApi
             GlobalResourceLoader.GetInstance().UpdateTrackVersions(
                 progressCallback: (string currentlyLoadingFile) =>
                 {
+                    if (progressCallback.IsNil()) return;
                     progressCallback.Function.Call(
                         currentlyLoadingFile);
                 },
                 completeCallback: (Status status) =>
                 {
-                    completeCallback.Function.Call(status);
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
+                });
+        }
+
+        public static void ReloadNoteSkin(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadNoteSkin(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
+                });
+        }
+
+        public static void ReloadVfxSkin(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadVfxSkin(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
+                });
+        }
+
+        public static void ReloadComboSkin(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadComboSkin(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
+                });
+        }
+
+        public static void ReloadGameUiSkin(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadGameUiSkin(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback?.Function.Call(status);
                 });
         }
     }

@@ -34,17 +34,39 @@ end
 selectSkinPanel.Initialize = function()
     local panel = selectSkinPanel.panel
 
-    function InitializeSkinDropdown(elementName, keyInOption)
+    function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
+        print("start of InitializeSkinDropdown")
         local dropdown = panel.Q(elementName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.skinPreview.Conclude()
+            local oldValue = tm.options[keyInOption]
             tm.options[keyInOption] = event.newValue
+            reloadFunction(
+                nil,  -- progress callback
+                function(status)  -- complete callback
+                    if (status.Ok()) then
+                        tm.skinPreview.Begin()
+                    else
+                        local errorMessage = net.string.Format(
+                            tm.l10n.GetString("select_skin_panel_load_error_format"),
+                            status.errorMessage)
+                        alertBox.Alert(errorMessage)
+                        tm.options[keyInOption] = oldValue
+                        reloadFunction(
+                            nil,
+                            function() tm.skinPreview.Begin() end
+                        )
+                    end
+                end
+            )
         end)
+        print("end of InitializeSkinDropdown")
     end
 
-    InitializeSkinDropdown("note-skin", "noteSkin")
-    InitializeSkinDropdown("vfx-skin", "vfxSkin")
-    InitializeSkinDropdown("combo-skin", "comboSkin")
-    InitializeSkinDropdown("game-ui-skin", "gameUiSkin")
+    InitializeSkinDropdown("note-skin", "noteSkin", util.io.ReloadNoteSkin)
+    InitializeSkinDropdown("vfx-skin", "vfxSkin", util.io.ReloadVfxSkin)
+    InitializeSkinDropdown("combo-skin", "comboSkin", util.io.ReloadComboSkin)
+    InitializeSkinDropdown("game-ui-skin", "gameUiSkin", util.io.ReloadGameUiSkin)
 
     local reloadToggle = panel.Q("reload-skins").Q("track")
     reloadToggle.RegisterCallback(eventType.Click, function()
