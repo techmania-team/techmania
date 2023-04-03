@@ -7,6 +7,40 @@ mainMenu = {
 }
 
 navigation = {
+    TransitionTo = function(from, to)
+        panelTransition.FromRight(
+            from.panel,
+            to.panel,
+            function()
+                if (from.Hide() != nil) then from.Hide() end
+                if (to.Show() != nil) then to.Show() end
+            end
+        )
+    end,
+
+    TransitionBackTo = function(from, to)
+        panelTransition.FromLeft(
+            from.panel,
+            to.panel,
+            function()
+                if (from.Hide() != nil) then from.Hide() end
+                if (to.Show() != nil) then to.Show() end
+            end
+        )
+    end
+
+    FadeTo = function(from, to)
+        panelTransition.FadeToBlack(
+            from.panel,
+            to.panel,
+            function()
+                if (from.Hide() != nil) then from.Hide() end
+                if (to.Show() != nil) then to.Show() end
+            end
+        )
+    end,
+
+
     -- TODO: refactor this. Maybe each panel will have a
     -- Show() and Hide() function?
     MainMenuToSelectTrackPanel = function()
@@ -139,16 +173,17 @@ navigation = {
     EditorSelectTrackPanelToEditor = function(trackFolder)
         panelTransition.FromRight(
             selectTrackPanel.panel,
-            nil,
+            editorTrackSetupPanel.panel,
             function()
                 selectTrackPanel.Hide()
-                tm.editor.LaunchOnTrack(trackFolder)
+                editorTrackSetupPanel.trackFolder = trackFolder
+                editorTrackSetupPanel.Show()
             end
         )
     end,
     EditorToEditorSelectTrackPanel = function()
         panelTransition.FromLeft(
-            nil,
+            editorTrackSetupPanel.panel,
             selectTrackPanel.panel,
             function()
                 selectTrackPanel.Show()
@@ -158,7 +193,7 @@ navigation = {
 
     EditorToGamePanel = function()
         panelTransition.FromRight(
-            nil,
+            editorPatternPanel.panel,
             gamePanel.panel,
             function()
                 gamePanel.inEditor = true
@@ -169,10 +204,10 @@ navigation = {
     GamePanelToEditor = function()
         panelTransition.FromLeft(
             gamePanel.panel,
-            nil,
+            editorPatternPanel.panel,
             function()
                 gamePanel.Hide()
-                tm.editor.ReturnFromPreview()
+                editorPatternPanel.Show()
             end
         )
     end,
