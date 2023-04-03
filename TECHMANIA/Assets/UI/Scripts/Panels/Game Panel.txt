@@ -271,9 +271,13 @@ gamePanel.Show = function()
     panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
 
     tm.options.TemporarilyDisableVSync()
-    
-    -- tm.game.BeginLoading() will be called by navigation,
-    -- after the game panel becomes visible.
+    tm.game.BeginLoading()
+end
+
+gamePanel.Hide = function()
+    if (tm.game.state != tm.enum.gameState.Idle) then
+        tm.game.Conclude()
+    end
 end
 
 gamePanel.BeginGame = function()
@@ -496,7 +500,6 @@ pauseMenu.Initialize = function()
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
         tm.game.Conclude()
         gamePanel.Show()
-        tm.game.BeginLoading()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()

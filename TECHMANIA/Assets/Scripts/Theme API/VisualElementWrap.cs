@@ -510,6 +510,9 @@ namespace ThemeApi
             return new VisualElementWrap(newElement);
         }
 
+        // Beware: deleting multiple elements while some parent
+        // element is undergoing USS transition may cause errors.
+        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
         public void RemoveFromHierarchy()
         {
             CallbackRegistry.RemoveAllCallbackOn(inner);
@@ -526,6 +529,9 @@ namespace ThemeApi
             inner.Insert(index, child.inner);
         }
 
+        // Beware: deleting multiple elements while some parent
+        // element is undergoing USS transition may cause errors.
+        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
         public void RemoveAllChildren()
         {
             // Make a copy of the child list so we don't modify

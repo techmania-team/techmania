@@ -11,8 +11,10 @@ function SetPosition(element, vector)
     element.style.top = unity.styleLength.__new(vector.y)
 end
 
-touchscreenTestPanel.Show = function()
-    touchscreenTestPanel.indicatorContainer.RemoveAllChildren()  -- TODO: put this into Hide()
+-- There is no Show function
+
+touchscreenTestPanel.Hide = function()
+    touchscreenTestPanel.indicatorContainer.RemoveAllChildren()
     touchscreenTestPanel.indicatorElements = {}
 end
 

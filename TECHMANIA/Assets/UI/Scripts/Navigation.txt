@@ -7,9 +7,8 @@ mainMenu = {
 }
 
 navigation = {
-    -- TODO: refactor this. Maybe we can put all the .Show() into the
-    -- callbacks? The "to" panels will be invisible when the callback
-    -- is called anyway.
+    -- TODO: refactor this. Maybe each panel will have a
+    -- Show() and Hide() function?
     MainMenuToSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
@@ -38,8 +37,6 @@ navigation = {
             function()
                 selectTrackPanel.Hide()
                 selectPatternPanel.Show()
-                selectPatternPanel.InitializeRadar()
-                selectPatternPanel.StartPreviewTrackPlayback()
             end
         )
         
@@ -50,7 +47,6 @@ navigation = {
             selectTrackPanel.panel,
             function()
                 selectPatternPanel.Hide()
-                selectPatternPanel.StopPreviewTrackPlayback()
                 selectTrackPanel.Show()
             end
         )
@@ -61,7 +57,7 @@ navigation = {
             selectPatternPanel.panel,
             selectSkinPanel.panel,
             function()
-                selectPatternPanel.StopPreviewTrackPlayback()
+                selectPatternPanel.Hide()
                 selectSkinPanel.panelToGoBackTo = selectPatternPanel
                 selectSkinPanel.Show()
             end
@@ -73,7 +69,7 @@ navigation = {
             selectPatternPanel.panel,
             function()
                 selectSkinPanel.Hide()
-                selectPatternPanel.StartPreviewTrackPlayback()
+                selectPatternPanel.Show()
             end
         )
     end,
@@ -84,10 +80,8 @@ navigation = {
             gamePanel.panel,
             function()
                 selectPatternPanel.Hide()
-                selectPatternPanel.StopPreviewTrackPlayback()
                 gamePanel.inEditor = false
                 gamePanel.Show()
-                tm.game.BeginLoading()
             end
         )
         
@@ -97,11 +91,7 @@ navigation = {
             gamePanel.panel,
             selectTrackPanel.panel,
             function()
-                -- This causes the BGA to unload so it should happen
-                -- after the game panel has faded out.
-                if (tm.game.state != tm.enum.gameState.Idle) then
-                    tm.game.Conclude()
-                end
+                gamePanel.Hide()
                 selectTrackPanel.Show()
             end
         )
@@ -122,7 +112,6 @@ navigation = {
             gamePanel.panel,
             function()
                 gamePanel.Show()
-                tm.game.BeginLoading()
             end
         )
     end,
@@ -174,7 +163,6 @@ navigation = {
             function()
                 gamePanel.inEditor = true
                 gamePanel.Show()
-                tm.game.BeginLoading()
             end
         )
     end,
@@ -183,7 +171,7 @@ navigation = {
             gamePanel.panel,
             nil,
             function()
-                tm.game.Conclude()
+                gamePanel.Hide()
                 tm.editor.ReturnFromPreview()
             end
         )
@@ -203,7 +191,7 @@ navigation = {
             optionsPanel.panel,
             mainMenu.panel,
             function()
-                tm.options.SaveToFile()
+                optionsPanel.Hide()
                 mainMenu.Show()
             end
         )
@@ -212,16 +200,16 @@ navigation = {
     OptionsPanelToTouchscreenTestPanel = function()
         panelTransition.FromRight(
             optionsPanel.panel,
-            touchscreenTestPanel.panel,
-            function()
-                touchscreenTestPanel.Show()
-            end
+            touchscreenTestPanel.panel
         )
     end,
     TouchscreenTestPanelToOptionsPanel = function()
         panelTransition.FromLeft(
             touchscreenTestPanel.panel,
-            optionsPanel.panel
+            optionsPanel.panel,
+            function()
+                touchscreenTestPanel.Hide()
+            end
         )
     end,
 

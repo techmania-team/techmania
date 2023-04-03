@@ -178,7 +178,7 @@ panelTransition = {
     -- toPanelInitializer will be called 1 frame after the "to"
     -- panel becomes displayed, so all the layout is ready.
     --
-    -- Avoid adding VisualElements inside toPanelInitializer:
+    -- Avoid deleting VisualElements inside toPanelInitializer:
     -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
     FromLeft = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
@@ -191,7 +191,7 @@ panelTransition = {
     -- toPanelInitializer will be called 1 frame after the "to"
     -- panel becomes displayed, so all the layout is ready.
     --
-    -- Avoid adding VisualElements inside toPanelInitializer:
+    -- Avoid deleting VisualElements inside toPanelInitializer:
     -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
     FromRight = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()

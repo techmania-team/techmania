@@ -20,6 +20,7 @@ selectPatternPanel = {
     previewPlaybackCoroutine = nil,
     previewTrackAudioSource = nil,
 
+    radarLayoutInitialized = false,
     radarOfSelectedPattern = nil,
     radarRadiusUnit = 13 / 20,
     
@@ -370,14 +371,23 @@ selectPatternPanel.Show = function()
     selectPatternPanel.ShowPatternDetails()
     panel.Q("play-button").SetEnabled(false)
     selectPatternPanel.ShowCurrentModifiers()
+
+    -- Initialize radar layout if entering the panel for the first time.
+    if (not selectPatternPanel.radarLayoutInitialized) then
+        selectPatternPanel.InitializeRadar()
+    end
+
+    -- Play preview.
+    selectPatternPanel.StartPreviewTrackPlayback()
 end
 
 selectPatternPanel.Hide = function()
     local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
     patternListContainer.RemoveAllChildren()
+
+    selectPatternPanel.StopPreviewTrackPlayback()
 end
 
--- Called 1 frame after transitions into this panel.
 selectPatternPanel.InitializeRadar = function()
     local radarElement = selectPatternPanel.panel.Q("radar")
     local radarCenterX = radarElement.contentRect.width * 0.5
@@ -397,6 +407,8 @@ selectPatternPanel.InitializeRadar = function()
     PlaceRadarDisplay(radarElement.Q("speed"), 2)
     PlaceRadarDisplay(radarElement.Q("chaos"), 3)
     PlaceRadarDisplay(radarElement.Q("async"), 4)
+
+    selectPatternPanel.radarLayoutInitialized = true
 end
 
 selectPatternPanel.Initialize = function()
@@ -549,7 +561,6 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
     end)
 end
 
--- Called when transitioning back to select track panel, or to the game.
 selectPatternPanel.StopPreviewTrackPlayback = function()
     if (selectPatternPanel.previewPlaybackCoroutine != nil) then
         tm.StopCoroutine(selectPatternPanel.previewPlaybackCoroutine)

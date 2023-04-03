@@ -107,6 +107,10 @@ optionsPanel.Show = function()
     controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
 end
 
+optionsPanel.Hide = function()
+    tm.options.SaveToFile()
+end
+
 optionsPanel.SetDiscordActivity = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_options"))
 end

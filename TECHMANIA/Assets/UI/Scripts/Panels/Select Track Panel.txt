@@ -87,7 +87,7 @@ selectTrackPanel.ClearAllCards = function()
     panel.Q("track-container").RemoveAllChildren()
 end
 
-selectTrackPanel.RefreshAllCards = function()  -- TODO: rename to SpawnAllCards
+selectTrackPanel.SpawnAllCards = function()
     local panel = selectTrackPanel.panel
 
     if (selectTrackPanel.filter.showTracksInAllFolders) then
@@ -142,7 +142,7 @@ selectTrackPanel.RefreshAllCards = function()  -- TODO: rename to SpawnAllCards
         card.RegisterCallback(eventType.Click, function(_, _, subfolder)
             selectTrackPanel.location = subfolder.fullPath
             selectTrackPanel.ClearAllCards()
-            selectTrackPanel.RefreshAllCards()
+            selectTrackPanel.SpawnAllCards()
         end, subfolder)
     end
 
@@ -269,18 +269,14 @@ selectTrackPanel.RefreshAllCards = function()  -- TODO: rename to SpawnAllCards
 end
 
 selectTrackPanel.Show = function()
-    selectTrackPanel.SetDiscordActivity()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
 
     if (selectTrackPanel.needsRefresh) then
         selectTrackPanel.Refresh()  -- Will call Show when done
         return
     end
-    selectTrackPanel.RefreshAllCards()
+    selectTrackPanel.SpawnAllCards()
     selectTrackPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedTrack
-end
-
-selectTrackPanel.SetDiscordActivity = function()
-    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
 end
 
 selectTrackPanel.Hide = function()
@@ -349,7 +345,7 @@ selectTrackPanel.Initialize = function()
     panel.Q("up-button").RegisterCallback(eventType.Click, function()
         selectTrackPanel.location = tm.paths.GoUpFrom(selectTrackPanel.location)
         selectTrackPanel.ClearAllCards()
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
 
     panel.Q("open-button").RegisterCallback(eventType.Click, function()
@@ -423,13 +419,13 @@ filterSideSheet.Initialize = function()
             end
         end
         selectTrackPanel.ClearAllCards()
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
 
     bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
         selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
         selectTrackPanel.ClearAllCards()
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
 
     function LocalizeDropdown()
@@ -457,7 +453,7 @@ filterSideSheet.Initialize = function()
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
     sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         selectTrackPanel.filter.sortBasis = KeyFromValue(selectTrackPanel.filter.sortBasisDisplayString, event.newValue)
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
 
     local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
@@ -466,13 +462,13 @@ filterSideSheet.Initialize = function()
         controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = true
         selectTrackPanel.ClearAllCards()
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
     descendingRadioButton.RegisterCallback(eventType.Click, function()
         controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = false
         selectTrackPanel.ClearAllCards()
-        selectTrackPanel.RefreshAllCards()
+        selectTrackPanel.SpawnAllCards()
     end)
 end
 
