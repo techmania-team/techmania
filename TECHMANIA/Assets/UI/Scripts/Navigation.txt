@@ -7,6 +7,9 @@ mainMenu = {
 }
 
 navigation = {
+    -- TODO: refactor this. Maybe we can put all the .Show() into the
+    -- callbacks? The "to" panels will be invisible when the callback
+    -- is called anyway.
     MainMenuToSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
