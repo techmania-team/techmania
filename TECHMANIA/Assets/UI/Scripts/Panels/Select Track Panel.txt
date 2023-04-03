@@ -83,17 +83,11 @@ end
 
 selectTrackPanel.ClearAllCards = function()
     local panel = selectTrackPanel.panel
-    local subfolderContainer = panel.Q("subfolder-container")
-    for _, child in ipairs(subfolderContainer.Children()) do
-        child.RemoveFromHierarchy()
-    end
-    local trackContainer = panel.Q("track-container")
-    for _, child in ipairs(trackContainer.Children()) do
-        child.RemoveFromHierarchy()
-    end
+    panel.Q("subfolder-container").RemoveAllChildren()
+    panel.Q("track-container").RemoveAllChildren()
 end
 
-selectTrackPanel.RefreshAllCards = function()
+selectTrackPanel.RefreshAllCards = function()  -- TODO: rename to SpawnAllCards
     local panel = selectTrackPanel.panel
 
     if (selectTrackPanel.filter.showTracksInAllFolders) then
@@ -102,8 +96,6 @@ selectTrackPanel.RefreshAllCards = function()
 
     panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
     panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
-
-    selectTrackPanel.ClearAllCards()
 
     local subfolderContainer = panel.Q("subfolder-container")
     local trackContainer = panel.Q("track-container")
@@ -149,6 +141,7 @@ selectTrackPanel.RefreshAllCards = function()
         controls.SetUpScrollingText(card.Q("name-container"))
         card.RegisterCallback(eventType.Click, function(_, _, subfolder)
             selectTrackPanel.location = subfolder.fullPath
+            selectTrackPanel.ClearAllCards()
             selectTrackPanel.RefreshAllCards()
         end, subfolder)
     end
@@ -290,6 +283,10 @@ selectTrackPanel.SetDiscordActivity = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
 end
 
+selectTrackPanel.Hide = function()
+    selectTrackPanel.ClearAllCards()
+end
+
 selectTrackPanel.Refresh = function()
     selectTrackPanel.ClearAllCards()
     local panel = selectTrackPanel.panel
@@ -351,6 +348,7 @@ selectTrackPanel.Initialize = function()
 
     panel.Q("up-button").RegisterCallback(eventType.Click, function()
         selectTrackPanel.location = tm.paths.GoUpFrom(selectTrackPanel.location)
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.RefreshAllCards()
     end)
 
@@ -424,11 +422,13 @@ filterSideSheet.Initialize = function()
                 table.insert(selectTrackPanel.filter.keywords, net.string.ToLower(keyword))
             end
         end
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.RefreshAllCards()
     end)
 
     bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
         selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.RefreshAllCards()
     end)
 
@@ -465,11 +465,13 @@ filterSideSheet.Initialize = function()
     ascendingRadioButton.RegisterCallback(eventType.Click, function()
         controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = true
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.RefreshAllCards()
     end)
     descendingRadioButton.RegisterCallback(eventType.Click, function()
         controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
         selectTrackPanel.filter.ascending = false
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.RefreshAllCards()
     end)
 end

@@ -186,6 +186,7 @@ public class GameController : MonoBehaviour
 
         // Step 1: load background image to display on the loading
         // screen.
+        yield return null;  // Delay 1 frame for layout update
         bg = new GameBackground(
             setup.patternAfterModifier,
             setup.bgContainer.inner,

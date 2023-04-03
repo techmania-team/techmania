@@ -165,7 +165,7 @@ function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     end
 
     if (toPanelInitializer != nil) then
-        coroutine.yield()
+        coroutine.yield()  -- For layout update
         toPanelInitializer()
     end
 

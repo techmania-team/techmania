@@ -1,7 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Panel" src="project://database/Assets/UI/Controls/Panel.uxml?fileID=9197481963319205126&amp;guid=ef0a580985f87cd47b0f5f054f6c9830&amp;type=3#Panel" />
-    <ui:Template name="Subfolder In Select Track" src="project://database/Assets/UI/Templates/Subfolder%20Card.uxml?fileID=9197481963319205126&amp;guid=4bb02d2027594954ebaf6f1e56bf0d3c&amp;type=3#Subfolder Card" />
-    <ui:Template name="Track In Select Track Panel" src="project://database/Assets/UI/Templates/Track%20Card.uxml?fileID=9197481963319205126&amp;guid=8b54f445fc976704bb9b4d596fa81ab6&amp;type=3#Track Card" />
     <ui:Template name="Text Field" src="project://database/Assets/UI/Controls/Text%20Field.uxml?fileID=9197481963319205126&amp;guid=6f6445efae019ec4098632163cf1fd2e&amp;type=3#Text Field" />
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
@@ -56,12 +54,8 @@
                     <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" name="location-display" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
                 </ui:VisualElement>
                 <ui:ScrollView name="scroll-view" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
-                    <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;">
-                        <ui:Instance template="Subfolder In Select Track" name="Subfolder In Select Track" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="track-container" style="flex-direction: row; flex-wrap: wrap;">
-                        <ui:Instance template="Track In Select Track Panel" name="Track In Select Track Panel" />
-                    </ui:VisualElement>
+                    <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;" />
+                    <ui:VisualElement name="track-container" style="flex-direction: row; flex-wrap: wrap;" />
                     <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="track-status" class="text-body" style="margin-top: 20px;" />
                 </ui:ScrollView>
             </ui:VisualElement>

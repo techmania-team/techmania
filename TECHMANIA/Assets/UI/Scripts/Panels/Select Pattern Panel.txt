@@ -329,9 +329,6 @@ selectPatternPanel.Show = function()
     -- Display pattern list.
     panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
     local patternListContainer = panel.Q("pattern-list").Q("unity-content-container")
-    for _, child in ipairs(patternListContainer.Children()) do
-        child.RemoveFromHierarchy()
-    end
     selectPatternPanel.allPatternRadioButtons = {}
     for _, pattern in ipairs(track.patterns) do
         local radioButton = patternListContainer.InstantiateTemplate("Assets/UI/Templates/Pattern Radio Button.uxml").Q("radio-button")
@@ -373,10 +370,11 @@ selectPatternPanel.Show = function()
     selectPatternPanel.ShowPatternDetails()
     panel.Q("play-button").SetEnabled(false)
     selectPatternPanel.ShowCurrentModifiers()
+end
 
-    -- The radar displays are tied to the radar element's layout,
-    -- so they are only initialized when this panel appears the first time,
-    -- in selectPatternPanel.InitializeRadar.
+selectPatternPanel.Hide = function()
+    local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
+    patternListContainer.RemoveAllChildren()
 end
 
 -- Called 1 frame after transitions into this panel.

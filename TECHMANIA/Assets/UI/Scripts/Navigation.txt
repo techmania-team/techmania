@@ -13,17 +13,22 @@ navigation = {
     MainMenuToSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
-            selectTrackPanel.panel
+            selectTrackPanel.panel,
+            function()
+                selectTrackPanel.inEditor = false
+                selectTrackPanel.Show()
+            end
         )
-        selectTrackPanel.inEditor = false
-        selectTrackPanel.Show()
     end,
     SelectTrackPanelToMainMenu = function()
         panelTransition.FromLeft(
             selectTrackPanel.panel,
-            mainMenu.panel
+            mainMenu.panel,
+            function()
+                selectTrackPanel.Hide()
+                mainMenu.Show()
+            end
         )
-        mainMenu.Show()
     end,
 
     SelectTrackPanelToSelectPatternPanel = function()
@@ -31,24 +36,24 @@ navigation = {
             selectTrackPanel.panel,
             selectPatternPanel.panel,
             function()
-                -- This has to be called 1 frame after selectPatternPanel
-                -- displays so the radar can be initialized properly.
+                selectTrackPanel.Hide()
+                selectPatternPanel.Show()
                 selectPatternPanel.InitializeRadar()
-                -- This has to be called after selectPatternPanel displays
-                -- so the load audio callback can check whether the panel
-                -- displays to decide whether to play the audio.
                 selectPatternPanel.StartPreviewTrackPlayback()
             end
         )
-        selectPatternPanel.Show()
+        
     end,
     SelectPatternPanelToSelectTrackPanel = function()
         panelTransition.FromLeft(
             selectPatternPanel.panel,
-            selectTrackPanel.panel
+            selectTrackPanel.panel,
+            function()
+                selectPatternPanel.Hide()
+                selectPatternPanel.StopPreviewTrackPlayback()
+                selectTrackPanel.Show()
+            end
         )
-        selectPatternPanel.StopPreviewTrackPlayback()
-        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
     end,
 
     SelectPatternPanelToSelectSkinPanel = function()
@@ -56,13 +61,11 @@ navigation = {
             selectPatternPanel.panel,
             selectSkinPanel.panel,
             function()
-                -- Begin the skin preview after the panel becomes visible,
-                -- so the API can properly set up layout.
+                selectPatternPanel.StopPreviewTrackPlayback()
+                selectSkinPanel.panelToGoBackTo = selectPatternPanel
                 selectSkinPanel.Show()
             end
         )
-        selectPatternPanel.StopPreviewTrackPlayback()
-        selectSkinPanel.panelToGoBackTo = selectPatternPanel
     end,
     SelectSkinPanelToSelectPatternPanel = function()
         panelTransition.FromLeft(
@@ -70,9 +73,6 @@ navigation = {
             selectPatternPanel.panel,
             function()
                 selectSkinPanel.Hide()
-                -- This has to be called after selectPatternPanel displays
-                -- so the load audio callback can check whether the panel
-                -- displays to decide whether to play the audio.
                 selectPatternPanel.StartPreviewTrackPlayback()
             end
         )
@@ -83,14 +83,14 @@ navigation = {
             selectPatternPanel.panel,
             gamePanel.panel,
             function()
-                -- Only start loading after the game panel appears, in order
-                -- for layout to work.
+                selectPatternPanel.Hide()
+                selectPatternPanel.StopPreviewTrackPlayback()
+                gamePanel.inEditor = false
+                gamePanel.Show()
                 tm.game.BeginLoading()
             end
         )
-        selectPatternPanel.StopPreviewTrackPlayback()
-        gamePanel.inEditor = false
-        gamePanel.Show()
+        
     end,
     GamePanelToSelectTrackPanel = function()
         panelTransition.FadeToBlack(
@@ -102,46 +102,49 @@ navigation = {
                 if (tm.game.state != tm.enum.gameState.Idle) then
                     tm.game.Conclude()
                 end
+                selectTrackPanel.Show()
             end
         )
-        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
     end,
 
     GamePanelToResultPanel = function()
         panelTransition.FadeToBlack(
             gamePanel.panel,
-            resultPanel.panel
+            resultPanel.panel,
+            function()
+                resultPanel.Show()
+            end
         )
-        resultPanel.Show()
     end,
     ResultPanelToGamePanel = function()
         panelTransition.FadeToBlack(
             resultPanel.panel,
             gamePanel.panel,
             function()
-                -- Only start loading after the game panel appears, in order
-                -- for layout to work.
+                gamePanel.Show()
                 tm.game.BeginLoading()
             end
         )
-        gamePanel.Show()
     end,
     ResultPanelToSelectTrackPanel = function()
         panelTransition.FromRight(
             resultPanel.panel,
-            selectTrackPanel.panel
+            selectTrackPanel.panel,
+            function()
+                selectTrackPanel.Show()
+            end
         )
-        selectPatternPanel.StopPreviewTrackPlayback()
-        selectTrackPanel.SetDiscordActivity()  -- but don't refresh cards
     end,
 
     MainMenuToEditorSelectTrackPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
-            selectTrackPanel.panel
+            selectTrackPanel.panel,
+            function()
+                selectTrackPanel.inEditor = true
+                selectTrackPanel.Show()
+            end
         )
-        selectTrackPanel.inEditor = true
-        selectTrackPanel.Show()
     end,
 
     EditorSelectTrackPanelToEditor = function(trackFolder)
@@ -149,6 +152,7 @@ navigation = {
             selectTrackPanel.panel,
             nil,
             function()
+                selectTrackPanel.Hide()
                 tm.editor.LaunchOnTrack(trackFolder)
             end
         )
@@ -156,9 +160,11 @@ navigation = {
     EditorToEditorSelectTrackPanel = function()
         panelTransition.FromLeft(
             nil,
-            selectTrackPanel.panel
+            selectTrackPanel.panel,
+            function()
+                selectTrackPanel.Show()
+            end
         )
-        selectTrackPanel.Show()
     end,
 
     EditorToGamePanel = function()
@@ -166,13 +172,11 @@ navigation = {
             nil,
             gamePanel.panel,
             function()
-                -- Only start loading after the game panel appears, in order
-                -- for layout to work.
+                gamePanel.inEditor = true
+                gamePanel.Show()
                 tm.game.BeginLoading()
             end
         )
-        gamePanel.inEditor = true
-        gamePanel.Show()
     end,
     GamePanelToEditor = function()
         panelTransition.FromLeft(
@@ -188,25 +192,31 @@ navigation = {
     MainMenuToOptionsPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
-            optionsPanel.panel
+            optionsPanel.panel,
+            function()
+                optionsPanel.Show()
+            end
         )
-        optionsPanel.Show()
     end,
     OptionsPanelToMainMenu = function()
         panelTransition.FromLeft(
             optionsPanel.panel,
-            mainMenu.panel
+            mainMenu.panel,
+            function()
+                tm.options.SaveToFile()
+                mainMenu.Show()
+            end
         )
-        tm.options.SaveToFile()
-        mainMenu.Show()
     end,
 
     OptionsPanelToTouchscreenTestPanel = function()
         panelTransition.FromRight(
             optionsPanel.panel,
-            touchscreenTestPanel.panel
+            touchscreenTestPanel.panel,
+            function()
+                touchscreenTestPanel.Show()
+            end
         )
-        touchscreenTestPanel.Show()
     end,
     TouchscreenTestPanelToOptionsPanel = function()
         panelTransition.FromLeft(
@@ -220,12 +230,10 @@ navigation = {
             optionsPanel.panel,
             selectSkinPanel.panel,
             function()
-                -- Begin the skin preview after the panel becomes visible,
-                -- so the API can properly set up layout.
+                selectSkinPanel.panelToGoBackTo = optionsPanel
                 selectSkinPanel.Show()
             end
         )
-        selectSkinPanel.panelToGoBackTo = optionsPanel
     end,
     SelectSkinPanelToOptionsPanel = function()
         panelTransition.FromLeft(
@@ -240,16 +248,20 @@ navigation = {
     MainMenuToInformationPanel = function()
         panelTransition.FromRight(
             mainMenu.panel,
-            infoPanel.panel
+            infoPanel.panel,
+            function()
+                infoPanel.Show()
+            end
         )
-        infoPanel.Show()
     end,
     InformationPanelToMainMenu = function()
         panelTransition.FromLeft(
             infoPanel.panel,
-            mainMenu.panel
+            mainMenu.panel,
+            function()
+                mainMenu.Show()
+            end
         )
-        mainMenu.Show()
     end
 }
 

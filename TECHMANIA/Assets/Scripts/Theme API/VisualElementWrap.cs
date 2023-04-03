@@ -537,6 +537,7 @@ namespace ThemeApi
             }
             foreach (VisualElement child in children)
             {
+                CallbackRegistry.RemoveAllCallbackOn(child);
                 child.RemoveFromHierarchy();
             }
         }

@@ -12,7 +12,7 @@ function SetPosition(element, vector)
 end
 
 touchscreenTestPanel.Show = function()
-    touchscreenTestPanel.indicatorContainer.RemoveAllChildren()
+    touchscreenTestPanel.indicatorContainer.RemoveAllChildren()  -- TODO: put this into Hide()
     touchscreenTestPanel.indicatorElements = {}
 end
 
