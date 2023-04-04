@@ -36,7 +36,7 @@ gamePanel.Initialize = function()
     panel.RegisterCallback(eventType.KeyDown, function(element, event)
         if (event.keyCode == unity.enum.keyCode.Escape) then
             if (gamePanel.inEditor) then
-                navigation.GamePanelToEditor()
+                navigation.TransitionBackTo(gamePanel, editorPatternPanel)
             else
                 if (tm.game.state == tm.enum.gameState.Paused) then
                     gamePanel.Unpause()
@@ -84,7 +84,7 @@ gamePanel.Initialize = function()
         tm.gameSetup.onLoadError = function(status)
             tm.game.Conclude()
             alertBox.Alert(status.errorMessage, nil, function()
-                navigation.GamePanelToSelectTrackPanel()
+                navigation.FadeTo(gamePanel, selectTrackPanel)
             end)
         end
 
@@ -200,7 +200,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(scoreKeeper)
-            navigation.GamePanelToResultPanel()
+            navigation.FadeTo(gamePanel, resultPanel)
         end
 
         tm.gameSetup.onStageFailed = function(scoreKeeper)
@@ -219,7 +219,7 @@ gamePanel.Initialize = function()
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
                 tm.game.StopAllAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
-                navigation.GamePanelToResultPanel()
+                navigation.FadeTo(gamePanel, resultPanel)
             end)
         end
     end
@@ -503,7 +503,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
-        navigation.GamePanelToSelectTrackPanel()
+        navigation.FadeTo(gamePanel, selectTrackPanel)
     end)
 
     commonUI.InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))

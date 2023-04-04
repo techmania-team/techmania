@@ -12,8 +12,8 @@ navigation = {
             from.panel,
             to.panel,
             function()
-                if (from.Hide() != nil) then from.Hide() end
-                if (to.Show() != nil) then to.Show() end
+                if (from.Hide != nil) then from.Hide() end
+                if (to.Show != nil) then to.Show() end
             end
         )
     end,
@@ -23,340 +23,114 @@ navigation = {
             from.panel,
             to.panel,
             function()
-                if (from.Hide() != nil) then from.Hide() end
-                if (to.Show() != nil) then to.Show() end
+                if (from.Hide != nil) then from.Hide() end
+                if (to.Show != nil) then to.Show() end
             end
         )
-    end
+    end,
 
     FadeTo = function(from, to)
         panelTransition.FadeToBlack(
             from.panel,
             to.panel,
             function()
-                if (from.Hide() != nil) then from.Hide() end
-                if (to.Show() != nil) then to.Show() end
+                if (from.Hide != nil) then from.Hide() end
+                if (to.Show != nil) then to.Show() end
             end
         )
     end,
-
-
-    -- TODO: refactor this. Maybe each panel will have a
-    -- Show() and Hide() function?
-    MainMenuToSelectTrackPanel = function()
-        panelTransition.FromRight(
-            mainMenu.panel,
-            selectTrackPanel.panel,
-            function()
-                selectTrackPanel.inEditor = false
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-    SelectTrackPanelToMainMenu = function()
-        panelTransition.FromLeft(
-            selectTrackPanel.panel,
-            mainMenu.panel,
-            function()
-                selectTrackPanel.Hide()
-                mainMenu.Show()
-            end
-        )
-    end,
-
-    SelectTrackPanelToSelectPatternPanel = function()
-        panelTransition.FromRight(
-            selectTrackPanel.panel,
-            selectPatternPanel.panel,
-            function()
-                selectTrackPanel.Hide()
-                selectPatternPanel.Show()
-            end
-        )
-        
-    end,
-    SelectPatternPanelToSelectTrackPanel = function()
-        panelTransition.FromLeft(
-            selectPatternPanel.panel,
-            selectTrackPanel.panel,
-            function()
-                selectPatternPanel.Hide()
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-
-    SelectPatternPanelToSelectSkinPanel = function()
-        panelTransition.FromRight(
-            selectPatternPanel.panel,
-            selectSkinPanel.panel,
-            function()
-                selectPatternPanel.Hide()
-                selectSkinPanel.panelToGoBackTo = selectPatternPanel
-                selectSkinPanel.Show()
-            end
-        )
-    end,
-    SelectSkinPanelToSelectPatternPanel = function()
-        panelTransition.FromLeft(
-            selectSkinPanel.panel,
-            selectPatternPanel.panel,
-            function()
-                selectSkinPanel.Hide()
-                selectPatternPanel.Show()
-            end
-        )
-    end,
-
-    SelectPatternPanelToGamePanel = function()
-        panelTransition.FadeToBlack(
-            selectPatternPanel.panel,
-            gamePanel.panel,
-            function()
-                selectPatternPanel.Hide()
-                gamePanel.inEditor = false
-                gamePanel.Show()
-            end
-        )
-        
-    end,
-    GamePanelToSelectTrackPanel = function()
-        panelTransition.FadeToBlack(
-            gamePanel.panel,
-            selectTrackPanel.panel,
-            function()
-                gamePanel.Hide()
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-
-    GamePanelToResultPanel = function()
-        panelTransition.FadeToBlack(
-            gamePanel.panel,
-            resultPanel.panel,
-            function()
-                resultPanel.Show()
-            end
-        )
-    end,
-    ResultPanelToGamePanel = function()
-        panelTransition.FadeToBlack(
-            resultPanel.panel,
-            gamePanel.panel,
-            function()
-                gamePanel.Show()
-            end
-        )
-    end,
-    ResultPanelToSelectTrackPanel = function()
-        panelTransition.FromRight(
-            resultPanel.panel,
-            selectTrackPanel.panel,
-            function()
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-
-    MainMenuToEditorSelectTrackPanel = function()
-        panelTransition.FromRight(
-            mainMenu.panel,
-            selectTrackPanel.panel,
-            function()
-                selectTrackPanel.inEditor = true
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-
-    EditorSelectTrackPanelToEditor = function(trackFolder)
-        panelTransition.FromRight(
-            selectTrackPanel.panel,
-            editorTrackSetupPanel.panel,
-            function()
-                selectTrackPanel.Hide()
-                editorTrackSetupPanel.trackFolder = trackFolder
-                editorTrackSetupPanel.Show()
-            end
-        )
-    end,
-    EditorToEditorSelectTrackPanel = function()
-        panelTransition.FromLeft(
-            editorTrackSetupPanel.panel,
-            selectTrackPanel.panel,
-            function()
-                selectTrackPanel.Show()
-            end
-        )
-    end,
-
-    EditorToGamePanel = function()
-        panelTransition.FromRight(
-            editorPatternPanel.panel,
-            gamePanel.panel,
-            function()
-                gamePanel.inEditor = true
-                gamePanel.Show()
-            end
-        )
-    end,
-    GamePanelToEditor = function()
-        panelTransition.FromLeft(
-            gamePanel.panel,
-            editorPatternPanel.panel,
-            function()
-                gamePanel.Hide()
-                editorPatternPanel.Show()
-            end
-        )
-    end,
-
-    MainMenuToOptionsPanel = function()
-        panelTransition.FromRight(
-            mainMenu.panel,
-            optionsPanel.panel,
-            function()
-                optionsPanel.Show()
-            end
-        )
-    end,
-    OptionsPanelToMainMenu = function()
-        panelTransition.FromLeft(
-            optionsPanel.panel,
-            mainMenu.panel,
-            function()
-                optionsPanel.Hide()
-                mainMenu.Show()
-            end
-        )
-    end,
-
-    OptionsPanelToTouchscreenTestPanel = function()
-        panelTransition.FromRight(
-            optionsPanel.panel,
-            touchscreenTestPanel.panel
-        )
-    end,
-    TouchscreenTestPanelToOptionsPanel = function()
-        panelTransition.FromLeft(
-            touchscreenTestPanel.panel,
-            optionsPanel.panel,
-            function()
-                touchscreenTestPanel.Hide()
-            end
-        )
-    end,
-
-    OptionsPanelToSelectSkinPanel = function()
-        panelTransition.FromRight(
-            optionsPanel.panel,
-            selectSkinPanel.panel,
-            function()
-                selectSkinPanel.panelToGoBackTo = optionsPanel
-                selectSkinPanel.Show()
-            end
-        )
-    end,
-    SelectSkinPanelToOptionsPanel = function()
-        panelTransition.FromLeft(
-            selectSkinPanel.panel,
-            optionsPanel.panel,
-            function()
-                selectSkinPanel.Hide()
-            end
-        )
-    end,
-
-    MainMenuToInformationPanel = function()
-        panelTransition.FromRight(
-            mainMenu.panel,
-            infoPanel.panel,
-            function()
-                infoPanel.Show()
-            end
-        )
-    end,
-    InformationPanelToMainMenu = function()
-        panelTransition.FromLeft(
-            infoPanel.panel,
-            mainMenu.panel,
-            function()
-                mainMenu.Show()
-            end
-        )
-    end
 }
 
 function SetUpNavigation()
-    function GoBackFromSelectSkinPanel()
-        if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
-            navigation.SelectSkinPanelToSelectPatternPanel()
-        elseif (selectSkinPanel.panelToGoBackTo == optionsPanel) then
-            navigation.SelectSkinPanelToOptionsPanel()
-        end
-    end
-
-    mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click,
-        navigation.MainMenuToSelectTrackPanel)
-    selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.SelectTrackPanelToMainMenu)
+    mainMenu.panel.Q("start-button").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.inEditor = false
+        navigation.TransitionTo(mainMenu, selectTrackPanel)
+    end)
+    selectTrackPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(selectTrackPanel, mainMenu)
+    end)
 
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
-    selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.SelectPatternPanelToSelectTrackPanel)
+    selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(selectPatternPanel, selectTrackPanel)
+    end)
 
-    selectPatternPanel.panel.Q("modifier-sidesheet").Q("skins").Q("select-button").RegisterCallback(eventType.Click,
-        navigation.SelectPatternPanelToSelectSkinPanel)
-    selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        GoBackFromSelectSkinPanel)
+    selectPatternPanel.panel.Q("modifier-sidesheet").Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
+        selectSkinPanel.panelToGoBackTo = selectPatternPanel
+        navigation.TransitionTo(selectPatternPanel, selectSkinPanel)
+    end)
+    selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo)
+    end)
 
-    selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click,
-        navigation.SelectPatternPanelToGamePanel)
-    -- game panel --> select track panel can happen on multiple occasions, so it's a separate
-    -- function, found below.
+    selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
+        gamePanel.inEditor = false
+        navigation.FadeTo(selectPatternPanel, gamePanel)
+    end)
+    -- game panel --> select track panel can happen on multiple occasions, set up in
+    -- Game Panel.txt.
 
-    -- game panel --> result panel can happen on multiple occasions, so it's a separate function,
-    -- found below.
-    resultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click,
-        navigation.ResultPanelToGamePanel)
-    resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click,
-        navigation.ResultPanelToSelectTrackPanel)
+    -- game panel --> result panel can happen on multiple occasions, set up in
+    -- Game Panel.txt.
+    resultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click, function()
+        navigation.FadeTo(resultPanel, gamePanel)
+    end)
+    resultPanel.panel.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(resultPanel, selectTrackPanel)
+    end)
 
-    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click,
-        navigation.MainMenuToEditorSelectTrackPanel)
-    -- select track panel (editor) --> editor is registered on track cards,
+    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.inEditor = true
+        navigation.TransitionTo(mainMenu, selectTrackPanel)
+    end)
+    -- select track panel (editor) --> main menu is the same as
+    -- select track panel --> main menu.
+
+    -- select track panel (editor) --> track setup panel is registered on track cards,
     -- handled by Select Track Panel.txt
-    tm.editor.onExit = navigation.EditorToEditorSelectTrackPanel
+    tm.editor.onExit = function()
+        navigation.TransitionBackTo(editorTrackSetupPanel, selectTrackPanel)
+    end
 
     tm.editor.onPreview = function(trackFolder, track, pattern)
         selectTrackPanel.selectedTrackFolder = trackFolder
         selectTrackPanel.selectedFullTrack = track
         selectPatternPanel.selectedPattern = pattern
-        navigation.EditorToGamePanel()
+        gamePanel.inEditor = true
+        navigation.TransitionTo(editorPatternPanel, gamePanel)
     end
-    gamePanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.GamePanelToEditor)
+    gamePanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(gamePanel, editorPatternPanel)
+    end)
 
-    mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click,
-        navigation.MainMenuToOptionsPanel)
-    optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.OptionsPanelToMainMenu)
+    mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(mainMenu, optionsPanel)
+    end)
+    optionsPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(optionsPanel, mainMenu)
+    end)
 
-    optionsPanel.panel.Q("touchscreen-test").Q("button").RegisterCallback(eventType.Click,
-        navigation.OptionsPanelToTouchscreenTestPanel)
-    touchscreenTestPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.TouchscreenTestPanelToOptionsPanel)
+    optionsPanel.panel.Q("touchscreen-test").Q("button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(optionsPanel, touchscreenTestPanel)
+    end)
+    touchscreenTestPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(touchscreenTestPanel, optionsPanel)
+    end)
 
-    optionsPanel.panel.Q("skins").Q("button").RegisterCallback(eventType.Click,
-        navigation.OptionsPanelToSelectSkinPanel)
-    -- Select skin panel --> options panel is covered in GoBackFromSelectSkinPanel()
+    optionsPanel.panel.Q("skins").Q("button").RegisterCallback(eventType.Click, function()
+        selectSkinPanel.panelToGoBackTo = optionsPanel
+        navigation.TransitionTo(optionsPanel, selectSkinPanel)
+    end)
+    -- Select skin panel --> options panel is covered by
+    -- Select skin panel --> select pattern panel.
 
-    mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click,
-        navigation.MainMenuToInformationPanel)
-    infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click,
-        navigation.InformationPanelToMainMenu)
+    mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(mainMenu, infoPanel)
+    end)
+    infoPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(infoPanel, mainMenu)
+    end)
 
     mainMenu.panel.Q("quit-button").RegisterCallback(eventType.Click, function()
         tm.Quit()

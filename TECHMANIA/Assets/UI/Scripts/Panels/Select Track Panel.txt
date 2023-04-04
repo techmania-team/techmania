@@ -186,13 +186,14 @@ selectTrackPanel.SpawnAllCards = function()
             controls.SetUpScrollingText(card.Q("artist-container"))
             card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
                 if (selectTrackPanel.inEditor) then
-                    navigation.EditorSelectTrackPanelToEditor(trackInFolder.folder)
+                    editorTrackSetupPanel.trackFolder = trackInFolder.folder
+                    navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
                 else
                     -- Load full track and navigate to select pattern panel.
                     selectTrackPanel.selectedTrackFolder = trackInFolder.folder
                     local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
                     selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
-                    navigation.SelectTrackPanelToSelectPatternPanel()
+                    navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
                 end
             end, trackInFolder)
 
