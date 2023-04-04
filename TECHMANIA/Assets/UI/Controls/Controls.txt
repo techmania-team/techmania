@@ -150,6 +150,7 @@ controls = {
 -- The "from" panel's x transitions from 0 to length;
 -- The "to" panel's x transitions from -length to 0.
 -- "from", "to" and toPanelInitializer can all be nil.
+-- toPanelInitializer will be called 1 frame after "to" becomes displayed.
 function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     if (to != nil) then to.display = false end
 
@@ -174,64 +175,39 @@ function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
     end
 end
 
-panelTransition = {
-    -- toPanelInitializer will be called 1 frame after the "to"
-    -- panel becomes displayed, so all the layout is ready.
-    --
-    -- Avoid deleting VisualElements inside toPanelInitializer:
-    -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-    FromLeft = function(from, to, toPanelInitializer)
-        tm.StartCoroutine(function()
-            TransitionPanelCoroutine(from, to,
-                100,  -- length
-                toPanelInitializer)
-        end)
-    end,
+function FadeToBlackCoroutine(from, to, toPanelInitializer)
+    local curtain = tm.root.Q("curtain")
+    curtain.style.opacity = StyleFloat(0)
+    curtain.display = true
 
-    -- toPanelInitializer will be called 1 frame after the "to"
-    -- panel becomes displayed, so all the layout is ready.
-    --
-    -- Avoid deleting VisualElements inside toPanelInitializer:
-    -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-    FromRight = function(from, to, toPanelInitializer)
-        tm.StartCoroutine(function()
-            TransitionPanelCoroutine(from, to,
-                -100,  -- length
-                toPanelInitializer)
-        end)
-    end,
-
-    FadeToBlack = function(from, to, toPanelInitializer)
-        tm.StartCoroutine(function()
-            local curtain = tm.root.Q("curtain")
-            curtain.style.opacity = StyleFloat(0)
-            curtain.display = true
-
-            local fadeTime = 0.2
-            local timer = 0
-            while (timer < fadeTime) do
-                local progress = timer / fadeTime
-                curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, 1, progress))
-                timer = timer + unity.time.deltaTime
-                coroutine.yield()
-            end
-            curtain.style.opacity = StyleFloat(1)
-
-            from.display = false
-            to.display = true
-            to.style.opacity = StyleFloat(1)
-            to.style.translate = StyleTranslate(0, 0)
-            coroutine.yield()
-            if (toPanelInitializer != nil) then toPanelInitializer() end
-
-            timer = 0
-            while (timer < fadeTime) do
-                local progress = timer / fadeTime
-                curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(1, 0, progress))
-                timer = timer + unity.time.deltaTime
-                coroutine.yield()
-            end
-            curtain.display = false
-        end)
+    local fadeTime = 0.2
+    local timer = 0
+    while (timer < fadeTime) do
+        local progress = timer / fadeTime
+        curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, 1, progress))
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
     end
-}
+    curtain.style.opacity = StyleFloat(1)
+
+    if (from != nil) then from.display = false end
+    if (to != nil) then
+        to.display = true
+        to.style.opacity = StyleFloat(1)
+        to.style.translate = StyleTranslate(0, 0)
+    end
+
+    if (toPanelInitializer != nil) then
+        coroutine.yield()
+        toPanelInitializer()
+    end
+
+    timer = 0
+    while (timer < fadeTime) do
+        local progress = timer / fadeTime
+        curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(1, 0, progress))
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+    curtain.display = false
+end

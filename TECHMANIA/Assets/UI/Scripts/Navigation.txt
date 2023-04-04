@@ -7,37 +7,40 @@ mainMenu = {
 }
 
 navigation = {
+    -- Important: avoid deleting VisualElements, especially in batches,
+    -- inside Hide() and Show() of each panel. For additional information:
+    -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
+
     TransitionTo = function(from, to)
-        panelTransition.FromRight(
-            from.panel,
-            to.panel,
-            function()
-                if (from.Hide != nil) then from.Hide() end
-                if (to.Show != nil) then to.Show() end
-            end
-        )
+        tm.StartCoroutine(function()
+            TransitionPanelCoroutine(from.panel, to.panel,
+                -100,  -- length
+                function()  -- called 1 frame after "to" appears
+                    if (from.Hide != nil) then from.Hide() end
+                    if (to.Show != nil) then to.Show() end
+                end)
+        end)
     end,
 
     TransitionBackTo = function(from, to)
-        panelTransition.FromLeft(
-            from.panel,
-            to.panel,
-            function()
-                if (from.Hide != nil) then from.Hide() end
-                if (to.Show != nil) then to.Show() end
-            end
-        )
+        tm.StartCoroutine(function()
+            TransitionPanelCoroutine(from.panel, to.panel,
+                100,  -- length
+                function()  -- called 1 frame after "to" appears
+                    if (from.Hide != nil) then from.Hide() end
+                    if (to.Show != nil) then to.Show() end
+                end)
+        end)
     end,
 
     FadeTo = function(from, to)
-        panelTransition.FadeToBlack(
-            from.panel,
-            to.panel,
-            function()
-                if (from.Hide != nil) then from.Hide() end
-                if (to.Show != nil) then to.Show() end
-            end
-        )
+        tm.StartCoroutine(function()
+            FadeToBlackCoroutine(from.panel, to.panel,
+                function()  -- called 1 frame after "to" appears
+                    if (from.Hide != nil) then from.Hide() end
+                    if (to.Show != nil) then to.Show() end
+                end)
+        end)
     end,
 }
 
