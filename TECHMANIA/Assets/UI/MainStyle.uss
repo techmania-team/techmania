@@ -362,3 +362,26 @@
     align-items: center;
     justify-content: center;
 }
+
+#timing-calibration-panel .control-row {
+    height: 60px;
+    flex-direction: row;
+    width: 1000px;
+}
+
+#timing-calibration-panel .control-row #label {
+    width: 350px;
+    -unity-text-align: middle-right;
+}
+
+#timing-calibration-panel .control-row #slider {
+    justify-content: center;
+    width: 500px;
+    margin-left: 20px;
+}
+
+#timing-calibration-panel .control-row #value {
+    width: 100px;
+    margin-left: 30px;
+    justify-content: center;
+}

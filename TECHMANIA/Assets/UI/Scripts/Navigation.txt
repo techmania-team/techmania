@@ -8,7 +8,7 @@ mainMenu = {
 
 navigation = {
     -- Important: avoid deleting VisualElements, especially in batches,
-    -- inside Hide() and Show() of each panel. For additional information:
+    -- inside Show() of each panel. For additional information:
     -- https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
 
     TransitionTo = function(from, to)
