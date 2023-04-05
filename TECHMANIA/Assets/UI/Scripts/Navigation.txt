@@ -128,6 +128,13 @@ function SetUpNavigation()
     -- Select skin panel --> options panel is covered by
     -- Select skin panel --> select pattern panel.
 
+    optionsPanel.panel.Q("offset-latency").Q("button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(optionsPanel, timingCalibrationPanel)
+    end)
+    timingCalibrationPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(timingCalibrationPanel, optionsPanel)
+    end)
+
     mainMenu.panel.Q("information-button").RegisterCallback(eventType.Click, function()
         navigation.TransitionTo(mainMenu, infoPanel)
     end)

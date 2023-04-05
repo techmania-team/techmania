@@ -787,7 +787,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="timing-calibration-panel" picking-mode="Ignore" class="panel">
+    <ui:Instance template="Panel" name="timing-calibration-panel" picking-mode="Ignore" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Timing calibration" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 1200px; align-items: center;">
