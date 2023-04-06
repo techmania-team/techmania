@@ -140,7 +140,11 @@ namespace ThemeApi
                     return (inner as SliderInt).value;
                 if (inner is Scroller)
                     return (inner as Scroller).value;
-                throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'value' member.");
+                if (inner is IntegerField)
+                    return (inner as IntegerField).value;
+                if (inner is FloatField)
+                    return (inner as FloatField).value;
+                throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt, Scroller, IntegerField or FloatField, and therefore does not have the 'value' member.");
             }
             set
             {
@@ -150,7 +154,11 @@ namespace ThemeApi
                     (inner as SliderInt).value = (int)value;
                 else if (inner is Scroller)
                     (inner as Scroller).value = value;
-                else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'value' member.");
+                else if (inner is IntegerField)
+                    (inner as IntegerField).value = (int)value;
+                else if (inner is FloatField)
+                    (inner as FloatField).value = value;
+                else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt, Scroller, IntegerField or FloatField, and therefore does not have the 'value' member.");
             }
         }
 
@@ -224,19 +232,29 @@ namespace ThemeApi
 
         public void SetValueWithoutNotify(string newValue)
         {
-            CheckType(typeof(DropdownField), "newValue");
-            (inner as DropdownField).SetValueWithoutNotify(newValue);
+            if (inner is DropdownField)
+                (inner as DropdownField).SetValueWithoutNotify(newValue);
+            else if (inner is TextField)
+                (inner as TextField).SetValueWithoutNotify(newValue);
+            else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'SetValueWithoutNotify' member.");
         }
 
         public void SetValueWithoutNotify(float newValue)
         {
             if (inner is Slider)
-                (inner as Slider).value = newValue;
+                (inner as Slider).SetValueWithoutNotify(newValue);
             else if (inner is SliderInt)
-                (inner as SliderInt).value = (int)newValue;
+                (inner as SliderInt).SetValueWithoutNotify(
+                    (int)newValue);
             else if (inner is Scroller)
+                // There is no SetValueWithoutNotify method on Scroller
                 (inner as Scroller).value = newValue;
-            else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt or Scroller, and therefore does not have the 'SetValueWithoutNotify' member.");
+            else if (inner is IntegerField)
+                (inner as IntegerField).SetValueWithoutNotify(
+                    (int)newValue);
+            else if (inner is FloatField)
+                (inner as FloatField).SetValueWithoutNotify(newValue);
+            else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt, Scroller, IntegerField or FloatField, and therefore does not have the 'SetValueWithoutNotify' member.");
         }
 
         public void ScrollTo(VisualElementWrap child)

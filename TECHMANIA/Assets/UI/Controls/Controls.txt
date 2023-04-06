@@ -119,6 +119,10 @@ controls = {
         SetUpPointerEnterSound(element)
     end,
 
+    RadioButtonIsOn = function(button)
+        return button.Q("on-icon").display
+    end,
+
     SetRadioButton = function(onButton, buttonsInGroup)
         for _, radio in ipairs(buttonsInGroup) do
             radio.Q("on-icon").display = (radio == onButton)

@@ -7,6 +7,7 @@
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
+    <ui:Template name="Text Field Int" src="project://database/Assets/UI/Controls/Text%20Field%20Int.uxml?fileID=9197481963319205126&amp;guid=969b5e20ab88e7e42b1b372a11cb47fe&amp;type=3#Text Field Int" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
     <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
@@ -802,13 +803,15 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="note-offset" picking-mode="Ignore" class="control-row" style="margin-top: 10px;">
                     <ui:Label tabindex="-1" text="Note offset (ms)" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-headline-6" />
-                    <ui:Instance template="SliderInt" name="slider" picking-mode="Ignore" />
-                    <ui:Instance template="Text Field" name="value" picking-mode="Ignore" class="no-mini-label" />
+                    <ui:Instance template="SliderInt" name="value-slider" picking-mode="Ignore">
+                        <AttributeOverrides element-name="slider" low-value="-200" high-value="200" />
+                    </ui:Instance>
+                    <ui:Instance template="Text Field Int" name="value-text" picking-mode="Ignore" class="no-mini-label" />
                 </ui:VisualElement>
                 <ui:VisualElement name="input-latency" picking-mode="Ignore" class="control-row" style="margin-top: 10px;">
                     <ui:Label tabindex="-1" text="Input latency (ms)" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-headline-6" />
-                    <ui:Instance template="SliderInt" name="slider" picking-mode="Ignore" />
-                    <ui:Instance template="Text Field" name="value" picking-mode="Ignore" class="no-mini-label" />
+                    <ui:Instance template="SliderInt" name="value-slider" picking-mode="Ignore" />
+                    <ui:Instance template="Text Field Int" name="value-text" picking-mode="Ignore" class="no-mini-label" />
                 </ui:VisualElement>
                 <ui:VisualElement name="instructions-bg" picking-mode="Ignore" class="elevation-1dp" style="width: 100%; height: 180px; margin-top: 50px; flex-direction: row;">
                     <ui:Label tabindex="-1" text="Instructions" display-tooltip-when-elided="true" name="header" picking-mode="Ignore" class="text-body" style="width: 200px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; -unity-text-align: upper-right;" />

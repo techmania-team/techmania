@@ -1,14 +1,101 @@
 timingCalibrationPanel = {
-    panel = tm.root.Q("timing-calibration-panel")
+    panel = tm.root.Q("timing-calibration-panel"),
+
+    touchRadio = tm.root.Q("timing-calibration-panel").Q("touchscreen-radio").Q("radio-button"),
+    kmRadio = tm.root.Q("timing-calibration-panel").Q("km-radio").Q("radio-button"),
+    offsetSlider = tm.root.Q("timing-calibration-panel").Q("note-offset").Q("value-slider").Q("slider"),
+    offsetText = tm.root.Q("timing-calibration-panel").Q("note-offset").Q("value-text").Q("text-field"),
+    latencySlider = tm.root.Q("timing-calibration-panel").Q("input-latency").Q("value-slider").Q("slider"),
+    latencyText = tm.root.Q("timing-calibration-panel").Q("input-latency").Q("value-text").Q("text-field")
 }
 
 timingCalibrationPanel.Show = function()
+    timingCalibrationPanel.ShowTimingForTouch()
 end
 
 timingCalibrationPanel.Hide = function()
 end
 
+timingCalibrationPanel.ShowTimingForTouch = function()
+    local touchRadio = timingCalibrationPanel.touchRadio
+    local kmRadio = timingCalibrationPanel.kmRadio
+    controls.SetRadioButton(touchRadio, {touchRadio, kmRadio})
+
+    controls.SetSliderValueWithoutNotify(timingCalibrationPanel.offsetSlider, tm.options.touchOffsetMs)
+    timingCalibrationPanel.offsetText.SetValueWithoutNotify(tm.options.touchOffsetMs)
+    controls.SetSliderValueWithoutNotify(timingCalibrationPanel.latencySlider, tm.options.touchLatencyMs)
+    timingCalibrationPanel.latencyText.SetValueWithoutNotify(tm.options.touchLatencyMs)
+end
+
+timingCalibrationPanel.ShowTimingForKm = function()
+    local touchRadio = timingCalibrationPanel.touchRadio
+    local kmRadio = timingCalibrationPanel.kmRadio
+    controls.SetRadioButton(kmRadio, {touchRadio, kmRadio})
+
+    controls.SetSliderValueWithoutNotify(timingCalibrationPanel.offsetSlider, tm.options.keyboardMouseOffsetMs)
+    timingCalibrationPanel.offsetText.SetValueWithoutNotify(tm.options.keyboardMouseOffsetMs)
+    controls.SetSliderValueWithoutNotify(timingCalibrationPanel.latencySlider, tm.options.keyboardMouseLatencyMs)
+    timingCalibrationPanel.latencyText.SetValueWithoutNotify(tm.options.keyboardMouseLatencyMs)
+end
+
 timingCalibrationPanel.Initialize = function()
+    timingCalibrationPanel.offsetSlider.lowValue = -200
+    timingCalibrationPanel.offsetSlider.highValue = 200
+    timingCalibrationPanel.latencySlider.lowValue = -200
+    timingCalibrationPanel.latencySlider.highValue = 200
+
+    local panel = timingCalibrationPanel.panel
+
+    timingCalibrationPanel.touchRadio.RegisterCallback(eventType.Click,
+        timingCalibrationPanel.ShowTimingForTouch)
+    timingCalibrationPanel.kmRadio.RegisterCallback(eventType.Click,
+        timingCalibrationPanel.ShowTimingForKm)
+
+    function OffsetChanged(newValue)
+        if (controls.RadioButtonIsOn(timingCalibrationPanel.touchRadio)) then
+            tm.options.touchOffsetMs = newValue
+        else  -- km
+            tm.options.keyboardMouseOffsetMs = newValue
+        end
+    end
+    timingCalibrationPanel.offsetSlider.RegisterCallback(eventType.ChangeInt, function(_, event)
+        OffsetChanged(event.newValue)
+        timingCalibrationPanel.offsetText.SetValueWithoutNotify(event.newValue)
+    end)
+    timingCalibrationPanel.offsetText.RegisterCallback(eventType.ChangeInt, function(_, event)
+        local newValue = unity.mathf.Clamp(
+            event.newValue,
+            timingCalibrationPanel.offsetSlider.lowValue,
+            timingCalibrationPanel.offsetSlider.highValue)
+        OffsetChanged(newValue)
+        controls.SetSliderValueWithoutNotify(timingCalibrationPanel.offsetSlider, newValue)
+        if (newValue != event.newValue) then
+            timingCalibrationPanel.offsetText.SetValueWithoutNotify(newValue)
+        end
+    end)
+
+    function LatencyChanged(newValue)
+        if (controls.RadioButtonIsOn(timingCalibrationPanel.touchRadio)) then
+            tm.options.touchLatencyMs = newValue
+        else  -- km
+            tm.options.keyboardMouseLatencyMs = newValue
+        end
+    end
+    timingCalibrationPanel.latencySlider.RegisterCallback(eventType.ChangeInt, function(_, event)
+        LatencyChanged(event.newValue)
+        timingCalibrationPanel.latencyText.SetValueWithoutNotify(event.newValue)
+    end)
+    timingCalibrationPanel.latencyText.RegisterCallback(eventType.ChangeInt, function(_, event)
+        local newValue = unity.mathf.Clamp(
+            event.newValue,
+            timingCalibrationPanel.latencySlider.lowValue,
+            timingCalibrationPanel.latencySlider.highValue)
+        LatencyChanged(newValue)
+        controls.SetSliderValueWithoutNotify(timingCalibrationPanel.latencySlider, newValue)
+        if (newValue != event.newValue) then
+            timingCalibrationPanel.latencyText.SetValueWithoutNotify(newValue)
+        end
+    end)
 end
 
 timingCalibrationPanel.Initialize()
