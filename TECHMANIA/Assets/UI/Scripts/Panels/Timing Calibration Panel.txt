@@ -104,14 +104,19 @@ timingCalibrationPanel.Initialize = function()
     end)
 
     -- Set up calibrationPreview
+    function SetEarlyLateString()
+        tm.calibrationPreview.earlyString = tm.l10n.GetString("timing_calibration_early_indicator")
+        tm.calibrationPreview.lateString = tm.l10n.GetString("timing_calibration_late_indicator")
+    end
     tm.calibrationPreview.previewContainer = panel.Q("preview-container")
     tm.calibrationPreview.timingDisplayClasses = {"text-body"}
     tm.calibrationPreview.timingDisplayMaxLines = 5
-    tm.calibrationPreview.earlyString = "Early"  -- TODO: l10n
-    tm.calibrationPreview.lateString = "Late"  -- TODO: l10n
+    SetEarlyLateString()
     tm.calibrationPreview.setEarlyLateColors = true
     tm.calibrationPreview.earlyColor = unity.color.__new(144 / 255, 202 / 255, 249 / 255)  -- #90CAF9, blue 200
     tm.calibrationPreview.lateColor = unity.color.__new(239 / 255, 154 / 255, 154 / 255)  -- #EF9A9A, red 200
+
+    table.insert(callbacksOnLocaleChange, SetEarlyLateString)
 end
 
 timingCalibrationPanel.Initialize()

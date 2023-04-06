@@ -813,7 +813,7 @@
                     <ui:Instance template="SliderInt" name="value-slider" picking-mode="Ignore" />
                     <ui:Instance template="Text Field Int" name="value-text" picking-mode="Ignore" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="instructions-bg" picking-mode="Ignore" class="elevation-1dp" style="width: 100%; height: 180px; margin-top: 50px; flex-direction: row;">
+                <ui:VisualElement name="instructions-bg" picking-mode="Ignore" class="elevation-1dp" style="width: 100%; margin-top: 50px; flex-direction: row;">
                     <ui:Label tabindex="-1" text="Instructions" display-tooltip-when-elided="true" name="header" picking-mode="Ignore" class="text-body" style="width: 200px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; -unity-text-align: upper-right;" />
                     <ui:Label tabindex="-1" text="1. &lt;indent=5%&gt;Choose the input device(s) you wish to calibrate, then play the notes below. (for keyboard you can use any letter or number key)&lt;/indent&gt;&#10;2. &lt;indent=5%&gt;Adjust note offset until you feel the timing of notes and keysounds are correct.&lt;/indent&gt;&#10;3. &lt;indent=5%&gt;Adjust input latency until the reported time differences get close to 0.&lt;/indent&gt;" display-tooltip-when-elided="true" name="content" class="text-body" style="padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; -unity-paragraph-spacing: 50px; width: 1000px;" />
                 </ui:VisualElement>

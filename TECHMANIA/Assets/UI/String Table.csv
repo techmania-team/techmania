@@ -294,9 +294,36 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,#touchscreen-test-panel #instructions,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
 ,touchscreen_test_finger_indicator_format,Finger #{0},触点 #{0},手指 #{0},タップ #{0},터치 #{0}
 ,,,,,,
-,select_skin_panel_load_error_format,"An error occurred when loading the specified skin:
+,#select-skin-panel #title,Select Skin,选择皮肤,選擇造型,スキン選択,스킨 선택
+,#select-skin-panel #note-skin #label,Note,音符,音符,ノート,노트
+,#select-skin-panel #vfx-skin #label,VFX,特效,特效,VFX,쿨밤
+,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
+,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
+,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
+"Added in 2.0",select_skin_panel_load_error_format,"An error occurred when loading the specified skin:
 
 {0}",,,,
+,,,,,,
+,#timing-calibration-panel #title,Timing Calibration,偏移与延迟校对,偏移與延遲校正,タイミング調整,타이밍 보정
+,#timing-calibration-panel #device #label,Input device,输入设备,輸入裝置,入力方式,입력 장치
+,#timing-calibration-panel #device #touchscreen-radio #text,Touchscreen,触屏,觸控螢幕,タッチスクリーン,터치스크린
+,#timing-calibration-panel #device #km-radio #text,Keyboard & Mouse,键盘鼠标,鍵盤滑鼠,キーボード・マウス,키보드/마우스
+,#timing-calibration-panel #note-offset #label,Note offset (ms),音符偏移（ms）,音符偏移,ノートオフセット(ms),노트 오프셋 (ms)
+,#timing-calibration-panel #input-latency #label,Input latency (ms),输入延迟（ms）,輸入延遲,入力遅延(ms),입력 지연 (ms)
+,#timing-calibration-panel #instructions-bg #header,Instructions,说明,說明,設定方法,설명
+,#timing-calibration-panel #instructions-bg #content,"1. <indent=5%>Choose the input device(s) you wish to calibrate, then play the notes below. (for keyboard you can use any letter or number key)</indent>
+2. <indent=5%>Adjust note offset until you feel the timing of notes and keysounds are correct.</indent>
+3. <indent=5%>Adjust input latency until the reported time differences get close to 0.</indent>","1. <indent=5%>选择待校对的输入设备，然后演奏下方的音符。（在键盘上可以使用任意字母、数字键）</indent>
+2. <indent=5%>调整音符偏移，直到你感觉音符以及按键音的时机与背景音乐完全同步。</indent>
+3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>","1. <indent=5%>選擇待校正的輸入裝置，然後演奏下方的音符。（在鍵盤上可以使用任意字母、數字鍵）</indent>
+2. <indent=5%>調整音符偏移，直到您感覺音符以及按鍵音的時機與背景音樂完全同步。</indent>
+3. <indent=5%>調整輸入延遲，直到遊戲回報的時間差接近於 0。</indent>","1. <indent=5%>タイミングを調整したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーを使用できます）</indent>
+2. <indent=5%>ノートのタイミングとノート音が合っていると感じられるまで調整してください。</indent>
+3. <indent=5%>時間差が0に近くなるまで入力遅延を調整してください。</indent>","1. <indent=5%>보정할 입력 장치를 선택하고, 아래 노트를 연주합니다. 키보드는 문자, 숫자 키 중 아무 키나 사용할 수 있습니다.</indent>
+2. <indent=5%>연주음과 연주 타이밍이 일치할 때까지 오프셋을 조정하십시오.</indent>
+3. <indent=5%>시간차가 0에 최대한 가까워지도록 입력 지연을 조정하십시오.</indent>"
+,timing_calibration_early_indicator,early,过早,太早,EARLY,EARLY
+,timing_calibration_late_indicator,late,过晚,太晚,LATE,LATE
 ,,,,,,
 ,#information-panel #title,Information,须知,須知,情報,안내
 ,#information-panel #getting-started-header,Getting started,入门,開始,はじめに,게임 시작하기
