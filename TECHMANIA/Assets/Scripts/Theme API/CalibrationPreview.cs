@@ -61,6 +61,16 @@ namespace ThemeApi
         private List<VisualElement> noteImages;
         private List<VisualElement> timingDisplays;
         private Stopwatch stopwatch;
+        private float baseTime;
+        private float gameTime;
+        private AudioSource backingTrackSource;
+
+        private enum InputMethod
+        {
+            Touch,
+            KM
+        }
+        private InputMethod inputMethod;
 
         // Start is called before the first frame update
         private void Start()
@@ -83,6 +93,15 @@ namespace ThemeApi
             float left = leftMargin + leftPerBeat * beat;
             return StyleFromPortion(left);
         }
+
+        private StyleLength LeftFromScan(float scan)
+        {
+            float left = Mathf.LerpUnclamped(
+                Ruleset.instance.scanMarginBeforeFirstBeat,
+                1f - Ruleset.instance.scanMarginAfterLastBeat,
+                scan);
+            return StyleFromPortion(left);
+        }
         #endregion
 
         // Render a calibration preview in the specified
@@ -102,6 +121,7 @@ namespace ThemeApi
         // the preview after changing offset and latency.
         public void Begin()
         {
+            // Initialize scanlines and notes
             previewBg = calibrationPreviewTemplate.Instantiate();
             previewBg.style.flexGrow = new StyleFloat(1f);
             previewContainer.inner.Add(previewBg);
@@ -135,6 +155,7 @@ namespace ThemeApi
                 {
                     display.AddToClassList(ussClass);
                 }
+                (display as TextElement).text = "";
                 timingDisplays.Add(display);
             }
 
@@ -153,7 +174,11 @@ namespace ThemeApi
 
             ResetSize();
 
-            // TODO: play backing track
+            inputMethod = InputMethod.Touch;
+
+            backingTrackSource = audioSourceManager.PlayBackingTrack(
+                backingTrack);
+            backingTrackSource.loop = true;
 
             stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -183,11 +208,12 @@ namespace ThemeApi
 
         public void SwitchToTouch()
         {
-
+            inputMethod = InputMethod.Touch;
         }
 
         public void SwitchToKeyboardMouse()
         {
+            inputMethod = InputMethod.KM;
 
         }
 
@@ -195,6 +221,45 @@ namespace ThemeApi
         private void Update()
         {
             if (!running) return;
+
+            // Calculate time
+            int offsetMs = inputMethod switch
+            {
+                InputMethod.Touch => Options.instance.touchOffsetMs,
+                InputMethod.KM => 
+                    Options.instance.keyboardMouseOffsetMs,
+                _ => 0
+            };
+            baseTime = (float)stopwatch.Elapsed.TotalSeconds;
+            gameTime = baseTime - offsetMs * 0.001f;
+            float beat = gameTime * beatPerSecond;
+            float scan = beat / bps;
+
+            // Move scanline
+            float scanOfScanline0 = scan;
+            float scanOfScanline1 = scan + 1f;
+            while (scanOfScanline0 > 1.5f) scanOfScanline0 -= 2f;
+            while (scanOfScanline1 > 1.5f) scanOfScanline1 -= 2f;
+            scanlineAnchors[0].style.left = LeftFromScan(
+                scanOfScanline0);
+            scanlineAnchors[1].style.left = LeftFromScan(
+                scanOfScanline1);
+
+            // Animate scanline and note
+            foreach (VisualElement scanline in scanlines)
+            {
+                scanline.style.backgroundImage = new StyleBackground(
+                    GlobalResource.gameUiSkin.scanline
+                    .GetSpriteAtFloatIndex(scan % 1f));
+            }
+            foreach (VisualElement noteImage in noteImages)
+            {
+                noteImage.style.backgroundImage = new StyleBackground(
+                    GlobalResource.noteSkin.basic
+                    .GetSpriteAtFloatIndex(beat % 1f));
+            }
+
+            // Handle input
         }
 
         public void Conclude()
@@ -202,6 +267,8 @@ namespace ThemeApi
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
             vfxManager.Dispose();
+            backingTrackSource.loop = false;
+            backingTrackSource.Stop();
 
             running = false;
         }
