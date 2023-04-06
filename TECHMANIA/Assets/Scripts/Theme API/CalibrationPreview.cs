@@ -35,6 +35,8 @@ namespace ThemeApi
         [HideInInspector]
         public List<string> timingDisplayClasses;
         [HideInInspector]
+        public int timingDisplayMaxLines;
+        [HideInInspector]
         public string earlyString;
         [HideInInspector]
         public string lateString;
@@ -62,7 +64,8 @@ namespace ThemeApi
         private List<VisualElement> scanlines;
         private List<VisualElement> noteAnchors;
         private List<VisualElement> noteImages;
-        private List<VisualElement> timingDisplays;
+        private List<TextElement> timingDisplays;
+        private List<int> displayLinesOfNote;
         private Stopwatch stopwatch;
         private float baseTime;
         private float gameTime;
@@ -146,20 +149,23 @@ namespace ThemeApi
 
             noteAnchors = new List<VisualElement>();
             noteImages = new List<VisualElement>();
-            timingDisplays = new List<VisualElement>();
+            timingDisplays = new List<TextElement>();
+            displayLinesOfNote = new List<int>();
             VisualElement noteContainer = previewBg.Q("notes");
             foreach (VisualElement anchor in noteContainer.Children())
             {
                 noteAnchors.Add(anchor);
                 VisualElement image = anchor.Q("note-image");
                 noteImages.Add(image);
-                VisualElement display = image.Q("timing-display");
+                TextElement display = image.Q("timing-display")
+                    as TextElement;
                 foreach (string ussClass in timingDisplayClasses)
                 {
                     display.AddToClassList(ussClass);
                 }
-                (display as TextElement).text = "";
+                display.text = "";
                 timingDisplays.Add(display);
+                displayLinesOfNote.Add(0);
             }
 
             if (noteAnchors.Count != beatOfNote.Length)
@@ -389,7 +395,54 @@ namespace ThemeApi
         private void OnNoteHit(int noteIndex, int timeDifferenceMs,
             InputDevice device)
         {
-            UnityEngine.Debug.Log($"#{noteIndex} {timeDifferenceMs}ms {device}");
+            // VFX and keysound
+            vfxManager.SpawnOneShotVFX(noteImages[noteIndex], 
+                Judgement.RainbowMax);
+            switch (laneOfNote[noteIndex])
+            {
+                case 0:
+                    audioSourceManager.PlayKeysound(snare,
+                        hiddenLane: false);
+                    break;
+                case 1:
+                    audioSourceManager.PlayKeysound(kick,
+                        hiddenLane: false);
+                    break;
+                default:
+                    break;
+            }
+
+            // Timing history
+            string deviceAcronym = device switch
+            {
+                InputDevice.Touchscreen => "T",
+                InputDevice.Keyboard => "K",
+                InputDevice.Mouse => "M",
+                _ => ""
+            };
+            string earlyLateIndicator = timeDifferenceMs < 0 ?
+                earlyString : lateString;
+            if (setEarlyLateColors)
+            {
+                Color color = timeDifferenceMs < 0 ?
+                    earlyColor : lateColor;
+                earlyLateIndicator = $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{earlyLateIndicator}</color>";
+            }
+            string historyLine = $"{deviceAcronym} {Mathf.Abs(timeDifferenceMs)}ms {earlyLateIndicator}\n";
+
+            string displayString = historyLine +
+                timingDisplays[noteIndex].text;
+            displayLinesOfNote[noteIndex]++;
+            if (displayLinesOfNote[noteIndex] > timingDisplayMaxLines)
+            {
+                // Remove last line. Note that the last character
+                // is always '\n'.
+                displayString = displayString.Substring(0, 
+                    displayString.LastIndexOf('\n',
+                    displayString.Length - 2));
+                displayLinesOfNote[noteIndex]--;
+            }
+            timingDisplays[noteIndex].text = displayString;
         }
         #endregion
     }

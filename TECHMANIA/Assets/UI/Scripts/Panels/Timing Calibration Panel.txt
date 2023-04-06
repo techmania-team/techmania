@@ -106,6 +106,7 @@ timingCalibrationPanel.Initialize = function()
     -- Set up calibrationPreview
     tm.calibrationPreview.previewContainer = panel.Q("preview-container")
     tm.calibrationPreview.timingDisplayClasses = {"text-body"}
+    tm.calibrationPreview.timingDisplayMaxLines = 5
     tm.calibrationPreview.earlyString = "Early"  -- TODO: l10n
     tm.calibrationPreview.lateString = "Late"  -- TODO: l10n
     tm.calibrationPreview.setEarlyLateColors = true
