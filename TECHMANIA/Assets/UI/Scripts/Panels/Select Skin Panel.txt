@@ -39,7 +39,6 @@ selectSkinPanel.Initialize = function()
     local panel = selectSkinPanel.panel
 
     function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
-        print("start of InitializeSkinDropdown")
         local dropdown = panel.Q(elementName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             tm.skinPreview.Conclude()
@@ -64,7 +63,6 @@ selectSkinPanel.Initialize = function()
                 end
             )
         end)
-        print("end of InitializeSkinDropdown")
     end
 
     InitializeSkinDropdown("note-skin", "noteSkin", util.io.ReloadNoteSkin)

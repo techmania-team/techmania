@@ -63,6 +63,9 @@ namespace ThemeApi
         public Paths paths { get; private set; }
         public EditorInterface editor { get; private set; }
         public SkinPreview skinPreview => SkinPreview.instance;
+
+        public CalibrationPreview calibrationPreview =>
+            CalibrationPreview.instance;
         #endregion
 
         #region Audio and video
