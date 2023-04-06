@@ -46853,6 +46853,7 @@ GameObject:
   - component: {fileID: 1527373383}
   - component: {fileID: 1527373384}
   - component: {fileID: 1527373385}
+  - component: {fileID: 1527373386}
   m_Layer: 5
   m_Name: Main UIDocument
   m_TagString: Untagged
@@ -46983,6 +46984,31 @@ MonoBehaviour:
   judgement: 0
   combo: 0
   fever: 0
+--- !u!114 &1527373386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527373379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e89676ff22d3e40907c46575b153da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  calibrationPreviewTemplate: {fileID: 9197481963319205126, guid: bf6606f4faac98948b0338bf7e12bafc,
+    type: 3}
+  vfxManager: {fileID: 1865618701}
+  audioSourceManager: {fileID: 1505072944}
+  backingTrack: {fileID: 8300000, guid: cde484f3bf79d8e4b91e767a36fc1b54, type: 3}
+  kick: {fileID: 8300000, guid: c79be2f9a15da574fb604092127371ec, type: 3}
+  snare: {fileID: 8300000, guid: bccf4483db9366d4d8fa9ee66756cb59, type: 3}
+  timingDisplayClasses: []
+  earlyString: 
+  lateString: 
+  setEarlyLateColors: 0
+  earlyColor: {r: 0, g: 0, b: 0, a: 0}
+  lateColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1528729325
 GameObject:
   m_ObjectHideFlags: 0

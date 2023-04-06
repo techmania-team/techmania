@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Templates/Game%20Layout.uss?fileID=7433441132597879392&amp;guid=ceb06435995ca63468a334b5559c5e18&amp;type=3#Game Layout" />
+    <ui:VisualElement name="bg" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="scanlines" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+            <ui:VisualElement name="scanline-anchor" picking-mode="Ignore" class="scanline-anchor" style="left: 20%;">
+                <ui:VisualElement name="scanline" picking-mode="Ignore" class="scanline" style="width: 500px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="scanline-anchor" picking-mode="Ignore" class="scanline-anchor" style="left: 80%;">
+                <ui:VisualElement name="scanline" picking-mode="Ignore" class="scanline" style="width: 500px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="notes" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+            <ui:VisualElement name="note-anchor" picking-mode="Ignore" class="note-anchor" style="left: 30%; top: 30%;">
+                <ui:VisualElement name="note-image" style="width: 50px; height: 50px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/Basic.png?fileID=2800000&amp;guid=69b7fb4f9cb3eeb4091f6aced55c3d7e&amp;type=3#Basic&apos;); position: absolute;">
+                    <ui:Label tabindex="-1" text="Timing display" display-tooltip-when-elided="true" name="timing-display" picking-mode="Ignore" class="calibration-timing-display" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="note-anchor" picking-mode="Ignore" class="note-anchor" style="left: 40%; top: 30%;">
+                <ui:VisualElement name="note-image" style="width: 50px; height: 50px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/Basic.png?fileID=2800000&amp;guid=69b7fb4f9cb3eeb4091f6aced55c3d7e&amp;type=3#Basic&apos;); position: absolute;">
+                    <ui:Label tabindex="-1" text="Timing display" display-tooltip-when-elided="true" name="timing-display" picking-mode="Ignore" class="calibration-timing-display" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="note-anchor" picking-mode="Ignore" class="note-anchor" style="left: 50%; top: 30%;">
+                <ui:VisualElement name="note-image" style="width: 50px; height: 50px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/Basic.png?fileID=2800000&amp;guid=69b7fb4f9cb3eeb4091f6aced55c3d7e&amp;type=3#Basic&apos;); position: absolute;">
+                    <ui:Label tabindex="-1" text="Timing display" display-tooltip-when-elided="true" name="timing-display" picking-mode="Ignore" class="calibration-timing-display" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="note-anchor" picking-mode="Ignore" class="note-anchor" style="left: 60%; top: 30%;">
+                <ui:VisualElement name="note-image" style="width: 50px; height: 50px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/Basic.png?fileID=2800000&amp;guid=69b7fb4f9cb3eeb4091f6aced55c3d7e&amp;type=3#Basic&apos;); position: absolute;">
+                    <ui:Label tabindex="-1" text="Timing display" display-tooltip-when-elided="true" name="timing-display" picking-mode="Ignore" class="calibration-timing-display" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="note-anchor" picking-mode="Ignore" class="note-anchor" style="left: 70%; top: 30%;">
+                <ui:VisualElement name="note-image" style="width: 50px; height: 50px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/Basic.png?fileID=2800000&amp;guid=69b7fb4f9cb3eeb4091f6aced55c3d7e&amp;type=3#Basic&apos;); position: absolute;">
+                    <ui:Label tabindex="-1" text="Timing display" display-tooltip-when-elided="true" name="timing-display" picking-mode="Ignore" class="calibration-timing-display" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

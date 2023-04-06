@@ -10,16 +10,15 @@ timingCalibrationPanel = {
 }
 
 timingCalibrationPanel.Show = function()
-    timingCalibrationPanel.ShowTimingForTouch()
-
     tm.calibrationPreview.Begin()
+    timingCalibrationPanel.SwitchToTouch()
 end
 
 timingCalibrationPanel.Hide = function()
     tm.calibrationPreview.Conclude()
 end
 
-timingCalibrationPanel.ShowTimingForTouch = function()
+timingCalibrationPanel.SwitchToTouch = function()
     local touchRadio = timingCalibrationPanel.touchRadio
     local kmRadio = timingCalibrationPanel.kmRadio
     controls.SetRadioButton(touchRadio, {touchRadio, kmRadio})
@@ -28,9 +27,11 @@ timingCalibrationPanel.ShowTimingForTouch = function()
     timingCalibrationPanel.offsetText.SetValueWithoutNotify(tm.options.touchOffsetMs)
     controls.SetSliderValueWithoutNotify(timingCalibrationPanel.latencySlider, tm.options.touchLatencyMs)
     timingCalibrationPanel.latencyText.SetValueWithoutNotify(tm.options.touchLatencyMs)
+
+    tm.calibrationPreview.SwitchToTouch()
 end
 
-timingCalibrationPanel.ShowTimingForKm = function()
+timingCalibrationPanel.SwitchToKm = function()
     local touchRadio = timingCalibrationPanel.touchRadio
     local kmRadio = timingCalibrationPanel.kmRadio
     controls.SetRadioButton(kmRadio, {touchRadio, kmRadio})
@@ -39,6 +40,8 @@ timingCalibrationPanel.ShowTimingForKm = function()
     timingCalibrationPanel.offsetText.SetValueWithoutNotify(tm.options.keyboardMouseOffsetMs)
     controls.SetSliderValueWithoutNotify(timingCalibrationPanel.latencySlider, tm.options.keyboardMouseLatencyMs)
     timingCalibrationPanel.latencyText.SetValueWithoutNotify(tm.options.keyboardMouseLatencyMs)
+
+    tm.calibrationPreview.SwitchToKeyboardMouse()
 end
 
 timingCalibrationPanel.Initialize = function()
@@ -50,9 +53,9 @@ timingCalibrationPanel.Initialize = function()
     local panel = timingCalibrationPanel.panel
 
     timingCalibrationPanel.touchRadio.RegisterCallback(eventType.Click,
-        timingCalibrationPanel.ShowTimingForTouch)
+        timingCalibrationPanel.SwitchToTouch)
     timingCalibrationPanel.kmRadio.RegisterCallback(eventType.Click,
-        timingCalibrationPanel.ShowTimingForKm)
+        timingCalibrationPanel.SwitchToKm)
 
     function OffsetChanged(newValue)
         if (controls.RadioButtonIsOn(timingCalibrationPanel.touchRadio)) then
