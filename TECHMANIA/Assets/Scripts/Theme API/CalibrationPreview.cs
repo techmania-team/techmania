@@ -54,6 +54,9 @@ namespace ThemeApi
         private readonly float[] beatOfNote = { 0f, 1f, 2f, 2.5f, 3f };
         private readonly int[] laneOfNote = { 1, 0, 1, 1, 0 };
         private const float beatPerSecond = 1.5f;
+        private const float secondPerBeat = 1f / beatPerSecond;
+        private const float secondPerScan = secondPerBeat * bps;
+        private const int differenceThresholdMs = 200;
         private TemplateContainer previewBg;
         private List<VisualElement> scanlineAnchors;
         private List<VisualElement> scanlines;
@@ -214,7 +217,6 @@ namespace ThemeApi
         public void SwitchToKeyboardMouse()
         {
             inputMethod = InputMethod.KM;
-
         }
 
         // Update is called once per frame
@@ -260,6 +262,23 @@ namespace ThemeApi
             }
 
             // Handle input
+            if (Input.GetMouseButtonDown(0))
+            {
+                OnMouseOrTouchDown(Input.mousePosition, 
+                    InputDevice.Mouse);
+            }
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                if (Input.GetTouch(i).phase == TouchPhase.Began)
+                {
+                    OnMouseOrTouchDown(Input.GetTouch(i).position,
+                        InputDevice.Touchscreen);
+                }
+            }
+            if (AnyKeyDown())
+            {
+                OnAnyKeyDown();
+            }
         }
 
         public void Conclude()
@@ -272,5 +291,106 @@ namespace ThemeApi
 
             running = false;
         }
+
+        #region Input handling
+        private void OnMouseOrTouchDown(Vector2 screenPosition,
+            InputDevice device)
+        {
+            // Which note does this click / touch go to?
+            int noteIndex = -1;
+            for (int i = 0; i < noteImages.Count; i++)
+            {
+                if (VisualElementTransform
+                    .ElementContainsPointInScreenSpace(
+                    noteImages[i], screenPosition))
+                {
+                    noteIndex = i;
+                    break;
+                }
+            }
+
+            // Is the time difference within threshold?
+            if (noteIndex == -1) return;
+            int differenceMs = TimeDifferenceFromNote(
+                noteIndex, device);
+            if (Mathf.Abs(differenceMs) > differenceThresholdMs)
+            {
+                return;
+            }
+
+            OnNoteHit(noteIndex, differenceMs, device);
+        }
+
+        private bool AnyKeyDown()
+        {
+            for (int i = (int)KeyCode.A; i <= (int)KeyCode.Z; i++)
+            {
+                if (Input.GetKeyDown((KeyCode)i)) return true;
+            }
+            for (int i = (int)KeyCode.Alpha0;
+                i <= (int)KeyCode.Alpha9;
+                i++)
+            {
+                if (Input.GetKeyDown((KeyCode)i)) return true;
+            }
+            return false;
+        }
+
+        private void OnAnyKeyDown()
+        {
+            // Which note does this keystroke go to?
+            int minDifferenceMs = differenceThresholdMs + 1;
+            int noteIndex = -1;
+            for (int i = 0; i < beatOfNote.Length; i++)
+            {
+                int differenceMs = TimeDifferenceFromNote(i, 
+                    InputDevice.Keyboard);
+                if (Mathf.Abs(differenceMs) <
+                    Mathf.Abs(minDifferenceMs))
+                {
+                    minDifferenceMs = differenceMs;
+                    noteIndex = i;
+                }
+            }
+
+            // Is the time difference within threshold?
+            if (noteIndex == -1) return;
+            if (Mathf.Abs(minDifferenceMs) > differenceThresholdMs)
+            {
+                return;
+            }
+
+            OnNoteHit(noteIndex, minDifferenceMs, InputDevice.Keyboard);
+        }
+
+        // In milliseconds.
+        // Negative = early, positive = late
+        private int TimeDifferenceFromNote(int i, InputDevice device)
+        {
+            float correctTime = beatOfNote[i] / beatPerSecond +
+                Options.instance.GetLatencyForDevice(device) * 0.001f;
+            float clampedCurrentTime = gameTime % secondPerScan;
+
+            float minDifference = secondPerScan;
+            for (int scan = -1; scan <= 1; scan++)
+            {
+                float shiftedCorrectTime = correctTime +
+                    scan * secondPerScan;
+                float difference = clampedCurrentTime
+                    - shiftedCorrectTime;
+                if (Mathf.Abs(difference) < Mathf.Abs(minDifference))
+                {
+                    minDifference = difference;
+                }
+            }
+            return Mathf.FloorToInt(minDifference * 1000f);
+        }
+
+        private void OnNoteHit(int noteIndex, int timeDifferenceMs,
+            InputDevice device)
+        {
+            UnityEngine.Debug.Log($"#{noteIndex} {timeDifferenceMs}ms {device}");
+        }
+        #endregion
     }
 }
