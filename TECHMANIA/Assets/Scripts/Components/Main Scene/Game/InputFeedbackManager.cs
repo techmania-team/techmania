@@ -24,8 +24,7 @@ public class InputFeedbackManager
             if (GlobalResource.gameUiSkin.touchClickFeedback
                 .additiveShader)
             {
-                element.style.display = new StyleEnum<DisplayStyle>(
-                    DisplayStyle.None);
+                element.style.display = DisplayStyle.None;
             }
         }
 

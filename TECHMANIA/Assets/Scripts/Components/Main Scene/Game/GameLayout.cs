@@ -96,6 +96,21 @@ public class GameLayout
         topHalf = makeHalfElements(layoutContainer.Q("top-half"));
         bottomHalf = makeHalfElements(layoutContainer.Q(
             "bottom-half"));
+
+        // While UI Toolkit doesn't support shaders, we can't
+        // draw countdown elements that request the additive shader.
+        if (GlobalResource.gameUiSkin.scanCountdownBackground
+            .additiveShader)
+        {
+            topHalf.countdownBg.style.display = DisplayStyle.None;
+            bottomHalf.countdownBg.style.display = DisplayStyle.None;
+        }
+        if (GlobalResource.gameUiSkin.scanCountdownNumbers
+            .additiveShader)
+        {
+            topHalf.countdownNum.style.display = DisplayStyle.None;
+            bottomHalf.countdownNum.style.display = DisplayStyle.None;
+        }
     }
 
     public void ResetSize()
@@ -355,10 +370,21 @@ public class GameLayout
         // Clamp scan to [0, 2].
         float clampedScanEven = Mathf.Repeat(scan, 2f);
         float clampedScanOdd = Mathf.Repeat(scan + 1f, 2f);
+
         // Calculate countdown progress.
-        float countdownProgresEven = Mathf.InverseLerp(
+        System.Func<float, float, float, float> unclampedInverseLerp =
+            (float a, float b, float value) =>
+            {
+                // Like Mathf.InverseLerp, but doesn't clamp the
+                // output to [0, 1].
+
+                // y = kx+b goes through (0, a) and (1, b), so the
+                // equation is y = (b-a)x + a.
+                return (value - a) / (b - a);
+            };
+        float countdownProgresEven = unclampedInverseLerp(
             2f - countdownLengthInScans, 2f, clampedScanEven);
-        float countdownProgresOdd = Mathf.InverseLerp(
+        float countdownProgresOdd = unclampedInverseLerp(
             2f - countdownLengthInScans, 2f, clampedScanOdd);
         System.Action<HalfElements, float> setCountdownProgress =
             (HalfElements elements, float progress) =>
