@@ -1,9 +1,11 @@
+using MoonSharp.Interpreter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
+[MoonSharpUserData]
 public class SpriteSheet
 {
     public string filename;
@@ -144,6 +146,7 @@ public class NoteSkinBase : SerializableClass<NoteSkinBase> {}
 
 // Most sprite sheets use scale, except for the "...end"s.
 [Serializable]
+[MoonSharpUserData]
 public class NoteSkin : NoteSkinBase
 {
     public const string kVersion = "1";
@@ -229,6 +232,7 @@ public class VfxSkinBase : SerializableClass<VfxSkinBase> { }
 
 // All sprite sheets use scale, speed and additiveShader.
 [Serializable]
+[MoonSharpUserData]
 public class VfxSkin : VfxSkinBase
 {
     public const string kVersion = "1";
@@ -312,6 +316,7 @@ public class ComboSkinBase : SerializableClass<ComboSkinBase> { }
 
 // All sprite sheets use speed.
 [Serializable]
+[MoonSharpUserData]
 public class ComboSkin : ComboSkinBase
 {
     public const string kVersion = "1";
@@ -404,6 +409,7 @@ public class ComboSkin : ComboSkinBase
 public class GameUISkinBase : SerializableClass<GameUISkinBase> { }
 
 [Serializable]
+[MoonSharpUserData]
 public class GameUISkin : GameUISkinBase
 {
     public const string kVersion = "1";

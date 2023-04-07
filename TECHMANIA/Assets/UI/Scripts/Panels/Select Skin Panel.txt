@@ -38,6 +38,14 @@ end
 selectSkinPanel.Initialize = function()
     local panel = selectSkinPanel.panel
 
+    function WarnOnUndisplayableGameUiSkin()
+        local gameUiSkin = tm.resources.gameUiSkin
+        if (gameUiSkin.scanCountdownBackground.additiveShader or
+            gameUiSkin.scanCountdownNumbers.additiveShader or
+            gameUiSkin.touchClickFeedback.additiveShader) then
+            alertBox.Alert(tm.l10n.GetString("select_skin_panel_additive_shader_alert"))
+        end
+    end
     function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
         local dropdown = panel.Q(elementName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
@@ -49,6 +57,7 @@ selectSkinPanel.Initialize = function()
                 function(status)  -- complete callback
                     if (status.Ok()) then
                         tm.skinPreview.Begin()
+                        WarnOnUndisplayableGameUiSkin()
                     else
                         local errorMessage = net.string.Format(
                             tm.l10n.GetString("select_skin_panel_load_error_format"),

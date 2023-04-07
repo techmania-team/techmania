@@ -561,6 +561,7 @@ namespace ThemeApi
                     }
                 };
             unregisterAllCallbackRecursively(inner);
+
             inner.RemoveFromHierarchy();
         }
 

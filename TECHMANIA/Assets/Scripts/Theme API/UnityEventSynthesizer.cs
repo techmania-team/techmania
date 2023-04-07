@@ -60,11 +60,6 @@ namespace ThemeApi
         {
             // TODO: GC.Collect causes lag spikes. Why?
             if (!HasListeners<FrameUpdateEvent>()) return;
-            if (Time.frameCount % 60 == 0)
-            {
-                Debug.Log("FrameUpdateEvent listeners: " +
-                    eventListeners[typeof(FrameUpdateEvent)].Count);
-            }
             foreach (VisualElement element in
                 eventListeners[typeof(FrameUpdateEvent)])
             {
