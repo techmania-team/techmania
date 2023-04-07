@@ -92,9 +92,9 @@ public class DragNoteElements : NoteElements
     {
         noteImage.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.dragHead
-            .GetSpriteAtFloatIndex(Game.FloatBeat));
+            .GetSpriteAtFloatIndex(timer.beat));
         curveTexture = GlobalResource.noteSkin.dragCurve
-            .GetSpriteAtFloatIndex(Game.FloatBeat).texture;
+            .GetSpriteAtFloatIndex(timer.beat).texture;
     }
 
     protected override Vector2 GetHitboxScaleFromRuleset()
