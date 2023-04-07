@@ -93,8 +93,9 @@ public class DragNoteElements : NoteElements
         noteImage.style.backgroundImage = new StyleBackground(
             GlobalResource.noteSkin.dragHead
             .GetSpriteAtFloatIndex(timer.beat));
-        curveTexture = GlobalResource.noteSkin.dragCurve
-            .GetSpriteAtFloatIndex(timer.beat).texture;
+        curveSprite = GlobalResource.noteSkin.dragCurve
+            .GetSpriteAtFloatIndex(timer.beat);
+        curve.MarkDirtyRepaint();
     }
 
     protected override Vector2 GetHitboxScaleFromRuleset()
@@ -119,7 +120,7 @@ public class DragNoteElements : NoteElements
     private DragPointList pointList;
     // Top and Left of the note in layout.
     private Vector2 headPosition;
-    private Texture curveTexture;
+    private Sprite curveSprite;
 
     private float scanHeightCopy;
     private float gameContainerWidthCopy;
@@ -183,6 +184,7 @@ public class DragNoteElements : NoteElements
     {
         if (pointList == null ||
             pointList.Count < 2) return;
+        if (curveSprite == null) return;
 
         // Convert relative positions to absolute ones.
         Vector2[] points = new Vector2[pointList.Count];
@@ -194,6 +196,14 @@ public class DragNoteElements : NoteElements
                 * scanHeightCopy;
         }
 
+        // Calculate the curve sprite's normalized rect
+        // inside its texture.
+        Rect spriteRectInTexture = new Rect(
+            curveSprite.rect.xMin / curveSprite.texture.width,
+            curveSprite.rect.yMin / curveSprite.texture.height,
+            curveSprite.rect.width / curveSprite.texture.width,
+            curveSprite.rect.height / curveSprite.texture.height);
+
         // Calculate number of vertices and indices.
         // Counting the additional point (for curve end)
         // after the curve, each point generates 2 vertices.
@@ -203,18 +213,27 @@ public class DragNoteElements : NoteElements
         // therefore 6 incides.
         int numIndices = points.Length * 6;
         MeshWriteData data = context.Allocate(
-            numVertices, numIndices, curveTexture);
+            numVertices, numIndices, curveSprite.texture);
 
         float halfWidth = curveWidth * 0.5f;
 
         System.Func<float, float, Vector2> projectUv =
             (float u, float v) =>
             {
+                // First project from sprite to texture.
+                float uInTexture = Mathf.Lerp(
+                    spriteRectInTexture.xMin,
+                    spriteRectInTexture.xMax, u);
+                float vInTexture = Mathf.Lerp(
+                    spriteRectInTexture.yMin,
+                    spriteRectInTexture.yMax, v);
                 return new Vector2(
                     Mathf.Lerp(
-                        data.uvRegion.xMin, data.uvRegion.xMax, u),
+                        data.uvRegion.xMin, data.uvRegion.xMax,
+                        uInTexture),
                     Mathf.Lerp(
-                        data.uvRegion.yMin, data.uvRegion.yMax, v));
+                        data.uvRegion.yMin, data.uvRegion.yMax,
+                        vInTexture));
             };
 
         // Calculate left vector on each point. Then generate
