@@ -37,7 +37,15 @@ namespace ThemeApi
         public static void RemoveListener<EventType>(
             VisualElement element)
         {
+            // No exception if the element doesn't exist in the HashSet.
             eventListeners[typeof(EventType)].Remove(element);
+        }
+
+        public static void RemoveListenerForAllEventTypes(
+            VisualElement element)
+        {
+            RemoveListener<FrameUpdateEvent>(element);
+            RemoveListener<ApplicationFocusEvent>(element);
         }
         #endregion
 
@@ -50,7 +58,13 @@ namespace ThemeApi
 
         void Update()
         {
+            // TODO: GC.Collect causes lag spikes. Why?
             if (!HasListeners<FrameUpdateEvent>()) return;
+            if (Time.frameCount % 60 == 0)
+            {
+                Debug.Log("FrameUpdateEvent listeners: " +
+                    eventListeners[typeof(FrameUpdateEvent)].Count);
+            }
             foreach (VisualElement element in
                 eventListeners[typeof(FrameUpdateEvent)])
             {

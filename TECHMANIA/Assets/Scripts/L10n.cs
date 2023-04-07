@@ -150,7 +150,7 @@ public class L10n
             throw new System.Exception("Locale not found: " + locale);
         }
         instance.current = instance.locales[locale];
-        Debug.Log($"Setting locale to {locale}.");
+        Debug.Log($"Setting locale to {locale} for instance {instanceType}.");
         LocaleChanged?.Invoke();
     }
     

@@ -11,6 +11,10 @@ namespace ThemeApi
     // can be no more than 1 callback for each element-type
     // combination.
     //
+    // From UI Toolkit's perspective, all callbacks are the Action
+    // in CheckCallback, which then looks at the callback set
+    // and calls all of them.
+    //
     // This class is not exposed to Lua.
     public class CallbackRegistry
     {

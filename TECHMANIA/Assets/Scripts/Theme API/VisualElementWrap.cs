@@ -4,6 +4,7 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System.Reflection;
+using System;
 
 namespace ThemeApi
 {
@@ -408,7 +409,7 @@ namespace ThemeApi
                 inner, callback });
         }
 
-        public void UnregisterAllCallback(EventType eventType)
+        public void UnregisterAllCallbackOfType(EventType eventType)
         {
             System.Type genericType = EventTypeEnumToType(eventType);
             switch (eventType)
@@ -427,6 +428,18 @@ namespace ThemeApi
                 BindingFlags.Static | BindingFlags.Public)
                 .MakeGenericMethod(genericType);
             methodInfo.Invoke(null, new object[] { inner });
+        }
+
+        public void UnregisterAllCallback()
+        {
+            UnregisterAllCallback(inner);
+        }
+
+        private static void UnregisterAllCallback(VisualElement element)
+        {
+            UnityEventSynthesizer.RemoveListenerForAllEventTypes(
+                element);
+            CallbackRegistry.RemoveAllCallbackOn(element);
         }
         #endregion
 
@@ -531,9 +544,23 @@ namespace ThemeApi
         // Beware: deleting multiple elements while some parent
         // element is undergoing USS transition may cause errors.
         // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
+        //
+        // Update: Fixed in Unity 2022.2.14
         public void RemoveFromHierarchy()
         {
-            CallbackRegistry.RemoveAllCallbackOn(inner);
+            // Recursively remove all event handlers on all children.
+            Action<VisualElement> unregisterAllCallbackRecursively
+                = null;
+            unregisterAllCallbackRecursively =
+                (VisualElement element) =>
+                {
+                    UnregisterAllCallback(element);
+                    foreach (VisualElement child in element.Children())
+                    {
+                        unregisterAllCallbackRecursively(child);
+                    }
+                };
+            unregisterAllCallbackRecursively(inner);
             inner.RemoveFromHierarchy();
         }
 
@@ -550,6 +577,8 @@ namespace ThemeApi
         // Beware: deleting multiple elements while some parent
         // element is undergoing USS transition may cause errors.
         // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
+        //
+        // Update: Fixed in Unity 2022.2.14
         public void RemoveAllChildren()
         {
             // Make a copy of the child list so we don't modify
@@ -561,8 +590,7 @@ namespace ThemeApi
             }
             foreach (VisualElement child in children)
             {
-                CallbackRegistry.RemoveAllCallbackOn(child);
-                child.RemoveFromHierarchy();
+                new VisualElementWrap(child).RemoveFromHierarchy();
             }
         }
 
