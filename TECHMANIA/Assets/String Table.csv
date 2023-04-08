@@ -11,117 +11,30 @@ Added in 2.0.,resource_loader_loading_track_list,Loading track list... ({0} / {1
 Added in 2.0.,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),,,
 Added in 2.0.,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),,,
 Added in 2.0.,boot_screen_revert_default_theme_button,REVERT,复原,,,
-,,,,,,
-Deleted in 2.0.,resource_loader_loading_note_skin,Loading note skin...,正在读取音符皮肤……,正在載入音符造型......,ノートスキンを読み込み中...,노트 스킨을 불러오는 중입니다...
-,resource_loader_note_skin_error_format,"An error occurred when loading note skin:
+Added in 2.0.,resource_loader_skin_error_format,"An error occurred when loading skins:
 
 {0}
 
-Please select a valid skin from the options menu.","读取音符皮肤时发生错误：
+TECHMANIA will now load the default skins.","读取皮肤时发生错误：
 
 {0}
 
-请在设置菜单选择一个可用的皮肤。","載入音符造型時發生錯誤：
+TECHMANIA将读取默认皮肤。",,,
+Added in 2.0.,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,,
+Added in 2.0.,resource_loader_theme_error_format,"An error occurred when loading the theme:
 
 {0}
 
-請在設定中選擇一個可用的造型。","ノートスキンの読み込み中にエラーが発生しました：
+TECHMANIA will now load the default theme.","读取主题时发生错误：
 
 {0}
 
-オプションで正しいスキンを選択してください。","다음 스킨을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-옵션에서 노트 스킨을 다시 선택하십시오."
-Deleted in 2.0.,resource_loader_loading_vfx_skin,Loading VFX skin…,正在读取特效皮肤……,正在載入特效造型......,VFXスキンを読み込み中...,쿨밤 스킨을 불러오는 중입니다...
-,resource_loader_vfx_skin_error_format,"An error occurred when loading VFX skin:
-
-{0}
-
-Please select a valid skin from the options menu.","读取特效皮肤时发生错误：
-
-{0}
-
-请在设置菜单选择一个可用的皮肤。","載入特效造型時發生錯誤：
-
-{0}
-
-請在設定中選擇一個可用的造型。","VFXスキンの読み込み中にエラーが発生しました：
-
-{0}
-
-オプションで正しいスキンを選択してください。","다음 스킨을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-옵션에서 쿨밤 스킨을 다시 선택하십시오."
-Deleted in 2.0.,resource_loader_loading_combo_skin,Loading combo skin…,正在读取连击皮肤……,正在載入連擊造型......,コンボスキンを読み込み中...,콤보 스킨을 불러오는 중입니다...
-,resource_loader_combo_skin_error_format,"An error occurred when loading combo skin:
-
-{0}
-
-Please select a valid skin from the options menu.","读取连击皮肤时发生错误：
-
-{0}
-
-请在设置菜单选择一个可用的皮肤。","載入連擊造型時發生錯誤：
-
-{0}
-
-請在設定中選擇一個可用的造型。","コンボスキンの読み込み中にエラーが発生しました：
-
-{0}
-
-オプションで正しいスキンを選択してください。","다음 스킨을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-옵션에서 콤보 스킨을 다시 선택하십시오."
-Deleted in 2.0.,resource_loader_loading_game_ui_skin,Loading game UI skin…,正在读取游戏内界面皮肤……,正在讀取遊戲介面造型,UIスキンを読み込み中...,UI 스킨을 불러오는 중입니다...
-,resource_loader_game_ui_skin_error_format,"An error occurred when loading game UI skin:
-
-{0}
-
-Please select a valid skin from the options menu.","读取游戏内界面皮肤时发生错误：
-
-{0}
-
-请在设置菜单选择一个可用的皮肤。","載入遊戲介面造型時發生錯誤：
-
-{0}
-
-請在設定中選擇一個可用的造型。","次のスキンの読み込み中にエラーが発生しました：
-
-{0}
-
-オプションでUIスキンを再度選択してください。","다음 스킨을 불러오는 중 오류가 발생했습니다.
-
-{0}
-
-옵션에서 UI 스킨을 다시 선택하십시오."
-,,,,,,
-Added in 2.0.,resource_loader_theme_not_found,The theme {0} is not found.,,,,
-Added in 2.0.,resource_loader_theme_failed_to_load,Failed to load theme {0}.,,,,
-Added in 2.0.,resource_loader_revert_default_theme,TECHMANIA will now restart with the default theme.,,,,
+TECHMANIA将读取默认主题。",,,
+Added in 2.0.,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,,,
 ,,,,,,
 Added in 2.0.,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,,,
 Added in 2.0.,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,,,
 Added in 2.0.,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,,,
-,,,,,,
-,main_menu_editor_on_mobile_confirmation,"The editor is designed for PC. Many features will be inaccessible without a mouse and keyboard.
-
-Continue anyway?","谱面编辑器是为PC设计，某些功能只有用鼠标键盘才能使用。
-
-仍然要进入编辑器吗？","譜面編輯器是為 PC 設計，某些功能只有鍵盤滑鼠才能使用。
-
-仍要進入編輯器嗎？","エディタはPCで使用することを想定しています。マウスとキーボードを使用しない場合、多くの機能が使えなくなります。
-
-続けますか？","패턴 편집기는 PC 환경에 최적화되어 있습니다. 모바일 환경에서는 일부 기능을 이용하지 못할 수 있습니다.
-
-계속하시겠습니까?"
-,main_menu_editor_on_mobile_confirm,Continue,进入,進入,続ける,계속하기
-,main_menu_editor_on_mobile_cancel,Cancel,取消,取消,キャンセル,취소
 ,,,,,,
 ,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
 

@@ -300,12 +300,16 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
 ,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
-"Added in 2.0",select_skin_panel_load_error_format,"An error occurred when loading the specified skin:
+"Added in 2.0",select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
 
-{0}",,,,
+{0}","读取皮肤时发生错误：
+
+{0}",,,
 "Added in 2.0",select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
 
-Refer to TECHMANIA 2.0's release notes for more details.",,,,
+Refer to TECHMANIA 2.0's release notes for more details.","请注意，由于TECHMANIA的UI框架缺失功能，所选皮肤的一部分元素暂时无法显示。
+
+详情可参阅TECHMANIA 2.0的发行说明。",,,
 ,,,,,,
 ,#timing-calibration-panel #title,Timing Calibration,偏移与延迟校对,偏移與延遲校正,タイミング調整,타이밍 보정
 ,#timing-calibration-panel #device #label,Input device,输入设备,輸入裝置,入力方式,입력 장치

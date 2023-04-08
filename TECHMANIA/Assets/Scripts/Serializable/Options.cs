@@ -66,6 +66,7 @@ public class Options : OptionsBase
     public string vfxSkin;
     public string comboSkin;
     public string gameUiSkin;
+    public const string kDefaultSkin = "Default";
     public bool reloadSkinsWhenLoadingPattern;
     public string theme;
     public const string kDefaultTheme = "Default";
@@ -239,10 +240,10 @@ public class Options : OptionsBase
     {
         Debug.Log("Resetting custom data location.");
         customDataLocation = false;
-        noteSkin = "Default";
-        vfxSkin = "Default";
-        comboSkin = "Default";
-        gameUiSkin = "Default";
+        noteSkin = kDefaultSkin;
+        vfxSkin = kDefaultSkin;
+        comboSkin = kDefaultSkin;
+        gameUiSkin = kDefaultSkin;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
         SaveToFile(Paths.GetOptionsFilePath());

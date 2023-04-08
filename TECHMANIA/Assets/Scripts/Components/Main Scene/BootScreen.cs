@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,78 +26,186 @@ public class BootScreen : MonoBehaviour
         StartCoroutine(BootSequence());
     }
 
-    private IEnumerator BootSequence()
+    #region Boot sequence
+    private Status loadStatus;
+
+    private IEnumerator LoadSkins()
     {
         bool loaded = false;
-        GlobalResourceLoader.ProgressCallback progressCallback =
-            (string currentlyLoadingFile) =>
-            {
-                progressLine2.text = Paths
-                    .HidePlatformInternalPath(currentlyLoadingFile);
-            };
-        GlobalResourceLoader.CompleteCallback completeCallback =
-            (status) =>
-            {
-                if (!status.Ok())
-                {
-                    messageDialog.Show(status.errorMessage);
-                }
-                loaded = true;
-            };
-
-        // Step 1: load skins.
         progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_skins", 1, 3);
-        GlobalResourceLoader.GetInstance().LoadAllSkins(
-            progressCallback, completeCallback);
-        yield return new WaitUntil(() => loaded);
-        yield return new WaitUntil(() =>
-            !messageDialog.gameObject.activeSelf);
 
-        // Step 2: load track list.
-        progressLine1.text = L10n.GetStringAndFormat(
-            "resource_loader_loading_track_list", 2, 3);
-        loaded = false;
-        GlobalResourceLoader.GetInstance().LoadTrackList(
-            progressCallback, completeCallback);
-        yield return new WaitUntil(() => loaded);
-        yield return new WaitUntil(() =>
-            !messageDialog.gameObject.activeSelf);
-        yield return new WaitUntil(() => themeDecided);
+        // Attempt 1: load currently selected skins.
+        if (Options.instance.noteSkin != Options.kDefaultSkin ||
+            Options.instance.vfxSkin != Options.kDefaultSkin ||
+            Options.instance.comboSkin != Options.kDefaultSkin ||
+            Options.instance.gameUiSkin != Options.kDefaultSkin)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadAllSkins(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
 
-        // Step 3: load theme.
-        GlobalResourceLoader.CompleteCallback themeCompleteCallback =
-            (status) =>
+            if (loadStatus.Ok())
             {
                 loaded = true;
-                if (status.Ok()) return;
+            }
+            else
+            {
+                // Report error and revert to default skins.
+                string message = L10n.GetStringAndFormat(
+                    "resource_loader_skin_error_format",
+                    loadStatus.errorMessage);
+                messageDialog.Show(message);
+                yield return new WaitUntil(() =>
+                    !messageDialog.gameObject.activeSelf);
 
-                string errorMessage = L10n.GetStringAndFormat(
-                    "resource_loader_theme_failed_to_load",
-                    Options.instance.theme);
-                if (Options.instance.theme != Options.kDefaultTheme)
-                {
-                    errorMessage += "\n" + L10n.GetString(
-                        "resource_loader_revert_default_theme");
-                }
+                Options.instance.noteSkin = Options.kDefaultSkin;
+                Options.instance.vfxSkin = Options.kDefaultSkin;
+                Options.instance.comboSkin = Options.kDefaultSkin;
+                Options.instance.gameUiSkin = Options.kDefaultSkin;
+            }
+        }
 
-                Options.instance.theme = Options.kDefaultTheme;
-                Options.instance.SaveToFile(
-                    Paths.GetOptionsFilePath());
+        // Attempt 2: load default skins in a custom location.
+        if (!loaded && Options.instance.customDataLocation)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadAllSkins(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
 
-                messageDialog.Show(errorMessage, () =>
+            if (loadStatus.Ok())
+            {
+                loaded = true;
+            }
+            else
+            {
+                Options.instance.customDataLocation = false;
+                Paths.ApplyCustomDataLocation();
+            }
+        }
+
+        // Attempt 3: load default skins at the default location.
+        if (!loaded)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadAllSkins(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
+
+            if (loadStatus.Ok())
+            {
+                loaded = true;
+            }
+        }
+
+        if (!loaded)
+        {
+            // If all attempts fail, TECHMANIA can't start.
+            messageDialog.Show(L10n.GetString(
+                "resource_loader_cannot_load_default_skin"), () =>
                 {
                     QuitGame();
                 });
-            };
+            yield return new WaitWhile(() => true);
+        }
+    }
+
+    private IEnumerator LoadTheme()
+    {
+        bool loaded = false;
         progressLine1.text = L10n.GetStringAndFormat(
             "resource_loader_loading_theme", 3, 3);
-        loaded = false;
-        GlobalResourceLoader.GetInstance().LoadTheme(
-            progressCallback, themeCompleteCallback);
-        yield return new WaitUntil(() => loaded);
-        yield return new WaitUntil(() =>
-            !messageDialog.gameObject.activeSelf);
+
+        // Attempt 1: load currently selected theme.
+        if (Options.instance.theme != Options.kDefaultTheme)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadTheme(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
+
+            if (loadStatus.Ok())
+            {
+                loaded = true;
+            }
+            else
+            {
+                // Report error and revert to default theme.
+                string message = L10n.GetStringAndFormat(
+                    "resource_loader_theme_error_format",
+                    loadStatus.errorMessage);
+                messageDialog.Show(message);
+                yield return new WaitUntil(() =>
+                    !messageDialog.gameObject.activeSelf);
+
+                Options.instance.theme = Options.kDefaultTheme;
+            }
+        }
+
+        // Attempt 2: load default theme in a custom location.
+        if (!loaded && Options.instance.customDataLocation)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadTheme(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
+
+            if (loadStatus.Ok())
+            {
+                loaded = true;
+            }
+            else
+            {
+                Options.instance.customDataLocation = false;
+                Paths.ApplyCustomDataLocation();
+            }
+        }
+
+        // Attempt 3: load default theme at the default location.
+        if (!loaded)
+        {
+            loadStatus = null;
+            GlobalResourceLoader.GetInstance().LoadTheme(
+                ProgressCallback, CompleteCallback);
+            yield return new WaitUntil(() => loadStatus != null);
+
+            if (loadStatus.Ok())
+            {
+                loaded = true;
+            }
+        }
+
+        // If all attempts fail, TECHMANIA can't start.
+        if (!loaded)
+        {
+            messageDialog.Show(L10n.GetString(
+                "resource_loader_cannot_load_default_theme"), () =>
+                {
+                    QuitGame();
+                });
+            yield return new WaitWhile(() => true);
+        }
+    }
+
+    private IEnumerator BootSequence()
+    {
+        // Step 1: load skins.
+        yield return LoadSkins();
+
+        // Step 2: load track list. No sub-coroutine since errors
+        // in this step are not fatal.
+        progressLine1.text = L10n.GetStringAndFormat(
+            "resource_loader_loading_track_list", 2, 3);
+        loadStatus = null;
+        GlobalResourceLoader.GetInstance().LoadTrackList(
+            ProgressCallback, CompleteCallback);
+        yield return new WaitUntil(() => loadStatus != null);
+        yield return new WaitUntil(() => themeDecided);
+
+        // Step 3: load theme.
+        yield return LoadTheme();
 
         // Load main tree and main script.
         string mainTreePath = "assets/ui/maintree.uxml";
@@ -141,6 +251,18 @@ public class BootScreen : MonoBehaviour
         TopLevelObjects.instance.editorCanvas.gameObject
             .SetActive(false);
     }
+
+    private void ProgressCallback(string currentlyLoadingFile)
+    {
+        progressLine2.text = Paths
+            .HidePlatformInternalPath(currentlyLoadingFile);
+    }
+
+    private void CompleteCallback(Status status)
+    {
+        loadStatus = status;
+    }
+    #endregion
 
     private IEnumerator ShowRevertDefaultThemePrompt()
     {
