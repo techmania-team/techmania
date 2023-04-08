@@ -256,11 +256,11 @@ optionsPanel.Initialize = function()
         tm.options.ruleset = KeyFromValue(optionsPanel.rulesetDisplayString, event.newValue)
         if (tm.options.ruleset == tm.enum.ruleset.Custom) then
             local status = tm.ruleset.LoadCustomRuleset()
-            if (not status.ok) then
-                local errorFormat = tm.l10n.GetString("custom_ruleset_not_found_error_format")
-                local path = tm.paths.EscapeBackslash(tm.paths.GetRulesetFilePath())
-                local error = net.string.Format(errorFormat, path)
-                alertBox.Alert(error)
+            if (not status.Ok()) then
+                local errorFormat = tm.l10n.GetString("custom_ruleset_load_error_format")
+                local errorMessage = net.string.Format(errorFormat, 
+                    tm.paths.EscapeBackslash(status.errorMessage))
+                alertBox.Alert(errorMessage)
                 tm.options.ruleset = tm.enum.ruleset.Standard
                 rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.enum.ruleset.Standard])
             end

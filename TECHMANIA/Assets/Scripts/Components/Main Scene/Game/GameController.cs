@@ -116,6 +116,16 @@ public class GameController : MonoBehaviour
                 });
         };
 
+        // Reload custom ruleset if using it.
+        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        {
+            try
+            {
+                Ruleset.LoadCustomRuleset();
+            }
+            catch (Exception) { /* silently ignore errors */ }
+        }
+
         // Load track, track options and pattern. These are all
         // synchronous.
         if (EditorContext.inPreview)
