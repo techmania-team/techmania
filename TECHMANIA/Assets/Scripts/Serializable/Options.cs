@@ -774,47 +774,6 @@ public class Modifiers
         }
     }
 
-    public Scan.Direction GetTopScanDirection()
-    {
-        switch (scanDirection)
-        {
-            case ScanDirection.Normal:
-            case ScanDirection.RR:
-                return Scan.Direction.Right;
-            case ScanDirection.LR:
-            case ScanDirection.LL:
-                return Scan.Direction.Left;
-            default:
-                throw new Exception();
-        }
-    }
-
-    public Scan.Direction GetBottomScanDirection()
-    {
-        switch (scanDirection)
-        {
-            case ScanDirection.Normal:
-            case ScanDirection.LL:
-                return Scan.Direction.Left;
-            case ScanDirection.LR:
-            case ScanDirection.RR:
-                return Scan.Direction.Right;
-            default:
-                throw new Exception();
-        }
-    }
-
-    public Scan.Position GetScanPosition(int scanNumber)
-    {
-        bool isBottomScan = scanNumber % 2 == 0;
-        if (scanPosition == ScanPosition.Swap)
-        {
-            isBottomScan = !isBottomScan;
-        }
-        return isBottomScan ?
-            Scan.Position.Bottom : Scan.Position.Top;
-    }
-
     public bool HasAnySpecialModifier()
     {
         if (mode != Mode.Normal) return true;

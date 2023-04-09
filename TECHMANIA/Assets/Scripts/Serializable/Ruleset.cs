@@ -237,28 +237,6 @@ public class Ruleset : RulesetBase
                 return 0;
         }
     }
-
-    public void GetScanMargin(int playableLanes,
-        Scan.Position scanPosition,
-        out float marginAbove, out float marginBelow)
-    {
-        int index = playableLanes - 2;
-        float marginTopBottom = scanMarginTopBottom[index];
-        float marginMiddle = scanMarginMiddle[index];
-        switch (scanPosition)
-        {
-            case Scan.Position.Top:
-                marginAbove = marginTopBottom;
-                marginBelow = marginMiddle;
-                break;
-            case Scan.Position.Bottom:
-                marginAbove = marginMiddle;
-                marginBelow = marginTopBottom;
-                break;
-            default:
-                throw new NotImplementedException();
-        }
-    }
     #endregion
 
     #region Instances

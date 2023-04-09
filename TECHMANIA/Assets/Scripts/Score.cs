@@ -3,6 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 
+public enum Judgement
+{
+    RainbowMax,
+    Max,
+    Cool,
+    Good,
+    Miss,
+    Break
+}
+
 public enum PerformanceMedal
 {
     NoMedal,

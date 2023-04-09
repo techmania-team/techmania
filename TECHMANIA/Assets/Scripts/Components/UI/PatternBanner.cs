@@ -83,16 +83,6 @@ public class PatternBanner : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        ModifierSidesheet.ModifierChanged += RefreshControlIcon;
-    }
-
-    private void OnDisable()
-    {
-        ModifierSidesheet.ModifierChanged -= RefreshControlIcon;
-    }
-
     private void RefreshControlIcon()
     {
         Sprite sprite = null;
