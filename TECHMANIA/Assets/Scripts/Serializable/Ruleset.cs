@@ -128,7 +128,8 @@ public class Ruleset : RulesetBase
     }
 
     #region Accessors
-    public int GetHpDelta(Judgement j, NoteType type, bool fever)
+    public int GetHpDelta(Judgement j, NoteType type, bool fever,
+        LegacyRulesetOverride legacyRulesetOverride)
     {
         List<int> list = null;
         switch (type)
@@ -171,10 +172,9 @@ public class Ruleset : RulesetBase
 
         List<int> overrideList = null;
         if (Options.instance.ruleset == Options.Ruleset.Legacy &&
-            InternalGameSetup.patternAfterModifier.legacyRulesetOverride != null)
+            legacyRulesetOverride != null)
         {
-            LegacyRulesetOverride o =
-                InternalGameSetup.patternAfterModifier.legacyRulesetOverride;
+            LegacyRulesetOverride o = legacyRulesetOverride;
             switch (type)
             {
                 case NoteType.Basic:

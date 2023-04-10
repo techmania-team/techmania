@@ -9,6 +9,7 @@ public class ScoreKeeper
 {
     // Reference to GameSetup so we can call callbacks.
     private ThemeApi.GameSetup gameSetup;
+    private LegacyRulesetOverride legacyRulesetOverride;
 
     // Score
     public Score score { get; private set; }
@@ -43,6 +44,8 @@ public class ScoreKeeper
     public void Prepare(Pattern pattern, int firstScan, int lastScan,
         int playableNotes)
     {
+        legacyRulesetOverride = pattern.legacyRulesetOverride;
+
         // Score.
         score = new Score();
         score.Initialize(playableNotes);
@@ -116,7 +119,8 @@ public class ScoreKeeper
         // HP
         hp += Ruleset.instance.GetHpDelta(
             judgement, noteType,
-            feverState == FeverState.Active);
+            feverState == FeverState.Active,
+            legacyRulesetOverride);
         // It's up to GameController to set stage failed.
         if (hp < 0) hp = 0;
         if (hp >= Ruleset.instance.maxHp)

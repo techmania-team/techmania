@@ -265,12 +265,10 @@ public partial class Pattern
         List<float> timeWindows = Ruleset.instance.timeWindows;
         if (calculateTimeWindows &&
             Options.instance.ruleset == Options.Ruleset.Legacy &&
-            InternalGameSetup.patternAfterModifier.legacyRulesetOverride != null &&
-            InternalGameSetup.patternAfterModifier.legacyRulesetOverride
-                .timeWindows.Count > 0)
+            legacyRulesetOverride != null &&
+            legacyRulesetOverride.timeWindows.Count > 0)
         {
-            timeWindows = InternalGameSetup.patternAfterModifier.legacyRulesetOverride
-                .timeWindows;
+            timeWindows = legacyRulesetOverride.timeWindows;
         }
 
         foreach (Note n in notes)
