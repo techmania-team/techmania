@@ -40,6 +40,9 @@ public class GameLayout
         public VisualElement scanline;
     }
     private List<ScanElements> scanElements;
+    // The same list organized as a dictionary for VFXManager
+    // to query.
+    private Dictionary<int, ScanElements> intScanToElements;
 
     #region Public properties
     public float scanHeight => layoutContainer.resolvedStyle
@@ -199,6 +202,7 @@ public class GameLayout
 
         // Spawn scanlines.
         scanElements = new List<ScanElements>();
+        intScanToElements = new Dictionary<int, ScanElements>();
         for (int i = firstScan; i <= lastScan; i++)
         {
             HalfElements half = (i % 2 == 0) ? evenHalf : oddHalf;
@@ -216,6 +220,7 @@ public class GameLayout
 
             half.scanlineContainer.Add(scan.anchor);
             scanElements.Add(scan);
+            intScanToElements.Add(i, scan);
         }
 
         // Calculate countdown length.
@@ -341,6 +346,7 @@ public class GameLayout
     {
         layoutContainer.RemoveFromHierarchy();
         scanElements.Clear();
+        intScanToElements.Clear();
     }
 
     public void Update(float scan)
@@ -529,5 +535,22 @@ public class GameLayout
         }
         return new Vector2(x * gameContainerWidth,
             y * gameContainerHeight);
+    }
+
+    public float GetWorldXOfScanlineAtIntScan(int intScan)
+    {
+        if (!intScanToElements.ContainsKey(intScan)) return 0f;
+
+        // After setting left on the scanline anchor, it takes
+        // 1 frame for world bounds to update, so we can't just
+        // return the world bounds of the scanline anchor.
+        float left = intScanToElements[intScan].anchor.style.left
+            .value.value * 0.01f;
+        float localX = Mathf.Lerp(
+            layoutContainer.localBound.xMin,
+            layoutContainer.localBound.xMax,
+            left);
+        return layoutContainer.LocalToWorld(
+            new Vector2(localX, 0f)).x;
     }
 }

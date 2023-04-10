@@ -390,7 +390,7 @@ public class GameController : MonoBehaviour
             setup.patternAfterModifier.patternMetadata);
 
         // Prepare for VFX and combo text.
-        vfxManager.Prepare(layout.laneHeight, timer);
+        vfxManager.Prepare(layout.laneHeight, timer, layout);
         comboText.ResetSize();
         comboText.Hide();
 

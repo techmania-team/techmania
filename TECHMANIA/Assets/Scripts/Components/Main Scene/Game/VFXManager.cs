@@ -21,7 +21,9 @@ public class VFXManager : MonoBehaviour
 
     // To be passed to
     // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
-    private GameTimer timer;  
+    private GameTimer timer;
+    // To query scanline position when placing ongoing VFX.
+    private GameLayout layout;
 
     // Start is called before the first frame update
     void Start()
@@ -34,10 +36,12 @@ public class VFXManager : MonoBehaviour
             new Dictionary<NoteElements, List<GameObject>>();
     }
 
-    public void Prepare(float laneHeight, GameTimer timer)
+    public void Prepare(float laneHeight, GameTimer timer,
+        GameLayout layout)
     {
         ResetSize(laneHeight);
         this.timer = timer;
+        this.layout = layout;
     }
 
     public void ResetSize(float laneHeight)
@@ -272,15 +276,23 @@ public class VFXManager : MonoBehaviour
 
     private void Update()
     {
+        if (holdNoteToOngoingTrailVfx.Count == 0 &&
+            dragNoteToOngoingVfx.Count == 0) return;
+        float worldXOfScanline = layout.GetWorldXOfScanlineAtIntScan(
+            timer.intScan);
+
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in
             holdNoteToOngoingTrailVfx)
         {
+            Vector2 ongoingTrailEndPosition =
+                VisualElementCenterToScreenPoint(
+                    pair.Key.holdTrailAndExtensions
+                    .GetOngoingTrailEndPosition(timer.intScan));
             foreach (GameObject o in pair.Value)
             {
                 o.GetComponent<VFXDrawer>().SetPosition(
-                    VisualElementCenterToScreenPoint(
-                        pair.Key.holdTrailAndExtensions
-                        .GetOngoingTrailEndPosition(timer.intScan)));
+                    new Vector2(worldXOfScanline,
+                    ongoingTrailEndPosition.y));
             }
         }
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in
