@@ -20,9 +20,6 @@ public class InternalGameSetup
                 "/jar:file:/data", "jar:file:///data");
         }
     }
-    public static PerTrackOptions trackOptions;
 
     public static Pattern patternAfterModifier;
-    public static Pattern patternBeforeApplyingModifier;
-    public static int beginningScanInEditorPreview;
 }

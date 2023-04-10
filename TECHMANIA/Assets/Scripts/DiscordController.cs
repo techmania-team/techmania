@@ -1,27 +1,16 @@
 using System;
 
-// TODO: remove all values not related to editor.
 public enum DiscordActivityType
 {
-    MainMenu,
-    Options,
-    Information,
-    SelectingTrack,
-    SelectingPattern,
     EditorTrack,
-    EditorPattern,
-    EditorSave,
-    Game,
-    Empty
+    EditorPattern
 }
 
 public class DiscordController
 {
     private static Discord.Discord discord;
-    private static DateTimeOffset timeStart;
-    private static string details = "";
-    private static string state = "";
-    private static DiscordActivityType lastActivityType;
+    private static bool showingElapsedTime = false;
+    private static DateTimeOffset startTime;
 
     public static void Start ()
     {
@@ -52,100 +41,36 @@ public class DiscordController
         }
     }
 
+    // For editor only.
     public static void SetActivity (DiscordActivityType type)
     {
         if (discord == null || !SupportedOnCurrentPlatform()) return;
 
-        bool shouldSetTimestamp = false;
         switch (type)
         {
-            case DiscordActivityType.MainMenu:
-                details = L10n.GetString("discord_state_main_menu");
-                state = "";
-                break;
-            case DiscordActivityType.Options:
-                details = L10n.GetString("discord_state_options");
-                state = "";
-                break;
-            case DiscordActivityType.Information:
-                details = L10n.GetString("discord_state_information");
-                state = "";
-                break;
-            case DiscordActivityType.SelectingTrack:
-                details = L10n.GetString(
-                    "discord_state_selecting_track");
-                state = "";
-                break;
-            case DiscordActivityType.SelectingPattern:
-                details = InternalGameSetup.track.trackMetadata.title;
-                state = L10n.GetString(
-                    "discord_state_selecting_pattern");
-                break;
             case DiscordActivityType.EditorTrack:
-                if (lastActivityType
-                    != DiscordActivityType.EditorTrack)
-                {
-                    timeStart = DateTimeOffset.UtcNow;
-                }
-                details = EditorContext.track.trackMetadata.title;
-                state = L10n.GetString("discord_state_editing_track");
-                shouldSetTimestamp = true;
+                SetActivity(
+                    details: 
+                    EditorContext.track.trackMetadata.title,
+                    state:
+                    L10n.GetString("discord_state_editing_track"),
+                    showElapsedTime: true);
                 break;
             case DiscordActivityType.EditorPattern:
-                if (lastActivityType !=
-                    DiscordActivityType.EditorPattern)
-                {
-                    timeStart = DateTimeOffset.UtcNow;
-                }
-                {
-                    PatternMetadata metadata = EditorContext.Pattern
-                        .patternMetadata;
-                    state = L10n.GetStringAndFormat(
-                        "discord_state_editing_pattern",
-                        metadata.playableLanes,
-                        GetModeName(metadata.controlScheme),
-                        metadata.patternName);
-                }
-                shouldSetTimestamp = true;
-                break;
-            case DiscordActivityType.EditorSave:
-                details = EditorContext.track.trackMetadata.title;
-                shouldSetTimestamp = true;
-                break;
-            case DiscordActivityType.Game:
-                if (lastActivityType != DiscordActivityType.Game)
-                {
-                    timeStart = DateTimeOffset.UtcNow;
-                }
-                {
-                    PatternMetadata metadata = InternalGameSetup.patternAfterModifier
-                        .patternMetadata;
-                    details = InternalGameSetup.track.trackMetadata.title;
-                    state = L10n.GetStringAndFormat(
-                        "discord_state_playing_pattern",
-                        metadata.playableLanes,
-                        GetModeName(metadata.controlScheme),
-                        metadata.patternName);
-                }
-                shouldSetTimestamp = true;
+                PatternMetadata metadata = EditorContext.Pattern
+                    .patternMetadata;
+                string state = L10n.GetStringAndFormat(
+                    "discord_state_editing_pattern",
+                    metadata.playableLanes,
+                    GetModeName(metadata.controlScheme),
+                    metadata.patternName);
+                SetActivity(
+                    details:
+                    EditorContext.track.trackMetadata.title,
+                    state: state,
+                    showElapsedTime: true);
                 break;
         }
-        lastActivityType = type;
-        Discord.Activity activity = new Discord.Activity
-        {
-            Details = details,
-            State = state,
-            Assets =
-            {
-                LargeImage = "techmania"
-            }
-        };
-        if (shouldSetTimestamp)
-        {
-            activity.Timestamps.Start = timeStart.ToUnixTimeSeconds();
-        }
-        discord.GetActivityManager().UpdateActivity(
-            activity, (result) => {});
     }
 
     public static void Dispose ()
@@ -183,8 +108,7 @@ public class DiscordController
     }
 
     #region Theme API
-    private static bool showingElapsedTime = false;
-
+    
     public static void SetActivity(
         string details, string state, bool showElapsedTime = false)
     {
@@ -204,9 +128,9 @@ public class DiscordController
             if (!showingElapsedTime)
             {
                 // Capture start time.
-                timeStart = DateTimeOffset.UtcNow;
+                startTime = DateTimeOffset.UtcNow;
             }
-            activity.Timestamps.Start = timeStart.ToUnixTimeSeconds();
+            activity.Timestamps.Start = startTime.ToUnixTimeSeconds();
         }
         discord.GetActivityManager().UpdateActivity(
             activity, (result) => { });

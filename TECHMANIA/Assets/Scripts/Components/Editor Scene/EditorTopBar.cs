@@ -28,8 +28,6 @@ public class EditorTopBar : MonoBehaviour
     public void Save()
     {
         EditorContext.Save();
-        
-        DiscordController.SetActivity(DiscordActivityType.EditorSave);
     }
 
     public void Undo()
