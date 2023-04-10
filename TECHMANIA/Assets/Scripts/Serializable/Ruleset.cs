@@ -172,7 +172,8 @@ public class Ruleset : RulesetBase
 
         List<int> overrideList = null;
         if (Options.instance.ruleset == Options.Ruleset.Legacy &&
-            legacyRulesetOverride != null)
+            legacyRulesetOverride != null &&
+            legacyRulesetOverride.HasAny())
         {
             LegacyRulesetOverride o = legacyRulesetOverride;
             switch (type)

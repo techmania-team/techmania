@@ -266,7 +266,7 @@ public partial class Pattern
         if (calculateTimeWindows &&
             Options.instance.ruleset == Options.Ruleset.Legacy &&
             legacyRulesetOverride != null &&
-            legacyRulesetOverride.timeWindows.Count > 0)
+            legacyRulesetOverride.HasAny())
         {
             timeWindows = legacyRulesetOverride.timeWindows;
         }
