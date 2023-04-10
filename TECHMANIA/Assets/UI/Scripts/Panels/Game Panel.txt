@@ -36,6 +36,7 @@ gamePanel.Initialize = function()
     panel.RegisterCallback(eventType.KeyDown, function(element, event)
         if (event.keyCode == unity.enum.keyCode.Escape) then
             if (gamePanel.inEditor) then
+                gamePanel.ConcludeGame()
                 navigation.TransitionBackTo(gamePanel, editorPatternPanel)
             else
                 if (tm.game.state == tm.enum.gameState.Paused) then
@@ -84,6 +85,7 @@ gamePanel.Initialize = function()
         tm.gameSetup.onLoadError = function(status)
             tm.game.Conclude()
             alertBox.Alert(status.errorMessage, nil, function()
+                gamePanel.ConcludeGame()
                 navigation.FadeTo(gamePanel, selectTrackPanel)
             end)
         end
@@ -200,6 +202,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(scoreKeeper)
+            -- Don't conclude the game yet
             navigation.FadeTo(gamePanel, resultPanel)
         end
 
@@ -219,6 +222,7 @@ gamePanel.Initialize = function()
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
                 tm.game.StopAllAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
+                -- Don't conclude the game yet
                 navigation.FadeTo(gamePanel, resultPanel)
             end)
         end
@@ -274,7 +278,9 @@ gamePanel.Show = function()
     tm.game.BeginLoading()
 end
 
-gamePanel.Hide = function()
+gamePanel.ConcludeGame = function()
+    -- Don't conclude the game in Hide, Result panel calls stuff that
+    -- requires Complete state.
     if (tm.game.state != tm.enum.gameState.Idle) then
         tm.game.Conclude()
     end
@@ -503,6 +509,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
         navigation.FadeTo(gamePanel, selectTrackPanel)
     end)
 

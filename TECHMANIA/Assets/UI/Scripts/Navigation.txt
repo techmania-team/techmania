@@ -106,6 +106,7 @@ function SetUpNavigation()
         navigation.TransitionTo(editorPatternPanel, gamePanel)
     end
     gamePanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
         navigation.TransitionBackTo(gamePanel, editorPatternPanel)
     end)
 
