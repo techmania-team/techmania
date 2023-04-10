@@ -489,7 +489,7 @@ newTrackDialog.Initialize = function()
                         -- When the panel fully disappears, hide the new track dialog so
                         -- it's not visible when we return
                         bg.display = false
-                        tm.editor.LaunchOnTrack(newTrackFolder)  -- TODO: pass in newly created track
+                        tm.editor.LaunchOnTrack(newTrackFolder)
                     end)
             end)
         else

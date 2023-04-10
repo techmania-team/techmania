@@ -270,6 +270,7 @@ optionsPanel.Initialize = function()
     local customLocationToggle = panel.Q("custom-data-location").Q("track")
     customLocationToggle.RegisterCallback(eventType.Click, function()
         tm.options.customDataLocation = not tm.options.customDataLocation
+        tm.paths.ApplyCustomDataLocation()
         selectTrackPanel.needsRefresh = true
         optionsPanel.UpdateCustomDataLocationDisplay()
     end)

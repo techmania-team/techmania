@@ -87,9 +87,9 @@ public class Options : OptionsBase
         Custom
     }
     public Ruleset ruleset;
-    public bool customDataLocation;
     // Remember to call Paths.ApplyCustomDataLocation after modifying
     // these paths.
+    public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
     // Call TurnOn/OffDiscordRichPresence instead of setting this

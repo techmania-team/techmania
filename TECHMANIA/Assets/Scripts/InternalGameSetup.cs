@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 
 // Pass information from MainMenu scene to Game scene.
+// TODO: delete this.
 public class InternalGameSetup
 {
     public static Track track;

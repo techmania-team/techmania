@@ -1,5 +1,6 @@
 using System;
 
+// TODO: remove all values not related to editor.
 public enum DiscordActivityType
 {
     MainMenu,
