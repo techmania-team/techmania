@@ -13,7 +13,7 @@ resultPanel.Show = function()
 
     -- Panel title
     local panelTitle = panel.Q("top-bar").Q("title")
-    if (scoreKeeper.score.stageFailed) then
+    if (scoreKeeper.stageFailed) then
         panelTitle.text = tm.l10n.GetString("result_panel_stage_failed_title")
     else
         panelTitle.text = tm.l10n.GetString("result_panel_stage_clear_title")
@@ -41,21 +41,21 @@ resultPanel.Show = function()
         tallyLabels.Q("combo-bonus").display = false
         tallyValues.Q("combo-bonus").display = false
     end
-    tallyValues.Q("rainbow-max").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
-    tallyValues.Q("max").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.Max))
-    tallyValues.Q("cool").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.Cool))
-    tallyValues.Q("good").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.Good))
-    tallyValues.Q("miss").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.Miss))
-    tallyValues.Q("break").text = tostring(scoreKeeper.score.NumNotesWithJudgement(tm.enum.judgement.Break))
+    tallyValues.Q("rainbow-max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
+    tallyValues.Q("max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Max))
+    tallyValues.Q("cool").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Cool))
+    tallyValues.Q("good").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Good))
+    tallyValues.Q("miss").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Miss))
+    tallyValues.Q("break").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Break))
     tallyValues.Q("max-combo").text = tostring(scoreKeeper.maxCombo)
-    tallyValues.Q("fever-bonus").text = tostring(scoreKeeper.score.totalFeverBonus)
-    tallyValues.Q("combo-bonus").text = tostring(scoreKeeper.score.comboBonus)
+    tallyValues.Q("fever-bonus").text = tostring(scoreKeeper.totalFeverBonus)
+    tallyValues.Q("combo-bonus").text = tostring(scoreKeeper.ComboBonus())
 
     -- Score and rank
-    local score = scoreKeeper.score.CurrentScore() + scoreKeeper.score.totalFeverBonus + scoreKeeper.score.comboBonus
+    local score = scoreKeeper.TotalScore()
     panel.Q("total-score").Q("value").text = tostring(score)
 
-    local medal = scoreKeeper.score.Medal()
+    local medal = scoreKeeper.Medal()
     local medalString = ""
     if (medal == tm.enum.performanceMedal.AllCombo) then
         medalString = tm.l10n.GetString("performance_medal_all_combo")
@@ -66,17 +66,13 @@ resultPanel.Show = function()
     end
     panel.Q("total-score").Q("medal").text = medalString
 
-    local rank = "F"
-    if (not scoreKeeper.score.stageFailed) then
-        rank = ScoreToRank(score)
-    end
-    panel.Q("rank").Q("value").text = rank
+    panel.Q("rank").Q("value").text = scoreKeeper.Rank()
 
     -- Record
     local record = tm.records.GetRecord(pattern)
     local recordString = "---"
     if (record != nil) then
-        recordString = record.score .. "   " .. ScoreToRank(record.score)
+        recordString = record.score .. "   " .. record.Rank()
     end
     panel.Q("my-record").Q("value").text = recordString
     

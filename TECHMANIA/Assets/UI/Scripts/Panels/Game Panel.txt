@@ -104,9 +104,9 @@ gamePanel.Initialize = function()
         tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
             gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
             gamePanel.UpdateScoreDisplay(
-                scoreKeeper.score.CurrentScore(),
+                scoreKeeper.ScoreFromNotes(),
                 scoreKeeper.maxCombo)
-            judgementTally.Update(scoreKeeper.score)
+            judgementTally.Update(scoreKeeper)
         end
 
         tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
@@ -116,7 +116,7 @@ gamePanel.Initialize = function()
         tm.gameSetup.onComboTick = function(newCombo)
             local scoreKeeper = tm.game.scoreKeeper
             gamePanel.UpdateScoreDisplay(
-                scoreKeeper.score.CurrentScore(),
+                scoreKeeper.ScoreFromNotes(),
                 scoreKeeper.maxCombo)
         end
 
@@ -544,13 +544,13 @@ judgementTally.Reset = function()
     judgementTally.displays.Q("break").text = "0"
 end
 
-judgementTally.Update = function(score)
-    judgementTally.displays.Q("rmax").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
-    judgementTally.displays.Q("max").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Max))
-    judgementTally.displays.Q("cool").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Cool))
-    judgementTally.displays.Q("good").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Good))
-    judgementTally.displays.Q("miss").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Miss))
-    judgementTally.displays.Q("break").text = tostring(score.NumNotesWithJudgement(tm.enum.judgement.Break))
+judgementTally.Update = function(scoreKeeper)
+    judgementTally.displays.Q("rmax").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
+    judgementTally.displays.Q("max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Max))
+    judgementTally.displays.Q("cool").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Cool))
+    judgementTally.displays.Q("good").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Good))
+    judgementTally.displays.Q("miss").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Miss))
+    judgementTally.displays.Q("break").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Break))
 end
 
 practiceMode.Initialize = function()

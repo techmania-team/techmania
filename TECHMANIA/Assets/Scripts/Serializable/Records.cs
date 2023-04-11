@@ -57,9 +57,14 @@ public class Record
         set;
     }
 
+    public string Rank()
+    {
+        return ScoreKeeper.ScoreToRankAssumingStageClear(score);
+    }
+
     public override string ToString()
     {
-        return $"{score}   {Score.ScoreToRank(score)}";
+        return $"{score}   {Rank()}";
     }
 
     public static string EmptyRecordString()
@@ -146,7 +151,7 @@ public class Records : RecordsBase
 
     [MoonSharpHidden]
     public void UpdateRecord(Pattern p, Options.Ruleset ruleset,
-        Score s)
+        int totalScore, PerformanceMedal medal)
     {
         p.CheckFingerprintCalculated();
 
@@ -156,8 +161,6 @@ public class Records : RecordsBase
         }
 
         string guid = p.patternMetadata.guid;
-        int totalScore = s.CurrentScore() + s.totalFeverBonus +
-            s.comboBonus;
         Record record = GetRecord(p, ruleset);
         if (record == null)
         {
@@ -178,7 +181,7 @@ public class Records : RecordsBase
                 fingerprint = p.fingerprint,
                 ruleset = Options.instance.ruleset,
                 score = totalScore,
-                medal = s.Medal(),
+                medal = medal,
                 gameVersion = Application.version
             };
             dict.Add(guid, record);
@@ -191,9 +194,9 @@ public class Records : RecordsBase
             {
                 record.score = totalScore;
             }
-            if (s.Medal() > record.medal)
+            if (medal > record.medal)
             {
-                record.medal = s.Medal();
+                record.medal = medal;
             }
         }
     }

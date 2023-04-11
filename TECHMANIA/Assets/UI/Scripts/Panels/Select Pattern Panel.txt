@@ -289,8 +289,7 @@ selectPatternPanel.ShowPatternDetails = function()
         panel.Q("record").Q("content").text = "---"
         panel.Q("record").Q("medal-text").text = ""
     else
-        local score = record.score
-        panel.Q("record").Q("content").text = score .. "   " .. ScoreToRank(score)
+        panel.Q("record").Q("content").text = record.score .. "   " .. record.Rank()
         local medal = record.medal
         if (medal == tm.enum.performanceMedal.NoMedal) then
             panel.Q("record").Q("medal-text").text = ""

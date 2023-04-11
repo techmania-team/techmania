@@ -495,7 +495,7 @@ public class GameController : MonoBehaviour
     {
         return !setup.modifiers.HasAnySpecialModifier() &&
             setup.ruleset != Options.Ruleset.Custom &&
-            !scoreKeeper.score.stageFailed;
+            !scoreKeeper.stageFailed;
     }
 
     public bool ScoreIsNewRecord()
@@ -505,9 +505,7 @@ public class GameController : MonoBehaviour
             setup.patternBeforeModifier, setup.ruleset);
         if (currentRecord == null) return true;
         int currentScore = currentRecord.score;
-        int newScore = scoreKeeper.score.CurrentScore() +
-            scoreKeeper.score.totalFeverBonus +
-            scoreKeeper.score.comboBonus;
+        int newScore = scoreKeeper.TotalScore();
 
         return newScore > currentScore;
     }
@@ -518,7 +516,8 @@ public class GameController : MonoBehaviour
         Records.instance.UpdateRecord(
             setup.patternBeforeModifier,
             setup.ruleset,
-            scoreKeeper.score);
+            scoreKeeper.TotalScore(),
+            scoreKeeper.Medal());
     }
     #endregion
 
@@ -618,8 +617,7 @@ public class GameController : MonoBehaviour
         if (scoreKeeper.hp <= 0 &&
             setup.modifiers.mode != Modifiers.Mode.NoFail)
         {
-            scoreKeeper.score.stageFailed = true;
-            scoreKeeper.score.CalculateComboBonus();
+            scoreKeeper.stageFailed = true;
             state.SetComplete();
             setup.onStageFailed?.Function?.Call(scoreKeeper);
         }
@@ -630,10 +628,9 @@ public class GameController : MonoBehaviour
         if (state.state != ThemeApi.GameState.State.Ongoing) return;
         if (timer.baseTime <= timer.patternEndTime) return;
         if (setup.modifiers.mode == Modifiers.Mode.Practice) return;
-        if (!scoreKeeper.score.AllNotesResolved()) return;
+        if (!scoreKeeper.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
-        scoreKeeper.score.CalculateComboBonus();
         state.SetComplete();
         setup.onStageClear?.Function?.Call(scoreKeeper);
     }
@@ -685,7 +682,7 @@ public class GameController : MonoBehaviour
 
         setup.onNoteResolved?.Function?.Call(elements.note,
             judgement, scoreKeeper);
-        if (scoreKeeper.score.AllNotesResolved())
+        if (scoreKeeper.AllNotesResolved())
         {
             setup.onAllNotesResolved?.Function?.Call(scoreKeeper);
         }

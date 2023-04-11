@@ -18,26 +18,6 @@ function LoadAndShowEyecatch(path, eyecatchElement)
     end)
 end
 
-function ScoreToRank(score)
-    if (score > 295000) then
-        return "S++"
-    elseif (score > 290000) then
-        return "S+"
-    elseif (score > 285000) then
-        return "S"
-    elseif (score > 280000) then
-        return "A++"
-    elseif (score > 270000) then
-        return "A+"
-    elseif (score > 260000) then
-        return "A"
-    elseif (score > 220000) then
-        return "B"
-    else
-        return "C"
-    end
-end
-
 commonUI = {}
 
 commonUI.InitializeVolumeSliders = function(container)
