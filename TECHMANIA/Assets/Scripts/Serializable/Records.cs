@@ -20,27 +20,42 @@ public class RecordsBase : SerializableClass<RecordsBase>
 public class Record
 {
     // All fields are read-only for Lua.
-    [MoonSharpHidden]
-    public string guid;  // For pattern
-    [MoonSharpHidden]
-    public string fingerprint;  // SHA256
-    [MoonSharpHidden]
-    public Options.Ruleset ruleset;
-    [MoonSharpHidden]
-    public int score;
-    [MoonSharpHidden]
-    public PerformanceMedal medal;
-    [MoonSharpHidden]
-    public string gameVersion;
-
-    #region Lua accessors
-    public string GetGuid() => guid;
-    public string GetFingerprint() => fingerprint;
-    public string GetRuleset() => ruleset.ToString();
-    public int GetScore() => score;
-    public string GetMedal() => medal.ToString();
-    public string GetGameVersion() => gameVersion;
-    #endregion
+    public string guid  // For pattern
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public string fingerprint // SHA256
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public Options.Ruleset ruleset
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public int score
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public PerformanceMedal medal
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public string gameVersion
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
 
     public override string ToString()
     {
@@ -50,26 +65,6 @@ public class Record
     public static string EmptyRecordString()
     {
         return "---";
-    }
-
-    public static string MedalToString(PerformanceMedal medal)
-    {
-        switch (medal)
-        {
-            case PerformanceMedal.NoMedal:
-                return "";
-            case PerformanceMedal.AllCombo:
-                return L10n.GetString(
-                    "result_panel_full_combo_medal");
-            case PerformanceMedal.PerfectPlay:
-                return L10n.GetString(
-                    "result_panel_perfect_play_medal");
-            case PerformanceMedal.AbsolutePerfect:
-                return L10n.GetString(
-                    "result_panel_absolute_perfect_medal");
-            default:
-                return "";
-        }
     }
 
     public Record Clone()
@@ -147,71 +142,6 @@ public class Records : RecordsBase
     public Record GetRecord(Pattern p)
     {
         return GetRecord(p, Options.instance.ruleset);
-    }
-
-    // If the score is invalid for any reason (modifiers,
-    // stage failed, etc.), pass in null. currentRecord can also
-    // be null.
-    //
-    // This method has special treatment for records set in 1.0 and
-    // 1.0.1. It is now deprecated.
-    [MoonSharpHidden]
-    [Obsolete]
-    public void LegacyUpdateRecord(Pattern p, Score s,
-        Record currentRecord, out bool newRecord)
-    {
-        p.CheckFingerprintCalculated();
-        Record updatedRecord = null;
-        if (currentRecord != null)
-        {
-            updatedRecord = currentRecord.Clone();
-        }
-
-        // First, fix outdated records if applicable.
-        if (currentRecord != null &&
-            (currentRecord.gameVersion == "1.0" ||
-            currentRecord.gameVersion == "1.0.1"))
-        {
-            updatedRecord.fingerprint = p.fingerprint;
-            updatedRecord.gameVersion = Application.version;
-        }
-
-        // Then, update medal if applicable.
-        if (currentRecord != null &&
-            s != null &&
-            s.Medal() > currentRecord.medal)
-        {
-            updatedRecord.medal = s.Medal();
-            updatedRecord.gameVersion = Application.version;
-        }
-
-        // Finally, update score if applicable.
-        newRecord = false;
-        if (s != null)
-        {
-            int totalScore = s.CurrentScore() +
-                s.totalFeverBonus + s.comboBonus;
-            if (currentRecord == null ||
-                totalScore > currentRecord.score)
-            {
-                newRecord = true;
-                updatedRecord = new Record()
-                {
-                    guid = p.patternMetadata.guid,
-                    fingerprint = p.fingerprint,
-                    ruleset = Options.instance.ruleset,
-                    score = totalScore,
-                    medal = s.Medal(),
-                    gameVersion = Application.version
-                };
-            }    
-        }
-
-        if (updatedRecord != null)
-        {
-            recordDict[updatedRecord.ruleset][updatedRecord.guid]
-                = updatedRecord;
-        }
     }
 
     [MoonSharpHidden]

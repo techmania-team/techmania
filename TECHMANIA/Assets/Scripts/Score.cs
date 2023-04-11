@@ -3,24 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 
-public enum Judgement
-{
-    RainbowMax,
-    Max,
-    Cool,
-    Good,
-    Miss,
-    Break
-}
-
-public enum PerformanceMedal
-{
-    NoMedal,
-    AllCombo,
-    PerfectPlay,
-    AbsolutePerfect
-}
-
 // Read-only to Lua.
 // TODO: merge this class into ScoreKeeper.
 // TODO: add a properly named API to provide CurrentScore() +

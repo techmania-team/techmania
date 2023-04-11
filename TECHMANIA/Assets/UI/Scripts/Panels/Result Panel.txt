@@ -76,7 +76,7 @@ resultPanel.Show = function()
     local record = tm.records.GetRecord(pattern)
     local recordString = "---"
     if (record != nil) then
-        recordString = record.GetScore() .. "   " .. ScoreToRank(record.GetScore())
+        recordString = record.score .. "   " .. ScoreToRank(record.score)
     end
     panel.Q("my-record").Q("value").text = recordString
     

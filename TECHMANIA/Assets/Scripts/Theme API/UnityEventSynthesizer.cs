@@ -58,7 +58,6 @@ namespace ThemeApi
 
         void Update()
         {
-            // TODO: GC.Collect causes lag spikes. Why?
             if (!HasListeners<FrameUpdateEvent>()) return;
             foreach (VisualElement element in
                 eventListeners[typeof(FrameUpdateEvent)])

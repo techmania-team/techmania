@@ -3,6 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 
+public enum Judgement
+{
+    RainbowMax,
+    Max,
+    Cool,
+    Good,
+    Miss,
+    Break
+}
+
+public enum PerformanceMedal
+{
+    NoMedal,
+    AllCombo,
+    PerfectPlay,
+    AbsolutePerfect
+}
+
 [MoonSharpUserData]
 // Keeps track of score, combo, HP and fever.
 public class ScoreKeeper

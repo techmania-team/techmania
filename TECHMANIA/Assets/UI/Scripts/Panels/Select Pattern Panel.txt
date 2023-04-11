@@ -34,6 +34,7 @@ modifierSideSheet = {
 
 -- Returns a table with keys "density", "peak", "speed", "chaos" and "async".
 -- Make sure to call pattern.PrepareForTimeCalculation() before this.
+-- TODO: let Theme API do this.
 function CalculateRadar(pattern)
     local radar = {}
     if (pattern == nil) then
@@ -288,16 +289,16 @@ selectPatternPanel.ShowPatternDetails = function()
         panel.Q("record").Q("content").text = "---"
         panel.Q("record").Q("medal-text").text = ""
     else
-        local score = record.GetScore()
+        local score = record.score
         panel.Q("record").Q("content").text = score .. "   " .. ScoreToRank(score)
-        local medal = record.GetMedal()
-        if (medal == "NoMedal") then
+        local medal = record.medal
+        if (medal == tm.enum.performanceMedal.NoMedal) then
             panel.Q("record").Q("medal-text").text = ""
-        elseif (medal == "AllCombo") then
+        elseif (medal == tm.enum.performanceMedal.AllCombo) then
             panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_all_combo")
-        elseif (medal == "PerfectPlay") then
+        elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
             panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_perfect_play")
-        elseif (medal == "AbsolutePerfect") then
+        elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
             panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_absolute_perfect")
         end
     end
@@ -343,13 +344,13 @@ selectPatternPanel.Show = function()
         local record = tm.records.GetRecord(pattern)
         local medal = ""
         if (record != nil) then
-            medal = record.GetMedal()
+            medal = record.medal
         end
-        if (medal == "AbsolutePerfect" or
-            medal == "PerfectPlay") then
+        if (medal == tm.enum.performanceMedal.AbsolutePerfect or
+            medal == tm.enum.performanceMedal.PerfectPlay) then
             radioButton.Q("perfect-play-icon").display = true
             radioButton.Q("all-combo-icon").display = false
-        elseif (medal == "AllCombo") then
+        elseif (medal == tm.enum.performanceMedal.AllCombo) then
             radioButton.Q("perfect-play-icon").display = false
             radioButton.Q("all-combo-icon").display = true
         else
