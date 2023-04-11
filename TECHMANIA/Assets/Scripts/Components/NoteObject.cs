@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-// Used by legacy Game component and editor.
+// Used by editor.
 public class NoteObject : MonoBehaviour, INoteHolder
 {
     [HideInInspector]

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+// For sorting file names in a natural way, so "file 9" comes before
+// "file 10", for example.
 public class NumericSort
 {
     // Based on https://stackoverflow.com/a/22323356

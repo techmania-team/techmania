@@ -13,7 +13,18 @@ using UnityEngine.Events;
 //   Field 0 - comment
 //   Field 1 - key
 //   Same field as the locale in header - string content
-
+//
+// ===============================================================
+//
+// On instances
+//
+// Starting 2.0, there are 2 L10n instances: "system", covering
+// stuff outside themes (boot screen, editor), and "theme",
+// covering the theme. The latter is exposed to Lua via
+// ThemeL10n.
+//
+// ===============================================================
+//
 // On keys
 //
 // In the system instance, keys can be any string as it's up to
@@ -43,7 +54,6 @@ public class Locale
 
 // This class loads string tables and serves strings based on
 // the current locale.
-// There are 2 instances: one for the system, one for the theme.
 public class L10n
 {
     public enum Instance
