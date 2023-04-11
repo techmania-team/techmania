@@ -13,7 +13,6 @@ public class AudioSourceManager : MonoBehaviour
     [MoonSharpHidden]
     public UnityEngine.Audio.AudioMixer audioMixer;
 
-    // TODO: rename to "music"
     [MoonSharpHidden]
     public AudioSource musicSource;
     [MoonSharpHidden]
