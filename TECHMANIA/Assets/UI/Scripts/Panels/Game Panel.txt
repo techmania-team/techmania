@@ -182,7 +182,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onFeverActivated = function()
-            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"), tm.enum.audioChannel.SFX)
+            tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"))
             gamePanel.ShowFeverOff()
         end
 
@@ -207,7 +207,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageFailed = function(scoreKeeper)
-            tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"), tm.enum.audioChannel.SFX)
+            tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"))
             tm.StartCoroutine(function()
                 local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
                 local timer = 0
@@ -220,7 +220,7 @@ gamePanel.Initialize = function()
                     coroutine.yield()
                 end
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
-                tm.game.StopAllAudio()
+                tm.game.StopAllGameAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
                 -- Don't conclude the game yet
                 navigation.FadeTo(gamePanel, resultPanel)
@@ -426,7 +426,7 @@ gamePanel.Pause = function(silent)  -- boolean
     local bg = pauseMenu.bg
     local menu = pauseMenu.menu
     if (not silent) then
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"))
     end
     tm.game.Pause()
     FadeInDialog(bg, menu)
@@ -500,7 +500,7 @@ pauseMenu.Initialize = function()
     menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, function(_, _)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
     end)
 
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()

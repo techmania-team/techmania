@@ -1,17 +1,26 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[MoonSharpUserData]
 public class AudioSourceManager : MonoBehaviour
 {
+    [MoonSharpHidden]
     public static AudioSourceManager instance { get; private set; }
 
+    [MoonSharpHidden]
     public UnityEngine.Audio.AudioMixer audioMixer;
 
+    // TODO: rename to "music"
+    [MoonSharpHidden]
     public AudioSource backingTrack;
+    [MoonSharpHidden]
     public Transform playableLanesContainer;
+    [MoonSharpHidden]
     public Transform hiddenLanesContainer;
+    [MoonSharpHidden]
     public Transform sfxContainer;
 
     private AudioSource[] playableLanes;
@@ -19,7 +28,7 @@ public class AudioSourceManager : MonoBehaviour
     private AudioSource[] sfxSources;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         instance = this;
 
@@ -84,17 +93,7 @@ public class AudioSourceManager : MonoBehaviour
         source.Play();
     }
 
-    public AudioSource PlayBackingTrack(AudioClip clip,
-        float startTime = 0f,
-        int volumePercent = Note.defaultVolume,
-        int panPercent = Note.defaultPan)
-    {
-        PlaySound(backingTrack, clip, startTime,
-            volumePercent, panPercent);
-        return backingTrack;
-    }
-
-    private AudioSource FindSource(AudioSource[] sources,
+    private AudioSource FindAvailableSource(AudioSource[] sources,
         string clipTypeForLogging)
     {
         AudioSource sourceWithLeastRemainingTime = null;
@@ -118,6 +117,17 @@ public class AudioSourceManager : MonoBehaviour
         return sourceWithLeastRemainingTime;
     }
 
+    #region Play API
+    public AudioSource PlayBackingTrack(AudioClip clip,
+        float startTime = 0f,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan)
+    {
+        PlaySound(backingTrack, clip, startTime,
+            volumePercent, panPercent);
+        return backingTrack;
+    }
+
     // Returns the AudioSource chosen to play the clip, if not null.
     public AudioSource PlayKeysound(AudioClip clip, bool hiddenLane,
         float startTime = 0f,
@@ -129,12 +139,12 @@ public class AudioSourceManager : MonoBehaviour
         AudioSource source;
         if (hiddenLane)
         {
-            source = FindSource(hiddenLanes,
+            source = FindAvailableSource(hiddenLanes,
                 "keysound in hidden lane");
         }
         else
         {
-            source = FindSource(playableLanes,
+            source = FindAvailableSource(playableLanes,
                 "keysound in playable lane");
         }
 
@@ -143,15 +153,18 @@ public class AudioSourceManager : MonoBehaviour
     }
 
     public AudioSource PlaySfx(AudioClip clip,
+        float startTime = 0f,
         int volumePercent = Note.defaultVolume,
         int panPercent = Note.defaultPan)
     {
-        AudioSource source = FindSource(sfxSources,
+        AudioSource source = FindAvailableSource(sfxSources,
             "SFX");
         PlaySound(source, clip, 0f, volumePercent, panPercent);
         return source;
     }
+    #endregion
 
+    #region Batch control
     public void PauseAll()
     {
         backingTrack.Pause();
@@ -179,6 +192,7 @@ public class AudioSourceManager : MonoBehaviour
         foreach (AudioSource s in playableLanes) s.pitch = speed;
         foreach (AudioSource s in hiddenLanes) s.pitch = speed;
     }
+    #endregion
 
     public bool IsAnySourcePlaying()
     {

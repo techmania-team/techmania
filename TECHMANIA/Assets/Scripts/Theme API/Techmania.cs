@@ -28,8 +28,6 @@ namespace ThemeApi
             paths = new Paths();
             editor = new EditorInterface();
 
-            audio = new AudioManager();
-
             CallbackRegistry.Prepare();
             UnityEventSynthesizer.Prepare();
 
@@ -69,7 +67,7 @@ namespace ThemeApi
         #endregion
 
         #region Audio and video
-        public AudioManager audio { get; private set; }
+        public AudioSourceManager audio => AudioSourceManager.instance;
         #endregion
 
         #region System dialogs

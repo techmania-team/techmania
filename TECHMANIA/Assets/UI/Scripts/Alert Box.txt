@@ -68,7 +68,7 @@ alertBox.Initialize = function()
     bg.Q("cancel-button").RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, OnCancel)
     bg.RegisterCallback(eventType.Click, function(element, event)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
     end)
 
     bg.Q("alert-box").RegisterCallback(eventType.Click, function(element, event)

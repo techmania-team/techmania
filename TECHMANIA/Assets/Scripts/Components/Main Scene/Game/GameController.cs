@@ -480,7 +480,7 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region APIs available in Complete state
-    public void StopAllAudio()
+    public void StopAllGameAudio()
     {
         bg.StopBackingTrack();
         keysoundPlayer.StopAll();

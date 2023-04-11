@@ -112,9 +112,10 @@ namespace ThemeApi
         #endregion
 
         #region APIs available in Complete state
-        public void StopAllAudio()
+        // Covers backing track and keysounds.
+        public void StopAllGameAudio()
         {
-            GameController.instance.StopAllAudio();
+            GameController.instance.StopAllGameAudio();
         }
 
         public void StopBga()

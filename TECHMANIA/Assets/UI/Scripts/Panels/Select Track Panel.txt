@@ -397,7 +397,7 @@ end
 filterSideSheet.Initialize = function()
     local bg = filterSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         filterSideSheet.FadeOut()
     end)
 
@@ -506,7 +506,7 @@ newTrackDialog.Initialize = function()
         FadeOutDialog(bg, dialog)
     end)
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         FadeOutDialog(bg, dialog)
     end)
 

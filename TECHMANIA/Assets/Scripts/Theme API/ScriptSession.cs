@@ -102,8 +102,6 @@ namespace ThemeApi
             Table tmEnums = new Table(session);
             addType(tmEnums, typeof(VisualElementWrap.EventType));
             addType(tmEnums, typeof(Options.Ruleset));
-            addTypeAs(tmEnums, typeof(AudioManager.Channel),
-                "audioChannel");
             addTypeAs(tmEnums, typeof(GameState.State), "gameState");
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));

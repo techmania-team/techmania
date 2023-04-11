@@ -337,7 +337,7 @@ selectPatternPanel.Initialize = function()
     end)
 
     panel.Q("play-button").RegisterCallback(eventType.Click, function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
 
         -- Populate game setup
         tm.gameSetup.trackFolder = selectTrackPanel.selectedTrackFolder
@@ -453,7 +453,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
             while (true) do
                 local timer = 0
                 -- Start at volume 0
-                selectPatternPanel.previewTrackAudioSource = tm.audio.Play(clip, tm.enum.audioChannel.Music, startTime, 0)
+                selectPatternPanel.previewTrackAudioSource = tm.audio.PlayBackingTrack(clip, startTime, 0)
                 while (timer < fadeLength) do
                     selectPatternPanel.previewTrackAudioSource.volume = timer / fadeLength
                     timer = timer + unity.time.deltaTime
@@ -546,7 +546,7 @@ end
 modifierSideSheet.Initialize = function()
     local bg = modifierSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         modifierSideSheet.FadeOut()
     end)
 

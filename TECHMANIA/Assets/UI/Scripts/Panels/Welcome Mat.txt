@@ -43,7 +43,7 @@ function InitializeWelcomeMat()
         if (not slowBlinking) then return end
         slowBlinking = false
         tm.StopCoroutine(slowBlinkCoroutine)
-        tm.audio.Play(util.io.LoadAudioFromTheme("Assets/UI/SFX/Game Start.wav"), tm.enum.audioChannel.SFX)
+        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Game Start.wav"))
         tm.StartCoroutine(FastBlinkThenShowMenu)
     end)
 end
