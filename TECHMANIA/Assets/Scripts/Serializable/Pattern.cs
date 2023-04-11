@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -441,11 +442,13 @@ public partial class Pattern
         return count;
     }
 
+    [MoonSharpUserData]
     public struct RadarDimension
     {
         public float raw;
         public int normalized;  // 0-100
     }
+    [MoonSharpUserData]
     public struct Radar
     {
         public RadarDimension density;

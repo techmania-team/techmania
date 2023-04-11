@@ -32,99 +32,6 @@ modifierSideSheet = {
     sheet = selectPatternPanel.panel.Q("modifier-sidesheet"),
 }
 
--- Returns a table with keys "density", "peak", "speed", "chaos" and "async".
--- Make sure to call pattern.PrepareForTimeCalculation() before this.
--- TODO: let Theme API do this.
-function CalculateRadar(pattern)
-    local radar = {}
-    if (pattern == nil) then
-        radar.density = 0
-        radar.peak = 0
-        radar.speed = 0
-        radar.chaos = 0
-        radar.async = 0
-        return radar
-    end
-
-    -- Pre-processing
-    local seconds = 0
-    local scans = 0
-    _, seconds, scans = pattern.GetLengthInSecondsAndScans()
-    local pulsesPerBeat = 240
-    local pulsesPerScan = pattern.patternMetadata.bps * pulsesPerBeat
-    local playableNotes = 0
-    local notesInScan = {}
-    local numChaosNotes = 0
-    local numAsyncNotes = 0
-    local allNotes = pattern.notesAsList()
-    for _, n in ipairs(allNotes) do
-        if (n.lane < pattern.patternMetadata.playableLanes) then
-            playableNotes = playableNotes + 1
-
-            local scan = math.floor(n.pulse / pulsesPerScan)
-            if (notesInScan[scan] == nil) then notesInScan[scan] = 0 end
-            notesInScan[scan] = notesInScan[scan] + 1
-
-            if (n.pulse % (pulsesPerBeat / 2) ~= 0) then
-                numChaosNotes = numChaosNotes + 1
-            end
-
-            if (n.type == tm.enum.noteType.Hold or
-                n.type == tm.enum.noteType.RepeatHeadHold) then
-                numAsyncNotes = numAsyncNotes + 0.5
-            elseif (n.type == tm.enum.noteType.Repeat or
-                n.type == tm.enum.noteType.RepeatHold) then
-                numAsyncNotes = numAsyncNotes + 1
-            end
-        end
-    end
-    
-    function Normalize(raw, min, max)
-        local t = unity.mathf.InverseLerp(min, max, raw)
-        return unity.mathf.RoundToInt(t * 100)
-    end
-
-    -- Density: average number of notes per second.
-    local density = 0
-    if (seconds > 0) then
-        density = playableNotes / seconds
-    end
-    radar.density = Normalize(density, 0.5, 8)
-
-    -- Peak: peak number of notes per second.
-    local peak = 0
-    for scan, notes in pairs(notesInScan) do  -- Not ipairs here as some scans may be empty
-        local startTime = pattern.PulseToTime(scan * pulsesPerScan)
-        local endTime = pattern.PulseToTime((scan + 1) * pulsesPerScan)
-        local densityOfThisScan = notes / (endTime - startTime)
-        if (densityOfThisScan > peak) then peak = densityOfThisScan end
-    end
-    radar.peak = Normalize(peak, 1, 18)
-
-    -- Speed: average scans per minute.
-    local speed = 0
-    if (seconds > 0) then
-        speed = scans * 60 / seconds
-    end
-    radar.speed = Normalize(speed, 12, 55)
-
-    -- Chaos: percentage of notes that are not 4th or 8th notes.
-    local chaos = 0
-    if (playableNotes > 0) then
-        chaos = numChaosNotes * 100 / playableNotes
-    end
-    radar.chaos = Normalize(chaos, 0, 50)
-
-    -- Async: percentage of notes that are hold or repeat notes.
-    local async = 0
-    if (playableNotes > 0) then
-        async = numAsyncNotes * 100 / playableNotes
-    end
-    radar.async = Normalize(async, 0, 40)
-
-    return radar
-end
-
 function RadarAngleForVertex(i)
     return (-90 + 72 * i) * unity.mathf.Deg2Rad
 end
@@ -212,14 +119,22 @@ selectPatternPanel.ShowPatternDetails = function()
 
     function ShowRadar()
         local radarElement = panel.Q("radar")
-        selectPatternPanel.radarOfSelectedPattern = CalculateRadar(pattern)
+        if (pattern == nil) then
+            selectPatternPanel.radarOfSelectedPattern = nil
+            radarElement.Q("density").Q("value").text = "0"
+            radarElement.Q("peak").Q("value").text = "0"
+            radarElement.Q("speed").Q("value").text = "0"
+            radarElement.Q("chaos").Q("value").text = "0"
+            radarElement.Q("async").Q("value").text = "0"
+        else
+            selectPatternPanel.radarOfSelectedPattern = pattern.CalculateRadar()
+            radarElement.Q("density").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.density.normalized)
+            radarElement.Q("peak").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.peak.normalized)
+            radarElement.Q("speed").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.speed.normalized)
+            radarElement.Q("chaos").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.chaos.normalized)
+            radarElement.Q("async").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.async.normalized)
+        end
         radarElement.MarkDirtyRepaint()
-
-        radarElement.Q("density").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.density)
-        radarElement.Q("peak").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.peak)
-        radarElement.Q("speed").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.speed)
-        radarElement.Q("chaos").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.chaos)
-        radarElement.Q("async").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.async)
     end
 
     if (pattern == nil) then
@@ -485,22 +400,22 @@ selectPatternPanel.Initialize = function()
         end
 
         -- Draw radar
-        if (selectPatternPanel.radarOfSelectedPattern ~= nil) then
+        if (selectPatternPanel.radarOfSelectedPattern != nil) then
             painter.fillColor = unity.color.__new(165 / 256, 214 / 256, 167 / 256)
             painter.BeginPath()
             painter.MoveTo(unity.vector2.__new(
                 radarCenterX,
-                radarCenterY - selectPatternPanel.radarRadiusUnit * selectPatternPanel.radarOfSelectedPattern.density))
+                radarCenterY - selectPatternPanel.radarRadiusUnit * selectPatternPanel.radarOfSelectedPattern.density.normalized))
             function DrawRadarDimension(vertex, normalized)
                 local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(unity.vector2.__new(
                     radarCenterX + selectPatternPanel.radarRadiusUnit * normalized * unity.mathf.Cos(angle),
                     radarCenterY + selectPatternPanel.radarRadiusUnit * normalized * unity.mathf.Sin(angle)))
             end
-            DrawRadarDimension(1, selectPatternPanel.radarOfSelectedPattern.peak)
-            DrawRadarDimension(2, selectPatternPanel.radarOfSelectedPattern.speed)
-            DrawRadarDimension(3, selectPatternPanel.radarOfSelectedPattern.chaos)
-            DrawRadarDimension(4, selectPatternPanel.radarOfSelectedPattern.async)
+            DrawRadarDimension(1, selectPatternPanel.radarOfSelectedPattern.peak.normalized)
+            DrawRadarDimension(2, selectPatternPanel.radarOfSelectedPattern.speed.normalized)
+            DrawRadarDimension(3, selectPatternPanel.radarOfSelectedPattern.chaos.normalized)
+            DrawRadarDimension(4, selectPatternPanel.radarOfSelectedPattern.async.normalized)
             painter.ClosePath()
             painter.Fill()
         end
