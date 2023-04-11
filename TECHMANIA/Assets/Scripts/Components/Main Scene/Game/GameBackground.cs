@@ -11,7 +11,7 @@ public class GameBackground
     // null if no backing track.
     public AudioClip backingTrack { get; private set; }
     private AudioSource backingSource => AudioSourceManager.instance
-        .backingTrack;
+        .musicSource;
 
     private VisualElement bgContainer;
     // null if no video.
@@ -134,7 +134,7 @@ public class GameBackground
 
         if (prevFrameBaseTime < 0f && baseTime >= 0f)
         {
-            AudioSourceManager.instance.PlayBackingTrack(
+            AudioSourceManager.instance.PlayMusic(
                 backingTrack,
                 startTime: baseTime);
         }
@@ -191,7 +191,7 @@ public class GameBackground
             }
             else
             {
-                AudioSourceManager.instance.PlayBackingTrack(
+                AudioSourceManager.instance.PlayMusic(
                     backingTrack,
                     startTime: baseTime);
             }

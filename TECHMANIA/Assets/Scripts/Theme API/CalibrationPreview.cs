@@ -185,7 +185,7 @@ namespace ThemeApi
 
             inputMethod = InputMethod.Touch;
 
-            backingTrackSource = audioSourceManager.PlayBackingTrack(
+            backingTrackSource = audioSourceManager.PlayMusic(
                 backingTrack);
             backingTrackSource.loop = true;
 

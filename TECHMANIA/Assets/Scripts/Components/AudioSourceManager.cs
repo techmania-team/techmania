@@ -15,7 +15,7 @@ public class AudioSourceManager : MonoBehaviour
 
     // TODO: rename to "music"
     [MoonSharpHidden]
-    public AudioSource backingTrack;
+    public AudioSource musicSource;
     [MoonSharpHidden]
     public Transform playableLanesContainer;
     [MoonSharpHidden]
@@ -59,7 +59,7 @@ public class AudioSourceManager : MonoBehaviour
             Input.GetKeyDown(KeyCode.R))
         {
             Debug.Log("===== Beginning of AudioSourceManager report =====");
-            PrintReportOnAudioSource("backing track", backingTrack);
+            PrintReportOnAudioSource("music", musicSource);
             for (int i = 0; i < playableLanes.Length; i++)
             {
                 PrintReportOnAudioSource($"playable lane #{i}", playableLanes[i]);
@@ -118,14 +118,14 @@ public class AudioSourceManager : MonoBehaviour
     }
 
     #region Play API
-    public AudioSource PlayBackingTrack(AudioClip clip,
+    public AudioSource PlayMusic(AudioClip clip,
         float startTime = 0f,
         int volumePercent = Note.defaultVolume,
         int panPercent = Note.defaultPan)
     {
-        PlaySound(backingTrack, clip, startTime,
+        PlaySound(musicSource, clip, startTime,
             volumePercent, panPercent);
-        return backingTrack;
+        return musicSource;
     }
 
     // Returns the AudioSource chosen to play the clip, if not null.
@@ -167,28 +167,28 @@ public class AudioSourceManager : MonoBehaviour
     #region Batch control
     public void PauseAll()
     {
-        backingTrack.Pause();
+        musicSource.Pause();
         foreach (AudioSource s in playableLanes) s.Pause();
         foreach (AudioSource s in hiddenLanes) s.Pause();
     }
 
     public void UnpauseAll()
     {
-        backingTrack.UnPause();
+        musicSource.UnPause();
         foreach (AudioSource s in playableLanes) s.UnPause();
         foreach (AudioSource s in hiddenLanes) s.UnPause();
     }
 
     public void StopAll()
     {
-        backingTrack.Stop();
+        musicSource.Stop();
         foreach (AudioSource s in playableLanes) s.Stop();
         foreach (AudioSource s in hiddenLanes) s.Stop();
     }
 
     public void SetSpeed(float speed)
     {
-        backingTrack.pitch = speed;
+        musicSource.pitch = speed;
         foreach (AudioSource s in playableLanes) s.pitch = speed;
         foreach (AudioSource s in hiddenLanes) s.pitch = speed;
     }
@@ -204,7 +204,7 @@ public class AudioSourceManager : MonoBehaviour
             if (s.timeSamples == 0) return false;
             return true;
         };
-        if (SourceIsPlaying(backingTrack)) return true;
+        if (SourceIsPlaying(musicSource)) return true;
         foreach (AudioSource s in playableLanes)
         {
             if (SourceIsPlaying(s)) return true;

@@ -3843,7 +3843,7 @@ public class PatternPanel : MonoBehaviour
             playbackCurrentTime >= 0f)
         {
             backingTrackPlaying = true;
-            audioSourceManager.PlayBackingTrack(
+            audioSourceManager.PlayMusic(
                 ResourceLoader.GetCachedClip(
                     EditorContext.Pattern.patternMetadata
                     .backingTrack),
