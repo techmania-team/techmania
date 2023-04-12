@@ -140,22 +140,26 @@ namespace ThemeApi
             // Expose Unity classes
             Table unityTypes = new Table(session);
             addType(unityTypes, typeof(Time));
+            // Resolution
             addType(unityTypes, typeof(Screen));
-            addType(unityTypes, typeof(Input));
-            addType(unityTypes, typeof(Touch));
             addType(unityTypes, typeof(Resolution));
             addType(unityTypes, typeof(RefreshRate));
+            // Input
+            addType(unityTypes, typeof(Input));
+            addType(unityTypes, typeof(Touch));
+            // Math types
             addType(unityTypes, typeof(Mathf));
             addType(unityTypes, typeof(UnityEngine.Random));
             addType(unityTypes, typeof(Vector2));
             addType(unityTypes, typeof(Vector3));
+            // Mesh generation
             addType(unityTypes, typeof(Vertex));
-            addType(unityTypes, typeof(Color));
-            addType(unityTypes, typeof(Color32));
-            addType(unityTypes, typeof(Angle));
+            // Styles
             addType(unityTypes, typeof(StyleBackground));
             addType(unityTypes, typeof(Background));
             addType(unityTypes, typeof(StyleColor));
+            addType(unityTypes, typeof(Color));
+            addType(unityTypes, typeof(Color32));
             addType(unityTypes, typeof(StyleFloat));
             addType(unityTypes, typeof(StyleInt));
             addType(unityTypes, typeof(StyleLength));
@@ -164,10 +168,11 @@ namespace ThemeApi
             addType(unityTypes, typeof(Translate));
             addType(unityTypes, typeof(StyleRotate));
             addType(unityTypes, typeof(Rotate));
+            addType(unityTypes, typeof(Angle));
             addType(unityTypes, typeof(StyleScale));
             addType(unityTypes, typeof(Scale));
-            addType(unityTypes, typeof(Painter2D));
             // Types used by Painter2D
+            addType(unityTypes, typeof(Painter2D));
             addType(unityTypes, typeof(VectorImage));
             addType(unityTypes, typeof(Gradient));
             addType(unityTypes, typeof(GradientColorKey));
@@ -179,17 +184,17 @@ namespace ThemeApi
             addType(unityEnums, typeof(FullScreenMode));
             // Enums used by Input
             addType(unityEnums, typeof(TouchPhase));
+            // Enums used by styles
+            addType(unityEnums, typeof(StyleKeyword));
+            addType(unityEnums, typeof(LengthUnit));
+            addType(unityEnums, typeof(AngleUnit));
             // Enums used by Painter2D
             addType(unityEnums, typeof(LineCap));
             addType(unityEnums, typeof(LineJoin));
             addType(unityEnums, typeof(FillRule));
-            addType(unityEnums, typeof(AngleUnit));
             addType(unityEnums, typeof(ArcDirection));
             addType(unityEnums, typeof(ColorSpace));
             addType(unityEnums, typeof(GradientMode));
-            // Enums used by styles
-            addType(unityEnums, typeof(StyleKeyword));
-            addType(unityEnums, typeof(LengthUnit));
             // Enums used by events
             addType(unityEnums, typeof(PropagationPhase));
             addType(unityEnums, typeof(KeyCode));
@@ -200,8 +205,6 @@ namespace ThemeApi
             // Expose utility classes
             Table utilTypes = new Table(session);
             addTypeAs(utilTypes, typeof(IO), "io");
-            addTypeAs(utilTypes, typeof(VisualElementTransform),
-                "transform");
             apiTable["util"] = utilTypes;
 
             return apiTable;

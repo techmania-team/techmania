@@ -5,7 +5,7 @@ using MoonSharp.Interpreter;
 using System.IO;
 
 [MoonSharpUserData]
-public class GlobalResource
+public static class GlobalResource
 {
     #region Skins
     public static NoteSkin noteSkin;

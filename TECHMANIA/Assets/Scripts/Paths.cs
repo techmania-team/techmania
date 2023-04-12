@@ -6,10 +6,8 @@ using System.Text;
 using UnityEngine.Events;
 using System;
 
-// This should be a static class, but isn't, so that it can be
-// exposed via tm.paths.
 [MoonSharp.Interpreter.MoonSharpUserData]
-public class Paths
+public static class Paths
 {
     public const string kTrackFilename = "track.tech";
     public const string kSkinFilename = "skin.json";
