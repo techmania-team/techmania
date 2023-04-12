@@ -74,10 +74,10 @@ selectSkinPanel.Initialize = function()
         end)
     end
 
-    InitializeSkinDropdown("note-skin", "noteSkin", util.io.ReloadNoteSkin)
-    InitializeSkinDropdown("vfx-skin", "vfxSkin", util.io.ReloadVfxSkin)
-    InitializeSkinDropdown("combo-skin", "comboSkin", util.io.ReloadComboSkin)
-    InitializeSkinDropdown("game-ui-skin", "gameUiSkin", util.io.ReloadGameUiSkin)
+    InitializeSkinDropdown("note-skin", "noteSkin", tm.io.ReloadNoteSkin)
+    InitializeSkinDropdown("vfx-skin", "vfxSkin", tm.io.ReloadVfxSkin)
+    InitializeSkinDropdown("combo-skin", "comboSkin", tm.io.ReloadComboSkin)
+    InitializeSkinDropdown("game-ui-skin", "gameUiSkin", tm.io.ReloadGameUiSkin)
 
     local reloadToggle = panel.Q("reload-skins").Q("track")
     reloadToggle.RegisterCallback(eventType.Click, function()

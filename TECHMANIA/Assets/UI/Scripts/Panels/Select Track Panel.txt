@@ -192,7 +192,7 @@ selectTrackPanel.SpawnAllCards = function()
                     -- Load full track and navigate to select pattern panel.
                     selectTrackPanel.selectedTrackFolder = trackInFolder.folder
                     local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
-                    selectTrackPanel.selectedFullTrack = util.io.LoadFullTrack(trackPath)
+                    selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
                     navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
                 end
             end, trackInFolder)
@@ -291,7 +291,7 @@ selectTrackPanel.Refresh = function()
     selectTrackPanel.needsRefresh = false
     panel.Q("back-button").SetEnabled(false)
     panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
-    util.io.ReloadTrackList(function(currentlyLoadingFile)
+    tm.io.ReloadTrackList(function(currentlyLoadingFile)
         panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
     end,
     function(reloadStatus)
@@ -326,7 +326,7 @@ selectTrackPanel.Initialize = function()
             function()
                 selectTrackPanel.ClearAllCards()
                 panel.Q("back-button").SetEnabled(false)
-                util.io.UpgradeAllTracks(function(currentlyLoadingFile)
+                tm.io.UpgradeAllTracks(function(currentlyLoadingFile)
                     panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
                 end,
                 function(reloadStatus)
@@ -397,7 +397,7 @@ end
 filterSideSheet.Initialize = function()
     local bg = filterSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         filterSideSheet.FadeOut()
     end)
 
@@ -506,7 +506,7 @@ newTrackDialog.Initialize = function()
         FadeOutDialog(bg, dialog)
     end)
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         FadeOutDialog(bg, dialog)
     end)
 

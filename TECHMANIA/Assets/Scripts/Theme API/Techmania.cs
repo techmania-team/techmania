@@ -22,10 +22,11 @@ namespace ThemeApi
             root = new VisualElementWrap(uiDocument.rootVisualElement);
 
             l10n = new ThemeL10n(uiDocument.rootVisualElement);
+            paths = UserData.CreateStatic(typeof(Paths));
             resources = UserData.CreateStatic(typeof(GlobalResource));
+            io = UserData.CreateStatic(typeof(IO));
             gameSetup = new GameSetup();
             game = new GameState();
-            paths = UserData.CreateStatic(typeof(Paths));
             editor = new EditorInterface();
 
             CallbackRegistry.Prepare();
@@ -55,13 +56,13 @@ namespace ThemeApi
         public Ruleset ruleset => Ruleset.instance;
         public Records records => Records.instance;
         public ThemeL10n l10n { get; private set; }
+        public DynValue paths;  // Of type Paths
         public DynValue resources;  // Of type GlobalResource
+        public DynValue io;  // Of type IO
         public GameSetup gameSetup { get; private set; }
         public GameState game { get; private set; }
-        public DynValue paths;  // Of type Paths
         public EditorInterface editor { get; private set; }
         public SkinPreview skinPreview => SkinPreview.instance;
-
         public CalibrationPreview calibrationPreview =>
             CalibrationPreview.instance;
         #endregion

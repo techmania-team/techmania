@@ -6,7 +6,7 @@ using MoonSharp.Interpreter;
 namespace ThemeApi
 {
     [MoonSharpUserData]
-    public class IO
+    public static class IO
     {
         public static string LoadTextFileFromTheme(string path)
         {

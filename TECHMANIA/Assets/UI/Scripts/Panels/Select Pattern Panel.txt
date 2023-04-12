@@ -337,7 +337,7 @@ selectPatternPanel.Initialize = function()
     end)
 
     panel.Q("play-button").RegisterCallback(eventType.Click, function()
-        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
 
         -- Populate game setup
         tm.gameSetup.trackFolder = selectTrackPanel.selectedTrackFolder
@@ -435,7 +435,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
     if (trackMetadata.previewStartTime > trackMetadata.previewEndTime) then return end
     local previewPath = tm.paths.Combine(trackFolder, trackMetadata.previewTrack)
 
-    util.io.LoadAudioFromFile(previewPath, function(status, clip)
+    tm.io.LoadAudioFromFile(previewPath, function(status, clip)
         if (not status.Ok()) then return end
         -- If the user transitioned away while loading the clip, don't play.
         if (not selectPatternPanel.panel.display) then return end
@@ -546,7 +546,7 @@ end
 modifierSideSheet.Initialize = function()
     local bg = modifierSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
-        tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         modifierSideSheet.FadeOut()
     end)
 

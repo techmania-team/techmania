@@ -5,7 +5,7 @@ unity = api.unity
 util = api.util
 eventType = tm.enum.eventType
 
-tm.l10n.Initialize(util.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
+tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
 

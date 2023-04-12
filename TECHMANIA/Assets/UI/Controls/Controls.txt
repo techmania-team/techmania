@@ -34,14 +34,14 @@ function SetUpClickSound(element)
         sfxName = "Assets/UI/SFX/Back.wav"
     end
     element.RegisterCallback(eventType.Click, function ()
-        tm.audio.PlaySfx(util.io.LoadAudioFromTheme(sfxName))
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme(sfxName))
     end)
 end
 
 function SetUpPointerEnterSound(element)
     element.RegisterCallback(eventType.PointerEnter, function (element)
         if (element.enabledInHierarchy) then
-            tm.audio.PlaySfx(util.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"))
+            tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"))
         end
     end)
 end

@@ -202,11 +202,6 @@ namespace ThemeApi
             unityTypes["enum"] = unityEnums;
             apiTable["unity"] = unityTypes;
 
-            // Expose utility classes
-            Table utilTypes = new Table(session);
-            addTypeAs(utilTypes, typeof(IO), "io");
-            apiTable["util"] = utilTypes;
-
             return apiTable;
         }
     }
