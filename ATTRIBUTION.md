@@ -12,7 +12,7 @@ This project uses the following libraries and resources.
 
 # Sound effects
 
-Refer to [Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md).
+Refer to [Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) and [Attributions.md](TECHMANIA/Assets/UI/SFX/Attributions.md).
 
 # Images
 

@@ -13,7 +13,7 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 
 ## Licensing
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
-* Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
+* Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) and [TECHMANIA/Assets/UI/SFX](TECHMANIA/Assets/UI/SFX) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) and [TECHMANIA/Assets/UI/SFX/Attributions.md](TECHMANIA/Assets/UI/SFX/Attributions.md) for details. Please note that some licenses prohibit commercial use.
 * Some included tracks in the releases are under separate licenses:
 
 |Track name|License|
@@ -45,10 +45,10 @@ We also provide technical support for iOS/iPadOS, in that we are able to respond
 ## Content policy
 Per the MIT license, you are free to produce any Content with TECHMANIA, including but not limited to screenshots, videos and livestreams. Attributions are appreciated, but not required. However, please keep the following in mind:
 * If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
-* If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
+* If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md) or theme, you must clearly state so in the description of your Content, to avoid potential confusion.
 * If your Content is commercial, additional limitations apply:
   * Your Content cannot feature any [official tracks](#licensing).
-  * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/Sfx/Fever.wav). You can swap the sound with one that allows commercial use, make a custom build, and produce Content from that build.
+  * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/UI/SFX/Fever.wav), which is a part of the default theme. You can produce Content from a different theme.
 
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
