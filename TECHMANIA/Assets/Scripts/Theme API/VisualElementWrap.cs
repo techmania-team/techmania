@@ -65,7 +65,7 @@ namespace ThemeApi
         #endregion
 
         #region Subclass-specific
-        public void CheckType(System.Type type, string targetMember)
+        private void CheckType(System.Type type, string targetMember)
         {
             if (!type.IsAssignableFrom(inner.GetType()))
             {
@@ -565,16 +565,6 @@ namespace ThemeApi
             inner.RemoveFromHierarchy();
         }
 
-        public void AddChild(VisualElementWrap child)
-        {
-            inner.Add(child.inner);
-        }
-
-        public void InsertChild(int index, VisualElementWrap child)
-        {
-            inner.Insert(index, child.inner);
-        }
-
         // Beware: deleting multiple elements while some parent
         // element is undergoing USS transition may cause errors.
         // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
@@ -593,6 +583,16 @@ namespace ThemeApi
             {
                 new VisualElementWrap(child).RemoveFromHierarchy();
             }
+        }
+
+        public void AddChild(VisualElementWrap child)
+        {
+            inner.Add(child.inner);
+        }
+
+        public void InsertChild(int index, VisualElementWrap child)
+        {
+            inner.Insert(index, child.inner);
         }
 
         public void PlaceBehind(VisualElementWrap sibling)

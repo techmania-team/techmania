@@ -822,6 +822,7 @@ public class PerTrackOptions
     }
 }
 
+// Only used in OptionsV1 and OptionsV2.
 [Serializable]
 public class TrackFilter
 {

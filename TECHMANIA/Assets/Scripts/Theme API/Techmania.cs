@@ -72,6 +72,27 @@ namespace ThemeApi
         #endregion
 
         #region System dialogs
+        // Returns the selected files if any. Returns 0 values if the
+        // user cancels the dialog.
+        public string[] OpenSelectFileDialog(
+            string title, string currentDirectory, bool multiSelect,
+            string[] supportedExtensionsWithoutDot)
+        {
+            SFB.ExtensionFilter[] extensionFilters = new 
+                SFB.ExtensionFilter[2];
+            extensionFilters[0] = new SFB.ExtensionFilter(
+                L10n.GetString(
+                    "track_setup_resource_tab_import_dialog_supported_formats", 
+                L10n.Instance.System),
+                supportedExtensionsWithoutDot);
+            extensionFilters[1] = new SFB.ExtensionFilter(
+                L10n.GetString(
+                    "track_setup_resource_tab_import_dialog_all_files",
+                L10n.Instance.System), "*");
+            return SFB.StandaloneFileBrowser.OpenFilePanel(title,
+                currentDirectory, extensionFilters, multiSelect);
+        }
+
         // Returns the selected dialog if any; null if the user
         // cancels the dialog.
         public string OpenSelectFolderDialog(
@@ -94,18 +115,15 @@ namespace ThemeApi
         }
         #endregion
 
-        #region Miscellaneous
-        public void ExecuteScript(string name)
+        #region Script execution
+        public void ExecuteScript(string script)
         {
-            string script = GlobalResource
-                .GetThemeContent<TextAsset>(name).text;
-            Debug.Log("Executing: " + name);
             ScriptSession.Execute(script);
         }
 
         public int StartCoroutine(DynValue function)
         {
-            function.CheckType("Techmania.StartCoroutine", 
+            function.CheckType("Techmania.StartCoroutine",
                 DataType.Function);
             return CoroutineRunner.Start(
                 ScriptSession.session.CreateCoroutine(function)
@@ -116,7 +134,9 @@ namespace ThemeApi
         {
             CoroutineRunner.Stop(id);
         }
+        #endregion
 
+        #region Miscellaneous
         // Does nothing if Discord Rich Presence is turned off
         // from options, or running on unsupported platform.
         //
@@ -130,6 +150,11 @@ namespace ThemeApi
         {
             DiscordController.SetActivity(details, state,
                 showElapsedTime);
+        }
+
+        public void OpenURL(string url)
+        {
+            Application.OpenURL(url);
         }
 
         // Returns one of "Windows", "Linux", "macOS", "Android"
@@ -149,11 +174,6 @@ namespace ThemeApi
 #else
             return "Unknown";
 #endif
-        }
-
-        public void OpenURL(string url)
-        {
-            Application.OpenURL(url);
         }
 
         public static void Quit()

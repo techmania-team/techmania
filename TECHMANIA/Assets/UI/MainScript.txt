@@ -11,27 +11,41 @@ callbacksOnLocaleChange = {}
 
 themeOptions = tm.options.GetThemeOptions("Default")
 
-tm.ExecuteScript("Assets/UI/Scripts/Utilities.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Fading.txt")
-tm.ExecuteScript("Assets/UI/Controls/Controls.txt")
+function LoadAndExecute(path)
+    print("Executing: " .. path)
+    local script = tm.io.LoadTextFileFromTheme(path)
+    tm.ExecuteScript(script)
+end
+
+LoadAndExecute("Assets/UI/Scripts/Utilities.txt")
+LoadAndExecute("Assets/UI/Scripts/Fading.txt")
+LoadAndExecute("Assets/UI/Controls/Controls.txt")
 InitializeControls()
 
-tm.ExecuteScript("Assets/UI/Scripts/Alert Box.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Welcome Mat.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Select Track Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Options Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Information Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Game Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Result Panel.txt")
-tm.ExecuteScript("Assets/UI/Scripts/Panels/Editor.txt")
+LoadAndExecute("Assets/UI/Scripts/Alert Box.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Welcome Mat.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Select Track Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Options Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Information Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Game Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Result Panel.txt")
+LoadAndExecute("Assets/UI/Scripts/Panels/Editor.txt")
 
-tm.ExecuteScript("Assets/UI/Scripts/Navigation.txt")
+LoadAndExecute("Assets/UI/Scripts/Navigation.txt")
 SetUpNavigation()
 mainMenu.Show()
+
+tm.StartCoroutine(function()
+    coroutine.yield()
+    local testElement = tm.root.Q("test")
+    print("contentRect: " .. testElement.contentRect.ToString())
+    print("localBound: " .. testElement.localBound.ToString())
+    print("worldBound: " .. testElement.worldBound.ToString())
+end)
 
 -- Array/table example
 
