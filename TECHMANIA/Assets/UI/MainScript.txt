@@ -5,7 +5,7 @@ unity = api.unity
 util = api.util
 eventType = tm.enum.eventType
 
-tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table.csv"))
+tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table (default theme).csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
 
@@ -38,14 +38,6 @@ LoadAndExecute("Assets/UI/Scripts/Panels/Editor.txt")
 LoadAndExecute("Assets/UI/Scripts/Navigation.txt")
 SetUpNavigation()
 mainMenu.Show()
-
-tm.StartCoroutine(function()
-    coroutine.yield()
-    local testElement = tm.root.Q("test")
-    print("contentRect: " .. testElement.contentRect.ToString())
-    print("localBound: " .. testElement.localBound.ToString())
-    print("worldBound: " .. testElement.worldBound.ToString())
-end)
 
 -- Array/table example
 
