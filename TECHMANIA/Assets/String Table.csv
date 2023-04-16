@@ -6,11 +6,11 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,,,,,,
 `===== Main Menu =====,,,,,,
 ,,,,,,
-Added in 2.0.,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),,,
-Added in 2.0.,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),,,
-Added in 2.0.,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),,,
-Added in 2.0.,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),,,
-Added in 2.0.,boot_screen_revert_default_theme_button,REVERT,复原,,,
+Added in 2.0.,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),正在載入造型…… ({0} / {1}),スキンをロード中… ({0} / {1}),스킨 로드 중... ({0} / {1})
+Added in 2.0.,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲列表…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
+Added in 2.0.,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),正在載入主題…… ({0} / {1}),テーマをロード中… ({0} / {1}),테마 로드 중... ({0} / {1})
+Added in 2.0.,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),還原至預設主題 ({0}),デフォルトにします… ({0}),기본값으로 되돌리는 중... ({0})
+Added in 2.0.,boot_screen_revert_default_theme_button,REVERT,复原,還原,デフォルトにする,기본값으로 복원
 Added in 2.0.,resource_loader_skin_error_format,"An error occurred when loading skins:
 
 {0}
@@ -19,8 +19,20 @@ TECHMANIA will now load the default skins.","读取皮肤时发生错误：
 
 {0}
 
-TECHMANIA将读取默认皮肤。",,,
-Added in 2.0.,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,,
+TECHMANIA将读取默认皮肤。","載入造型時發生錯誤：
+
+{0}
+
+TECHMANIA 將載入預設造型。","下のスキンの読み込み中にエラーが発生しました。
+
+{0}
+
+TECHMANIAのデフォルトスキンを使用します。","아래 스킨을 불러오는 중 오류가 발생했습니다.
+
+{0}
+
+TECHMANIA 기본 스킨을 사용합니다."
+Added in 2.0.,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,デフォルトスキンの読み込み失敗のため、TECHMANIAを起動できません。ゲームを再インストールしてください。,기본 스킨을 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
 Added in 2.0.,resource_loader_theme_error_format,"An error occurred when loading the theme:
 
 {0}
@@ -29,16 +41,30 @@ TECHMANIA will now load the default theme.","读取主题时发生错误：
 
 {0}
 
-TECHMANIA将读取默认主题。",,,
-Added in 2.0.,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,,,
+TECHMANIA将读取默认主题。","載入主題時發生錯誤：
+
+{0}
+
+TECHMANIA 將載入預設主題。","下のテーマの読み込み中にエラーが発生しました。
+
+{0}
+
+TECHMANIAのデフォルトテーマを使用します。","아래 테마를 로드하는 중 오류가 발생했습니다.
+
+{0}
+
+TECHMANIA 기본 테마를 사용합니다."
+Added in 2.0.,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,TECHMANIA 無法載入預設主題，因此無法啟動。您可能需要重新安裝 TECHMANIA。,デフォルトテーマの読み込み失敗のため、TECHMANIA を起動できません。ゲームを再インストールしてください。,기본 테마를 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
 ,,,,,,
-Added in 2.0.,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,,,
-Added in 2.0.,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,,,
-Added in 2.0.,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,,,
+Added in 2.0.,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,您正在使用的主題缺少以下基本檔案，無法載入。,"使用中のテーマは次の重要ファイルが存在しないため、読み込めませんでした。
+","사용 중인 테마를 불러올 수 없습니다. 아래 파일이 누락되었습니다.
+
+{0}"
+Added in 2.0.,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,您使用的主題與您的 TECHMANIA 版本不相容,使用中のテーマは現在のTECHMANIAバージョンをサポートしません。,사용 중인 테마가 현재 TECHMANIA 버전과 호환되지 않습니다.
+Added in 2.0.,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,請更新 TECHMANIA 到最新版本、使用預設主題，或聯繫主題的開發者。TECHMANIA 現在將關閉。,TECHMANIAをアップデートするか、デフォルトテーマを使用するか、制作者にお問い合わせください。TECHMANIAを終了します。,"TECHMANIA를 최신 버전으로 업데이트하거나, 기본 테마를 사용하거나, 개발자에게 문의하십시오. TECHMANIA를 종료합니다."
 ,,,,,,
-Added in 1.1.,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
-"Added in 1.1.
-{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중
+,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
+{0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중
 ,,,,,,
 ,message_dialog_ok_button,OK,确定,確定,OK,확인
 ,,,,,,
@@ -196,7 +222,7 @@ starts. Can be negative.","如果指定了BGA，它将于背景音乐播放到
 再生された後、BGAオフセットだけの時間が
 過ぎてからBGAが再生されます。（単位：秒、負数可）","BGA를 지정하면, 배경 음악이 시작되고
 BGA 오프셋만큼의 시간이 지난 뒤 BGA가 재생됩니다.
-(단위 : 초, 음수 입력 가능)"
+(단위: 초, 음수 입력 가능)"
 ,track_setup_patterns_tab_wait_for_bga_label,Wait for end of BGA,等待BGA结束,等待 BGA 結束,BGAが終わるまで待機,BGA가 끝날 때까지 대기
 ,track_setup_patterns_tab_wait_for_bga_help,"Don't end the pattern until the BGA
 has completed playing.",等到BGA结束播放后才结束游戏。,等待 BGA 結束播放後才結束遊戲。,"BGAが終わるまでパターンのプレイが
@@ -227,10 +253,10 @@ seconds after the backing track starts.","将背景音乐的这一时间点（�
 ,pattern_panel_timing_tab_bps_help,"Unlike BPM, you cannot change BPS throughout the pattern.",与BPM不同，BPS不能在谱面中途变化。,與 BPM 不同，BPS 不能在譜面中途變化。,"BPMとは別に、BPSはパターンの
 再生中に変更できません。","한 스크롤 영역 안에 들어갈 박자 수를 지정합니다.
 BPS는 패턴 중간에 변경할 수 없습니다."
-Added in 1.1.,pattern_panel_note_tab_tools_header,Tools,工具,工具,ツール,도구
-Added in 1.1.,pattern_panel_note_tab_note_types_header,Note types,音符种类,音符種類,ノートタイプ,노트 형식
-Added in 1.1,pattern_panel_edit_tab_edit_header,Edit,编辑,編輯,編集,편집
-Added in 1.1.,pattern_panel_edit_tab_analyze_header,Analyze,分析,分析,分析,패턴 분석
+,pattern_panel_note_tab_tools_header,Tools,工具,工具,ツール,도구
+,pattern_panel_note_tab_note_types_header,Note types,音符种类,音符種類,ノートタイプ,노트 형식
+,pattern_panel_edit_tab_edit_header,Edit,编辑,編輯,編集,편집
+,pattern_panel_edit_tab_analyze_header,Analyze,分析,分析,分析,패턴 분석
 ,pattern_panel_note_tab_beat_snap_divisor_label,Beat snap divisor,节拍划分数,節拍劃分數,ノートスナップ値,박자 스냅 고정
 ,pattern_panel_note_tab_beat_snap_divisor_help,"Divide each beat into this many portions
 when snapping notes.","对齐音符时把每一拍
@@ -282,7 +308,7 @@ instead of the next scan's beginning.","把这个音符绘制到前一扫描的�
 B-splines are smoother, but don't go through all anchors,
 and ignore all control points.","把这个拖拽音符绘制为B-样条而不是贝塞尔曲线。
 B-样条更为平滑，但是不经过所有的锚点，
-也不受控制点的影响。","把這個拖曳音符繪製為B-樣條而不是貝茲曲線。
+也不受控制点的影响。","把這個拖動音符繪製為B-樣條而不是貝茲曲線。
 B-樣條更為平滑，但是不會經過所有的錨點，
 也不受控制點影響。","ドラッグノートにB-スプライン曲線を適用します。
 B-スプライン曲線はベジェ曲線よりもっと滑らかな曲線で、
@@ -327,39 +353,39 @@ Ctrl 또는 Shift 키를 누른 채로 여러 사운드를 선택하여 순서�
 ,pattern_panel_options_return_scanline_label,Return scanline after playback,播放后归位扫描线,播放後歸位掃描線,プレイバックの停止後スキャンラインを戻させる,타임라인 되돌리기
 ,pattern_panel_options_return_scanline_description,"When you stop playback, return the scanline to where the playback started.",结束播放时把扫描线复位到开始播放的位置。,結束播放時把掃描線復原到開始播放的位置。,プレイバックを停止すると、スキャンラインが最初にプレイバックした時点へ戻ります。,재생을 중지하면 처음 재생한 시점으로 타임라인이 되돌아갑니다.
 ,pattern_panel_options_help_header,Help,帮助,幫助,ヘルプ,도움말
-Added in 1.1.,pattern_panel_options_tools_label,Tools,工具,工具,ツール,도구
-Added in 1.1.,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
+,pattern_panel_options_tools_label,Tools,工具,工具,ツール,도구
+,pattern_panel_options_tools_pan,"Pan: drag to view different parts of the pattern.
 On PC, you can also pan by holding and dragging the middle mouse button, without using this tool.","移动：在工作区中拖拽，从而查看谱面的不同部分。
 在PC上，不需选择此工具，按住并拖拽鼠标中键即可滚动工作区。","移動：在工作區中拖曳以查看譜面的不同部分。
 PC不須選擇此工具，按住滑鼠中鍵拖曳即可。","パン：ドラッグしてパターンビューを移動します。
 PCではこのツールを使わず、マウスのホイールボタンを押したままドラックして移動することができます。","이동: 드래그하여 패턴 뷰 위치를 이동합니다.
 PC에서는 이 도구를 사용하지 않고 마우스 휠 버튼을 누른 채 드래그하는 것으로 패턴 뷰를 이동할 수 있습니다."
-Added in 1.1.,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
+,pattern_panel_options_tools_note,"Note: place and edit notes. This is the default tool.
 On PC, you can use the number keys 1-9 to switch between note types.","音符：添加并编辑音符。这是编辑器默认的工具。
 在PC上，可以按数字键1-9来快速选择音符类型。","音符：新增並編輯音符。這是編輯器的預設工具。
 PC可以按數字鍵1-9快速選擇音符類型。","ノート：ノートを配置するか編集します。これはデフォルトのツールです。
 PCでは、1‐9の数字キーでノートのタイプを変更することができます。","노트: 노트를 추가하거나 편집합니다.
 PC에서는 1부터 9까지의 숫자 키를 이용하여 노트의 모양을 바꿀 수 있습니다."
-Added in 1.1.,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
+,pattern_panel_options_tools_rectangle,"Rectangle: select notes in a rectangle area.
 On PC, you can select this tool by pressing the ` key; you can also move selected notes by holding Ctrl.","选框：绘制矩形从而选中其中的所有音符。
 在PC上，可以按`键来选择此工具。使用此工具时，可以按住Ctrl键来移动所有选中的音符。","矩形選取：繪製矩形以選中範圍內的所有音符。
 PC可以按`鍵使用此工具。使用時能按住Ctrl鍵移動所有選中的音符。","選択：ドラッグした長方形エリア内のノートを全部選択します。
 PCでは、`キーでこのツールを選択することができます。
 選択したノートをCtrlキーを押しながら移動することもできます。","선택: 지정한 사각형 영역 안의 노트를 모두 선택합니다.
 PC에서는 ` 키를 이용하여 이 도구를 활성화할 수 있으며, Ctrl 키를 누른 채로 선택한 노트를 이동할 수 있습니다."
-Added in 1.1.,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
+,pattern_panel_options_tools_rectangle_append,"Rectangle Append: select notes in a rectangle area, in addition to any currently selected notes.
 On PC, you can also append by holding Shift when using the Rectangle tool.","追加选框：在已经选中的音符的基础上，额外选中绘制的矩形中的音符。
 在PC上，可以在使用选框工具时按住Shift来进行追加选择。","增加選取：增加選取範圍內的音符。
 PC可以在使用選取工具時按住Shif新增選取音符。","追加選択：1個以上のノートが選択された場合、ドラッグした長方形エリア内のノートを追加選択します。
 PCでは、Shiftキーを押しながら選択ツールを使うことでノートを追加選択することができます。","추가 선택: 하나 이상의 노트가 선택된 상태에서, 지정한 사각형 안의 노트를 추가로 선택합니다.
 PC에서는 선택 도구 사용 중 Shift 키를 누른 상태에서 노트를 추가 선택할 수 있습니다."
-Added in 1.1.,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
+,pattern_panel_options_tools_rectangle_subtract,"Rectangle Subtract: deselect notes in a rectangle area.
 On PC, you can also subtract by holding Alt when using the Rectangle tool.","取消选框：取消选中绘制的矩形中的音符。
 在PC上，可以在使用选框工具时按住Alt来取消选择。","取消選取：取消選取範圍內的音符。
 PC可以在使用選取工具時按住住Alt取消選取。","選択解除：ドラッグした長方形エリア内のノートを選択解除します。
 PCでは、Altキーを押しながら選択ツールを使うことでノートを選択解除することができます。","선택 해제: 지정한 사각형 영역 안의 노트를 선택 해제합니다.
 PC에서는 선택 도구 사용 중 Alt 키를 누른 상태에서 노트 선택을 해제할 수 있습니다."
-Added in 1.1.,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
+,pattern_panel_options_tools_anchor,"Anchor: enables alternative controls on drag notes' anchors and control points.
 With this tool active, click on anchors and control points to delete them; drag from an anchor to reset control points on it.","锚点：修改对拖拽音符的锚点与控制点的操作方式。
 使用此工具时，点击锚点与控制点可以将其删除；在锚点上拖拽可以重置其控制点。","錨點：修改對拖拽音符的錨點與控制點的操作方式。
 使用此工具時，點擊錨點與控制點可以將其刪除；在錨點上拖拽可以重置其控制點。 ","アンカー：ドラッグノートのアンカーとコントロールポイントの操作を切り替えます。
@@ -468,7 +494,7 @@ Home / End <indent=35%>타임라인을 패턴의 처음/끝으로 이동</indent
 Page Up / Down <indent=35%>타임라인을 한 마디 앞/뒤로 이동</indent>
 
 여러 개의 노트나 키사운드를 선택하려면 Ctrl 또는 Shift키를 누른 채 선택하십시오."
-,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符。,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
+,pattern_panel_options_drag_control_label,Drag note controls,拖拽音符,拖動音符,ドラッグノートの詳細説明,드래그 노트에 대한 상세설명
 ,pattern_panel_options_drag_control_help,"Drag notes are Bézier curves or B-splines controlled by anchors and control points.
 Select a drag note to show its anchors, control points, and anchor receiver (the brown curve in the middle).
 Click on the anchor receiver to add an anchor.
@@ -481,7 +507,7 @@ When using B-spline, control points are hidden.","拖拽音符是由锚点和控
 用鼠标左键拖拽移动锚点和控制点。
 用鼠标右键点击可以删除锚点和控制点。
 按住Ctrl并用鼠标左键拖拽锚点可以重置其控制点。
-使用B-样条时，将不会显示控制点。","拖動音符是由冒點和控制點所控制的貝茲曲線。
+使用B-样条时，将不会显示控制点。","拖動音符是由錨點和控制點所控制的貝茲曲線。
 選取一個拖動音符可以顯示它的錨點和控制點，以及錨點接收線（音符中心的棕色曲線）。
 點擊錨點接收線以增加錨點。
 用滑鼠左鍵拖曳移動錨點和控制點。
@@ -555,4 +581,3 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* それぞれの項目の定義と計算方式は公式マニュアルをご参照ください。
 * このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
-,,,,,,

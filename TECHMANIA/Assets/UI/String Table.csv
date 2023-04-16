@@ -23,7 +23,7 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,discord_state_information,Information,须知,須知,情報,정보
 ,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,トラック選択,음악 선택 중
 ,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,パターン選択,패턴 선택 중
-"{0} is number of lanes; {1} is control scheme; {2} is level.",discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
+{0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
 ,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button,START,开始,開始,スタート,게임 시작
@@ -106,7 +106,7 @@ Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred whe
 ,track_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
 ,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
 ,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
-,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드 + 마우스)
+,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
 ,,,,,,
 ,#select-track-panel #new-track-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
 ,#select-track-panel #new-track-dialog #artist-field #mini-label,Artist,艺术家,演出者,アーティスト,아티스트
@@ -187,7 +187,7 @@ Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred whe
 ,modifier_practice,Practice,练习,練習,練習,연습 모드
 ,modifier_override_to_touch,Override to Touch,强制使用触控,強制使用觸控,タッチで操作,터치
 ,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
-,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드 + 마우스
+,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드+마우스
 ,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
 ,,,,,,
 Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-indicator,No fail,无失败,No fail,No fail,No fail
@@ -298,7 +298,7 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,#options-panel #offset-latency #label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,#options-panel #offset-latency #button,CALIBRATE,校对,校正,調整,보정하기
 ,#options-panel #pause-when-lose-focus #label,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-,#options-panel #discord-rich-presence #label,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord 상태 메시지
+,#options-panel #discord-rich-presence #label,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord 상태 메시지,
 ,,,,,,
 ,#touchscreen-test-panel #title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,#touchscreen-test-panel #instructions,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
@@ -310,16 +310,29 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 ,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
 ,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
-"Added in 2.0",select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
+"Added in 2.0.
+{0} is error message",select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
 
 {0}","读取皮肤时发生错误：
 
-{0}",,,
-"Added in 2.0",select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
+{0}","讀取造型時發生錯誤：
+
+{0}","選択したスキンの読み込み中にエラーが発生しました。
+
+{0}","선택한 스킨을 불러오는 중 오류가 발생했습니다.
+
+{0}"
+Added in 2.0,select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
 
 Refer to TECHMANIA 2.0's release notes for more details.","请注意，由于TECHMANIA的UI框架缺失功能，所选皮肤的一部分元素暂时无法显示。
 
-详情可参阅TECHMANIA 2.0的发行说明。",,,
+详情可参阅TECHMANIA 2.0的发行说明。","請注意，由於 TECHMANIA 的 UI 框架缺失功能，所選造型的一部份元素暫時無法顯示。
+
+詳情請參閱 TECHMANIA 2.0 的發行備註。","TECHMANIA UIフレームワークに存在しない機能が含まれているため、スキンの一部が表示されない場合があります。
+
+詳細はTECHMANIA 2.0のリリーズノートをご確認ください。","TECHMANIA UI 프레임워크의 기능이 누락되어 있어 선택한 스킨의 일부 요소가 올바르게 보이지 않을 수 있습니다.
+
+자세한 내용은 TECHMANIA 2.0 릴리스 노트를 참고하십시오."
 ,,,,,,
 ,#timing-calibration-panel #title,Timing Calibration,偏移与延迟校对,偏移與延遲校正,タイミング調整,타이밍 보정
 ,#timing-calibration-panel #device #label,Input device,输入设备,輸入裝置,入力方式,입력 장치
