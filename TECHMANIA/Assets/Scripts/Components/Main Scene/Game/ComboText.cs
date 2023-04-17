@@ -235,7 +235,7 @@ public class ComboText : MonoBehaviour
         if (elementToFollow != null)
         {
             rect.anchoredPosition = VisualElementTransform
-                .ElementCenterToScreenSpace(elementToFollow);
+                .ElementCenterToWorldSpace(elementToFollow);
         }
         else if (transformToFollow != null)
         {

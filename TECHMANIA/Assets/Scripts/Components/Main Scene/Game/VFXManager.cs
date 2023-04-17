@@ -71,7 +71,7 @@ public class VFXManager : MonoBehaviour
     {
         return SpawnVfxAt(
             VisualElementTransform
-                .ElementCenterToScreenSpace(element),
+                .ElementCenterToWorldSpace(element),
             spriteSheetLayers, loop);
     }
 
@@ -279,7 +279,7 @@ public class VFXManager : MonoBehaviour
         {
             Vector2 ongoingTrailEndPosition =
                 VisualElementTransform
-                .ElementCenterToScreenSpace(
+                .ElementCenterToWorldSpace(
                     pair.Key.holdTrailAndExtensions
                     .GetOngoingTrailEndPosition(timer.intScan));
             foreach (GameObject o in pair.Value)
@@ -296,7 +296,7 @@ public class VFXManager : MonoBehaviour
             {
                 o.GetComponent<VFXDrawer>().SetPosition(
                     VisualElementTransform
-                    .ElementCenterToScreenSpace(
+                    .ElementCenterToWorldSpace(
                         pair.Key.noteImage));
             }
         }
