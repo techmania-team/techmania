@@ -20,6 +20,15 @@ namespace ThemeApi
             return element.WorldToLocal(worldSpace);
         }
 
+        public static Vector2 ElementCenterToScreenSpace(
+            VisualElement element)
+        {
+            Vector2 screenPoint = element.worldBound.center;
+            // Reverse Y coordinate when passing a position to Canvas.
+            screenPoint.y = Screen.height - screenPoint.y;
+            return screenPoint;
+        }
+
         public static bool ElementContainsPointInScreenSpace(
             VisualElement element, Vector2 screenSpace)
         {

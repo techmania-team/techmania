@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using ThemeApi;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -233,9 +234,8 @@ public class ComboText : MonoBehaviour
     {
         if (elementToFollow != null)
         {
-            Vector2 center = elementToFollow.worldBound.center;
-            center.y = Screen.height - center.y;
-            rect.anchoredPosition = center;
+            rect.anchoredPosition = VisualElementTransform
+                .ElementCenterToScreenSpace(elementToFollow);
         }
         else if (transformToFollow != null)
         {

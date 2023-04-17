@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using ThemeApi;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -50,15 +51,6 @@ public class VFXManager : MonoBehaviour
         // Reset size for VFXDrawer?
     }
 
-    private Vector2 VisualElementCenterToScreenPoint(
-        UnityEngine.UIElements.VisualElement element)
-    {
-        Vector2 screenPoint = element.worldBound.center;
-        // Reverse Y coordinate when passing a position to Canvas.
-        screenPoint.y = Screen.height - screenPoint.y;
-        return screenPoint;
-    }
-
     private List<GameObject> SpawnVfxAt(Vector3 position,
         List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
@@ -78,7 +70,8 @@ public class VFXManager : MonoBehaviour
         List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
         return SpawnVfxAt(
-            VisualElementCenterToScreenPoint(element),
+            VisualElementTransform
+                .ElementCenterToScreenSpace(element),
             spriteSheetLayers, loop);
     }
 
@@ -285,7 +278,8 @@ public class VFXManager : MonoBehaviour
             holdNoteToOngoingTrailVfx)
         {
             Vector2 ongoingTrailEndPosition =
-                VisualElementCenterToScreenPoint(
+                VisualElementTransform
+                .ElementCenterToScreenSpace(
                     pair.Key.holdTrailAndExtensions
                     .GetOngoingTrailEndPosition(timer.intScan));
             foreach (GameObject o in pair.Value)
@@ -301,7 +295,8 @@ public class VFXManager : MonoBehaviour
             foreach (GameObject o in pair.Value)
             {
                 o.GetComponent<VFXDrawer>().SetPosition(
-                    VisualElementCenterToScreenPoint(
+                    VisualElementTransform
+                    .ElementCenterToScreenSpace(
                         pair.Key.noteImage));
             }
         }
