@@ -57,7 +57,9 @@ selectSkinPanel.Initialize = function()
                 function(status)  -- complete callback
                     if (status.Ok()) then
                         tm.skinPreview.Begin()
-                        WarnOnUndisplayableGameUiSkin()
+                        if (keyInOption == "gameUiSkin") then
+                            WarnOnUndisplayableGameUiSkin()
+                        end
                     else
                         local errorMessage = net.string.Format(
                             tm.l10n.GetString("select_skin_panel_load_error_format"),
