@@ -691,7 +691,7 @@ public class GlobalResourceLoader : MonoBehaviour
             themePath = Paths.GetThemeFilename(
                 Options.instance.theme);
         }
-        if (!File.Exists(themePath))
+        if (!UniversalIO.FileExists(themePath))
         {
             completeCallback?.Invoke(
                 Status.Error(Status.Code.NotFound));
