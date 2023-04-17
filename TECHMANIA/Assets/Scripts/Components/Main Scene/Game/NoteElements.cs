@@ -240,10 +240,10 @@ public class NoteElements : INoteHolder
         if (approachOverlay != null)
         {
             scale = GlobalResource.gameUiSkin.approachOverlay.scale;
-            approachOverlay.style.width = laneHeight * scale *
-                (scanDirection == GameLayout.ScanDirection.Left
-                ? -1f : 1f);
+            approachOverlay.style.width = laneHeight * scale;
             approachOverlay.style.height = laneHeight * scale;
+            approachOverlay.EnableInClassList("h-flipped",
+                scanDirection == GameLayout.ScanDirection.Left);
         }
 
         holdTrailAndExtensions?.InitializeSize();
