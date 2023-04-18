@@ -43,6 +43,8 @@ namespace ThemeApi
                 });
         }
 
+        // This will call Prepare() on the video clip and return
+        // without waiting for it to be prepared.
         public static VideoElement LoadVideoFromTheme(string path)
         {
             UnityEngine.Video.VideoClip clip =

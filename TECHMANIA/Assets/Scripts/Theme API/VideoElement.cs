@@ -24,7 +24,6 @@ namespace ThemeApi
             e.player = VideoElementManager.InstantiatePlayer();
             e.player.clip = clip;
             e.player.Prepare();
-            while (!e.player.isPrepared) { }
             e.PrepareToPlay();
             return e;
         }
