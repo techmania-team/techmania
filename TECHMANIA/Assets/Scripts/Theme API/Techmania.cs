@@ -43,11 +43,11 @@ namespace ThemeApi
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
 
-        public void SetThemeStyleSheet(string name)
+        public void SetPanelSettings(string path)
         {
-            ThemeStyleSheet sheet = GlobalResource.GetThemeContent
-                <ThemeStyleSheet>(name);
-            panelSettings.themeStyleSheet = sheet;
+            PanelSettings settings = GlobalResource
+                .GetThemeContent<PanelSettings>(path);
+            uiDocument.panelSettings = settings;
         }
         #endregion
 

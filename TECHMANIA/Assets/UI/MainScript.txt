@@ -5,6 +5,9 @@ unity = api.unity
 util = api.util
 eventType = tm.enum.eventType
 
+-- To apply themes to dropdowns
+tm.SetPanelSettings("Assets/UI/Panel Settings.asset")
+    
 tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table (default theme).csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
