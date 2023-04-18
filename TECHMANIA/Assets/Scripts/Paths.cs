@@ -391,9 +391,22 @@ public static class Paths
     // from streaming assets to track root folder.
     public static string GoUpFrom(string path)
     {
-        if (path == GetTrackRootFolder()) return GetTrackRootFolder();
+        if (path == GetTrackRootFolder() || path == GetStreamingTrackRootFolder()) return GetTrackRootFolder();
+#if UNITY_ANDROID
+        // Paths variables on Android are in the form of
+        // path
+        // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks/Official Tracks
+        // GetStreamingTrackRootFolder()
+        // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
+        // GetTrackRootFolder()
+        // /storage/emulated/0/Android/data/com.TECHMANIATeam.TECHMANIA/files/Tracks
+        // Path.GetDirectoryName(path)
+        // jar:file:/storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
+        string up = Path.GetDirectoryName(path).Replace("jar:file:/", "jar:file:///");
+#else
         string up = Path.GetDirectoryName(path);
-        if (up == GetTrackRootFolder()) return GetTrackRootFolder();
+#endif
+        if (up == GetTrackRootFolder() || up == GetStreamingTrackRootFolder()) return GetTrackRootFolder();
         return up;
     }
 
