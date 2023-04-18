@@ -133,7 +133,9 @@ public static class GlobalResource
         }
         else
         {
-            return null;
+            // Return an empty list instead of null to prevent errors in theme script.
+            // Unity ScriptRuntimeException: bad argument #1 to 'sort' (table expected, got nil)
+            return new List<TrackSubfolder>();
         }
     }
 
@@ -145,7 +147,9 @@ public static class GlobalResource
         }
         else
         {
-            return null;
+            // Return an empty list instead of null to prevent errors in theme script.
+            // Unity ScriptRuntimeException: bad argument #1 to 'sort' (table expected, got nil)
+            return new List<TrackInFolder>();
         }
     }
 
@@ -158,7 +162,9 @@ public static class GlobalResource
         }
         else
         {
-            return null;
+            // Return an empty list instead of null to prevent errors in theme script.
+            // Unity ScriptRuntimeException: bad argument #1 to 'sort' (table expected, got nil)
+            return new List<TrackWithError>();
         }
     }
     #endregion
