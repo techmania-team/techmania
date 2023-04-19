@@ -18,14 +18,18 @@ namespace ThemeApi
 
         #region Creation and Disposal
         [MoonSharpHidden]
-        public static VideoElement CreateFromClip(VideoClip clip)
+        public static void CreateFromClip(VideoClip clip,
+            System.Action<VideoElement> callback)
         {
             VideoElement e = new VideoElement();
             e.player = VideoElementManager.InstantiatePlayer();
             e.player.clip = clip;
+            e.player.prepareCompleted += (VideoPlayer source) =>
+            {
+                e.PrepareToPlay();
+                callback(e);
+            };
             e.player.Prepare();
-            e.PrepareToPlay();
-            return e;
         }
 
         [MoonSharpHidden]

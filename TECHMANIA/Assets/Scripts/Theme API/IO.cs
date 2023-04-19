@@ -43,14 +43,19 @@ namespace ThemeApi
                 });
         }
 
-        // This will call Prepare() on the video clip and return
-        // without waiting for it to be prepared.
-        public static VideoElement LoadVideoFromTheme(string path)
+        // Callback parameter: VideoElement
+        public static void LoadVideoFromTheme(string path,
+            DynValue callback)
         {
             UnityEngine.Video.VideoClip clip =
                 GlobalResource.GetThemeContent<
                     UnityEngine.Video.VideoClip>(path);
-            return VideoElement.CreateFromClip(clip);
+            VideoElement.CreateFromClip(clip,
+                callback: (VideoElement element) =>
+                {
+                    if (callback.IsNil()) return;
+                    callback.Function.Call(element);
+                });
         }
 
         // Callback parameters: Status, VideoElement
