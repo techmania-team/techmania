@@ -14,6 +14,11 @@ namespace ThemeApi
                 .text;
         }
 
+        public static Texture2D LoadTextureFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<Texture2D>(path);
+        }
+
         // Callback parameter: Status, Texture2D
         public static void LoadTextureFromFile(string path,
             DynValue callback)
