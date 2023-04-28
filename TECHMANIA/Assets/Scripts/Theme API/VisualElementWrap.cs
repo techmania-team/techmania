@@ -231,6 +231,22 @@ namespace ThemeApi
             }
         }
 
+        public bool boolValue
+        {
+            get
+            {
+                if (inner is Toggle)
+                    return (inner as Toggle).value;
+                throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+            set
+            {
+                if (inner is Toggle)
+                    (inner as Toggle).value = value;
+                else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+        }
+
         public void SetValueWithoutNotify(string newValue)
         {
             if (inner is DropdownField)
@@ -256,6 +272,13 @@ namespace ThemeApi
             else if (inner is FloatField)
                 (inner as FloatField).SetValueWithoutNotify(newValue);
             else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt, Scroller, IntegerField or FloatField, and therefore does not have the 'SetValueWithoutNotify' member.");
+        }
+
+        public void SetValueWithoutNotify(bool newValue)
+        {
+            if (inner is Toggle)
+                (inner as Toggle).SetValueWithoutNotify(newValue);
+            else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
         }
 
         public void ScrollTo(VisualElementWrap child)
