@@ -28,6 +28,7 @@ namespace ThemeApi
 
             // Register types
             UserData.RegisterAssembly();
+            UserData.RegisterType<Dictionary<string, string>>();
             UserData.RegisterType<Rect>();
             UserData.RegisterType<Texture2D>();
             UserData.RegisterType<VisualTreeAsset>();
@@ -133,8 +134,6 @@ namespace ThemeApi
             addTypeAs(netTypes, typeof(int), "int");
             addTypeAs(netTypes, typeof(float), "float");
             addTypeAs(netTypes, typeof(StringWrap), "string");
-            addTypeAs(netTypes, typeof(Dictionary<string, string>), 
-                "stringDict");
             apiTable["net"] = netTypes;
 
             // Expose Unity classes
