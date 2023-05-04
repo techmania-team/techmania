@@ -1,10 +1,13 @@
+using MoonSharp.VsCodeDebugger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using TMPro;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static System.Collections.Specialized.BitVector32;
 
 public class BootScreen : MonoBehaviour
 {
@@ -242,6 +245,12 @@ public class BootScreen : MonoBehaviour
             yield break;
         }
 
+        // Start debug server if running in Unity editor.
+        if (Application.isEditor)
+        {
+            StartMoonSharpDebugServer();
+        }
+
         // If everything worked up to this point, we can hide
         // main canvas and finish the boot sequence.
         TopLevelObjects.instance.eventSystem.gameObject
@@ -250,6 +259,46 @@ public class BootScreen : MonoBehaviour
             .SetActive(false);
         TopLevelObjects.instance.editorCanvas.gameObject
             .SetActive(false);
+    }
+
+    private void StartMoonSharpDebugServer()
+    {
+        // MoonSharp recommended port.
+        int port = 41912;
+
+        // Is this port available?
+        bool available = true;
+        TcpListener tcpListener = new TcpListener(
+            System.Net.IPAddress.Loopback, port);
+        try
+        {
+            tcpListener.Start();
+        }
+        catch (SocketException)
+        {
+            Debug.LogWarning($"Port {port} unavailable for MoonSharp debug server. Finding another port; you will need to update launch.json in VS Code to connect.");
+            available = false;
+        }
+        finally { tcpListener.Stop(); }
+
+        if (!available)
+        {
+            // Find an available port.
+            tcpListener = new TcpListener(
+                System.Net.IPAddress.Loopback, 0);
+            tcpListener.Start();
+            port = ((System.Net.IPEndPoint)tcpListener.LocalEndpoint)
+                .Port;
+            tcpListener.Stop();
+        }
+        MoonSharpVsCodeDebugServer debugServer =
+            new MoonSharpVsCodeDebugServer(port);
+        debugServer.Start();
+        debugServer.AttachToScript(ThemeApi.ScriptSession.session,
+            "TECHMANIA Theme");
+        Debug.Log($"Started MoonSharp debug server at port {port}.");
+        
+        // TODO: call Dispose on exit or disable.
     }
 
     private void ProgressCallback(string currentlyLoadingFile)

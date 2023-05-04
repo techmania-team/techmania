@@ -4,6 +4,8 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System;
+using MoonSharp.VsCodeDebugger;
+using System.Net.Sockets;
 
 namespace ThemeApi
 {
@@ -66,6 +68,9 @@ namespace ThemeApi
 
         public static void Execute(string script)
         {
+            // TODO: pass in filename after all, and feed it to
+            // 3rd parameter of DoString, so debugger can find
+            // the source file on file system.
             session.DoString(script);
         }
 
