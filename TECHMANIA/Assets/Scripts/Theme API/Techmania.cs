@@ -116,7 +116,30 @@ namespace ThemeApi
         #endregion
 
         #region Script execution
-        public void ExecuteScript(string script)
+        
+        public static void ExecuteScriptFromTheme(string path)
+        {
+            string script = GlobalResource.GetThemeContent<TextAsset>
+                (path)?.text;
+            if (string.IsNullOrEmpty(script)) return;
+
+            if (Application.isEditor)
+            {
+                // If in editor, construct the full path to the
+                // script file, in order to provide debugging support.
+                string fullPath = System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(
+                        Application.dataPath),
+                    path);
+                ScriptSession.Execute(script, fullPath);
+            }
+            else
+            {
+                ScriptSession.Execute(script);
+            }
+        }
+
+        public static void ExecuteScript(string script)
         {
             ScriptSession.Execute(script);
         }

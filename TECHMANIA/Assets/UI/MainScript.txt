@@ -6,38 +6,32 @@ eventType = tm.enum.eventType
 
 -- To apply themes to dropdowns
 tm.SetPanelSettings("Assets/UI/Panel Settings.asset")
-    
+
 tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table (default theme).csv"))
 tm.l10n.ApplyLocale()
 callbacksOnLocaleChange = {}
 
 themeOptions = tm.options.GetThemeOptions("Default")
 
-function LoadAndExecute(path)
-    print("Executing: " .. path)
-    local script = tm.io.LoadTextFileFromTheme(path)
-    tm.ExecuteScript(script)
-end
-
-LoadAndExecute("Assets/UI/Scripts/Utilities.txt")
-LoadAndExecute("Assets/UI/Scripts/Fading.txt")
-LoadAndExecute("Assets/UI/Controls/Controls.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Utilities.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Fading.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Controls/Controls.txt")
 InitializeControls()
 
-LoadAndExecute("Assets/UI/Scripts/Alert Box.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Welcome Mat.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Select Track Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Options Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Information Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Game Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Result Panel.txt")
-LoadAndExecute("Assets/UI/Scripts/Panels/Editor.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Alert Box.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Welcome Mat.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Track Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Options Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Information Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Game Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Result Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Editor.txt")
 
-LoadAndExecute("Assets/UI/Scripts/Navigation.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Navigation.txt")
 SetUpNavigation()
 mainMenu.Show()
 

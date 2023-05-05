@@ -66,12 +66,17 @@ namespace ThemeApi
             session.Globals["getApi"] = (Func<int, Table>)GetApi;
         }
 
-        public static void Execute(string script)
+        public static void Execute(string script, string path = null)
         {
-            // TODO: pass in filename after all, and feed it to
-            // 3rd parameter of DoString, so debugger can find
-            // the source file on file system.
-            session.DoString(script);
+            if (path == null)
+            {
+                Debug.Log("Executing script from unknown origin");
+            }
+            else
+            {
+                Debug.Log("Executing script from file " + path);
+            }
+            session.DoString(script, globalContext: null, path);
         }
 
         public static Table GetApi(int version)

@@ -237,7 +237,7 @@ public class BootScreen : MonoBehaviour
         ThemeApi.ScriptSession.Prepare();
         try
         {
-            ThemeApi.ScriptSession.Execute(mainScript.text);
+            ThemeApi.Techmania.ExecuteScriptFromTheme(mainScriptPath);
         }
         catch (ThemeApi.ApiNotSupportedException)
         {
@@ -250,6 +250,10 @@ public class BootScreen : MonoBehaviour
         {
             StartMoonSharpDebugServer();
         }
+        else
+        {
+            debugServer = null;
+        }
 
         // If everything worked up to this point, we can hide
         // main canvas and finish the boot sequence.
@@ -260,6 +264,21 @@ public class BootScreen : MonoBehaviour
         TopLevelObjects.instance.editorCanvas.gameObject
             .SetActive(false);
     }
+
+    private void ProgressCallback(string currentlyLoadingFile)
+    {
+        progressLine2.text = Paths
+            .HidePlatformInternalPath(currentlyLoadingFile);
+    }
+
+    private void CompleteCallback(Status status)
+    {
+        loadStatus = status;
+    }
+    #endregion
+
+    #region MoonSharp debug server
+    private MoonSharpVsCodeDebugServer debugServer;
 
     private void StartMoonSharpDebugServer()
     {
@@ -276,7 +295,7 @@ public class BootScreen : MonoBehaviour
         }
         catch (SocketException)
         {
-            Debug.LogWarning($"Port {port} unavailable for MoonSharp debug server. Finding another port; you will need to update launch.json in VS Code to connect.");
+            Debug.LogWarning($"Port {port} unavailable for MoonSharp debug server. Looking for another port; you will need to update .vscode/launch.json in VS Code to connect.");
             available = false;
         }
         finally { tcpListener.Stop(); }
@@ -291,25 +310,16 @@ public class BootScreen : MonoBehaviour
                 .Port;
             tcpListener.Stop();
         }
-        MoonSharpVsCodeDebugServer debugServer =
-            new MoonSharpVsCodeDebugServer(port);
+        debugServer = new MoonSharpVsCodeDebugServer(port);
         debugServer.Start();
         debugServer.AttachToScript(ThemeApi.ScriptSession.session,
             "TECHMANIA Theme");
         Debug.Log($"Started MoonSharp debug server at port {port}.");
-        
-        // TODO: call Dispose on exit or disable.
     }
 
-    private void ProgressCallback(string currentlyLoadingFile)
+    private void OnDisable()
     {
-        progressLine2.text = Paths
-            .HidePlatformInternalPath(currentlyLoadingFile);
-    }
-
-    private void CompleteCallback(Status status)
-    {
-        loadStatus = status;
+        debugServer?.Dispose();
     }
     #endregion
 
