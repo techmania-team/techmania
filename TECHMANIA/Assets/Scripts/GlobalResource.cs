@@ -161,6 +161,13 @@ public static class GlobalResource
             return null;
         }
     }
+
+    public static void ClearTrackList()
+    {
+        trackSubfolderList.Clear();
+        trackList.Clear();
+        trackWithErrorList.Clear();
+    }
     #endregion
 
     public static bool anyOutdatedTrack;
