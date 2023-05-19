@@ -8,6 +8,11 @@ namespace ThemeApi
     [MoonSharpUserData]
     public static class IO
     {
+        public static bool FileExists(string path)
+        {
+            return UniversalIO.FileExists(path);
+        }
+
         public static string LoadTextFileFromTheme(string path)
         {
             return GlobalResource.GetThemeContent<TextAsset>(path)?
