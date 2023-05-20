@@ -232,6 +232,8 @@ public class TrackMetadata
     // In seconds.
     public double previewStartTime;
     public double previewEndTime;
+    // Filename of preview BGA. Not used by default theme.
+    public string previewBga;
 
     // Patterns.
 
