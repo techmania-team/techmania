@@ -259,6 +259,7 @@ public class TrackMetadata
             previewTrack = previewTrack,
             previewStartTime = previewStartTime,
             previewEndTime = previewEndTime,
+            previewBga = previewBga,
 
             autoOrderPatterns = autoOrderPatterns
         };
