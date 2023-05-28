@@ -282,6 +282,9 @@ end
 
 selectTrackPanel.Hide = function()
     selectTrackPanel.ClearAllCards()
+    -- When creating a new track and transitioning to editor, hide
+    -- the new track dialog so it isn't visible when transitioning back.
+    newTrackDialog.Hide()
 end
 
 selectTrackPanel.Refresh = function()
@@ -483,15 +486,8 @@ newTrackDialog.Initialize = function()
         local artist = dialog.Q("artist-field").Q("text-field").stringValue
         local status, newTrackFolder = tm.editor.CreateNewTrack(selectTrackPanel.location, title, artist)
         if (status.Ok()) then
-            tm.StartCoroutine(function()
-                FadeOutCoroutine(selectTrackPanel.panel, -100, 0,
-                    function()
-                        -- When the panel fully disappears, hide the new track dialog so
-                        -- it's not visible when we return
-                        bg.display = false
-                        tm.editor.LaunchOnTrack(newTrackFolder)
-                    end)
-            end)
+            editorTrackSetupPanel.trackFolder = newTrackFolder
+            navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
         else
             FadeOutDialog(bg, dialog)
             alertBox.Alert(
@@ -514,6 +510,10 @@ newTrackDialog.Initialize = function()
         -- Prevents bg from receiving this event on the bubble up phase
         event.StopPropagation()
     end)
+end
+
+newTrackDialog.Hide = function()
+    newTrackDialog.bg.display = false
 end
 
 selectTrackPanel.Initialize()
