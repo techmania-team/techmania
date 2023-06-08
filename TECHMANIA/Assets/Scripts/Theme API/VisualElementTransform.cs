@@ -13,6 +13,7 @@ namespace ThemeApi
         public static Vector2 ScreenSpaceToElementLocalSpace(
             VisualElement element, Vector2 screenSpace)
         {
+            // TODO: update this
             Vector2 invertedScreenSpace = new Vector2(
                 screenSpace.x, Screen.height - screenSpace.y);
             // worldSpace will be in the reference resolution of
@@ -25,22 +26,35 @@ namespace ThemeApi
             return localSpace;
         }
 
-        // Used by VFXManager and ComboText.
-        public static Vector2 ElementCenterToWorldSpace(
-            VisualElement element)
+        // Viewport space: bottom left of screen is (0, 0),
+        // top right is (1, 1).
+        public static Vector2 LocalSpaceToViewportSpace(
+            VisualElement element, Vector2 localPoint)
         {
-            Vector2 screenPoint = element.worldBound.center;
-            int referenceResolutionHeight = 
-                TopLevelObjects.instance.mainUiDocument
-                .panelSettings.referenceResolution.y;
-            // Reverse Y coordinate when passing a position to Canvas.
-            screenPoint.y = referenceResolutionHeight - screenPoint.y;
-            return screenPoint;
+            VisualElement root = TopLevelObjects.instance.mainUiDocument
+                .rootVisualElement;
+            // It's called "world" but it's actually in the root
+            // element's local space. Took me a while to figure out.
+            Vector2 worldPoint = element.LocalToWorld(localPoint);
+            // In UI Toolkit, Y+ is downwards, but in Unity UI's
+            // definition of "view port", Y+ is upwards.
+            return new Vector2(
+                worldPoint.x / root.contentRect.width,
+                1f - worldPoint.y / root.contentRect.height);
+        }
+
+        // Used by VFXManager and ComboText.
+        public static Vector2 ElementCenterToViewportSpace(
+            VisualElement element, bool log = false)
+        {
+            return LocalSpaceToViewportSpace(element,
+                element.contentRect.center);
         }
 
         public static bool ElementContainsPointInScreenSpace(
             VisualElement element, Vector2 screenSpace)
         {
+            // TODO: update this
             Vector2 localSpace = ScreenSpaceToElementLocalSpace(
                 element, screenSpace);
             return element.ContainsPoint(localSpace);

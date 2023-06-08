@@ -5,7 +5,6 @@ using ThemeApi;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class ComboText : MonoBehaviour
 {
@@ -15,21 +14,18 @@ public class ComboText : MonoBehaviour
     public List<UnityEngine.UI.Image> comboDigits;
     public Animator animator;
 
-    private Transform transformToFollow;
     private UnityEngine.UIElements.VisualElement elementToFollow;
-
     private RectTransform rect;
     private SpriteSheet judgementSpriteSheet;
     private List<SpriteSheet> comboDigitSpriteSheet;
     private float startTime;
+    private float sizeUnit;
 
     // Start is called before the first frame update
     void Start()
     {
-        ResetSize();
         Hide();
 
-        transformToFollow = null;
         elementToFollow = null;
         rect = GetComponent<RectTransform>();
         judgementSpriteSheet = null;
@@ -44,26 +40,37 @@ public class ComboText : MonoBehaviour
     private float GetWidth(SpriteSheet spriteSheet)
     {
         if (spriteSheet.sprites.Count == 0) return 0f;
-        float height = GlobalResource.comboSkin.height;
+        float height = GlobalResource.comboSkin.height * sizeUnit;
         float ratio = spriteSheet.sprites[0].rect.height /
             spriteSheet.sprites[0].rect.width;
         return height / ratio;
     }
 
-    public void ResetSize()
+    public void ResetSize(float scanHeight)
     {
-        // TODO: do we need to scale with the play area's size?
-        if (GlobalResource.comboSkin != null)
-        {
-            comboTextLayout.anchoredPosition = new Vector2(
-                0f, GlobalResource.comboSkin.distanceToNote);
-            comboTextLayout.sizeDelta = new Vector2(
-                comboTextLayout.sizeDelta.x,
-                GlobalResource.comboSkin.height);
-            space.sizeDelta = new Vector2(
-                GlobalResource.comboSkin.spaceBetweenJudgementAndCombo,
-                space.sizeDelta.y);
-        }
+        if (GlobalResource.comboSkin == null) return;
+
+        // Sizes in the combo skin are in unit
+        // "1/500 of scan height".
+        // To express this unit in Canvas terms, first normalize
+        // scan height in UI Toolkit's world space.
+        float worldHeight = TopLevelObjects.instance.mainUiDocument
+            .rootVisualElement.contentRect.height;
+        float normalizedScanHeight = scanHeight / worldHeight;
+
+        // Now we can calculate size unit.
+        sizeUnit = TopLevelObjects.instance.vfxComboCanvas
+            .GetComponent<RectTransform>().sizeDelta.y
+            * normalizedScanHeight / 500f;
+
+        comboTextLayout.anchoredPosition = new Vector2(
+            0f, GlobalResource.comboSkin.distanceToNote * sizeUnit);
+        comboTextLayout.sizeDelta = new Vector2(
+            0, GlobalResource.comboSkin.height * sizeUnit);
+        space.sizeDelta = new Vector2(
+            GlobalResource.comboSkin.spaceBetweenJudgementAndCombo
+                * sizeUnit,
+            0);
     }
 
     public void Hide()
@@ -73,16 +80,16 @@ public class ComboText : MonoBehaviour
         comboDigits.ForEach(i => i.gameObject.SetActive(false));
     }
 
-    public void Show(VisualElement noteImage, Judgement judgement,
-        ScoreKeeper scoreKeeper)
+    public void Show(UnityEngine.UIElements.VisualElement noteImage, 
+        Judgement judgement, ScoreKeeper scoreKeeper)
     {
         Show(noteImage, judgement,
             scoreKeeper.feverState == ScoreKeeper.FeverState.Active,
             scoreKeeper.currentCombo);
     }
 
-    public void Show(VisualElement noteImage, Judgement judgement,
-        bool fever, int combo)
+    public void Show(UnityEngine.UIElements.VisualElement noteImage, 
+        Judgement judgement, bool fever, int combo)
     {
         if (noteImage != null)
         {
@@ -232,14 +239,11 @@ public class ComboText : MonoBehaviour
 
     private void Follow()
     {
-        if (elementToFollow != null)
-        {
-            rect.anchoredPosition = VisualElementTransform
-                .ElementCenterToWorldSpace(elementToFollow);
-        }
-        else if (transformToFollow != null)
-        {
-            transform.position = transformToFollow.position;
-        }
+        if (elementToFollow == null) return;
+
+        Vector2 viewportPoint = VisualElementTransform
+            .ElementCenterToViewportSpace(elementToFollow);
+        rect.anchorMin = viewportPoint;
+        rect.anchorMax = viewportPoint;
     }
 }

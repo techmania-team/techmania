@@ -12,7 +12,7 @@ public class VFXDrawer : MonoBehaviour
     public Material additiveMaterial;
 
     private SpriteSheet spriteSheet;
-    private Vector3 position;
+    private Vector2 anchor;
     private float laneHeight;
     private bool loop;
 
@@ -20,11 +20,11 @@ public class VFXDrawer : MonoBehaviour
     private Image image;
     private float startTime;
 
-    public void Initialize(Vector3 position,
+    public void Initialize(Vector2 viewportPoint,
         SpriteSheet spriteSheet, float laneHeight, bool loop)
     {
         this.spriteSheet = spriteSheet;
-        this.position = position;
+        this.anchor = viewportPoint;
         this.laneHeight = laneHeight;
         this.loop = loop;
     }
@@ -40,11 +40,29 @@ public class VFXDrawer : MonoBehaviour
         }
 
         rect = GetComponent<RectTransform>();
-        rect.anchoredPosition = position;
+        SetViewportPoint(anchor);
+
+        // To calculate the proper size, first calculate in
+        // UI Toolkit's world space. laneHeight comes from layout's
+        // resolved style, so it should take scale into account.
         float height = laneHeight * spriteSheet.scale;
         float width = spriteSheet.sprites[0].rect.width /
             spriteSheet.sprites[0].rect.height * height;
-        rect.sizeDelta = new Vector2(width, height);
+
+        // Then normalize the sizes.
+        UnityEngine.UIElements.VisualElement root = 
+            TopLevelObjects.instance.mainUiDocument.rootVisualElement;
+        float rootHeight = root.contentRect.height;
+        float rootWidth = root.contentRect.width;
+        height /= rootHeight;
+        width /= rootWidth;
+
+        // Finally, multiply by canvas size.
+        RectTransform canvasRect = 
+            TopLevelObjects.instance.vfxComboCanvas
+            .GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(width * canvasRect.sizeDelta.x,
+            height * canvasRect.sizeDelta.y);
 
         image = GetComponent<Image>();
         image.sprite = spriteSheet.sprites[0];
@@ -71,9 +89,10 @@ public class VFXDrawer : MonoBehaviour
         }
     }
 
-    public void SetPosition(Vector2 screenPoint)
+    public void SetViewportPoint(Vector2 viewportPoint)
     {
         if (rect == null) return;
-        rect.anchoredPosition = screenPoint;
+        rect.anchorMin = viewportPoint;
+        rect.anchorMax = viewportPoint;
     }
 }

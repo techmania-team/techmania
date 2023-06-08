@@ -391,7 +391,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for VFX and combo text.
         vfxManager.Prepare(layout.laneHeight, timer, layout);
-        comboText.ResetSize();
+        comboText.ResetSize(layout.scanHeight);
         comboText.Hide();
 
         // Initialize scores.
@@ -532,7 +532,7 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
         noteManager.ResetSize();
         vfxManager.ResetSize(layout.laneHeight);
-        comboText.ResetSize();
+        comboText.ResetSize(layout.scanHeight);
     }
 
     public void ActivateFever()
