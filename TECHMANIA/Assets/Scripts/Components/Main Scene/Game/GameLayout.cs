@@ -475,7 +475,7 @@ public class GameLayout
     public int ScreenPointToLaneNumber(Vector2 screenPoint)
     {
         Vector2 localPoint = ThemeApi.VisualElementTransform
-            .ScreenSpaceToElementLocalSpace(
+            .ScreenSpaceToLocalSpace(
             layoutContainer, screenPoint);
         if (!layoutContainer.ContainsPoint(localPoint))
         {

@@ -677,10 +677,16 @@ namespace ThemeApi
         #endregion
 
         #region Transform
+        public Vector2 LocalSpaceToScreenSpace(Vector2 localSpace)
+        {
+            return VisualElementTransform.LocalSpaceToScreenSpace(
+                inner, localSpace);
+        }
+
         public Vector2 ScreenSpaceToLocalSpace(Vector2 screenSpace)
         {
             return VisualElementTransform
-                .ScreenSpaceToElementLocalSpace(inner, screenSpace);
+                .ScreenSpaceToLocalSpace(inner, screenSpace);
         }
 
         public bool ContainsPointInScreenSpace(Vector2 screenSpace)
