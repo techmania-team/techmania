@@ -180,6 +180,8 @@ namespace ThemeApi
             addType(unityTypes, typeof(Angle));
             addType(unityTypes, typeof(StyleScale));
             addType(unityTypes, typeof(Scale));
+            addType(unityTypes, typeof(StyleTransformOrigin));
+            addType(unityTypes, typeof(TransformOrigin));
             // Types used by Painter2D
             addType(unityTypes, typeof(Painter2D));
             addType(unityTypes, typeof(VectorImage));
