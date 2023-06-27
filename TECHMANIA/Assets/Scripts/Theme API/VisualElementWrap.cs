@@ -648,6 +648,14 @@ namespace ThemeApi
         // Parameters: VisualElementWrap, MeshGenerationContext
         // Call VisualElementWrap.contentRect for draw boundaries.
         // (0, 0) is top left, positions are in pixels.
+        //
+        // When setting Vertex's, make sure to create new vectors
+        // instead of modifying existing ones.
+        // Correct: vertex.position = new Vector3(...)
+        // Wrong: vertex.position.x = ...
+        //
+        // Also remember to set the tint on each vertex; it seems
+        // to default to (0, 0, 0, 0).
         public void SetMeshGeneratorFunction(DynValue function)
         {
             inner.generateVisualContent =

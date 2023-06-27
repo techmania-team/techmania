@@ -138,7 +138,7 @@ namespace ThemeApi
         }
 
         // Updates the score and medal on the current pattern separately.
-        // Does not save to disk; call Records.SaveToDisk() to do that.
+        // Does not save to disk; call Records.SaveToFile() to do that.
         public void UpdateRecord()
         {
             CheckState(State.Complete, "UpdateRecord");
