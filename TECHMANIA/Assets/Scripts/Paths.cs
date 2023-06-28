@@ -122,20 +122,29 @@ public static class Paths
 
     public static void ApplyCustomDataLocation()
     {
+        trackRootFolder = Path.Combine(workingDirectory,
+            kTrackFolderName);
+        skinRootFolder = Path.Combine(workingDirectory,
+            kSkinFolderName);
+        themeFolder = Path.Combine(workingDirectory,
+            kThemeFolderName);
         if (Options.instance.customDataLocation)
         {
-            trackRootFolder = Options.instance.tracksFolderLocation;
-            skinRootFolder = Options.instance.skinsFolderLocation;
-            themeFolder = Options.instance.themesFolderLocation;
-        }
-        else
-        {
-            trackRootFolder = Path.Combine(workingDirectory,
-                kTrackFolderName);
-            skinRootFolder = Path.Combine(workingDirectory,
-                kSkinFolderName);
-            themeFolder = Path.Combine(workingDirectory,
-                kThemeFolderName);
+            if (!string.IsNullOrEmpty(
+                Options.instance.tracksFolderLocation))
+            {
+                trackRootFolder = Options.instance.tracksFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.skinsFolderLocation))
+            {
+                skinRootFolder = Options.instance.skinsFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.themesFolderLocation))
+            {
+                themeFolder = Options.instance.themesFolderLocation;
+            }
         }
     }
     #endregion

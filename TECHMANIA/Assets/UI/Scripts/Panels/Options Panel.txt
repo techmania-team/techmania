@@ -30,6 +30,7 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
     local panel = optionsPanel.panel
     local tracksContainer = panel.Q("tracks-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
+    local themesContainer = panel.Q("themes-folder-location")
     if (tm.options.customDataLocation) then
         if (tm.options.tracksFolderLocation == nil or
             tm.options.tracksFolderLocation == "") then
@@ -37,15 +38,22 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
         end
         if (tm.options.skinsFolderLocation == nil or
             tm.options.skinsFolderLocation == "") then
-            tm.options.skinsFolderLocation = tm.paths.GetSkinFolder()
+            tm.options.skinsFolderLocation = tm.paths.GetSkinRootFolder()
+        end
+        if (tm.options.themesFolderLocation == nil or
+            tm.options.themesFolderLocation == "") then
+            tm.options.themesFolderLocation = tm.paths.GetThemeFolder()
         end
         tracksContainer.display = true
         tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
         skinsContainer.display = true
         skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+        themesContainer.display = true
+        themesContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.themesFolderLocation)
     else
         tracksContainer.display = false
         skinsContainer.display = false
+        themesContainer.display = false
     end
 end
 
@@ -290,6 +298,15 @@ optionsPanel.Initialize = function()
         local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
+            tm.paths.ApplyCustomDataLocation()
+            optionsPanel.UpdateCustomDataLocationDisplay()
+        end
+    end)
+    local themesFolderButton = panel.Q("themes-folder-location").Q("button")
+    themesFolderButton.RegisterCallback(eventType.Click, function()
+        local newFolder = tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation)
+        if (newFolder != nil) then
+            tm.options.themesFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
             optionsPanel.UpdateCustomDataLocationDisplay()
         end
