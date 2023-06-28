@@ -72,7 +72,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadNoteSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string noteSkinFolder = Paths.GetNoteSkinFolder(
+        string noteSkinFolder = Paths.GetSkinFolder(SkinType.Note,
             Options.instance.noteSkin);
         string noteSkinFilename = Path.Combine(
             noteSkinFolder, Paths.kSkinFilename);
@@ -99,7 +99,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadVfxSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string vfxSkinFolder = Paths.GetVfxSkinFolder(
+        string vfxSkinFolder = Paths.GetSkinFolder(SkinType.Vfx,
             Options.instance.vfxSkin);
         string vfxSkinFilename = Path.Combine(
             vfxSkinFolder, Paths.kSkinFilename);
@@ -126,7 +126,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadComboSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string comboSkinFolder = Paths.GetComboSkinFolder(
+        string comboSkinFolder = Paths.GetSkinFolder(SkinType.Combo,
             Options.instance.comboSkin);
         string comboSkinFilename = Path.Combine(
             comboSkinFolder, Paths.kSkinFilename);
@@ -171,7 +171,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadGameUiSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
+        string gameUiSkinFolder = Paths.GetSkinFolder(SkinType.GameUI,
             Options.instance.gameUiSkin);
         string gameUiSkinFilename = Path.Combine(
             gameUiSkinFolder, Paths.kSkinFilename);
@@ -393,7 +393,7 @@ public class GlobalResourceLoader : MonoBehaviour
 
                 // Record as a subfolder.
                 if (folder.Equals(
-                    Paths.GetStreamingTrackRootFolder()))
+                    Paths.GetTrackRootFolder(streamingAssets: true)))
                 {
                     GlobalResource.trackSubfolderList[
                         Paths.GetTrackRootFolder()]
@@ -477,7 +477,7 @@ public class GlobalResourceLoader : MonoBehaviour
         // directory above them.
         if (!BetterStreamingAssets.DirectoryExists(
                 Paths.RelativePathInStreamingAssets(
-                    Paths.GetStreamingTrackRootFolder())))
+                    Paths.GetTrackRootFolder(streamingAssets: true))))
         {
             return;
         }
@@ -485,7 +485,7 @@ public class GlobalResourceLoader : MonoBehaviour
         // Get all track.tech files.
         string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
             Paths.RelativePathInStreamingAssets(
-                Paths.GetStreamingTrackRootFolder()
+                Paths.GetTrackRootFolder(streamingAssets: true)
             ),
             Paths.kTrackFilename,
             SearchOption.AllDirectories
@@ -504,14 +504,15 @@ public class GlobalResourceLoader : MonoBehaviour
             string absoluteTrackFolder = Paths
                 .AbsolutePathInStreamingAssets(relativeTrackFolder);
 
+            // These two start as the folder above track folder.
             string processingRelativeFolder = Path
                 .GetDirectoryName(relativeTrackFolder);
             string processingAbsoluteFolder = Paths
                 .AbsolutePathInStreamingAssets(
                 processingRelativeFolder);
 
-            if (processingAbsoluteFolder == Paths
-                .GetStreamingTrackRootFolder())
+            if (processingAbsoluteFolder == Paths.GetTrackRootFolder(
+                streamingAssets: true))
             {
                 processingAbsoluteFolder = Paths
                     .GetTrackRootFolder();
@@ -535,7 +536,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 GlobalResource.trackList[processingAbsoluteFolder]
                     .Add(new GlobalResource.TrackInFolder()
                 {
-                    minimizedTrack = t,
+                    minimizedTrack = Track.Minimize(t),
                     folder = absoluteTrackFolder
                 });
             }
@@ -558,9 +559,9 @@ public class GlobalResourceLoader : MonoBehaviour
                 });
             }
 
-            // Process path folders one by one.
+            // Process folders upward from processingAbsoluteFolder.
             while (processingAbsoluteFolder != Paths
-                .GetStreamingTrackRootFolder())
+                .GetTrackRootFolder(streamingAssets: true))
             {
                 string processingRelativeParentFolder = Path
                     .GetDirectoryName(processingRelativeFolder);
@@ -570,7 +571,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 string dirKey = processingAbsoluteParentFolder;
 
                 if (processingAbsoluteParentFolder == Paths
-                    .GetStreamingTrackRootFolder())
+                    .GetTrackRootFolder(streamingAssets: true))
                 {
                     dirKey = Paths.GetTrackRootFolder();
                 }
@@ -688,7 +689,7 @@ public class GlobalResourceLoader : MonoBehaviour
         else
         {
             // Load from theme folder.
-            themePath = Paths.GetThemeFilename(
+            themePath = Paths.GetThemeFilePath(
                 Options.instance.theme);
         }
         if (!File.Exists(themePath))

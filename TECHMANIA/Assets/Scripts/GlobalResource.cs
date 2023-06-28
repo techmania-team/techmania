@@ -4,6 +4,14 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
 
+public enum SkinType
+{
+    Note,
+    Vfx,
+    Combo,
+    GameUI
+}
+
 [MoonSharpUserData]
 public static class GlobalResource
 {
@@ -13,32 +21,35 @@ public static class GlobalResource
     public static ComboSkin comboSkin;
     public static GameUISkin gameUiSkin;
 
+    public static List<string> GetSkinList(SkinType type)
+    {
+        return AllSkinsInFolder(
+            Paths.GetSkinRootFolderForType(type),
+            Paths.GetSkinRootFolderForType(type, streamingAssets: true));
+    }
+
+    // TODO: deprecate
     public static List<string> AllNoteSkins()
     {
-        return AllSkinsInFolder(
-            Paths.GetNoteSkinRootFolder(),
-            Paths.GetStreamingNoteSkinRootFolder());
+        return GetSkinList(SkinType.Note);
     }
 
+    // TODO: deprecate
     public static List<string> AllVfxSkins()
     {
-        return AllSkinsInFolder(
-            Paths.GetVfxSkinRootFolder(),
-            Paths.GetStreamingVfxSkinRootFolder());
+        return GetSkinList(SkinType.Vfx);
     }
 
+    // TODO: deprecate
     public static List<string> AllComboSkins()
     {
-        return AllSkinsInFolder(
-            Paths.GetComboSkinRootFolder(),
-            Paths.GetStreamingComboSkinRootFolder());
+        return GetSkinList(SkinType.Combo);
     }
 
+    // TODO: deprecate
     public static List<string> AllGameUiSkins()
     {
-        return AllSkinsInFolder(
-            Paths.GetGameUiSkinRootFolder(),
-            Paths.GetStreamingGameUiSkinRootFolder());
+        return GetSkinList(SkinType.GameUI);
     }
 
     private static List<string> AllSkinsInFolder(string skinFolder,

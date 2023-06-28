@@ -92,6 +92,7 @@ public class Options : OptionsBase
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
+    public string themesFolderLocation;
     // Call TurnOn/OffDiscordRichPresence instead of setting this
     // directly.
     public bool discordRichPresence
@@ -186,6 +187,7 @@ public class Options : OptionsBase
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
+        themesFolderLocation = "";
         discordRichPresence = true;
 
         editorOptions = new EditorOptions();
@@ -246,6 +248,7 @@ public class Options : OptionsBase
         gameUiSkin = kDefaultSkin;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
+        themesFolderLocation = "";
         SaveToFile(Paths.GetOptionsFilePath());
     }
 
