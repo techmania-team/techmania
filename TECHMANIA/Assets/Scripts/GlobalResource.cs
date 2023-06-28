@@ -28,30 +28,6 @@ public static class GlobalResource
             Paths.GetSkinRootFolderForType(type, streamingAssets: true));
     }
 
-    // TODO: deprecate
-    public static List<string> AllNoteSkins()
-    {
-        return GetSkinList(SkinType.Note);
-    }
-
-    // TODO: deprecate
-    public static List<string> AllVfxSkins()
-    {
-        return GetSkinList(SkinType.Vfx);
-    }
-
-    // TODO: deprecate
-    public static List<string> AllComboSkins()
-    {
-        return GetSkinList(SkinType.Combo);
-    }
-
-    // TODO: deprecate
-    public static List<string> AllGameUiSkins()
-    {
-        return GetSkinList(SkinType.GameUI);
-    }
-
     private static List<string> AllSkinsInFolder(string skinFolder,
         string streamingSkinFolder)
     {

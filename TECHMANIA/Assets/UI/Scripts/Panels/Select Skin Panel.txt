@@ -17,13 +17,13 @@ selectSkinPanel.Show = function()
     end
 
     SetSkinDropdown("note-skin", "noteSkin",
-        tm.resources.AllNoteSkins())
+        tm.resources.GetSkinList(tm.enum.skinType.Note))
     SetSkinDropdown("vfx-skin", "vfxSkin",
-        tm.resources.AllVfxSkins())
+        tm.resources.GetSkinList(tm.enum.skinType.Vfx))
     SetSkinDropdown("combo-skin", "comboSkin",
-        tm.resources.AllComboSkins())
+        tm.resources.GetSkinList(tm.enum.skinType.Combo))
     SetSkinDropdown("game-ui-skin", "gameUiSkin",
-        tm.resources.AllGameUiSkins())
+        tm.resources.GetSkinList(tm.enum.skinType.GameUI))
 
     local reloadToggle = panel.Q("reload-skins").Q("track")
     controls.SetToggleIsOn(reloadToggle, tm.options.reloadSkinsWhenLoadingPattern)

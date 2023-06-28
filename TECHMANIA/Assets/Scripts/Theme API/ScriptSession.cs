@@ -114,6 +114,7 @@ namespace ThemeApi
             addType(tmEnums, typeof(VisualElementWrap.EventType));
             addType(tmEnums, typeof(Options.Ruleset));
             addTypeAs(tmEnums, typeof(GameState.State), "gameState");
+            addType(tmEnums, typeof(SkinType));
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));
             addType(tmEnums, typeof(NoteType));
