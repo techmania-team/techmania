@@ -153,6 +153,11 @@ namespace ThemeApi
                 .Coroutine);
         }
 
+        public bool IsCoroutineRunning(int id)
+        {
+            return CoroutineRunner.IsRunning(id);
+        }
+
         public void StopCoroutine(int id)
         {
             CoroutineRunner.Stop(id);

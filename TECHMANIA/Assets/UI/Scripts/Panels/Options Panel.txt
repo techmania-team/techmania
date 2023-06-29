@@ -249,12 +249,17 @@ optionsPanel.Initialize = function()
 
     local themeDropdown = panel.Q("theme").Q("dropdown")
     themeDropdown.RegisterCallback(eventType.ChangeString, function(_, event)
-        -- TODO: display warning
-        tm.options.theme = event.newValue
-    end)
-
-    local skinsButton = panel.Q("skins").Q("button")
-    skinsButton.RegisterCallback(eventType.Click, function()
+        local newTheme = event.newValue
+        if (tm.options.theme == newTheme) then return end
+        -- Temporarily revert the change, only apply it after confirmation
+        themeDropdown.SetValueWithoutNotify(tm.options.theme)
+        alertBox.Confirm(tm.l10n.GetString("change_theme_warning"),
+            tm.l10n.GetString("change_theme_confirm"), tm.l10n.GetString("change_theme_cancel"),
+            function()
+                tm.options.theme = newTheme
+                themeDropdown.SetValueWithoutNotify(newTheme)
+                alertBox.Alert(tm.l10n.GetString("change_theme_instruction"))
+            end)
     end)
 
     function InitializeThemeOptionToggle(containerName, key)
