@@ -145,6 +145,7 @@ namespace ThemeApi
             addTypeAs(netTypes, typeof(int), "int");
             addTypeAs(netTypes, typeof(float), "float");
             addTypeAs(netTypes, typeof(StringWrap), "string");
+            addType(netTypes, typeof(DateTime));
             apiTable["net"] = netTypes;
 
             // Expose Unity classes

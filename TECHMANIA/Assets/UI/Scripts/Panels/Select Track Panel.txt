@@ -9,7 +9,7 @@ selectTrackPanel = {
         keywords = {},
         keywordsPreSplit = "",  -- for display
         showTracksInAllFolders = false,
-        -- Possible values: Title, Artist, Genre, Touch, Keys, KM
+        -- Possible values: Title, Artist, Genre, ModifiedTime, Touch, Keys, KM
         sortBasis = "Title",
         -- key: enum, value: display string
         sortBasisDisplayString = {},
@@ -31,7 +31,9 @@ newTrackDialog = {
     dialog = selectTrackPanel.panel.Q("new-track-dialog-bg").Q("new-track-dialog")
 }
 
-function CompareTracks(t1, t2)
+function CompareTracks(trackInFolder1, trackInFolder2)
+    local t1 = trackInFolder1.minimizedTrack
+    local t2 = trackInFolder2.minimizedTrack
     local basis1, basis2
 
     function FindBasisPatternLevel(track, controlScheme)
@@ -68,6 +70,9 @@ function CompareTracks(t1, t2)
     elseif (selectTrackPanel.filter.sortBasis == "Genre") then
         basis1 = t1.trackMetadata.genre
         basis2 = t2.trackMetadata.genre
+    elseif (selectTrackPanel.filter.sortBasis == "ModifiedTime") then
+        basis1 = trackInFolder1.modifiedTime
+        basis2 = trackInFolder2.modifiedTime
     else
         -- "Touch", "Keys" or "KM"
         basis1 = FindBasisPatternLevel(t1, tm.enum.controlScheme[selectTrackPanel.filter.sortBasis])
@@ -166,7 +171,7 @@ selectTrackPanel.SpawnAllCards = function()
     end
 
     table.sort(tracksInFolder, function(trackInFolder1, trackInFolder2)
-        return CompareTracks(trackInFolder1.minimizedTrack, trackInFolder2.minimizedTrack)
+        return CompareTracks(trackInFolder1, trackInFolder2)
     end)
     local cardOfPreviouslySelectedTrack = nil
     for _, trackInFolder in ipairs(tracksInFolder) do
@@ -438,6 +443,7 @@ filterSideSheet.Initialize = function()
             Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
             Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
             Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
+            ModifiedTime = tm.l10n.GetString("track_filter_sidesheet_sort_basis_modified_time"),
             Touch = tm.l10n.GetString("track_filter_sidesheet_sort_basis_touch_level"),
             Keys = tm.l10n.GetString("track_filter_sidesheet_sort_basis_keys_level"),
             KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
@@ -457,6 +463,7 @@ filterSideSheet.Initialize = function()
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
     sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         selectTrackPanel.filter.sortBasis = KeyFromValue(selectTrackPanel.filter.sortBasisDisplayString, event.newValue)
+        selectTrackPanel.ClearAllCards()
         selectTrackPanel.SpawnAllCards()
     end)
 

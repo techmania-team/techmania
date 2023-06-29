@@ -363,6 +363,7 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             worker.ReportProgress(0,
                 Paths.HidePlatformInternalPath(dir));
+            DateTime modifiedTime = new DirectoryInfo(dir).LastWriteTime;
 
             // Is there a track?
             string possibleTrackFile = Path.Combine(
@@ -374,6 +375,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     new GlobalResource.TrackSubfolder()
                 {
                     name = Path.GetFileName(dir),
+                    modifiedTime = modifiedTime,
                     fullPath = dir
                 };
 
@@ -465,6 +467,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 new GlobalResource.TrackInFolder()
             {
                 folder = dir,
+                modifiedTime = modifiedTime,
                 minimizedTrack = Track.Minimize(track)
             });
         }
@@ -537,6 +540,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     .Add(new GlobalResource.TrackInFolder()
                 {
                     minimizedTrack = Track.Minimize(t),
+                    modifiedTime = DateTime.UnixEpoch,
                     folder = absoluteTrackFolder
                 });
             }
@@ -593,6 +597,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     {
                         name = Path.GetFileName(
                             processingAbsoluteFolder),
+                        modifiedTime = DateTime.UnixEpoch,
                         fullPath = processingAbsoluteFolder
                     };
                     string pngEyecatch = Path.Combine(
