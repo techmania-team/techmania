@@ -57,6 +57,24 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
     end
 end
 
+optionsPanel.UpdateThemeDropdown = function()
+    local dropdown = optionsPanel.panel.Q("theme").Q("dropdown")
+    dropdown.SetValueWithoutNotify(tm.options.theme)
+
+    local choices = tm.resources.GetThemeList()
+    local choicesContainsDefault = false
+    for _, choice in ipairs(choices) do
+        if (choice == "Default") then
+            choicesContainsDefault = true
+            break;
+        end
+    end
+    if (not choicesContainsDefault) then
+        table.insert(choices, "Default")
+    end
+    dropdown.choices = choices
+end
+
 optionsPanel.Show = function()
     optionsPanel.SetDiscordActivity()
 
@@ -80,6 +98,8 @@ optionsPanel.Show = function()
     local languageDropdown = panel.Q("language").Q("dropdown")
     local locale = tm.l10n.GetAllLocales()[tm.options.locale]
     languageDropdown.SetValueWithoutNotify(locale.languageName)
+
+    optionsPanel.UpdateThemeDropdown()
 
     function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
@@ -227,6 +247,12 @@ optionsPanel.Initialize = function()
         optionsPanel.Show()
     end)
 
+    local themeDropdown = panel.Q("theme").Q("dropdown")
+    themeDropdown.RegisterCallback(eventType.ChangeString, function(_, event)
+        -- TODO: display warning
+        tm.options.theme = event.newValue
+    end)
+
     local skinsButton = panel.Q("skins").Q("button")
     skinsButton.RegisterCallback(eventType.Click, function()
     end)
@@ -309,6 +335,7 @@ optionsPanel.Initialize = function()
             tm.options.themesFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
             optionsPanel.UpdateCustomDataLocationDisplay()
+            optionsPanel.UpdateThemeDropdown()
         end
     end)
 

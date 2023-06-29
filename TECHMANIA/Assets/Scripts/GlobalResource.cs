@@ -161,6 +161,41 @@ public static class GlobalResource
     #endregion
 
     #region Theme
+    public static List<string> GetThemeList()
+    {
+        List<string> themeNames = new List<string>();
+        string searchPattern = "*" + Paths.kThemeExtension;
+
+        // Enumerate themes in the theme folder.
+        foreach (string filename in
+            Directory.EnumerateFiles(Paths.GetThemeFolder(), 
+            searchPattern))
+        {
+            themeNames.Add(Path.GetFileNameWithoutExtension(filename));
+        }
+
+        // Enumerate themes in the streaming assets folder.
+        string relativeStreamingThemesFolder =
+            Paths.RelativePathInStreamingAssets(
+                Paths.GetThemeFolder(streamingAssets: true));
+        if (BetterStreamingAssets.DirectoryExists(
+            relativeStreamingThemesFolder))
+        {
+            foreach (string relativeFilename in
+                BetterStreamingAssets.GetFiles(
+                    relativeStreamingThemesFolder,
+                    searchPattern,
+                    SearchOption.AllDirectories))
+            {
+                themeNames.Add(Path.GetFileNameWithoutExtension(
+                    relativeFilename));
+            }
+        }
+
+        themeNames.Sort();
+        return themeNames;
+    }
+
     public static Dictionary<string, Object> themeContent;
 
     /// <summary>

@@ -661,6 +661,11 @@
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="theme" class="options-item">
+                    <ui:Label text="Theme" display-tooltip-when-elided="true" name="label" class="text-body" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="divider" class="options-divider" />
                 <ui:VisualElement name="skins" class="options-item">
                     <ui:Label text="Skins" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Button text="SELECT" display-tooltip-when-elided="true" name="button" class="button-outlined" />
