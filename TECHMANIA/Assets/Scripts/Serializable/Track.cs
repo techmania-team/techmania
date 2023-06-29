@@ -152,6 +152,12 @@ public partial class Track : TrackBase
                 return (int)p1.patternMetadata.controlScheme -
                     (int)p2.patternMetadata.controlScheme;
             }
+            else if (p1.patternMetadata.playableLanes !=
+                p2.patternMetadata.playableLanes)
+            {
+                return p1.patternMetadata.playableLanes -
+                    p2.patternMetadata.playableLanes;
+            }
             else
             {
                 return p1.patternMetadata.level -
