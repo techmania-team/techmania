@@ -247,6 +247,11 @@
                                 <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
                             </ui:Label>
                         </ui:VisualElement>
+                        <ui:VisualElement name="sudden-death" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Sudden death" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                            </ui:Label>
+                        </ui:VisualElement>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
                         <ui:Label tabindex="-1" text="Appearance" display-tooltip-when-elided="true" name="appearance-header" picking-mode="Ignore" class="item text-headline-4" />
                         <ui:VisualElement name="skins" picking-mode="Ignore" class="item">
@@ -290,7 +295,7 @@
                                 <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
                             </ui:Label>
                         </ui:VisualElement>
-                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" style="height: 100px;" />
+                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" style="height: 150px;" />
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>

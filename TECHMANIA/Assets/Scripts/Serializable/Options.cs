@@ -611,7 +611,7 @@ public class Modifiers
 
     public enum SuddenDeath
     {
-        None,
+        Normal,
         SuddenDeath
     }
     public SuddenDeath suddenDeath;
