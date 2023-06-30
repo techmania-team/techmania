@@ -609,6 +609,13 @@ public class Modifiers
     }
     public AssistTick assistTick;
 
+    public enum SuddenDeath
+    {
+        None,
+        SuddenDeath
+    }
+    public SuddenDeath suddenDeath;
+
     // Special modifiers
 
     public enum Mode
@@ -632,7 +639,8 @@ public class Modifiers
     public enum ScrollSpeed
     {
         Normal,
-        HalfSpeed
+        HalfSpeed,
+        ShiftedHalfSpeed
     }
     public ScrollSpeed scrollSpeed;
 

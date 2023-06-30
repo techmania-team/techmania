@@ -128,6 +128,7 @@ namespace ThemeApi
             addType(tmEnums, typeof(Modifiers.Fever));
             addType(tmEnums, typeof(Modifiers.Keysound));
             addType(tmEnums, typeof(Modifiers.AssistTick));
+            addType(tmEnums, typeof(Modifiers.SuddenDeath));
             addType(tmEnums, typeof(Modifiers.Mode));
             addType(tmEnums, typeof(Modifiers.ControlOverride));
             addType(tmEnums, typeof(Modifiers.ScrollSpeed));

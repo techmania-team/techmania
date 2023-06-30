@@ -180,6 +180,13 @@ public class ScoreKeeper
             judgement, noteType,
             feverState == FeverState.Active,
             legacyRulesetOverride);
+        if (Modifiers.instance.suddenDeath == 
+            Modifiers.SuddenDeath.SuddenDeath &&
+            (judgement == Judgement.Miss ||
+            judgement == Judgement.Break))
+        {
+            hp = 0;
+        }
         // It's up to GameController to set stage failed.
         if (hp < 0) hp = 0;
         if (hp >= maxHp) hp = maxHp;
