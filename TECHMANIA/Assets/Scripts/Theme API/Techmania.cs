@@ -165,6 +165,18 @@ namespace ThemeApi
         #endregion
 
         #region Miscellaneous
+        public void HideVfxAndComboText()
+        {
+            TopLevelObjects.instance.vfxComboCanvas
+                .GetComponent<CanvasGroup>().alpha = 0f;
+        }
+
+        public void RestoreVfxAndComboText()
+        {
+            TopLevelObjects.instance.vfxComboCanvas
+                .GetComponent<CanvasGroup>().alpha = 1f;
+        }
+
         // Does nothing if Discord Rich Presence is turned off
         // from options, or running on unsupported platform.
         //

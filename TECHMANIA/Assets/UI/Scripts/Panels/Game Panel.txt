@@ -413,6 +413,7 @@ gamePanel.BeginGame = function()
     -- Begin game.
     panel.Q("loading-bar-wrap").display = false
     tm.options.RestoreVSync()
+    tm.RestoreVfxAndComboText()  -- In case a previous pause hid them
     tm.game.Begin()
 
     -- Give game panel focus so it can receive keyboard events.
@@ -431,6 +432,7 @@ gamePanel.Pause = function(silent)  -- boolean
     tm.game.Pause()
     FadeInDialog(bg, menu)
     pauseMenu.Show()
+    tm.HideVfxAndComboText()
 end
 
 gamePanel.Unpause = function()
@@ -439,6 +441,7 @@ gamePanel.Unpause = function()
     FadeOutDialog(bg, menu, function()
         -- Only unpause after the menu has fully faded out.
         tm.game.Unpause()
+        tm.RestoreVfxAndComboText()
     end)
 end
 
