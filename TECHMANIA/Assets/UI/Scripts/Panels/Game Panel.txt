@@ -624,7 +624,7 @@ practiceMode.Update = function()
     local practiceTopBar = practiceMode.practiceTopBar
 
     practiceTopBar.Q("scan-number").Q("center-display").Q("value").text = net.string.Format(
-        "{0} / {1}", tm.game.timer.intScan, tm.game.timer.lastScan)
+        "{0} / {1}", tm.game.timer.intScan + 1, tm.game.timer.lastScan + 1)
 
     if (tm.game.timer.intScan > practiceMode.loopEnd) then
         tm.game.JumpToScan(practiceMode.loopStart)
@@ -634,7 +634,7 @@ end
 practiceMode.UpdateUi = function()
     local practiceTopBar = practiceMode.practiceTopBar
     practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
-        "{0} - {1}", practiceMode.loopStart, practiceMode.loopEnd)
+        "{0} - {1}", practiceMode.loopStart + 1, practiceMode.loopEnd + 1)
 
     -- For speed display, we have to be more delicate in order to not show something like "0.799999999685x".
     local speedString = ""
