@@ -641,19 +641,58 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             byte[] buffer = new byte[4096];  // Recommended length
 
+            // 1st pass: find track.tech, determine whether we need
+            // to create a folder to extract into.
+            bool foundTrackFile = false;
             foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
                 zipFile)
             {
-                if (string.IsNullOrEmpty(
-                    Path.GetDirectoryName(entry.Name)))
-                {
-                    Debug.Log($"Ignoring due to not being in a folder: {entry.Name} in {zipFilename}");
+                if (Path.GetFileName(entry.Name) != Paths.kTrackFilename)
+                { 
                     continue;
                 }
+                foundTrackFile = true;
 
+                if (!string.IsNullOrEmpty(Path.GetDirectoryName(
+                    entry.Name)))
+                {
+                    // Track file is in a folder, no need to
+                    // create a new one.
+                    break;
+                }
+
+                // Track file is not in a folder, we need to
+                // create a track folder to extract into.
+                // In order to do that, extract the track.tech file
+                // to memory, then deserialize.
+                using var inputStream = zipFile.GetInputStream(entry);
+                using MemoryStream outputStream = new MemoryStream();
+                ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
+                    inputStream, outputStream, buffer);
+                outputStream.Position = 0;
+                using StreamReader reader = new StreamReader(
+                    outputStream);
+                string trackFileContent = reader.ReadToEnd();
+                Track track = TrackBase.Deserialize(
+                    trackFileContent) as Track;
+                zipLocation = Path.Combine(zipLocation,
+                    ThemeApi.EditorInterface.TrackToDirectoryName(
+                        track.trackMetadata.title, 
+                        track.trackMetadata.artist));
+                Directory.CreateDirectory(zipLocation);
+                break;
+            }
+            if (!foundTrackFile)
+            {
+                throw new Exception(Paths.kTrackFilename + " is not found in the zip file. Unable to extract.");
+            }
+
+            // 2nd pass: actually extract files to disk.
+            foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
+                zipFile)
+            {
                 if (entry.IsDirectory)
                 {
-                    Debug.Log($"Ignoring empty folder: {entry.Name} in {zipFilename}");
                     continue;
                 }
 

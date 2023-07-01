@@ -58,6 +58,19 @@ namespace ThemeApi
                 TransitionToPanel.Direction.Right);
         }
 
+        // Contains timestamp so collisions are very unlikely.
+        public static string TrackToDirectoryName(
+            string title, string artist)
+        {
+            string filteredTitle = Paths.
+                RemoveCharsNotAllowedOnFileSystem(title);
+            string filteredArtist = Paths
+                .RemoveCharsNotAllowedOnFileSystem(artist);
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            return $"{filteredArtist} - {filteredTitle} - {timestamp}";
+        }
+
         // In Lua, this function returns 2 values, the Status
         // and newTrackFolder.
         // If successful, this will update the track lists in
@@ -65,16 +78,9 @@ namespace ThemeApi
         public Status CreateNewTrack(string parentFolder,
             string title, string artist, out string newTrackFolder)
         {
-            // Attempt to create track directory. Contains timestamp
-            // so collisions are very unlikely.
-            string filteredTitle = Paths.
-                RemoveCharsNotAllowedOnFileSystem(title);
-            string filteredArtist = Paths
-                .RemoveCharsNotAllowedOnFileSystem(artist);
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-
+            // Attempt to create track directory.
             newTrackFolder = Path.Combine(parentFolder,
-                $"{filteredArtist} - {filteredTitle} - {timestamp}");
+                TrackToDirectoryName(title, artist));
             try
             {
                 Directory.CreateDirectory(newTrackFolder);

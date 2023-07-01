@@ -289,7 +289,7 @@ namespace ThemeApi
         #endregion
 
         #region Events
-        // https://docs.unity3d.com/2021.2/Documentation/Manual/UIE-Events-Reference.html
+        // https://docs.unity3d.com/2022.3/Documentation/Manual/UIE-Events-Reference.html
         public enum EventType
         {
             // Capture events: omitted
