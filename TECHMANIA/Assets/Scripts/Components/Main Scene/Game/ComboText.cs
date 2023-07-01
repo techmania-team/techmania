@@ -75,6 +75,7 @@ public class ComboText : MonoBehaviour
 
     public void Hide()
     {
+        elementToFollow = null;  // To stop Follow()
         judgementText.gameObject.SetActive(false);
         space.gameObject.SetActive(false);
         comboDigits.ForEach(i => i.gameObject.SetActive(false));
