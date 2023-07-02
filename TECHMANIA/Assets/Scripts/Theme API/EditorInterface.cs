@@ -13,12 +13,6 @@ namespace ThemeApi
         #region Launching and exiting
         public void LaunchOnTrack(string trackFolder)
         {
-            TopLevelObjects.instance.HideUiDocument();
-            TopLevelObjects.instance.editorCanvas.gameObject
-                .SetActive(true);
-            TopLevelObjects.instance.eventSystem.gameObject
-                .SetActive(true);
-
             // Set EditorContext
             EditorContext.previewCallback = () =>
             {
@@ -51,6 +45,11 @@ namespace ThemeApi
             EditorContext.Reset();
 
             // Show track setup panel
+            TopLevelObjects.instance.HideUiDocument();
+            TopLevelObjects.instance.editorCanvas.gameObject
+                .SetActive(true);
+            TopLevelObjects.instance.eventSystem.gameObject
+                .SetActive(true);
             Panel.current = null;
             PanelTransitioner.TransitionTo(
                 TopLevelObjects.instance.trackSetupPanel
