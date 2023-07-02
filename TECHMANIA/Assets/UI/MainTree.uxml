@@ -305,10 +305,10 @@
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">
-                <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="pause-button" class="button-icon-contained special-click-sfx" style="width: 80px; height: 80px; display: flex;">
+                <ui:VisualElement name="pause-button" class="primary-color" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
                     <ui:VisualElement name="interaction-step-indicator" picking-mode="Ignore" style="position: absolute; left: 0; top: 100%; right: 0; bottom: 0; background-color: rgb(206, 147, 216);" />
-                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_pause_white_48dp.png?fileID=2800000&amp;guid=f310f17705df6d4469872455ba7372ab&amp;type=3#baseline_pause_white_48dp&apos;); width: 54px; height: 54px;" />
-                </ui:Button>
+                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_pause_white_48dp.png?fileID=2800000&amp;guid=f310f17705df6d4469872455ba7372ab&amp;type=3#baseline_pause_white_48dp&apos;); width: 54px; height: 54px; -unity-background-image-tint-color: rgb(0, 0, 0);" />
+                </ui:VisualElement>
                 <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="back-button" class="button-icon" style="width: 80px; height: 80px; display: none;">
                     <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="width: 60px; height: 60px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;);" />
                 </ui:Button>

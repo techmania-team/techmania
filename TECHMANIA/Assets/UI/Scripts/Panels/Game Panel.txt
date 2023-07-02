@@ -9,7 +9,7 @@ pauseButton = {
     button = gamePanel.panel.Q("top-bar").Q("pause-button"),
     stepIndicator = nil,
     stepCoroutine = nil,
-    eligibleForPause = false,
+    waitingForSecondTap = false,
 }
 
 pauseMenu = {
@@ -425,6 +425,7 @@ gamePanel.BeginGame = function()
 end
 
 gamePanel.Pause = function(silent)  -- boolean
+    pauseButton.ResetState()
     if (tm.game.state != tm.enum.gameState.Ongoing) then return end
 
     if (silent == nil) then silent = false end
@@ -501,31 +502,70 @@ pauseButton.Initialize = function()
         if (themeOptions["pauseButtonInteraction"] == "Hold") then return end
 
         -- In DoubleTap, determine whether this is the 1st or 2nd tap.
-        if (pauseButton.eligibleForPause) then
+        if (pauseButton.waitingForSecondTap) then
             -- 2nd tap
-            pauseButton.ResetState()
             gamePanel.Pause()
         else
             -- 1st tap
             pauseButton.stepCoroutine = tm.StartCoroutine(function()
                 local timer = 0
                 local length = 1
-                pauseButton.eligibleForPause = true
+                pauseButton.waitingForSecondTap = true
                 pauseButton.SetStepIndicatorHeight(1)
                 while (timer < length) do
                     timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
-                pauseButton.ResetState() -- implies eligibleForPause = false
+                pauseButton.ResetState() -- implies waitingForSecondTap = false
             end)
         end
     end)
 
-    pauseButton.button.RegisterCallback(eventType.PointerDown, function()
+    pauseButton.button.RegisterCallback(eventType.PointerDown, function(_, event)
         if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
-    end)
-    pauseButton.button.RegisterCallback(eventType.PointerUp, function()
-        if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
+        local pointerId = event.pointerId  -- 0 if mouse, 1+ if finger
+        local mouseButton = event.button  -- only meaningful if pointerId == 0
+        local fingerId = 0  -- only meaningful if pointerId > 0
+        if (pointerId > 0) then
+            fingerId = unity.input.GetTouch(pointerId - 1).fingerId
+        end
+        pauseButton.stepCoroutine = tm.StartCoroutine(function()
+            local timer = 0
+            local length = 1
+            pauseButton.SetStepIndicatorHeight(0)
+            while (timer < length) do
+                -- Detect if the original pointer is still held down.
+                -- We don't do this by registering PointerUp event because
+                -- that event is not fired if the pointer leaves the button.
+                local pointerHeld = false
+                if (pointerId == 0) then
+                    pointerHeld = unity.input.GetMouseButton(mouseButton)
+                else
+                    for i = 0, unity.input.touchCount - 1 do
+                        local touch = unity.input.GetTouch(i)
+                        if (touch.fingerId == fingerId) then
+                            if (touch.phase == unity.enum.touchPhase.Began or
+                                touch.phase == unity.enum.touchPhase.Moved or
+                                touch.phase == unity.enum.touchPhase.Stationary) then
+                                pointerHeld = true
+                            end
+                            break
+                        end
+                    end
+                end
+                if (not pointerHeld) then
+                    pauseButton.ResetState()
+                    return
+                end
+
+                local progress = timer / length
+                pauseButton.SetStepIndicatorHeight(progress)
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+
+            gamePanel.Pause()
+        end)
     end)
 end
 
@@ -539,7 +579,7 @@ pauseButton.ResetState = function()
         tm.StopCoroutine(pauseButton.stepCoroutine)
     end
     pauseButton.stepCoroutine = nil
-    pauseButton.eligibleForPause = false
+    pauseButton.waitingForSecondTap = false
 end
 
 pauseMenu.Initialize = function()
