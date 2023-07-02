@@ -199,9 +199,6 @@ optionsPanel.Initialize = function()
     InitializeLocalizedDropdowns(panel)
     table.insert(callbacksOnLocaleChange, function()
         InitializeLocalizedDropdowns(panel)
-        -- TODO: re-register theme option dropdown callbacks because
-        -- the local stringTables in InitializeThemeOptionDropdown
-        -- are not updated by this.
     end)
     panel.display = false
 
@@ -295,15 +292,19 @@ optionsPanel.Initialize = function()
     InitializeThemeOptionToggle("show-judgement-tally", "showJudgementTally")
     InitializeThemeOptionToggle("show-lane-dividers", "showLaneDividers")
 
-    function InitializeThemeOptionDropdown(containerName, key, stringTable)
+    -- Pass in the key to the string table instead of the table itself,
+    -- because tables are passed by value, and the string tables may change
+    -- with locale change, so we need the callbacks to query the up-to-date
+    -- tables.
+    function InitializeThemeOptionDropdown(containerName, key, stringTableKey)
         local dropdown = panel.Q(containerName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-            enum = KeyFromValue(stringTable, event.newValue)
+            enum = KeyFromValue(optionsPanel[stringTableKey], event.newValue)
             themeOptions[key] = enum
         end)
     end
-    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", optionsPanel.beatMarkersDisplayString)
-    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", optionsPanel.bgScalingDisplayString)
+    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "beatMarkersDisplayString")
+    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", "bgScalingDisplayString")
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
@@ -360,7 +361,7 @@ optionsPanel.Initialize = function()
     end)
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
-    InitializeThemeOptionDropdown("pause-button-interaction", "pauseButtonInteraction", optionsPanel.pauseButtonInteractionDisplayString)
+    InitializeThemeOptionDropdown("pause-button-interaction", "pauseButtonInteraction", "pauseButtonInteractionDisplayString")
 
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     discordRichPresenceToggle.RegisterCallback(eventType.Click, function()
