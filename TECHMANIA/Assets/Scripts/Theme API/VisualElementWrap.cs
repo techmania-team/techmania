@@ -364,6 +364,7 @@ namespace ThemeApi
                 EventType.KeyDown => typeof(KeyDownEvent),
                 EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
+                EventType.PointerUp => typeof(PointerUpEvent),
                 EventType.PointerEnter => typeof(PointerEnterEvent),
                 EventType.PointerLeave => typeof(PointerLeaveEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),

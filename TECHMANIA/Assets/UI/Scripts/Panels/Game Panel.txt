@@ -5,6 +5,13 @@ gamePanel = {
     inEditor = false
 }
 
+pauseButton = {
+    button = gamePanel.panel.Q("top-bar").Q("pause-button"),
+    stepIndicator = nil,
+    stepCoroutine = nil,
+    eligibleForPause = false,
+}
+
 pauseMenu = {
     bg = gamePanel.panel.Q("pause-menu-bg"),
     menu = gamePanel.panel.Q("pause-menu")
@@ -61,10 +68,6 @@ gamePanel.Initialize = function()
         if (event.focus) then return end
         if (gamePanel.inEditor) then return end
         gamePanel.Pause(true)  -- silent
-    end)
-
-    panel.Q("top-bar").Q("pause-button").RegisterCallback(eventType.Click, function()
-        gamePanel.Pause()
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
@@ -308,6 +311,7 @@ gamePanel.BeginGame = function()
     -- Initialize top bar and middle fever bar.
     local topBar = panel.Q("top-bar")
     topBar.visible = true
+    pauseButton.ResetState()
     gamePanel.UpdateHpDisplay(1, 1)
     topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
     gamePanel.UpdateScoreDisplay(0, 0)
@@ -485,6 +489,57 @@ gamePanel.ShowFeverOff = function()
     middleFeverBarBg.display = true
     middleFeverBarBg.Q("fever-ready-text").display = false
     -- Does not control Fever bonus.
+end
+
+pauseButton.Initialize = function()
+    pauseButton.stepIndicator = pauseButton.button.Q("interaction-step-indicator")
+
+    pauseButton.button.RegisterCallback(eventType.Click, function()
+        if (themeOptions["pauseButtonInteraction"] == "SingleTap") then
+            gamePanel.Pause()
+        end
+        if (themeOptions["pauseButtonInteraction"] == "Hold") then return end
+
+        -- In DoubleTap, determine whether this is the 1st or 2nd tap.
+        if (pauseButton.eligibleForPause) then
+            -- 2nd tap
+            pauseButton.ResetState()
+            gamePanel.Pause()
+        else
+            -- 1st tap
+            pauseButton.stepCoroutine = tm.StartCoroutine(function()
+                local timer = 0
+                local length = 1
+                pauseButton.eligibleForPause = true
+                pauseButton.SetStepIndicatorHeight(1)
+                while (timer < length) do
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                pauseButton.ResetState() -- implies eligibleForPause = false
+            end)
+        end
+    end)
+
+    pauseButton.button.RegisterCallback(eventType.PointerDown, function()
+        if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
+    end)
+    pauseButton.button.RegisterCallback(eventType.PointerUp, function()
+        if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
+    end)
+end
+
+pauseButton.SetStepIndicatorHeight = function(proportion)  -- [0, 1]
+    pauseButton.stepIndicator.style.top = StyleLengthInPercent((1 - proportion) * 100)
+end
+
+pauseButton.ResetState = function()
+    pauseButton.SetStepIndicatorHeight(0)
+    if (pauseButton.stepCoroutine != nil) then
+        tm.StopCoroutine(pauseButton.stepCoroutine)
+    end
+    pauseButton.stepCoroutine = nil
+    pauseButton.eligibleForPause = false
 end
 
 pauseMenu.Initialize = function()
@@ -724,6 +779,7 @@ practiceMode.controls = {
 }
 
 gamePanel.Initialize()
+pauseButton.Initialize()
 pauseMenu.Initialize()
 fpsCounter.Initialize()
 practiceMode.Initialize()
