@@ -14,6 +14,7 @@ function InitializeThemeOptions()
     -- FillEntireScreen/FillGameArea
     InitializeOneOption("backgroundScalingMode", "FillEntireScreen")
     InitializeOneOption("pauseWhenGameLosesFocus", "True")
+    InitializeOneOption("pauseButtonInteraction", "SingleTap")
 end
 
 optionsPanel = {
@@ -23,7 +24,8 @@ optionsPanel = {
     fullScreenDisplayString = {},
     beatMarkersDisplayString = {},
     bgScalingDisplayString = {},
-    rulesetDisplayString = {}
+    rulesetDisplayString = {},
+    pauseButtonInteractionDisplayString = {}
 }
 
 optionsPanel.UpdateCustomDataLocationDisplay = function()
@@ -131,6 +133,9 @@ optionsPanel.Show = function()
 
     ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
 
+    local pauseButtonInteractionDropdown = panel.Q("pause-button-interaction").Q("dropdown")
+    pauseButtonInteractionDropdown.SetValueWithoutNotify(optionsPanel.pauseButtonInteractionDisplayString[themeOptions["pauseButtonInteraction"]])
+
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
 end
@@ -181,12 +186,22 @@ optionsPanel.Initialize = function()
             [tm.enum.ruleset.Custom] = tm.l10n.GetString("ruleset_custom")
         }
         InitializeOneLocalizedDropdown("ruleset", optionsPanel.rulesetDisplayString)
+
+        optionsPanel.pauseButtonInteractionDisplayString = {
+            SingleTap = tm.l10n.GetString("pause_button_interaction_single_tap"),
+            DoubleTap = tm.l10n.GetString("pause_button_interaction_double_tap"),
+            Hold = tm.l10n.GetString("pause_button_interaction_hold")
+        }
+        InitializeOneLocalizedDropdown("pause-button-interaction", optionsPanel.pauseButtonInteractionDisplayString)
     end
 
     local panel = optionsPanel.panel
     InitializeLocalizedDropdowns(panel)
     table.insert(callbacksOnLocaleChange, function()
         InitializeLocalizedDropdowns(panel)
+        -- TODO: re-register theme option dropdown callbacks because
+        -- the local stringTables in InitializeThemeOptionDropdown
+        -- are not updated by this.
     end)
     panel.display = false
 
@@ -345,6 +360,7 @@ optionsPanel.Initialize = function()
     end)
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
+    InitializeThemeOptionDropdown("pause-button-interaction", "pauseButtonInteraction", optionsPanel.pauseButtonInteractionDisplayString)
 
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     discordRichPresenceToggle.RegisterCallback(eventType.Click, function()

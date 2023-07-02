@@ -742,27 +742,33 @@
                     </ui:VisualElement>
                     <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
-                <ui:VisualElement name="touchscreen-test" class="options-item">
-                    <ui:Label text="Touchscreen test" display-tooltip-when-elided="true" name="label" class="text-body" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="touchscreen-test" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Touchscreen test" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Button text="START" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
-                <ui:VisualElement name="offset-latency" class="options-item">
-                    <ui:Label text="Offset &amp; latency" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Label text="10/20/30/40 ms" display-tooltip-when-elided="true" name="value-display" class="text-body" style="white-space: nowrap; margin-right: 30px;" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="offset-latency" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Offset &amp; latency" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" style="flex-grow: 1;" />
+                    <ui:Label text="10/20/30/40 ms" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" style="white-space: nowrap; margin-right: 30px;" />
                     <ui:Button text="CALIBRATE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
-                <ui:VisualElement name="pause-when-lose-focus" class="options-item">
-                    <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" class="text-body" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="pause-when-lose-focus" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
-                <ui:VisualElement name="discord-rich-presence" class="options-item">
-                    <ui:Label text="Discord Rich Presence" display-tooltip-when-elided="true" name="label" class="text-body" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="pause-button-interaction" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Pause button interaction" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="discord-rich-presence" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Discord Rich Presence" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
+                <ui:VisualElement name="space" picking-mode="Ignore" style="height: 100px;" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:Instance>

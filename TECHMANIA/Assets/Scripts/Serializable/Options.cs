@@ -137,16 +137,7 @@ public class Options : OptionsBase
      * backgroundScalingMode        FillEntireScreen
      *                              FillGameArea
      * pauseWhenGameLosesFocus      True/False
-     * trackFilter.showTracksInAllFolders
-     *                              True/False
-     * trackFilter.sortBasis        Title
-     *                              Artist
-     *                              Genre
-     *                              TouchLevel
-     *                              KeysLevel
-     *                              KMLevel
-     * trackFilter.sortOrder        Ascending
-     *                              Descending
+     * pauseButtonInteraction       SingleTap/DoubleTap/Hold
      */
 
     public Options()
@@ -208,22 +199,8 @@ public class Options : OptionsBase
                     "backgroundScalingMode",
                     "FillEntireScreen"
                 },
-                {
-                    "pauseWhenGameLosesFocus",
-                    true.ToString()
-                },
-                {
-                    "trackFilter.showTracksInAllFolders",
-                    false.ToString()
-                },
-                {
-                    "trackFilter.sortBasis",
-                    TrackFilter.SortBasis.Title.ToString()
-                },
-                {
-                    "trackFilter.sortOrder",
-                    TrackFilter.SortOrder.Ascending.ToString()
-                }
+                { "pauseWhenGameLosesFocus", true.ToString() },
+                { "pauseButtonInteraction", "SingleTap" }
             };
         themeOptions.Add(kDefaultTheme, defaultThemeOptions);
     }
@@ -1016,18 +993,6 @@ public class OptionsV2 : OptionsBase
                 {
                     "pauseWhenGameLosesFocus",
                     pauseWhenGameLosesFocus.ToString()
-                },
-                {
-                    "trackFilter.showTracksInAllFolders",
-                    trackFilter.showTracksInAllFolders.ToString()
-                },
-                {
-                    "trackFilter.sortBasis",
-                    trackFilter.sortBasis.ToString()
-                },
-                {
-                    "trackFilter.sortOrder",
-                    trackFilter.sortOrder.ToString()
                 }
             };
         upgraded.themeOptions.Add(kDefaultTheme, defaultThemeOptions);
