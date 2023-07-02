@@ -6,12 +6,12 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,,,,,,
 `===== Main Menu =====,,,,,,
 ,,,,,,
-Added in 2.0.,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),正在載入造型…… ({0} / {1}),スキンをロード中… ({0} / {1}),스킨 로드 중... ({0} / {1})
-Added in 2.0.,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲列表…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
-Added in 2.0.,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),正在載入主題…… ({0} / {1}),テーマをロード中… ({0} / {1}),테마 로드 중... ({0} / {1})
-Added in 2.0.,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),還原至預設主題 ({0}),デフォルトにします… ({0}),기본값으로 되돌리는 중... ({0})
-Added in 2.0.,boot_screen_revert_default_theme_button,REVERT,复原,還原,デフォルトにする,기본값으로 복원
-Added in 2.0.,resource_loader_skin_error_format,"An error occurred when loading skins:
+,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),正在載入造型…… ({0} / {1}),スキンをロード中… ({0} / {1}),스킨 로드 중... ({0} / {1})
+,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲列表…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
+,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),正在載入主題…… ({0} / {1}),テーマをロード中… ({0} / {1}),테마 로드 중... ({0} / {1})
+,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),還原至預設主題 ({0}),デフォルトにします… ({0}),기본값으로 되돌리는 중... ({0})
+,boot_screen_revert_default_theme_button,REVERT,复原,還原,デフォルトにする,기본값으로 복원
+,resource_loader_skin_error_format,"An error occurred when loading skins:
 
 {0}
 
@@ -32,8 +32,8 @@ TECHMANIAのデフォルトスキンを使用します。","아래 스킨을 불
 {0}
 
 TECHMANIA 기본 스킨을 사용합니다."
-Added in 2.0.,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,デフォルトスキンの読み込み失敗のため、TECHMANIAを起動できません。ゲームを再インストールしてください。,기본 스킨을 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
-Added in 2.0.,resource_loader_theme_error_format,"An error occurred when loading the theme:
+,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,デフォルトスキンの読み込み失敗のため、TECHMANIAを起動できません。ゲームを再インストールしてください。,기본 스킨을 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
+,resource_loader_theme_error_format,"An error occurred when loading the theme:
 
 {0}
 
@@ -54,14 +54,14 @@ TECHMANIAのデフォルトテーマを使用します。","아래 테마를 로
 {0}
 
 TECHMANIA 기본 테마를 사용합니다."
-Added in 2.0.,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,TECHMANIA 無法載入預設主題，因此無法啟動。您可能需要重新安裝 TECHMANIA。,デフォルトテーマの読み込み失敗のため、TECHMANIA を起動できません。ゲームを再インストールしてください。,기본 테마를 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
+,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,TECHMANIA 無法載入預設主題，因此無法啟動。您可能需要重新安裝 TECHMANIA。,デフォルトテーマの読み込み失敗のため、TECHMANIA を起動できません。ゲームを再インストールしてください。,기본 테마를 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
 ,,,,,,
-Added in 2.0.,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,您正在使用的主題缺少以下基本檔案，無法載入。,"使用中のテーマは次の重要ファイルが存在しないため、読み込めませんでした。
+,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,您正在使用的主題缺少以下基本檔案，無法載入。,"使用中のテーマは次の重要ファイルが存在しないため、読み込めませんでした。
 ","사용 중인 테마를 불러올 수 없습니다. 아래 파일이 누락되었습니다.
 
 {0}"
-Added in 2.0.,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,您使用的主題與您的 TECHMANIA 版本不相容,使用中のテーマは現在のTECHMANIAバージョンをサポートしません。,사용 중인 테마가 현재 TECHMANIA 버전과 호환되지 않습니다.
-Added in 2.0.,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,請更新 TECHMANIA 到最新版本、使用預設主題，或聯繫主題的開發者。TECHMANIA 現在將關閉。,TECHMANIAをアップデートするか、デフォルトテーマを使用するか、制作者にお問い合わせください。TECHMANIAを終了します。,"TECHMANIA를 최신 버전으로 업데이트하거나, 기본 테마를 사용하거나, 개발자에게 문의하십시오. TECHMANIA를 종료합니다."
+,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,您使用的主題與您的 TECHMANIA 版本不相容,使用中のテーマは現在のTECHMANIAバージョンをサポートしません。,사용 중인 테마가 현재 TECHMANIA 버전과 호환되지 않습니다.
+,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,請更新 TECHMANIA 到最新版本、使用預設主題，或聯繫主題的開發者。TECHMANIA 現在將關閉。,TECHMANIAをアップデートするか、デフォルトテーマを使用するか、制作者にお問い合わせください。TECHMANIAを終了します。,"TECHMANIA를 최신 버전으로 업데이트하거나, 기본 테마를 사용하거나, 개발자에게 문의하십시오. TECHMANIA를 종료합니다."
 ,,,,,,
 ,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중

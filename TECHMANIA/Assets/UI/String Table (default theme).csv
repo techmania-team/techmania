@@ -269,11 +269,11 @@ but may cause audio issues such as stuttering.","数值越小，音频延迟越�
 "Added in 2.0",#options-panel #theme #label,Theme,主题,,,
 "Added in 2.0",change_theme_warning,"WARNING
 
-Themes contain executable scripts, which might contain malicious code and other security hazards. Please only use themes from sources you trust.
+Themes contain executable scripts, which may contain malicious code that could harm your device or compromise your data. Please only use themes from sources you trust.
 
 Are you sure you want to change theme?","警告
 
-主题包含可执行代码，其中可能包含恶意代码和其他安全隐患。请仅使用来源可信的主题。
+主题包含可执行代码，其中可能包含恶意代码，能够损害你的设备或危及你的数据安全。请仅使用来源可信的主题。
 
 你确定要更改主题吗？",,,
 "Added in 2.0",change_theme_confirm,CHANGE,更改,,,
@@ -333,8 +333,7 @@ Are you sure you want to change theme?","警告
 ,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
 ,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
-"Added in 2.0.
-{0} is error message",select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
+"{0} is error message",select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
 
 {0}","读取皮肤时发生错误：
 
@@ -345,7 +344,7 @@ Are you sure you want to change theme?","警告
 {0}","선택한 스킨을 불러오는 중 오류가 발생했습니다.
 
 {0}"
-Added in 2.0,select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
+,select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
 
 Refer to TECHMANIA 2.0's release notes for more details.","请注意，由于TECHMANIA的UI框架缺失功能，所选皮肤的一部分元素暂时无法显示。
 
