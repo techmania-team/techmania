@@ -269,8 +269,10 @@ selectTrackPanel.SpawnAllCards = function()
 
     if (cardOfPreviouslySelectedTrack != nil) then
         cardOfPreviouslySelectedTrack.Focus()
-        -- This doesn't work even after delaying one frame. Not sure why.
-        panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedTrack)
+        tm.StartCoroutine(function()
+            coroutine.yield()  -- for layout update
+            panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedTrack)
+        end)
     end
 end
 
