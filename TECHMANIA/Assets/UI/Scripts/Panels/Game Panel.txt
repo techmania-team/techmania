@@ -281,6 +281,10 @@ gamePanel.Show = function()
     tm.game.BeginLoading()
 end
 
+gamePanel.Hide = function()
+    tm.RestoreVfxAndComboText()
+end
+
 gamePanel.ConcludeGame = function()
     -- Don't conclude the game in Hide, Result panel calls stuff that
     -- requires Complete state.

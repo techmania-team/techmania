@@ -221,8 +221,6 @@ namespace ThemeApi
             return Application.version;
         }
 
-        // TODO: add Restart()
-
         public static void Quit()
         {
 #if UNITY_EDITOR
