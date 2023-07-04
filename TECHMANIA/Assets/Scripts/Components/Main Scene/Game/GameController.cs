@@ -590,7 +590,13 @@ public class GameController : MonoBehaviour
     {
         if (state == null) return;
 
-        if (state.state == ThemeApi.GameState.State.Ongoing)
+        if (state.state == ThemeApi.GameState.State.Paused)
+        {
+            // Input feedbacks should work through pauses as fingers
+            // may enter and leave during a pause.
+            inputFeedback.Update(timer.scan);
+        }
+        else if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update(comboTickCallback: ComboTick);
             bg.Update(timer.baseTime, timer.prevFrameBaseTime);

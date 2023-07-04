@@ -99,8 +99,6 @@ public class InputFeedbackManager
     #region Update
     public void Update(float scan)
     {
-        // TODO: this is not called when paused. Should we
-        // remove all feedbacks when pausing?
         UpdateWithInput(scan);
         UpdateExistingFeedbacks();
     }
