@@ -33,6 +33,11 @@ namespace ThemeApi
         #region Properties
         public bool enabledInHierarchy => inner.enabledInHierarchy;
         public bool enabledSelf => inner.enabledSelf;
+        public void SetEnabled(bool enabled)
+        {
+            inner.SetEnabled(enabled);
+        }
+
         public string name
         {
             get { return inner.name; }
@@ -48,11 +53,6 @@ namespace ThemeApi
                 inner.pickingMode = value ?
                     PickingMode.Position : PickingMode.Ignore;
             }
-        }
-
-        public void SetEnabled(bool enabled)
-        {
-            inner.SetEnabled(enabled);
         }
 
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
@@ -163,6 +163,42 @@ namespace ThemeApi
             }
         }
 
+        public string stringValue
+        {
+            get
+            {
+                if (inner is DropdownField)
+                    return (inner as DropdownField).value;
+                if (inner is TextField)
+                    return (inner as TextField).value;
+                throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
+            }
+            set
+            {
+                if (inner is DropdownField)
+                    (inner as DropdownField).value = value;
+                else if (inner is TextField)
+                    (inner as TextField).value = value;
+                else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
+            }
+        }
+
+        public bool boolValue
+        {
+            get
+            {
+                if (inner is Toggle)
+                    return (inner as Toggle).value;
+                throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+            set
+            {
+                if (inner is Toggle)
+                    (inner as Toggle).value = value;
+                else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+        }
+
         public VisualElementWrap horizontalScroller
         {
             get
@@ -208,42 +244,6 @@ namespace ThemeApi
             {
                 CheckType(typeof(DropdownField), "index");
                 (inner as DropdownField).index = value;
-            }
-        }
-
-        public string stringValue
-        {
-            get
-            {
-                if (inner is DropdownField)
-                    return (inner as DropdownField).value;
-                if (inner is TextField)
-                    return (inner as TextField).value;
-                throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
-            }
-            set
-            {
-                if (inner is DropdownField)
-                    (inner as DropdownField).value = value;
-                else if (inner is TextField)
-                    (inner as TextField).value = value;
-                else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
-            }
-        }
-
-        public bool boolValue
-        {
-            get
-            {
-                if (inner is Toggle)
-                    return (inner as Toggle).value;
-                throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
-            }
-            set
-            {
-                if (inner is Toggle)
-                    (inner as Toggle).value = value;
-                else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
             }
         }
 
@@ -565,11 +565,6 @@ namespace ThemeApi
             return new VisualElementWrap(newElement);
         }
 
-        // Beware: deleting multiple elements while some parent
-        // element is undergoing USS transition may cause errors.
-        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-        //
-        // Update: Fixed in Unity 2022.2.14
         public void RemoveFromHierarchy()
         {
             // Recursively remove all event handlers on all children.
@@ -589,11 +584,6 @@ namespace ThemeApi
             inner.RemoveFromHierarchy();
         }
 
-        // Beware: deleting multiple elements while some parent
-        // element is undergoing USS transition may cause errors.
-        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-        //
-        // Update: Fixed in Unity 2022.2.14
         public void RemoveAllChildren()
         {
             // Make a copy of the child list so we don't modify
