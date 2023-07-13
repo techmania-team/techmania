@@ -111,7 +111,41 @@ namespace ThemeApi
         }
         #endregion
 
-        #region APIs available in Complete state
+        #region Game control
+        // Available in states LoadComplete, Ongoing,
+        // Paused and Complete.
+        public ScoreKeeper scoreKeeper => GameController.instance
+            .scoreKeeper;
+        // Available in states LoadComplete, Ongoing and Paused.
+        public GameTimer timer => GameController.instance.timer;
+
+        public void ActivateFever()
+        {
+            CheckState(State.Ongoing, "ActivateFever");
+            GameController.instance.ActivateFever();
+        }
+        #endregion
+
+        #region Background
+        public void UpdateBgBrightness()
+        {
+            CheckState(
+                new List<State>
+                { State.Ongoing, State.Paused, State.Complete },
+                "UpdateBgBrightness");
+            GameController.instance.UpdateBgBrightness();
+        }
+
+        // It's up to the theme to wait 1 frame for layout to update.
+        public void ResetElementSizes()
+        {
+            CheckState(
+                new List<State>
+                { State.Ongoing, State.Paused, State.Complete },
+                "ResetElementSizes");
+            GameController.instance.ResetElementSizes();
+        }
+
         // Covers backing track and keysounds.
         public void StopAllGameAudio()
         {
@@ -122,7 +156,9 @@ namespace ThemeApi
         {
             GameController.instance.StopBga();
         }
+        #endregion
 
+        #region Score and record
         public bool ScoreIsValid()
         {
             return GameController.instance.ScoreIsValid();
@@ -189,39 +225,6 @@ namespace ThemeApi
                 GameController.instance.showHitbox = value;
             }
         }
-        #endregion
-
-        #region Other theme APIs
-        public void UpdateBgBrightness()
-        {
-            CheckState(
-                new List<State>
-                { State.Ongoing, State.Paused, State.Complete },
-                "UpdateBgBrightness");
-            GameController.instance.UpdateBgBrightness();
-        }
-
-        // It's up to the theme to wait 1 frame for layout to update.
-        public void ResetElementSizes()
-        {
-            CheckState(
-                new List<State>
-                { State.Ongoing, State.Paused, State.Complete },
-                "ResetElementSizes");
-            GameController.instance.ResetElementSizes();
-        }
-
-        public void ActivateFever()
-        {
-            CheckState(State.Ongoing, "ActivateFever");
-            GameController.instance.ActivateFever();
-        }
-
-        // Available in states LoadComplete, Ongoing and Paused.
-        public ScoreKeeper scoreKeeper => GameController.instance
-            .scoreKeeper;
-        // Available in states LoadComplete, Ongoing and Paused.
-        public GameTimer timer => GameController.instance.timer;
         #endregion
     }
 }
