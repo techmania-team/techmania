@@ -99,7 +99,7 @@ namespace ThemeApi
             noteImage.style.height = laneHeight * noteScale;
 
             vfxManager.ResetSize(laneHeight);
-            comboText.ResetSize();
+            comboText.ResetSize(scanHeight);
         }
 
         private void Update()

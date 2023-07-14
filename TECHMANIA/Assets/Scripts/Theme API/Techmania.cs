@@ -43,11 +43,11 @@ namespace ThemeApi
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
 
-        public void SetThemeStyleSheet(string name)
+        public void SetPanelSettings(string path)
         {
-            ThemeStyleSheet sheet = GlobalResource.GetThemeContent
-                <ThemeStyleSheet>(name);
-            panelSettings.themeStyleSheet = sheet;
+            PanelSettings settings = GlobalResource
+                .GetThemeContent<PanelSettings>(path);
+            uiDocument.panelSettings = settings;
         }
         #endregion
 
@@ -65,9 +65,6 @@ namespace ThemeApi
         public SkinPreview skinPreview => SkinPreview.instance;
         public CalibrationPreview calibrationPreview =>
             CalibrationPreview.instance;
-        #endregion
-
-        #region Audio and video
         public AudioSourceManager audio => AudioSourceManager.instance;
         #endregion
 
@@ -116,7 +113,30 @@ namespace ThemeApi
         #endregion
 
         #region Script execution
-        public void ExecuteScript(string script)
+        
+        public static void ExecuteScriptFromTheme(string path)
+        {
+            string script = GlobalResource.GetThemeContent<TextAsset>
+                (path)?.text;
+            if (string.IsNullOrEmpty(script)) return;
+
+            if (Application.isEditor)
+            {
+                // If in editor, construct the full path to the
+                // script file, in order to provide debugging support.
+                string fullPath = System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(
+                        Application.dataPath),
+                    path);
+                ScriptSession.Execute(script, fullPath);
+            }
+            else
+            {
+                ScriptSession.Execute(script);
+            }
+        }
+
+        public static void ExecuteScript(string script)
         {
             ScriptSession.Execute(script);
         }
@@ -130,6 +150,11 @@ namespace ThemeApi
                 .Coroutine);
         }
 
+        public bool IsCoroutineRunning(int id)
+        {
+            return CoroutineRunner.IsRunning(id);
+        }
+
         public void StopCoroutine(int id)
         {
             CoroutineRunner.Stop(id);
@@ -137,6 +162,18 @@ namespace ThemeApi
         #endregion
 
         #region Miscellaneous
+        public void HideVfxAndComboText()
+        {
+            TopLevelObjects.instance.vfxComboCanvas
+                .GetComponent<CanvasGroup>().alpha = 0f;
+        }
+
+        public void RestoreVfxAndComboText()
+        {
+            TopLevelObjects.instance.vfxComboCanvas
+                .GetComponent<CanvasGroup>().alpha = 1f;
+        }
+
         // Does nothing if Discord Rich Presence is turned off
         // from options, or running on unsupported platform.
         //
@@ -174,6 +211,11 @@ namespace ThemeApi
 #else
             return "Unknown";
 #endif
+        }
+
+        public string Version()
+        {
+            return Application.version;
         }
 
         public static void Quit()

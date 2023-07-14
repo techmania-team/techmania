@@ -152,6 +152,12 @@ public partial class Track : TrackBase
                 return (int)p1.patternMetadata.controlScheme -
                     (int)p2.patternMetadata.controlScheme;
             }
+            else if (p1.patternMetadata.playableLanes !=
+                p2.patternMetadata.playableLanes)
+            {
+                return p1.patternMetadata.playableLanes -
+                    p2.patternMetadata.playableLanes;
+            }
             else
             {
                 return p1.patternMetadata.level -
@@ -232,6 +238,8 @@ public class TrackMetadata
     // In seconds.
     public double previewStartTime;
     public double previewEndTime;
+    // Filename of preview BGA. Not used by default theme.
+    public string previewBga;
 
     // Patterns.
 
@@ -257,6 +265,7 @@ public class TrackMetadata
             previewTrack = previewTrack,
             previewStartTime = previewStartTime,
             previewEndTime = previewEndTime,
+            previewBga = previewBga,
 
             autoOrderPatterns = autoOrderPatterns
         };

@@ -72,7 +72,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadNoteSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string noteSkinFolder = Paths.GetNoteSkinFolder(
+        string noteSkinFolder = Paths.GetSkinFolder(SkinType.Note,
             Options.instance.noteSkin);
         string noteSkinFilename = Path.Combine(
             noteSkinFolder, Paths.kSkinFilename);
@@ -99,7 +99,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadVfxSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string vfxSkinFolder = Paths.GetVfxSkinFolder(
+        string vfxSkinFolder = Paths.GetSkinFolder(SkinType.Vfx,
             Options.instance.vfxSkin);
         string vfxSkinFilename = Path.Combine(
             vfxSkinFolder, Paths.kSkinFilename);
@@ -126,7 +126,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadComboSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string comboSkinFolder = Paths.GetComboSkinFolder(
+        string comboSkinFolder = Paths.GetSkinFolder(SkinType.Combo,
             Options.instance.comboSkin);
         string comboSkinFilename = Path.Combine(
             comboSkinFolder, Paths.kSkinFilename);
@@ -171,7 +171,7 @@ public class GlobalResourceLoader : MonoBehaviour
     public void LoadGameUiSkin(ProgressCallback progressCallback,
         CompleteCallback completeCallback)
     {
-        string gameUiSkinFolder = Paths.GetGameUiSkinFolder(
+        string gameUiSkinFolder = Paths.GetSkinFolder(SkinType.GameUI,
             Options.instance.gameUiSkin);
         string gameUiSkinFilename = Path.Combine(
             gameUiSkinFolder, Paths.kSkinFilename);
@@ -363,6 +363,7 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             worker.ReportProgress(0,
                 Paths.HidePlatformInternalPath(dir));
+            DateTime modifiedTime = new DirectoryInfo(dir).LastWriteTime;
 
             // Is there a track?
             string possibleTrackFile = Path.Combine(
@@ -374,6 +375,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     new GlobalResource.TrackSubfolder()
                 {
                     name = Path.GetFileName(dir),
+                    modifiedTime = modifiedTime,
                     fullPath = dir
                 };
 
@@ -393,7 +395,7 @@ public class GlobalResourceLoader : MonoBehaviour
 
                 // Record as a subfolder.
                 if (folder.Equals(
-                    Paths.GetStreamingTrackRootFolder()))
+                    Paths.GetTrackRootFolder(streamingAssets: true)))
                 {
                     GlobalResource.trackSubfolderList[
                         Paths.GetTrackRootFolder()]
@@ -465,6 +467,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 new GlobalResource.TrackInFolder()
             {
                 folder = dir,
+                modifiedTime = modifiedTime,
                 minimizedTrack = Track.Minimize(track)
             });
         }
@@ -477,7 +480,7 @@ public class GlobalResourceLoader : MonoBehaviour
         // directory above them.
         if (!BetterStreamingAssets.DirectoryExists(
                 Paths.RelativePathInStreamingAssets(
-                    Paths.GetStreamingTrackRootFolder())))
+                    Paths.GetTrackRootFolder(streamingAssets: true))))
         {
             return;
         }
@@ -485,7 +488,7 @@ public class GlobalResourceLoader : MonoBehaviour
         // Get all track.tech files.
         string[] relativeTrackFiles = BetterStreamingAssets.GetFiles(
             Paths.RelativePathInStreamingAssets(
-                Paths.GetStreamingTrackRootFolder()
+                Paths.GetTrackRootFolder(streamingAssets: true)
             ),
             Paths.kTrackFilename,
             SearchOption.AllDirectories
@@ -504,14 +507,15 @@ public class GlobalResourceLoader : MonoBehaviour
             string absoluteTrackFolder = Paths
                 .AbsolutePathInStreamingAssets(relativeTrackFolder);
 
+            // These two start as the folder above track folder.
             string processingRelativeFolder = Path
                 .GetDirectoryName(relativeTrackFolder);
             string processingAbsoluteFolder = Paths
                 .AbsolutePathInStreamingAssets(
                 processingRelativeFolder);
 
-            if (processingAbsoluteFolder == Paths
-                .GetStreamingTrackRootFolder())
+            if (processingAbsoluteFolder == Paths.GetTrackRootFolder(
+                streamingAssets: true))
             {
                 processingAbsoluteFolder = Paths
                     .GetTrackRootFolder();
@@ -535,7 +539,8 @@ public class GlobalResourceLoader : MonoBehaviour
                 GlobalResource.trackList[processingAbsoluteFolder]
                     .Add(new GlobalResource.TrackInFolder()
                 {
-                    minimizedTrack = t,
+                    minimizedTrack = Track.Minimize(t),
+                    modifiedTime = DateTime.UnixEpoch,
                     folder = absoluteTrackFolder
                 });
             }
@@ -558,9 +563,9 @@ public class GlobalResourceLoader : MonoBehaviour
                 });
             }
 
-            // Process path folders one by one.
+            // Process folders upward from processingAbsoluteFolder.
             while (processingAbsoluteFolder != Paths
-                .GetStreamingTrackRootFolder())
+                .GetTrackRootFolder(streamingAssets: true))
             {
                 string processingRelativeParentFolder = Path
                     .GetDirectoryName(processingRelativeFolder);
@@ -570,7 +575,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 string dirKey = processingAbsoluteParentFolder;
 
                 if (processingAbsoluteParentFolder == Paths
-                    .GetStreamingTrackRootFolder())
+                    .GetTrackRootFolder(streamingAssets: true))
                 {
                     dirKey = Paths.GetTrackRootFolder();
                 }
@@ -592,6 +597,7 @@ public class GlobalResourceLoader : MonoBehaviour
                     {
                         name = Path.GetFileName(
                             processingAbsoluteFolder),
+                        modifiedTime = DateTime.UnixEpoch,
                         fullPath = processingAbsoluteFolder
                     };
                     string pngEyecatch = Path.Combine(
@@ -635,19 +641,58 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             byte[] buffer = new byte[4096];  // Recommended length
 
+            // 1st pass: find track.tech, determine whether we need
+            // to create a folder to extract into.
+            bool foundTrackFile = false;
             foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
                 zipFile)
             {
-                if (string.IsNullOrEmpty(
-                    Path.GetDirectoryName(entry.Name)))
-                {
-                    Debug.Log($"Ignoring due to not being in a folder: {entry.Name} in {zipFilename}");
+                if (Path.GetFileName(entry.Name) != Paths.kTrackFilename)
+                { 
                     continue;
                 }
+                foundTrackFile = true;
 
+                if (!string.IsNullOrEmpty(Path.GetDirectoryName(
+                    entry.Name)))
+                {
+                    // Track file is in a folder, no need to
+                    // create a new one.
+                    break;
+                }
+
+                // Track file is not in a folder, we need to
+                // create a track folder to extract into.
+                // In order to do that, extract the track.tech file
+                // to memory, then deserialize.
+                using var inputStream = zipFile.GetInputStream(entry);
+                using MemoryStream outputStream = new MemoryStream();
+                ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
+                    inputStream, outputStream, buffer);
+                outputStream.Position = 0;
+                using StreamReader reader = new StreamReader(
+                    outputStream);
+                string trackFileContent = reader.ReadToEnd();
+                Track track = TrackBase.Deserialize(
+                    trackFileContent) as Track;
+                zipLocation = Path.Combine(zipLocation,
+                    ThemeApi.EditorInterface.TrackToDirectoryName(
+                        track.trackMetadata.title, 
+                        track.trackMetadata.artist));
+                Directory.CreateDirectory(zipLocation);
+                break;
+            }
+            if (!foundTrackFile)
+            {
+                throw new Exception(Paths.kTrackFilename + " is not found in the zip file. Unable to extract.");
+            }
+
+            // 2nd pass: actually extract files to disk.
+            foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
+                zipFile)
+            {
                 if (entry.IsDirectory)
                 {
-                    Debug.Log($"Ignoring empty folder: {entry.Name} in {zipFilename}");
                     continue;
                 }
 
@@ -688,7 +733,7 @@ public class GlobalResourceLoader : MonoBehaviour
         else
         {
             // Load from theme folder.
-            themePath = Paths.GetThemeFilename(
+            themePath = Paths.GetThemeFilePath(
                 Options.instance.theme);
         }
         if (!UniversalIO.FileExists(themePath))

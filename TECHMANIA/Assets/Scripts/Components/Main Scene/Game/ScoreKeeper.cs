@@ -180,6 +180,13 @@ public class ScoreKeeper
             judgement, noteType,
             feverState == FeverState.Active,
             legacyRulesetOverride);
+        if (Modifiers.instance.suddenDeath == 
+            Modifiers.SuddenDeath.SuddenDeath &&
+            (judgement == Judgement.Miss ||
+            judgement == Judgement.Break))
+        {
+            hp = 0;
+        }
         // It's up to GameController to set stage failed.
         if (hp < 0) hp = 0;
         if (hp >= maxHp) hp = maxHp;
@@ -219,10 +226,7 @@ public class ScoreKeeper
             if (feverState == FeverState.Building ||
                 feverState == FeverState.Ready)
             {
-                if (feverState == FeverState.Ready)
-                {
-                    gameSetup.onFeverUnready?.Function?.Call();
-                }
+                bool wasReady = feverState == FeverState.Ready;
                 switch (judgement)
                 {
                     case Judgement.Miss:
@@ -232,8 +236,12 @@ public class ScoreKeeper
                         feverAmount *= 0.5f;
                         break;
                 }
-                gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
                 feverState = FeverState.Building;
+                if (wasReady)
+                {
+                    gameSetup.onFeverUnready?.Function?.Call();
+                }
+                gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
             }
         }
     }

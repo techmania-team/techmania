@@ -9,6 +9,7 @@ public class GameLayout
     private Pattern pattern;
     private float countdownLengthInScans;
 
+    private VisualElement rootElement;
     private TemplateContainer layoutContainer;
     public VisualElement inputFeedbackContainer { get; private set; }
 
@@ -74,6 +75,8 @@ public class GameLayout
     {
         this.pattern = pattern;
 
+        rootElement = TopLevelObjects.instance.mainUiDocument
+            .rootVisualElement;
         layoutContainer = layoutTemplate.Instantiate();
         // Make sure the game - where everything uses absolute
         // positioning - takes up the entirety of setup.gameContainer.
@@ -472,7 +475,7 @@ public class GameLayout
     public int ScreenPointToLaneNumber(Vector2 screenPoint)
     {
         Vector2 localPoint = ThemeApi.VisualElementTransform
-            .ScreenSpaceToElementLocalSpace(
+            .ScreenSpaceToLocalSpace(
             layoutContainer, screenPoint);
         if (!layoutContainer.ContainsPoint(localPoint))
         {
@@ -537,7 +540,7 @@ public class GameLayout
             y * gameContainerHeight);
     }
 
-    public float GetWorldXOfScanlineAtIntScan(int intScan)
+    public float GetViewportXOfScanline(int intScan)
     {
         if (!intScanToElements.ContainsKey(intScan)) return 0f;
 
@@ -550,7 +553,8 @@ public class GameLayout
             layoutContainer.localBound.xMin,
             layoutContainer.localBound.xMax,
             left);
-        return layoutContainer.LocalToWorld(
+        float worldX = layoutContainer.LocalToWorld(
             new Vector2(localX, 0f)).x;
+        return worldX / rootElement.contentRect.width;
     }
 }

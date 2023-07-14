@@ -237,6 +237,7 @@ public class TrackSetupPanel : MonoBehaviour
     public TMP_InputField startTime;
     public TMP_InputField endTime;
     public PreviewTrackPlayer previewTrackPlayer;
+    public TMP_Dropdown previewBga;
 
     public void RefreshMetadataTab()
     {
@@ -254,6 +255,8 @@ public class TrackSetupPanel : MonoBehaviour
             metadata.previewTrack, audioFilesCache);
         startTime.SetTextWithoutNotify(metadata.previewStartTime.ToString());
         endTime.SetTextWithoutNotify(metadata.previewEndTime.ToString());
+        UIUtils.MemoryToDropdown(previewBga,
+            metadata.previewBga, videoFilesCache);
 
         foreach (TMP_InputField field in new List<TMP_InputField>()
         {
@@ -296,6 +299,8 @@ public class TrackSetupPanel : MonoBehaviour
         UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
         UIUtils.UpdateMetadataInMemory(
             ref metadata.previewEndTime, endTime.text, ref madeChange);
+        UIUtils.UpdateMetadataInMemory(
+            ref metadata.previewBga, previewBga, ref madeChange);
     }
 
     public void OnEyecatchUpdated()

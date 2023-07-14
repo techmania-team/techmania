@@ -4,6 +4,8 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System;
+using MoonSharp.VsCodeDebugger;
+using System.Net.Sockets;
 
 namespace ThemeApi
 {
@@ -28,6 +30,7 @@ namespace ThemeApi
 
             // Register types
             UserData.RegisterAssembly();
+            UserData.RegisterType<Dictionary<string, string>>();
             UserData.RegisterType<Rect>();
             UserData.RegisterType<Texture2D>();
             UserData.RegisterType<VisualTreeAsset>();
@@ -63,9 +66,17 @@ namespace ThemeApi
             session.Globals["getApi"] = (Func<int, Table>)GetApi;
         }
 
-        public static void Execute(string script)
+        public static void Execute(string script, string path = null)
         {
-            session.DoString(script);
+            if (path == null)
+            {
+                Debug.Log("Executing script from unknown origin");
+            }
+            else
+            {
+                Debug.Log("Executing script from file " + path);
+            }
+            session.DoString(script, globalContext: null, path);
         }
 
         public static Table GetApi(int version)
@@ -103,6 +114,7 @@ namespace ThemeApi
             addType(tmEnums, typeof(VisualElementWrap.EventType));
             addType(tmEnums, typeof(Options.Ruleset));
             addTypeAs(tmEnums, typeof(GameState.State), "gameState");
+            addType(tmEnums, typeof(SkinType));
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));
             addType(tmEnums, typeof(NoteType));
@@ -116,6 +128,7 @@ namespace ThemeApi
             addType(tmEnums, typeof(Modifiers.Fever));
             addType(tmEnums, typeof(Modifiers.Keysound));
             addType(tmEnums, typeof(Modifiers.AssistTick));
+            addType(tmEnums, typeof(Modifiers.SuddenDeath));
             addType(tmEnums, typeof(Modifiers.Mode));
             addType(tmEnums, typeof(Modifiers.ControlOverride));
             addType(tmEnums, typeof(Modifiers.ScrollSpeed));
@@ -133,8 +146,7 @@ namespace ThemeApi
             addTypeAs(netTypes, typeof(int), "int");
             addTypeAs(netTypes, typeof(float), "float");
             addTypeAs(netTypes, typeof(StringWrap), "string");
-            addTypeAs(netTypes, typeof(Dictionary<string, string>), 
-                "stringDict");
+            addType(netTypes, typeof(DateTime));
             apiTable["net"] = netTypes;
 
             // Expose Unity classes
@@ -171,6 +183,8 @@ namespace ThemeApi
             addType(unityTypes, typeof(Angle));
             addType(unityTypes, typeof(StyleScale));
             addType(unityTypes, typeof(Scale));
+            addType(unityTypes, typeof(StyleTransformOrigin));
+            addType(unityTypes, typeof(TransformOrigin));
             // Types used by Painter2D
             addType(unityTypes, typeof(Painter2D));
             addType(unityTypes, typeof(VectorImage));

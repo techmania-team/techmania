@@ -1,10 +1,13 @@
+using MoonSharp.VsCodeDebugger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using TMPro;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static System.Collections.Specialized.BitVector32;
 
 public class BootScreen : MonoBehaviour
 {
@@ -234,12 +237,22 @@ public class BootScreen : MonoBehaviour
         ThemeApi.ScriptSession.Prepare();
         try
         {
-            ThemeApi.ScriptSession.Execute(mainScript.text);
+            ThemeApi.Techmania.ExecuteScriptFromTheme(mainScriptPath);
         }
         catch (ThemeApi.ApiNotSupportedException)
         {
             messageDialog.Show($"{L10n.GetString("theme_error_api_not_supported")}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
             yield break;
+        }
+
+        // Start debug server if running in Unity editor.
+        if (Application.isEditor)
+        {
+            StartMoonSharpDebugServer();
+        }
+        else
+        {
+            debugServer = null;
         }
 
         // If everything worked up to this point, we can hide
@@ -261,6 +274,52 @@ public class BootScreen : MonoBehaviour
     private void CompleteCallback(Status status)
     {
         loadStatus = status;
+    }
+    #endregion
+
+    #region MoonSharp debug server
+    private MoonSharpVsCodeDebugServer debugServer;
+
+    private void StartMoonSharpDebugServer()
+    {
+        // MoonSharp recommended port.
+        int port = 41912;
+
+        // Is this port available?
+        bool available = true;
+        TcpListener tcpListener = new TcpListener(
+            System.Net.IPAddress.Loopback, port);
+        try
+        {
+            tcpListener.Start();
+        }
+        catch (SocketException)
+        {
+            Debug.LogWarning($"Port {port} unavailable for MoonSharp debug server. Looking for another port; you will need to update .vscode/launch.json in VS Code to connect.");
+            available = false;
+        }
+        finally { tcpListener.Stop(); }
+
+        if (!available)
+        {
+            // Find an available port.
+            tcpListener = new TcpListener(
+                System.Net.IPAddress.Loopback, 0);
+            tcpListener.Start();
+            port = ((System.Net.IPEndPoint)tcpListener.LocalEndpoint)
+                .Port;
+            tcpListener.Stop();
+        }
+        debugServer = new MoonSharpVsCodeDebugServer(port);
+        debugServer.Start();
+        debugServer.AttachToScript(ThemeApi.ScriptSession.session,
+            "TECHMANIA Theme");
+        Debug.Log($"Started MoonSharp debug server at port {port}.");
+    }
+
+    private void OnDisable()
+    {
+        debugServer?.Dispose();
     }
     #endregion
 

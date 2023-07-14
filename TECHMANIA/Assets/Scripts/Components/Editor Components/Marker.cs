@@ -28,7 +28,9 @@ public class Marker : MonoBehaviour
                 "↓" : "↑";
         }
 
-        scanBeatText.text = $"{scanPosition}{scan}-{beatInScan}";
+        // Display in 1-index
+        scanBeatText.text =
+            $"{scanPosition}{scan + 1}-{beatInScan + 1}";
         timeText.text = UIUtils.FormatTime(time,
             includeMillisecond: true);
     }

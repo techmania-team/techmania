@@ -12,6 +12,7 @@ selectPatternPanel = {
         fever = {},
         keysound = {},
         assistTick = {},
+        suddenDeath = {},
         mode = {},
         controlOverride = {},
         scrollSpeed = {}
@@ -101,6 +102,7 @@ function CurrentModifiersToString(includeNoVideo)
         selectTrackPanel.selectedTrackOptions.noVideo) then
         table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
     end
+    CheckAndAddSegment("suddenDeath", false)
     CheckAndAddSegment("mode", true)
     CheckAndAddSegment("controlOverride", true)
     CheckAndAddSegment("scrollSpeed", true)
@@ -510,6 +512,7 @@ modifierSideSheet.SetDropdownValues = function()
     SetDropdownValue("fever", "fever")
     SetDropdownValue("keysound", "keysound")
     SetDropdownValue("assist-tick", "assistTick")
+    SetDropdownValue("sudden-death", "suddenDeath")
     SetDropdownValue("mode", "mode")
     SetDropdownValue("control-override", "controlOverride")
     SetDropdownValue("scroll-speed", "scrollSpeed")
@@ -601,6 +604,10 @@ modifierSideSheet.Initialize = function()
             [tm.enum.assistTick.AssistTick] = tm.l10n.GetString("modifier_assist_tick"),
             [tm.enum.assistTick.AutoAssistTick] = tm.l10n.GetString("modifier_auto_assist_tick")
         }
+        selectPatternPanel.modifierDisplayString.suddenDeath = {
+            [tm.enum.suddenDeath.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.suddenDeath.suddenDeath] = tm.l10n.GetString("modifier_sudden_death")
+        }
         selectPatternPanel.modifierDisplayString.mode = {
             [tm.enum.mode.Normal] = tm.l10n.GetString("modifier_normal"),
             [tm.enum.mode.NoFail] = tm.l10n.GetString("modifier_no_fail"),
@@ -615,7 +622,8 @@ modifierSideSheet.Initialize = function()
         }
         selectPatternPanel.modifierDisplayString.scrollSpeed = {
             [tm.enum.scrollSpeed.Normal] = tm.l10n.GetString("modifier_normal"),
-            [tm.enum.scrollSpeed.HalfSpeed] = tm.l10n.GetString("modifier_half_speed")
+            [tm.enum.scrollSpeed.HalfSpeed] = tm.l10n.GetString("modifier_half_speed");
+            [tm.enum.scrollSpeed.ShiftedHalfSpeed] = tm.l10n.GetString("modifier_shifted_half_speed")
         }
 
         function LocalizeOneDropdown(bg, containerName, displayStringTable)
@@ -633,6 +641,7 @@ modifierSideSheet.Initialize = function()
         LocalizeOneDropdown(bg, "fever", selectPatternPanel.modifierDisplayString.fever)
         LocalizeOneDropdown(bg, "keysound", selectPatternPanel.modifierDisplayString.keysound)
         LocalizeOneDropdown(bg, "assist-tick", selectPatternPanel.modifierDisplayString.assistTick)
+        LocalizeOneDropdown(bg, "sudden-death", selectPatternPanel.modifierDisplayString.suddenDeath)
         LocalizeOneDropdown(bg, "mode", selectPatternPanel.modifierDisplayString.mode)
         LocalizeOneDropdown(bg, "control-override", selectPatternPanel.modifierDisplayString.controlOverride)
         LocalizeOneDropdown(bg, "scroll-speed", selectPatternPanel.modifierDisplayString.scrollSpeed)
@@ -659,6 +668,7 @@ modifierSideSheet.Initialize = function()
     InitializeDropdown("fever", "fever")
     InitializeDropdown("keysound", "keysound")
     InitializeDropdown("assist-tick", "assistTick")
+    InitializeDropdown("sudden-death", "suddenDeath")
     InitializeDropdown("mode", "mode")
     InitializeDropdown("control-override", "controlOverride")
     bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()

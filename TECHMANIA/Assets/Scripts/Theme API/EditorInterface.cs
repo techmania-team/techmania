@@ -13,12 +13,6 @@ namespace ThemeApi
         #region Launching and exiting
         public void LaunchOnTrack(string trackFolder)
         {
-            TopLevelObjects.instance.HideUiDocument();
-            TopLevelObjects.instance.editorCanvas.gameObject
-                .SetActive(true);
-            TopLevelObjects.instance.eventSystem.gameObject
-                .SetActive(true);
-
             // Set EditorContext
             EditorContext.previewCallback = () =>
             {
@@ -52,10 +46,28 @@ namespace ThemeApi
 
             // Show track setup panel
             Panel.current = null;
+            TopLevelObjects.instance.HideUiDocument();
+            TopLevelObjects.instance.editorCanvas.gameObject
+                .SetActive(true);
+            TopLevelObjects.instance.eventSystem.gameObject
+                .SetActive(true);
             PanelTransitioner.TransitionTo(
                 TopLevelObjects.instance.trackSetupPanel
                 .GetComponent<Panel>(), 
                 TransitionToPanel.Direction.Right);
+        }
+
+        // Contains timestamp so collisions are very unlikely.
+        public static string TrackToDirectoryName(
+            string title, string artist)
+        {
+            string filteredTitle = Paths.
+                RemoveCharsNotAllowedOnFileSystem(title);
+            string filteredArtist = Paths
+                .RemoveCharsNotAllowedOnFileSystem(artist);
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            return $"{filteredArtist} - {filteredTitle} - {timestamp}";
         }
 
         // In Lua, this function returns 2 values, the Status
@@ -65,16 +77,9 @@ namespace ThemeApi
         public Status CreateNewTrack(string parentFolder,
             string title, string artist, out string newTrackFolder)
         {
-            // Attempt to create track directory. Contains timestamp
-            // so collisions are very unlikely.
-            string filteredTitle = Paths.
-                RemoveCharsNotAllowedOnFileSystem(title);
-            string filteredArtist = Paths
-                .RemoveCharsNotAllowedOnFileSystem(artist);
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-
+            // Attempt to create track directory.
             newTrackFolder = Path.Combine(parentFolder,
-                $"{filteredArtist} - {filteredTitle} - {timestamp}");
+                TrackToDirectoryName(title, artist));
             try
             {
                 Directory.CreateDirectory(newTrackFolder);

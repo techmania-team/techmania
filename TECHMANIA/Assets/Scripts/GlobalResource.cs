@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
+using System;
+
+public enum SkinType
+{
+    Note,
+    Vfx,
+    Combo,
+    GameUI
+}
 
 [MoonSharpUserData]
 public static class GlobalResource
@@ -13,32 +22,11 @@ public static class GlobalResource
     public static ComboSkin comboSkin;
     public static GameUISkin gameUiSkin;
 
-    public static List<string> AllNoteSkins()
+    public static List<string> GetSkinList(SkinType type)
     {
         return AllSkinsInFolder(
-            Paths.GetNoteSkinRootFolder(),
-            Paths.GetStreamingNoteSkinRootFolder());
-    }
-
-    public static List<string> AllVfxSkins()
-    {
-        return AllSkinsInFolder(
-            Paths.GetVfxSkinRootFolder(),
-            Paths.GetStreamingVfxSkinRootFolder());
-    }
-
-    public static List<string> AllComboSkins()
-    {
-        return AllSkinsInFolder(
-            Paths.GetComboSkinRootFolder(),
-            Paths.GetStreamingComboSkinRootFolder());
-    }
-
-    public static List<string> AllGameUiSkins()
-    {
-        return AllSkinsInFolder(
-            Paths.GetGameUiSkinRootFolder(),
-            Paths.GetStreamingGameUiSkinRootFolder());
+            Paths.GetSkinRootFolderForType(type),
+            Paths.GetSkinRootFolderForType(type, streamingAssets: true));
     }
 
     private static List<string> AllSkinsInFolder(string skinFolder,
@@ -93,6 +81,7 @@ public static class GlobalResource
     {
         public string name;
         public string fullPath;
+        public DateTime modifiedTime;
         public string eyecatchFullPath;
     }
     [MoonSharpUserData]
@@ -100,6 +89,10 @@ public static class GlobalResource
     {
         // The folder that track.tech is in.
         public string folder;
+        // The last modified time of the folder.
+        // Newly unzipped folders will have the modified time be set
+        // to the time of unzipping.
+        public DateTime modifiedTime;
         // Minimized to save RAM; does not contain notes or time events.
         public Track minimizedTrack;
     }
@@ -167,13 +160,55 @@ public static class GlobalResource
             return new List<TrackWithError>();
         }
     }
+
+    public static void ClearTrackList()
+    {
+        trackSubfolderList.Clear();
+        trackList.Clear();
+        trackWithErrorList.Clear();
+    }
     #endregion
 
     public static bool anyOutdatedTrack;
     #endregion
 
     #region Theme
-    public static Dictionary<string, Object> themeContent;
+    public static List<string> GetThemeList()
+    {
+        List<string> themeNames = new List<string>();
+        string searchPattern = "*" + Paths.kThemeExtension;
+
+        // Enumerate themes in the theme folder.
+        foreach (string filename in
+            Directory.EnumerateFiles(Paths.GetThemeFolder(), 
+            searchPattern))
+        {
+            themeNames.Add(Path.GetFileNameWithoutExtension(filename));
+        }
+
+        // Enumerate themes in the streaming assets folder.
+        string relativeStreamingThemesFolder =
+            Paths.RelativePathInStreamingAssets(
+                Paths.GetThemeFolder(streamingAssets: true));
+        if (BetterStreamingAssets.DirectoryExists(
+            relativeStreamingThemesFolder))
+        {
+            foreach (string relativeFilename in
+                BetterStreamingAssets.GetFiles(
+                    relativeStreamingThemesFolder,
+                    searchPattern,
+                    SearchOption.AllDirectories))
+            {
+                themeNames.Add(Path.GetFileNameWithoutExtension(
+                    relativeFilename));
+            }
+        }
+
+        themeNames.Sort();
+        return themeNames;
+    }
+
+    public static Dictionary<string, UnityEngine.Object> themeContent;
 
     /// <summary>
     /// Returns null if the specified file doesn't exist, or isn't
@@ -182,7 +217,8 @@ public static class GlobalResource
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static T GetThemeContent<T>(string name) where T : Object
+    public static T GetThemeContent<T>(string name)
+        where T : UnityEngine.Object
     {
         name = name.ToLower();
         if (!themeContent.ContainsKey(name))
@@ -190,7 +226,7 @@ public static class GlobalResource
             Debug.LogError($"The asset {name} does not exist in the current theme.");
             return null;
         }
-        Object asset = themeContent[name];
+        UnityEngine.Object asset = themeContent[name];
         if (asset.GetType() != typeof(T))
         {
             Debug.LogError($"The asset {name} exists in the current theme, but is not of the expected type. Expected type: {typeof(T).Name}; actual type: {asset.GetType().Name}");

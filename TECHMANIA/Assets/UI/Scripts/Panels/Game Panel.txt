@@ -5,6 +5,13 @@ gamePanel = {
     inEditor = false
 }
 
+pauseButton = {
+    button = gamePanel.panel.Q("top-bar").Q("pause-button"),
+    stepIndicator = nil,
+    stepCoroutine = nil,
+    waitingForSecondTap = false,
+}
+
 pauseMenu = {
     bg = gamePanel.panel.Q("pause-menu-bg"),
     menu = gamePanel.panel.Q("pause-menu")
@@ -61,10 +68,6 @@ gamePanel.Initialize = function()
         if (event.focus) then return end
         if (gamePanel.inEditor) then return end
         gamePanel.Pause(true)  -- silent
-    end)
-
-    panel.Q("top-bar").Q("pause-button").RegisterCallback(eventType.Click, function()
-        gamePanel.Pause()
     end)
 
     panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
@@ -278,6 +281,10 @@ gamePanel.Show = function()
     tm.game.BeginLoading()
 end
 
+gamePanel.Hide = function()
+    tm.RestoreVfxAndComboText()
+end
+
 gamePanel.ConcludeGame = function()
     -- Don't conclude the game in Hide, Result panel calls stuff that
     -- requires Complete state.
@@ -308,6 +315,7 @@ gamePanel.BeginGame = function()
     -- Initialize top bar and middle fever bar.
     local topBar = panel.Q("top-bar")
     topBar.visible = true
+    pauseButton.ResetState()
     gamePanel.UpdateHpDisplay(1, 1)
     topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
     gamePanel.UpdateScoreDisplay(0, 0)
@@ -413,6 +421,7 @@ gamePanel.BeginGame = function()
     -- Begin game.
     panel.Q("loading-bar-wrap").display = false
     tm.options.RestoreVSync()
+    tm.RestoreVfxAndComboText()  -- In case a previous pause hid them
     tm.game.Begin()
 
     -- Give game panel focus so it can receive keyboard events.
@@ -420,6 +429,7 @@ gamePanel.BeginGame = function()
 end
 
 gamePanel.Pause = function(silent)  -- boolean
+    pauseButton.ResetState()
     if (tm.game.state != tm.enum.gameState.Ongoing) then return end
 
     if (silent == nil) then silent = false end
@@ -431,6 +441,7 @@ gamePanel.Pause = function(silent)  -- boolean
     tm.game.Pause()
     FadeInDialog(bg, menu)
     pauseMenu.Show()
+    tm.HideVfxAndComboText()
 end
 
 gamePanel.Unpause = function()
@@ -439,6 +450,7 @@ gamePanel.Unpause = function()
     FadeOutDialog(bg, menu, function()
         -- Only unpause after the menu has fully faded out.
         tm.game.Unpause()
+        tm.RestoreVfxAndComboText()
     end)
 end
 
@@ -482,6 +494,96 @@ gamePanel.ShowFeverOff = function()
     middleFeverBarBg.display = true
     middleFeverBarBg.Q("fever-ready-text").display = false
     -- Does not control Fever bonus.
+end
+
+pauseButton.Initialize = function()
+    pauseButton.stepIndicator = pauseButton.button.Q("interaction-step-indicator")
+
+    pauseButton.button.RegisterCallback(eventType.Click, function()
+        if (themeOptions["pauseButtonInteraction"] == "SingleTap") then
+            gamePanel.Pause()
+        end
+        if (themeOptions["pauseButtonInteraction"] == "Hold") then return end
+
+        -- In DoubleTap, determine whether this is the 1st or 2nd tap.
+        if (pauseButton.waitingForSecondTap) then
+            -- 2nd tap
+            gamePanel.Pause()
+        else
+            -- 1st tap
+            pauseButton.stepCoroutine = tm.StartCoroutine(function()
+                local timer = 0
+                local length = 1
+                pauseButton.waitingForSecondTap = true
+                pauseButton.SetStepIndicatorHeight(1)
+                while (timer < length) do
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                pauseButton.ResetState() -- implies waitingForSecondTap = false
+            end)
+        end
+    end)
+
+    pauseButton.button.RegisterCallback(eventType.PointerDown, function(_, event)
+        if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
+        local pointerId = event.pointerId  -- 0 if mouse, 1+ if finger
+        local mouseButton = event.button  -- only meaningful if pointerId == 0
+        local fingerId = 0  -- only meaningful if pointerId > 0
+        if (pointerId > 0) then
+            fingerId = unity.input.GetTouch(pointerId - 1).fingerId
+        end
+        pauseButton.stepCoroutine = tm.StartCoroutine(function()
+            local timer = 0
+            local length = 1
+            pauseButton.SetStepIndicatorHeight(0)
+            while (timer < length) do
+                -- Detect if the original pointer is still held down.
+                -- We don't do this by registering PointerUp event because
+                -- that event is not fired if the pointer leaves the button.
+                local pointerHeld = false
+                if (pointerId == 0) then
+                    pointerHeld = unity.input.GetMouseButton(mouseButton)
+                else
+                    for i = 0, unity.input.touchCount - 1 do
+                        local touch = unity.input.GetTouch(i)
+                        if (touch.fingerId == fingerId) then
+                            if (touch.phase == unity.enum.touchPhase.Began or
+                                touch.phase == unity.enum.touchPhase.Moved or
+                                touch.phase == unity.enum.touchPhase.Stationary) then
+                                pointerHeld = true
+                            end
+                            break
+                        end
+                    end
+                end
+                if (not pointerHeld) then
+                    pauseButton.ResetState()
+                    return
+                end
+
+                local progress = timer / length
+                pauseButton.SetStepIndicatorHeight(progress)
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+
+            gamePanel.Pause()
+        end)
+    end)
+end
+
+pauseButton.SetStepIndicatorHeight = function(proportion)  -- [0, 1]
+    pauseButton.stepIndicator.style.top = StyleLengthInPercent((1 - proportion) * 100)
+end
+
+pauseButton.ResetState = function()
+    pauseButton.SetStepIndicatorHeight(0)
+    if (pauseButton.stepCoroutine != nil) then
+        tm.StopCoroutine(pauseButton.stepCoroutine)
+    end
+    pauseButton.stepCoroutine = nil
+    pauseButton.waitingForSecondTap = false
 end
 
 pauseMenu.Initialize = function()
@@ -624,7 +726,7 @@ practiceMode.Update = function()
     local practiceTopBar = practiceMode.practiceTopBar
 
     practiceTopBar.Q("scan-number").Q("center-display").Q("value").text = net.string.Format(
-        "{0} / {1}", tm.game.timer.intScan, tm.game.timer.lastScan)
+        "{0} / {1}", tm.game.timer.intScan + 1, tm.game.timer.lastScan + 1)
 
     if (tm.game.timer.intScan > practiceMode.loopEnd) then
         tm.game.JumpToScan(practiceMode.loopStart)
@@ -634,7 +736,7 @@ end
 practiceMode.UpdateUi = function()
     local practiceTopBar = practiceMode.practiceTopBar
     practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
-        "{0} - {1}", practiceMode.loopStart, practiceMode.loopEnd)
+        "{0} - {1}", practiceMode.loopStart + 1, practiceMode.loopEnd + 1)
 
     -- For speed display, we have to be more delicate in order to not show something like "0.799999999685x".
     local speedString = ""
@@ -721,6 +823,7 @@ practiceMode.controls = {
 }
 
 gamePanel.Initialize()
+pauseButton.Initialize()
 pauseMenu.Initialize()
 fpsCounter.Initialize()
 practiceMode.Initialize()

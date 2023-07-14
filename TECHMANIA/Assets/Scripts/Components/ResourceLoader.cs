@@ -179,7 +179,6 @@ public class ResourceLoader : MonoBehaviour
             
             numLoaded++;
             fileLoadedCallback?.Invoke(fileRelativePath);
-            Debug.Log("Loaded: " + file);
         }
 
         yield return null;  // Wait 1 more frame just in case
@@ -346,7 +345,6 @@ public class ResourceLoader : MonoBehaviour
             yield break;
         }
 
-        Debug.Log("Loaded: " + fullPath);
         t2d.wrapMode = TextureWrapMode.Clamp;
         loadImageCompleteCallback.Invoke(Status.OKStatus(),
             texture: t2d);

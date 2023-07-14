@@ -8,10 +8,20 @@ namespace ThemeApi
     [MoonSharpUserData]
     public static class IO
     {
+        public static bool FileExists(string path)
+        {
+            return UniversalIO.FileExists(path);
+        }
+
         public static string LoadTextFileFromTheme(string path)
         {
             return GlobalResource.GetThemeContent<TextAsset>(path)?
                 .text;
+        }
+
+        public static Texture2D LoadTextureFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<Texture2D>(path);
         }
 
         // Callback parameter: Status, Texture2D
@@ -43,12 +53,19 @@ namespace ThemeApi
                 });
         }
 
-        public static VideoElement LoadVideoFromTheme(string path)
+        // Callback parameter: VideoElement
+        public static void LoadVideoFromTheme(string path,
+            DynValue callback)
         {
             UnityEngine.Video.VideoClip clip =
                 GlobalResource.GetThemeContent<
                     UnityEngine.Video.VideoClip>(path);
-            return VideoElement.CreateFromClip(clip);
+            VideoElement.CreateFromClip(clip,
+                callback: (VideoElement element) =>
+                {
+                    if (callback.IsNil()) return;
+                    callback.Function.Call(element);
+                });
         }
 
         // Callback parameters: Status, VideoElement

@@ -14,6 +14,7 @@ function InitializeThemeOptions()
     -- FillEntireScreen/FillGameArea
     InitializeOneOption("backgroundScalingMode", "FillEntireScreen")
     InitializeOneOption("pauseWhenGameLosesFocus", "True")
+    InitializeOneOption("pauseButtonInteraction", "SingleTap")
 end
 
 optionsPanel = {
@@ -23,13 +24,15 @@ optionsPanel = {
     fullScreenDisplayString = {},
     beatMarkersDisplayString = {},
     bgScalingDisplayString = {},
-    rulesetDisplayString = {}
+    rulesetDisplayString = {},
+    pauseButtonInteractionDisplayString = {}
 }
 
 optionsPanel.UpdateCustomDataLocationDisplay = function()
     local panel = optionsPanel.panel
     local tracksContainer = panel.Q("tracks-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
+    local themesContainer = panel.Q("themes-folder-location")
     if (tm.options.customDataLocation) then
         if (tm.options.tracksFolderLocation == nil or
             tm.options.tracksFolderLocation == "") then
@@ -37,16 +40,41 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
         end
         if (tm.options.skinsFolderLocation == nil or
             tm.options.skinsFolderLocation == "") then
-            tm.options.skinsFolderLocation = tm.paths.GetSkinFolder()
+            tm.options.skinsFolderLocation = tm.paths.GetSkinRootFolder()
+        end
+        if (tm.options.themesFolderLocation == nil or
+            tm.options.themesFolderLocation == "") then
+            tm.options.themesFolderLocation = tm.paths.GetThemeFolder()
         end
         tracksContainer.display = true
         tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
         skinsContainer.display = true
         skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+        themesContainer.display = true
+        themesContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.themesFolderLocation)
     else
         tracksContainer.display = false
         skinsContainer.display = false
+        themesContainer.display = false
     end
+end
+
+optionsPanel.UpdateThemeDropdown = function()
+    local dropdown = optionsPanel.panel.Q("theme").Q("dropdown")
+    dropdown.SetValueWithoutNotify(tm.options.theme)
+
+    local choices = tm.resources.GetThemeList()
+    local choicesContainsDefault = false
+    for _, choice in ipairs(choices) do
+        if (choice == "Default") then
+            choicesContainsDefault = true
+            break;
+        end
+    end
+    if (not choicesContainsDefault) then
+        table.insert(choices, "Default")
+    end
+    dropdown.choices = choices
 end
 
 optionsPanel.Show = function()
@@ -72,6 +100,8 @@ optionsPanel.Show = function()
     local languageDropdown = panel.Q("language").Q("dropdown")
     local locale = tm.l10n.GetAllLocales()[tm.options.locale]
     languageDropdown.SetValueWithoutNotify(locale.languageName)
+
+    optionsPanel.UpdateThemeDropdown()
 
     function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
@@ -102,6 +132,9 @@ optionsPanel.Show = function()
         tm.options.keyboardMouseLatencyMs .. " ms"
 
     ShowThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
+
+    local pauseButtonInteractionDropdown = panel.Q("pause-button-interaction").Q("dropdown")
+    pauseButtonInteractionDropdown.SetValueWithoutNotify(optionsPanel.pauseButtonInteractionDisplayString[themeOptions["pauseButtonInteraction"]])
 
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
@@ -153,6 +186,13 @@ optionsPanel.Initialize = function()
             [tm.enum.ruleset.Custom] = tm.l10n.GetString("ruleset_custom")
         }
         InitializeOneLocalizedDropdown("ruleset", optionsPanel.rulesetDisplayString)
+
+        optionsPanel.pauseButtonInteractionDisplayString = {
+            SingleTap = tm.l10n.GetString("pause_button_interaction_single_tap"),
+            DoubleTap = tm.l10n.GetString("pause_button_interaction_double_tap"),
+            Hold = tm.l10n.GetString("pause_button_interaction_hold")
+        }
+        InitializeOneLocalizedDropdown("pause-button-interaction", optionsPanel.pauseButtonInteractionDisplayString)
     end
 
     local panel = optionsPanel.panel
@@ -219,8 +259,20 @@ optionsPanel.Initialize = function()
         optionsPanel.Show()
     end)
 
-    local skinsButton = panel.Q("skins").Q("button")
-    skinsButton.RegisterCallback(eventType.Click, function()
+    local themeDropdown = panel.Q("theme").Q("dropdown")
+    themeDropdown.RegisterCallback(eventType.ChangeString, function(_, event)
+        local newTheme = event.newValue
+        if (tm.options.theme == newTheme) then return end
+        -- Temporarily revert the change, only apply it after confirmation
+        themeDropdown.SetValueWithoutNotify(tm.options.theme)
+        alertBox.Confirm(tm.l10n.GetString("change_theme_warning"),
+            tm.l10n.GetString("change_theme_confirm"), tm.l10n.GetString("change_theme_cancel"),
+            function()
+                tm.options.theme = newTheme
+                tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
+                themeDropdown.SetValueWithoutNotify(newTheme)
+                alertBox.Alert(tm.l10n.GetString("change_theme_instruction"))
+            end)
     end)
 
     function InitializeThemeOptionToggle(containerName, key)
@@ -241,15 +293,19 @@ optionsPanel.Initialize = function()
     InitializeThemeOptionToggle("show-judgement-tally", "showJudgementTally")
     InitializeThemeOptionToggle("show-lane-dividers", "showLaneDividers")
 
-    function InitializeThemeOptionDropdown(containerName, key, stringTable)
+    -- Pass in the key to the string table instead of the table itself,
+    -- because tables are passed by value, and the string tables may change
+    -- with locale change, so we need the callbacks to query the up-to-date
+    -- tables.
+    function InitializeThemeOptionDropdown(containerName, key, stringTableKey)
         local dropdown = panel.Q(containerName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-            enum = KeyFromValue(stringTable, event.newValue)
+            enum = KeyFromValue(optionsPanel[stringTableKey], event.newValue)
             themeOptions[key] = enum
         end)
     end
-    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", optionsPanel.beatMarkersDisplayString)
-    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", optionsPanel.bgScalingDisplayString)
+    InitializeThemeOptionDropdown("beat-markers", "beatMarkers", "beatMarkersDisplayString")
+    InitializeThemeOptionDropdown("background-scaling", "backgroundScalingMode", "bgScalingDisplayString")
 
     local rulesetDropdown = panel.Q("ruleset").Q("dropdown")
     rulesetDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
@@ -294,8 +350,19 @@ optionsPanel.Initialize = function()
             optionsPanel.UpdateCustomDataLocationDisplay()
         end
     end)
+    local themesFolderButton = panel.Q("themes-folder-location").Q("button")
+    themesFolderButton.RegisterCallback(eventType.Click, function()
+        local newFolder = tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation)
+        if (newFolder != nil) then
+            tm.options.themesFolderLocation = newFolder;
+            tm.paths.ApplyCustomDataLocation()
+            optionsPanel.UpdateCustomDataLocationDisplay()
+            optionsPanel.UpdateThemeDropdown()
+        end
+    end)
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
+    InitializeThemeOptionDropdown("pause-button-interaction", "pauseButtonInteraction", "pauseButtonInteractionDisplayString")
 
     local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
     discordRichPresenceToggle.RegisterCallback(eventType.Click, function()

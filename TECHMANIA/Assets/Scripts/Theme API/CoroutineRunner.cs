@@ -32,8 +32,14 @@ namespace ThemeApi
             return id;
         }
 
+        public static bool IsRunning(int id)
+        {
+            return instance.coroutines.ContainsKey(id);
+        }
+
         public static void Stop(int id)
         {
+            if (!IsRunning(id)) return;
             instance.StopCoroutine(instance.coroutines[id]);
             instance.coroutines.Remove(id);
         }

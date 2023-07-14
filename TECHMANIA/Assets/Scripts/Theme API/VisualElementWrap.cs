@@ -33,6 +33,11 @@ namespace ThemeApi
         #region Properties
         public bool enabledInHierarchy => inner.enabledInHierarchy;
         public bool enabledSelf => inner.enabledSelf;
+        public void SetEnabled(bool enabled)
+        {
+            inner.SetEnabled(enabled);
+        }
+
         public string name
         {
             get { return inner.name; }
@@ -48,11 +53,6 @@ namespace ThemeApi
                 inner.pickingMode = value ?
                     PickingMode.Position : PickingMode.Ignore;
             }
-        }
-
-        public void SetEnabled(bool enabled)
-        {
-            inner.SetEnabled(enabled);
         }
 
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
@@ -163,6 +163,42 @@ namespace ThemeApi
             }
         }
 
+        public string stringValue
+        {
+            get
+            {
+                if (inner is DropdownField)
+                    return (inner as DropdownField).value;
+                if (inner is TextField)
+                    return (inner as TextField).value;
+                throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
+            }
+            set
+            {
+                if (inner is DropdownField)
+                    (inner as DropdownField).value = value;
+                else if (inner is TextField)
+                    (inner as TextField).value = value;
+                else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
+            }
+        }
+
+        public bool boolValue
+        {
+            get
+            {
+                if (inner is Toggle)
+                    return (inner as Toggle).value;
+                throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+            set
+            {
+                if (inner is Toggle)
+                    (inner as Toggle).value = value;
+                else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+            }
+        }
+
         public VisualElementWrap horizontalScroller
         {
             get
@@ -211,26 +247,6 @@ namespace ThemeApi
             }
         }
 
-        public string stringValue
-        {
-            get
-            {
-                if (inner is DropdownField)
-                    return (inner as DropdownField).value;
-                if (inner is TextField)
-                    return (inner as TextField).value;
-                throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
-            }
-            set
-            {
-                if (inner is DropdownField)
-                    (inner as DropdownField).value = value;
-                else if (inner is TextField)
-                    (inner as TextField).value = value;
-                else throw new System.Exception($"VisualElement {name} is not a DropdownField or TextField, and therefore does not have the 'stringValue' member.");
-            }
-        }
-
         public void SetValueWithoutNotify(string newValue)
         {
             if (inner is DropdownField)
@@ -258,6 +274,13 @@ namespace ThemeApi
             else throw new System.Exception($"VisualElement {name} is not a Slider, SliderInt, Scroller, IntegerField or FloatField, and therefore does not have the 'SetValueWithoutNotify' member.");
         }
 
+        public void SetValueWithoutNotify(bool newValue)
+        {
+            if (inner is Toggle)
+                (inner as Toggle).SetValueWithoutNotify(newValue);
+            else throw new Exception($"VisualElement {name} is not a Toggle, and therefore does not have the 'boolValue' member.");
+        }
+
         public void ScrollTo(VisualElementWrap child)
         {
             CheckType(typeof(ScrollView), "ScrollTo");
@@ -266,7 +289,7 @@ namespace ThemeApi
         #endregion
 
         #region Events
-        // https://docs.unity3d.com/2021.2/Documentation/Manual/UIE-Events-Reference.html
+        // https://docs.unity3d.com/2022.3/Documentation/Manual/UIE-Events-Reference.html
         public enum EventType
         {
             // Capture events: omitted
@@ -341,6 +364,7 @@ namespace ThemeApi
                 EventType.KeyDown => typeof(KeyDownEvent),
                 EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
+                EventType.PointerUp => typeof(PointerUpEvent),
                 EventType.PointerEnter => typeof(PointerEnterEvent),
                 EventType.PointerLeave => typeof(PointerLeaveEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),
@@ -541,11 +565,6 @@ namespace ThemeApi
             return new VisualElementWrap(newElement);
         }
 
-        // Beware: deleting multiple elements while some parent
-        // element is undergoing USS transition may cause errors.
-        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-        //
-        // Update: Fixed in Unity 2022.2.14
         public void RemoveFromHierarchy()
         {
             // Recursively remove all event handlers on all children.
@@ -565,11 +584,6 @@ namespace ThemeApi
             inner.RemoveFromHierarchy();
         }
 
-        // Beware: deleting multiple elements while some parent
-        // element is undergoing USS transition may cause errors.
-        // https://forum.unity.com/threads/uitoolkit-styleanimation-issue-transition-property-references-non-set-value.1257483/
-        //
-        // Update: Fixed in Unity 2022.2.14
         public void RemoveAllChildren()
         {
             // Make a copy of the child list so we don't modify
@@ -625,6 +639,14 @@ namespace ThemeApi
         // Parameters: VisualElementWrap, MeshGenerationContext
         // Call VisualElementWrap.contentRect for draw boundaries.
         // (0, 0) is top left, positions are in pixels.
+        //
+        // When setting Vertex's, make sure to create new vectors
+        // instead of modifying existing ones.
+        // Correct: vertex.position = new Vector3(...)
+        // Wrong: vertex.position.x = ...
+        //
+        // Also remember to set the tint on each vertex; it seems
+        // to default to (0, 0, 0, 0).
         public void SetMeshGeneratorFunction(DynValue function)
         {
             inner.generateVisualContent =
@@ -654,10 +676,16 @@ namespace ThemeApi
         #endregion
 
         #region Transform
+        public Vector2 LocalSpaceToScreenSpace(Vector2 localSpace)
+        {
+            return VisualElementTransform.LocalSpaceToScreenSpace(
+                inner, localSpace);
+        }
+
         public Vector2 ScreenSpaceToLocalSpace(Vector2 screenSpace)
         {
             return VisualElementTransform
-                .ScreenSpaceToElementLocalSpace(inner, screenSpace);
+                .ScreenSpaceToLocalSpace(inner, screenSpace);
         }
 
         public bool ContainsPointInScreenSpace(Vector2 screenSpace)

@@ -151,7 +151,9 @@ public class PatternPanel : MonoBehaviour
 
     #region Horizontal Spacing
     private int numScans;
-    private static int zoom;
+    private static int zoom = 0;
+    private const int kMinZoom = 10;
+    private const int kMaxZoom = 500;
     public static float ScanWidth => 10f * zoom;
     public static float PulseWidth
     {
@@ -190,7 +192,7 @@ public class PatternPanel : MonoBehaviour
 
         // Horizontal spacing
         numScans = 0;  // Will be updated in Refresh()
-        zoom = 100;
+        if (zoom == 0) zoom = 100;  // Preserved through preview
 
         // Scanline
         scanline.floatPulse = 0f;
@@ -3671,7 +3673,7 @@ public class PatternPanel : MonoBehaviour
 
     private void AdjustZoom (int value)
     {
-        zoom = Mathf.Clamp(value, 10, 500);
+        zoom = Mathf.Clamp(value, kMinZoom, kMaxZoom);
         float horizontal = workspaceScrollRect
             .horizontalNormalizedPosition;
         ResizeWorkspace();

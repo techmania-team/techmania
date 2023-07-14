@@ -47,9 +47,6 @@ function SetUpPointerEnterSound(element)
 end
 
 function InitializeControls()
-    -- To apply themes to dropdowns
-    tm.SetThemeStyleSheet("Assets/UI/Theme StyleSheet.tss")
-
     -- Sliders
     tm.root.Query(nil, "slider").ForEach(function (element)
         element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)

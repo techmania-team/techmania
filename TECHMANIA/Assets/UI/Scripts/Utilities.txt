@@ -1,9 +1,17 @@
+function PrintTable(table)
+    for k, v in pairs(table) do
+        print("k=" .. tostring(k) .. " v=" .. tostring(v))
+    end
+end
+
 function KeyFromValue(table, value)
     for k, v in pairs(table) do
         if (v == value) then
             return k
         end
     end
+    print("Warning: KeyFromValue is returning nil because the value " .. tostring(value) .. " is not found in the following table:")
+    PrintTable(table)
     return nil
 end
 

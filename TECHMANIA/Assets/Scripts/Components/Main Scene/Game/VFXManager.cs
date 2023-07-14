@@ -51,7 +51,7 @@ public class VFXManager : MonoBehaviour
         // Reset size for VFXDrawer?
     }
 
-    private List<GameObject> SpawnVfxAt(Vector3 position,
+    private List<GameObject> SpawnVfxAt(Vector2 viewportPoint,
         List<SpriteSheet> spriteSheetLayers, bool loop = false)
     {
         List<GameObject> layers = new List<GameObject>();
@@ -59,7 +59,7 @@ public class VFXManager : MonoBehaviour
         {
             GameObject vfx = Instantiate(vfxPrefab, transform);
             vfx.GetComponent<VFXDrawer>().Initialize(
-                position, layer, laneHeight, loop);
+                viewportPoint, layer, laneHeight, loop);
             layers.Add(vfx);
         }
         return layers;
@@ -71,7 +71,7 @@ public class VFXManager : MonoBehaviour
     {
         return SpawnVfxAt(
             VisualElementTransform
-                .ElementCenterToWorldSpace(element),
+                .ElementCenterToViewportSpace(element, log:true),
             spriteSheetLayers, loop);
     }
 
@@ -271,7 +271,7 @@ public class VFXManager : MonoBehaviour
     {
         if (holdNoteToOngoingTrailVfx.Count == 0 &&
             dragNoteToOngoingVfx.Count == 0) return;
-        float worldXOfScanline = layout.GetWorldXOfScanlineAtIntScan(
+        float viewportXOfScanline = layout.GetViewportXOfScanline(
             timer.intScan);
 
         foreach (KeyValuePair<NoteElements, List<GameObject>> pair in
@@ -279,13 +279,13 @@ public class VFXManager : MonoBehaviour
         {
             Vector2 ongoingTrailEndPosition =
                 VisualElementTransform
-                .ElementCenterToWorldSpace(
+                .ElementCenterToViewportSpace(
                     pair.Key.holdTrailAndExtensions
                     .GetOngoingTrailEndPosition(timer.intScan));
             foreach (GameObject o in pair.Value)
             {
-                o.GetComponent<VFXDrawer>().SetPosition(
-                    new Vector2(worldXOfScanline,
+                o.GetComponent<VFXDrawer>().SetViewportPoint(
+                    new Vector2(viewportXOfScanline,
                     ongoingTrailEndPosition.y));
             }
         }
@@ -294,9 +294,9 @@ public class VFXManager : MonoBehaviour
         {
             foreach (GameObject o in pair.Value)
             {
-                o.GetComponent<VFXDrawer>().SetPosition(
+                o.GetComponent<VFXDrawer>().SetViewportPoint(
                     VisualElementTransform
-                    .ElementCenterToWorldSpace(
+                    .ElementCenterToViewportSpace(
                         pair.Key.noteImage));
             }
         }

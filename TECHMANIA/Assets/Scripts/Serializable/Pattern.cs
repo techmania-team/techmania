@@ -690,9 +690,29 @@ public partial class Pattern
                 break;
         }
 
-        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
+        switch (modifiers.scrollSpeed)
         {
-            p.patternMetadata.bps *= 2;
+            case Modifiers.ScrollSpeed.HalfSpeed:
+                p.patternMetadata.bps *= 2;
+                break;
+            case Modifiers.ScrollSpeed.ShiftedHalfSpeed:
+                // 1. Shift all notes by 1 scan
+                int pulsesPerScan = pulsesPerBeat *
+                    p.patternMetadata.bps;
+                foreach (Note n in p.notes)
+                {
+                    n.pulse += pulsesPerScan;
+                }
+
+                // 2. Shift back first beat offset by 1 scan
+                float initialBpm = p.GetBPMAt(0);
+                float secondsPerBeat = 60 / initialBpm;
+                p.patternMetadata.firstBeatOffset -= secondsPerBeat *
+                    p.patternMetadata.bps;
+
+                // 3. Double BPS
+                p.patternMetadata.bps *= 2;
+                break;
         }
 
         return p;

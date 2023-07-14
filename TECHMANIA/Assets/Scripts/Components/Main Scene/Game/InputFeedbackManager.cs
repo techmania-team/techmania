@@ -125,7 +125,7 @@ public class InputFeedbackManager
                 {
                     Touch t = Input.GetTouch(i);
                     Vector2 position = ThemeApi.VisualElementTransform
-                        .ScreenSpaceToElementLocalSpace(
+                        .ScreenSpaceToLocalSpace(
                         feedbackContainer, t.position);
                     switch (t.phase)
                     {
@@ -181,7 +181,7 @@ public class InputFeedbackManager
             case ControlScheme.KM:
                 {
                     Vector2 position = ThemeApi.VisualElementTransform
-                        .ScreenSpaceToElementLocalSpace(
+                        .ScreenSpaceToLocalSpace(
                         feedbackContainer, Input.mousePosition);
                     int numButtonsHeldPreviousFrame = 
                         numMouseButtonsHeld;

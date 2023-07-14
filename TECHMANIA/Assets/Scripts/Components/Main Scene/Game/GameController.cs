@@ -391,7 +391,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for VFX and combo text.
         vfxManager.Prepare(layout.laneHeight, timer, layout);
-        comboText.ResetSize();
+        comboText.ResetSize(layout.scanHeight);
         comboText.Hide();
 
         // Initialize scores.
@@ -532,7 +532,7 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
         noteManager.ResetSize();
         vfxManager.ResetSize(layout.laneHeight);
-        comboText.ResetSize();
+        comboText.ResetSize(layout.scanHeight);
     }
 
     public void ActivateFever()
@@ -590,7 +590,13 @@ public class GameController : MonoBehaviour
     {
         if (state == null) return;
 
-        if (state.state == ThemeApi.GameState.State.Ongoing)
+        if (state.state == ThemeApi.GameState.State.Paused)
+        {
+            // Input feedbacks should work through pauses as fingers
+            // may enter and leave during a pause.
+            inputFeedback.Update(timer.scan);
+        }
+        else if (state.state == ThemeApi.GameState.State.Ongoing)
         {
             timer.Update(comboTickCallback: ComboTick);
             bg.Update(timer.baseTime, timer.prevFrameBaseTime);

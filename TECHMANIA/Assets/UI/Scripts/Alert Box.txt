@@ -2,10 +2,12 @@ alertBox = {
     bg = tm.root.Q("alert-box-background"),
     
     confirmCallback = nil,
-    cancelCallback = nil
+    cancelCallback = nil,
+    fadeOutCoroutine = nil
 }
 
 function FadeInDialog(bg, dialog)
+    -- If a fade out coroutine is running, 
     bg.display = true
     tm.StartCoroutine(function()
         FadeInCoroutine(dialog, 0, -100)
@@ -14,8 +16,9 @@ end
 
 -- finishCallback will be called after the dialog fully fades out
 -- and bg disappears.
+-- Returns the coroutine ID.
 function FadeOutDialog(bg, dialog, finishCallback)
-    tm.StartCoroutine(function()
+    return tm.StartCoroutine(function()
         FadeOutCoroutine(dialog, 0, -100, function()
             bg.display = false
             if (finishCallback != nil) then
@@ -23,6 +26,18 @@ function FadeOutDialog(bg, dialog, finishCallback)
             end
         end)
     end)
+end
+
+alertBox.AbortFadeOut = function()
+    if (alertBox.fadeOutCoroutine == nil) then return end
+    if (not tm.IsCoroutineRunning(alertBox.fadeOutCoroutine)) then
+        alertBox.fadeOutCoroutine = nil
+        return
+    end
+    -- alertBox does not have callbacks after fade out completes, so we can
+    -- simply cut it short.
+    tm.StopCoroutine(alertBox.fadeOutCoroutine)
+    alertBox.fadeOutCoroutine = nil
 end
 
 alertBox.Alert = function(message, confirmText, callback)
@@ -35,6 +50,8 @@ alertBox.Alert = function(message, confirmText, callback)
     bg.Q("cancel-button").display = false
     alertBox.confirmCallback = callback
     alertBox.cancelCallback = callback
+
+    alertBox.AbortFadeOut()
     FadeInDialog(bg, bg.Q("alert-box"))
 end
 
@@ -46,6 +63,8 @@ alertBox.Confirm = function(message, confirmText, cancelText, confirmCallback)
     bg.Q("cancel-button").text = cancelText
     alertBox.confirmCallback = confirmCallback
     alertBox.cancelCallback = nil
+
+    alertBox.AbortFadeOut()
     FadeInDialog(bg, bg.Q("alert-box"))
 end
 
@@ -53,14 +72,14 @@ alertBox.Initialize = function()
     local bg = alertBox.bg
     bg.display = false
     bg.Q("confirm-button").RegisterCallback(eventType.Click, function()
-        FadeOutDialog(bg, bg.Q("alert-box"))
+        alertBox.fadeOutCoroutine = FadeOutDialog(bg, bg.Q("alert-box"))
         if (alertBox.confirmCallback != nil) then
             alertBox.confirmCallback()
         end
     end)
 
     function OnCancel()
-        FadeOutDialog(bg, bg.Q("alert-box"))
+        alertBox.fadeOutCoroutine = FadeOutDialog(bg, bg.Q("alert-box"))
         if (alertBox.cancelCallback != nil) then
             alertBox.cancelCallback()
         end
