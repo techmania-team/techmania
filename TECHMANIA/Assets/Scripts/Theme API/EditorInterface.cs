@@ -45,12 +45,12 @@ namespace ThemeApi
             EditorContext.Reset();
 
             // Show track setup panel
+            Panel.current = null;
             TopLevelObjects.instance.HideUiDocument();
             TopLevelObjects.instance.editorCanvas.gameObject
                 .SetActive(true);
             TopLevelObjects.instance.eventSystem.gameObject
                 .SetActive(true);
-            Panel.current = null;
             PanelTransitioner.TransitionTo(
                 TopLevelObjects.instance.trackSetupPanel
                 .GetComponent<Panel>(), 
