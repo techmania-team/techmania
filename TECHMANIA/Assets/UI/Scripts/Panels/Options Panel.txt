@@ -269,6 +269,7 @@ optionsPanel.Initialize = function()
             tm.l10n.GetString("change_theme_confirm"), tm.l10n.GetString("change_theme_cancel"),
             function()
                 tm.options.theme = newTheme
+                tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
                 themeDropdown.SetValueWithoutNotify(newTheme)
                 alertBox.Alert(tm.l10n.GetString("change_theme_instruction"))
             end)
