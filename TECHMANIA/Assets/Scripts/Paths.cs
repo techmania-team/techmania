@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -323,10 +323,10 @@ public static class Paths
     {
 #if UNITY_ANDROID || UNITY_IOS
         return fullPath
-            .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
+            .Replace(Paths.GetTrackRootFolder(true), "Tracks")
             .Replace(Paths.GetTrackRootFolder(), "Tracks")
-            .Replace(Paths.GetStreamingSkinFolder(), "Skins")
-            .Replace(Paths.GetSkinFolder(), "Skins")
+            .Replace(Paths.GetSkinRootFolder(true), "Skins")
+            .Replace(Paths.GetSkinRootFolder(), "Skins")
             .Replace(dataFolder, "TECHMANIA");
 #else
         return fullPath;
@@ -354,7 +354,7 @@ public static class Paths
     // from streaming assets to track root folder.
     public static string GoUpFrom(string path)
     {
-        if (path == GetTrackRootFolder() || path == GetStreamingTrackRootFolder()) return GetTrackRootFolder();
+        if (path == GetTrackRootFolder() || path == GetTrackRootFolder(true)) return GetTrackRootFolder();
 #if UNITY_ANDROID
         // Paths variables on Android are in the form of
         // path
@@ -369,7 +369,7 @@ public static class Paths
 #else
         string up = Path.GetDirectoryName(path);
 #endif
-        if (up == GetTrackRootFolder() || up == GetStreamingTrackRootFolder()) return GetTrackRootFolder();
+        if (up == GetTrackRootFolder() || up == GetTrackRootFolder(true)) return GetTrackRootFolder();
         return up;
     }
 
