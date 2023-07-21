@@ -502,6 +502,7 @@ pauseButton.Initialize = function()
     pauseButton.button.RegisterCallback(eventType.Click, function()
         if (themeOptions["pauseButtonInteraction"] == "SingleTap") then
             gamePanel.Pause()
+            return
         end
         if (themeOptions["pauseButtonInteraction"] == "Hold") then return end
 
