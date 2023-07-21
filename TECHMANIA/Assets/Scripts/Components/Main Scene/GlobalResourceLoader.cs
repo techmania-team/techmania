@@ -762,15 +762,17 @@ public class GlobalResourceLoader : MonoBehaviour
         yield return bundleRequest;
 
         AssetBundle bundle = bundleRequest.assetBundle;
-        Action reportFailedToLoadError = () =>
+        Action<string> reportFailedToLoadError = (string path) =>
         {
             Options.RestoreVSync();
             completeCallback?.Invoke(Status.Error(
-                Status.Code.OtherError));
+                Status.Code.OtherError, null, path));
         };
         if (bundle == null)
         {
-            reportFailedToLoadError();
+            // Sadly AssetBundleCreateRequest does not report error.
+            Debug.LogError("AssetBundleCreateRequest returned empty bundle.");
+            reportFailedToLoadError(path);
             yield break;
         }
 
@@ -781,7 +783,8 @@ public class GlobalResourceLoader : MonoBehaviour
             yield return request;
             if (request.asset == null)
             {
-                reportFailedToLoadError();
+                Debug.LogError($"Failed to load {name} from within the bundle.");
+                reportFailedToLoadError(name);
                 yield break;
             }
 
