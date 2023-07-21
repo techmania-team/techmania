@@ -106,7 +106,20 @@ namespace ThemeApi
 
         public void Unpause() => player.Play();
 
-        public void Stop() => player.Stop();
+        public void Stop()
+        {
+            if (player.isPlaying)
+            {
+                player.Stop();
+            }
+            else
+            {
+                // Calling Stop() on a already non-playing player
+                // causes it to freeze on the last frame on Play().
+                // Not sure why.
+                player.time = 0;
+            }
+        }
         #endregion
     }
 }
