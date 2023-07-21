@@ -258,6 +258,9 @@ public class Options : OptionsBase
     // resolution or save to file.
     public void SetDefaultResolutionIfInvalid()
     {
+#if UNITY_ANDROID || UNITY_IOS
+        return;
+#else
         foreach (Resolution r in Screen.resolutions)
         {
             if (r.width == width && r.height == height &&
@@ -274,6 +277,7 @@ public class Options : OptionsBase
         height = def.height;
         refreshRateNumerator = def.refreshRateRatio.numerator;
         refreshRateDenominator = def.refreshRateRatio.denominator;
+#endif
     }
 
     public Resolution GetCurrentResolutionAsObject()
