@@ -25,7 +25,7 @@
             <ui:Button text="INFORMATION" display-tooltip-when-elided="true" name="information-button" class="button-outlined" />
             <ui:Button text="QUIT" display-tooltip-when-elided="true" name="quit-button" class="button-outlined" />
         </ui:VisualElement>
-        <ui:VisualElement name="welcome-mat" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; display: flex;">
+        <ui:VisualElement name="welcome-mat" focusable="true" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; display: flex;">
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
         </ui:VisualElement>
     </ui:VisualElement>

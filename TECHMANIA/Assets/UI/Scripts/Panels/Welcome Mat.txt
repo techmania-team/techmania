@@ -39,13 +39,20 @@ function InitializeWelcomeMat()
     end
 
     local slowBlinkCoroutine = tm.StartCoroutine(SlowBlink)
-    mat.RegisterCallback(eventType.Click, function ()
+    function OnAnyInteraction()
         if (not slowBlinking) then return end
         slowBlinking = false
         tm.StopCoroutine(slowBlinkCoroutine)
         tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Game Start.wav"))
         tm.StartCoroutine(FastBlinkThenShowMenu)
+    end
+    mat.RegisterCallback(eventType.Click, function ()
+        OnAnyInteraction()
     end)
+    mat.RegisterCallback(eventType.KeyDown, function()
+        OnAnyInteraction()
+    end)
+    mat.Focus()
 end
 
 InitializeWelcomeMat()
