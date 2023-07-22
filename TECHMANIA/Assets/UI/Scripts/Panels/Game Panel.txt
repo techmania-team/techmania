@@ -705,8 +705,14 @@ practiceMode.HandleKeyDown = function(keyCode)
         practiceMode.controls.IncreaseSpeed()
     elseif (keyCode == unity.enum.keyCode.F11) then
         practiceMode.controls.ToggleAutoPlay()
+        controls.SetToggleIsOn(practiceMode.practiceTopBar.Q("options")
+            .Q("auto-play-wrap").Q("Toggle").Q("track"),
+            tm.game.autoPlay)
     elseif (keyCode == unity.enum.keyCode.F12) then
         practiceMode.controls.ToggleShowHitbox()
+        controls.SetToggleIsOn(practiceMode.practiceTopBar.Q("options")
+            .Q("show-hitbox-wrap").Q("Toggle").Q("track"),
+            tm.game.showHitbox)
     end
 end
 
