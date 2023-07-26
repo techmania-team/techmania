@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
-using FantomLib;
 
 namespace ThemeApi
 {
@@ -69,12 +68,19 @@ namespace ThemeApi
         #endregion
 
         #region System dialogs
+        private static string SelectDialogCallback;
         // Returns the selected files if any. Returns 0 values if the
         // user cancels the dialog.
-        public string[] OpenSelectFileDialog(
+        public void OpenSelectFileDialog(
             string title, string currentDirectory, bool multiSelect,
-            string[] supportedExtensionsWithoutDot)
+            string[] supportedExtensionsWithoutDot, string callback)
         {
+            SelectDialogCallback = callback;
+#if UNITY_ANDROID
+            GameObject.Find("/Main UIDocument")
+                .GetComponent<AndroidHelper>()
+                .OnSelectFile();
+#else
             SFB.ExtensionFilter[] extensionFilters = new 
                 SFB.ExtensionFilter[2];
             extensionFilters[0] = new SFB.ExtensionFilter(
@@ -86,18 +92,35 @@ namespace ThemeApi
                 L10n.GetString(
                     "track_setup_resource_tab_import_dialog_all_files",
                 L10n.Instance.System), "*");
-            return SFB.StandaloneFileBrowser.OpenFilePanel(title,
-                currentDirectory, extensionFilters, multiSelect);
+            Script script = ScriptSession.session;
+            script.Call(
+                script.Globals.Get(SelectDialogCallback),
+                SFB.StandaloneFileBrowser.OpenFilePanel(
+                    title,
+                    currentDirectory, extensionFilters, multiSelect
+                )
+            );
+#endif
         }
-
+#if UNITY_ANDROID
+        public static void OnAndroidFileSelected(string path)
+        {
+            Script script = ScriptSession.session;
+            script.Call(script.Globals.Get(SelectDialogCallback), path);
+        }
+#endif
         // Returns the selected dialog if any; null if the user
         // cancels the dialog.
-        public string OpenSelectFolderDialog(
-            string title, string currentDirectory)
+        public void OpenSelectFolderDialog(
+            string title, string currentDirectory, string callback)
         {
-#if UNITY_ANDROID
-            AndroidPlugin.OpenStorageFolder(null, "OnAndroidTracksFolderSelected", "", true);
-            return null;
+            SelectDialogCallback = callback;
+#if UNITY_IOS
+            return;
+#elif UNITY_ANDROID
+            GameObject.Find("/Main UIDocument")
+                .GetComponent<AndroidHelper>()
+                .OnSelectFolder();
 #else
             string[] folders = SFB.StandaloneFileBrowser
                 .OpenFolderPanel(title,
@@ -105,11 +128,18 @@ namespace ThemeApi
                 multiselect: false);
             if (folders.Length == 1)
             {
-                return folders[0];
+                Script script = ScriptSession.session;
+                script.Call(script.Globals.Get(SelectDialogCallback), folders[0]);
             }
-            else return null;
 #endif
         }
+#if UNITY_ANDROID
+        public static void OnAndroidFolderSelected(string folder)
+        {
+            Script script = ScriptSession.session;
+            script.Call(script.Globals.Get(SelectDialogCallback), folder);
+        }
+#endif
         #endregion
 
         #region Script execution
