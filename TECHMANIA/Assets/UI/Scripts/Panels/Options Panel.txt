@@ -78,19 +78,24 @@ optionsPanel.UpdateThemeDropdown = function()
 end
 
 optionsPanel.Show = function()
+    local platform = tm.GetPlatform()
+    local isMobile = (platform == "iOS" or platform == "Android")
+
     optionsPanel.SetDiscordActivity()
 
     local panel = optionsPanel.panel
 
-    local currentResolution = tm.options.GetCurrentResolutionAsObject()
-    local resolutionDropdown = panel.Q("resolution").Q("dropdown")
-    resolutionDropdown.SetValueWithoutNotify(currentResolution.ToString())
+    if (not isMobile) then
+        local currentResolution = tm.options.GetCurrentResolutionAsObject()
+        local resolutionDropdown = panel.Q("resolution").Q("dropdown")
+        resolutionDropdown.SetValueWithoutNotify(currentResolution.ToString())
 
-    local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
-    fullScreenDropdown.SetValueWithoutNotify(optionsPanel.fullScreenDisplayString[tm.options.fullScreenMode])
+        local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+        fullScreenDropdown.SetValueWithoutNotify(optionsPanel.fullScreenDisplayString[tm.options.fullScreenMode])
 
-    local vSyncToggle = panel.Q("vsync").Q("track")
-    controls.SetToggleIsOn(vSyncToggle, tm.options.vSync)
+        local vSyncToggle = panel.Q("vsync").Q("track")
+        controls.SetToggleIsOn(vSyncToggle, tm.options.vSync)
+    end
 
     commonUI.ShowVolumeSliders(panel)
 
@@ -136,8 +141,10 @@ optionsPanel.Show = function()
     local pauseButtonInteractionDropdown = panel.Q("pause-button-interaction").Q("dropdown")
     pauseButtonInteractionDropdown.SetValueWithoutNotify(optionsPanel.pauseButtonInteractionDisplayString[themeOptions["pauseButtonInteraction"]])
 
-    local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
-    controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
+    if (not isMobile) then
+        local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
+        controls.SetToggleIsOn(discordRichPresenceToggle, tm.options.discordRichPresence)
+    end
 end
 
 optionsPanel.Hide = function()
@@ -202,36 +209,48 @@ optionsPanel.Initialize = function()
     end)
     panel.display = false
 
-    local resolutionDropdown = panel.Q("resolution").Q("dropdown")
-    local resolutionChoices = {}
-    for i, resolution in ipairs(unity.screen.resolutions) do
-        table.insert(resolutionChoices, resolution.ToString())
-    end
-    resolutionDropdown.choices = resolutionChoices
-    resolutionDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        for _, resolution in ipairs(unity.screen.resolutions) do
-            if (resolution.ToString() == event.newValue) then
-                tm.options.width = resolution.width
-                tm.options.height = resolution.height
-                tm.options.refreshRateNumerator = resolution.refreshRateRatio.numerator
-                tm.options.refreshRateDenominator = resolution.refreshRateRatio.denominator
-                break
-            end
+    local platform = tm.GetPlatform()
+    local isMobile = (platform == "iOS" or platform == "Android")
+
+    if (isMobile) then
+        panel.Q("graphics-header").display = false
+        panel.Q("resolution").display = false
+        panel.Q("graphics-divider-1").display = false
+        panel.Q("fullscreen-mode").display = false
+        panel.Q("graphics-divider-2").display = false
+        panel.Q("vsync").display = false
+    else
+        local resolutionDropdown = panel.Q("resolution").Q("dropdown")
+        local resolutionChoices = {}
+        for i, resolution in ipairs(unity.screen.resolutions) do
+            table.insert(resolutionChoices, resolution.ToString())
         end
-        tm.options.ApplyGraphicSettings()
-    end)
-
-    local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
-    fullScreenDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        tm.options.fullScreenMode = KeyFromValue(optionsPanel.fullScreenDisplayString, event.newValue)
-        tm.options.ApplyGraphicSettings()
-    end)
-
-    local vSyncToggle = panel.Q("vsync").Q("track")
-    vSyncToggle.RegisterCallback(eventType.Click, function()
-        tm.options.vSync = not tm.options.vSync
-        tm.options.ApplyGraphicSettings()
-    end)
+        resolutionDropdown.choices = resolutionChoices
+        resolutionDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+            for _, resolution in ipairs(unity.screen.resolutions) do
+                if (resolution.ToString() == event.newValue) then
+                    tm.options.width = resolution.width
+                    tm.options.height = resolution.height
+                    tm.options.refreshRateNumerator = resolution.refreshRateRatio.numerator
+                    tm.options.refreshRateDenominator = resolution.refreshRateRatio.denominator
+                    break
+                end
+            end
+            tm.options.ApplyGraphicSettings()
+        end)
+    
+        local fullScreenDropdown = panel.Q("fullscreen-mode").Q("dropdown")
+        fullScreenDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.options.fullScreenMode = KeyFromValue(optionsPanel.fullScreenDisplayString, event.newValue)
+            tm.options.ApplyGraphicSettings()
+        end)
+    
+        local vSyncToggle = panel.Q("vsync").Q("track")
+        vSyncToggle.RegisterCallback(eventType.Click, function()
+            tm.options.vSync = not tm.options.vSync
+            tm.options.ApplyGraphicSettings()
+        end)
+    end
 
     commonUI.InitializeVolumeSliders(panel)
 
@@ -323,56 +342,69 @@ optionsPanel.Initialize = function()
         end
     end)
 
-    local customLocationToggle = panel.Q("custom-data-location").Q("track")
-    customLocationToggle.RegisterCallback(eventType.Click, function()
-        tm.options.customDataLocation = not tm.options.customDataLocation
-        tm.paths.ApplyCustomDataLocation()
-        selectTrackPanel.needsRefresh = true
-        optionsPanel.UpdateCustomDataLocationDisplay()
-    end)
-
-    local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
-    tracksFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
-        if (newFolder != nil) then
-            tm.options.tracksFolderLocation = newFolder;
+    if (platform == "iOS") then
+        panel.Q("custom-data-location").display = false
+        panel.Q("tracks-folder-location").display = false
+        panel.Q("skins-folder-location").display = false
+        panel.Q("themes-folder-location").display = false
+        panel.Q("miscellaneous-divider-2").display = false
+    else
+        local customLocationToggle = panel.Q("custom-data-location").Q("track")
+        customLocationToggle.RegisterCallback(eventType.Click, function()
+            tm.options.customDataLocation = not tm.options.customDataLocation
             tm.paths.ApplyCustomDataLocation()
             selectTrackPanel.needsRefresh = true
             optionsPanel.UpdateCustomDataLocationDisplay()
-        end
-    end)
-    local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
-    skinsFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
-        if (newFolder != nil) then
-            tm.options.skinsFolderLocation = newFolder;
-            tm.paths.ApplyCustomDataLocation()
-            optionsPanel.UpdateCustomDataLocationDisplay()
-        end
-    end)
-    local themesFolderButton = panel.Q("themes-folder-location").Q("button")
-    themesFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation)
-        if (newFolder != nil) then
-            tm.options.themesFolderLocation = newFolder;
-            tm.paths.ApplyCustomDataLocation()
-            optionsPanel.UpdateCustomDataLocationDisplay()
-            optionsPanel.UpdateThemeDropdown()
-        end
-    end)
+        end)
+    
+        local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
+        tracksFolderButton.RegisterCallback(eventType.Click, function()
+            local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation)
+            if (newFolder != nil) then
+                tm.options.tracksFolderLocation = newFolder;
+                tm.paths.ApplyCustomDataLocation()
+                selectTrackPanel.needsRefresh = true
+                optionsPanel.UpdateCustomDataLocationDisplay()
+            end
+        end)
+        local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
+        skinsFolderButton.RegisterCallback(eventType.Click, function()
+            local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation)
+            if (newFolder != nil) then
+                tm.options.skinsFolderLocation = newFolder;
+                tm.paths.ApplyCustomDataLocation()
+                optionsPanel.UpdateCustomDataLocationDisplay()
+            end
+        end)
+        local themesFolderButton = panel.Q("themes-folder-location").Q("button")
+        themesFolderButton.RegisterCallback(eventType.Click, function()
+            local newFolder = tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation)
+            if (newFolder != nil) then
+                tm.options.themesFolderLocation = newFolder;
+                tm.paths.ApplyCustomDataLocation()
+                optionsPanel.UpdateCustomDataLocationDisplay()
+                optionsPanel.UpdateThemeDropdown()
+            end
+        end)
+    end
 
     InitializeThemeOptionToggle("pause-when-lose-focus", "pauseWhenGameLosesFocus")
     InitializeThemeOptionDropdown("pause-button-interaction", "pauseButtonInteraction", "pauseButtonInteractionDisplayString")
 
-    local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
-    discordRichPresenceToggle.RegisterCallback(eventType.Click, function()
-        if (controls.IsToggleOn(discordRichPresenceToggle)) then
-            tm.options.TurnOnDiscordRichPresence()
-            optionsPanel.SetDiscordActivity()
-        else
-            tm.options.TurnOffDiscordRichPresence()
-        end
-    end)
+    if (isMobile) then
+        panel.Q("discord-rich-presence").display = false
+        panel.Q("miscellaneous-divider-6").display = false
+    else
+        local discordRichPresenceToggle = panel.Q("discord-rich-presence").Q("track")
+        discordRichPresenceToggle.RegisterCallback(eventType.Click, function()
+            if (controls.IsToggleOn(discordRichPresenceToggle)) then
+                tm.options.TurnOnDiscordRichPresence()
+                optionsPanel.SetDiscordActivity()
+            else
+                tm.options.TurnOffDiscordRichPresence()
+            end
+        end)
+    end
 end
 
 InitializeThemeOptions()

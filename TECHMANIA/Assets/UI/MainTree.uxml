@@ -619,12 +619,12 @@
                     <ui:Label text="Resolution" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="graphics-divider-1" class="options-divider" />
                 <ui:VisualElement name="fullscreen-mode" class="options-item">
                     <ui:Label text="Fullscreen mode" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="graphics-divider-2" class="options-divider" />
                 <ui:VisualElement name="vsync" class="options-item">
                     <ui:Label text="VSync" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
@@ -635,25 +635,25 @@
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="audio-divider-1" class="options-divider" />
                 <ui:VisualElement name="music" class="options-item">
                     <ui:Label text="Music" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="audio-divider-2" class="options-divider" />
                 <ui:VisualElement name="keysounds" class="options-item">
                     <ui:Label text="Keysounds" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="audio-divider-3" class="options-divider" />
                 <ui:VisualElement name="sound-effects" class="options-item">
                     <ui:Label text="Sound effects" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="audio-divider-3" class="options-divider" />
                 <ui:VisualElement name="audio-buffer-size" class="options-item">
                     <ui:Label text="Audio buffer size" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
@@ -666,42 +666,42 @@
                     <ui:Label text="Language" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-1" class="options-divider" />
                 <ui:VisualElement name="theme" class="options-item">
                     <ui:Label text="Theme" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-2" class="options-divider" />
                 <ui:VisualElement name="skins" class="options-item">
                     <ui:Label text="Skins" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Button text="SELECT" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-3" class="options-divider" />
                 <ui:VisualElement name="show-loading-bar" class="options-item">
                     <ui:Label text="Show loading bar" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-4" class="options-divider" />
                 <ui:VisualElement name="show-fps" class="options-item">
                     <ui:Label text="Show FPS" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-5" class="options-divider" />
                 <ui:VisualElement name="show-judgement-tally" class="options-item">
                     <ui:Label text="Show judgement tally" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-6" class="options-divider" />
                 <ui:VisualElement name="show-lane-dividers" class="options-item">
                     <ui:Label text="Show lane dividers" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-7" class="options-divider" />
                 <ui:VisualElement name="beat-markers" class="options-item">
                     <ui:Label text="Beat markers" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="appearance-divider-8" class="options-divider" />
                 <ui:VisualElement name="background-scaling" class="options-item">
                     <ui:Label text="Background scaling" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
@@ -711,7 +711,7 @@
                     <ui:Label text="Ruleset" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-1" class="options-divider" />
                 <ui:VisualElement name="custom-data-location" class="options-item">
                     <ui:Label text="Custom data location" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
@@ -743,28 +743,28 @@
                     </ui:VisualElement>
                     <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-2" picking-mode="Ignore" class="options-divider" />
                 <ui:VisualElement name="touchscreen-test" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Touchscreen test" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Button text="START" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-3" picking-mode="Ignore" class="options-divider" />
                 <ui:VisualElement name="offset-latency" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Offset &amp; latency" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" style="flex-grow: 1;" />
                     <ui:Label text="10/20/30/40 ms" display-tooltip-when-elided="true" name="value-display" picking-mode="Ignore" class="text-body" style="white-space: nowrap; margin-right: 30px;" />
                     <ui:Button text="CALIBRATE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-4" picking-mode="Ignore" class="options-divider" />
                 <ui:VisualElement name="pause-when-lose-focus" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Pause when game loses focus" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-5" picking-mode="Ignore" class="options-divider" />
                 <ui:VisualElement name="pause-button-interaction" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Pause button interaction" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
                 </ui:VisualElement>
-                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="miscellaneous-divider-6" picking-mode="Ignore" class="options-divider" />
                 <ui:VisualElement name="discord-rich-presence" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Discord Rich Presence" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
