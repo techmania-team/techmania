@@ -323,10 +323,12 @@ public static class Paths
     {
 #if UNITY_ANDROID || UNITY_IOS
         return fullPath
-            .Replace(Paths.GetTrackRootFolder(true), "Tracks")
-            .Replace(Paths.GetTrackRootFolder(), "Tracks")
-            .Replace(Paths.GetSkinRootFolder(true), "Skins")
-            .Replace(Paths.GetSkinRootFolder(), "Skins")
+            .Replace(Paths.GetTrackRootFolder(true), kTrackFolderName)
+            .Replace(Paths.GetTrackRootFolder(), kTrackFolderName)
+            .Replace(Paths.GetSkinRootFolder(true), kSkinFolderName)
+            .Replace(Paths.GetSkinRootFolder(), kSkinFolderName)
+            .Replace(Paths.GetThemeFolder(true), kThemeFolderName)
+            .Replace(Paths.GetThemeFolder(), kThemeFolderName)
             .Replace(dataFolder, "TECHMANIA");
 #else
         return fullPath;
