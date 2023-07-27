@@ -386,15 +386,15 @@ optionsPanel.Initialize = function()
 
     local tracksFolderButton = panel.Q("tracks-folder-location").Q("button")
     tracksFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation, "OnTracksFolderSelected")
+        tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation, "OnTracksFolderSelected")
     end)
     local skinsFolderButton = panel.Q("skins-folder-location").Q("button")
     skinsFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation, "OnSkinsFolderSelected")
+        tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation, "OnSkinsFolderSelected")
     end)
     local themesFolderButton = panel.Q("themes-folder-location").Q("button")
     themesFolderButton.RegisterCallback(eventType.Click, function()
-        local newFolder = tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation, "OnThemeFolderSelected")
+        tm.OpenSelectFolderDialog("", tm.options.themesFolderLocation, "OnThemeFolderSelected")
     end)
     -- end
 
