@@ -11,22 +11,29 @@ public class AndroidHelper : MonoBehaviour
     }
     public void OnFolderSelected(string result)
     {
-        if (result[0] == '{')
-        {
-            StartCoroutine(AndroidUtility.AskForPermissions(
-                callback: () =>
+        // result is a JSON string with the following format:
+        // {
+        //     "path":"/storage/3864-3562/TECHMANIA/Tracks",
+        //     "uri":"content://com.android.externalstorage.documents/tree/3864-3562%3ATECHMANIA%2FTracks",
+        //     "decodedUri":"content://com.android.externalstorage.documents/tree/3864-3562:TECHMANIA/Tracks",
+        //     "fileUri":"",
+        //     "name":"Tracks"
+        // }
+        if (result[0] != '{')   return;
+
+        StartCoroutine(AndroidUtility.AskForPermissions(
+            callback: () =>
+            {
+                // Turn off custom data location and reset skins
+                // if user denied permission.
+                // Otherwise, there will be an error while loading skins.
+                if (!AndroidUtility.HasStoragePermissions())
                 {
-                    // Turn off custom data location and reset skins
-                    // if user denied permission.
-                    // Otherwise, there will be an error while loading skins.
-                    if (!AndroidUtility.HasStoragePermissions())
-                    {
-                        Options.instance.ResetCustomDataLocation();
-                    }
-                    ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-                    ThemeApi.Techmania.OnAndroidFolderSelected(info.path);
-                }));
-        }
+                    Options.instance.ResetCustomDataLocation();
+                }
+                ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+                ThemeApi.Techmania.OnAndroidFolderSelected(info.path);
+            }));
     }
     public void OnSelectFile()
     {
@@ -34,22 +41,32 @@ public class AndroidHelper : MonoBehaviour
     }
     public void OnFileSelected(string result)
     {
-        if (result[0] == '{')
-        {
-            StartCoroutine(AndroidUtility.AskForPermissions(
-                callback: () =>
+        // result is a JSON string with the following format:
+        // {
+        //     "uri":"content://com.android.externalstorage.documents/document/primary%3ATECHMANIA%2FFile.png",
+        //     "decodedUri":"content://com.android.externalstorage.documents/document/primary:TECHMANIA/File.png",
+        //     "path":"/storage/emulated/0/TECHMANIA/File.png",
+        //     "fileUri":"content://media/external/file/123456789",
+        //     "size":13501,
+        //     "name":"File.png",
+        //     "mimeType":"image/png"
+        // }
+
+        if (result[0] != '{')   return;
+
+        StartCoroutine(AndroidUtility.AskForPermissions(
+            callback: () =>
+            {
+                // Turn off custom data location and reset skins
+                // if user denied permission.
+                // Otherwise, there will be an error while loading files.
+                if (!AndroidUtility.HasStoragePermissions())
                 {
-                    // Turn off custom data location and reset skins
-                    // if user denied permission.
-                    // Otherwise, there will be an error while loading files.
-                    if (!AndroidUtility.HasStoragePermissions())
-                    {
-                        Options.instance.ResetCustomDataLocation();
-                    }
-                    ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-                    ThemeApi.Techmania.OnAndroidFileSelected(info.path);
-                }));
-        }
+                    Options.instance.ResetCustomDataLocation();
+                }
+                ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+                ThemeApi.Techmania.OnAndroidFileSelected(info.path);
+            }));
     }
 #endif
 }
