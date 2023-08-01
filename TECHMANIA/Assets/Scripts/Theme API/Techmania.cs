@@ -68,18 +68,16 @@ namespace ThemeApi
         #endregion
 
         #region System dialogs
-        private static string SelectDialogCallback;
         // Returns the selected files if any. Returns 0 values if the
         // user cancels the dialog.
         public void OpenSelectFileDialog(
             string title, string currentDirectory, bool multiSelect,
-            string[] supportedExtensionsWithoutDot, string callback)
+            string[] supportedExtensionsWithoutDot, DynValue callback)
         {
-            SelectDialogCallback = callback;
 #if UNITY_ANDROID
-            GameObject.Find("/Main UIDocument")
+            TopLevelObjects.instance.mainUiDocument
                 .GetComponent<AndroidHelper>()
-                .OnSelectFile();
+                .OnSelectFile((string path) => callback.Function.Call(path));
 #else
             SFB.ExtensionFilter[] extensionFilters = new 
                 SFB.ExtensionFilter[2];
@@ -92,9 +90,7 @@ namespace ThemeApi
                 L10n.GetString(
                     "track_setup_resource_tab_import_dialog_all_files",
                 L10n.Instance.System), "*");
-            Script script = ScriptSession.session;
-            script.Call(
-                script.Globals.Get(SelectDialogCallback),
+            callback.Function.Call(
                 SFB.StandaloneFileBrowser.OpenFilePanel(
                     title,
                     currentDirectory, extensionFilters, multiSelect
@@ -102,25 +98,17 @@ namespace ThemeApi
             );
 #endif
         }
-#if UNITY_ANDROID
-        public static void OnAndroidFileSelected(string path)
-        {
-            Script script = ScriptSession.session;
-            script.Call(script.Globals.Get(SelectDialogCallback), path);
-        }
-#endif
         // Returns the selected dialog if any; null if the user
         // cancels the dialog.
         public void OpenSelectFolderDialog(
-            string title, string currentDirectory, string callback)
+            string title, string currentDirectory, DynValue callback)
         {
-            SelectDialogCallback = callback;
 #if UNITY_IOS
             return;
 #elif UNITY_ANDROID
-            GameObject.Find("/Main UIDocument")
+            TopLevelObjects.instance.mainUiDocument
                 .GetComponent<AndroidHelper>()
-                .OnSelectFolder();
+                .OnSelectFolder((string path) => callback.Function.Call(path));
 #else
             string[] folders = SFB.StandaloneFileBrowser
                 .OpenFolderPanel(title,
@@ -128,18 +116,10 @@ namespace ThemeApi
                 multiselect: false);
             if (folders.Length == 1)
             {
-                Script script = ScriptSession.session;
-                script.Call(script.Globals.Get(SelectDialogCallback), folders[0]);
+                callback.Function.Call(folders[0]);
             }
 #endif
         }
-#if UNITY_ANDROID
-        public static void OnAndroidFolderSelected(string folder)
-        {
-            Script script = ScriptSession.session;
-            script.Call(script.Globals.Get(SelectDialogCallback), folder);
-        }
-#endif
         #endregion
 
         #region Script execution

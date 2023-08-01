@@ -5,8 +5,13 @@ using FantomLib;
 public class AndroidHelper : MonoBehaviour
 {
 #if UNITY_ANDROID
-    public void OnSelectFolder()
+    public delegate void SelectCompleteCallback(string path);
+    
+    private SelectCompleteCallback selectCompleteCallback;
+
+    public void OnSelectFolder(SelectCompleteCallback completeCallback)
     {
+        selectCompleteCallback = completeCallback;
         AndroidPlugin.OpenStorageFolder(gameObject.name, "OnFolderSelected", "", true);
     }
     public void OnFolderSelected(string result)
@@ -32,11 +37,12 @@ public class AndroidHelper : MonoBehaviour
                     Options.instance.ResetCustomDataLocation();
                 }
                 ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-                ThemeApi.Techmania.OnAndroidFolderSelected(info.path);
+                selectCompleteCallback?.Invoke(info.path);
             }));
     }
-    public void OnSelectFile()
+    public void OnSelectFile(SelectCompleteCallback completeCallback)
     {
+        selectCompleteCallback = completeCallback;
         AndroidPlugin.OpenStorageFile(gameObject.name, "OnFileSelected", "", true);
     }
     public void OnFileSelected(string result)
@@ -65,7 +71,7 @@ public class AndroidHelper : MonoBehaviour
                     Options.instance.ResetCustomDataLocation();
                 }
                 ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
-                ThemeApi.Techmania.OnAndroidFileSelected(info.path);
+                selectCompleteCallback?.Invoke(info.path);
             }));
     }
 #endif
