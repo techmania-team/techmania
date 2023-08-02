@@ -68,8 +68,44 @@ namespace ThemeApi
         #endregion
 
         #region System dialogs
-        // Returns the selected files if any. Returns 0 values if the
-        // user cancels the dialog.
+        // DEPRECATED
+        // A synchronous version of OpenSelectFileDialog. Only works
+        // on Windows.
+        public string[] OpenSelectFileDialog(string title,
+            string currentDirectory, bool multiSelect,
+            string[] supportedExtensionsWithoutDot)
+        {
+#if UNITY_ANDROID
+            return null;
+#else
+            SFB.ExtensionFilter[] extensionFilters = new
+                SFB.ExtensionFilter[2];
+            extensionFilters[0] = new SFB.ExtensionFilter(
+                L10n.GetString(
+                    "track_setup_resource_tab_import_dialog_supported_formats",
+                L10n.Instance.System),
+                supportedExtensionsWithoutDot);
+            extensionFilters[1] = new SFB.ExtensionFilter(
+                L10n.GetString(
+                    "track_setup_resource_tab_import_dialog_all_files",
+                L10n.Instance.System), "*");
+            return SFB.StandaloneFileBrowser.OpenFilePanel(
+                title, currentDirectory,
+                extensionFilters, multiSelect);
+#endif
+        }
+
+        // Asynchronous because the process on Android may take
+        // multiple frames.
+        // If the user selects one or more files, the callback
+        // will be called with an array of paths.
+        // If the user cancels the dialog, the callback will not
+        // be called.
+        //
+        // On Windows, the callback will be called in the same frame.
+        // On Android, the callback may be called in a future frame.
+        //     All arguments other than callback will be ignored, and
+        //     the user cannot select more than 1 file.
         public void OpenSelectFileDialog(
             string title, string currentDirectory, bool multiSelect,
             string[] supportedExtensionsWithoutDot, DynValue callback)
@@ -77,29 +113,62 @@ namespace ThemeApi
 #if UNITY_ANDROID
             TopLevelObjects.instance.mainUiDocument
                 .GetComponent<AndroidHelper>()
-                .OnSelectFile((string path) => callback.Function.Call(path));
+                .OnSelectFile((string path) =>
+                    callback.Function.Call(new string[] { path }));
 #else
-            SFB.ExtensionFilter[] extensionFilters = new 
+            SFB.ExtensionFilter[] extensionFilters = new
                 SFB.ExtensionFilter[2];
             extensionFilters[0] = new SFB.ExtensionFilter(
                 L10n.GetString(
-                    "track_setup_resource_tab_import_dialog_supported_formats", 
+                    "track_setup_resource_tab_import_dialog_supported_formats",
                 L10n.Instance.System),
                 supportedExtensionsWithoutDot);
             extensionFilters[1] = new SFB.ExtensionFilter(
                 L10n.GetString(
                     "track_setup_resource_tab_import_dialog_all_files",
                 L10n.Instance.System), "*");
-            callback.Function.Call(
-                SFB.StandaloneFileBrowser.OpenFilePanel(
-                    title,
-                    currentDirectory, extensionFilters, multiSelect
-                )
-            );
+            string[] paths = SFB.StandaloneFileBrowser.OpenFilePanel(
+                title, currentDirectory,
+                extensionFilters, multiSelect);
+            if (paths.Length > 0)
+            {
+                callback.Function.Call(paths);
+            };
 #endif
         }
-        // Returns the selected dialog if any; null if the user
-        // cancels the dialog.
+
+        // DEPRECATED
+        // A synchronous version of OpenSelectFolderDialog. Only works
+        // on Windows.
+        public string OpenSelectFolderDialog(
+            string title, string currentDirectory)
+        {
+#if UNITY_ANDROID
+            return null;
+#else
+            string[] folders = SFB.StandaloneFileBrowser
+                .OpenFolderPanel(title,
+                currentDirectory,
+                multiselect: false);
+            if (folders.Length == 1)
+            {
+                return folders[0];
+            }
+            else return null;
+#endif
+        }
+
+        // Asynchronous because the process on Android may take
+        // multiple frames.
+        // If the user selects a folder, the callback will be called
+        // with its path.
+        // If the user cancels the dialog, the callback will not
+        // be called.
+        //
+        // On Windows, the callback will be called in the same frame.
+        // On Android, the callback may be called in a future frame.
+        //     All arguments other than callback will be ignored.
+        // On iOS, this method does nothing.
         public void OpenSelectFolderDialog(
             string title, string currentDirectory, DynValue callback)
         {
@@ -108,7 +177,8 @@ namespace ThemeApi
 #elif UNITY_ANDROID
             TopLevelObjects.instance.mainUiDocument
                 .GetComponent<AndroidHelper>()
-                .OnSelectFolder((string path) => callback.Function.Call(path));
+                .OnSelectFolder((string path) =>
+                    callback.Function.Call(path));
 #else
             string[] folders = SFB.StandaloneFileBrowser
                 .OpenFolderPanel(title,
