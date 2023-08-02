@@ -70,11 +70,6 @@ public class Startup : MonoBehaviour
         }
         else
         {
-            // This prevents loading custom skins from streaming assets
-            // at startup. Android Play Games may sync your options after
-            // reinstall the game So we have to reset skins if custom
-            // data location is not set but using custom skins.
-            Options.instance.ResetCustomDataLocation();
             StartBooting();
         }
 #else

@@ -75,6 +75,10 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="UnityEngine.AudioSource" preserve="all" />
     <type fullname="UnityEngine.AudioClip" preserve="all" />
   </assembly>
+  <assembly fullname="UnityEngine">
+    <type fullname="UnityEngine.Video.*" preserve="all"/>
+    <type fullname="UnityEngine.VideoModule.*" preserve="all"/>
+  </assembly>
   <assembly fullname="UnityEngine.TextCoreTextEngineModule">
     <type fullname="UnityEngine.TextCore.Text.FontAsset" preserve="all" />
   </assembly>

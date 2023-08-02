@@ -44,6 +44,8 @@ namespace ThemeApi
             UserData.RegisterType<StyleSheet>();
             UserData.RegisterType<AudioSource>();
             UserData.RegisterType<AudioClip>();
+            UserData.RegisterType<UnityEngine.Video.VideoClip>();
+            UserData.RegisterType<UnityEngine.Video.VideoPlayer>();
             UserData.RegisterType<UnityEngine.TextCore.Text.FontAsset>();
             
             foreach (VisualElementWrap.EventType typeEnum in

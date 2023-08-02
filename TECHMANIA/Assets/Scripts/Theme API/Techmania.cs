@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
-using FantomLib;
 
 namespace ThemeApi
 {
@@ -71,10 +70,15 @@ namespace ThemeApi
         #region System dialogs
         // Returns the selected files if any. Returns 0 values if the
         // user cancels the dialog.
-        public string[] OpenSelectFileDialog(
+        public void OpenSelectFileDialog(
             string title, string currentDirectory, bool multiSelect,
-            string[] supportedExtensionsWithoutDot)
+            string[] supportedExtensionsWithoutDot, DynValue callback)
         {
+#if UNITY_ANDROID
+            TopLevelObjects.instance.mainUiDocument
+                .GetComponent<AndroidHelper>()
+                .OnSelectFile((string path) => callback.Function.Call(path));
+#else
             SFB.ExtensionFilter[] extensionFilters = new 
                 SFB.ExtensionFilter[2];
             extensionFilters[0] = new SFB.ExtensionFilter(
@@ -86,18 +90,25 @@ namespace ThemeApi
                 L10n.GetString(
                     "track_setup_resource_tab_import_dialog_all_files",
                 L10n.Instance.System), "*");
-            return SFB.StandaloneFileBrowser.OpenFilePanel(title,
-                currentDirectory, extensionFilters, multiSelect);
+            callback.Function.Call(
+                SFB.StandaloneFileBrowser.OpenFilePanel(
+                    title,
+                    currentDirectory, extensionFilters, multiSelect
+                )
+            );
+#endif
         }
-
         // Returns the selected dialog if any; null if the user
         // cancels the dialog.
-        public string OpenSelectFolderDialog(
-            string title, string currentDirectory)
+        public void OpenSelectFolderDialog(
+            string title, string currentDirectory, DynValue callback)
         {
-#if UNITY_ANDROID
-            AndroidPlugin.OpenStorageFolder(null, "OnAndroidTracksFolderSelected", "", true);
-            return null;
+#if UNITY_IOS
+            return;
+#elif UNITY_ANDROID
+            TopLevelObjects.instance.mainUiDocument
+                .GetComponent<AndroidHelper>()
+                .OnSelectFolder((string path) => callback.Function.Call(path));
 #else
             string[] folders = SFB.StandaloneFileBrowser
                 .OpenFolderPanel(title,
@@ -105,9 +116,8 @@ namespace ThemeApi
                 multiselect: false);
             if (folders.Length == 1)
             {
-                return folders[0];
+                callback.Function.Call(folders[0]);
             }
-            else return null;
 #endif
         }
         #endregion

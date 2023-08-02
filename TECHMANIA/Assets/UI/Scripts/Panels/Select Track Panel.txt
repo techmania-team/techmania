@@ -99,7 +99,7 @@ selectTrackPanel.SpawnAllCards = function()
         selectTrackPanel.location = tm.paths.GetTrackRootFolder()
     end
 
-    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(selectTrackPanel.location))
     panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
 
     local subfolderContainer = panel.Q("subfolder-container")
@@ -300,7 +300,7 @@ selectTrackPanel.Refresh = function()
     selectTrackPanel.location = tm.paths.GetTrackRootFolder()
     selectTrackPanel.needsRefresh = false
     panel.Q("back-button").SetEnabled(false)
-    panel.Q("location-display").text = tm.paths.EscapeBackslash(selectTrackPanel.location)
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(selectTrackPanel.location))
     tm.io.ReloadTrackList(function(currentlyLoadingFile)
         panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
     end,
