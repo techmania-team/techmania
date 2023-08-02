@@ -12,8 +12,10 @@ public class AndroidHelper : MonoBehaviour
     public void OnSelectFolder(SelectCompleteCallback completeCallback)
     {
         selectCompleteCallback = completeCallback;
-        AndroidPlugin.OpenStorageFolder(gameObject.name, "OnFolderSelected", "", true);
+        AndroidPlugin.OpenStorageFolder(gameObject.name, 
+            "OnFolderSelected", "", true);
     }
+
     public void OnFolderSelected(string result)
     {
         // result is a JSON string with the following format:
@@ -31,20 +33,25 @@ public class AndroidHelper : MonoBehaviour
             {
                 // Turn off custom data location and reset skins
                 // if user denied permission.
-                // Otherwise, there will be an error while loading skins.
+                // Otherwise, there will be an error while
+                // loading skins.
                 if (!AndroidUtility.HasStoragePermissions())
                 {
                     Options.instance.ResetCustomDataLocation();
                 }
-                ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+                ContentInfo info = JsonUtility
+                    .FromJson<ContentInfo>(result);
                 selectCompleteCallback?.Invoke(info.path);
             }));
     }
+
     public void OnSelectFile(SelectCompleteCallback completeCallback)
     {
         selectCompleteCallback = completeCallback;
-        AndroidPlugin.OpenStorageFile(gameObject.name, "OnFileSelected", "", true);
+        AndroidPlugin.OpenStorageFile(gameObject.name,
+            "OnFileSelected", "", true);
     }
+
     public void OnFileSelected(string result)
     {
         // result is a JSON string with the following format:
@@ -65,12 +72,14 @@ public class AndroidHelper : MonoBehaviour
             {
                 // Turn off custom data location and reset skins
                 // if user denied permission.
-                // Otherwise, there will be an error while loading files.
+                // Otherwise, there will be an error while
+                // loading files.
                 if (!AndroidUtility.HasStoragePermissions())
                 {
                     Options.instance.ResetCustomDataLocation();
                 }
-                ContentInfo info = JsonUtility.FromJson<ContentInfo>(result);
+                ContentInfo info = JsonUtility
+                    .FromJson<ContentInfo>(result);
                 selectCompleteCallback?.Invoke(info.path);
             }));
     }

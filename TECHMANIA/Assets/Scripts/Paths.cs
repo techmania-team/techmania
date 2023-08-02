@@ -323,12 +323,18 @@ public static class Paths
     {
 #if UNITY_ANDROID || UNITY_IOS
         return fullPath
-            .Replace(Paths.GetTrackRootFolder(true), kTrackFolderName)
-            .Replace(Paths.GetTrackRootFolder(), kTrackFolderName)
-            .Replace(Paths.GetSkinRootFolder(true), kSkinFolderName)
-            .Replace(Paths.GetSkinRootFolder(), kSkinFolderName)
-            .Replace(Paths.GetThemeFolder(true), kThemeFolderName)
-            .Replace(Paths.GetThemeFolder(), kThemeFolderName)
+            .Replace(Paths.GetTrackRootFolder(streamingAssets: true), 
+                kTrackFolderName)
+            .Replace(Paths.GetTrackRootFolder(streamingAssets: false), 
+                kTrackFolderName)
+            .Replace(Paths.GetSkinRootFolder(streamingAssets: true), 
+                kSkinFolderName)
+            .Replace(Paths.GetSkinRootFolder(streamingAssets: false), 
+                kSkinFolderName)
+            .Replace(Paths.GetThemeFolder(streamingAssets: true), 
+                kThemeFolderName)
+            .Replace(Paths.GetThemeFolder(streamingAssets: false), 
+                kThemeFolderName)
             .Replace(dataFolder, "TECHMANIA");
 #else
         return fullPath;
@@ -356,7 +362,11 @@ public static class Paths
     // from streaming assets to track root folder.
     public static string GoUpFrom(string path)
     {
-        if (path == GetTrackRootFolder() || path == GetTrackRootFolder(true)) return GetTrackRootFolder();
+        if (path == GetTrackRootFolder(streamingAssets: false) ||
+            path == GetTrackRootFolder(streamingAssets: true))
+        {
+            return GetTrackRootFolder();
+        }
 #if UNITY_ANDROID
         // Paths variables on Android are in the form of
         // path
@@ -367,11 +377,16 @@ public static class Paths
         // /storage/emulated/0/Android/data/com.TECHMANIATeam.TECHMANIA/files/Tracks
         // Path.GetDirectoryName(path)
         // jar:file:/storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
-        string up = Path.GetDirectoryName(path).Replace("jar:file:/", "jar:file:///");
+        string up = Path.GetDirectoryName(path)
+            .Replace("jar:file:/", "jar:file:///");
 #else
         string up = Path.GetDirectoryName(path);
 #endif
-        if (up == GetTrackRootFolder() || up == GetTrackRootFolder(true)) return GetTrackRootFolder();
+        if (up == GetTrackRootFolder(streamingAssets: false) ||
+            up == GetTrackRootFolder(streamingAssets: true))
+        {
+            return GetTrackRootFolder();
+        }
         return up;
     }
 
