@@ -521,7 +521,17 @@ namespace ThemeApi
         public Texture2D backgroundImage
         {
             get { return style.backgroundImage.value.texture; }
-            set { style.backgroundImage = new StyleBackground(value); }
+            set 
+            {
+                if (style.backgroundImage != null &&
+                    style.backgroundImage.value != null &&
+                    style.backgroundImage.value.texture != null)
+                {
+                    IO.DestroyTextureIfFromFile(
+                        style.backgroundImage.value.texture);
+                }
+                style.backgroundImage = new StyleBackground(value);
+            }
         }
         #endregion
 

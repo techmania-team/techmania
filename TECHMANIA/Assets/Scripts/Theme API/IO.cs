@@ -8,6 +8,26 @@ namespace ThemeApi
     [MoonSharpUserData]
     public static class IO
     {
+        #region Garbage collection
+        // VisualElementWrap.backgroundImage setter will destroy
+        // old textures if they are loaded from file.
+        private static HashSet<Texture2D> texturesFromFile;
+        static IO()
+        {
+            texturesFromFile = new HashSet<Texture2D>();
+        }
+
+        public static void DestroyTextureIfFromFile(Texture2D texture)
+        {
+            if (texturesFromFile.Contains(texture))
+            {
+                texturesFromFile.Remove(texture);
+                Object.Destroy(texture);
+            }
+        }
+
+        #endregion
+
         public static bool FileExists(string path)
         {
             return UniversalIO.FileExists(path);
@@ -32,6 +52,7 @@ namespace ThemeApi
                 (Status status, Texture2D texture) =>
                 {
                     if (callback.IsNil()) return;
+                    texturesFromFile.Add(texture);
                     callback.Function.Call(status, texture);
                 });
         }
