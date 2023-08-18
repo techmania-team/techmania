@@ -43,4 +43,19 @@ public class BuildPostProcessor
             overwrite: true
         );
     }
+
+    [PostProcessBuild]
+    private static void WriteVersionToFile(
+        BuildTarget buildTarget, string pathToBuiltProject)
+    {
+        if (buildTarget == BuildTarget.StandaloneWindows ||
+            buildTarget == BuildTarget.StandaloneWindows64)
+        {
+            File.WriteAllText(
+                Path.Combine(
+                    Path.GetDirectoryName(pathToBuiltProject), 
+                    "version"),
+                Application.version);
+        }
+    }
 }
