@@ -696,12 +696,20 @@ public partial class Pattern
                 p.patternMetadata.bps *= 2;
                 break;
             case Modifiers.ScrollSpeed.ShiftedHalfSpeed:
-                // 1. Shift all notes by 1 scan
+                // 1. Shift all notes and time events by 1 scan
                 int pulsesPerScan = pulsesPerBeat *
                     p.patternMetadata.bps;
                 foreach (Note n in p.notes)
                 {
                     n.pulse += pulsesPerScan;
+                }
+                foreach (TimeEvent e in p.bpmEvents)
+                {
+                    e.pulse += pulsesPerScan;
+                }
+                foreach (TimeEvent e in p.timeStops)
+                {
+                    e.pulse += pulsesPerScan;
                 }
 
                 // 2. Shift back first beat offset by 1 scan
