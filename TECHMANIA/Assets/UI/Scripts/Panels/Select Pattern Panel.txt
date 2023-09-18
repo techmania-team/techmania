@@ -1,0 +1,703 @@
+selectPatternPanel = {
+    panel = tm.root.Q("select-pattern-panel"),
+    
+    allPatternRadioButtons = {},
+    -- In each table, key is enum, value is display string
+    modifierDisplayString = {
+        noteOpacity = {},
+        scanlineOpacity = {},
+        scanDirection = {},
+        notePosition = {},
+        scanPosition = {},
+        fever = {},
+        keysound = {},
+        assistTick = {},
+        suddenDeath = {},
+        mode = {},
+        controlOverride = {},
+        scrollSpeed = {}
+    },
+
+    previewPlaybackCoroutine = nil,
+    previewTrackAudioSource = nil,
+
+    radarLayoutInitialized = false,
+    radarOfSelectedPattern = nil,
+    radarRadiusUnit = 13 / 20,
+    
+    selectedPattern = nil,
+}
+
+modifierSideSheet = {
+    bg = selectPatternPanel.panel.Q("modifier-sidesheet-background"),
+    sheet = selectPatternPanel.panel.Q("modifier-sidesheet"),
+}
+
+function RadarAngleForVertex(i)
+    return (-90 + 72 * i) * unity.mathf.Deg2Rad
+end
+
+function SetUpControlSchemeIcon(originalScheme, iconContainer)
+    local overrideScheme = originalScheme
+    if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
+        overrideScheme = tm.enum.controlScheme.Touch
+    elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
+        overrideScheme = tm.enum.controlScheme.Keys
+    elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
+        overrideScheme = tm.enum.controlScheme.KM
+    end
+
+    if (overrideScheme == originalScheme) then
+        iconContainer.RemoveFromClassList("scheme-override")
+        iconContainer.AddToClassList("scheme-no-override")
+    else
+        iconContainer.RemoveFromClassList("scheme-no-override")
+        iconContainer.AddToClassList("scheme-override")
+    end
+    local scheme = overrideScheme
+
+    iconContainer.Q("touch-icon").display = scheme == tm.enum.controlScheme.Touch
+    iconContainer.Q("keys-icon").display = scheme == tm.enum.controlScheme.Keys
+    iconContainer.Q("km-icon").display = scheme == tm.enum.controlScheme.KM
+end
+
+-- To be reusable, this function does not:
+-- * set up scrolling text
+-- * display performance medal
+function SetUpPatternBanner(patternMetadata, banner)
+    -- Lanes icon
+    banner.Q("2l-icon").display = patternMetadata.playableLanes == 2
+    banner.Q("3l-icon").display = patternMetadata.playableLanes == 3
+    banner.Q("4l-icon").display = patternMetadata.playableLanes == 4
+
+    -- Scheme icon
+    SetUpControlSchemeIcon(patternMetadata.controlScheme, banner.Q("scheme-icon-container"))
+
+    -- Text
+    banner.Q("level").text = patternMetadata.level
+    banner.Q("pattern-name").text = patternMetadata.patternName
+end
+
+function CurrentModifiersToString(includeNoVideo)
+    local allSegments = {}
+    function CheckAndAddSegment(modifierKey, isSpecial)
+        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
+        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
+        local segment = selectPatternPanel.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        if (isSpecial) then
+            segment = "<color=#CF6679>" .. segment .. "</color>"
+        end
+        table.insert(allSegments, segment)
+    end
+    CheckAndAddSegment("noteOpacity", false)
+    CheckAndAddSegment("scanlineOpacity", false)
+    CheckAndAddSegment("scanDirection", false)
+    CheckAndAddSegment("notePosition", false)
+    CheckAndAddSegment("scanPosition", false)
+    CheckAndAddSegment("fever", false)
+    CheckAndAddSegment("keysound", false)
+    CheckAndAddSegment("assistTick", false)
+    if (includeNoVideo and
+        selectTrackPanel.selectedTrackOptions != nil and
+        selectTrackPanel.selectedTrackOptions.noVideo) then
+        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
+    end
+    CheckAndAddSegment("suddenDeath", false)
+    CheckAndAddSegment("mode", true)
+    CheckAndAddSegment("controlOverride", true)
+    CheckAndAddSegment("scrollSpeed", true)
+
+    if (#allSegments == 0) then
+        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
+    end
+
+    return net.string.Join(" / ", allSegments)
+end
+
+-- Currently selected pattern may be nil.
+selectPatternPanel.ShowPatternDetails = function()
+    local pattern = selectPatternPanel.selectedPattern
+    local panel = selectPatternPanel.panel
+
+    function ShowRadar()
+        local radarElement = panel.Q("radar")
+        if (pattern == nil) then
+            selectPatternPanel.radarOfSelectedPattern = nil
+            radarElement.Q("density").Q("value").text = "0"
+            radarElement.Q("peak").Q("value").text = "0"
+            radarElement.Q("speed").Q("value").text = "0"
+            radarElement.Q("chaos").Q("value").text = "0"
+            radarElement.Q("async").Q("value").text = "0"
+        else
+            selectPatternPanel.radarOfSelectedPattern = pattern.CalculateRadar()
+            radarElement.Q("density").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.density.normalized)
+            radarElement.Q("peak").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.peak.normalized)
+            radarElement.Q("speed").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.speed.normalized)
+            radarElement.Q("chaos").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.chaos.normalized)
+            radarElement.Q("async").Q("value").text = tostring(selectPatternPanel.radarOfSelectedPattern.async.normalized)
+        end
+        radarElement.MarkDirtyRepaint()
+    end
+
+    if (pattern == nil) then
+        panel.Q("bpm").Q("content").text = ""
+        panel.Q("length").Q("content").text = ""
+        panel.Q("notes").Q("content").text = ""
+        panel.Q("author").Q("content").text = ""
+        panel.Q("record").Q("content").text = ""
+        panel.Q("record").Q("medal-text").text = ""
+        ShowRadar()
+        return
+    end
+
+    -- This also enables radar calculation.
+    pattern.PrepareForTimeCalculation()
+
+    -- BPM range
+    local minBpm = pattern.patternMetadata.initBpm
+    local maxBpm = minBpm
+    for _, e in ipairs(pattern.bpmEvents) do
+        if (e.bpm < minBpm) then minBpm = e.bpm end
+        if (e.bpm > maxBpm) then maxBpm = e.bpm end
+    end
+    function FormatBpm(bpm)
+        local rounded = unity.mathf.RoundToInt(bpm)
+        if (unity.mathf.Abs(rounded - bpm) < unity.mathf.Epsilon) then
+            return tostring(rounded)
+        else
+            return net.string.DoubleToString(bpm, "F2")
+        end
+    end
+    if (minBpm < maxBpm) then
+        panel.Q("bpm").Q("content").text = FormatBpm(minBpm) .. " - " .. FormatBpm(maxBpm)
+    else
+        panel.Q("bpm").Q("content").text = FormatBpm(minBpm)
+    end
+    controls.SetUpScrollingText(panel.Q("bpm").Q("container"))
+
+    -- Length
+    local length = 0
+    -- This function returns void and has 2 out parameters
+    _, length, _ = pattern.GetLengthInSecondsAndScans()
+    local minutes = unity.mathf.FloorToInt(length / 60)
+    local seconds = unity.mathf.FloorToInt(length - minutes * 60)
+    if (seconds < 10) then 
+        panel.Q("length").Q("content").text = minutes .. ":0" .. seconds
+    else
+        panel.Q("length").Q("content").text = minutes .. ":" .. seconds
+    end
+
+    -- Note count
+    local noteCount = 0
+    local notes = pattern.NotesAsList()
+    for _, note in ipairs(notes) do
+        if (note.lane < pattern.patternMetadata.playableLanes) then
+            noteCount = noteCount + 1
+        end
+    end
+    panel.Q("notes").Q("content").text = noteCount
+
+    -- Author
+    panel.Q("author").Q("content").text = pattern.patternMetadata.author
+
+    -- Record
+    local record = tm.records.GetRecord(pattern)
+    if (record == nil) then
+        panel.Q("record").Q("content").text = "---"
+        panel.Q("record").Q("medal-text").text = ""
+    else
+        panel.Q("record").Q("content").text = record.score .. "   " .. record.Rank()
+        local medal = record.medal
+        if (medal == tm.enum.performanceMedal.NoMedal) then
+            panel.Q("record").Q("medal-text").text = ""
+        elseif (medal == tm.enum.performanceMedal.AllCombo) then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_all_combo")
+        elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_perfect_play")
+        elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
+            panel.Q("record").Q("medal-text").text = tm.l10n.GetString("performance_medal_absolute_perfect")
+        end
+    end
+
+    -- Radar
+    ShowRadar()
+end
+
+selectPatternPanel.ShowCurrentModifiers = function()
+    local container = selectPatternPanel.panel.Q("modifier-display").Q("container")
+    container.Q("content").text = CurrentModifiersToString(true)  -- include "no video"
+end
+
+selectPatternPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_pattern"))
+
+    local panel = selectPatternPanel.panel
+    local track = selectTrackPanel.selectedFullTrack
+
+    -- Load per-track options.
+    selectTrackPanel.selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
+
+    -- Display metadata.
+    local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, track.trackMetadata.eyecatchImage)
+    LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
+    panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
+    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
+    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
+
+    -- Display pattern list.
+    panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
+    local patternListContainer = panel.Q("pattern-list").Q("unity-content-container")
+    selectPatternPanel.allPatternRadioButtons = {}
+    for _, pattern in ipairs(track.patterns) do
+        local radioButton = patternListContainer.InstantiateTemplate("Assets/UI/Templates/Pattern Radio Button.uxml").Q("radio-button")
+        table.insert(selectPatternPanel.allPatternRadioButtons, radioButton)
+        controls.SetUpButtonSounds(radioButton)
+
+        SetUpPatternBanner(pattern.patternMetadata, radioButton.Q("pattern-banner"))
+        controls.SetUpScrollingText(radioButton.Q("pattern-name-container"))
+
+        -- Medal
+        local record = tm.records.GetRecord(pattern)
+        local medal = ""
+        if (record != nil) then
+            medal = record.medal
+        end
+        if (medal == tm.enum.performanceMedal.AbsolutePerfect or
+            medal == tm.enum.performanceMedal.PerfectPlay) then
+            radioButton.Q("perfect-play-icon").display = true
+            radioButton.Q("all-combo-icon").display = false
+        elseif (medal == tm.enum.performanceMedal.AllCombo) then
+            radioButton.Q("perfect-play-icon").display = false
+            radioButton.Q("all-combo-icon").display = true
+        else
+            radioButton.Q("perfect-play-icon").display = false
+            radioButton.Q("all-combo-icon").display = false
+        end
+
+        radioButton.RegisterCallback(eventType.Click, function(_, _, pattern)
+            selectPatternPanel.selectedPattern = pattern
+            controls.SetRadioButton(radioButton, selectPatternPanel.allPatternRadioButtons)
+            selectPatternPanel.ShowPatternDetails()
+            panel.Q("play-button").SetEnabled(true)
+        end, pattern)
+    end
+    controls.SetRadioButton(nil, selectPatternPanel.allPatternRadioButtons)
+
+    -- Initialize details when no pattern is selected.
+    selectPatternPanel.selectedPattern = nil
+    selectPatternPanel.ShowPatternDetails()
+    panel.Q("play-button").SetEnabled(false)
+    selectPatternPanel.ShowCurrentModifiers()
+
+    -- Initialize radar layout if entering the panel for the first time.
+    if (not selectPatternPanel.radarLayoutInitialized) then
+        selectPatternPanel.InitializeRadar()
+    end
+
+    -- Play preview.
+    selectPatternPanel.StartPreviewTrackPlayback()
+end
+
+selectPatternPanel.Hide = function()
+    local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
+    patternListContainer.RemoveAllChildren()
+
+    selectPatternPanel.StopPreviewTrackPlayback()
+end
+
+selectPatternPanel.InitializeRadar = function()
+    local radarElement = selectPatternPanel.panel.Q("radar")
+    local radarCenterX = radarElement.contentRect.width * 0.5
+    local radarCenterY = radarElement.contentRect.height * 0.5
+    
+    local radarDisplayWidth = radarElement.Q("density").contentRect.width
+    local radarDisplayHeight = radarElement.Q("density").contentRect.height
+    local radarDisplayDistance = selectPatternPanel.radarRadiusUnit * 100 + 40
+    function PlaceRadarDisplay(element, vertex)
+        element.style.left = unity.styleLength.__new(
+            radarCenterX + radarDisplayDistance * unity.mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
+        element.style.top = unity.styleLength.__new(
+            radarCenterY + radarDisplayDistance * unity.mathf.Sin(RadarAngleForVertex(vertex)) - radarDisplayHeight * 0.5)
+    end
+    PlaceRadarDisplay(radarElement.Q("density"), 0)
+    PlaceRadarDisplay(radarElement.Q("peak"), 1)
+    PlaceRadarDisplay(radarElement.Q("speed"), 2)
+    PlaceRadarDisplay(radarElement.Q("chaos"), 3)
+    PlaceRadarDisplay(radarElement.Q("async"), 4)
+
+    selectPatternPanel.radarLayoutInitialized = true
+end
+
+selectPatternPanel.Initialize = function()
+    local panel = selectPatternPanel.panel
+
+    local sidesheetBg = modifierSideSheet.bg
+    sidesheetBg.display = false
+    panel.Q("modifiers-button").RegisterCallback(eventType.Click, function()
+        modifierSideSheet.Show()
+        modifierSideSheet.FadeIn()
+    end)
+
+    panel.Q("play-button").RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
+
+        -- Populate game setup
+        tm.gameSetup.trackFolder = selectTrackPanel.selectedTrackFolder
+        tm.gameSetup.patternGuid = selectPatternPanel.selectedPattern.patternMetadata.guid
+
+        -- Save options
+        tm.options.SaveToFile()
+
+        -- Navigation.txt will handle loading
+    end)
+
+    -- Set the function to draw radar graph. Actual drawing happens
+    -- when selectPatternPanel.ShowPatternDetails calls ShowRadar.
+    local radarElement = panel.Q("radar")
+    radarElement.SetMeshGeneratorFunction(function(element, context)
+        local painter = context.painter2D
+        
+        painter.lineWidth = 2
+        painter.lineCap = unity.enum.lineCap.Round
+        painter.lineJoin = unity.enum.lineJoin.Miter
+
+        local majorStrokeAlpha = 0.12
+        local minorStrokeAlpha = 0.05
+
+        local radarElement = panel.Q("radar")
+        local radarCenterX = radarElement.contentRect.width * 0.5
+        local radarCenterY = radarElement.contentRect.height * 0.5
+
+        -- Draw radii, lines from the center to vertices of the outmost pentagon
+        painter.strokeColor = unity.color.__new(1, 1, 1, majorStrokeAlpha)
+        for i = 1, 5 do
+            local angle = RadarAngleForVertex(i)
+            painter.BeginPath()
+            painter.MoveTo(unity.vector2.__new(radarCenterX, radarCenterY))
+            painter.LineTo(unity.vector2.__new(
+                radarCenterX + selectPatternPanel.radarRadiusUnit * 100 * unity.mathf.Cos(angle),
+                radarCenterY + selectPatternPanel.radarRadiusUnit * 100 * unity.mathf.Sin(angle)))
+            painter.ClosePath()
+            painter.Stroke()
+        end
+
+        -- Draw pentagons
+        for pentagon = 1, 5 do
+            local radius = selectPatternPanel.radarRadiusUnit * pentagon * 20
+            if (pentagon == 5) then
+                painter.strokeColor = unity.color.__new(1, 1, 1, majorStrokeAlpha)
+            else
+                painter.strokeColor = unity.color.__new(1, 1, 1, minorStrokeAlpha)
+            end
+            painter.BeginPath()
+            painter.MoveTo(unity.vector2.__new(radarCenterX, radarCenterY - radius))
+            for vertex = 1, 4 do
+                local angle = RadarAngleForVertex(vertex)
+                painter.LineTo(unity.vector2.__new(
+                    radarCenterX + radius * unity.mathf.Cos(angle),
+                    radarCenterY + radius * unity.mathf.Sin(angle)))
+            end
+            painter.ClosePath()
+            painter.Stroke()
+        end
+
+        -- Draw radar
+        if (selectPatternPanel.radarOfSelectedPattern != nil) then
+            painter.fillColor = unity.color.__new(165 / 256, 214 / 256, 167 / 256)
+            painter.BeginPath()
+            painter.MoveTo(unity.vector2.__new(
+                radarCenterX,
+                radarCenterY - selectPatternPanel.radarRadiusUnit * selectPatternPanel.radarOfSelectedPattern.density.normalized))
+            function DrawRadarDimension(vertex, normalized)
+                local angle = RadarAngleForVertex(vertex)
+                painter.LineTo(unity.vector2.__new(
+                    radarCenterX + selectPatternPanel.radarRadiusUnit * normalized * unity.mathf.Cos(angle),
+                    radarCenterY + selectPatternPanel.radarRadiusUnit * normalized * unity.mathf.Sin(angle)))
+            end
+            DrawRadarDimension(1, selectPatternPanel.radarOfSelectedPattern.peak.normalized)
+            DrawRadarDimension(2, selectPatternPanel.radarOfSelectedPattern.speed.normalized)
+            DrawRadarDimension(3, selectPatternPanel.radarOfSelectedPattern.chaos.normalized)
+            DrawRadarDimension(4, selectPatternPanel.radarOfSelectedPattern.async.normalized)
+            painter.ClosePath()
+            painter.Fill()
+        end
+    end)
+end
+
+selectPatternPanel.StartPreviewTrackPlayback = function()
+    local trackFolder = selectTrackPanel.selectedTrackFolder
+    local trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
+
+    if (selectPatternPanel.previewPlaybackCoroutine != nil) then
+        tm.StopCoroutine(selectPatternPanel.previewPlaybackCoroutine)
+    end
+
+    if (trackMetadata.previewTrack == nil) then return end
+    if (trackMetadata.previewTrack == "") then return end
+    if (trackMetadata.previewStartTime > trackMetadata.previewEndTime) then return end
+    local previewPath = tm.paths.Combine(trackFolder, trackMetadata.previewTrack)
+
+    tm.io.LoadAudioFromFile(previewPath, function(status, clip)
+        if (not status.Ok()) then return end
+        -- If the user transitioned away while loading the clip, don't play.
+        if (not selectPatternPanel.panel.display) then return end
+
+        local startTime = trackMetadata.previewStartTime
+        local endTime = trackMetadata.previewEndTime
+        if (startTime < 0) then startTime = 0 end
+        if (endTime > clip.length) then endTime = clip.length end
+        if (endTime == 0) then endTime = clip.length end
+        local previewLength = endTime - startTime
+        local fadeLength = 1
+        if (fadeLength > previewLength * 0.5) then fadeLength = previewLength * 0.5 end
+
+        selectPatternPanel.previewPlaybackCoroutine = tm.StartCoroutine(function()
+            while (true) do
+                local timer = 0
+                -- Start at volume 0
+                selectPatternPanel.previewTrackAudioSource = tm.audio.PlayMusic(clip, startTime, 0)
+                while (timer < fadeLength) do
+                    selectPatternPanel.previewTrackAudioSource.volume = timer / fadeLength
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                selectPatternPanel.previewTrackAudioSource.volume = 1
+                timer = 0
+                while (timer < previewLength - fadeLength * 2) do
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                timer = 0
+                while (timer < fadeLength) do
+                    selectPatternPanel.previewTrackAudioSource.volume = 1 - timer / fadeLength
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+            end
+        end)
+    end)
+end
+
+selectPatternPanel.StopPreviewTrackPlayback = function()
+    if (selectPatternPanel.previewPlaybackCoroutine != nil) then
+        tm.StopCoroutine(selectPatternPanel.previewPlaybackCoroutine)
+        selectPatternPanel.previewPlaybackCoroutine = nil
+    end
+    
+    if (selectPatternPanel.previewTrackAudioSource != nil and selectPatternPanel.previewTrackAudioSource.isPlaying) then
+        tm.StartCoroutine(function()
+            local timer = 0
+            local fadeLength = 0.2
+            while (timer < fadeLength) do
+                selectPatternPanel.previewTrackAudioSource.volume = 1 - timer / fadeLength
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+            selectPatternPanel.previewTrackAudioSource.Stop()
+        end)
+    end
+end
+
+modifierSideSheet.SetDropdownValues = function()
+    local sheet = modifierSideSheet.sheet
+    function SetDropdownValue(containerName, modifierKey)
+        local display = selectPatternPanel.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        sheet.Q(containerName).Q("dropdown").SetValueWithoutNotify(display)
+    end
+    SetDropdownValue("note-opacity", "noteOpacity")
+    SetDropdownValue("scanline-opacity", "scanlineOpacity")
+    SetDropdownValue("scan-direction", "scanDirection")
+    SetDropdownValue("note-position", "notePosition")
+    SetDropdownValue("scan-position", "scanPosition")
+    SetDropdownValue("fever", "fever")
+    SetDropdownValue("keysound", "keysound")
+    SetDropdownValue("assist-tick", "assistTick")
+    SetDropdownValue("sudden-death", "suddenDeath")
+    SetDropdownValue("mode", "mode")
+    SetDropdownValue("control-override", "controlOverride")
+    SetDropdownValue("scroll-speed", "scrollSpeed")
+end
+
+modifierSideSheet.Show = function()
+    local sheet = modifierSideSheet.sheet
+    modifierSideSheet.SetDropdownValues()
+
+    controls.SetToggleIsOn(
+        sheet.Q("judgement-tally").Q("track"),
+        themeOptions["showJudgementTally"] == "True")
+
+    commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
+
+    controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+end
+
+modifierSideSheet.FadeIn = function()
+    modifierSideSheet.bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(modifierSideSheet.sheet, 100, 0)
+    end)
+end
+
+modifierSideSheet.FadeOut = function()
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(modifierSideSheet.sheet, 100, 0, function()
+            modifierSideSheet.bg.display = false
+        end)
+    end)
+end
+
+modifierSideSheet.Initialize = function()
+    local bg = modifierSideSheet.bg
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        modifierSideSheet.FadeOut()
+    end)
+
+    modifierSideSheet.sheet.RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
+        modifierSideSheet.FadeOut()
+    end)
+
+    function LocalizeDropdowns()
+        selectPatternPanel.modifierDisplayString.noteOpacity = {
+            [tm.enum.noteOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.noteOpacity.FadeOut] = tm.l10n.GetString("modifier_fade_out"),
+            [tm.enum.noteOpacity.FadeOut2] = tm.l10n.GetString("modifier_fade_out_2"),
+            [tm.enum.noteOpacity.FadeIn] = tm.l10n.GetString("modifier_fade_in"),
+            [tm.enum.noteOpacity.FadeIn2] = tm.l10n.GetString("modifier_fade_in_2")
+        }
+        selectPatternPanel.modifierDisplayString.scanlineOpacity = {
+            [tm.enum.scanlineOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanlineOpacity.Blink] = tm.l10n.GetString("modifier_blink"),
+            [tm.enum.scanlineOpacity.Blink2] = tm.l10n.GetString("modifier_blink_2"),
+            [tm.enum.scanlineOpacity.Blind] = tm.l10n.GetString("modifier_blind")
+        }
+        selectPatternPanel.modifierDisplayString.scanDirection = {
+            [tm.enum.scanDirection.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanDirection.RR] = tm.l10n.GetString("modifier_right_right"),
+            [tm.enum.scanDirection.LR] = tm.l10n.GetString("modifier_left_right"),
+            [tm.enum.scanDirection.LL] = tm.l10n.GetString("modifier_left_left")
+        }
+        selectPatternPanel.modifierDisplayString.notePosition = {
+            [tm.enum.notePosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.notePosition.Mirror] = tm.l10n.GetString("modifier_mirror")
+        }
+        selectPatternPanel.modifierDisplayString.scanPosition = {
+            [tm.enum.scanPosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanPosition.Swap] = tm.l10n.GetString("modifier_swap")
+        }
+        selectPatternPanel.modifierDisplayString.fever = {
+            [tm.enum.fever.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.fever.FeverOff] = tm.l10n.GetString("modifier_fever_off"),
+            [tm.enum.fever.AutoFever] = tm.l10n.GetString("modifier_auto_fever")
+        }
+        selectPatternPanel.modifierDisplayString.keysound = {
+            [tm.enum.keysound.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.keysound.AutoKeysound] = tm.l10n.GetString("modifier_auto_keysound")
+        }
+        selectPatternPanel.modifierDisplayString.assistTick = {
+            [tm.enum.assistTick.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.assistTick.AssistTick] = tm.l10n.GetString("modifier_assist_tick"),
+            [tm.enum.assistTick.AutoAssistTick] = tm.l10n.GetString("modifier_auto_assist_tick")
+        }
+        selectPatternPanel.modifierDisplayString.suddenDeath = {
+            [tm.enum.suddenDeath.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.suddenDeath.suddenDeath] = tm.l10n.GetString("modifier_sudden_death")
+        }
+        selectPatternPanel.modifierDisplayString.mode = {
+            [tm.enum.mode.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.mode.NoFail] = tm.l10n.GetString("modifier_no_fail"),
+            [tm.enum.mode.AutoPlay] = tm.l10n.GetString("modifier_auto_play"),
+            [tm.enum.mode.Practice] = tm.l10n.GetString("modifier_practice")
+        }
+        selectPatternPanel.modifierDisplayString.controlOverride = {
+            [tm.enum.controlOverride.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.controlOverride.OverrideToTouch] = tm.l10n.GetString("modifier_override_to_touch"),
+            [tm.enum.controlOverride.OverrideToKeys] = tm.l10n.GetString("modifier_override_to_keys"),
+            [tm.enum.controlOverride.OverrideToKM] = tm.l10n.GetString("modifier_override_to_km")
+        }
+        selectPatternPanel.modifierDisplayString.scrollSpeed = {
+            [tm.enum.scrollSpeed.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scrollSpeed.HalfSpeed] = tm.l10n.GetString("modifier_half_speed");
+            [tm.enum.scrollSpeed.ShiftedHalfSpeed] = tm.l10n.GetString("modifier_shifted_half_speed")
+        }
+
+        function LocalizeOneDropdown(bg, containerName, displayStringTable)
+            local choices = {}
+            for _, displayString in pairs(displayStringTable) do
+                table.insert(choices, displayString)
+            end
+            bg.Q(containerName).Q("dropdown").choices = choices
+        end
+        LocalizeOneDropdown(bg, "note-opacity", selectPatternPanel.modifierDisplayString.noteOpacity)
+        LocalizeOneDropdown(bg, "scanline-opacity", selectPatternPanel.modifierDisplayString.scanlineOpacity)
+        LocalizeOneDropdown(bg, "scan-direction", selectPatternPanel.modifierDisplayString.scanDirection)
+        LocalizeOneDropdown(bg, "note-position", selectPatternPanel.modifierDisplayString.notePosition)
+        LocalizeOneDropdown(bg, "scan-position", selectPatternPanel.modifierDisplayString.scanPosition)
+        LocalizeOneDropdown(bg, "fever", selectPatternPanel.modifierDisplayString.fever)
+        LocalizeOneDropdown(bg, "keysound", selectPatternPanel.modifierDisplayString.keysound)
+        LocalizeOneDropdown(bg, "assist-tick", selectPatternPanel.modifierDisplayString.assistTick)
+        LocalizeOneDropdown(bg, "sudden-death", selectPatternPanel.modifierDisplayString.suddenDeath)
+        LocalizeOneDropdown(bg, "mode", selectPatternPanel.modifierDisplayString.mode)
+        LocalizeOneDropdown(bg, "control-override", selectPatternPanel.modifierDisplayString.controlOverride)
+        LocalizeOneDropdown(bg, "scroll-speed", selectPatternPanel.modifierDisplayString.scrollSpeed)
+    end
+    LocalizeDropdowns()
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdowns()
+        modifierSideSheet.SetDropdownValues()
+        selectPatternPanel.ShowCurrentModifiers()
+    end)
+
+    function InitializeDropdown(containerName, modifierKey)
+        -- tm.options.modifiers and selectPatternPanel.modifierDisplayString share the same keys.
+        bg.Q(containerName).Q("dropdown").RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.options.modifiers[modifierKey] = KeyFromValue(selectPatternPanel.modifierDisplayString[modifierKey], event.newValue)
+            selectPatternPanel.ShowCurrentModifiers()
+        end)
+    end
+    InitializeDropdown("note-opacity", "noteOpacity")
+    InitializeDropdown("scanline-opacity", "scanlineOpacity")
+    InitializeDropdown("scan-direction", "scanDirection")
+    InitializeDropdown("note-position", "notePosition")
+    InitializeDropdown("scan-position", "scanPosition")
+    InitializeDropdown("fever", "fever")
+    InitializeDropdown("keysound", "keysound")
+    InitializeDropdown("assist-tick", "assistTick")
+    InitializeDropdown("sudden-death", "suddenDeath")
+    InitializeDropdown("mode", "mode")
+    InitializeDropdown("control-override", "controlOverride")
+    bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()
+        -- Update control scheme icons of all patterns
+        for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
+            local radioButton = selectPatternPanel.allPatternRadioButtons[index]
+            SetUpControlSchemeIcon(pattern.patternMetadata.controlScheme, radioButton.Q("pattern-banner").Q("scheme-icon-container"))
+        end
+    end)
+    InitializeDropdown("scroll-speed", "scrollSpeed")
+
+    local judgementTallyKey = "showJudgementTally"
+    bg.Q("judgement-tally").Q("track").RegisterCallback(eventType.Click, function()
+        local oldValue = themeOptions[judgementTallyKey]
+        if (oldValue == "True") then
+            themeOptions[judgementTallyKey] = "False"
+        else
+            themeOptions[judgementTallyKey] = "True"
+        end
+    end)
+
+    commonUI.InitializeBgBrightnessSlider(bg.Q("bg-brightness"))
+
+    bg.Q("no-video").Q("track").RegisterCallback(eventType.Click, function(element, event)
+        if (selectTrackPanel.selectedTrackOptions == nil) then return end
+        selectTrackPanel.selectedTrackOptions.noVideo = not selectTrackPanel.selectedTrackOptions.noVideo
+        selectPatternPanel.ShowCurrentModifiers()
+    end)
+end
+
+selectPatternPanel.Initialize()
+modifierSideSheet.Initialize()

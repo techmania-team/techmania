@@ -1,0 +1,836 @@
+gamePanel = {
+    panel = tm.root.Q("game-panel"),
+    feverReadyCoroutine = nil,
+    feverBonusCoroutine = nil,
+    inEditor = false
+}
+
+pauseButton = {
+    button = gamePanel.panel.Q("top-bar").Q("pause-button"),
+    stepIndicator = nil,
+    stepCoroutine = nil,
+    waitingForSecondTap = false,
+}
+
+pauseMenu = {
+    bg = gamePanel.panel.Q("pause-menu-bg"),
+    menu = gamePanel.panel.Q("pause-menu")
+}
+
+fpsCounter = {
+    display = gamePanel.panel.Q("fps-counter").Q("fps-value"),
+    reportInterval = 0.2,
+    timeAtLastReport = 0
+}
+
+judgementTally = {
+    displays = gamePanel.panel.Q("judgement-tally").Q("judgement-values")
+}
+
+practiceMode = {
+    practiceTopBar = gamePanel.panel.Q("practice-top-bar"),
+    loopStart = 0,
+    loopEnd = 0
+}
+
+function FillBar(barElement, amount)
+    barElement.style.width = StyleLengthInPercent(amount * 100)
+end
+
+gamePanel.Initialize = function()
+    local panel = gamePanel.panel
+
+    panel.RegisterCallback(eventType.KeyDown, function(element, event)
+        if (event.keyCode == unity.enum.keyCode.Escape) then
+            if (gamePanel.inEditor) then
+                gamePanel.ConcludeGame()
+                navigation.TransitionBackTo(gamePanel, editorPatternPanel)
+            else
+                if (tm.game.state == tm.enum.gameState.Paused) then
+                    gamePanel.Unpause()
+                elseif (tm.game.state == tm.enum.gameState.Ongoing) then
+                    gamePanel.Pause()
+                end
+            end
+        end
+        if (event.keyCode == unity.enum.keyCode.Space or
+            event.keyCode == unity.enum.keyCode.Backspace) then
+            gamePanel.ActivateFever()
+        end
+
+        if (tm.options.modifiers.mode == tm.enum.mode.Practice or gamePanel.inEditor) then
+            practiceMode.HandleKeyDown(event.keyCode)
+        end
+    end)
+
+    panel.RegisterCallback(eventType.ApplicationFocus, function(element, event)
+        if (themeOptions["pauseWhenGameLosesFocus"] == "False") then return end
+        if (event.focus) then return end
+        if (gamePanel.inEditor) then return end
+        gamePanel.Pause(true)  -- silent
+    end)
+
+    panel.Q("fever-bar-bg").RegisterCallback(eventType.PointerDown, function()
+        gamePanel.ActivateFever()
+    end)
+
+    function InitializeGameSetup()
+        tm.gameSetup.bgContainer = panel.Q("bg-layer")
+        tm.gameSetup.gameContainer = panel.Q("game-layer")
+        tm.gameSetup.vfxComboContainer = nil  -- Unused
+        tm.gameSetup.assistTick = tm.io.LoadAudioFromTheme("Assets/UI/SFX/Assist Tick.wav")
+
+        tm.gameSetup.onLoadProgress = function(progress)
+            local percent = progress.filesLoaded * 100 / progress.totalFiles
+            controls.SetProgressBar(panel.Q("loading-progress"), percent)
+        end
+
+        tm.gameSetup.onLoadError = function(status)
+            tm.game.Conclude()
+            alertBox.Alert(status.errorMessage, nil, function()
+                gamePanel.ConcludeGame()
+                navigation.FadeTo(gamePanel, selectTrackPanel)
+            end)
+        end
+
+        tm.gameSetup.onLoadComplete = function()
+            gamePanel.BeginGame()
+        end
+
+        tm.gameSetup.onUpdate = function(timer)
+            fpsCounter.Update()
+            if (tm.options.modifiers.mode == tm.enum.mode.Practice or gamePanel.inEditor) then
+                practiceMode.Update()
+            end
+        end
+
+        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+            gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
+            gamePanel.UpdateScoreDisplay(
+                scoreKeeper.ScoreFromNotes(),
+                scoreKeeper.maxCombo)
+            judgementTally.Update(scoreKeeper)
+        end
+
+        tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
+            -- Do nothing.
+        end
+
+        tm.gameSetup.onComboTick = function(newCombo)
+            local scoreKeeper = tm.game.scoreKeeper
+            gamePanel.UpdateScoreDisplay(
+                scoreKeeper.ScoreFromNotes(),
+                scoreKeeper.maxCombo)
+        end
+
+        tm.gameSetup.onFeverReady = function()
+            if (gamePanel.feverReadyCoroutine != nil) then
+                tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+            end
+
+            -- Play the "Fever ready" animation.
+            gamePanel.feverReadyCoroutine = tm.StartCoroutine(function()
+                local feverBarBg = gamePanel.panel.Q("top-bar").Q("fever-bar-bg")
+                local highlight = feverBarBg.Q("highlight")
+                local feverOff = feverBarBg.Q("fever-off-text")
+                local feverReady = feverBarBg.Q("fever-ready-text")
+                local instructionTouch = feverBarBg.Q("fever-instruction-touch")
+                local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
+
+                function OneFlash()
+                    local fadeTimer = 0.5
+                    local timer = 0
+                    local maxHighlightOpacity = 0.38
+                    highlight.style.opacity = StyleFloat(maxHighlightOpacity)
+                    while (timer < fadeTimer) do
+                        local progress = timer / fadeTimer
+                        highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(maxHighlightOpacity, 0, progress))
+                        timer = timer + unity.time.deltaTime
+                        coroutine.yield()
+                    end
+                    highlight.style.opacity = StyleFloat(0)
+                    timer = 0
+                    while (timer < fadeTimer) do
+                        local progress = timer / fadeTimer
+                        highlight.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, maxHighlightOpacity, progress))
+                        timer = timer + unity.time.deltaTime
+                        coroutine.yield()
+                    end
+                    highlight.style.opacity = StyleFloat(0)
+                end
+
+                while (true) do
+                    feverOff.display = false
+                    feverReady.display = true
+                    instructionTouch.display = false
+                    instructionKeysKm.display = false
+
+                    OneFlash()
+
+                    feverOff.display = false
+                    feverReady.display = false
+                    instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
+                    instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
+
+                    OneFlash()
+                end
+            end)
+
+            -- Show "Fever" on middle bar.
+            panel.Q("middle-fever-bar-bg").Q("fever-ready-text").display = true
+        end
+
+        tm.gameSetup.onFeverUnready = function()
+            gamePanel.ShowFeverOff()
+        end
+
+        tm.gameSetup.onFeverActivated = function()
+            tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"))
+            gamePanel.ShowFeverOff()
+        end
+
+        tm.gameSetup.onFeverUpdate = function(feverAmount)
+            gamePanel.UpdateFeverDisplay(feverAmount)
+        end
+
+        tm.gameSetup.onFeverEnd = function(feverBonus)
+            gamePanel.ShowFeverOff()
+            gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
+                local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")
+                bonusDisplay.text = net.string.Format(tm.l10n.GetString("game_panel_fever_bonus_format"), tostring(feverBonus))
+                bonusDisplay.display = true
+                WaitForSeconds(2)
+                bonusDisplay.display = false
+            end)
+        end
+
+        tm.gameSetup.onStageClear = function(scoreKeeper)
+            -- Don't conclude the game yet
+            navigation.FadeTo(gamePanel, resultPanel)
+        end
+
+        tm.gameSetup.onStageFailed = function(scoreKeeper)
+            tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"))
+            tm.StartCoroutine(function()
+                local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
+                local timer = 0
+                local animationLength = 0.25
+                stageFailedPanel.style.bottom = StyleLengthInPercent(100)
+                while (timer < animationLength) do
+                    local progress = timer / animationLength
+                    stageFailedPanel.style.bottom = StyleLengthInPercent(unity.mathf.SmoothStep(100, 0, progress))
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                stageFailedPanel.style.bottom = StyleLengthInPercent(0)
+                tm.game.StopAllGameAudio()
+                WaitForSeconds(3.75)  -- Total wait is 4 seconds
+                -- Don't conclude the game yet
+                navigation.FadeTo(gamePanel, resultPanel)
+            end)
+        end
+    end
+    InitializeGameSetup()
+end
+
+gamePanel.Show = function()
+    -- Discord activity
+    local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
+    local metadata = selectPatternPanel.selectedPattern.patternMetadata
+    local controlSchemeString
+    if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_touch")
+    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_keys")
+    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+        controlSchemeString = tm.l10n.GetString("control_scheme_km")
+    end
+    local discordActivity = net.string.format(discordActivityFormat,
+        metadata.playableLanes,
+        controlSchemeString,
+        metadata.level)
+    tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
+        discordActivity,
+        true)  -- show elapsed time
+
+    local panel = gamePanel.panel
+
+    panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
+    if (gamePanel.inEditor) then
+        panel.Q("top-bar").Q("pause-button").display = false
+        panel.Q("top-bar").Q("back-button").display = true
+        panel.Q("top-bar").Q("regular-top-bar").display = false
+        panel.Q("top-bar").Q("practice-top-bar").display = true
+    else
+        panel.Q("top-bar").Q("pause-button").display = true
+        panel.Q("top-bar").Q("back-button").display = false
+        panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
+        panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
+    end
+    panel.Q("markers").display = false
+    panel.Q("fps-counter").display = false
+    panel.Q("judgement-tally").display = false
+    panel.Q("middle-fever-bar-bg").display = false
+    panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
+    controls.SetProgressBar(panel.Q("loading-progress"), 0)
+    panel.InsertChild(0, panel.Q("bg-layer"))
+    pauseMenu.bg.display = false
+    panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
+
+    tm.options.TemporarilyDisableVSync()
+    tm.game.BeginLoading()
+end
+
+gamePanel.Hide = function()
+    tm.RestoreVfxAndComboText()
+end
+
+gamePanel.ConcludeGame = function()
+    -- Don't conclude the game in Hide, Result panel calls stuff that
+    -- requires Complete state.
+    if (tm.game.state != tm.enum.gameState.Idle) then
+        tm.game.Conclude()
+    end
+end
+
+gamePanel.BeginGame = function()
+    local panel = gamePanel.panel
+
+    -- Prepare practice mode, specifically the loop, if necessary.
+    if (tm.options.modifiers.mode == tm.enum.mode.Practice or gamePanel.inEditor) then
+        practiceMode.BeginGame()
+    end
+
+    -- Relocate game area if necessary.
+    local scalingMode = themeOptions["backgroundScalingMode"]
+    local bgLayer = panel.Q("bg-layer")
+    if (scalingMode == "FillEntireScreen" and
+        bgLayer.parent.Equals(panel.Q("remaining-space"))) then
+        panel.InsertChild(0, panel.Q("bg-layer"))
+    elseif (scalingMode == "FillGameArea" and
+        bgLayer.parent.Equals(panel)) then
+        panel.Q("remaining-space").InsertChild(0, panel.Q("bg-layer"))
+    end
+
+    -- Initialize top bar and middle fever bar.
+    local topBar = panel.Q("top-bar")
+    topBar.visible = true
+    pauseButton.ResetState()
+    gamePanel.UpdateHpDisplay(1, 1)
+    topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
+    gamePanel.UpdateScoreDisplay(0, 0)
+    gamePanel.UpdateFeverDisplay(0)
+    gamePanel.ShowFeverOff()
+    panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
+
+    -- Despawn all lane dividers and beat markers.
+    local markersContainer = panel.Q("markers")
+    local topLaneDividersWrap = markersContainer.Q("top-half").Q("lane-dividers-wrap")
+    local topBeatMarkersWrap = markersContainer.Q("top-half").Q("beat-markers-wrap")
+    local bottomLaneDividersWrap = markersContainer.Q("bottom-half").Q("lane-dividers-wrap")
+    local bottomBeatMarkersWrap = markersContainer.Q("bottom-half").Q("beat-markers-wrap")
+    topLaneDividersWrap.Q("lane-dividers").RemoveAllChildren()
+    topBeatMarkersWrap.Q("beat-markers").RemoveAllChildren()
+    bottomLaneDividersWrap.Q("lane-dividers").RemoveAllChildren()
+    bottomBeatMarkersWrap.Q("beat-markers").RemoveAllChildren()
+    markersContainer.display = true
+
+    -- Display lane dividers, if requested.
+    if (themeOptions["showLaneDividers"] == "True") then
+        local lanes = selectPatternPanel.selectedPattern.patternMetadata.playableLanes
+        local indexInMarginArray = lanes - 1  -- Lua arrays are 1-index
+        local marginTopBottom = tm.ruleset.scanMarginTopBottom[indexInMarginArray] * 100
+        local marginMiddle = tm.ruleset.scanMarginMiddle[indexInMarginArray] * 100
+
+        topLaneDividersWrap.Q("top-margin").style.height = StyleLengthInPercent(marginTopBottom)
+        topLaneDividersWrap.Q("bottom-margin").style.height = StyleLengthInPercent(marginMiddle)
+        bottomLaneDividersWrap.Q("top-margin").style.height = StyleLengthInPercent(marginMiddle)
+        bottomLaneDividersWrap.Q("bottom-margin").style.height = StyleLengthInPercent(marginTopBottom)
+
+        local topLaneDividers = topLaneDividersWrap.Q("lane-dividers")
+        local bottomLaneDividers = bottomLaneDividersWrap.Q("lane-dividers")
+        for i = 1, lanes + 1 do
+            local divider = topLaneDividers.AddEmptyChild()
+            divider.pickable = false
+            divider.AddToClassList("lane-divider")
+
+            divider = bottomLaneDividers.AddEmptyChild()
+            divider.pickable = false
+            divider.AddToClassList("lane-divider")
+        end
+        topLaneDividers.Children()[1].visible = false
+        topLaneDividers.Children()[lanes + 1].visible = false
+        bottomLaneDividers.Children()[1].visible = false
+        bottomLaneDividers.Children()[lanes + 1].visible = false
+    end
+
+    -- Display beat markers, if requested.
+    if (themeOptions["beatMarkers"] != "Hidden") then
+        local bps = selectPatternPanel.selectedPattern.patternMetadata.bps
+        local marginBeforeFirstBeat = tm.ruleset.scanMarginBeforeFirstBeat * 100
+        local marginAfterLastBeat = tm.ruleset.scanMarginAfterLastBeat * 100
+        local scanDirection = tm.options.modifiers.scanDirection
+
+        if (scanDirection == tm.enum.scanDirection.Normal or
+            scanDirection == tm.enum.scanDirection.RR) then
+            topBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            topBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        else
+            topBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            topBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        end
+
+        if (scanDirection == tm.enum.scanDirection.RR or
+            scanDirection == tm.enum.scanDirection.LR) then
+            bottomBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            bottomBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        else
+            bottomBeatMarkersWrap.Q("right-margin").style.width = StyleLengthInPercent(marginBeforeFirstBeat)
+            bottomBeatMarkersWrap.Q("left-margin").style.width = StyleLengthInPercent(marginAfterLastBeat)
+        end
+
+        local topBeatMarkers = topBeatMarkersWrap.Q("beat-markers")
+        local bottomBeatMarkers = bottomBeatMarkersWrap.Q("beat-markers")
+        for i = 1, bps + 1 do
+            local beatMarker = topBeatMarkers.AddEmptyChild()
+            beatMarker.pickable = false
+            beatMarker.AddToClassList("beat-marker")
+
+            beatMarker = bottomBeatMarkers.AddEmptyChild()
+            beatMarker.pickable = false
+            beatMarker.AddToClassList("beat-marker")
+
+            if (themeOptions["beatMarkers"] == "ShowHalfBeatMarkers" and
+                i < bps + 1) then
+                local halfBeatMarker = topBeatMarkers.AddEmptyChild()
+                halfBeatMarker.pickable = false
+                halfBeatMarker.AddToClassList("half-beat-marker")
+
+                halfBeatMarker = bottomBeatMarkers.AddEmptyChild()
+                halfBeatMarker.pickable = false
+                halfBeatMarker.AddToClassList("half-beat-marker")
+            end
+        end
+    end
+
+    -- Initialize info insert.
+    panel.Q("fps-counter").display = themeOptions["showFps"] == "True"
+    panel.Q("judgement-tally").display = themeOptions["showJudgementTally"] == "True"
+    judgementTally.Reset()
+
+    -- Begin game.
+    panel.Q("loading-bar-wrap").display = false
+    tm.options.RestoreVSync()
+    tm.RestoreVfxAndComboText()  -- In case a previous pause hid them
+    tm.game.Begin()
+
+    -- Give game panel focus so it can receive keyboard events.
+    panel.Focus()
+end
+
+gamePanel.Pause = function(silent)  -- boolean
+    pauseButton.ResetState()
+    if (tm.game.state != tm.enum.gameState.Ongoing) then return end
+
+    if (silent == nil) then silent = false end
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
+    if (not silent) then
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Pause.wav"))
+    end
+    tm.game.Pause()
+    FadeInDialog(bg, menu)
+    pauseMenu.Show()
+    tm.HideVfxAndComboText()
+end
+
+gamePanel.Unpause = function()
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
+    FadeOutDialog(bg, menu, function()
+        -- Only unpause after the menu has fully faded out.
+        tm.game.Unpause()
+        tm.RestoreVfxAndComboText()
+    end)
+end
+
+gamePanel.ActivateFever = function()
+    if (tm.game.state != tm.enum.gameState.Ongoing) then return end
+    if (tm.game.scoreKeeper.feverState != tm.enum.feverState.Ready) then return end
+    tm.game.ActivateFever()
+end
+
+gamePanel.UpdateHpDisplay = function(hp, maxHp)
+    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hp / maxHp)
+end
+
+gamePanel.UpdateScoreDisplay = function(score, maxCombo)
+    local topBar = gamePanel.panel.Q("top-bar")
+    topBar.Q("score-value").text = tostring(score)
+    topBar.Q("max-combo-value").text = tostring(maxCombo)
+end
+
+gamePanel.UpdateFeverDisplay = function(fever)
+    FillBar(gamePanel.panel.Q("top-bar").Q("fever-bar"), fever)
+    FillBar(gamePanel.panel.Q("middle-fever-bar"), fever)
+end
+
+gamePanel.ShowFeverOff = function()
+    if (gamePanel.feverReadyCoroutine != nil) then
+        tm.StopCoroutine(gamePanel.feverReadyCoroutine)
+        gamePanel.feverReadyCoroutine = nil
+    end
+
+    local topBar = gamePanel.panel.Q("top-bar")
+
+    local feverBarBg = topBar.Q("fever-bar-bg")
+    feverBarBg.Q("highlight").style.opacity = StyleFloat(0)
+    feverBarBg.Q("fever-off-text").display = true
+    feverBarBg.Q("fever-ready-text").display = false
+    feverBarBg.Q("fever-instruction-touch").display = false
+    feverBarBg.Q("fever-instruction-keys-km").display = false
+
+    local middleFeverBarBg = gamePanel.panel.Q("middle-fever-bar-bg")
+    middleFeverBarBg.display = true
+    middleFeverBarBg.Q("fever-ready-text").display = false
+    -- Does not control Fever bonus.
+end
+
+pauseButton.Initialize = function()
+    pauseButton.stepIndicator = pauseButton.button.Q("interaction-step-indicator")
+
+    pauseButton.button.RegisterCallback(eventType.Click, function()
+        if (themeOptions["pauseButtonInteraction"] == "SingleTap") then
+            gamePanel.Pause()
+            return
+        end
+        if (themeOptions["pauseButtonInteraction"] == "Hold") then return end
+
+        -- In DoubleTap, determine whether this is the 1st or 2nd tap.
+        if (pauseButton.waitingForSecondTap) then
+            -- 2nd tap
+            gamePanel.Pause()
+        else
+            -- 1st tap
+            pauseButton.stepCoroutine = tm.StartCoroutine(function()
+                local timer = 0
+                local length = 1
+                pauseButton.waitingForSecondTap = true
+                pauseButton.SetStepIndicatorHeight(1)
+                while (timer < length) do
+                    timer = timer + unity.time.deltaTime
+                    coroutine.yield()
+                end
+                pauseButton.ResetState() -- implies waitingForSecondTap = false
+            end)
+        end
+    end)
+
+    pauseButton.button.RegisterCallback(eventType.PointerDown, function(_, event)
+        if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
+        local pointerId = event.pointerId  -- 0 if mouse, 1+ if finger
+        local mouseButton = event.button  -- only meaningful if pointerId == 0
+        local fingerId = 0  -- only meaningful if pointerId > 0
+        if (pointerId > 0) then
+            fingerId = unity.input.GetTouch(pointerId - 1).fingerId
+        end
+        pauseButton.stepCoroutine = tm.StartCoroutine(function()
+            local timer = 0
+            local length = 1
+            pauseButton.SetStepIndicatorHeight(0)
+            while (timer < length) do
+                -- Detect if the original pointer is still held down.
+                -- We don't do this by registering PointerUp event because
+                -- that event is not fired if the pointer leaves the button.
+                local pointerHeld = false
+                if (pointerId == 0) then
+                    pointerHeld = unity.input.GetMouseButton(mouseButton)
+                else
+                    for i = 0, unity.input.touchCount - 1 do
+                        local touch = unity.input.GetTouch(i)
+                        if (touch.fingerId == fingerId) then
+                            if (touch.phase == unity.enum.touchPhase.Began or
+                                touch.phase == unity.enum.touchPhase.Moved or
+                                touch.phase == unity.enum.touchPhase.Stationary) then
+                                pointerHeld = true
+                            end
+                            break
+                        end
+                    end
+                end
+                if (not pointerHeld) then
+                    pauseButton.ResetState()
+                    return
+                end
+
+                local progress = timer / length
+                pauseButton.SetStepIndicatorHeight(progress)
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+
+            gamePanel.Pause()
+        end)
+    end)
+end
+
+pauseButton.SetStepIndicatorHeight = function(proportion)  -- [0, 1]
+    pauseButton.stepIndicator.style.top = StyleLengthInPercent((1 - proportion) * 100)
+end
+
+pauseButton.ResetState = function()
+    pauseButton.SetStepIndicatorHeight(0)
+    if (pauseButton.stepCoroutine != nil) then
+        tm.StopCoroutine(pauseButton.stepCoroutine)
+    end
+    pauseButton.stepCoroutine = nil
+    pauseButton.waitingForSecondTap = false
+end
+
+pauseMenu.Initialize = function()
+    local panel = gamePanel.panel
+    local bg = pauseMenu.bg
+    local menu = pauseMenu.menu
+
+    menu.RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    function OnCancel()
+        gamePanel.Unpause()
+    end
+    menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, function(_, _)
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+    end)
+
+    menu.Q("restart-button").RegisterCallback(eventType.Click, function()
+        tm.game.Conclude()
+        gamePanel.Show()
+    end)
+
+    menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
+        navigation.FadeTo(gamePanel, selectTrackPanel)
+    end)
+
+    commonUI.InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
+    commonUI.InitializeVolumeSliders(menu)
+end
+
+pauseMenu.Show = function()
+    commonUI.ShowBgBrightnessSlider(pauseMenu.menu.Q("bg-brightness-wrap"))
+    commonUI.ShowVolumeSliders(pauseMenu.menu)
+end
+
+fpsCounter.Initialize = function()
+    fpsCounter.display.text = ""
+end
+
+fpsCounter.Update = function()
+    if (unity.mathf.Floor(fpsCounter.timeAtLastReport / fpsCounter.reportInterval) !=
+        unity.mathf.Floor(unity.time.timeSinceLevelLoad / fpsCounter.reportInterval)) then
+        local fps = 1 / unity.time.smoothDeltaTime
+        fpsCounter.display.text = net.string.DoubleToString(fps, "F2") .. " FPS"
+        fpsCounter.timeAtLastReport = unity.time.timeSinceLevelLoad
+    end
+end
+
+judgementTally.Reset = function()
+    judgementTally.displays.Q("rmax").text = "0"
+    judgementTally.displays.Q("max").text = "0"
+    judgementTally.displays.Q("cool").text = "0"
+    judgementTally.displays.Q("good").text = "0"
+    judgementTally.displays.Q("miss").text = "0"
+    judgementTally.displays.Q("break").text = "0"
+end
+
+judgementTally.Update = function(scoreKeeper)
+    judgementTally.displays.Q("rmax").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
+    judgementTally.displays.Q("max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Max))
+    judgementTally.displays.Q("cool").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Cool))
+    judgementTally.displays.Q("good").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Good))
+    judgementTally.displays.Q("miss").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Miss))
+    judgementTally.displays.Q("break").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Break))
+end
+
+practiceMode.Initialize = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+
+    practiceTopBar.Q("prev-scan-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.JumpToPrevScan()
+    end)
+    practiceTopBar.Q("next-scan-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.JumpToNextScan()
+    end)
+    practiceTopBar.Q("set-loop-start-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.SetLoopStart()
+    end)
+    practiceTopBar.Q("set-loop-end-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.SetLoopEnd()
+    end)
+    practiceTopBar.Q("reset-loop-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.ResetLoop()
+    end)
+    practiceTopBar.Q("decrease-speed-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.DecreaseSpeed()
+    end)
+    practiceTopBar.Q("increase-speed-button").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.IncreaseSpeed()
+    end)
+    practiceTopBar.Q("auto-play-wrap").Q("track").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.ToggleAutoPlay()
+    end)
+    practiceTopBar.Q("show-hitbox-wrap").Q("track").RegisterCallback(eventType.Click, function()
+        practiceMode.controls.ToggleShowHitbox()
+    end)
+end
+
+practiceMode.HandleKeyDown = function(keyCode)
+    if (keyCode == unity.enum.keyCode.F3) then
+        practiceMode.controls.JumpToPrevScan()
+    elseif (keyCode == unity.enum.keyCode.F4) then
+        practiceMode.controls.JumpToNextScan()
+    elseif (keyCode == unity.enum.keyCode.F5) then
+        practiceMode.controls.SetLoopStart()
+    elseif (keyCode == unity.enum.keyCode.F6) then
+        practiceMode.controls.SetLoopEnd()
+    elseif (keyCode == unity.enum.keyCode.F7) then
+        practiceMode.controls.ResetLoop()
+    elseif (keyCode == unity.enum.keyCode.F9) then
+        practiceMode.controls.DecreaseSpeed()
+    elseif (keyCode == unity.enum.keyCode.F10) then
+        practiceMode.controls.IncreaseSpeed()
+    elseif (keyCode == unity.enum.keyCode.F11) then
+        practiceMode.controls.ToggleAutoPlay()
+        controls.SetToggleIsOn(practiceMode.practiceTopBar.Q("options")
+            .Q("auto-play-wrap").Q("Toggle").Q("track"),
+            tm.game.autoPlay)
+    elseif (keyCode == unity.enum.keyCode.F12) then
+        practiceMode.controls.ToggleShowHitbox()
+        controls.SetToggleIsOn(practiceMode.practiceTopBar.Q("options")
+            .Q("show-hitbox-wrap").Q("Toggle").Q("track"),
+            tm.game.showHitbox)
+    end
+end
+
+practiceMode.BeginGame = function()
+    practiceMode.loopStart = tm.game.timer.firstScan
+    practiceMode.loopEnd = tm.game.timer.lastScan
+    practiceMode.UpdateUi()
+
+    -- Toggles are only updated on begin. They will update themselves when the player clicks them.
+    local optionToggles = practiceMode.practiceTopBar.Q("options")
+    local autoPlayToggle = optionToggles.Q("auto-play-wrap").Q("Toggle")
+    controls.SetToggleIsOn(autoPlayToggle.Q("track"), tm.game.autoPlay)
+    local showHitboxToggle = optionToggles.Q("show-hitbox-wrap").Q("Toggle")
+    controls.SetToggleIsOn(showHitboxToggle.Q("track"), tm.game.showHitbox)
+end
+
+practiceMode.Update = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+
+    practiceTopBar.Q("scan-number").Q("center-display").Q("value").text = net.string.Format(
+        "{0} / {1}", tm.game.timer.intScan + 1, tm.game.timer.lastScan + 1)
+
+    if (tm.game.timer.intScan > practiceMode.loopEnd) then
+        tm.game.JumpToScan(practiceMode.loopStart)
+    end
+end
+
+practiceMode.UpdateUi = function()
+    local practiceTopBar = practiceMode.practiceTopBar
+    practiceTopBar.Q("loop-control").Q("center-display").Q("value").text = net.string.Format(
+        "{0} - {1}", practiceMode.loopStart + 1, practiceMode.loopEnd + 1)
+
+    -- For speed display, we have to be more delicate in order to not show something like "0.799999999685x".
+    local speedString = ""
+    if (tm.game.timer.speedPercent == 100) then
+        speedString = "1x"
+    elseif (tm.game.timer.speedPercent == 200) then
+        speedString = "2x"
+    else
+        speedString = tostring(tm.game.timer.speedPercent)
+        if (tm.game.timer.speedPercent < 100) then speedString = "0" .. speedString end
+        local wholePart = string.sub(speedString, 1, 1)
+        local fracPart = string.sub(speedString, 2, 3)
+        if (string.sub(fracPart, 2, 2) == "0") then fracPart = string.sub(fracPart, 1, 1) end
+        speedString = wholePart .. "." .. fracPart .. "x"
+    end
+    practiceTopBar.Q("speed-control").Q("center-display").Q("value").text = speedString
+end
+
+practiceMode.controls = {
+    JumpToPrevScan = function()
+        local intScan = tm.game.timer.intScan
+        local floatScanFraction = tm.game.timer.scan - intScan
+        if (floatScanFraction > 0.25) then
+            tm.game.JumpToScan(intScan)
+        else
+            tm.game.JumpToScan(intScan - 1)
+        end
+    end,
+
+    JumpToNextScan = function()
+        local scan = tm.game.timer.intScan
+        tm.game.JumpToScan(scan + 1)
+    end,
+
+    SetLoopStart = function()
+        local scan = tm.game.timer.intScan
+        if (scan > tm.game.timer.lastScan) then scan = tm.game.timer.lastScan end
+        practiceMode.loopStart = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopEnd = tm.game.timer.lastScan
+        end
+        practiceMode.UpdateUi()
+    end,
+
+    SetLoopEnd = function()
+        local scan = tm.game.timer.intScan
+        if (scan < tm.game.timer.firstScan) then scan = tm.game.timer.firstScan end
+        practiceMode.loopEnd = scan
+        if (practiceMode.loopEnd < practiceMode.loopStart) then
+            practiceMode.loopStart = tm.game.timer.firstScan
+        end
+        practiceMode.UpdateUi()
+    end,
+
+    ResetLoop = function()
+        practiceMode.loopStart = tm.game.timer.firstScan
+        practiceMode.loopEnd = tm.game.timer.lastScan
+        practiceMode.UpdateUi()
+    end,
+
+    DecreaseSpeed = function()
+        local speedPercent = tm.game.timer.speedPercent
+        speedPercent = speedPercent - 5
+        if (speedPercent < 50) then speedPercent = 50 end
+        tm.game.SetSpeed(speedPercent)
+        practiceMode.UpdateUi()
+    end,
+
+    IncreaseSpeed = function()
+        local speedPercent = tm.game.timer.speedPercent
+        speedPercent = speedPercent + 5
+        if (speedPercent > 200) then speedPercent = 200 end
+        tm.game.SetSpeed(speedPercent)
+        practiceMode.UpdateUi()
+    end,
+
+    ToggleAutoPlay = function()
+        tm.game.autoPlay = not tm.game.autoPlay
+    end,
+
+    ToggleShowHitbox = function()
+        tm.game.showHitbox = not tm.game.showHitbox
+    end
+}
+
+gamePanel.Initialize()
+pauseButton.Initialize()
+pauseMenu.Initialize()
+fpsCounter.Initialize()
+practiceMode.Initialize()

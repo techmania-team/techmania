@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/Controls/Slider.uss?fileID=7433441132597879392&amp;guid=bd891abc1a1396841bfb5bd72c0fe00b&amp;type=3#Slider" />
+    <ui:Instance template="Progress Bar" name="progress-bar">
+        <AttributeOverrides element-name="container" picking-mode="Ignore" />
+        <ui:SliderInt picking-mode="Ignore" value="42" high-value="100" name="slider" class="slider" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+            <ui:VisualElement name="overlay-track" picking-mode="Ignore" class="overlay-track">
+                <ui:VisualElement name="overlay-center" picking-mode="Ignore" class="center">
+                    <ui:VisualElement name="overlay" picking-mode="Ignore" class="overlay" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:SliderInt>
+    </ui:Instance>
+</ui:UXML>

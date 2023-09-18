@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/Templates/Toggle.uss?fileID=7433441132597879392&amp;guid=a9e257051c170844099e101f47bbd3b3&amp;type=3#Toggle" />
+    <ui:Button display-tooltip-when-elided="true" name="track" class="toggle-track toggle-track-on">
+        <ui:VisualElement name="thumb" picking-mode="Ignore" class="toggle-thumb">
+            <ui:VisualElement name="overlay" picking-mode="Ignore" class="toggle-overlay" />
+        </ui:VisualElement>
+    </ui:Button>
+</ui:UXML>

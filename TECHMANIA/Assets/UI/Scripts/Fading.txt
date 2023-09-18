@@ -1,0 +1,58 @@
+function DampedLerp(a, b, t)
+    return unity.mathf.Lerp(a, b, unity.mathf.Pow(t, 0.6))
+end
+
+function StyleFloat(float)
+    return unity.styleFloat.__new(float)
+end
+
+function StyleTranslate(x, y)
+    return unity.styleTranslate.__new(unity.translate.__new(
+        unity.length.__new(x),
+        unity.length.__new(y),
+        0
+    ))
+end
+
+-- This operates on opacity and translate, but NOT display.
+-- element's translate will animate from (translateX, translateY) to (0, 0).
+function FadeInCoroutine(element, translateX, translateY)
+    local transitionTime = 0.2
+    local timer = 0
+    element.style.opacity = StyleFloat(0)
+    element.style.translate = StyleTranslate(translateX, translateY)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(translateX, 0, progress)
+        local y = DampedLerp(translateY, 0, progress)
+        element.style.opacity = StyleFloat(progress)
+        element.style.translate = StyleTranslate(x, y)
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+    element.style.opacity = StyleFloat(1)
+    element.style.translate = StyleTranslate(0, 0)
+end
+
+-- This operates on opacity and translate, but NOT display.
+-- element's translate will animate from (0, 0) to (translateX, translateY).
+function FadeOutCoroutine(element, translateX, translateY, finishCallback)
+    local transitionTime = 0.2
+    local timer = 0
+    element.style.opacity = StyleFloat(1)
+    element.style.translate = StyleTranslate(0, 0)
+    while (timer < transitionTime) do
+        local progress = timer / transitionTime
+        local x = DampedLerp(0, translateX, progress)
+        local y = DampedLerp(0, translateY, progress)
+        element.style.opacity = StyleFloat(1 - progress)
+        element.style.translate = StyleTranslate(x, y)
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+    element.style.opacity = StyleFloat(0)
+    element.style.translate = StyleTranslate(translateX, translateY)
+    if (finishCallback != nil) then
+        finishCallback()
+    end
+end

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -265,12 +266,10 @@ public partial class Pattern
         List<float> timeWindows = Ruleset.instance.timeWindows;
         if (calculateTimeWindows &&
             Options.instance.ruleset == Options.Ruleset.Legacy &&
-            GameSetup.pattern.legacyRulesetOverride != null &&
-            GameSetup.pattern.legacyRulesetOverride
-                .timeWindows.Count > 0)
+            legacyRulesetOverride != null &&
+            legacyRulesetOverride.HasAny())
         {
-            timeWindows = GameSetup.pattern.legacyRulesetOverride
-                .timeWindows;
+            timeWindows = legacyRulesetOverride.timeWindows;
         }
 
         foreach (Note n in notes)
@@ -443,11 +442,13 @@ public partial class Pattern
         return count;
     }
 
+    [MoonSharpUserData]
     public struct RadarDimension
     {
         public float raw;
         public int normalized;  // 0-100
     }
+    [MoonSharpUserData]
     public struct Radar
     {
         public RadarDimension density;
@@ -455,7 +456,6 @@ public partial class Pattern
         public RadarDimension speed;
         public RadarDimension chaos;
         public RadarDimension async;
-        public RadarDimension shift;
         public float suggestedLevel;
         public int suggestedLevelRounded;
     }
@@ -573,22 +573,6 @@ public partial class Pattern
         r.async.normalized = NormalizeRadarValue(r.async.raw,
             0f, 40f);
 
-        // Shift: number of unique time events.
-        int numTimeEvents = 0;
-        for (int i = 0; i < timeEvents.Count; i++)
-        {
-            if (i > 0 &&
-                timeEvents[i].pulse ==
-                    timeEvents[i - 1].pulse &&
-                timeEvents[i].GetType()
-                    == timeEvents[i - 1].GetType())
-            {
-                continue;
-            }
-            numTimeEvents++;
-        }
-        r.shift.raw = numTimeEvents;
-
         // Suggested difficulty. Formulta calculated by
         // linear regression.
         r.suggestedLevel =
@@ -602,6 +586,12 @@ public partial class Pattern
             r.suggestedLevel);
 
         return r;
+    }
+
+    public void PrintRadar()
+    {
+        Radar r = CalculateRadar();
+        UnityEngine.Debug.Log($"density: {r.density.normalized} peak: {r.peak.normalized} speed: {r.speed.normalized} chaos: {r.chaos.normalized} async: {r.async.normalized}");
     }
 
     private int NormalizeRadarValue(float raw,
@@ -700,9 +690,37 @@ public partial class Pattern
                 break;
         }
 
-        if (modifiers.scrollSpeed == Modifiers.ScrollSpeed.HalfSpeed)
+        switch (modifiers.scrollSpeed)
         {
-            p.patternMetadata.bps *= 2;
+            case Modifiers.ScrollSpeed.HalfSpeed:
+                p.patternMetadata.bps *= 2;
+                break;
+            case Modifiers.ScrollSpeed.ShiftedHalfSpeed:
+                // 1. Shift all notes and time events by 1 scan
+                int pulsesPerScan = pulsesPerBeat *
+                    p.patternMetadata.bps;
+                foreach (Note n in p.notes)
+                {
+                    n.pulse += pulsesPerScan;
+                }
+                foreach (TimeEvent e in p.bpmEvents)
+                {
+                    e.pulse += pulsesPerScan;
+                }
+                foreach (TimeEvent e in p.timeStops)
+                {
+                    e.pulse += pulsesPerScan;
+                }
+
+                // 2. Shift back first beat offset by 1 scan
+                float initialBpm = p.GetBPMAt(0);
+                float secondsPerBeat = 60 / initialBpm;
+                p.patternMetadata.firstBeatOffset -= secondsPerBeat *
+                    p.patternMetadata.bps;
+
+                // 3. Double BPS
+                p.patternMetadata.bps *= 2;
+                break;
         }
 
         return p;
@@ -725,8 +743,7 @@ public partial class Pattern
     {
         // Minimize pattern, serialize, then convert to binary.
         MinimizedPattern miniP = new MinimizedPattern(this);
-        string json = UnityEngine.JsonUtility.ToJson(miniP,
-            prettyPrint: false);
+        string json = Json.Serialize(miniP, formatForFile: false);
         byte[] hashInput = Encoding.UTF8.GetBytes(json);
 
         // Compute hash.

@@ -1,0 +1,19 @@
+-- This file wraps TECHMANIA's editor interface into panels, so they
+-- can be transitioned to and from the same way as other panels.
+
+editorTrackSetupPanel = {
+    panel = nil,
+    trackFolder = "",
+
+    Show = function()
+        tm.editor.LaunchOnTrack(editorTrackSetupPanel.trackFolder)
+    end
+}
+
+editorPatternPanel = {
+    panel = nil,
+
+    Show = function()
+        tm.editor.ReturnFromPreview()
+    end
+}

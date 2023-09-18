@@ -1,0 +1,530 @@
+selectTrackPanel = {
+    panel = tm.root.Q("select-track-panel"),
+
+    location = "",
+    needsRefresh = false,
+    inEditor = false,
+
+    filter = {
+        keywords = {},
+        keywordsPreSplit = "",  -- for display
+        showTracksInAllFolders = false,
+        -- Possible values: Title, Artist, Genre, ModifiedTime, Touch, Keys, KM
+        sortBasis = "Title",
+        -- key: enum, value: display string
+        sortBasisDisplayString = {},
+        ascending = true
+    },
+    
+    selectedTrackFolder = "",
+    selectedFullTrack = nil,
+    selectedTrackOptions = nil
+}
+
+filterSideSheet = {
+    bg = selectTrackPanel.panel.Q("filter-sidesheet-background"),
+    sheet = selectTrackPanel.panel.Q("filter-sidesheet-background").Q("filter-sidesheet")
+}
+
+newTrackDialog = {
+    bg = selectTrackPanel.panel.Q("new-track-dialog-bg"),
+    dialog = selectTrackPanel.panel.Q("new-track-dialog-bg").Q("new-track-dialog")
+}
+
+function CompareTracks(trackInFolder1, trackInFolder2)
+    local t1 = trackInFolder1.minimizedTrack
+    local t2 = trackInFolder2.minimizedTrack
+    local basis1, basis2
+
+    function FindBasisPatternLevel(track, controlScheme)
+        -- When ascending, this looks for the lowest level.
+        -- When descending, this looks for the highest level.
+
+        local basis
+        -- Tracks without any pattern in the specified scheme are sorted last.
+        if (selectTrackPanel.filter.ascending) then
+            basis = 65536
+        else
+            basis = -65536
+        end
+
+        for _, pattern in ipairs(track.patterns) do
+            if (pattern.patternMetadata.controlScheme == controlScheme) then
+                local level = pattern.patternMetadata.level
+                if ((selectTrackPanel.filter.ascending and level < basis) or
+                    (not selectTrackPanel.filter.ascending and level > basis)) then
+                    basis = level
+                end
+            end
+        end
+
+        return basis
+    end
+
+    if (selectTrackPanel.filter.sortBasis == "Title") then
+        basis1 = t1.trackMetadata.title
+        basis2 = t2.trackMetadata.title
+    elseif (selectTrackPanel.filter.sortBasis == "Artist") then
+        basis1 = t1.trackMetadata.artist
+        basis2 = t2.trackMetadata.artist
+    elseif (selectTrackPanel.filter.sortBasis == "Genre") then
+        basis1 = t1.trackMetadata.genre
+        basis2 = t2.trackMetadata.genre
+    elseif (selectTrackPanel.filter.sortBasis == "ModifiedTime") then
+        basis1 = trackInFolder1.modifiedTime
+        basis2 = trackInFolder2.modifiedTime
+    else
+        -- "Touch", "Keys" or "KM"
+        basis1 = FindBasisPatternLevel(t1, tm.enum.controlScheme[selectTrackPanel.filter.sortBasis])
+        basis2 = FindBasisPatternLevel(t2, tm.enum.controlScheme[selectTrackPanel.filter.sortBasis])
+    end
+
+    if (selectTrackPanel.filter.ascending) then
+        return basis1 < basis2
+    else
+        return basis1 > basis2
+    end
+end
+
+selectTrackPanel.ClearAllCards = function()
+    local panel = selectTrackPanel.panel
+    panel.Q("subfolder-container").RemoveAllChildren()
+    panel.Q("track-container").RemoveAllChildren()
+end
+
+selectTrackPanel.SpawnAllCards = function()
+    local panel = selectTrackPanel.panel
+
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
+        selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+    end
+
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(selectTrackPanel.location))
+    panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
+
+    local subfolderContainer = panel.Q("subfolder-container")
+    local trackContainer = panel.Q("track-container")
+
+    local anythingInFolder = false
+    local hiddenTracks = 0
+
+    -- Prepare the subfolder list, track list and error list.
+    local subfolders = {}
+    local tracksInFolder = {}
+    local tracksWithError = {}
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
+        function SearchAndProcessFolder(folder)
+            for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
+                table.insert(tracksInFolder, trackInFolder)
+            end
+            for _, trackWithError in ipairs(tm.resources.GetTracksWithError(folder)) do
+                table.insert(tracksWithError, trackWithError)
+            end
+            for _, subfolder in ipairs(tm.resources.GetSubfolders(folder)) do
+                SearchAndProcessFolder(subfolder.fullPath)
+            end
+        end
+        SearchAndProcessFolder(selectTrackPanel.location)
+    else
+        subfolders = tm.resources.GetSubfolders(selectTrackPanel.location)
+        tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanel.location)
+        tracksWithError = tm.resources.GetTracksWithError(selectTrackPanel.location)
+    end
+
+    -- Render lists as cards.
+    table.sort(subfolders, function(s1, s2)
+        return s1.name < s2.name
+    end)
+    for _, subfolder in ipairs(subfolders) do
+        anythingInFolder = true
+        local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
+        if (subfolder.eyecatchFullPath != nil) then
+            LoadAndShowEyecatch(subfolder.eyecatchFullPath, card.Q("eyecatch"))
+        end
+        controls.SetUpButtonSounds(card)
+        card.Q("name").text = tm.paths.EscapeBackslash(subfolder.name)
+        controls.SetUpScrollingText(card.Q("name-container"))
+        card.RegisterCallback(eventType.Click, function(_, _, subfolder)
+            selectTrackPanel.location = subfolder.fullPath
+            selectTrackPanel.ClearAllCards()
+            selectTrackPanel.SpawnAllCards()
+        end, subfolder)
+    end
+
+    function TrackContainsAnyFilterKeyword(metadata)
+        if (#selectTrackPanel.filter.keywords == 0) then
+            return true
+        end
+
+        local title = net.string.ToLower(metadata.title)
+        local artist = net.string.ToLower(metadata.artist)
+        local genre = net.string.ToLower(metadata.genre)
+        for _, keyword in ipairs(selectTrackPanel.filter.keywords) do
+            if (net.string.Contains(title, keyword) or
+                net.string.Contains(artist, keyword) or
+                net.string.Contains(genre, keyword)) then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    table.sort(tracksInFolder, function(trackInFolder1, trackInFolder2)
+        return CompareTracks(trackInFolder1, trackInFolder2)
+    end)
+    local cardOfPreviouslySelectedTrack = nil
+    for _, trackInFolder in ipairs(tracksInFolder) do
+        anythingInFolder = true
+
+        if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
+            local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+            card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+            card.Q("error-icon").visible = false
+            card.Q("new-track-icon").visible = false
+            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            LoadAndShowEyecatch(eyecatchPath, card.Q("eyecatch"))
+            controls.SetUpButtonSounds(card)
+            card.Q("name").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.title)
+            card.Q("artist").text = tm.paths.EscapeBackslash(trackInFolder.minimizedTrack.trackMetadata.artist)
+            controls.SetUpScrollingText(card.Q("name-container"))
+            controls.SetUpScrollingText(card.Q("artist-container"))
+            card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
+                if (selectTrackPanel.inEditor) then
+                    editorTrackSetupPanel.trackFolder = trackInFolder.folder
+                    navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
+                else
+                    -- Load full track and navigate to select pattern panel.
+                    selectTrackPanel.selectedTrackFolder = trackInFolder.folder
+                    local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
+                    selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
+                    navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
+                end
+            end, trackInFolder)
+
+            if (selectTrackPanel.selectedFullTrack != nil and
+                trackInFolder.minimizedTrack.trackMetadata.guid ==
+                selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
+                cardOfPreviouslySelectedTrack = card
+            end
+        else
+            hiddenTracks = hiddenTracks + 1
+        end
+    end
+
+    for _, trackWithError in ipairs(tracksWithError) do
+        anythingInFolder = true
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = true
+        card.Q("new-track-icon").visible = false
+        controls.SetUpButtonSounds(card)
+        local errorMessage = ""
+        if (trackWithError.type == "Load") then
+            card.Q("name").text = tm.l10n.GetString("select_track_error_card_title")
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_error_format"),
+                trackWithError.status.filePath,
+                trackWithError.status.errorMessage))
+        elseif (trackWithError.type == "Upgrade") then
+            card.Q("name").text = tm.l10n.GetString("select_track_upgrade_error_card_title")
+            errorMessage = tm.paths.EscapeBackslash(net.string.Format(tm.l10n.GetString("select_track_upgrade_error_format"),
+                trackWithError.status.filePath,
+                trackWithError.status.errorMessage))
+        end
+        card.Q("artist").text = tm.l10n.GetString("select_track_error_card_artist")
+        controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("artist-container"))
+        card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
+            alertBox.Alert(errorMessage)
+        end, errorMessage)
+    end
+
+    if (selectTrackPanel.inEditor) then
+        local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = false
+        card.Q("new-track-icon").visible = true
+        controls.SetUpButtonSounds(card)
+        card.Q("name").text = tm.l10n.GetString("select_track_new_track_card_title")
+        card.Q("artist").text = ""
+        controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("artist-container"))
+        card.RegisterCallback(eventType.Click, function()
+            FadeInDialog(newTrackDialog.bg, newTrackDialog.dialog)
+        end)
+    end
+
+    if (hiddenTracks > 0) then
+        panel.Q("track-status").text = net.string.Format(
+            tm.l10n.GetString("select_track_some_tracks_hidden_text"),
+            hiddenTracks,
+            selectTrackPanel.filter.keywordsPreSplit)
+    elseif (not anythingInFolder) then
+        panel.Q("track-status").text = tm.l10n.GetString("select_track_no_track_text")
+    else
+        panel.Q("track-status").text = ""
+    end
+
+    if (cardOfPreviouslySelectedTrack != nil) then
+        cardOfPreviouslySelectedTrack.Focus()
+        tm.StartCoroutine(function()
+            coroutine.yield()  -- for layout update
+            panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedTrack)
+        end)
+    end
+end
+
+selectTrackPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
+
+    if (selectTrackPanel.needsRefresh) then
+        selectTrackPanel.Refresh()  -- Will call Show when done
+        return
+    end
+    selectTrackPanel.SpawnAllCards()
+    selectTrackPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedTrack
+end
+
+selectTrackPanel.Hide = function()
+    selectTrackPanel.ClearAllCards()
+    -- When creating a new track and transitioning to editor, hide
+    -- the new track dialog so it isn't visible when transitioning back.
+    newTrackDialog.Hide()
+end
+
+selectTrackPanel.Refresh = function()
+    selectTrackPanel.ClearAllCards()
+    local panel = selectTrackPanel.panel
+    selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+    selectTrackPanel.needsRefresh = false
+    panel.Q("back-button").SetEnabled(false)
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(selectTrackPanel.location))
+    tm.io.ReloadTrackList(function(currentlyLoadingFile)
+        panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
+    end,
+    function(reloadStatus)
+        panel.Q("back-button").SetEnabled(true)
+        selectTrackPanel.Show()
+    end)
+end
+
+selectTrackPanel.Initialize = function()
+    selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+
+    local panel = selectTrackPanel.panel
+    panel.Q("refresh-button").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.Refresh()
+    end)
+
+    local sidesheetBg = filterSideSheet.bg
+    sidesheetBg.display = false
+    panel.Q("filter-button").RegisterCallback(eventType.Click, function()
+        if (sidesheetBg.display) then
+            filterSideSheet.FadeOut()
+        else
+            filterSideSheet.Show()
+            filterSideSheet.FadeIn()
+        end
+    end)
+
+    panel.Q("upgrade-button").RegisterCallback(eventType.Click, function()
+        alertBox.Confirm(tm.l10n.GetString("select_track_upgrade_version_confirmation"),
+            tm.l10n.GetString("select_track_upgrade_version_confirm"),
+            tm.l10n.GetString("select_track_upgrade_version_cancel"),
+            function()
+                selectTrackPanel.ClearAllCards()
+                panel.Q("back-button").SetEnabled(false)
+                tm.io.UpgradeAllTracks(function(currentlyLoadingFile)
+                    panel.Q("track-status").text = tm.paths.EscapeBackslash(currentlyLoadingFile)
+                end,
+                function(reloadStatus)
+                    panel.Q("back-button").SetEnabled(true)
+                    selectTrackPanel.Show()
+                    if (reloadStatus.Ok()) then
+                        alertBox.Alert(tm.l10n.GetString("select_track_upgrade_complete_message"))
+                    else
+                        alertBox.Alert(tm.paths.EscapeBackslash(net.string.Format(
+                            tm.l10n.GetString("select_track_upgrade_process_error_format"),
+                            reloadStatus.errorMessage)))
+                    end
+                end)
+            end)
+    end)
+
+    panel.Q("up-button").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.location = tm.paths.GoUpFrom(selectTrackPanel.location)
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+
+    panel.Q("open-button").RegisterCallback(eventType.Click, function()
+        tm.OpenURL(selectTrackPanel.location)
+    end)
+end
+
+filterSideSheet.SetDropdownValues = function()
+    local sortBasisDropdown = filterSideSheet.sheet.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.SetValueWithoutNotify(selectTrackPanel.filter.sortBasisDisplayString[selectTrackPanel.filter.sortBasis])
+end
+
+filterSideSheet.Show = function()
+    local sheet = filterSideSheet.sheet
+
+    sheet.Q("keyword-field").Q("text-field").stringValue = selectTrackPanel.filter.keywordsPreSplit
+
+    controls.SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectTrackPanel.filter.showTracksInAllFolders)
+
+    filterSideSheet.SetDropdownValues()
+
+    local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
+    if (selectTrackPanel.filter.ascending) then
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    else
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    end
+end
+
+filterSideSheet.FadeIn = function()
+    local bg = filterSideSheet.bg
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(bg.Q("filter-sidesheet"), 100, 0)
+    end)
+end
+
+filterSideSheet.FadeOut = function()
+    local bg = filterSideSheet.bg
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(bg.Q("filter-sidesheet"), 100, 0, function()
+            bg.display = false
+        end)
+    end)
+end
+
+filterSideSheet.Initialize = function()
+    local bg = filterSideSheet.bg
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        filterSideSheet.FadeOut()
+    end)
+
+    bg.Q("filter-sidesheet").RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
+        filterSideSheet.FadeOut()
+    end)
+
+    bg.Q("keyword-field").Q("text-field").RegisterCallback(eventType.ChangeString, function(element, event)
+        selectTrackPanel.filter.keywordsPreSplit = net.string.Trim(event.newValue)
+        local keywords = net.string.Split(selectTrackPanel.filter.keywordsPreSplit, ' ')
+        selectTrackPanel.filter.keywords = {}
+        for _, keyword in ipairs(keywords) do
+            if (net.string.Length(keyword) > 0) then
+                table.insert(selectTrackPanel.filter.keywords, net.string.ToLower(keyword))
+            end
+        end
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+
+    bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+
+    function LocalizeDropdown()
+        local bg = filterSideSheet.bg
+        selectTrackPanel.filter.sortBasisDisplayString = {
+            Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
+            Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
+            Genre = tm.l10n.GetString("track_filter_sidesheet_sort_basis_genre"),
+            ModifiedTime = tm.l10n.GetString("track_filter_sidesheet_sort_basis_modified_time"),
+            Touch = tm.l10n.GetString("track_filter_sidesheet_sort_basis_touch_level"),
+            Keys = tm.l10n.GetString("track_filter_sidesheet_sort_basis_keys_level"),
+            KM = tm.l10n.GetString("track_filter_sidesheet_sort_basis_km_level")
+        }
+        local sortBasisChoices = {}
+        for _, display in pairs(selectTrackPanel.filter.sortBasisDisplayString) do
+            table.insert(sortBasisChoices, display)
+        end
+        local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+        sortBasisDropdown.choices = sortBasisChoices
+    end
+    LocalizeDropdown()
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdown()
+        filterSideSheet.SetDropdownValues()
+    end)
+    local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+        selectTrackPanel.filter.sortBasis = KeyFromValue(selectTrackPanel.filter.sortBasisDisplayString, event.newValue)
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+
+    local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
+    ascendingRadioButton.RegisterCallback(eventType.Click, function()
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        selectTrackPanel.filter.ascending = true
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+    descendingRadioButton.RegisterCallback(eventType.Click, function()
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        selectTrackPanel.filter.ascending = false
+        selectTrackPanel.ClearAllCards()
+        selectTrackPanel.SpawnAllCards()
+    end)
+end
+
+newTrackDialog.Initialize = function()
+    local bg = newTrackDialog.bg
+    local dialog = newTrackDialog.dialog
+
+    bg.display = false
+    dialog.Q("create-button").RegisterCallback(eventType.Click, function()
+        local title = dialog.Q("title-field").Q("text-field").stringValue
+        local artist = dialog.Q("artist-field").Q("text-field").stringValue
+        local status, newTrackFolder = tm.editor.CreateNewTrack(selectTrackPanel.location, title, artist)
+        if (status.Ok()) then
+            editorTrackSetupPanel.trackFolder = newTrackFolder
+            navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
+        else
+            FadeOutDialog(bg, dialog)
+            alertBox.Alert(
+                tm.paths.HidePlatformInternalPath(tm.paths.EscapeBackslash(
+                    net.string.Format(
+                        tm.l10n.GetString("new_track_error_format"),
+                        status.filePath,
+                        status.errorMessage))))
+        end
+    end)
+    dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
+        FadeOutDialog(bg, dialog)
+    end)
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        FadeOutDialog(bg, dialog)
+    end)
+
+    dialog.RegisterCallback(eventType.Click, function(_, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+end
+
+newTrackDialog.Hide = function()
+    newTrackDialog.bg.display = false
+end
+
+selectTrackPanel.Initialize()
+filterSideSheet.Initialize()
+newTrackDialog.Initialize()

@@ -1,0 +1,93 @@
+<!--
+Tell IL2CPP to not strip anything in the following types.
+Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
+-->
+<linker>
+  <assembly fullname="MoonSharp.Interpreter">
+    <type fullname="MoonSharp.*" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.Rect" preserve="all" />
+    <type fullname="UnityEngine.Texture2D" preserve="all" />
+    <type fullname="UnityEngine.Time" preserve="all" />
+    <type fullname="UnityEngine.Screen" preserve="all" />
+    <type fullname="UnityEngine.Resolution" preserve="all" />
+    <type fullname="UnityEngine.RefreshRate" preserve="all" />
+    <type fullname="UnityEngine.Input" preserve="all" />
+    <type fullname="UnityEngine.Touch" preserve="all" />
+    <type fullname="UnityEngine.Mathf" preserve="all" />
+    <type fullname="UnityEngine.Random" preserve="all" />
+    <type fullname="UnityEngine.Vector2" preserve="all" />
+    <type fullname="UnityEngine.Vector3" preserve="all" />
+    <type fullname="UnityEngine.Color" preserve="all" />
+    <type fullname="UnityEngine.Color32" preserve="all" />
+    <type fullname="UnityEngine.Gradient" preverse="all" />
+    <type fullname="UnityEngine.GradientColorKey" preverse="all" />
+    <type fullname="UnityEngine.GradientAlphaKey" preverse="all" />
+    <type fullname="UnityEngine.FullScreenMode" preserve="all" />
+    <type fullname="UnityEngine.TouchPhase" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.UIElementsModule">
+    <type fullname="UnityEngine.UIElements.VisualTreeAsset" preserve="all" />
+    <type fullname="UnityEngine.UIElements.VisualElement" preserve="all" />
+    <type fullname="UnityEngine.UIElements.MeshGenerationContext" preserve="all" />
+    <type fullname="UnityEngine.UIElements.MeshWriteData" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Vertex" preserve="all" />
+    <type fullname="UnityEngine.UIElements.PanelSetting" preserve="all" />
+    <type fullname="UnityEngine.UIElements.UQueryState`1" preserve="all" />
+    <type fullname="UnityEngine.UIElements.IStyle" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ITransform" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleSheet" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ChangeEvent`1" preserve="all" />
+    <type fullname="UnityEngine.UIElements.PointerOverEvent" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ClickEvent" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleBackground" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Background" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleColor" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleFloat" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleInt" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleLength" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Length" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleTranslate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Translate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleRotate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Rotate" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Angle" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleScale" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Scale" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleTransformOrigin" preserve="all" />
+    <type fullname="UnityEngine.UIElements.TransformOrigin" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Painter2D" preserve="all" />
+    <type fullname="UnityEngine.UIElements.VectorImage" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleKeyword" preserve="all" />
+    <type fullname="UnityEngine.UIElements.LengthUnit" preserve="all" />
+    <type fullname="UnityEngine.UIElements.AngleUnit" preserve="all" />
+    <type fullname="UnityEngine.UIElements.LineCap" preserve="all" />
+    <type fullname="UnityEngine.UIElements.LineJoin" preserve="all" />
+    <type fullname="UnityEngine.UIElements.FillRule" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ArcDirection" preserve="all" />
+    <type fullname="UnityEngine.UIElements.ColorSpace" preserve="all" />
+    <type fullname="UnityEngine.UIElements.GradientMode" preserve="all" />
+    <type fullname="UnityEngine.UIElements.PropagationPhase" preserve="all" />
+    <type fullname="UnityEngine.UIElements.KeyCode" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.AudioModule">
+    <type fullname="UnityEngine.AudioSource" preserve="all" />
+    <type fullname="UnityEngine.AudioClip" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine">
+    <type fullname="UnityEngine.Video.*" preserve="all"/>
+    <type fullname="UnityEngine.VideoModule.*" preserve="all"/>
+  </assembly>
+  <assembly fullname="UnityEngine.TextCoreTextEngineModule">
+    <type fullname="UnityEngine.TextCore.Text.FontAsset" preserve="all" />
+  </assembly>
+  <assembly fullname="mscorlib">
+    <type fullname="System.String" preserve="all" />
+    <type fullname="System.Boolean" preserve="all" />
+    <type fullname="System.Int32" preserve="all" />
+    <type fullname="System.Single" preserve="all" />
+    <type fullname="System.Collections.Generic.Dictionary`2" preserve="all" />
+    <type fullname="System.DateTime" preserve="all" />
+  </assembly>
+</linker>

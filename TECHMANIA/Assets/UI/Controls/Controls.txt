@@ -1,0 +1,214 @@
+function WaitForSeconds(seconds)
+    local timer = 0
+    while (timer < seconds) do
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+end
+
+function StyleLengthInPercent(percent)
+    return unity.styleLength.__new(
+        unity.length.__new(
+            percent, unity.enum.lengthUnit.Percent
+        )
+    )
+end
+
+function UpdateSliderAppearance(slider)
+    local percent = (slider.value - slider.lowValue) * 100 / 
+        (slider.highValue - slider.lowValue)
+    controls.SetProgressBar(slider.parent, percent)
+    slider.Q("overlay-center").style.left =
+        StyleLengthInPercent(percent)
+end
+
+function SetUpClickSound(element)
+    if (element.ClassListContains("special-click-sfx")) then return end
+    if (element.ClassListContains("silent")) then return end
+    -- For toggles, we can't attach the silent class to #track inside an instance, so
+    -- we check the parent element.
+    if (element != tm.root and element.parent.ClassListContains("silent")) then return end
+    local sfxName = "Assets/UI/SFX/Click.wav"
+    if (element.name == "back-button" or
+        element.name == "cancel-button") then
+        sfxName = "Assets/UI/SFX/Back.wav"
+    end
+    element.RegisterCallback(eventType.Click, function ()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme(sfxName))
+    end)
+end
+
+function SetUpPointerEnterSound(element)
+    element.RegisterCallback(eventType.PointerEnter, function (element)
+        if (element.enabledInHierarchy) then
+            tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Select.wav"))
+        end
+    end)
+end
+
+function InitializeControls()
+    -- Sliders
+    tm.root.Query(nil, "slider").ForEach(function (element)
+        element.RegisterCallback(eventType.ChangeFloat, UpdateSliderAppearance)
+        element.RegisterCallback(eventType.ChangeInt, UpdateSliderAppearance)
+        UpdateSliderAppearance(element)
+    end)
+
+    -- Toggles
+    tm.root.Query(nil, "toggle-track").ForEach(function (element)
+        element.RegisterCallback(eventType.Click, function (track)
+            track.ToggleInClassList("toggle-track-on")
+            track.ToggleInClassList("toggle-track-off")
+        end)
+    end)
+
+    -- Buttons
+    function SetUpButtonSoundsForClass(className)
+        tm.root.Query(nil, className).ForEach(function (element)
+            controls.SetUpButtonSounds(element)
+        end)
+    end
+    SetUpButtonSoundsForClass("button-text")
+    SetUpButtonSoundsForClass("button-icon")
+    SetUpButtonSoundsForClass("button-outlined")
+    SetUpButtonSoundsForClass("button-icon-outlined")
+    SetUpButtonSoundsForClass("button-contained")
+    SetUpButtonSoundsForClass("button-icon-contained")
+    SetUpButtonSoundsForClass("button-card")
+    SetUpButtonSoundsForClass("toggle-track")
+    SetUpButtonSoundsForClass("input-field")
+
+    -- Sliders
+    tm.root.Query(nil, "slider").ForEach(function (element)
+        SetUpPointerEnterSound(element)
+    end)
+
+    -- Scrolling texts
+    tm.root.Query(nil, "scrolling-text").ForEach(function (container)
+        controls.SetUpScrollingText(container)
+    end)
+end
+
+-- These are the control functions meant to be called
+-- from other scripts.
+controls = {
+    SetProgressBar = function(progressBar, percent)
+        progressBar.Q("filled-portion").style.right =
+            StyleLengthInPercent(100 - percent)
+    end,
+
+    SetSliderValueWithoutNotify = function(slider, value)
+        slider.SetValueWithoutNotify(value)
+        UpdateSliderAppearance(slider)
+    end,
+
+    IsToggleOn = function(trackElement)
+        return trackElement.ClassListContains("toggle-track-on")
+    end,
+
+    SetToggleIsOn = function(trackElement, on)
+        trackElement.EnableInClassList("toggle-track-on", on)
+        trackElement.EnableInClassList("toggle-track-off", not on)
+    end,
+
+    SetUpButtonSounds = function(element)
+        SetUpClickSound(element)
+        SetUpPointerEnterSound(element)
+    end,
+
+    RadioButtonIsOn = function(button)
+        return button.Q("on-icon").display
+    end,
+
+    SetRadioButton = function(onButton, buttonsInGroup)
+        for _, radio in ipairs(buttonsInGroup) do
+            radio.Q("on-icon").display = (radio == onButton)
+            radio.Q("off-icon").display = not (radio == onButton)
+        end
+    end,
+
+    SetUpScrollingText = function(scrollingTextContainer)
+        scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
+        scrollingTextContainer.Q("unity-content-viewport").pickable = false
+        scrollingTextContainer.Q("unity-content-container").pickable = false
+        function ContainerUpdate(element)
+            local low = element.horizontalScroller.lowValue
+            local high = element.horizontalScroller.highValue
+            if (net.float.IsNaN(high) or high <= low) then
+                return
+            end
+            local scrollDuration = 4
+            local pingPongTime = unity.mathf.PingPong(unity.time.time, scrollDuration)
+            -- InverseLerp's output is clamped between 0 and 1.
+            local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+            element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
+        end
+        scrollingTextContainer.UnregisterCallback(eventType.FrameUpdate, ContainerUpdate)
+        scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
+    end
+}
+
+-- The "from" panel's x transitions from 0 to length;
+-- The "to" panel's x transitions from -length to 0.
+-- "from", "to" and toPanelInitializer can all be nil.
+-- toPanelInitializer will be called 1 frame after "to" becomes displayed.
+function TransitionPanelCoroutine(from, to, length, toPanelInitializer)
+    if (to != nil) then to.display = false end
+
+    if (from != nil) then
+        from.display = true
+        FadeOutCoroutine(from, length, 0)
+        from.display = false
+    end
+
+    if (to != nil) then
+        to.display = true
+        to.style.opacity = StyleFloat(0)
+    end
+
+    if (toPanelInitializer != nil) then
+        coroutine.yield()  -- For layout update
+        toPanelInitializer()
+    end
+
+    if (to != nil) then
+        FadeInCoroutine(to, -length, 0)
+    end
+end
+
+function FadeToBlackCoroutine(from, to, toPanelInitializer)
+    local curtain = tm.root.Q("curtain")
+    curtain.style.opacity = StyleFloat(0)
+    curtain.display = true
+
+    local fadeTime = 0.2
+    local timer = 0
+    while (timer < fadeTime) do
+        local progress = timer / fadeTime
+        curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(0, 1, progress))
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+    curtain.style.opacity = StyleFloat(1)
+
+    if (from != nil) then from.display = false end
+    if (to != nil) then
+        to.display = true
+        to.style.opacity = StyleFloat(1)
+        to.style.translate = StyleTranslate(0, 0)
+    end
+
+    if (toPanelInitializer != nil) then
+        coroutine.yield()
+        toPanelInitializer()
+    end
+
+    timer = 0
+    while (timer < fadeTime) do
+        local progress = timer / fadeTime
+        curtain.style.opacity = StyleFloat(unity.mathf.SmoothStep(1, 0, progress))
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+    curtain.display = false
+end

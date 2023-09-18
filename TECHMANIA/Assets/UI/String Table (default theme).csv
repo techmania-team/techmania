@@ -1,0 +1,425 @@
+﻿comment,key,en,zh-Hans,zh-Hant,ja,ko
+"The language's name in itself.
+Used in option menu.",language_name,English,简体中文,繁體中文,日本語,한국어
+"The list of localizer names, seperated by commas.
+Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sinby","Dino.B, Sinby, BrainInAVet, namusang"
+,,,,,,
+,alert_ok,OK,确定,確定,OK,확인
+,,,,,,
+,control_scheme_touch,Touch,触屏,觸控,タッチ,터치
+,control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
+,control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
+,,,,,,
+"Shown when the score is 300,000.",performance_medal_absolute_perfect,ABSOLUTE PERFECT,绝对完美,ABSOLUTE PERFECT,ABSOLUTE PERFECT,ABSOLUTE PERFECT
+,performance_medal_perfect_play,PERFECT PLAY,完美,PERFECT PLAY,PERFECT PLAY,PERFECT PLAY
+,performance_medal_all_combo,ALL COMBO,全连,ALL COMBO,ALL COMBO,ALL COMBO
+,,,,,,
+,ruleset_standard,Standard,标准,標準,スタンダード,표준
+,ruleset_legacy,Legacy,经典,經典,レガシー,레거시
+,ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
+,,,,,,
+,discord_state_main_menu,Main Menu,主菜单,主選單,メインメニュー,메인 메뉴
+,discord_state_options,Options,设置,設定,オプション,설정 변경 중
+,discord_state_information,Information,须知,須知,情報,정보
+,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,トラック選択,음악 선택 중
+,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,パターン選択,패턴 선택 중
+{0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
+,,,,,,
+,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
+,#main-menu #start-button,START,开始,開始,スタート,게임 시작
+,#main-menu #editor-button,EDITOR,编辑,編輯,エディタ,편집기
+,#main-menu #options-button,OPTIONS,设置,設定,オプション,설정
+,#main-menu #information-button,INFORMATION,须知,須知,情報,안내
+,#main-menu #quit-button,QUIT,退出,離開,終了,종료
+,,,,,,
+,#select-track-panel #top-bar #title,Select Track,选择曲目,選擇歌曲,トラック選択,Select Track
+,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
+"{0} is the number of tracks hidden;
+{1} is the search term.",select_track_some_tracks_hidden_text,"{0} track(s) are hidden as they don't match the search term ""{1}"".",{0}首曲目不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的曲目。,"キーワード""{1}""を含まない{0}曲が表示されていません。","검색어 ""{1}""을 포함하지 않는 {0}곡이 표시되지 않았습니다."
+,select_track_no_track_text,TECHMANIA cannot find any track in this folder.,TECHMANIA没有在此文件夹内找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
+"When there's an error with a track,
+the select track panel will create an ""error card"" for it,
+with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入歌曲,トラックを読み込めません。,음악을 불러올 수 없습니다.
+,select_track_upgrade_error_card_title,Could not upgrade track,无法升级曲目,無法升級歌曲,更新できません,업그레이드할 수 없음
+,select_track_error_card_artist,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
+"{0} is track.tech's full path;
+{1} is the error message.",select_track_error_format,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}","載入 {0} 時發生錯誤：
+
+{1}","{0} の読み込み中にエラーが発生しました：
+
+{1}","{0}을(를) 불러오는 중 오류가 발생했습니다.
+
+{1}"
+,select_track_upgrade_error_format,"An error occurred when upgrading {0}:
+
+{1}","升级{0}时发生错误：
+
+{1}","升級 {0} 時發生錯誤：
+
+{1}","{0}の更新中にエラーが発生しました：
+
+{1}","{0}을/를 업그레이드하는 중 오류가 발생했습니다.
+
+{1}"
+,select_track_upgrade_version_confirmation,"Some tracks are created with older versions of TECHMANIA. They will still work, but it will take longer for the select track screen to scan them.
+
+Would you like to upgrade all tracks to the current version?
+
+It is recommended that you backup your tracks before upgrading.","有一部分曲目是使用旧版本的TECHMANIA制作。你仍然可以游玩这些曲目，但是扫描这些曲目将需要更长时间。
+
+是否将所有曲目升级至当前版本？
+
+建议在备份所有曲目后再开始升级。","有一部分的歌曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些歌曲，但是掃描這些歌曲將需要更長時間。
+
+是否將所有歌曲升級至目前版本？
+
+建議備份所有歌曲後再開始升級。","旧バージョンのTECHMANIAで作成されたトラックがあります。プレイはできますが、トラック選択画面のロードに遅延が発生する可能性があります。
+
+全てのトラックを更新しますか？
+
+更新する前にトラックのバックアップを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
+
+모든 패턴을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 패턴 백업을 권장합니다."
+,select_track_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
+,select_track_upgrade_version_cancel,CANCEL,取消,取消,キャンセル,취소
+,select_track_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
+Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred when upgrading tracks:
+
+{0}","升级曲目时发生错误：
+
+{0}","升級歌曲時發生錯誤：
+
+{0}","トラックのアップグレード中にエラーが発生しました:
+
+{0}","음악 데이터를 업그레이드하는 중 오류가 발생했습니다.
+
+{0}"
+,select_track_new_track_card_title,New,新建,新增,新しいトラック,새 음악
+,,,,,,
+,#select-track-panel #filter-sidesheet #search-header,Search,搜索,搜尋,検索,검색
+,#select-track-panel #filter-sidesheet #keyword-field #mini-label,Keyword,关键字,關鍵字,キーワード,키워드
+,#select-track-panel #filter-sidesheet #options-header,Options,设置,設定,設定,정렬 옵션
+,#select-track-panel #filter-sidesheet #all-folders,Show tracks in all folders,显示所有文件夹内的曲目,顯示所有資料夾內的曲目,全てのトラックを見る,모든 음악 보기
+,#select-track-panel #filter-sidesheet #sort-by,Sort by,排序,排序,並べ替え,정렬 기준
+,#select-track-panel #filter-sidesheet #ascending-radio #text,Ascending,升序,升冪,昇順,오름차순
+,#select-track-panel #filter-sidesheet #descending-radio #text,Descending,降序,降冪,降順,내림차순
+,track_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
+,track_filter_sidesheet_sort_basis_artist,Artist,艺术家,演出者,アーティスト,아티스트
+,track_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
+Added in 2.0,track_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
+,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
+,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
+,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
+,,,,,,
+,#select-track-panel #new-track-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
+,#select-track-panel #new-track-dialog #artist-field #mini-label,Artist,艺术家,演出者,アーティスト,아티스트
+,#select-track-panel #new-track-dialog #create-button,CREATE,新建,新增,作成,생성
+,#select-track-panel #new-track-dialog #cancel-button,CANCEL,取消,取消,キャンセル,취소
+{0} is a folder or file's full path.,new_track_error_format,"An error occurred when creating or writing to {0}:
+
+{1}","写入{0}时发生错误：
+
+{1}","儲存 {0} 時發生錯誤：
+
+{1}","{0} の書き込み中にエラーが発生しました：
+
+{1}","{0}을/를 생성하는 중 오류가 발생했습니다.
+
+{1}"
+,,,,,,
+,#select-pattern-panel #top-bar #title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
+,#select-pattern-panel #pattern-list #no-pattern-text,This track does not contain any pattern.,本曲目不包含任何谱面。,本歌曲不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
+,#select-pattern-panel #bpm #title,BPM,BPM,BPM,BPM,템포
+,#select-pattern-panel #length #title,Length,长度,長度,長さ,재생 시간
+,#select-pattern-panel #notes #title,Notes,音符数,音符數,ノート数,노트 수
+,#select-pattern-panel #radar #density #name,DENSITY,密度,密度,密度,평균 밀도
+,#select-pattern-panel #radar #peak #name,PEAK,峰值,峰值,ピーク値,최고 밀도
+,#select-pattern-panel #radar #speed #name,SPEED,速度,速度,速さ,빠르기
+,#select-pattern-panel #radar #chaos #name,CHAOS,混乱,混亂度,混乱度,복잡도
+,#select-pattern-panel #radar #async #name,ASYNC,异地,異步,非同期,비동기 터치
+,#select-pattern-panel #author #title,Author,作者,作者,投稿者,작성자
+,#select-pattern-panel #record #title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
+,#select-pattern-panel #modifier-display #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
+"Shown when all modifiers are set to ""normal"".",select_pattern_modifier_none,(none),（无）,(無),(なし),(없음)
+,#select-pattern-panel #modifiers-button,MODIFIERS,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,#select-pattern-panel #play-button,PLAY,开始,開始,プレイ,시작
+,,,,,,
+,#select-pattern-panel #modifier-sidesheet #modifiers-header,Modifiers,游戏选项,遊戲選項,モディファイア,플레이 옵션
+,#select-pattern-panel #modifier-sidesheet #note-opacity #label,Note opacity,音符透明度,音符透明度,ノート透明度,노트 이펙터
+,#select-pattern-panel #modifier-sidesheet #scanline-opacity #label,Scanline opacity,扫描线透明度,掃描線透明度,スキャンライン透明度,타임라인 이펙터
+,#select-pattern-panel #modifier-sidesheet #scan-direction #label,Scan direction,扫描方向,掃描方向,スキャン方向,스크롤 방향
+,#select-pattern-panel #modifier-sidesheet #note-position #label,Note position,音符位置,音符位置,ノート位置,노트 배치
+,#select-pattern-panel #modifier-sidesheet #scan-position #label,Scan position,扫描位置,掃描位置,スキャン位置,마디 배치
+,#select-pattern-panel #modifier-sidesheet #fever #label,Fever,Fever,Fever,Fever,피버
+,#select-pattern-panel #modifier-sidesheet #keysound #label,Keysound,按键音,按鍵音,ノート音,연주음
+,#select-pattern-panel #modifier-sidesheet #assist-tick #label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
+Added in 2.0,#select-pattern-panel #modifier-sidesheet #sudden-death #label,Sudden death,即死,即死,サドンデス,서든데스
+,#select-pattern-panel #modifier-sidesheet #appearance-header,Appearance,界面,介面,表示,화면 표시
+,#select-pattern-panel #modifier-sidesheet #skins #label,Skins,皮肤,造型,スキン,스킨
+,#select-pattern-panel #modifier-sidesheet #skins #select-button,SELECT,选择,選擇,選択,선택
+,#select-pattern-panel #modifier-sidesheet #judgement-tally #label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
+,#select-pattern-panel #modifier-sidesheet #bg-brightness #label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
+,#select-pattern-panel #modifier-sidesheet #no-video #label,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
+,#select-pattern-panel #modifier-sidesheet #special-modifiers #header,Special Modifiers,特殊选项,特殊選項,特殊モディファイア,기타 옵션
+,#select-pattern-panel #modifier-sidesheet #special-modifiers #warning,Warning: these options will invalidate your score.,警告：这些选项会导致你的成绩无效。,警告：這些選項會使成績無效,注意：このオプションを有効にするとスコアが無効になります。,주의: 아래 옵션을 사용하면 스코어를 등록할 수 없습니다.
+,#select-pattern-panel #modifier-sidesheet #mode #label,Mode,模式,模式,モード,모드
+,#select-pattern-panel #modifier-sidesheet #control-override #label,Control override,操作方式,操作方式,プレイ方式,입력 방식
+,#select-pattern-panel #modifier-sidesheet #scroll-speed #label,Scroll speed,扫描速度,掃描速度,スクロール速度,스크롤 속도
+,,,,,,
+,modifier_normal,Normal,正常,正常,ノーマル,기본
+,modifier_none,None,无,無,なし,없음
+,modifier_fade_out,Fade out,淡出,淡出,FADE OUT,FADE OUT
+,modifier_fade_out_2,Fade out 2,淡出II,淡出II,FADE OUT 2,FADE OUT 2
+,modifier_fade_in,Fade in,淡入,淡入,FADE IN,FADE IN
+,modifier_fade_in_2,Fade in 2,淡入II,淡入II,FADE IN 2,FADE IN 2
+,modifier_blink,Blink,闪烁,閃爍,BLINK,BLINK
+,modifier_blink_2,Blink 2,闪烁II,閃爍II,BLINK 2,BLINK 2
+,modifier_blind,Blind,隐藏扫描线,隱藏掃描線,BLIND,BLIND
+,modifier_right_right,Right - Right,右 - 右,右 - 右,右 - 右,오른쪽
+,modifier_left_right,Left - Right,左 - 右,左 - 右,左 - 右,역방향
+,modifier_left_left,Left - Left,左 - 左,左 - 左,左 - 左,왼쪽
+,modifier_mirror,Mirror,镜像,鏡像,MIRROR,MIRROR
+,modifier_swap,Swap,调换,調換,反転,반전
+,modifier_fever_off,Fever off,关闭Fever,關閉 Fever,Fever オフ,끄기
+,modifier_auto_fever,Auto Fever,自动Fever,自動 Fever,オート Fever,자동
+,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생
+,modifier_assist_tick,Assist tick,辅助音效,輔助音效,打撃音,수동
+,modifier_auto_assist_tick,Auto assist tick,自动辅助音效,自動輔助音效,オート打撃音,자동
+Added in 2.0,modifier_sudden_death,Sudden death,即死,即死,サドンデス,서든데스
+,modifier_no_video,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
+,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
+,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
+,modifier_practice,Practice,练习,練習,練習,연습 모드
+,modifier_override_to_touch,Override to Touch,强制使用触控,強制使用觸控,タッチで操作,터치
+,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
+,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드+마우스
+,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
+Added in 2.0,modifier_shifted_half_speed,Shifted half speed,半速+偏移,半速 + 偏移,0.5x(シフト),0.5x(마디 당기기)
+,,,,,,
+Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-indicator,No fail,无失败,No fail,No fail,No fail
+,#game-panel #top-bar #score-label,Score,分数,SCORE,SCORE,SCORE
+,#game-panel #top-bar #max-combo-label,Max Combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
+,#game-panel #top-bar #fever-bar-wrap #fever-off-text,FEVER OFF,FEVER OFF,FEVER OFF,FEVER OFF,FEVER OFF
+,#game-panel #top-bar #fever-bar-wrap #fever-ready-text,FEVER,FEVER,FEVER,FEVER,FEVER
+,#game-panel #top-bar #fever-bar-wrap #fever-instruction-touch,TOUCH,轻触,TOUCH,TOUCH,TOUCH
+,#game-panel #top-bar #fever-bar-wrap #fever-instruction-keys-km,PRESS SPACE,空格,PRESS SPACE,PRESS SPACE,PRESS SPACE
+,#game-panel #middle-fever-bar-bg #fever-ready-text,FEVER,FEVER,FEVER,FEVER,FEVER
+,game_panel_fever_bonus_format,FEVER BONUS   +{0},FEVER奖励    +{0},FEVER BONUS   +{0},FEVER BONUS   +{0},FEVER BONUS   +{0}
+,#game-panel #loading-bar #label,Loading...,正在读取……,載入中......,読み込み中...,Loading...
+,#game-panel #stage-failed-panel #stage-failed,STAGE FAILED,请再接再厉,STAGE FAILED,STAGE FAILED,STAGE FAILED
+,,,,,,
+,#game-panel #practice-top-bar #scan-number #label,Scan,扫描,掃描,スキャン,마디
+,#game-panel #practice-top-bar #loop-control #label,Loop,循环,循環,ループ,구간 반복
+,#game-panel #practice-top-bar #speed-control #label,Speed,速度,速度,速度,재생 속도
+,#game-panel #practice-top-bar #auto-play-wrap #label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
+,#game-panel #practice-top-bar #show-hitbox-wrap #label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
+,,,,,,
+,#game-panel #pause-menu #title,PAUSE,暂停,暫停,PAUSE,PAUSE
+,#game-panel #pause-menu #resume-button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
+,#game-panel #pause-menu #restart-button,RESTART,重试,再試一次,RESTART,RESTART
+,#game-panel #pause-menu #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
+,#game-panel #pause-menu #bg-brightness-wrap #label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
+,#game-panel #pause-menu #master #label,Master,主音量,主音量,マスター,마스터 볼륨
+,#game-panel #pause-menu #music #label,Music,音乐音量,音樂音量,音楽,반주음
+,#game-panel #pause-menu #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
+,#game-panel #pause-menu #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
+,,,,,,
+,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,STAGE CLEARED,STAGE CLEARED
+,result_panel_stage_failed_title,Stage Failed,挑战失败,STAGE FAILED,STAGE FAILED,STAGE FAILED
+,#result-panel #judgement-tally #labels #rainbow-max,Rainbow Max,Rainbow Max,RAINBOW MAX,RAINBOW MAX,RAINBOW MAX
+,#result-panel #judgement-tally #labels #max,Max,Max,MAX,MAX,MAX
+,#result-panel #judgement-tally #labels #cool,Cool,Cool,COOL,COOL,COOL
+,#result-panel #judgement-tally #labels #good,Good,Good,GOOD,GOOD,GOOD
+,#result-panel #judgement-tally #labels #miss,Miss,Miss,MISS,MISS,MISS
+,#result-panel #judgement-tally #labels #break,Break,Break,BREAK,BREAK,BREAK
+,#result-panel #judgement-tally #labels #max-combo,Max Combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
+,#result-panel #judgement-tally #labels #fever-bonus,Fever Bonus,Fever奖励,FEVER BONUS,FEVER BONUS,FEVER BONUS
+,#result-panel #judgement-tally #labels #combo-bonus,Combo Bonus,连击奖励,COMBO BONUS,COMBO BONUS,COMBO BONUS
+,#result-panel #total-score #title,Score,总分,SCORE,SCORE,SCORE
+,#result-panel #rank #title,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
+,#result-panel #my-record #title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
+,#result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,新記録,NEW RECORD
+,#result-panel #ruleset #title,Ruleset,规则,規則,ルールセット,규칙
+,#result-panel #modifiers #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
+,#result-panel #retry-button,RETRY,重试,重新開始,RETRY,RETRY
+,#result-panel #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
+,#result-panel #legacy-override-indicator,*Pattern contains legacy ruleset override,*谱面包含对经典规则的修改,*譜面包含對經典規則的修改,*レガシールールセットを使用中,* 레거시 규칙 사용 중
+,,,,,,
+,#options-panel #title,Options,设置,設定,オプション,설정
+,#options-panel #graphics-header,Graphics,图像,影像,グラフィック,그래픽
+,#options-panel #resolution #label,Resolution,分辨率,解析度,解像度,화면 해상도
+,#options-panel #fullscreen-mode #label,Fullscreen mode,全屏模式,顯示模式,画面モード,출력 방식
+,fullscreen_mode_exclusive_fullscreen,Exclusive fullscreen,独占全屏,全螢幕,フルスクリーン,전체화면
+,fullscreen_mode_fullscreen_window,Borderless window,全屏窗口,無邊框視窗,ボーダーレス,윈도우(전체화면)
+,fullscreen_mode_maximized_window,Maximized window,最大化窗口,最大化視窗,ウィンドウ（最大）,윈도우(최대화)
+,fullscreen_mode_windowed,Windowed,窗口化,視窗化,ウィンドウ,윈도우
+,#options-panel #vsync #label,VSync,垂直同步,垂直同步,VSync,수직 동기화
+,#options-panel #audio-header,Audio,音频,音效,オーディオ,오디오
+,#options-panel #master #label,Master,主音量,主音量,マスター,마스터 볼륨
+,#options-panel #music #label,Music,音乐音量,音樂音量,音楽,반주음
+,#options-panel #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
+,#options-panel #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
+,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
+,#options-panel #audio-buffer-size-explanation #label,"Lower value reduces audio latency,
+but may cause audio issues such as stuttering.","数值越小，音频延迟越低，
+但也越可能出现卡壳等问题。","數值越小，音效延遲越低，
+但也越可能出現問題。","バッファを減らせば遅延が小さくなりますが、
+ノイズ、音ズレなどが発生することがあります。","버퍼 크기가 작을수록 오디오 지연이 감소하지만,
+노이즈, 싱크 밀림 등의 문제가 발생할 수 있습니다."
+,#options-panel #appearance-header,Appearance,界面,介面,表示,화면
+,#options-panel #language #label,Language,语言,語言,言語,언어
+Added in 2.0,#options-panel #theme #label,Theme,主题,主題,テーマ,테마
+Added in 2.0,change_theme_warning,"WARNING
+
+Themes contain executable scripts, which may contain malicious code that could harm your device or compromise your data. Please only use themes from sources you trust.
+
+Are you sure you want to change theme?","警告
+
+主题包含可执行代码，其中可能包含恶意代码，能够损害你的设备或危及你的数据安全。请仅使用来源可信的主题。
+
+你确定要更改主题吗？","警告
+
+主題包含可執行腳本，其中可能包含惡意程式碼，能夠損害您的設備或危及您的資料。請僅使用來源可信的主題。
+
+您確定要更改主題嗎？","警告
+
+テーマは実行可能なスクリプトを含み、デバイスやユーザーのデータを破損させるコードを含む可能性があります。必ず信頼できるソースからのテーマを使用してください。
+
+本当にテーマを変更しますか?","경고
+
+테마는 실행 가능한 스크립트를 포함하고 있으며, 이는 디바이스나 사용자 데이터를 손상시키는 코드를 포함할 수 있습니다. 반드시 신뢰할 수 있는 출처에서 받은 데이터를 사용하십시오.
+
+계속하시겠습니까?"
+Added in 2.0,change_theme_confirm,CHANGE,更改,變更,変更,변경
+Added in 2.0,change_theme_cancel,CANCEL,取消,取消,キャンセル,취소
+Added in 2.0,change_theme_instruction,The new theme will be applied the next time you start TECHMANIA.,新主题将在下次启动TECHMANIA时生效。,新主題將在下次啟動 TECHMANIA 時套用,テーマはTECHMANIAを再起動すると適用されます。,TECHMANIA를 재시작하면 테마가 적용됩니다.
+,#options-panel #skins #label,Skins,皮肤,造型,スキン,스킨
+,#options-panel #skins #button,SELECT,选择,選擇,選択,선택
+,#options-panel #show-loading-bar #label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
+,#options-panel #show-fps #label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
+,#options-panel #show-judgement-tally #label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
+,#options-panel #show-lane-dividers #label,Show lane dividers,显示轨道分界线,顯示軌道分界線,レーン区切り線を表示,트랙 구분선 표시
+,#options-panel #beat-markers #label,Beat markers,节拍辅助线,節拍輔助線,ビート区切り線,박자 구분선
+,beat_markers_hidden,Hidden,隐藏,隱藏,隠す,숨김
+,beat_markers_show_beat_markers,Show beat markers,显示节拍辅助线,顯示節拍輔助線,1泊毎に表示,1박마다 표시
+,beat_markers_show_half_beat_markers,Show half beat markers,显示半节拍辅助线,顯示半拍輔助線,半拍毎に表示,반 박마다 표시
+,#options-panel #background-scaling #label,Background scaling,背景缩放方式,背景縮放方式,BGAのスケーリング,BGA 맞춤
+,bg_scaling_fill_entire_screen,Fill entire screen,覆盖整个屏幕,覆蓋整個螢幕,画面に合わせる,전체 화면
+,bg_scaling_fill_game_area,Fill game area,仅覆盖游戏区域,僅覆蓋遊戲區域,ゲームプレイエリアに合わせる,게임 플레이 영역
+,#options-panel #miscellaneous-header,Miscellaneous,其他,其他,その他,기타
+,#options-panel #ruleset #label,Ruleset,规则,規則,ルールセット,규칙
+,custom_ruleset_load_error_format,"An error occurred when loading custom ruleset:
+
+{0}","读取自定义规则时发生错误：
+
+{0}","載入自訂規則時發生錯誤：
+
+{0}","カスタムルールセットの読み込み中にエラーが発生しました：
+
+{0}","사용자 지정 규칙을 불러오는 중 오류가 발생했습니다.
+
+{0}"
+,#options-panel #custom-data-location #label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
+,#options-panel #tracks-folder-location #label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
+,#options-panel #tracks-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
+,#options-panel #skins-folder-location #label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
+,#options-panel #skins-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
+Added in 2.0,#options-panel #themes-folder-location #label,Themes folder,主题文件夹,主題資料夾,テーマフォルダ,테마 폴더
+Added in 2.0,#options-panel #themes-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
+,#options-panel #touchscreen-test #label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
+,#options-panel #touchscreen-test #button,START,开始,開始,開始,시작
+,#options-panel #offset-latency #label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
+,#options-panel #offset-latency #button,CALIBRATE,校对,校正,調整,보정하기
+,#options-panel #pause-when-lose-focus #label,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
+Added in 2.0,#options-panel #pause-button-interaction #label,Pause button interaction,暂停按钮操作方式,暫停按鈕操作方式,一時停止の操作方式,일시정지 버튼 작동 방식
+Added in 2.0,pause_button_interaction_single_tap,Single tap,点击一次,點擊一次,一回タップ,한 번 터치
+Added in 2.0,pause_button_interaction_double_tap,Double tap,点击两次,點擊兩次,二回タップ,두 번 터치
+Added in 2.0,pause_button_interaction_hold,Hold,长按,長按,長押し,길게 터치
+,#options-panel #discord-rich-presence #label,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord 상태 메시지
+,,,,,,
+,#touchscreen-test-panel #title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
+,#touchscreen-test-panel #instructions,Touch anywhere on the screen. Circles should appear around your fingertips.,请轻触屏幕上任意位置。触点周围会出现圆圈。,請觸碰螢幕上任意位置。指尖周圍會出現圓圈。,画面をタップしてください。指の周りに円が現れます。,화면을 터치하십시오. 손가락 주변에 원이 나타납니다.
+,touchscreen_test_finger_indicator_format,Finger #{0},触点 #{0},手指 #{0},タップ #{0},터치 #{0}
+,,,,,,
+,#select-skin-panel #title,Select Skin,选择皮肤,選擇造型,スキン選択,스킨 선택
+,#select-skin-panel #note-skin #label,Note,音符,音符,ノート,노트
+,#select-skin-panel #vfx-skin #label,VFX,特效,特效,VFX,쿨밤
+,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
+,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
+,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
+{0} is error message,select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
+
+{0}","读取皮肤时发生错误：
+
+{0}","讀取造型時發生錯誤：
+
+{0}","選択したスキンの読み込み中にエラーが発生しました。
+
+{0}","선택한 스킨을 불러오는 중 오류가 발생했습니다.
+
+{0}"
+,select_skin_panel_additive_shader_alert,"Please note that some elements of the selected skin cannot be displayed, due to a missing feature in TECHMANIA's UI framework.
+
+Refer to TECHMANIA 2.0's release notes for more details.","请注意，由于TECHMANIA的UI框架缺失功能，所选皮肤的一部分元素暂时无法显示。
+
+详情可参阅TECHMANIA 2.0的发行说明。","請注意，由於 TECHMANIA 的 UI 框架缺失功能，所選造型的一部份元素暫時無法顯示。
+
+詳情請參閱 TECHMANIA 2.0 的發行備註。","TECHMANIA UIフレームワークに存在しない機能が含まれているため、スキンの一部が表示されない場合があります。
+
+詳細はTECHMANIA 2.0のリリーズノートをご確認ください。","TECHMANIA UI 프레임워크의 기능이 누락되어 있어 선택한 스킨의 일부 요소가 올바르게 보이지 않을 수 있습니다.
+
+자세한 내용은 TECHMANIA 2.0 릴리스 노트를 참고하십시오."
+,,,,,,
+,#timing-calibration-panel #title,Timing Calibration,偏移与延迟校对,偏移與延遲校正,タイミング調整,타이밍 보정
+,#timing-calibration-panel #device #label,Input device,输入设备,輸入裝置,入力方式,입력 장치
+,#timing-calibration-panel #device #touchscreen-radio #text,Touchscreen,触屏,觸控螢幕,タッチスクリーン,터치스크린
+,#timing-calibration-panel #device #km-radio #text,Keyboard & Mouse,键盘鼠标,鍵盤滑鼠,キーボード・マウス,키보드/마우스
+,#timing-calibration-panel #note-offset #label,Note offset (ms),音符偏移（ms）,音符偏移,ノートオフセット(ms),노트 오프셋 (ms)
+,#timing-calibration-panel #input-latency #label,Input latency (ms),输入延迟（ms）,輸入延遲,入力遅延(ms),입력 지연 (ms)
+,#timing-calibration-panel #instructions-bg #header,Instructions,说明,說明,設定方法,설명
+,#timing-calibration-panel #instructions-bg #content,"1. <indent=5%>Choose the input device(s) you wish to calibrate, then play the notes below. (for keyboard you can use any letter or number key)</indent>
+2. <indent=5%>Adjust note offset until you feel the timing of notes and keysounds are correct.</indent>
+3. <indent=5%>Adjust input latency until the reported time differences get close to 0.</indent>","1. <indent=5%>选择待校对的输入设备，然后演奏下方的音符。（在键盘上可以使用任意字母、数字键）</indent>
+2. <indent=5%>调整音符偏移，直到你感觉音符以及按键音的时机与背景音乐完全同步。</indent>
+3. <indent=5%>调整输入延迟，直到游戏报告的时间差接近于0。</indent>","1. <indent=5%>選擇待校正的輸入裝置，然後演奏下方的音符。（在鍵盤上可以使用任意字母、數字鍵）</indent>
+2. <indent=5%>調整音符偏移，直到您感覺音符以及按鍵音的時機與背景音樂完全同步。</indent>
+3. <indent=5%>調整輸入延遲，直到遊戲回報的時間差接近於 0。</indent>","1. <indent=5%>タイミングを調整したい入力方法を選択し、下のノートをタップしてください。（キーボードでは全ての文字・数字キーを使用できます）</indent>
+2. <indent=5%>ノートのタイミングとノート音が合っていると感じられるまで調整してください。</indent>
+3. <indent=5%>時間差が0に近くなるまで入力遅延を調整してください。</indent>","1. <indent=5%>보정할 입력 장치를 선택하고, 아래 노트를 연주합니다. 키보드는 문자, 숫자 키 중 아무 키나 사용할 수 있습니다.</indent>
+2. <indent=5%>연주음과 연주 타이밍이 일치할 때까지 오프셋을 조정하십시오.</indent>
+3. <indent=5%>시간차가 0에 최대한 가까워지도록 입력 지연을 조정하십시오.</indent>"
+,timing_calibration_early_indicator,early,过早,太早,EARLY,EARLY
+,timing_calibration_late_indicator,late,过晚,太晚,LATE,LATE
+,,,,,,
+,#information-panel #title,Information,须知,須知,情報,안내
+,#information-panel #getting-started-header,Getting started,入门,開始,はじめに,게임 시작하기
+,#information-panel #getting-started-instruction,"Download tracks and skins from the official website, then extract them into the ""Tracks"" and ""Skins"" folders.",从官方网站下载曲目和皮肤，然后解压到Tracks和Skins文件夹。,從官方網站下載歌曲和造型，然後解壓縮到 Tracks 和 Skins 資料夾。,公式ウェブサイトでトラックとスキンをダウンロードし、「Tracks」と「Skins」フォルダに解凍します。,"공식 웹사이트에서 음악과 스킨을 내려받고, ""Tracks""와 ""Skins"" 폴더에 각각 압축을 해제합니다."
+,#information-panel #folder-location-pc,"On PC, these folders are next to TECHMANIA.exe.",在PC上，这两个文件夹和TECHMANIA.exe位于同一位置。,在 PC 上，這兩個資料夾和 TECHMANIA.exe 在同一個位置。,PCの場合、これらのフォルダはTECHMANIA.exeと同じパスにあります。,해당 폴더는 게임 실행 파일과 같은 위치에서 찾을 수 있습니다.
+,#information-panel #folder-location-ios,"On iOS/iPadOS, you can find these folders in the Files app, or in iTunes File Sharing on your computer.",在iOS/iPadOS上，使用文件app或者iTunes的文件共享来访问这两个文件夹。,在 iOS/iPadOS 上，使用檔案 app 或 iTunes 檔案共享來查看這兩個資料夾,iOS・iPadOSの場合、ファイルアプリまたはiTunesのファイル共有をご利用ください。,파일 앱 또는 iTunes의 파일 공유 기능을 사용하십시오.
+,#information-panel #folder-location-android,"On Android, you can find these folders in /storage/Android/data/com.TECHMANIA.",在Android上，这两个文件夹位于/storage/Android/data/com.TECHMANIA。,在 Android 上，這兩個資料夾在 /storage/Android/data/com.TECHMANIA。,Androidの場合、これらのフォルダは/storage/Android/data/com.TECHMANIAにあります。,해당 폴더는 /storage/Android/data/com.TECHMANIA에서 찾을 수 있습니다.
+,#information-panel #ios-guided-access,Enable Guided Access from your device's accessibility settings to avoid returning to the Home Screen when swiping.,在系统设置——辅助功能中启用引导式访问，可以避免滑动操作时返回主屏幕。,在設定——輔助使用中啟用引導使用模式，可以避免滑動操作時返回主畫面。,画面をスワイプしたときにホーム画面に移動することを防止するにはデバイス設定のアクセシビリティでアクセスガイドを有効にしてください。,화면을 스와이프했을 때 홈 화면으로 이동하는 것을 막으려면 기기 설정 > 손쉬운 설정 항목에서 '사용법 유도'를 활성화하십시오.
+,#information-panel #links-header,Links,链接,連結,リンク,링크
+,#information-panel #website-button #text,WEBSITE,网站,網站,ウェブサイト,웹사이트
+,#information-panel #documentation-button #text,DOCUMENTATION,文档,文件,公式マニュアル,기술 문서
+,#information-panel #health-safety-header,Health & safety information,健康与安全须知,健康與安全須知,健康と安全のために,안전과 건강을 위하여
+,#information-panel #health-safety-text,"When playing with a touchscreen, please do not strike it violently. Doing so may cause damage to the touchscreen and/or yourself.
+
+Flashing lights may trigger seizures, even in people who never experienced it before. If you feel uncomfortable, stop playing and take a break.","使用触屏时请勿用力击打，否则可能对触屏或玩家自身造成伤害。
+
+闪烁的游戏图像有可能触发癫痫症状，无论是否有此病史。如果在游戏时感到不适，请停止游戏并休息。","使用觸控螢幕時請勿用力點擊，否則可能會對螢幕或玩家自身造成傷害。
+
+無論是否有癲癇病史，閃爍的遊戲影像可能會觸發此症狀。如果在遊戲時趕到不適，請停止遊戲並休息。","タッチスクリーンは軽くタップしてください。衝撃を与える行為または指ではないものでタップする行為は故障の原因となります。
+
+まれに特定の光のパターンや点滅を見た場合にてんかん発作を起こす場合があります。これまでにてんかん発作やてんかん病状のない人でも同様に起きる可能性があります。ゲーム中にめまい、視覚変化、目元の痙攣、意識消失、方向感覚消失、あらゆる不随意運動、痙攣などの症状が生じた場合には直ちにゲームを中止し、十分に休息するか医師へご相談ください。","터치 스크린은 손가락으로 가볍게 눌러 주십시오.
+주먹으로 내려치거나 다른 도구를 사용하는 등의 다른 방법으로 터치 스크린을 누를 경우, 터치 스크린이 파손될 수 있습니다.
+
+극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
+
+현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
+,#information-panel #credits-header,Credits,制作人,製作者,クレジット,
+,#information-panel #program-subheader,Program,程序,程式,プログラミング,프로그래밍
+,#information-panel #localization-subheader,Localization (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)

@@ -1,0 +1,24 @@
+#radio-button {
+    height: 50px;
+    flex-direction: row;
+}
+
+#radio-button #icon-wrap {
+    width: 70px;
+    align-items: center;
+    justify-content: center;
+    max-width: 70px;
+    min-width: 70px;
+}
+
+#radio-button #icon-wrap .icon {
+    width: 30px;
+    height: 30px;
+    -unity-background-image-tint-color: var(--primary-color);
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    min-height: 30px;
+    max-width: 30px;
+    max-height: 30px;
+}

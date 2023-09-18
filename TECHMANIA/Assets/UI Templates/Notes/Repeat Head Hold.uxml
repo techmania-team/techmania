@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Templates/Notes/Notes.uss?fileID=7433441132597879392&amp;guid=f8d6a106e16262d4595009c4ec36f0b4&amp;type=3#Notes" />
+    <Style src="project://database/Assets/UI%20Templates/Notes/Hold%20Trails.uss?fileID=7433441132597879392&amp;guid=6e4cdac049afbe9448a98e02e49e8a78&amp;type=3#Hold Trails" />
+    <ui:VisualElement name="path-container" picking-mode="Ignore" class="align-left">
+        <ui:VisualElement name="repeat-path" picking-mode="Ignore" style="width: 500px; height: 80px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatPath.png?fileID=2800000&amp;guid=f089f81e8e93b3a44821c70400e35fc1&amp;type=3#RepeatPath&apos;);">
+            <ui:VisualElement name="repeat-path-end" picking-mode="Ignore" class="end-image" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatHoldTrailSideShadow.png?fileID=2800000&amp;guid=1b301c5d8f104f44daefe00836616eb8&amp;type=3#RepeatHoldTrailSideShadow&apos;); width: 50px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="trail-container" picking-mode="Ignore" class="align-left">
+        <ui:VisualElement name="total-trail" picking-mode="Ignore" class="total-trail" style="width: 200px; height: 80px;">
+            <ui:VisualElement name="ongoing" picking-mode="Ignore" class="ongoing-trail" style="width: 69%; background-image: none;">
+                <ui:VisualElement name="ongoing-trail-end-position" picking-mode="Ignore" class="end-position" />
+            </ui:VisualElement>
+            <ui:VisualElement name="duration" picking-mode="Ignore" class="duration-trail" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatHoldTrail.png?fileID=2800000&amp;guid=cfea2895a79f40a4eb6072434063fc38&amp;type=3#RepeatHoldTrail&apos;);">
+                <ui:VisualElement name="duration-trail-end-position" picking-mode="Ignore" class="end-position" />
+                <ui:VisualElement name="duration-trail-end" picking-mode="Ignore" class="end-image" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatHoldTrailSideShadow.png?fileID=2800000&amp;guid=1b301c5d8f104f44daefe00836616eb8&amp;type=3#RepeatHoldTrailSideShadow&apos;); width: 30px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="note-image" picking-mode="Ignore" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatHead.png?fileID=2800000&amp;guid=dbeec57ec8adf4a40b3dcbe9da151ea8&amp;type=3#RepeatHead&apos;); width: 80px; height: 80px;" />
+    <ui:VisualElement name="fever-overlay" picking-mode="Ignore" style="width: 80px; height: 80px;" />
+    <ui:VisualElement name="approach-overlay" picking-mode="Ignore" style="width: 80px; height: 80px;" />
+    <ui:VisualElement name="hitbox" style="width: 120px; height: 80px;" />
+</ui:UXML>

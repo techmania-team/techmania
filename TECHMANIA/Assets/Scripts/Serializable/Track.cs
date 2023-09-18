@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoonSharp.Interpreter;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -53,10 +54,11 @@ public enum CurveType
 }
 #endregion
 
+#region Time events
 public class TimeEvent
 {
     public int pulse;
-#if UNITY_2021
+#if UNITY_2022
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -65,6 +67,7 @@ public class TimeEvent
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class BpmEvent : TimeEvent
 {
     public double bpm;
@@ -80,18 +83,19 @@ public class BpmEvent : TimeEvent
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class TimeStop : TimeEvent
 {
     public int duration;  // In beats
 
-#if UNITY_2021
+#if UNITY_2022
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
     public float endTime;
 
-#if UNITY_2021
+#if UNITY_2022
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
@@ -109,8 +113,11 @@ public class TimeStop : TimeEvent
         };
     }
 }
+#endregion
 
+#region Track
 [Serializable]
+[MoonSharpUserData]
 public partial class Track : TrackBase
 {
     public const string kVersion = "3";
@@ -144,6 +151,12 @@ public partial class Track : TrackBase
             {
                 return (int)p1.patternMetadata.controlScheme -
                     (int)p2.patternMetadata.controlScheme;
+            }
+            else if (p1.patternMetadata.playableLanes !=
+                p2.patternMetadata.playableLanes)
+            {
+                return p1.patternMetadata.playableLanes -
+                    p2.patternMetadata.playableLanes;
             }
             else
             {
@@ -183,9 +196,28 @@ public partial class Track : TrackBase
         patterns.ForEach(p => p.UnpackAllNotes());
         RestoreToSystemCulture();
     }
+
+    // Returns a clone that only contains metadata, no notes.
+    public static Track Minimize(Track t)
+    {
+        Track mini = new Track()
+        {
+            trackMetadata = t.trackMetadata.Clone(),
+            patterns = new List<Pattern>()
+        };
+        foreach (Pattern p in t.patterns)
+        {
+            mini.patterns.Add(new Pattern()
+            {
+                patternMetadata = p.patternMetadata.Clone()
+            });
+        }
+        return mini;
+    }
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class TrackMetadata
 {
     public string guid;
@@ -206,6 +238,8 @@ public class TrackMetadata
     // In seconds.
     public double previewStartTime;
     public double previewEndTime;
+    // Filename of preview BGA. Not used by default theme.
+    public string previewBga;
 
     // Patterns.
 
@@ -231,13 +265,17 @@ public class TrackMetadata
             previewTrack = previewTrack,
             previewStartTime = previewStartTime,
             previewEndTime = previewEndTime,
+            previewBga = previewBga,
 
             autoOrderPatterns = autoOrderPatterns
         };
     }
 }
+#endregion
 
+#region Pattern
 [Serializable]
+[MoonSharpUserData]
 public partial class Pattern
 {
     public PatternMetadata patternMetadata;
@@ -245,23 +283,32 @@ public partial class Pattern
     public List<BpmEvent> bpmEvents;
     public List<TimeStop> timeStops;
 
-#if UNITY_2021
+#if UNITY_2022
     [NonSerialized]
 #else
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
+    [MoonSharpHidden]
     public SortedSet<Note> notes;
 
-#if UNITY_2021
-    [NonSerialized]
-#else
-    [System.Text.Json.Serialization.JsonIgnore]
-#endif
-    public List<TimeEvent> timeEvents;  // bpmEvents + timeStops
+    // For enumerating notes from Lua. Slow; don't call too often.
+    public List<Note> NotesAsList()
+    {
+        return new List<Note>(notes);
+    }
 
-    // Only used in serialization and deserialization.
+    // = bpmEvents + timeStops
+    // Doesn't need to stay in sync with bpmEvents and timeStops
+    // at all times; PrepareForTimeCalculation will re-populate it.
+    private List<TimeEvent> timeEvents;
+
+    // Only used in serialization and deserialization. At other times,
+    // access notes from the notes field.
+    [MoonSharpHidden]
     public List<string> packedNotes;
+    [MoonSharpHidden]
     public List<string> packedHoldNotes;
+    [MoonSharpHidden]
     public List<PackedDragNote> packedDragNotes;
 
     public const int pulsesPerBeat = 240;
@@ -275,6 +322,7 @@ public partial class Pattern
 
     private const int kAutoKeysoundFirstLane = 64;
     private const int kAutoAssistTickFirstLane = 68;
+    public const int kMaxLane = 72;
 
     public Pattern()
     {
@@ -287,12 +335,10 @@ public partial class Pattern
 
     public Pattern CloneWithDifferentGuid()
     {
-#if UNITY_2021
+#if UNITY_2022
         PackAllNotes();
-        string json = UnityEngine.JsonUtility.ToJson(
-            this, prettyPrint: false);
-        Pattern clone = UnityEngine.JsonUtility
-            .FromJson<Pattern>(json);
+        string json = Json.Serialize(this, formatForFile: false);
+        Pattern clone = Json.Deserialize<Pattern>(json);
         clone.patternMetadata.guid = Guid.NewGuid().ToString();
         clone.UnpackAllNotes();
         return clone;
@@ -343,14 +389,20 @@ public partial class Pattern
     // This is meant for choosing the audio channel for keysounds,
     // and therefore does not consider auto keysound or auto assist
     // tick notes to be hidden.
-    public bool IsHiddenNote(int lane)
+    public bool ShouldPlayInMusicChannel(int lane)
     {
         return lane >= patternMetadata.playableLanes &&
             lane < kAutoKeysoundFirstLane;
     }
+
+    public bool IsHidden(int lane)
+    {
+        return lane >= patternMetadata.playableLanes;
+    }
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class PatternMetadata
 {
     public string guid;
@@ -394,8 +446,8 @@ public class PatternMetadata
     public PatternMetadata()
     {
         guid = Guid.NewGuid().ToString();
-#if UNITY_2021
-        patternName = Locale.GetString(
+#if UNITY_2022
+        patternName = L10n.GetString(
             "track_setup_patterns_tab_new_pattern_name");
 #else
         patternName = "New pattern";
@@ -438,6 +490,7 @@ public class PatternMetadata
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class LegacyRulesetOverride
 {
     // Empty list means no override.
@@ -486,7 +539,10 @@ public class LegacyRulesetOverride
         return false;
     }
 }
+#endregion
 
+#region Notes
+[MoonSharpUserData]
 public class Note
 {
     // Calculated at unpack time:
@@ -496,7 +552,8 @@ public class Note
     public int lane;
     public string sound;  // Filename with extension, no folder
 
-    // Calculated at runtime:
+    // Available only after calling
+    // Pattern.CalculateTimeOfAllNotes:
 
     public float time;
     public Dictionary<Judgement, float> timeWindow;
@@ -628,7 +685,7 @@ public class Note
         int pulsesPerScan = Pattern.pulsesPerBeat * bps;
         int scan = pulse / pulsesPerScan;
         if (pulse % pulsesPerScan == 0 &&
-            endOfScan && scan > 0 &&
+            endOfScan &&
             type != NoteType.Drag)
         {
             scan--;
@@ -637,6 +694,7 @@ public class Note
     }
 }
 
+[MoonSharpUserData]
 public class HoldNote : Note
 {
     // Calculated at unpack time:
@@ -699,6 +757,7 @@ public class HoldNote : Note
     }
 }
 
+[MoonSharpUserData]
 public class DragNote : Note
 {
     public CurveType curveType;
@@ -901,8 +960,9 @@ public class DragNote : Note
     }
 }
 
-// Used to play auto assist ticks. Inaccessible to players and pattern
-// authors.
+// Used to play auto assist ticks. Inaccessible to players
+// and pattern authors.
+[MoonSharpUserData]
 public class AssistTickNote : Note { }
 
 public class NoteComparer : IComparer<Note>
@@ -916,6 +976,7 @@ public class NoteComparer : IComparer<Note>
         return 0;
     }
 }
+#endregion
 
 #region Drag note dependencies
 // Version 2 does not serialize the following classes, but
@@ -946,6 +1007,7 @@ public class IntPoint
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class FloatPoint
 {
     public float lane;
@@ -984,6 +1046,7 @@ public class FloatPoint
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class DragNode
 {
     // Relative to DragNote

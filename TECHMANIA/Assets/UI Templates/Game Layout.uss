@@ -1,0 +1,86 @@
+.input-feedback-anchor {
+    width: 0;
+    height: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.half {
+    height: 50%;
+}
+
+.scanline-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.scanline-anchor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    align-items: center;
+}
+
+.scanline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url('project://database/Assets/UI%20Templates/Placeholders/Scanline.png?fileID=2800000&guid=22c3497ac6fdec646aba9b06cbbdb553&type=3#Scanline');
+}
+
+.countdown-bg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url('project://database/Assets/UI%20Templates/Placeholders/CountdownBackground.png?fileID=2800000&guid=067260b82a4f4ca4bad155dbfda22342&type=3#CountdownBackground');
+}
+
+.countdown {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    background-image: url('project://database/Assets/UI%20Templates/Placeholders/Countdown.png?fileID=2800000&guid=0c9c613b2440d93468d530793f13f2cc&type=3#Countdown');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.note-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.h-flipped {
+    scale: -1 1;
+}
+
+.left-side {
+    left: 0;
+}
+
+.right-side {
+    right: 0;
+}
+
+.note-anchor {
+    position: absolute;
+    width: 0;
+    height: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.calibration-timing-display {
+    position: absolute;
+    left: -100px;
+    top: 100%;
+    right: -100px;
+    -unity-text-align: upper-center;
+}

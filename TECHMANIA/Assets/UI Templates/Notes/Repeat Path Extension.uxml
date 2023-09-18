@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Templates/Notes/Notes.uss?fileID=7433441132597879392&amp;guid=f8d6a106e16262d4595009c4ec36f0b4&amp;type=3#Notes" />
+    <ui:VisualElement name="path-container" picking-mode="Ignore" class="align-left">
+        <ui:VisualElement name="repeat-path" picking-mode="Ignore" style="width: 500px; height: 80px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatPath.png?fileID=2800000&amp;guid=f089f81e8e93b3a44821c70400e35fc1&amp;type=3#RepeatPath&apos;);">
+            <ui:VisualElement name="repeat-path-end" picking-mode="Ignore" class="end-image" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/RepeatHoldTrailSideShadow.png?fileID=2800000&amp;guid=1b301c5d8f104f44daefe00836616eb8&amp;type=3#RepeatHoldTrailSideShadow&apos;); width: 50px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

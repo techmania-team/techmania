@@ -1,0 +1,50 @@
+touchscreenTestPanel = {
+    panel = tm.root.Q("touchscreen-test-panel"),
+    indicatorContainer = tm.root.Q("touchscreen-test-panel").Q("finger-indicators"),
+
+    -- Table, key is finger ID, value is VisualElementWrap of indicator
+    indicatorElements = {}
+}
+
+function SetPosition(element, vector)
+    element.style.left = unity.styleLength.__new(vector.x)
+    element.style.top = unity.styleLength.__new(vector.y)
+end
+
+-- There is no Show function
+
+touchscreenTestPanel.Hide = function()
+    touchscreenTestPanel.indicatorContainer.RemoveAllChildren()
+    touchscreenTestPanel.indicatorElements = {}
+end
+
+touchscreenTestPanel.Initialize = function()
+    local panel = touchscreenTestPanel.panel
+    panel.RegisterCallback(eventType.FrameUpdate, function()
+        if (not panel.display) then return end
+        for i = 0, unity.input.touchCount - 1 do
+            local touch = unity.input.GetTouch(i)
+            local position = touchscreenTestPanel.indicatorContainer.ScreenSpaceToLocalSpace(touch.position)
+
+            if (touch.phase == unity.enum.touchPhase.Began) then
+                -- Spawn new indicator
+                local indicator = touchscreenTestPanel.indicatorContainer.InstantiateTemplate("Assets/UI/Templates/Finger Indicator.uxml")
+                indicator.AddToClassList("anchor")
+                SetPosition(indicator, position)
+                indicator.Q("finger-number").text = net.string.Format(tm.l10n.GetString("touchscreen_test_finger_indicator_format"), touch.fingerId)
+                touchscreenTestPanel.indicatorElements[touch.fingerId] = indicator
+            elseif (touch.phase == unity.enum.touchPhase.Ended or touch.phase == unity.enum.touchPhase.Canceled) then
+                -- Delete indicator
+                local indicator = touchscreenTestPanel.indicatorElements[touch.fingerId]
+                indicator.RemoveFromHierarchy()
+                touchscreenTestPanel.indicatorElements[touch.fingerId] = nil
+            elseif (touch.phase == unity.enum.touchPhase.Moved or touch.phase == unity.enum.touchPhase.Stationary) then
+                -- Move indicator
+                local indicator = touchscreenTestPanel.indicatorElements[touch.fingerId]
+                SetPosition(indicator, position)
+            end
+        end
+    end)
+end
+
+touchscreenTestPanel.Initialize()

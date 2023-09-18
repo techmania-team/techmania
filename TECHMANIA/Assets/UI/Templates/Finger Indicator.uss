@@ -1,0 +1,16 @@
+#indicator {
+    width: 100px;
+    height: 100px;
+    background-image: url('project://database/Assets/UI/Images/Cursor.png?fileID=2800000&guid=90f828c69ec1ccc4c84a5d0344be08cb&type=3#Cursor');
+    -unity-background-image-tint-color: var(--primary-color);
+    overflow: visible;
+    position: absolute;
+}
+
+#finger-number {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100px;
+    -unity-text-align: upper-center;
+}

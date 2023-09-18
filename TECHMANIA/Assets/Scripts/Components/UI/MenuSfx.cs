@@ -8,8 +8,6 @@ public class MenuSfx : MonoBehaviour
     public AudioClip select;
     public AudioClip click;
     public AudioClip back;
-    public AudioClip gameStart;
-    public AudioClip pause;
 
     public static MenuSfx instance { get; private set; }
 
@@ -38,15 +36,5 @@ public class MenuSfx : MonoBehaviour
     public void PlayBackSound()
     {
         PlaySound(back);
-    }
-
-    public void PlayGameStartSound()
-    {
-        PlaySound(gameStart);
-    }
-
-    public void PlayPauseSound()
-    {
-        PlaySound(pause);
     }
 }

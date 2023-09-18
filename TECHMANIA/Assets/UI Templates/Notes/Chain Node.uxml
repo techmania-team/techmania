@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Templates/Notes/Notes.uss?fileID=7433441132597879392&amp;guid=f8d6a106e16262d4595009c4ec36f0b4&amp;type=3#Notes" />
+    <ui:VisualElement name="path-container" picking-mode="Ignore" class="align-left">
+        <ui:VisualElement name="path-to-previous-note" picking-mode="Ignore" style="width: 500px; height: 80px; background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/ChainPath.png?fileID=2800000&amp;guid=7b2c02c586840cc4aa17c85c62325bd8&amp;type=3#ChainPath&apos;); rotate: 210deg; transform-origin: left;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="note-image" picking-mode="Ignore" style="background-image: url(&apos;project://database/Assets/UI%20Templates/Placeholders/ChainNode.png?fileID=2800000&amp;guid=7f6f841d19c132e4a8b0a776fb6f746e&amp;type=3#ChainNode&apos;); width: 80px; height: 80px;" />
+    <ui:VisualElement name="hitbox" style="width: 120px; height: 80px;" />
+</ui:UXML>

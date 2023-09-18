@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
+    <Style src="project://database/Assets/UI/Templates/Pattern%20Banner.uss?fileID=7433441132597879392&amp;guid=53dfc36cd47197347b6eb4fa1dd93d1e&amp;type=3#Pattern Banner" />
+    <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
+    <ui:VisualElement name="pattern-banner" picking-mode="Ignore">
+        <ui:VisualElement name="lane-icon-container" picking-mode="Ignore">
+            <ui:VisualElement name="2l-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/Lanes2.png?fileID=2800000&amp;guid=47097890a40e3b449880127aeb225832&amp;type=3#Lanes2&apos;); display: none;" />
+            <ui:VisualElement name="3l-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/Lanes3.png?fileID=2800000&amp;guid=fe3b40625b42d3a45a0c78ef3c97f8de&amp;type=3#Lanes3&apos;); display: none;" />
+            <ui:VisualElement name="4l-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/Lanes4.png?fileID=2800000&amp;guid=b1fcb00d60275c14aa39f6b85cab56c4&amp;type=3#Lanes4&apos;); display: flex;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="scheme-icon-container" picking-mode="Ignore">
+            <ui:VisualElement name="touch-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_touch_app_white_48dp.png?fileID=2800000&amp;guid=f749762052b211d4594bd6772a8948ca&amp;type=3#baseline_touch_app_white_48dp&apos;);" />
+            <ui:VisualElement name="keys-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_keyboard_white_48dp.png?fileID=2800000&amp;guid=a12dad0c68a5aa04387f88c04117b74f&amp;type=3#baseline_keyboard_white_48dp&apos;); display: none;" />
+            <ui:VisualElement name="km-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/KM.png?fileID=2800000&amp;guid=8732849deafd43847ab0e226a2a3ef0c&amp;type=3#KM&apos;); display: none;" />
+        </ui:VisualElement>
+        <ui:Label tabindex="-1" text="12" display-tooltip-when-elided="true" name="level" picking-mode="Ignore" class="text-subtitle" />
+        <ui:ScrollView name="pattern-name-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+            <ui:Label tabindex="-1" text="Pattern name" display-tooltip-when-elided="true" name="pattern-name" picking-mode="Ignore" class="text-subtitle" style="-unity-text-align: upper-left;" />
+        </ui:ScrollView>
+        <ui:VisualElement name="medal-container" picking-mode="Ignore">
+            <ui:VisualElement name="all-combo-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/MedalAllCombo.png?fileID=2800000&amp;guid=536b903a28ea1834dae87e5d719b3fd1&amp;type=3#MedalAllCombo&apos;);" />
+            <ui:VisualElement name="perfect-play-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/MedalPerfectPlay.png?fileID=2800000&amp;guid=d7544b4d8f10b334380b92af7ca81f25&amp;type=3#MedalPerfectPlay&apos;); display: none;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -8,11 +8,17 @@ using UnityEngine.Networking;
 
 public class ResourceLoader : MonoBehaviour
 {
+    private static ResourceLoader instance;
+
     public AudioClip emptyClip;
 
     private static ResourceLoader GetInstance()
     {
-        return FindObjectOfType<ResourceLoader>();
+        if (instance == null)
+        {
+            instance = FindObjectOfType<ResourceLoader>();
+        }
+        return instance;
     }
 
     #region Audio Caching
@@ -57,7 +63,7 @@ public class ResourceLoader : MonoBehaviour
 
     // Cache all audio files in the given path.
     public static void CacheAudioResources(string trackFolder,
-        UnityAction<string> cacheAudioCompleteCallback)
+        UnityAction<Status> cacheAudioCompleteCallback)
     {
         if (trackFolder != cachedFolder)
         {
@@ -70,31 +76,20 @@ public class ResourceLoader : MonoBehaviour
             forceReload = false;
         }
 
-        ResourceLoader instance = GetInstance();
-        instance.StartCoroutine(instance.InnerCacheAudioResources(
-            trackFolder,
-            Paths.GetAllAudioFiles(trackFolder),
-            cacheAudioCompleteCallback,
-            progressCallback: null));
+        GetInstance().StartCoroutine(
+            GetInstance().InnerCacheAudioResources(
+                trackFolder,
+                Paths.GetAllAudioFiles(trackFolder),
+                cacheAudioCompleteCallback,
+                fileLoadedCallback: null));
     }
 
     // Cache all keysounds of the given pattern.
     public static void CacheAllKeysounds(string trackFolder,
         Pattern pattern,
-        UnityAction<string> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback)
+        UnityAction<Status> cacheAudioCompleteCallback,
+        UnityAction<string> fileLoadedCallback)
     {
-        if (trackFolder != cachedFolder)
-        {
-            ClearAudioCache();
-            cachedFolder = trackFolder;
-        }
-        if (forceReload)
-        {
-            ClearAudioCache();
-            forceReload = false;
-        }
-
         HashSet<string> filenames = new HashSet<string>();
         foreach (Note n in pattern.notes)
         {
@@ -103,24 +98,47 @@ public class ResourceLoader : MonoBehaviour
                 filenames.Add(Path.Combine(trackFolder, n.sound));
             }
         }
-        ResourceLoader instance = GetInstance();
-        instance.StartCoroutine(instance.InnerCacheAudioResources(
-            trackFolder,
-            filenames, cacheAudioCompleteCallback,
-            progressCallback));
+        CacheAllKeysounds(trackFolder, filenames,
+            cacheAudioCompleteCallback,
+            fileLoadedCallback);
+    }
+
+    public static void CacheAllKeysounds(string trackFolder,
+        HashSet<string> keysoundFullPaths,
+        UnityAction<Status> cacheAudioCompleteCallback,
+        UnityAction<string> fileLoadedCallback)
+    {
+        if (trackFolder != cachedFolder)
+        {
+            ClearAudioCache();
+            cachedFolder = trackFolder;
+        }
+        if (forceReload)
+        {
+            ClearAudioCache();
+            forceReload = false;
+        }
+
+        GetInstance().StartCoroutine(
+           GetInstance().InnerCacheAudioResources(
+               trackFolder,
+               keysoundFullPaths,
+               cacheAudioCompleteCallback,
+               fileLoadedCallback));
     }
 
     private IEnumerator InnerCacheAudioResources(
         string trackFolder,
         ICollection<string> filenameWithFolder,
-        UnityAction<string> cacheAudioCompleteCallback,
-        UnityAction<float> progressCallback)
+        UnityAction<Status> cacheAudioCompleteCallback,
+        UnityAction<string> fileLoadedCallback)
     {
         Options.TemporarilyDisableVSync();
         int numLoaded = 0;
         foreach (string file in filenameWithFolder)
         {
-            string fileRelativePath = Paths.RelativePath(trackFolder, file);
+            string fileRelativePath = Paths.RelativePath(
+                trackFolder, file);
             if (!audioClips.ContainsKey(fileRelativePath))
             {
                 // Handle empty files.
@@ -135,7 +153,8 @@ public class ResourceLoader : MonoBehaviour
                 }
                 catch (Exception ex)
                 {
-                    cacheAudioCompleteCallback?.Invoke(ex.Message);
+                    cacheAudioCompleteCallback?.Invoke(
+                        Status.FromException(ex));
                     yield break;
                 }
 
@@ -147,29 +166,28 @@ public class ResourceLoader : MonoBehaviour
                 yield return request.SendWebRequest();
 
                 AudioClip clip;
-                string error;
+                Status status;
                 GetAudioClipFromWebRequest(request,
-                    out clip, out error);
-                if (clip == null)
+                    out clip, out status);
+                if (!status.Ok())
                 {
-                    cacheAudioCompleteCallback?.Invoke(error);
+                    cacheAudioCompleteCallback?.Invoke(status);
                     yield break;
                 }
                 audioClips.Add(fileRelativePath, clip);
             }
             
             numLoaded++;
-            progressCallback?.Invoke((float)numLoaded /
-                filenameWithFolder.Count);
-            Debug.Log("Loaded: " + file);
+            fileLoadedCallback?.Invoke(fileRelativePath);
         }
 
         yield return null;  // Wait 1 more frame just in case
-        cacheAudioCompleteCallback?.Invoke(null);
+        cacheAudioCompleteCallback?.Invoke(Status.OKStatus());
         Options.RestoreVSync();
     }
 
-    public static AudioClip GetCachedClip(string filenameWithoutFolder)
+    public static AudioClip GetCachedClip(
+        string filenameWithoutFolder)
     {
         if (audioClips.ContainsKey(filenameWithoutFolder))
         {
@@ -183,16 +201,18 @@ public class ResourceLoader : MonoBehaviour
     #endregion
 
     #region Audio
+    public delegate void AudioLoadCompleteCallback(
+        Status status, AudioClip clip = null);
+
     public static void LoadAudio(string fullPath,
-        UnityAction<AudioClip, string> loadAudioCompleteCallback)
+        AudioLoadCompleteCallback loadAudioCompleteCallback)
     {
-        ResourceLoader instance = GetInstance();
-        instance.StartCoroutine(instance.InnerLoadAudio(
+        GetInstance().StartCoroutine(GetInstance().InnerLoadAudio(
             fullPath, loadAudioCompleteCallback));
     }
 
     private IEnumerator InnerLoadAudio(string fullPath,
-        UnityAction<AudioClip, string> loadAudioCompleteCallback)
+        AudioLoadCompleteCallback loadAudioCompleteCallback)
     {
         // Handle empty files.
         try
@@ -200,13 +220,15 @@ public class ResourceLoader : MonoBehaviour
             if (IsEmptyFile(fullPath))
             {
                 Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
-                loadAudioCompleteCallback?.Invoke(emptyClip, null);
+                loadAudioCompleteCallback?.Invoke(
+                    Status.OKStatus(), emptyClip);
                 yield break;
             }
         }
         catch (Exception ex)
         {
-            loadAudioCompleteCallback?.Invoke(null, ex.Message);
+            loadAudioCompleteCallback?.Invoke(
+                Status.FromException(ex), null);
             yield break;
         }
 
@@ -216,13 +238,13 @@ public class ResourceLoader : MonoBehaviour
         yield return request.SendWebRequest();
 
         AudioClip clip;
-        string error;
-        GetAudioClipFromWebRequest(request, out clip, out error);
+        Status status;
+        GetAudioClipFromWebRequest(request, out clip, out status);
         if (clip != null)
         {
             Debug.Log("Loaded: " + fullPath);
         }
-        loadAudioCompleteCallback?.Invoke(clip, error);
+        loadAudioCompleteCallback?.Invoke(status, clip);
     }
 
     private static bool IsEmptyFile(string fullPath)
@@ -240,47 +262,44 @@ public class ResourceLoader : MonoBehaviour
 
     public static void GetAudioClipFromWebRequest(
         UnityWebRequest request,
-        out AudioClip clip, out string error)
+        out AudioClip clip, out Status status)
     {
         string fullPath = request.uri.LocalPath;
         if (request.result != UnityWebRequest.Result.Success)
         {
             clip = null;
-            error = Locale.GetStringAndFormatIncludingPaths(
-                "resource_loader_error_format",
-                fullPath,
-                request.error);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
         clip = DownloadHandlerAudioClip.GetContent(request);
-        error = null;
 
         if (clip == null)
         {
-            error = Locale.GetStringAndFormatIncludingPaths(
-                "resource_loader_error_format",
-                fullPath,
-                request.error);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
         if (clip.loadState != AudioDataLoadState.Loaded)
         {
             clip = null;
-            error = Locale.GetStringAndFormatIncludingPaths(
-                "resource_loader_unsupported_format_error_format",
-                fullPath);
+            status = Status.Error(Status.Code.OtherError,
+                request.error, fullPath);
             return;
         }
+        status = Status.OKStatus();
     }
     #endregion
 
     #region Image
+    public delegate void ImageLoadCompleteCallback(
+        Status status, Texture2D texture = null);
+
     public static void LoadImage(string fullPath,
-        UnityAction<Texture2D, string> loadImageCompleteCallback)
+        ImageLoadCompleteCallback completeCallback)
     {
-        ResourceLoader instance = GetInstance();
-        instance.StartCoroutine(instance.InnerLoadImage(
-            fullPath, loadImageCompleteCallback));
+        GetInstance().StartCoroutine(GetInstance().InnerLoadImage(
+            fullPath, completeCallback));
     }
 
     public static Sprite CreateSpriteFromTexture(Texture2D texture)
@@ -296,7 +315,7 @@ public class ResourceLoader : MonoBehaviour
     }
 
     private IEnumerator InnerLoadImage(string fullPath,
-        UnityAction<Texture2D, string> loadImageCompleteCallback)
+        ImageLoadCompleteCallback loadImageCompleteCallback)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(
             Paths.FullPathToUri(fullPath), nonReadable: true);
@@ -304,37 +323,31 @@ public class ResourceLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormatIncludingPaths(
-                    "resource_loader_error_format",
-                    fullPath,
-                    request.error));
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Status.Code.OtherError,
+                request.error, fullPath));
             yield break;
         }
-
         Texture texture = DownloadHandlerTexture.GetContent(request);
         if (texture == null)
         {
-            loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormatIncludingPaths(
-                    "resource_loader_error_format",
-                    fullPath,
-                    request.error));
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Status.Code.OtherError,
+                request.error, fullPath));
             yield break;
         }
         Texture2D t2d = texture as Texture2D;
         if (t2d == null)
         {
-            loadImageCompleteCallback?.Invoke(null,
-                Locale.GetStringAndFormatIncludingPaths(
-                    "resource_loader_unsupported_format_error_format",
-                    fullPath));
+            loadImageCompleteCallback?.Invoke(
+                Status.Error(Status.Code.OtherError,
+                request.error, fullPath));
             yield break;
         }
 
-        Debug.Log("Loaded: " + fullPath);
         t2d.wrapMode = TextureWrapMode.Clamp;
-        loadImageCompleteCallback.Invoke(t2d, null);
+        loadImageCompleteCallback.Invoke(Status.OKStatus(),
+            texture: t2d);
     }
     #endregion
 }

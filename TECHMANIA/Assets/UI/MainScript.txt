@@ -1,0 +1,65 @@
+api = getApi(1)
+tm = api.tm
+net = api.net
+unity = api.unity
+eventType = tm.enum.eventType
+
+-- To apply themes to dropdowns
+tm.SetPanelSettings("Assets/UI/Panel Settings.asset")
+
+tm.l10n.Initialize(tm.io.LoadTextFileFromTheme("Assets/UI/String Table (default theme).csv"))
+tm.l10n.ApplyLocale()
+callbacksOnLocaleChange = {}
+
+themeOptions = tm.options.GetThemeOptions("Default")
+
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Utilities.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Fading.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Controls/Controls.txt")
+InitializeControls()
+
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Alert Box.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Welcome Mat.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Track Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Options Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Information Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Game Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Result Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Editor.txt")
+
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Navigation.txt")
+SetUpNavigation()
+mainMenu.Show()
+
+-- Array/table example
+
+-- local testArray = {}
+-- print(testArray[1])  -- Uninitialized values are nil
+-- table.insert(testArray, 123)  -- Key is 1
+-- testArray["foo"] = 456  -- Key is "foo"
+-- print(testArray[1])
+-- print(testArray["foo"])
+-- print(#testArray)  -- 1, as the length operator only counts consecutive integer keys
+-- table.insert(testArray, 789)  -- inserts at length+1, so this key is 2
+-- for key, value in pairs(testArray) do print(key .. " " .. value) end  -- Iterates over all key-value pairs
+-- for index, value in ipairs(testArray) do print(index .. " " .. value) end  -- Iterates integer keys until the first one absent
+-- local arrayLiteral = {1, 2, 3}
+-- local tableLiteral = { a = b, c = d }
+
+-- Constructor example
+
+-- function Vector3(x, y, z)
+--     return unity.vector3.__new(x, y, z)
+-- end
+-- v = Vector3(1, 2, 3)
+-- print(v.y)
+
+-- Enum example
+
+-- print(tostring(tm.enum.ruleset.Standard))  -- enums can be cast to string
+-- local enum = tm.enum.ruleset["Legacy"]  -- enums can be cast from string
+-- local equal = enum == tm.enum.ruleset.Legacy  -- enums can be tested for equality

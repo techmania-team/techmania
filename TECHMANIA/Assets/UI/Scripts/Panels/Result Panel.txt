@@ -1,0 +1,107 @@
+resultPanel = {
+    panel = tm.root.Q("result-panel")
+}
+
+-- There is no Initialize, all navigation is set up in Navigation.txt
+
+resultPanel.Show = function()
+    local panel = resultPanel.panel
+    local trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
+    local pattern = selectPatternPanel.selectedPattern
+    local patternMetadata = pattern.patternMetadata
+    local scoreKeeper = tm.game.scoreKeeper
+
+    -- Panel title
+    local panelTitle = panel.Q("top-bar").Q("title")
+    if (scoreKeeper.stageFailed) then
+        panelTitle.text = tm.l10n.GetString("result_panel_stage_failed_title")
+    else
+        panelTitle.text = tm.l10n.GetString("result_panel_stage_clear_title")
+    end
+
+    -- Track metadata
+    local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, trackMetadata.eyecatchImage)
+    LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
+    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(trackMetadata.title)
+    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(trackMetadata.artist)
+
+    -- Pattern metadata
+    local patternBanner = panel.Q("pattern-banner")
+    SetUpPatternBanner(patternMetadata, patternBanner)
+    patternBanner.Q("medal-container").display = false
+
+    -- Tally
+    local tally = panel.Q("judgement-tally")
+    local tallyLabels = tally.Q("labels")
+    local tallyValues = tally.Q("values")
+    if (tm.ruleset.comboBonus) then
+        tallyLabels.Q("combo-bonus").display = true
+        tallyValues.Q("combo-bonus").display = true
+    else
+        tallyLabels.Q("combo-bonus").display = false
+        tallyValues.Q("combo-bonus").display = false
+    end
+    tallyValues.Q("rainbow-max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.RainbowMax))
+    tallyValues.Q("max").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Max))
+    tallyValues.Q("cool").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Cool))
+    tallyValues.Q("good").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Good))
+    tallyValues.Q("miss").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Miss))
+    tallyValues.Q("break").text = tostring(scoreKeeper.NumNotesWithJudgement(tm.enum.judgement.Break))
+    tallyValues.Q("max-combo").text = tostring(scoreKeeper.maxCombo)
+    tallyValues.Q("fever-bonus").text = tostring(scoreKeeper.totalFeverBonus)
+    tallyValues.Q("combo-bonus").text = tostring(scoreKeeper.ComboBonus())
+
+    -- Score and rank
+    local score = scoreKeeper.TotalScore()
+    panel.Q("total-score").Q("value").text = tostring(score)
+
+    local medal = scoreKeeper.Medal()
+    local medalString = ""
+    if (medal == tm.enum.performanceMedal.AllCombo) then
+        medalString = tm.l10n.GetString("performance_medal_all_combo")
+    elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
+        medalString = tm.l10n.GetString("performance_medal_perfect_play")
+    elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
+        medalString = tm.l10n.GetString("performance_medal_absolute_perfect")
+    end
+    panel.Q("total-score").Q("medal").text = medalString
+
+    panel.Q("rank").Q("value").text = scoreKeeper.Rank()
+
+    -- Record
+    local record = tm.records.GetRecord(pattern)
+    local recordString = "---"
+    if (record != nil) then
+        recordString = record.score .. "   " .. record.Rank()
+    end
+    panel.Q("my-record").Q("value").text = recordString
+    
+    if (tm.game.ScoreIsValid() and tm.game.ScoreIsNewRecord()) then
+        panel.Q("my-record").Q("new-record-indicator").display = true
+        tm.game.UpdateRecord()
+        tm.records.SaveToFile()
+    else
+        panel.Q("my-record").Q("new-record-indicator").display = false
+    end
+
+    -- Ruleset
+    local rulesetString = ""
+    panel.Q("legacy-override-indicator").display = false
+    if (tm.options.ruleset == tm.enum.ruleset.Standard) then
+        rulesetString = tm.l10n.GetString("ruleset_standard")
+    elseif (tm.options.ruleset == tm.enum.ruleset.Legacy) then
+        rulesetString = tm.l10n.GetString("ruleset_legacy")
+        if (selectPatternPanel.selectedPattern.legacyRulesetOverride.HasAny()) then
+            rulesetString = rulesetString .. "*"
+            panel.Q("legacy-override-indicator").display = true
+        end
+    elseif (tm.options.ruleset == tm.enum.ruleset.Custom) then
+        rulesetString = tm.l10n.GetString("ruleset_custom")
+    end
+    panel.Q("ruleset").Q("value").text = rulesetString
+
+    -- Modifiers
+    panel.Q("modifiers").Q("content").text = CurrentModifiersToString(false)  -- don't include "no video"
+
+    tm.game.Conclude()
+end

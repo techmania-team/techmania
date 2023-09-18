@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine.Events;
 using System;
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 public static class Paths
 {
     public const string kTrackFilename = "track.tech";
@@ -14,12 +15,17 @@ public static class Paths
         "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = 
         "eyecatch.jpg";
+    public const string kThemeExtension = ".tmtheme";
     public const string kTrackFolderName = "Tracks";
     public const string kSkinFolderName = "Skins";
     public const string kNoteSkinFolderName = "Note";
     public const string kVfxSkinFolderName = "VFX";
     public const string kComboSkinFolderName = "Combo";
     public const string kGameUiFolderName = "Game UI";
+    public const string kThemeFolderName = "Themes";
+
+    public const string kAssetBundleFolder = "Assets/AssetBundles";
+    public const string kDefaultBundleName = "default";
 
     #region Important folders
     // "Streaming" refers to streaming assets. On PC this brings no
@@ -36,13 +42,16 @@ public static class Paths
     // special logic to try both the working directory and
     // streaming folder.
 
-    private static string streamingAssetsFolder;
     private static string workingDirectory;
+    private static string dataFolder;
+
+    private static string streamingAssetsFolder;
     private static string trackRootFolder;
     private static string streamingTrackRootFolder;
-    private static string skinFolder;
-    private static string streamingSkinFolder;
-    private static string dataFolder;
+    private static string skinRootFolder;
+    private static string streamingSkinRootFolder;
+    private static string themeFolder;
+    private static string streamingThemeFolder;
 
     public static void PrepareFolders()
     {
@@ -80,16 +89,22 @@ public static class Paths
             streamingAssetsFolder, kTrackFolderName);
 
         // Skin folder
-        skinFolder = Path.Combine(workingDirectory, 
+        skinRootFolder = Path.Combine(workingDirectory, 
             kSkinFolderName);
-        Directory.CreateDirectory(skinFolder);
-        streamingSkinFolder = Path.Combine(
+        Directory.CreateDirectory(skinRootFolder);
+        foreach (SkinType type in Enum.GetValues(typeof(SkinType)))
+        {
+            Directory.CreateDirectory(GetSkinRootFolderForType(type));
+        }
+        streamingSkinRootFolder = Path.Combine(
             streamingAssetsFolder, kSkinFolderName);
 
-        Directory.CreateDirectory(GetNoteSkinRootFolder());
-        Directory.CreateDirectory(GetVfxSkinRootFolder());
-        Directory.CreateDirectory(GetComboSkinRootFolder());
-        Directory.CreateDirectory(GetGameUiSkinRootFolder());
+        // Theme folder
+        themeFolder = Path.Combine(workingDirectory,
+            kThemeFolderName);
+        Directory.CreateDirectory(themeFolder);
+        streamingThemeFolder = Path.Combine(
+            streamingAssetsFolder, kThemeFolderName);
 
         // Data folder
 #if UNITY_ANDROID || UNITY_IOS
@@ -107,111 +122,95 @@ public static class Paths
 
     public static void ApplyCustomDataLocation()
     {
+        trackRootFolder = Path.Combine(workingDirectory,
+            kTrackFolderName);
+        skinRootFolder = Path.Combine(workingDirectory,
+            kSkinFolderName);
+        themeFolder = Path.Combine(workingDirectory,
+            kThemeFolderName);
         if (Options.instance.customDataLocation)
         {
-            trackRootFolder = Options.instance.tracksFolderLocation;
-            skinFolder = Options.instance.skinsFolderLocation;
-        }
-        else
-        {
-            trackRootFolder = Path.Combine(workingDirectory,
-                kTrackFolderName);
-            skinFolder = Path.Combine(workingDirectory,
-                kSkinFolderName);
+            if (!string.IsNullOrEmpty(
+                Options.instance.tracksFolderLocation))
+            {
+                trackRootFolder = Options.instance.tracksFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.skinsFolderLocation))
+            {
+                skinRootFolder = Options.instance.skinsFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.themesFolderLocation))
+            {
+                themeFolder = Options.instance.themesFolderLocation;
+            }
         }
     }
     #endregion
 
     #region Things in working directory
-    public static string GetTrackRootFolder()
+    public static string GetTrackRootFolder(
+        bool streamingAssets = false)
     {
-        return trackRootFolder;
+        return streamingAssets ? streamingTrackRootFolder :
+            trackRootFolder;
     }
 
-    public static string GetStreamingTrackRootFolder()
+    public static string GetSkinRootFolder(
+        bool streamingAssets = false)
     {
-        return streamingTrackRootFolder;
+        return streamingAssets ? streamingSkinRootFolder : 
+            skinRootFolder;
     }
 
-    public static string GetSkinFolder()
+    public static string GetSkinRootFolderForType(
+        SkinType type, bool streamingAssets = false)
     {
-        return skinFolder;
+        string rootFolder = GetSkinRootFolder(streamingAssets);
+        string folderName = type switch
+        {
+            SkinType.Note => kNoteSkinFolderName,
+            SkinType.Vfx => kVfxSkinFolderName,
+            SkinType.Combo => kComboSkinFolderName,
+            SkinType.GameUI => kGameUiFolderName,
+            _ => ""
+        };
+        return Path.Combine(rootFolder, folderName);
     }
 
-    public static string GetStreamingSkinFolder()
-    {
-        return streamingSkinFolder;
-    }
-
-    public static string GetNoteSkinRootFolder()
-    {
-        return Path.Combine(GetSkinFolder(), kNoteSkinFolderName);
-    }
-    public static string GetStreamingNoteSkinRootFolder()
-    {
-        return Path.Combine(GetStreamingSkinFolder(), 
-            kNoteSkinFolderName);
-    }
-    public static string GetNoteSkinFolder(string name)
+    public static string GetSkinFolder(SkinType type, string name)
     {
         // If there's a name collision between a skin in the
         // working directory and streaming assets, prioritize the
         // former. This is the same behavior as SelectSkinPanel.
-        string temp = Path.Combine(GetNoteSkinRootFolder(), name);
-        return Directory.Exists(temp) ?
-            temp :
-            Path.Combine(GetStreamingNoteSkinRootFolder(), name);
+        string folderInWorkingDir = Path.Combine(
+            GetSkinRootFolderForType(type), name);
+        if (Directory.Exists(folderInWorkingDir))
+        {
+            return folderInWorkingDir;
+        }
+        return Path.Combine(GetSkinRootFolderForType(
+            type, streamingAssets: true), name);
     }
 
-    public static string GetVfxSkinRootFolder()
+    public static string GetThemeFolder(bool streamingAssets = false)
     {
-        return Path.Combine(GetSkinFolder(), kVfxSkinFolderName);
-    }
-    public static string GetStreamingVfxSkinRootFolder()
-    {
-        return Path.Combine(GetStreamingSkinFolder(), 
-            kVfxSkinFolderName);
-    }
-    public static string GetVfxSkinFolder(string name)
-    {
-        string temp = Path.Combine(GetVfxSkinRootFolder(), name);
-        return Directory.Exists(temp) ?
-            temp :
-            Path.Combine(GetStreamingVfxSkinRootFolder(), name);
+        return streamingAssets ? streamingThemeFolder : themeFolder;
     }
 
-    public static string GetComboSkinRootFolder()
+    public static string GetThemeFilePath(string name)
     {
-        return Path.Combine(GetSkinFolder(), kComboSkinFolderName);
-    }
-    public static string GetStreamingComboSkinRootFolder()
-    {
-        return Path.Combine(GetStreamingSkinFolder(), 
-            kComboSkinFolderName);
-    }
-    public static string GetComboSkinFolder(string name)
-    {
-        string temp = Path.Combine(GetComboSkinRootFolder(), name);
-        return Directory.Exists(temp) ?
-            temp :
-            Path.Combine(GetStreamingComboSkinRootFolder(), name);
-    }
+        string filenameInFolder = name + kThemeExtension;
+        string pathInWorkingDir = Path.Combine(
+            GetThemeFolder(), filenameInFolder);
+        if (File.Exists(pathInWorkingDir))
+        {
+            return pathInWorkingDir;
+        }
 
-    public static string GetGameUiSkinRootFolder()
-    {
-        return Path.Combine(GetSkinFolder(), kGameUiFolderName);
-    }
-    public static string GetStreamingGameUiSkinRootFolder()
-    {
-        return Path.Combine(GetStreamingSkinFolder(), 
-            kGameUiFolderName);
-    }
-    public static string GetGameUiSkinFolder(string name)
-    {
-        string temp = Path.Combine(GetGameUiSkinRootFolder(), name);
-        return Directory.Exists(temp) ? 
-            temp :
-            Path.Combine(GetStreamingGameUiSkinRootFolder(), name);
+        return Path.Combine(GetThemeFolder(streamingAssets: true),
+            filenameInFolder);
     }
     #endregion
 
@@ -324,10 +323,18 @@ public static class Paths
     {
 #if UNITY_ANDROID || UNITY_IOS
         return fullPath
-            .Replace(Paths.GetStreamingTrackRootFolder(), "Tracks")
-            .Replace(Paths.GetTrackRootFolder(), "Tracks")
-            .Replace(Paths.GetStreamingSkinFolder(), "Skins")
-            .Replace(Paths.GetSkinFolder(), "Skins")
+            .Replace(Paths.GetTrackRootFolder(streamingAssets: true), 
+                kTrackFolderName)
+            .Replace(Paths.GetTrackRootFolder(streamingAssets: false), 
+                kTrackFolderName)
+            .Replace(Paths.GetSkinRootFolder(streamingAssets: true), 
+                kSkinFolderName)
+            .Replace(Paths.GetSkinRootFolder(streamingAssets: false), 
+                kSkinFolderName)
+            .Replace(Paths.GetThemeFolder(streamingAssets: true), 
+                kThemeFolderName)
+            .Replace(Paths.GetThemeFolder(streamingAssets: false), 
+                kThemeFolderName)
             .Replace(dataFolder, "TECHMANIA");
 #else
         return fullPath;
@@ -344,6 +351,50 @@ public static class Paths
             .Replace("\\", "/")
 #endif
             ;
+    }
+
+    public static string EscapeBackslash(string path)
+    {
+        return path.Replace("\\", "\\\\");
+    }
+
+    // Similar to Path.GetDirectoryName but allows going up
+    // from streaming assets to track root folder.
+    public static string GoUpFrom(string path)
+    {
+        if (path == GetTrackRootFolder(streamingAssets: false) ||
+            path == GetTrackRootFolder(streamingAssets: true))
+        {
+            return GetTrackRootFolder();
+        }
+#if UNITY_ANDROID
+        // Paths variables on Android are in the form of
+        // path
+        // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks/Official Tracks
+        // GetStreamingTrackRootFolder()
+        // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
+        // GetTrackRootFolder()
+        // /storage/emulated/0/Android/data/com.TECHMANIATeam.TECHMANIA/files/Tracks
+        // Path.GetDirectoryName(path)
+        // jar:file:/storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
+        string up = Path.GetDirectoryName(path)
+            .Replace("jar:file:/", "jar:file:///");
+#else
+        string up = Path.GetDirectoryName(path);
+#endif
+        if (up == GetTrackRootFolder(streamingAssets: false) ||
+            up == GetTrackRootFolder(streamingAssets: true))
+        {
+            return GetTrackRootFolder();
+        }
+        return up;
+    }
+
+    public static string Combine(string path1, string path2)
+    {
+        if (path1 == null) path1 = "";
+        if (path2 == null) path2 = "";
+        return System.IO.Path.Combine(path1, path2);
     }
     #endregion
 

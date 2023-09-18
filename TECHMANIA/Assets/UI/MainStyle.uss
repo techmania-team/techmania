@@ -1,0 +1,391 @@
+.surface {
+    background-color: var(--surface-color);
+}
+
+.surface-4dp {
+    background-color: var(--4dp-on-surface);
+}
+
+.surface-8dp {
+    background-color: var(--8dp-on-surface);
+}
+
+.elevation-1dp {
+    background-color: var(--elevation-1dp);
+}
+
+.elevation-shadow {
+    position: absolute;
+    left: -128px;
+    top: -128px;
+    right: -128px;
+    bottom: -128px;
+    background-image: url('project://database/Assets/UI/Images/Shadow.png?fileID=2800000&guid=384e19277f16d9646b840c9e2ccb15ac&type=3#Shadow');
+    -unity-slice-left: 128;
+    -unity-slice-top: 128;
+    -unity-slice-right: 128;
+    -unity-slice-bottom: 128;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+}
+
+.red-700 {
+    background-color: rgb(211, 47, 47);
+}
+
+.blue-200 {
+    background-color: rgb(144, 202, 249);
+}
+
+.panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.panel-content {
+    flex-grow: 1;
+}
+
+.top-bar-buttons-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    flex-direction: row-reverse;
+}
+
+.top-bar-buttons-container .button-in-top-bar {
+    margin-left: 0;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.options-header {
+    height: 80px;
+    -unity-text-align: middle-left;
+}
+
+.options-item {
+    height: 80px;
+    background-color: var(--elevation-1dp);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.options-divider {
+    height: 2px;
+    background-color: var(--elevation-8dp);
+}
+
+.options-item .input-field {
+    width: 400px;
+}
+
+#options-panel .button-outlined {
+    width: 200px;
+}
+
+#options-panel .slider-template {
+    width: 340px;
+    right: -20px;
+    -unity-text-align: upper-center;
+}
+
+#options-panel .volume-display {
+    width: 80px;
+    right: -20px;
+    -unity-text-align: upper-center;
+}
+
+.dialog-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog {
+}
+
+.dialog-button-container {
+    height: 55px;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+}
+
+.dialog-button-divider {
+    width: 20px;
+    height: 100%;
+}
+
+#information-panel .information-item {
+    margin-top: 20px;
+}
+
+#information-panel .divider {
+    height: 70px;
+}
+
+#information-panel #links-container Button {
+    width: 300px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.sidesheet-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sidesheet {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sidesheet #shadow {
+    position: absolute;
+    left: -128px;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    background-image: url('project://database/Assets/UI/Images/ShadowSide.png?fileID=2800000&guid=6099628bb55e579449505a7779474164&type=3#ShadowSide');
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+}
+
+.sidesheet #content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.sidesheet #content .item {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 20px;
+}
+
+.sidesheet #close-button {
+    position: absolute;
+    right: 40px;
+    top: 20px;
+}
+
+.sidesheet .space {
+    height: 20px;
+}
+
+#select-pattern-panel .card-title {
+    height: 30px;
+    -unity-text-align: middle-center;
+    margin-top: 20px;
+}
+
+#select-pattern-panel .card-content {
+    -unity-text-align: middle-center;
+    height: 40px;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#select-pattern-panel .radar-display {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+#select-pattern-panel .radar-display #name {
+    height: 50px;
+    -unity-text-align: lower-center;
+}
+
+#select-pattern-panel .radar-display #value {
+    height: 50px;
+    -unity-text-align: upper-center;
+}
+
+#modifier-sidesheet .item #label {
+    align-items: center;
+    height: 60px;
+    -unity-text-align: middle-left;
+    flex-direction: row-reverse;
+}
+
+#modifier-sidesheet .item #Dropdown {
+    width: 350px;
+}
+
+#game-panel #fever-bar-wrap .text-headline-6 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+}
+
+#game-panel #middle-fever-bar-bg .text-headline-6 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(245, 124, 0);
+    -unity-font-style: bold;
+}
+
+#game-panel #pause-menu .divider {
+    height: 2px;
+    width: 100%;
+    background-color: var(--elevation-8dp);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+#game-panel #pause-menu .item {
+    width: 100%;
+    height: 60px;
+    padding-left: 20px;
+    flex-direction: row;
+    align-items: center;
+}
+
+#game-panel #pause-menu .item #label {
+    flex-grow: 1;
+    -unity-text-align: upper-left;
+}
+
+#game-panel #pause-menu .item #slider-container {
+    width: 200px;
+}
+
+#game-panel #pause-menu .item #value-display {
+    width: 80px;
+    -unity-text-align: upper-center;
+}
+
+#game-panel #judgement-types Label {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+#game-panel #judgement-values Label {
+    flex-grow: 1;
+    -unity-text-align: middle-right;
+}
+
+#game-panel #markers .lane-divider {
+    height: 4px;
+    background-color: var(--disabled-text-color);
+}
+
+#game-panel #markers .beat-marker {
+    width: 4px;
+    background-color: var(--disabled-text-color);
+}
+
+#game-panel #markers .half-beat-marker {
+    width: 2px;
+    background-image: url('project://database/Assets/UI/Images/DottedLine.png?fileID=2800000&guid=ef4bfbe9cfa688d4f83f5290d23698cc&type=3#DottedLine');
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
+#game-panel #practice-top-bar .section {
+    flex-direction: row;
+    justify-content: center;
+    width: 25%;
+}
+
+#game-panel #practice-top-bar .section #center-display {
+    width: 160px;
+}
+
+#game-panel #practice-top-bar .section #center-display #label {
+    flex-grow: 1;
+    -unity-text-align: lower-center;
+}
+
+#game-panel #practice-top-bar .section #center-display #value {
+    flex-grow: 1;
+    -unity-text-align: upper-center;
+}
+
+#game-panel #practice-top-bar .shortcut-label {
+    left: 0;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+    height: 20px;
+    -unity-text-align: upper-center;
+}
+
+#result-panel #judgement-tally #labels Label {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+#result-panel #judgement-tally #values Label {
+    flex-grow: 1;
+    -unity-text-align: middle-right;
+}
+
+#result-panel .card-title {
+    height: 30px;
+    -unity-text-align: middle-center;
+    margin-top: 20px;
+}
+
+#touchscreen-test-panel .anchor {
+    width: 0;
+    height: 0;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+}
+
+#timing-calibration-panel .control-row {
+    height: 60px;
+    flex-direction: row;
+    width: 1000px;
+}
+
+#timing-calibration-panel .control-row #label {
+    width: 350px;
+    -unity-text-align: middle-right;
+}
+
+#timing-calibration-panel .control-row #value-slider {
+    justify-content: center;
+    width: 500px;
+    margin-left: 20px;
+}
+
+#timing-calibration-panel .control-row #value-text {
+    width: 100px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.primary-color {
+    background-color: var(--primary-color);
+}

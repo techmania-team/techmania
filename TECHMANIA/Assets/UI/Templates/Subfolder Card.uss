@@ -1,0 +1,30 @@
+#subfolder-card {
+    width: 400px;
+    height: 130px;
+    background-color: var(--elevation-2dp);
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#subfolder-card #eyecatch {
+    width: 100px;
+    height: 100px;
+    margin-left: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+#subfolder-card #default-eyecatch {
+    width: 60px;
+    height: 60px;
+    background-image: url('project://database/Assets/UI/Images/baseline_folder_white_48dp.png?fileID=2800000&guid=21c7ed5ad1230fc4993974aa237ce1d9&type=3#baseline_folder_white_48dp');
+    -unity-background-image-tint-color: var(--primary-color);
+}
+
+#subfolder-card #name-container {
+    position: absolute;
+    left: 130px;
+    right: 15px;
+}

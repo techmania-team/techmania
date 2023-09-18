@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Unused at the moment, but may be useful for the editor
+// in the future.
 public class ObjectPoolManager : MonoBehaviour
 {
     private Dictionary<GameObject, ObjectPool> prefabToPool;

@@ -13,7 +13,7 @@ An open source rhythm game, written in Unity, playable with or without a touchsc
 
 ## Licensing
 All code and assets are released under the [MIT License](LICENSE), with the following exceptions:
-* Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) for details. Please note that some licenses prohibit commercial use.
+* Sound effects in [TECHMANIA/Assets/Sfx](TECHMANIA/Assets/Sfx) and [TECHMANIA/Assets/UI/SFX](TECHMANIA/Assets/UI/SFX) are acquired from external resources, which use different licenses. Refer to [TECHMANIA/Assets/Sfx/Attributions.md](TECHMANIA/Assets/Sfx/Attributions.md) and [TECHMANIA/Assets/UI/SFX/Attributions.md](TECHMANIA/Assets/UI/SFX/Attributions.md) for details. Please note that some licenses prohibit commercial use.
 * Some included tracks in the releases are under separate licenses:
 
 |Track name|License|
@@ -45,10 +45,10 @@ We also provide technical support for iOS/iPadOS, in that we are able to respond
 ## Content policy
 Per the MIT license, you are free to produce any Content with TECHMANIA, including but not limited to screenshots, videos and livestreams. Attributions are appreciated, but not required. However, please keep the following in mind:
 * If your Content features 3rd party music, it may be subject to copyright claims and/or takedowns. You may not hold TECHMANIA responsible for the resulting losses.
-* If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md), you must clearly state so in the description of your Content, to avoid potential confusion.
+* If your Content is publicly available and features any unofficial [skin](https://github.com/techmania-team/techmania-docs/blob/main/English/Skins.md) or theme, you must clearly state so in the description of your Content, to avoid potential confusion.
 * If your Content is commercial, additional limitations apply:
   * Your Content cannot feature any [official tracks](#licensing).
-  * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/Sfx/Fever.wav). You can swap the sound with one that allows commercial use, make a custom build, and produce Content from that build.
+  * Your Content cannot feature the [Fever sound effect](TECHMANIA/Assets/UI/SFX/Fever.wav), which is a part of the default theme. You can produce Content from a different theme.
 
 ## Feedback
 For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then submit them to [Issues](https://github.com/techmania-team/techmania/issues).
@@ -69,22 +69,12 @@ If the build fails or produces a platform-specific bug, you can submit an issue,
 ## On streaming assets
 In PC builds we release the base game and resources (official tracks and skins) separately so PC players don't need to redownload resources when updating. On mobile builds, however, it's more beneficial to include the resources in the release so the installation process is easier. To achieve this, we take advantage of [streaming assets](https://docs.unity3d.com/Manual/StreamingAssets.html).
 
-In order to keep this repo focused, the streaming assets folder (TECHMANIA/Assets/StreamingAssets) is ignored in `.gitignore`. To set up streaming assets in your local clone:
-* Create the following folders:
-  * `TECHMANIA/Assets/StreamingAssets`
-  * `TECHMANIA/Assets/StreamingAssets/Tracks`
-  * `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks`
-  * `TECHMANIA/Assets/StreamingAssets/Skins`
+In order to keep this repo focused, the streaming assets folder (`Assets/StreamingAssets`) is ignored in `.gitignore`. To set up streaming assets in your local clone:
+* Create the directory `Assets/StreamingAssets`.
 * Download `Skins_and_Tracks.zip` from an official release.
-* Copy everything:
-  * from `Skins_and_Tracks.zip/Tracks` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks`
-  * from `Skins_and_Tracks.zip/Skins` to `TECHMANIA/Assets/StreamingAssets/Skins`
+* Extract everything in `Skins_and_Tracks.zip` into `Assets/StreamingAssets`.
 
 If done correctly, you should see official tracks and skins in the game even when they are not in the build folder.
-
-Additionally, we perform the following optimizations / decorations for the mobile releases:
-* In tracks, convert .wav to .ogg, and .wmv to .mp4, in order to decrease file size and increase compatibility. When doing so, make sure to also update filenames in `track.tech`.
-* Copy `TECHMANIA/Assets/Sprites/Logo.png` to `TECHMANIA/Assets/StreamingAssets/Tracks/Official Tracks` so it shows up as eyecatch.
 
 ## Platform-specific forks
 * rogeraabbccdd's iOS & Android builds: https://github.com/rogeraabbccdd/techmania/releases

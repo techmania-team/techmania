@@ -3,49 +3,73 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
 [Serializable]
 [FormatVersion(Records.kVersion, typeof(Records), isLatest: true)]
-public class RecordsBase : SerializableClass<RecordsBase> { }
+public class RecordsBase : SerializableClass<RecordsBase>
+{
+    public void SaveToFile()
+    {
+        SaveToFile(Paths.GetRecordsFilePath());
+    }
+}
 
 [Serializable]
+[MoonSharpUserData]
 public class Record
 {
-    public string guid;  // For pattern
-    public string fingerprint;  // SHA256
-    public Options.Ruleset ruleset;
-    public int score;
-    public PerformanceMedal medal;
-    public string gameVersion;
+    // All fields are read-only for Lua.
+    public string guid  // For pattern
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public string fingerprint // SHA256
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public Options.Ruleset ruleset
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public int score
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public PerformanceMedal medal
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public string gameVersion
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+
+    public string Rank()
+    {
+        return ScoreKeeper.ScoreToRankAssumingStageClear(score);
+    }
 
     public override string ToString()
     {
-        return $"{score}   {Score.ScoreToRank(score)}";
+        return $"{score}   {Rank()}";
     }
 
     public static string EmptyRecordString()
     {
         return "---";
-    }
-
-    public static string MedalToString(PerformanceMedal medal)
-    {
-        switch (medal)
-        {
-            case PerformanceMedal.NoMedal:
-                return "";
-            case PerformanceMedal.AllCombo:
-                return Locale.GetString(
-                    "result_panel_full_combo_medal");
-            case PerformanceMedal.PerfectPlay:
-                return Locale.GetString(
-                    "result_panel_perfect_play_medal");
-            case PerformanceMedal.AbsolutePerfect:
-                return Locale.GetString(
-                    "result_panel_absolute_perfect_medal");
-            default:
-                return "";
-        }
     }
 
     public Record Clone()
@@ -63,18 +87,24 @@ public class Record
 }
 
 [Serializable]
+[MoonSharpUserData]
 public class Records : RecordsBase
 {
     public const string kVersion = "1";
 
     // The format stored on disk.
+    [MoonSharpHidden]
     public List<Record> records;
 
-    // The format stored in memory.
+    // The format stored in memory. We don't serialize this dictionary
+    // directly because it's 2 levels deep.
+    // string is guid.
     [NonSerialized]
+    [MoonSharpHidden]
     public Dictionary<Options.Ruleset, Dictionary<string, Record>> 
         recordDict;
 
+    [MoonSharpHidden]
     public Records()
     {
         version = kVersion;
@@ -88,122 +118,87 @@ public class Records : RecordsBase
             new Dictionary<string, Record>();
     }
 
-    // Requires fingerprints to have been calculated.
-    public Record GetRecord(Pattern p)
+    // Returns null if a record doesn't exist.
+    public Record GetRecord(Pattern p, Options.Ruleset ruleset)
     {
-        if (Options.instance.ruleset == Options.Ruleset.Custom)
+        if (ruleset == Options.Ruleset.Custom)
         {
             return null;
         }
-        p.CheckFingerprintCalculated();
-        Dictionary<string, Record> dict = recordDict[
-            Options.instance.ruleset];
+        Dictionary<string, Record> dict = recordDict[ruleset];
         if (!dict.ContainsKey(p.patternMetadata.guid))
         {
             return null;
         }
 
         Record r = dict[p.patternMetadata.guid];
-
-        bool checkFingerprint = true;
-        switch (r.gameVersion)
+        if (string.IsNullOrEmpty(p.fingerprint))
         {
-            case "1.0 beta":
-                // There were ruleset changes between 1.0 beta and
-                // 1.0.
-                return null;
-            case "1.0":
-            case "1.0.1":
-                // Records on these versions were not calculated
-                // with MinimizedPattern. They will be fixed by
-                // UpdateRecord.
-                checkFingerprint = false;
-                break;
+            p.CalculateFingerprint();
         }
-
-        if (checkFingerprint && r.fingerprint != p.fingerprint)
+        if (r.fingerprint != p.fingerprint)
         {
             return null;
         }
         return r;
     }
 
-    // If the score is invalid for any reason (modifiers,
-    // stage failed, etc.), pass in null. currentRecord can also
-    // be null.
-    public void UpdateRecord(Pattern p, Score s,
-        Record currentRecord, out bool newRecord)
+    // Requires fingerprints to have been calculated.
+    public Record GetRecord(Pattern p)
     {
-        p.CheckFingerprintCalculated();
-        Record updatedRecord = null;
-        if (currentRecord != null)
-        {
-            updatedRecord = currentRecord.Clone();
-        }
-
-        // First, fix outdated records if applicable.
-        if (currentRecord != null &&
-            (currentRecord.gameVersion == "1.0" ||
-            currentRecord.gameVersion == "1.0.1"))
-        {
-            updatedRecord.fingerprint = p.fingerprint;
-            updatedRecord.gameVersion = Application.version;
-        }
-
-        // Then, update medal if applicable.
-        if (currentRecord != null &&
-            s != null &&
-            s.Medal() > currentRecord.medal)
-        {
-            updatedRecord.medal = s.Medal();
-            updatedRecord.gameVersion = Application.version;
-        }
-
-        // Finally, update score if applicable.
-        newRecord = false;
-        if (s != null)
-        {
-            int totalScore = s.CurrentScore() +
-                s.totalFeverBonus + s.comboBonus;
-            if (currentRecord == null ||
-                totalScore > currentRecord.score)
-            {
-                newRecord = true;
-                updatedRecord = new Record()
-                {
-                    guid = p.patternMetadata.guid,
-                    fingerprint = p.fingerprint,
-                    ruleset = Options.instance.ruleset,
-                    score = totalScore,
-                    medal = s.Medal(),
-                    gameVersion = Application.version
-                };
-            }    
-        }
-
-        if (updatedRecord != null)
-        {
-            recordDict[updatedRecord.ruleset][updatedRecord.guid]
-                = updatedRecord;
-        }
+        return GetRecord(p, Options.instance.ruleset);
     }
 
-    // Requires fingerprints to have been calculated.
-    public void SetRecord(Pattern p, Score s)
+    [MoonSharpHidden]
+    public void UpdateRecord(Pattern p, Options.Ruleset ruleset,
+        int totalScore, PerformanceMedal medal)
     {
         p.CheckFingerprintCalculated();
-        int totalScore = s.CurrentScore() +
-            s.totalFeverBonus + s.comboBonus;
-        Record r = new Record()
+
+        if (ruleset == Options.Ruleset.Custom)
         {
-            guid = p.patternMetadata.guid,
-            fingerprint = p.fingerprint,
-            ruleset = Options.instance.ruleset,
-            score = totalScore,
-            medal = s.Medal(),
-            gameVersion = Application.version
-        };
-        recordDict[r.ruleset][r.guid] = r;
+            return;
+        }
+
+        string guid = p.patternMetadata.guid;
+        Record record = GetRecord(p, ruleset);
+        if (record == null)
+        {
+            // If no record, it may be due to wrong fingerprint.
+            // To handle that, we delete the existing record on the
+            // guid, if any.
+            Dictionary<string, Record> dict = recordDict[ruleset];
+            
+            if (dict.ContainsKey(guid))
+            {
+                dict.Remove(guid);
+            }
+
+            // Now we create a new record.
+            record = new Record()
+            {
+                guid = guid,
+                fingerprint = p.fingerprint,
+                ruleset = Options.instance.ruleset,
+                score = totalScore,
+                medal = medal,
+                gameVersion = Application.version
+            };
+            dict.Add(guid, record);
+        }
+        else
+        {
+            // If there is an existing record, we update its score
+            // and/or medal if necessary.
+            if (totalScore > record.score)
+            {
+                record.score = totalScore;
+            }
+            if (medal > record.medal)
+            {
+                record.medal = medal;
+            }
+        }
     }
 
     protected override void PrepareToSerialize()
@@ -231,7 +226,10 @@ public class Records : RecordsBase
     }
 
     #region Instance
+    [MoonSharpHidden]
     public static Records instance { get; private set; }
+
+    [MoonSharpHidden]
     public static void RefreshInstance()
     {
         try

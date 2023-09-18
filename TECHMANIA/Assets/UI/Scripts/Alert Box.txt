@@ -1,0 +1,99 @@
+alertBox = {
+    bg = tm.root.Q("alert-box-background"),
+    
+    confirmCallback = nil,
+    cancelCallback = nil,
+    fadeOutCoroutine = nil
+}
+
+function FadeInDialog(bg, dialog)
+    -- If a fade out coroutine is running, 
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(dialog, 0, -100)
+    end)
+end
+
+-- finishCallback will be called after the dialog fully fades out
+-- and bg disappears.
+-- Returns the coroutine ID.
+function FadeOutDialog(bg, dialog, finishCallback)
+    return tm.StartCoroutine(function()
+        FadeOutCoroutine(dialog, 0, -100, function()
+            bg.display = false
+            if (finishCallback != nil) then
+                finishCallback()
+            end
+        end)
+    end)
+end
+
+alertBox.AbortFadeOut = function()
+    if (alertBox.fadeOutCoroutine == nil) then return end
+    if (not tm.IsCoroutineRunning(alertBox.fadeOutCoroutine)) then
+        alertBox.fadeOutCoroutine = nil
+        return
+    end
+    -- alertBox does not have callbacks after fade out completes, so we can
+    -- simply cut it short.
+    tm.StopCoroutine(alertBox.fadeOutCoroutine)
+    alertBox.fadeOutCoroutine = nil
+end
+
+alertBox.Alert = function(message, confirmText, callback)
+    local bg = alertBox.bg
+    bg.Q("alert-text").text = message
+    if (confirmText == nil) then
+        confirmText = tm.l10n.GetString("alert_ok")
+    end
+    bg.Q("confirm-button").text = confirmText
+    bg.Q("cancel-button").display = false
+    alertBox.confirmCallback = callback
+    alertBox.cancelCallback = callback
+
+    alertBox.AbortFadeOut()
+    FadeInDialog(bg, bg.Q("alert-box"))
+end
+
+alertBox.Confirm = function(message, confirmText, cancelText, confirmCallback)
+    local bg = alertBox.bg
+    bg.Q("alert-text").text = message
+    bg.Q("confirm-button").text = confirmText
+    bg.Q("cancel-button").display = true
+    bg.Q("cancel-button").text = cancelText
+    alertBox.confirmCallback = confirmCallback
+    alertBox.cancelCallback = nil
+
+    alertBox.AbortFadeOut()
+    FadeInDialog(bg, bg.Q("alert-box"))
+end
+
+alertBox.Initialize = function()
+    local bg = alertBox.bg
+    bg.display = false
+    bg.Q("confirm-button").RegisterCallback(eventType.Click, function()
+        alertBox.fadeOutCoroutine = FadeOutDialog(bg, bg.Q("alert-box"))
+        if (alertBox.confirmCallback != nil) then
+            alertBox.confirmCallback()
+        end
+    end)
+
+    function OnCancel()
+        alertBox.fadeOutCoroutine = FadeOutDialog(bg, bg.Q("alert-box"))
+        if (alertBox.cancelCallback != nil) then
+            alertBox.cancelCallback()
+        end
+    end
+    bg.Q("cancel-button").RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, OnCancel)
+    bg.RegisterCallback(eventType.Click, function(element, event)
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+    end)
+
+    bg.Q("alert-box").RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+end
+
+alertBox.Initialize()

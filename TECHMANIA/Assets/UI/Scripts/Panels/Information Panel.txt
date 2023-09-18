@@ -1,0 +1,47 @@
+infoPanel = {
+    panel = tm.root.Q("information-panel")
+}
+
+infoPanel.Initialize = function()
+    local panel = infoPanel.panel
+    panel.display = false
+
+    local platform = tm.GetPlatform()
+    panel.Q("folder-location-pc").display = (platform == "Windows")
+    panel.Q("folder-location-ios").display = (platform == "iOS")
+    panel.Q("folder-location-android").display = (platform == "Android")
+    panel.Q("ios-guided-access").display = (platform == "iOS")
+
+    function RegisterLinkButton(name, url)
+        panel.Q(name).RegisterCallback(eventType.Click, function()
+            tm.OpenURL(url)
+        end)
+    end
+    RegisterLinkButton("website-button", "https://techmania-team.herokuapp.com/")
+    RegisterLinkButton("discord-button", "https://discord.gg/K4Nf7AnAZt")
+    RegisterLinkButton("github-button", "https://github.com/techmania-team/techmania")
+    RegisterLinkButton("documentation-button", "https://techmania-team.github.io/techmania-docs/")
+    RegisterLinkButton("youtube-button", "https://www.youtube.com/channel/UCoHxk7shdAKf7W3yqUJlDaA")
+
+    local firstLocale = true
+    local localizerCredit = ""
+    for localeName, locale in pairs(tm.l10n.GetAllLocales()) do
+        if (localeName != "en") then
+            local localizers = table.concat(locale.localizers, ", ")
+            local creditLine = localizers .. " (" .. locale.languageName .. ")"
+            if (not firstLocale) then
+                localizerCredit = localizerCredit .. "\n"
+            end
+            localizerCredit = localizerCredit .. creditLine
+            firstLocale = false
+        end
+    end
+
+    panel.Q("localization-text").text = localizerCredit
+end
+
+infoPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_information"))
+end
+
+infoPanel.Initialize()

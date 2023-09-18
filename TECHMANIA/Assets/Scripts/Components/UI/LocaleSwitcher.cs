@@ -11,27 +11,27 @@ public class LocaleSwitcher : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) &&
             Input.GetKeyDown(KeyCode.Alpha1))
         {
-            Locale.SetLocale("en");
+            L10n.SetLocale("en", L10n.Instance.System);
         }
         if (Input.GetKey(KeyCode.LeftShift) &&
             Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Locale.SetLocale("zh-Hans");
+            L10n.SetLocale("zh-Hans", L10n.Instance.System);
         }
         if (Input.GetKey(KeyCode.LeftShift) &&
             Input.GetKeyDown(KeyCode.Alpha3))
         {
-            Locale.SetLocale("zh-Hant");
+            L10n.SetLocale("zh-Hant", L10n.Instance.System);
         }
         if (Input.GetKey(KeyCode.LeftShift) &&
             Input.GetKeyDown(KeyCode.Alpha4))
         {
-            Locale.SetLocale("ja");
+            L10n.SetLocale("ja", L10n.Instance.System);
         }
         if (Input.GetKey(KeyCode.LeftShift) &&
             Input.GetKeyDown(KeyCode.Alpha5))
         {
-            Locale.SetLocale("ko");
+            L10n.SetLocale("ko", L10n.Instance.System);
         }
 #endif
     }

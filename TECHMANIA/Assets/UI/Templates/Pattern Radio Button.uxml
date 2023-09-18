@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables[UNSUPPORTED_IN_UI_BUILDER]" />
+    <Style src="project://database/Assets/UI/Style/Button.uss?fileID=7433441132597879392&amp;guid=af62fd0529db4ab46822949e4f7a9e1d&amp;type=3#Button" />
+    <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
+    <Style src="project://database/Assets/UI/Controls/Radio%20Button.uss?fileID=7433441132597879392&amp;guid=a3ad9216fc04d6647a8d38e6647abd80&amp;type=3#Radio Button" />
+    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="radio-button" class="button-card" style="height: 70px;">
+        <ui:VisualElement name="icon-wrap" picking-mode="Ignore">
+            <ui:VisualElement name="on-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/RadioOn.png?fileID=2800000&amp;guid=e0f108ab70cd0574ebeceda4fe0edaa5&amp;type=3#RadioOn&apos;); display: flex;" />
+            <ui:VisualElement name="off-icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/RadioOff.png?fileID=2800000&amp;guid=ae5df8ac79a08ae4a9b83ef15fab8209&amp;type=3#RadioOff&apos;); display: none;" />
+        </ui:VisualElement>
+        <ui:Instance template="Pattern Banner" name="Pattern Banner" style="justify-content: center;" />
+        <ui:VisualElement name="highlight" picking-mode="Ignore" />
+    </ui:Button>
+</ui:UXML>

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-#if UNITY_2021
+#if UNITY_2022
 using UnityEngine;
 #endif
 
@@ -41,19 +41,11 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 {
     public string version;
 
-    public string Serialize(bool optimizeForSaving)
+    public string Serialize(bool formatForFile)
     {
         PrepareToSerialize();
-#if UNITY_2021
-        if (optimizeForSaving)
-        {
-            return JsonUtility.ToJson(this, prettyPrint: true)
-                .Replace("    ", "\t");
-        }
-        else
-        {
-            return JsonUtility.ToJson(this, prettyPrint: false);
-        }
+#if UNITY_2022
+        return Json.Serialize(this, formatForFile);
 #else
         return System.Text.Json.JsonSerializer.Serialize(this,
             GetType(),
@@ -65,10 +57,13 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 #endif
     }
 
+    // Throws FormatException or ArgumentException on failure.
+    // This will call T's constructor, then overwrite fields with
+    // ones in json.
     public static T Deserialize(string json, out bool upgraded)
     {
-#if UNITY_2021
-        string version = JsonUtility.FromJson<T>(json).version;
+#if UNITY_2022
+        string version = Json.Deserialize<T>(json).version;
         Type subclassType = null;
         string latestVersion = null;
 
@@ -92,15 +87,15 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         }
         if (subclassType == null)
         {
-            throw new Exception($"Unknown version: {version}");
+            throw new FormatException($"Unknown version: {version}");
         }
         if (latestVersion == null)
         {
-            throw new Exception($"Latest version not defined.");
+            throw new FormatException($"Latest version not defined.");
         }
 
         // Deserialize, upgrade if necessary, initialize if necessary.
-        T t = JsonUtility.FromJson(json, subclassType) as T;
+        T t = Json.Deserialize(json, subclassType) as T;
         upgraded = false;
         while (t.version != latestVersion)
         {
@@ -122,18 +117,18 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
 
     public T Clone()
     {
-        return Deserialize(Serialize(optimizeForSaving: false));
+        return Deserialize(Serialize(formatForFile: false));
     }
 
     public void SaveToFile(string path)
     {
         System.IO.File.WriteAllText(path, Serialize(
-            optimizeForSaving: true));
+            formatForFile: true));
     }
 
     public static T LoadFromFile(string path, out bool upgraded)
     {
-#if UNITY_2021
+#if UNITY_2022
         string fileContent = UniversalIO.ReadAllText(path);
         return Deserialize(fileContent, out upgraded);
 #else
@@ -152,6 +147,7 @@ public abstract class SerializableClass<T> where T : SerializableClass<T>
         throw new NotImplementedException();
     }
     protected virtual void PrepareToSerialize() { }
+    // Called after construction, deserialization and any upgrades.
     protected virtual void InitAfterDeserialize() { }
 
     #region Culture
@@ -186,7 +182,7 @@ public class SerializableDemoV1 : SerializableDemoBase
 
     public SerializableDemoV1()
     {
-#if UNITY_2021
+#if UNITY_2022
         Debug.Log("V1 constructor called");
 #endif
         version = kVersion;
@@ -209,7 +205,7 @@ public class SerializableDemoV2 : SerializableDemoBase
 
     public SerializableDemoV2()
     {
-#if UNITY_2021
+#if UNITY_2022
         Debug.Log("V2 constructor called");
 #endif
         version = kVersion;

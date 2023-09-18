@@ -42,9 +42,12 @@ public class TrackV2 : TrackBase
             trackMetadata = trackMetadata.Upgrade(),
             patterns = new List<Pattern>()
         };
-        foreach (PatternV2 p in patterns)
+        if (patterns != null)
         {
-            t.patterns.Add(p.Upgrade());
+            foreach (PatternV2 p in patterns)
+            {
+                t.patterns.Add(p.Upgrade());
+            }
         }
         return t;
     }
@@ -111,33 +114,48 @@ public class PatternV2
             packedHoldNotes = new List<string>(),
             packedDragNotes = new List<PackedDragNote>()
         };
-        foreach (BpmEvent e in bpmEvents)
+        if (bpmEvents != null)
         {
-            p.bpmEvents.Add(e.Clone());
+            foreach (BpmEvent e in bpmEvents)
+            {
+                p.bpmEvents.Add(e.Clone());
+            }
         }
-        foreach (TimeStop t in timeStops)
+        if (timeStops != null)
         {
-            p.timeStops.Add(t.Clone());
+            foreach (TimeStop t in timeStops)
+            {
+                p.timeStops.Add(t.Clone());
+            }
         }
 
         // Unpack notes as V2, then re-pack as v3.
-        foreach (string s in packedNotes)
+        if (packedNotes != null)
         {
-            NoteV2 n = NoteV2.Unpack(s);
-            Note upgraded = n.Upgrade();
-            p.packedNotes.Add(upgraded.Pack());
+            foreach (string s in packedNotes)
+            {
+                NoteV2 n = NoteV2.Unpack(s);
+                Note upgraded = n.Upgrade();
+                p.packedNotes.Add(upgraded.Pack());
+            }
         }
-        foreach (string s in packedHoldNotes)
+        if (packedHoldNotes != null)
         {
-            HoldNoteV2 n = HoldNoteV2.Unpack(s);
-            HoldNote upgraded = n.Upgrade() as HoldNote;
-            p.packedHoldNotes.Add(upgraded.Pack());
+            foreach (string s in packedHoldNotes)
+            {
+                HoldNoteV2 n = HoldNoteV2.Unpack(s);
+                HoldNote upgraded = n.Upgrade() as HoldNote;
+                p.packedHoldNotes.Add(upgraded.Pack());
+            }
         }
-        foreach (PackedDragNote s in packedDragNotes)
+        if (packedDragNotes != null)
         {
-            DragNoteV2 n = DragNoteV2.Unpack(s);
-            DragNote upgraded = n.Upgrade() as DragNote;
-            p.packedDragNotes.Add(upgraded.Pack());
+            foreach (PackedDragNote s in packedDragNotes)
+            {
+                DragNoteV2 n = DragNoteV2.Unpack(s);
+                DragNote upgraded = n.Upgrade() as DragNote;
+                p.packedDragNotes.Add(upgraded.Pack());
+            }
         }
 
         return p;
@@ -470,7 +488,10 @@ public class DragNoteV2 : NoteV2
             curveType = curveType,
             nodes = new List<DragNode>()
         };
-        foreach (DragNode node in nodes) n.nodes.Add(node.Clone());
+        if (nodes != null)
+        {
+            foreach (DragNode node in nodes) n.nodes.Add(node.Clone());
+        }
         return n;
     }
 }

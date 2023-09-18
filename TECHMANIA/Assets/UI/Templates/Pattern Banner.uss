@@ -1,0 +1,76 @@
+#pattern-banner {
+    flex-direction: row;
+    align-items: center;
+}
+
+#lane-icon-container {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+}
+
+#lane-icon-container .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--medium-emphasis-text-color);
+}
+
+#scheme-icon-container {
+    width: 40px;
+    margin-left: 10px;
+    height: 40px;
+    min-width: 40px;
+}
+
+#scheme-icon-container .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.scheme-override .icon {
+    -unity-background-image-tint-color: var(--error-color);
+}
+
+.scheme-no-override .icon {
+    -unity-background-image-tint-color: var(--medium-emphasis-text-color);
+}
+
+#pattern-banner #level {
+    width: 50px;
+    -unity-text-align: upper-center;
+    min-width: 50px;
+}
+
+#pattern-name-container {
+    flex-grow: 1;
+    justify-content: center;
+    flex-direction: row;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#pattern-name-container #pattern-name {
+    color: var(--high-emphasis-text-color);
+    -unity-text-align: upper-left;
+}
+
+#medal-container {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+}
+
+#medal-container .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--medium-emphasis-text-color);
+}

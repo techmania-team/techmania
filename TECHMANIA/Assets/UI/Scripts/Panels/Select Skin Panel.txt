@@ -1,0 +1,97 @@
+selectSkinPanel = {
+    panel = tm.root.Q("select-skin-panel"),
+
+    -- Both options panel and select pattern panel can transition here,
+    -- so we need to remember where to go when transitioning back
+    panelToGoBackTo = nil
+}
+
+selectSkinPanel.Show = function()
+    local panel = selectSkinPanel.panel
+
+    function SetSkinDropdown(elementName, keyInOption, allSkinNames)
+        local dropdown = panel.Q(elementName).Q("dropdown")
+        local currentSkinName = tm.options[keyInOption]
+        dropdown.SetValueWithoutNotify(currentSkinName)
+        dropdown.choices = allSkinNames
+    end
+
+    SetSkinDropdown("note-skin", "noteSkin",
+        tm.resources.GetSkinList(tm.enum.skinType.Note))
+    SetSkinDropdown("vfx-skin", "vfxSkin",
+        tm.resources.GetSkinList(tm.enum.skinType.Vfx))
+    SetSkinDropdown("combo-skin", "comboSkin",
+        tm.resources.GetSkinList(tm.enum.skinType.Combo))
+    SetSkinDropdown("game-ui-skin", "gameUiSkin",
+        tm.resources.GetSkinList(tm.enum.skinType.GameUI))
+
+    local reloadToggle = panel.Q("reload-skins").Q("track")
+    controls.SetToggleIsOn(reloadToggle, tm.options.reloadSkinsWhenLoadingPattern)
+
+    tm.skinPreview.Begin()
+end
+
+selectSkinPanel.Hide = function()
+    tm.skinPreview.Conclude()
+end
+
+selectSkinPanel.Initialize = function()
+    local panel = selectSkinPanel.panel
+
+    function WarnOnUndisplayableGameUiSkin()
+        local gameUiSkin = tm.resources.gameUiSkin
+        if (gameUiSkin.scanCountdownBackground.additiveShader or
+            gameUiSkin.scanCountdownNumbers.additiveShader or
+            gameUiSkin.touchClickFeedback.additiveShader) then
+            alertBox.Alert(tm.l10n.GetString("select_skin_panel_additive_shader_alert"))
+        end
+    end
+    function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
+        local dropdown = panel.Q(elementName).Q("dropdown")
+        dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.skinPreview.Conclude()
+            local oldValue = tm.options[keyInOption]
+            tm.options[keyInOption] = event.newValue
+            reloadFunction(
+                nil,  -- progress callback
+                function(status)  -- complete callback
+                    if (status.Ok()) then
+                        tm.skinPreview.Begin()
+                        if (keyInOption == "gameUiSkin") then
+                            WarnOnUndisplayableGameUiSkin()
+                        end
+                    else
+                        local errorMessage = net.string.Format(
+                            tm.l10n.GetString("select_skin_panel_load_error_format"),
+                            status.errorMessage)
+                        alertBox.Alert(errorMessage)
+                        tm.options[keyInOption] = oldValue
+                        reloadFunction(
+                            nil,
+                            function() tm.skinPreview.Begin() end
+                        )
+                    end
+                end
+            )
+        end)
+    end
+
+    InitializeSkinDropdown("note-skin", "noteSkin", tm.io.ReloadNoteSkin)
+    InitializeSkinDropdown("vfx-skin", "vfxSkin", tm.io.ReloadVfxSkin)
+    InitializeSkinDropdown("combo-skin", "comboSkin", tm.io.ReloadComboSkin)
+    InitializeSkinDropdown("game-ui-skin", "gameUiSkin", tm.io.ReloadGameUiSkin)
+
+    local reloadToggle = panel.Q("reload-skins").Q("track")
+    reloadToggle.RegisterCallback(eventType.Click, function()
+        tm.options.reloadSkinsWhenLoadingPattern = not tm.options.reloadSkinsWhenLoadingPattern
+    end)
+
+    -- Set up SkinPreview
+    tm.skinPreview.previewContainer = panel.Q("preview-container")
+    tm.skinPreview.bpm = 120
+    tm.skinPreview.lanes = 3
+    tm.skinPreview.judgement = tm.enum.judgement.RainbowMax
+    tm.skinPreview.combo = 123
+end
+
+selectSkinPanel.Initialize()

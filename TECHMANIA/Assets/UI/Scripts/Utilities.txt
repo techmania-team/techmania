@@ -1,0 +1,93 @@
+function PrintTable(table)
+    for k, v in pairs(table) do
+        print("k=" .. tostring(k) .. " v=" .. tostring(v))
+    end
+end
+
+function KeyFromValue(table, value)
+    for k, v in pairs(table) do
+        if (v == value) then
+            return k
+        end
+    end
+    print("Warning: KeyFromValue is returning nil because the value " .. tostring(value) .. " is not found in the following table:")
+    PrintTable(table)
+    return nil
+end
+
+function LoadAndShowEyecatch(path, eyecatchElement)
+    tm.io.LoadTextureFromFile(path, function(status, texture)
+        if (status.Ok()) then
+            eyecatchElement.backgroundImage = texture
+            eyecatchElement.Q("default-eyecatch").visible = false
+        else
+            eyecatchElement.Q("default-eyecatch").visible = true
+        end
+    end)
+end
+
+commonUI = {}
+
+commonUI.InitializeVolumeSliders = function(container)
+    function InitializeOneVolumeSlider(wrapName, optionKey)
+        local wrap = container.Q(wrapName)
+        local slider = wrap.Q("slider")
+        local valueDisplay = wrap.Q("value-display")
+
+        slider.lowValue = 0
+        slider.highValue = 100
+        slider.RegisterCallback(eventType.ChangeInt, function(element, event)
+            tm.options[optionKey] = event.newValue
+            tm.options.ApplyVolumeSettings()
+            valueDisplay.text = tostring(event.newValue)
+        end)
+    end
+    InitializeOneVolumeSlider("master", "masterVolumePercent")
+    InitializeOneVolumeSlider("music", "musicVolumePercent")
+    InitializeOneVolumeSlider("keysounds", "keysoundVolumePercent")
+    InitializeOneVolumeSlider("sound-effects", "sfxVolumePercent")
+end
+
+commonUI.ShowVolumeSliders = function(container)
+    function ShowOneVolumeSlider(wrapName, optionKey)
+        local wrap = container.Q(wrapName)
+        local slider = wrap.Q("slider")
+        local valueDisplay = wrap.Q("value-display")
+
+        controls.SetSliderValueWithoutNotify(slider, tm.options[optionKey])
+        valueDisplay.text = tostring(tm.options[optionKey])
+    end
+    ShowOneVolumeSlider("master", "masterVolumePercent")
+    ShowOneVolumeSlider("music", "musicVolumePercent")
+    ShowOneVolumeSlider("keysounds", "keysoundVolumePercent")
+    ShowOneVolumeSlider("sound-effects", "sfxVolumePercent")
+end
+
+-- Uses the selectTrackPanel.selectedTrackOptions global variable.
+commonUI.InitializeBgBrightnessSlider = function(container)
+    local slider = container.Q("slider")
+    slider.lowValue = 0
+    slider.highValue = 10
+    slider.RegisterCallback(eventType.ChangeInt, function(element, event)
+        if (selectTrackPanel.selectedTrackOptions == nil) then return end
+        selectTrackPanel.selectedTrackOptions.backgroundBrightness = event.newValue
+        container.Q("value-display").text = tostring(event.newValue)
+        if (tm.game.state == tm.enum.gameState.Ongoing or tm.game.state == tm.enum.gameState.Paused) then
+            tm.game.UpdateBgBrightness()
+        end
+    end)
+end
+
+-- Uses the selectTrackPanel.selectedTrackOptions global variable.
+commonUI.ShowBgBrightnessSlider = function(container)
+    controls.SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
+    container.Q("value-display").text = tostring(selectTrackPanel.selectedTrackOptions.backgroundBrightness)
+end
+
+function WaitForSeconds(waitTime)
+    local timer = 0
+    while (timer < waitTime) do
+        timer = timer + unity.time.deltaTime
+        coroutine.yield()
+    end
+end

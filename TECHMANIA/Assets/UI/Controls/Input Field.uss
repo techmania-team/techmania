@@ -1,0 +1,99 @@
+.input-field {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 55px;
+    overflow: visible;
+    --unity-cursor-color: var(--primary-color);
+}
+
+.input-field .unity-base-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    white-space: nowrap;
+    -unity-font-definition: url('project://database/Assets/UI/Fonts/OpenSans-Regular%20SDF%20non-TMP.asset?fileID=11400000&guid=e476754f529ce314cac8f4bc33bb0962&type=2#OpenSans-Regular SDF non-TMP');
+    color: var(--high-emphasis-text-color);
+    font-size: 22px;
+    border-left-color: var(--disabled-text-color);
+    border-right-color: var(--disabled-text-color);
+    border-top-color: var(--disabled-text-color);
+    border-bottom-color: var(--disabled-text-color);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-field .unity-base-field__input:hover {
+    border-left-color: var(--medium-emphasis-text-color);
+    border-right-color: var(--medium-emphasis-text-color);
+    border-top-color: var(--medium-emphasis-text-color);
+    border-bottom-color: var(--medium-emphasis-text-color);
+}
+
+.input-field .unity-base-field__input:focus {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    --unity-cursor-color: var(--high-emphasis-text-color);
+    --unity-selection-color: var(--primary-color-variant);
+}
+
+.input-field .unity-base-popup-field__text {
+    margin-right: 35px;
+}
+
+.input-field .unity-base-popup-field__arrow {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    right: 10px;
+    background-image: url('project://database/Assets/UI/Images/baseline_arrow_drop_down_white_48dp.png?fileID=2800000&guid=4d7224a74c3e99b4fa1f849f09c5323e&type=3#baseline_arrow_drop_down_white_48dp');
+    -unity-background-image-tint-color: var(--medium-emphasis-text-color);
+}
+
+#mini-label-container {
+    position: absolute;
+    left: 10px;
+    top: -14px;
+    height: 30px;
+    flex-direction: row;
+    align-items: center;
+}
+
+#mini-label-background {
+    position: absolute;
+    left: 0;
+    top: 13px;
+    right: 0;
+    bottom: 13px;
+    background-color: var(--surface-color);
+}
+
+.surface-4dp #mini-label-background {
+    background-color: var(--4dp-on-surface);
+}
+
+.surface-8dp #mini-label-background {
+    background-color: var(--8dp-on-surface);
+}
+
+#mini-label {
+}
+
+.no-mini-label #mini-label-container {
+    display: none;
+}

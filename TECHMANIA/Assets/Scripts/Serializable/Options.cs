@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +12,15 @@ using UnityEngine.Events;
 
 [Serializable]
 [FormatVersion(OptionsV1.kVersion, typeof(OptionsV1), isLatest: false)]
+[FormatVersion(OptionsV2.kVersion, typeof(OptionsV2), isLatest: false)]
 [FormatVersion(Options.kVersion, typeof(Options), isLatest: true)]
-public class OptionsBase : SerializableClass<OptionsBase> {}
+public class OptionsBase : SerializableClass<OptionsBase>
+{
+    public void SaveToFile()
+    {
+        SaveToFile(Paths.GetOptionsFilePath());
+    }
+}
 
 // Deserialization will call the constructor, so we can set whatever
 // weird default values in the constructor, and they will naturally
@@ -21,16 +29,25 @@ public class OptionsBase : SerializableClass<OptionsBase> {}
 // Updates in version 2:
 // - Now defines volumes in integer percents, so there's less
 //   float fuckery.
+//
+// Updates in version 3:
+// - Most appearance options are moved to theme-specific options.
+// - Replaced refreshRate with refreshRateNumerator and
+//   refreshRateDenominator, in line with Unity 2022.2 deprecating
+//   Resolution.refreshRate.
+// - Per-track options are now serialized as a dictionary.
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Options : OptionsBase
 {
-    public const string kVersion = "2";
+    public const string kVersion = "3";
 
     // Graphics
 
     public int width; 
     public int height;
-    public int refreshRate;
+    public uint refreshRateNumerator;
+    public uint refreshRateDenominator;
     public FullScreenMode fullScreenMode;
     public bool vSync;
 
@@ -44,31 +61,15 @@ public class Options : OptionsBase
 
     // Appearance
 
-    public enum BeatMarkerVisibility
-    {
-        Hidden,
-        ShowBeatMarkers,
-        ShowHalfBeatMarkers
-    }
-    public enum BackgroundScalingMode
-    {
-        FillEntireScreen,
-        // Fill the area under the top bar.
-        FillGameArea
-    }
-
     public string locale;
-    public bool showLoadingBar;
-    public bool showFps;
-    public bool showJudgementTally;
-    public bool showLaneDividers;
-    public BeatMarkerVisibility beatMarkers;
-    public BackgroundScalingMode backgroundScalingMode;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
     public string gameUiSkin;
+    public const string kDefaultSkin = "Default";
     public bool reloadSkinsWhenLoadingPattern;
+    public string theme;
+    public const string kDefaultTheme = "Default";
 
     // Timing
 
@@ -86,11 +87,20 @@ public class Options : OptionsBase
         Custom
     }
     public Ruleset ruleset;
+    // Remember to call Paths.ApplyCustomDataLocation after modifying
+    // these paths.
     public bool customDataLocation;
     public string tracksFolderLocation;
     public string skinsFolderLocation;
-    public bool pauseWhenGameLosesFocus;
-    public bool discordRichPresence;
+    public string themesFolderLocation;
+    // Call TurnOn/OffDiscordRichPresence instead of setting this
+    // directly.
+    public bool discordRichPresence
+    {
+        get;
+        [MoonSharp.Interpreter.MoonSharpHidden]
+        set;
+    }
 
     // Editor options
 
@@ -100,15 +110,35 @@ public class Options : OptionsBase
 
     public Modifiers modifiers;
 
-    // Track list options.
+    // Per-track options. Dictionary is keyed by GUID.
+    // Themes should access this with GetPerTrackOptions.
 
-    public TrackFilter trackFilter;
+    [MoonSharp.Interpreter.MoonSharpHidden]
+    public Dictionary<string, PerTrackOptions> perTrackOptions;
 
-    // Per-track options.
-    // This should be a dictionary, but dictionaries are not
-    // directly serializable, and we don't expect more than a
-    // few hundred elements anyway.
-    public List<PerTrackOptions> perTrackOptions;
+    // Per-theme options. Dictionary is keyed by themes'
+    // self-declared names when calling GetThemeOptions.
+    // Themes should access this with GetThemeOptions.
+
+    [MoonSharp.Interpreter.MoonSharpHidden]
+    public Dictionary<string, Dictionary<string, string>> themeOptions;
+
+    /* Default theme options
+     * 
+     * Key                          Value
+     * ---------------------------------------------------------
+     * showLoadingBar               True/False
+     * showFps                      True/False
+     * showJudgementTally           True/False
+     * showLaneDividers             True/False
+     * beatMarkers                  Hidden
+     *                              ShowBeatMarkers
+     *                              ShowHalfBeatMarkers
+     * backgroundScalingMode        FillEntireScreen
+     *                              FillGameArea
+     * pauseWhenGameLosesFocus      True/False
+     * pauseButtonInteraction       SingleTap/DoubleTap/Hold
+     */
 
     public Options()
     {
@@ -116,7 +146,8 @@ public class Options : OptionsBase
 
         width = 0;
         height = 0;
-        refreshRate = 0;
+        refreshRateNumerator = 0;
+        refreshRateDenominator = 0;
         fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         vSync = false;
 
@@ -130,19 +161,13 @@ public class Options : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        locale = Locale.kDefaultLocale;
-        showLoadingBar = true;
-        showFps = false;
-        showJudgementTally = false;
-        showLaneDividers = false;
-        beatMarkers = BeatMarkerVisibility.Hidden;
-        backgroundScalingMode = BackgroundScalingMode
-            .FillEntireScreen;
+        locale = L10n.kDefaultLocale;
         noteSkin = "Default";
         vfxSkin = "Default";
         comboSkin = "Default";
         gameUiSkin = "Default";
         reloadSkinsWhenLoadingPattern = false;
+        theme = kDefaultTheme;
 
         touchOffsetMs = 0;
         touchLatencyMs = 0;
@@ -153,25 +178,58 @@ public class Options : OptionsBase
         customDataLocation = false;
         tracksFolderLocation = "";
         skinsFolderLocation = "";
-        pauseWhenGameLosesFocus = true;
+        themesFolderLocation = "";
         discordRichPresence = true;
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
-        perTrackOptions = new List<PerTrackOptions>();
-        trackFilter = new TrackFilter();
+        perTrackOptions = new Dictionary<string, PerTrackOptions>();
+        themeOptions = new Dictionary<string,
+            Dictionary<string, string>>();
+
+        Dictionary<string, string> defaultThemeOptions =
+            new Dictionary<string, string>
+            {
+                { "showLoadingBar", true.ToString() },
+                { "showFps", false.ToString() },
+                { "showJudgementTally", false.ToString() },
+                { "showLaneDividers", false.ToString() },
+                { "beatMarkers", "Hidden" },
+                {
+                    "backgroundScalingMode",
+                    "FillEntireScreen"
+                },
+                { "pauseWhenGameLosesFocus", true.ToString() },
+                { "pauseButtonInteraction", "SingleTap" }
+            };
+        themeOptions.Add(kDefaultTheme, defaultThemeOptions);
     }
 
     protected override void PrepareToSerialize()
     {
-        RemoveDefaultPerTrackOptions();
+        PreparePerTrackOptionsToSerialize();
     }
 
-    public static int GetDefaultAudioBufferSize()
+    protected override void InitAfterDeserialize()
     {
-        return AudioSettings.GetConfiguration().dspBufferSize;
+        // Do nothing
     }
 
+    public void ResetCustomDataLocation ()
+    {
+        Debug.Log("Resetting custom data location.");
+        customDataLocation = false;
+        noteSkin = kDefaultSkin;
+        vfxSkin = kDefaultSkin;
+        comboSkin = kDefaultSkin;
+        gameUiSkin = kDefaultSkin;
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        themesFolderLocation = "";
+        SaveToFile(Paths.GetOptionsFilePath());
+    }
+
+    #region Offset & latency
     public int GetOffsetForControlScheme(ControlScheme scheme)
     {
         switch (scheme)
@@ -193,6 +251,48 @@ public class Options : OptionsBase
                 return keyboardMouseLatencyMs;
         }
     }
+    #endregion
+
+    #region Graphics
+    // This only changes options and does not apply the modified
+    // resolution or save to file.
+    public void SetDefaultResolutionIfInvalid()
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        return;
+#else
+        foreach (Resolution r in Screen.resolutions)
+        {
+            if (r.width == width && r.height == height &&
+                r.refreshRateRatio.numerator == refreshRateNumerator &&
+                r.refreshRateRatio.denominator == refreshRateDenominator)
+            {
+                // Current resolution is valid; do nothing.
+                return;
+            }
+        }
+
+        Resolution def = Screen.resolutions[^1];
+        width = def.width;
+        height = def.height;
+        refreshRateNumerator = def.refreshRateRatio.numerator;
+        refreshRateDenominator = def.refreshRateRatio.denominator;
+#endif
+    }
+
+    public Resolution GetCurrentResolutionAsObject()
+    {
+        return new Resolution()
+        {
+            width = this.width,
+            height = this.height,
+            refreshRateRatio = new RefreshRate()
+            {
+                numerator = refreshRateNumerator,
+                denominator = refreshRateDenominator
+            }
+        };
+    }
 
     public void ApplyGraphicSettings()
     {
@@ -205,8 +305,12 @@ public class Options : OptionsBase
             Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 0;
 #else
-        Screen.SetResolution(width, height, fullScreenMode, 
-            refreshRate);
+        Screen.SetResolution(width, height, fullScreenMode,
+            new RefreshRate()
+            {
+                numerator = refreshRateNumerator,
+                denominator = refreshRateDenominator
+            });
         QualitySettings.vSyncCount = vSync ? 1 : 0;
 #endif
     }
@@ -221,21 +325,59 @@ public class Options : OptionsBase
     {
         QualitySettings.vSyncCount = instance.vSync ? 1 : 0;
     }
+    #endregion
 
-    public void ResetCustomDataLocation ()
+    #region Audio
+    public void ApplyVolumeSettings()
     {
-        Debug.Log("Resetting custom data location.");
-        customDataLocation = false;
-        noteSkin = "Default";
-        vfxSkin = "Default";
-        comboSkin = "Default";
-        gameUiSkin = "Default";
-        tracksFolderLocation = "";
-        skinsFolderLocation = "";
-        SaveToFile(Paths.GetOptionsFilePath());
+        AudioSourceManager.instance.ApplyVolume();
     }
 
-#region Instance
+    public static int GetDefaultAudioBufferSize()
+    {
+        return AudioSettings.GetConfiguration().dspBufferSize;
+    }
+
+    // This resets the audio mixer, AND it only happens in
+    // the standalone player. What the heck? Anyway always reset
+    // the audio mixer after calling this.
+    public void ApplyAudioBufferSize()
+    {
+        AudioConfiguration config = AudioSettings.GetConfiguration();
+        if (config.dspBufferSize != audioBufferSize)
+        {
+            config.dspBufferSize = audioBufferSize;
+            AudioSettings.Reset(config);
+            ResourceLoader.forceReload = true;
+        }
+    }
+
+    public static float VolumeValueToDb(int volumePercent)
+    {
+        float volume = volumePercent * 0.01f;
+        return (Mathf.Pow(volume, 0.25f) - 1f) * 80f;
+    }
+    #endregion
+
+    #region Discord
+    // Call this instead of setting discordRichPresence directly,
+    // or rich presence will not immediately appear in Discord.
+    public void TurnOnDiscordRichPresence()
+    {
+        discordRichPresence = true;
+        DiscordController.Start();
+    }
+
+    // Call this instead of setting discordRichPresence directly,
+    // or rich presence will not immediately disappear in Discord.
+    public void TurnOffDiscordRichPresence()
+    {
+        discordRichPresence = false;
+        DiscordController.Dispose();
+    }
+    #endregion
+
+    #region Instance
     public static Options instance { get; private set; }
     private static Options backupInstance;
     public static void RefreshInstance()
@@ -245,8 +387,10 @@ public class Options : OptionsBase
             instance = LoadFromFile(
                 Paths.GetOptionsFilePath()) as Options;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Debug.LogError("An error occurred when loading options. All options will be reverted to default. See next error for details.");
+            Debug.LogException(ex);
             instance = new Options();
         }
     }
@@ -260,39 +404,49 @@ public class Options : OptionsBase
     {
         instance = backupInstance;
     }
-#endregion
+    #endregion
 
-#region Per-track options
+    #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
-        foreach (PerTrackOptions options in perTrackOptions)
+        if (!perTrackOptions.ContainsKey(guid))
         {
-            if (options.trackGuid == guid) return options;
+            PerTrackOptions newOptions = new PerTrackOptions();
+            perTrackOptions.Add(guid, newOptions);
+            // At this time the new options are not written to disk.
         }
 
-        PerTrackOptions newOptions = new PerTrackOptions(guid);
-        perTrackOptions.Add(newOptions);  // Not written to disk yet.
-        return newOptions;
+        return perTrackOptions[guid];
     }
 
-    private void RemoveDefaultPerTrackOptions()
+    private void PreparePerTrackOptionsToSerialize()
     {
-        List<PerTrackOptions> remainingOptions =
-            new List<PerTrackOptions>();
-        foreach (PerTrackOptions p in perTrackOptions)
+        Dictionary<string, PerTrackOptions> nonDefaultOptions
+            = new Dictionary<string, PerTrackOptions>();
+        foreach (KeyValuePair<string, PerTrackOptions> pair in 
+            perTrackOptions)
         {
-            if (!p.noVideo && p.backgroundBrightness == 
-                PerTrackOptions.kMaxBrightness)
-            {
-                continue;
-            }
-            remainingOptions.Add(p);
+            if (pair.Value.SameAsDefault()) continue;
+            nonDefaultOptions.Add(pair.Key, pair.Value);
         }
-        perTrackOptions = remainingOptions;
+        perTrackOptions = nonDefaultOptions;
     }
-#endregion
+    #endregion
+
+    #region Per-theme options
+    public Dictionary<string, string> GetThemeOptions(string themeName)
+    {
+        if (!themeOptions.ContainsKey(themeName))
+        {
+            themeOptions.Add(themeName,
+                new Dictionary<string, string>());
+        }
+        return themeOptions[themeName];
+    }
+    #endregion
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class EditorOptions
 {
@@ -360,6 +514,7 @@ public class EditorOptions
 }
 
 // All enums reserve the first option as the "normal" one.
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Modifiers
 {
@@ -379,14 +534,6 @@ public class Modifiers
         FadeIn2
     }
     public NoteOpacity noteOpacity;
-    public static readonly string[] noteOpacityDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_fade_out",
-        "modifier_fade_out_2",
-        "modifier_fade_in",
-        "modifier_fade_in_2"
-    };
 
     public enum ScanlineOpacity
     {
@@ -396,13 +543,6 @@ public class Modifiers
         Blind
     }
     public ScanlineOpacity scanlineOpacity;
-    public static readonly string[] scanlineOpacityDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_blink",
-        "modifier_blink_2",
-        "modifier_blind"
-    };
 
     public enum ScanDirection
     {
@@ -412,13 +552,6 @@ public class Modifiers
         LL
     }
     public ScanDirection scanDirection;
-    public static readonly string[] scanDirectionDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_right_right",
-        "modifier_left_right",
-        "modifier_left_left"
-    };
 
     public enum NotePosition
     {
@@ -426,11 +559,6 @@ public class Modifiers
         Mirror
     }
     public NotePosition notePosition;
-    public static readonly string[] notePositionDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_mirror"
-    };
 
     public enum ScanPosition
     {
@@ -438,11 +566,6 @@ public class Modifiers
         Swap
     }
     public ScanPosition scanPosition;
-    public static readonly string[] scanPositionDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_swap"
-    };
 
     public enum Fever
     {
@@ -451,12 +574,6 @@ public class Modifiers
         AutoFever
     }
     public Fever fever;
-    public static readonly string[] feverDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_fever_off",
-        "modifier_auto_fever"
-    };
 
     public enum Keysound
     {
@@ -464,11 +581,6 @@ public class Modifiers
         AutoKeysound
     }
     public Keysound keysound;
-    public static readonly string[] keysoundDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_auto_keysound"
-    };
 
     public enum AssistTick
     {
@@ -477,12 +589,13 @@ public class Modifiers
         AutoAssistTick
     }
     public AssistTick assistTick;
-    public static readonly string[] assistTickDisplayKeys =
+
+    public enum SuddenDeath
     {
-        "modifier_none",
-        "modifier_assist_tick",
-        "modifier_auto_assist_tick"
-    };
+        Normal,
+        SuddenDeath
+    }
+    public SuddenDeath suddenDeath;
 
     // Special modifiers
 
@@ -494,13 +607,6 @@ public class Modifiers
         Practice
     }
     public Mode mode;
-    public static readonly string[] modeDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_no_fail",
-        "modifier_auto_play",
-        "modifier_practice"
-    };
 
     public enum ControlOverride
     {
@@ -510,131 +616,16 @@ public class Modifiers
         OverrideToKM
     }
     public ControlOverride controlOverride;
-    public static readonly string[] controlOverrideDisplayKeys =
-    {
-        "modifier_none",
-        "modifier_override_to_touch",
-        "modifier_override_to_keys",
-        "modifier_override_to_km"
-    };
 
     public enum ScrollSpeed
     {
         Normal,
-        HalfSpeed
+        HalfSpeed,
+        ShiftedHalfSpeed
     }
     public ScrollSpeed scrollSpeed;
-    public static readonly string[] scrollSpeedDisplayKeys =
-    {
-        "modifier_normal",
-        "modifier_half_speed"
-    };
 
     // Utilities
-
-    // Does not add "none" segments when all options are 0; does not
-    // add per-track options.
-    public void ToDisplaySegments(List<string> regularSegments,
-        List<string> specialSegments)
-    {
-        if (noteOpacity != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                noteOpacityDisplayKeys[(int)noteOpacity]));
-        }
-        if (scanlineOpacity != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                scanlineOpacityDisplayKeys[(int)scanlineOpacity]));
-        }
-        if (scanDirection != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                scanDirectionDisplayKeys[(int)scanDirection]));
-        }
-        if (notePosition != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                notePositionDisplayKeys[(int)notePosition]));
-        }
-        if (scanPosition != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                scanPositionDisplayKeys[(int)scanPosition]));
-        }
-        if (fever != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                feverDisplayKeys[(int)fever]));
-        }
-        if (keysound != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                keysoundDisplayKeys[(int)keysound]));
-        }
-        if (assistTick != 0)
-        {
-            regularSegments.Add(Locale.GetString(
-                assistTickDisplayKeys[(int)assistTick]));
-        }
-
-        if (mode != 0)
-        {
-            specialSegments.Add(Locale.GetString(
-                modeDisplayKeys[(int)mode]));
-        }
-        if (controlOverride != 0)
-        {
-            specialSegments.Add(Locale.GetString(
-                controlOverrideDisplayKeys[(int)controlOverride]));
-        }
-        if (scrollSpeed != 0)
-        {
-            specialSegments.Add(Locale.GetString(
-                scrollSpeedDisplayKeys[(int)scrollSpeed]));
-        }
-    }
-
-    public Scan.Direction GetTopScanDirection()
-    {
-        switch (scanDirection)
-        {
-            case ScanDirection.Normal:
-            case ScanDirection.RR:
-                return Scan.Direction.Right;
-            case ScanDirection.LR:
-            case ScanDirection.LL:
-                return Scan.Direction.Left;
-            default:
-                throw new Exception();
-        }
-    }
-
-    public Scan.Direction GetBottomScanDirection()
-    {
-        switch (scanDirection)
-        {
-            case ScanDirection.Normal:
-            case ScanDirection.LL:
-                return Scan.Direction.Left;
-            case ScanDirection.LR:
-            case ScanDirection.RR:
-                return Scan.Direction.Right;
-            default:
-                throw new Exception();
-        }
-    }
-
-    public Scan.Position GetScanPosition(int scanNumber)
-    {
-        bool isBottomScan = scanNumber % 2 == 0;
-        if (scanPosition == ScanPosition.Swap)
-        {
-            isBottomScan = !isBottomScan;
-        }
-        return isBottomScan ?
-            Scan.Position.Bottom : Scan.Position.Top;
-    }
 
     public bool HasAnySpecialModifier()
     {
@@ -663,31 +654,36 @@ public class Modifiers
     }
 }
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class PerTrackOptions
 {
-    public string trackGuid;
     public bool noVideo;
     public int backgroundBrightness;  // 0-10
     public const int kMaxBrightness = 10;
 
-    public PerTrackOptions(string trackGuid)
+    public PerTrackOptions()
     {
-        this.trackGuid = trackGuid;
         noVideo = false;
         backgroundBrightness = kMaxBrightness;
     }
 
     public PerTrackOptions Clone()
     {
-        return new PerTrackOptions(trackGuid)
+        return new PerTrackOptions()
         {
             noVideo = noVideo,
             backgroundBrightness = backgroundBrightness
         };
     }
+
+    public bool SameAsDefault()
+    {
+        return !noVideo && backgroundBrightness == kMaxBrightness;
+    }
 }
 
+// Only used in OptionsV1 and OptionsV2.
 [Serializable]
 public class TrackFilter
 {
@@ -720,7 +716,11 @@ public class TrackFilter
 
     public static TrackFilter instance
     {
-        get { return Options.instance.trackFilter; }
+        get 
+        {
+            // return Options.instance.trackFilter;
+            return null;
+        }
     }
 
     public static readonly string[] sortBasisDisplayKeys =
@@ -741,6 +741,267 @@ public class TrackFilter
             sortBasis = sortBasis,
             sortOrder = sortOrder
         };
+    }
+}
+
+// For deserialization with OptionsV2 and OptionsV1.
+[Serializable]
+public class PerTrackOptionsWithGuid
+{
+    public string trackGuid;
+    public bool noVideo;
+    public int backgroundBrightness;  // 0-10
+    public const int kMaxBrightness = 10;
+
+    public PerTrackOptionsWithGuid(string trackGuid)
+    {
+        this.trackGuid = trackGuid;
+        noVideo = false;
+        backgroundBrightness = kMaxBrightness;
+    }
+
+    public PerTrackOptionsWithGuid Clone()
+    {
+        return new PerTrackOptionsWithGuid(trackGuid)
+        {
+            noVideo = noVideo,
+            backgroundBrightness = backgroundBrightness
+        };
+    }
+
+    public PerTrackOptions DropGuid()
+    {
+        return new PerTrackOptions()
+        {
+            noVideo = noVideo,
+            backgroundBrightness = backgroundBrightness
+        };
+    }
+}
+
+[Serializable]
+public class OptionsV2 : OptionsBase
+{
+    public const string kVersion = "2";
+
+    public const string kDefaultTheme = "Default";
+
+    // Graphics
+
+    public int width;
+    public int height;
+    public int refreshRate;
+    public FullScreenMode fullScreenMode;
+    public bool vSync;
+
+    // Audio
+
+    public int masterVolumePercent;
+    public int musicVolumePercent;
+    public int keysoundVolumePercent;
+    public int sfxVolumePercent;
+    public int audioBufferSize;
+
+    // Appearance
+
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
+
+    public string locale;
+    public bool showLoadingBar;
+    public bool showFps;
+    public bool showJudgementTally;
+    public bool showLaneDividers;
+    public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
+    public string noteSkin;
+    public string vfxSkin;
+    public string comboSkin;
+    public string gameUiSkin;
+    public bool reloadSkinsWhenLoadingPattern;
+    public string theme;
+
+    // Timing
+
+    public int touchOffsetMs;
+    public int touchLatencyMs;
+    public int keyboardMouseOffsetMs;
+    public int keyboardMouseLatencyMs;
+
+    // Miscellaneous
+
+    public enum Ruleset
+    {
+        Standard,
+        Legacy,
+        Custom
+    }
+    public Ruleset ruleset;
+    public bool customDataLocation;
+    public string tracksFolderLocation;
+    public string skinsFolderLocation;
+    public bool pauseWhenGameLosesFocus;
+
+    // Editor options
+
+    public EditorOptions editorOptions;
+
+    // Modifiers
+
+    public Modifiers modifiers;
+
+    // Track list options.
+
+    public TrackFilter trackFilter;
+
+    // Per-track options.
+    // This should be a dictionary, but dictionaries are not
+    // directly serializable, and we don't expect more than a
+    // few hundred elements anyway.
+    public List<PerTrackOptionsWithGuid> perTrackOptions;
+
+    public OptionsV2()
+    {
+        version = kVersion;
+
+        width = 0;
+        height = 0;
+        refreshRate = 0;
+        fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        vSync = false;
+
+        masterVolumePercent = 100;
+        musicVolumePercent = 80;
+        keysoundVolumePercent = 100;
+        sfxVolumePercent = 100;
+        // Cannot call GetDefaultAudioBufferSize() here, because
+        // somehow Unity calls this constructor during serialization,
+        // and calling AudioSettings.GetConfiguration() at that time
+        // causes an exception.
+        audioBufferSize = 512;
+
+        locale = L10n.kDefaultLocale;
+        showLoadingBar = true;
+        showFps = false;
+        showJudgementTally = false;
+        showLaneDividers = false;
+        beatMarkers = BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = BackgroundScalingMode
+            .FillEntireScreen;
+        noteSkin = "Default";
+        vfxSkin = "Default";
+        comboSkin = "Default";
+        gameUiSkin = "Default";
+        reloadSkinsWhenLoadingPattern = false;
+        theme = kDefaultTheme;
+
+        touchOffsetMs = 0;
+        touchLatencyMs = 0;
+        keyboardMouseOffsetMs = 0;
+        keyboardMouseLatencyMs = 0;
+
+        ruleset = Ruleset.Standard;
+        customDataLocation = false;
+        tracksFolderLocation = "";
+        skinsFolderLocation = "";
+        pauseWhenGameLosesFocus = true;
+
+        editorOptions = new EditorOptions();
+        modifiers = new Modifiers();
+        perTrackOptions = new List<PerTrackOptionsWithGuid>();
+        trackFilter = new TrackFilter();
+    }
+
+    protected override OptionsBase Upgrade()
+    {
+        Options upgraded = new Options()
+        {
+            width = width,
+            height = height,
+            refreshRateNumerator = (uint)refreshRate * 1000,
+            refreshRateDenominator = 1000,
+            fullScreenMode = fullScreenMode,
+            vSync = vSync,
+
+            masterVolumePercent = masterVolumePercent,
+            musicVolumePercent = musicVolumePercent,
+            keysoundVolumePercent = keysoundVolumePercent,
+            sfxVolumePercent = sfxVolumePercent,
+            audioBufferSize = audioBufferSize,
+
+            locale = locale,
+            noteSkin = noteSkin,
+            vfxSkin = vfxSkin,
+            comboSkin = comboSkin,
+            gameUiSkin = gameUiSkin,
+            reloadSkinsWhenLoadingPattern =
+                reloadSkinsWhenLoadingPattern,
+            theme = theme,
+
+            touchOffsetMs = touchOffsetMs,
+            touchLatencyMs = touchLatencyMs,
+            keyboardMouseOffsetMs = keyboardMouseOffsetMs,
+            keyboardMouseLatencyMs = keyboardMouseLatencyMs,
+
+            ruleset = (Options.Ruleset)ruleset,
+            customDataLocation = customDataLocation,
+            tracksFolderLocation = tracksFolderLocation,
+            skinsFolderLocation = skinsFolderLocation,
+
+            editorOptions = editorOptions.Clone(),
+            modifiers = modifiers.Clone(),
+            perTrackOptions = new Dictionary<string, PerTrackOptions>(),
+            themeOptions = new Dictionary<string,
+                Dictionary<string, string>>()
+        };
+
+        foreach (PerTrackOptionsWithGuid o in perTrackOptions)
+        {
+            upgraded.perTrackOptions.Add(o.trackGuid, o.DropGuid());
+        }
+
+        Dictionary<string, string> defaultThemeOptions =
+            new Dictionary<string, string>
+            {
+                {
+                    "showLoadingBar",
+                    showLoadingBar.ToString()
+                },
+                { "showFps", showFps.ToString() },
+                {
+                    "showJudgementTally",
+                    showJudgementTally.ToString()
+                },
+                {
+                    "showLaneDividers",
+                    showLaneDividers.ToString()
+                },
+                {
+                    "beatMarkers",
+                    beatMarkers.ToString()
+                },
+                {
+                    "backgroundScalingMode",
+                    backgroundScalingMode.ToString()
+                },
+                {
+                    "pauseWhenGameLosesFocus",
+                    pauseWhenGameLosesFocus.ToString()
+                }
+            };
+        upgraded.themeOptions.Add(kDefaultTheme, defaultThemeOptions);
+
+        return upgraded;
     }
 }
 
@@ -766,14 +1027,26 @@ public class OptionsV1 : OptionsBase
     public int audioBufferSize;
 
     // Appearance
+    public enum BeatMarkerVisibility
+    {
+        Hidden,
+        ShowBeatMarkers,
+        ShowHalfBeatMarkers
+    }
+    public enum BackgroundScalingMode
+    {
+        FillEntireScreen,
+        // Fill the area under the top bar.
+        FillGameArea
+    }
 
     public string locale;
     public bool showLoadingBar;
     public bool showFps;
     public bool showJudgementTally;
     public bool showLaneDividers;
-    public Options.BeatMarkerVisibility beatMarkers;
-    public Options.BackgroundScalingMode backgroundScalingMode;
+    public BeatMarkerVisibility beatMarkers;
+    public BackgroundScalingMode backgroundScalingMode;
     public string noteSkin;
     public string vfxSkin;
     public string comboSkin;
@@ -803,7 +1076,7 @@ public class OptionsV1 : OptionsBase
     // This should be a dictionary, but dictionaries are not
     // directly serializable, and we don't expect more than a
     // few hundred elements anyway.
-    public List<PerTrackOptions> perTrackOptions;
+    public List<PerTrackOptionsWithGuid> perTrackOptions;
 
     public OptionsV1()
     {
@@ -825,13 +1098,13 @@ public class OptionsV1 : OptionsBase
         // causes an exception.
         audioBufferSize = 512;
 
-        locale = Locale.kDefaultLocale;
+        locale = L10n.kDefaultLocale;
         showLoadingBar = true;
         showFps = false;
         showJudgementTally = false;
         showLaneDividers = false;
-        beatMarkers = Options.BeatMarkerVisibility.Hidden;
-        backgroundScalingMode = Options.BackgroundScalingMode
+        beatMarkers = BeatMarkerVisibility.Hidden;
+        backgroundScalingMode = BackgroundScalingMode
             .FillEntireScreen;
         noteSkin = "Default";
         vfxSkin = "Default";
@@ -846,13 +1119,13 @@ public class OptionsV1 : OptionsBase
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
-        perTrackOptions = new List<PerTrackOptions>();
+        perTrackOptions = new List<PerTrackOptionsWithGuid>();
         trackFilter = new TrackFilter();
     }
 
     protected override OptionsBase Upgrade()
     {
-        Options upgraded = new Options()
+        OptionsV2 upgraded = new OptionsV2()
         {
             width = width,
             height = height,
@@ -875,8 +1148,9 @@ public class OptionsV1 : OptionsBase
             showFps = showFps,
             showJudgementTally = showJudgementTally,
             showLaneDividers = showLaneDividers,
-            beatMarkers = beatMarkers,
-            backgroundScalingMode = backgroundScalingMode,
+            beatMarkers = (OptionsV2.BeatMarkerVisibility)beatMarkers,
+            backgroundScalingMode = (OptionsV2.BackgroundScalingMode)
+                backgroundScalingMode,
             noteSkin = noteSkin,
             vfxSkin = vfxSkin,
             comboSkin = comboSkin,
@@ -895,9 +1169,9 @@ public class OptionsV1 : OptionsBase
 
             trackFilter = trackFilter.Clone(),
 
-            perTrackOptions = new List<PerTrackOptions>()
+            perTrackOptions = new List<PerTrackOptionsWithGuid>()
         };
-        foreach (PerTrackOptions o in perTrackOptions)
+        foreach (PerTrackOptionsWithGuid o in perTrackOptions)
         {
             upgraded.perTrackOptions.Add(o.Clone());
         }
