@@ -531,7 +531,7 @@
     <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Result" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center; justify-content: center;">
-            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 900px;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 905px;">
                 <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 260px; margin-bottom: 20px; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; flex-direction: row;">
                     <ui:VisualElement name="eyecatch" picking-mode="Ignore" style="width: 200px; align-items: center; justify-content: center;">
                         <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
