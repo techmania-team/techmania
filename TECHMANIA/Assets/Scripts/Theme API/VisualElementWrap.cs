@@ -591,6 +591,8 @@ namespace ThemeApi
                 };
             unregisterAllCallbackRecursively(inner);
 
+            // TODO: remove texture if from file?
+
             inner.RemoveFromHierarchy();
         }
 
