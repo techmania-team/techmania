@@ -47,11 +47,11 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
             tm.options.themesFolderLocation = tm.paths.GetThemeFolder()
         end
         tracksContainer.display = true
-        tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
+        tracksContainer.Q("location-display").text = tm.options.tracksFolderLocation
         skinsContainer.display = true
-        skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+        skinsContainer.Q("location-display").text = tm.options.skinsFolderLocation
         themesContainer.display = true
-        themesContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.themesFolderLocation)
+        themesContainer.Q("location-display").text = tm.options.themesFolderLocation
     else
         tracksContainer.display = false
         skinsContainer.display = false
@@ -333,8 +333,7 @@ optionsPanel.Initialize = function()
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.Ok()) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_load_error_format")
-                local errorMessage = net.string.Format(errorFormat, 
-                    tm.paths.EscapeBackslash(status.errorMessage))
+                local errorMessage = net.string.Format(errorFormat, status.errorMessage)
                 alertBox.Alert(errorMessage)
                 tm.options.ruleset = tm.enum.ruleset.Standard
                 rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.enum.ruleset.Standard])

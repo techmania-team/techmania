@@ -240,9 +240,9 @@ selectPatternPanel.Show = function()
     -- Display metadata.
     local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
-    panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
-    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
-    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
+    panel.Q("metadata-wrap").Q("genre").text = track.trackMetadata.genre
+    panel.Q("metadata-wrap").Q("title").text = track.trackMetadata.title
+    panel.Q("metadata-wrap").Q("artist").text = track.trackMetadata.artist
 
     -- Display pattern list.
     panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
