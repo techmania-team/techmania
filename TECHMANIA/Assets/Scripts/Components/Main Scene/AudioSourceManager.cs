@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: route to FmodManager.
 [MoonSharpUserData]
 public class AudioSourceManager : MonoBehaviour
 {

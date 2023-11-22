@@ -58,6 +58,19 @@ public class FmodChannelWrap
         }
     }
 
+    // It's too much work to calculate pan from a mix matrix,
+    // so we simply cache the value for getter.
+    private float cachedPanStereo = 0f;
+    public float panStereo
+    {
+        get => cachedPanStereo;
+        set
+        {
+            cachedPanStereo = value;
+            FmodManager.EnsureOk(channel.setPan(value));
+        }
+    }
+
     public float pitch
     {
         get

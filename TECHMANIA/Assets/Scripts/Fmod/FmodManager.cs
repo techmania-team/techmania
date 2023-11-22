@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public class FmodManager : MonoBehaviour
+public class FmodManager
 {
     public static FmodManager instance { get; private set; }
     static FmodManager()
@@ -13,6 +13,8 @@ public class FmodManager : MonoBehaviour
     }
 
     public static FMOD.System system { get; private set; }
+
+    private Dictionary<AudioClip, FMOD.Sound> clipToSound;
 
     #region Channel groups
     private FMOD.ChannelGroup masterGroup;
@@ -24,6 +26,7 @@ public class FmodManager : MonoBehaviour
     public void Initialize()
     {
         system = FMODUnity.RuntimeManager.CoreSystem;
+        clipToSound = new Dictionary<AudioClip, FMOD.Sound>();
 
         // Create channel groups.
         EnsureOk(system.getMasterChannelGroup(out masterGroup));
@@ -31,6 +34,19 @@ public class FmodManager : MonoBehaviour
         EnsureOk(system.createChannelGroup("Keysound",
             out keysoundGroup));
         EnsureOk(system.createChannelGroup("SFX", out sfxGroup));
+    }
+
+    public void ConvertAndCacheAudioClip(AudioClip clip)
+    {
+        FMOD.Sound sound = CreateSoundFromAudioClip(clip);
+        clipToSound.Add(clip, sound);
+    }
+
+    public FMOD.Sound GetSound(AudioClip clip)
+    {
+        // Intentionally let it throw exceptions if the clip is
+        // not cached earlier.
+        return clipToSound[clip];
     }
 
     #region Utilities

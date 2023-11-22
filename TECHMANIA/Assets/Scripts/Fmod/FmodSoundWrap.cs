@@ -60,4 +60,9 @@ public class FmodSoundWrap
             return (int)value;
         }
     }
+
+    public void Release()
+    {
+        sound.release();
+    }
 }

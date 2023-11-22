@@ -3,11 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using ThemeApi;
 using TMPro;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static System.Collections.Specialized.BitVector32;
 
 public class BootScreen : MonoBehaviour
 {
@@ -16,6 +15,11 @@ public class BootScreen : MonoBehaviour
     public GameObject revertButtonContainer;
     public TextMeshProUGUI revertMessage;
     public MessageDialog messageDialog;
+
+    [Header("Components referencing Audio Clips")]
+    public MenuSfx menuSfx;
+    public PatternPanel patternPanel;
+    public CalibrationPreview calibrationPreview;
 
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;
@@ -196,6 +200,23 @@ public class BootScreen : MonoBehaviour
     {
         // Initialize FMOD.
         FmodManager.instance.Initialize();
+
+        // Convert and cache in-project audio clips.
+        FmodManager.instance.ConvertAndCacheAudioClip(menuSfx.select);
+        FmodManager.instance.ConvertAndCacheAudioClip(menuSfx.click);
+        FmodManager.instance.ConvertAndCacheAudioClip(menuSfx.back);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            patternPanel.metronome1);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            patternPanel.metronome2);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            patternPanel.assistTick);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            calibrationPreview.backingTrack);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            calibrationPreview.kick);
+        FmodManager.instance.ConvertAndCacheAudioClip(
+            calibrationPreview.snare);
 
         // Step 1: load skins.
         yield return LoadSkins();
