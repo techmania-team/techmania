@@ -11,12 +11,16 @@ public class ResourceLoader : MonoBehaviour
     private static ResourceLoader instance;
 
     public AudioClip emptyClip;
+    private FmodSoundWrap emptySound;
 
     private static ResourceLoader GetInstance()
     {
         if (instance == null)
         {
             instance = FindObjectOfType<ResourceLoader>();
+            instance.emptySound = new FmodSoundWrap(
+                FmodManager.CreateSoundFromAudioClip(
+                instance.emptyClip));
         }
         return instance;
     }
@@ -202,7 +206,7 @@ public class ResourceLoader : MonoBehaviour
 
     #region Audio
     public delegate void AudioLoadCompleteCallback(
-        Status status, AudioClip clip = null);
+        Status status, FmodSoundWrap sound);
 
     public static void LoadAudio(string fullPath,
         AudioLoadCompleteCallback loadAudioCompleteCallback)
@@ -221,7 +225,7 @@ public class ResourceLoader : MonoBehaviour
             {
                 Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
                 loadAudioCompleteCallback?.Invoke(
-                    Status.OKStatus(), emptyClip);
+                    Status.OKStatus(), emptySound);
                 yield break;
             }
         }
@@ -244,7 +248,10 @@ public class ResourceLoader : MonoBehaviour
         {
             Debug.Log("Loaded: " + fullPath);
         }
-        loadAudioCompleteCallback?.Invoke(status, clip);
+        FMOD.Sound internalSound = FmodManager.CreateSoundFromAudioClip(
+            clip);
+        loadAudioCompleteCallback?.Invoke(status,
+            new FmodSoundWrap(internalSound));
     }
 
     private static bool IsEmptyFile(string fullPath)

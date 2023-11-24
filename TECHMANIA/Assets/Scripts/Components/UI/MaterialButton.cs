@@ -18,6 +18,7 @@ public class MaterialButton : MonoBehaviour,
     public bool useClickSoundOverride;
     public AudioClip clickSoundOverride;
     public bool silent;
+    private FmodSoundWrap clickSoundOverrideFmod;
 
     private Button button;
     private Image buttonImage;
@@ -32,6 +33,13 @@ public class MaterialButton : MonoBehaviour,
     // Start is called before the first frame update
     void Start()
     {
+        if (useClickSoundOverride && clickSoundOverride != null)
+        {
+            clickSoundOverrideFmod = new FmodSoundWrap(
+                FmodManager.CreateSoundFromAudioClip(
+                    clickSoundOverride));
+        }
+
         button = GetComponent<Button>();
         buttonImage = GetComponent<Image>();
         foreach (Graphic g in GetComponentsInChildren<Graphic>())
@@ -95,7 +103,7 @@ public class MaterialButton : MonoBehaviour,
 
         if (useClickSoundOverride && !silent)
         {
-            MenuSfx.instance.PlaySound(clickSoundOverride);
+            MenuSfx.instance.PlaySound(clickSoundOverrideFmod);
             return;
         }
 
@@ -121,7 +129,7 @@ public class MaterialButton : MonoBehaviour,
 
         if (useClickSoundOverride && !silent)
         {
-            MenuSfx.instance.PlaySound(clickSoundOverride);
+            MenuSfx.instance.PlaySound(clickSoundOverrideFmod);
             return;
         }
 

@@ -15,8 +15,6 @@ public class FmodManager
 
     public static FMOD.System system { get; private set; }
 
-    private Dictionary<AudioClip, FMOD.Sound> clipToSound;
-
     #region Channel groups
     private FMOD.ChannelGroup masterGroup;
     private FMOD.ChannelGroup musicGroup;
@@ -47,7 +45,6 @@ public class FmodManager
     public void Initialize()
     {
         system = FMODUnity.RuntimeManager.CoreSystem;
-        clipToSound = new Dictionary<AudioClip, FMOD.Sound>();
 
         // Create channel groups.
         EnsureOk(system.getMasterChannelGroup(out masterGroup));
@@ -55,26 +52,6 @@ public class FmodManager
         EnsureOk(system.createChannelGroup("Keysound",
             out keysoundGroup));
         EnsureOk(system.createChannelGroup("SFX", out sfxGroup));
-    }
-
-    #region Prepare and play sounds
-    public void ConvertAndCacheAudioClip(AudioClip clip)
-    {
-        FMOD.Sound sound = CreateSoundFromAudioClip(clip);
-        clipToSound.Add(clip, sound);
-    }
-
-    public FMOD.Sound GetSoundFromAudioClip(AudioClip clip)
-    {
-        // Intentionally let it throw exceptions if the clip is
-        // not cached earlier.
-        return clipToSound[clip];
-    }
-
-    public FMOD.Channel Play(AudioClip clip, ChannelGroupType group,
-        bool paused = true)
-    {
-        return Play(GetSoundFromAudioClip(clip), group, true);
     }
 
     public FMOD.Channel Play(FMOD.Sound sound, ChannelGroupType group,
@@ -85,7 +62,13 @@ public class FmodManager
             paused, out channel));
         return channel;
     }
-    #endregion
+
+    public FmodChannelWrap Play(FmodSoundWrap sound,
+        ChannelGroupType group, bool paused = true)
+    {
+        FMOD.Channel channel = Play(sound.sound, group, paused);
+        return new FmodChannelWrap(channel);
+    }
 
     #region Group-level control
     public void PauseAll()

@@ -9,32 +9,43 @@ public class MenuSfx : MonoBehaviour
     public AudioClip click;
     public AudioClip back;
 
+    private FmodSoundWrap selectSound;
+    private FmodSoundWrap clickSound;
+    private FmodSoundWrap backSound;
+
     public static MenuSfx instance { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+
+        selectSound = new FmodSoundWrap(
+            FmodManager.CreateSoundFromAudioClip(select));
+        clickSound = new FmodSoundWrap(
+            FmodManager.CreateSoundFromAudioClip(click));
+        backSound = new FmodSoundWrap(
+            FmodManager.CreateSoundFromAudioClip(back));
     }
 
-    public void PlaySound(AudioClip clip)
+    public void PlaySound(FmodSoundWrap sound)
     {
-        if (clip == null) return;
-        audioSourceManager.PlaySfx(clip);
+        if (sound == null) return;
+        audioSourceManager.PlaySfx(sound);
     }
 
     public void PlaySelectSound()
     {
-        PlaySound(select);
+        PlaySound(selectSound);
     }
 
     public void PlayClickSound()
     {
-        PlaySound(click);
+        PlaySound(clickSound);
     }
 
     public void PlayBackSound()
     {
-        PlaySound(back);
+        PlaySound(backSound);
     }
 }

@@ -9,9 +9,9 @@ public class KeysoundPlayer
     // notes, and do not care about assist ticks.
     private Dictionary<Note, FmodChannelWrap> fmodChannelOfNote;
     private AudioSourceManager sourceManager;
-    private AudioClip assistTick;
+    private FmodSoundWrap assistTick;
 
-    public KeysoundPlayer(AudioClip assistTick)
+    public KeysoundPlayer(FmodSoundWrap assistTick)
     {
         sourceManager = AudioSourceManager.instance;
         this.assistTick = assistTick;

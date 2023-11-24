@@ -18,20 +18,19 @@ public class AudioSourceManager : MonoBehaviour
     }
 
     private FmodChannelWrap PlaySound(FmodManager.ChannelGroupType group,
-        AudioClip clip,
+        FmodSoundWrap sound,
         float startTime, int volumePercent, int panPercent)
     {
-        if (clip == null)
+        if (sound == null)
         {
             return null;
         }
         
         int startSample = Mathf.FloorToInt(
-            startTime * clip.frequency);
-        FMOD.Channel internalChannel = FmodManager.instance.Play(
-            clip, group, paused: true);
-        FmodChannelWrap channel = new FmodChannelWrap(internalChannel);
-        channel.timeSamples = Mathf.Min(clip.samples, startSample);
+            startTime * sound.frequency);
+        FmodChannelWrap channel = FmodManager.instance.Play(
+            sound, group, paused: true);
+        channel.timeSamples = Mathf.Min(sound.samples, startSample);
         channel.volume = volumePercent * 0.01f;
         channel.panStereo = panPercent * 0.01f;
         channel.Play();
@@ -39,36 +38,37 @@ public class AudioSourceManager : MonoBehaviour
     }
 
     #region Play API
-    public FmodChannelWrap PlayMusic(AudioClip clip,
+    public FmodChannelWrap PlayMusic(FmodSoundWrap sound,
         float startTime = 0f,
         int volumePercent = Note.defaultVolume,
         int panPercent = Note.defaultPan)
     {
         return PlaySound(FmodManager.ChannelGroupType.Music,
-            clip, startTime, volumePercent, panPercent);
+            sound, startTime, volumePercent, panPercent);
     }
 
-    public FmodChannelWrap PlayKeysound(AudioClip clip, bool hiddenLane,
+    public FmodChannelWrap PlayKeysound(FmodSoundWrap sound,
+        bool hiddenLane,
         float startTime = 0f,
         int volumePercent = Note.defaultVolume,
         int panPercent = Note.defaultPan)
     {
-        if (clip == null) return null;
+        if (sound == null) return null;
 
         FmodManager.ChannelGroupType group = hiddenLane ? 
             FmodManager.ChannelGroupType.Music :
             FmodManager.ChannelGroupType.Keysound;
-        return PlaySound(group, clip, startTime,
+        return PlaySound(group, sound, startTime,
             volumePercent, panPercent);
     }
 
-    public FmodChannelWrap PlaySfx(AudioClip clip,
+    public FmodChannelWrap PlaySfx(FmodSoundWrap sound,
         float startTime = 0f,
         int volumePercent = Note.defaultVolume,
         int panPercent = Note.defaultPan)
     {
         return PlaySound(FmodManager.ChannelGroupType.SFX,
-            clip, startTime: 0f, volumePercent, panPercent);
+            sound, startTime: 0f, volumePercent, panPercent);
     }
     #endregion
 

@@ -62,15 +62,15 @@ namespace ThemeApi
             return GlobalResource.GetThemeContent<AudioClip>(path);
         }
 
-        // Callback parameter: Status, AudioClip
+        // Callback parameter: Status, FmodSoundWrap
         public static void LoadAudioFromFile(string path,
             DynValue callback)
         {
             ResourceLoader.LoadAudio(path,
-                (Status status, AudioClip clip) =>
+                (Status status, FmodSoundWrap sound) =>
                 {
                     if (callback.IsNil()) return;
-                    callback.Function.Call(status, clip);
+                    callback.Function.Call(status, sound);
                 });
         }
 

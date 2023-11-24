@@ -9,7 +9,7 @@ public class GameBackground
     private Pattern pattern;
 
     // null if no backing track.
-    public AudioClip backingTrack { get; private set; }
+    public FmodSoundWrap backingTrack { get; private set; }
     private AudioSource backingSource => AudioSourceManager.instance
         .musicSource;
 
@@ -50,9 +50,9 @@ public class GameBackground
         bgContainer.style.unityBackgroundImageTintColor = Color.white;
     }
 
-    public void SetBackingTrack(AudioClip clip)
+    public void SetBackingTrack(FmodSoundWrap sound)
     {
-        backingTrack = clip;
+        backingTrack = sound;
     }
 
     public void SetBga(ThemeApi.VideoElement element,
@@ -104,7 +104,7 @@ public class GameBackground
 
     public void Conclude()
     {
-        backingTrack?.UnloadAudioData();
+        backingTrack?.Release();
         bgaElement?.Dispose();
     }
 
