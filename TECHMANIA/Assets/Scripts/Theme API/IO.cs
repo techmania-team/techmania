@@ -57,9 +57,9 @@ namespace ThemeApi
                 });
         }
 
-        public static AudioClip LoadAudioFromTheme(string path)
+        public static FmodSoundWrap LoadAudioFromTheme(string path)
         {
-            return GlobalResource.GetThemeContent<AudioClip>(path);
+            return GlobalResource.GetThemeContent<FmodSoundWrap>(path);
         }
 
         // Callback parameter: Status, FmodSoundWrap

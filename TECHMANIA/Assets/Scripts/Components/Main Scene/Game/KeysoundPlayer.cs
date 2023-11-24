@@ -71,12 +71,12 @@ public class KeysoundPlayer
 
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        AudioSource source = sourceManager.PlayKeysound(clip,
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        FmodChannelWrap channel = sourceManager.PlayKeysound(sound,
             hidden,
             startTime: 0f,
             n.volumePercent, n.panPercent);
-        fmodChannelOfNote[n] = source;
+        fmodChannelOfNote[n] = channel;
     }
 
     // Only play if the note's keysound starts before baseTime
@@ -85,21 +85,21 @@ public class KeysoundPlayer
     {
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        if (n.time + clip.length <= baseTime) return;
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        if (n.time + sound.length <= baseTime) return;
 
         float startTime = baseTime - n.time;
-        AudioSource source = sourceManager.PlayKeysound(clip,
+        FmodChannelWrap channel = sourceManager.PlayKeysound(sound,
             hidden, startTime, n.volumePercent, n.panPercent);
-        fmodChannelOfNote[n] = source;
+        fmodChannelOfNote[n] = channel;
     }
 
     public void StopIfPlaying(Note n)
     {
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        if (fmodChannelOfNote[n].clip == clip)
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        if (fmodChannelOfNote[n].sound == sound)
         {
             fmodChannelOfNote[n].Stop();
             fmodChannelOfNote.Remove(n);

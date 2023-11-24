@@ -20,12 +20,9 @@ public class MenuSfx : MonoBehaviour
     {
         instance = this;
 
-        selectSound = new FmodSoundWrap(
-            FmodManager.CreateSoundFromAudioClip(select));
-        clickSound = new FmodSoundWrap(
-            FmodManager.CreateSoundFromAudioClip(click));
-        backSound = new FmodSoundWrap(
-            FmodManager.CreateSoundFromAudioClip(back));
+        selectSound = FmodManager.CreateSoundFromAudioClip(select);
+        clickSound = FmodManager.CreateSoundFromAudioClip(click);
+        backSound = FmodManager.CreateSoundFromAudioClip(back);
     }
 
     public void PlaySound(FmodSoundWrap sound)

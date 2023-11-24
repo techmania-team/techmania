@@ -10,6 +10,7 @@ public class GameBackground
 
     // null if no backing track.
     public FmodSoundWrap backingTrack { get; private set; }
+    // TODO: play the backing track on load and record the channel here.
     private AudioSource backingSource => AudioSourceManager.instance
         .musicSource;
 

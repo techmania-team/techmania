@@ -3768,7 +3768,7 @@ public class PatternPanel : MonoBehaviour
         {
             if (n.time < playbackStartingTime)
             {
-                AudioClip clip = ResourceLoader.GetCachedClip(
+                AudioClip clip = ResourceLoader.GetCachedSound(
                     n.sound);
                 if (clip == null) continue;
                 if (n.time + clip.length > playbackStartingTime)
@@ -3846,7 +3846,7 @@ public class PatternPanel : MonoBehaviour
         {
             backingTrackPlaying = true;
             audioSourceManager.PlayMusic(
-                ResourceLoader.GetCachedClip(
+                ResourceLoader.GetCachedSound(
                     EditorContext.Pattern.patternMetadata
                     .backingTrack),
                 playbackCurrentTime);
@@ -3869,7 +3869,7 @@ public class PatternPanel : MonoBehaviour
             if (playbackCurrentTime < nextNote.time) break;
 
             sortedNotesForPlayback.Dequeue();
-            AudioClip clip = ResourceLoader.GetCachedClip(
+            AudioClip clip = ResourceLoader.GetCachedSound(
                 nextNote.sound);
             if (clip == null && Options.instance.editorOptions
                 .assistTickOnSilentNotes)
@@ -3895,7 +3895,7 @@ public class PatternPanel : MonoBehaviour
         {
             keysoundPreviewSource.Stop();
         }
-        AudioClip clip = ResourceLoader.GetCachedClip(
+        AudioClip clip = ResourceLoader.GetCachedSound(
             n.sound);
         keysoundPreviewSource = audioSourceManager.PlayKeysound(
             clip,

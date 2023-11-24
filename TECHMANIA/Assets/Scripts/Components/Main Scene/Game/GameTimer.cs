@@ -108,7 +108,7 @@ public class GameTimer
 
             if (!string.IsNullOrEmpty(n.sound))
             {
-                endOfKeysound += ResourceLoader.GetCachedClip(
+                endOfKeysound += ResourceLoader.GetCachedSound(
                     n.sound).length;
             }
             if (n is HoldNote)

@@ -788,7 +788,19 @@ public class GlobalResourceLoader : MonoBehaviour
                 yield break;
             }
 
-            GlobalResource.themeContent.Add(name, request.asset);
+            // Special handling of AudioClips: convert them to
+            // FmodSoundWrap.
+            if (request.asset is AudioClip)
+            {
+                FmodSoundWrap sound = FmodManager
+                    .CreateSoundFromAudioClip(
+                        request.asset as AudioClip);
+                GlobalResource.themeContent.Add(name, sound);
+            }
+            else
+            {
+                GlobalResource.themeContent.Add(name, request.asset);
+            }
         }
         Options.RestoreVSync();
         completeCallback?.Invoke(Status.OKStatus());

@@ -35,9 +35,9 @@ public class MaterialButton : MonoBehaviour,
     {
         if (useClickSoundOverride && clickSoundOverride != null)
         {
-            clickSoundOverrideFmod = new FmodSoundWrap(
-                FmodManager.CreateSoundFromAudioClip(
-                    clickSoundOverride));
+            clickSoundOverrideFmod = FmodManager
+                .CreateSoundFromAudioClip(
+                    clickSoundOverride);
         }
 
         button = GetComponent<Button>();

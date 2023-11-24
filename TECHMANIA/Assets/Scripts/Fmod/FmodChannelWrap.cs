@@ -13,6 +13,8 @@ public class FmodChannelWrap
         this.channel = channel;
     }
 
+    // This field retains the name "clip" for backwards compatibility.
+    // "sound" is the more proper name.
     public FmodSoundWrap clip
     {
         get
@@ -32,6 +34,7 @@ public class FmodChannelWrap
                 value.sound, channelGroup, isPlaying, out channel));
         }
     }
+    public FmodSoundWrap sound => clip;
 
     public bool isPlaying
     {

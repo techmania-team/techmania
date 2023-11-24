@@ -129,7 +129,7 @@ public class FmodManager
     }
 
     // https://qa.fmod.com/t/load-an-audioclip-as-fmod-sound/11741/2
-    public static FMOD.Sound CreateSoundFromAudioClip(
+    public static FmodSoundWrap CreateSoundFromAudioClip(
         AudioClip audioClip)
     {
         // Load samples from audio clip.
@@ -177,7 +177,7 @@ public class FmodManager
 
         // Return sound.
         EnsureOk(sound.setMode(FMOD.MODE.LOOP_OFF | FMOD.MODE._2D));
-        return sound;
+        return new FmodSoundWrap(sound);
     }
     #endregion
 }
