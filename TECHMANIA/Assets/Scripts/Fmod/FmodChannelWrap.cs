@@ -147,7 +147,7 @@ public class FmodChannelWrap
         FmodManager.EnsureOk(channel.stop());
     }
 
-    public void Unpause()
+    public void UnPause()
     {
         FmodManager.EnsureOk(channel.setPaused(true));
     }

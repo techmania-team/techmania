@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
+// A basic wrapper around FMOD.
 public class FmodManager
 {
     public static FmodManager instance { get; private set; }
@@ -21,6 +22,26 @@ public class FmodManager
     private FMOD.ChannelGroup musicGroup;
     private FMOD.ChannelGroup keysoundGroup;
     private FMOD.ChannelGroup sfxGroup;
+
+    public enum ChannelGroupType
+    {
+        Master,
+        Music,
+        Keysound,
+        SFX
+    }
+
+    private FMOD.ChannelGroup GetGroup(ChannelGroupType type)
+    {
+        return type switch
+        {
+            ChannelGroupType.Master => masterGroup,
+            ChannelGroupType.Music => musicGroup,
+            ChannelGroupType.Keysound => keysoundGroup,
+            ChannelGroupType.SFX => sfxGroup,
+            _ => throw new NotImplementedException()
+        };
+    }
     #endregion
 
     public void Initialize()
@@ -36,18 +57,84 @@ public class FmodManager
         EnsureOk(system.createChannelGroup("SFX", out sfxGroup));
     }
 
+    #region Prepare and play sounds
     public void ConvertAndCacheAudioClip(AudioClip clip)
     {
         FMOD.Sound sound = CreateSoundFromAudioClip(clip);
         clipToSound.Add(clip, sound);
     }
 
-    public FMOD.Sound GetSound(AudioClip clip)
+    public FMOD.Sound GetSoundFromAudioClip(AudioClip clip)
     {
         // Intentionally let it throw exceptions if the clip is
         // not cached earlier.
         return clipToSound[clip];
     }
+
+    public FMOD.Channel Play(AudioClip clip, ChannelGroupType group,
+        bool paused = true)
+    {
+        return Play(GetSoundFromAudioClip(clip), group, true);
+    }
+
+    public FMOD.Channel Play(FMOD.Sound sound, ChannelGroupType group,
+        bool paused = true)
+    {
+        FMOD.Channel channel;
+        EnsureOk(system.playSound(sound, GetGroup(group),
+            paused, out channel));
+        return channel;
+    }
+    #endregion
+
+    #region Group-level control
+    public void PauseAll()
+    {
+        EnsureOk(GetGroup(ChannelGroupType.Music).setPaused(true));
+        EnsureOk(GetGroup(ChannelGroupType.Keysound).setPaused(true));
+    }
+
+    public void UnpauseAll()
+    {
+        EnsureOk(GetGroup(ChannelGroupType.Music).setPaused(false));
+        EnsureOk(GetGroup(ChannelGroupType.Keysound).setPaused(false));
+    }
+
+    public void StopAll()
+    {
+        EnsureOk(GetGroup(ChannelGroupType.Music).stop());
+        EnsureOk(GetGroup(ChannelGroupType.Keysound).stop());
+    }
+
+    public void SetSpeed(float speed)
+    {
+        EnsureOk(GetGroup(ChannelGroupType.Music).setPitch(speed));
+        EnsureOk(GetGroup(ChannelGroupType.Keysound).setPitch(speed));
+    }
+
+    public bool AnySoundPlaying()
+    {
+        int numChannels;
+        EnsureOk(masterGroup.getNumChannels(out numChannels));
+
+        for (int i = 0; i < numChannels; i++)
+        {
+            FMOD.Channel channel;
+            EnsureOk(masterGroup.getChannel(i, out channel));
+            bool paused;
+            EnsureOk(channel.getPaused(out paused));
+            if (!paused) return true;
+        }
+
+        return false;
+    }
+
+    public void SetVolume(ChannelGroupType type, float volume)
+    {
+        FMOD.ChannelGroup group = GetGroup(type);
+        EnsureOk(group.setVolume(volume));
+    }
+    #endregion
 
     #region Utilities
     public static void EnsureOk(FMOD.RESULT result)
@@ -59,7 +146,7 @@ public class FmodManager
     }
 
     // https://qa.fmod.com/t/load-an-audioclip-as-fmod-sound/11741/2
-    private static FMOD.Sound CreateSoundFromAudioClip(
+    public static FMOD.Sound CreateSoundFromAudioClip(
         AudioClip audioClip)
     {
         // Load samples from audio clip.

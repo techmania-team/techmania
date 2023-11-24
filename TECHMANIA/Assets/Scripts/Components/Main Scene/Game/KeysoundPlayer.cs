@@ -7,7 +7,7 @@ public class KeysoundPlayer
     // Records which AudioSource is playing the keysounds of which
     // note, so they can be stopped later. This is meant for long
     // notes, and do not care about assist ticks.
-    private Dictionary<Note, AudioSource> audioSourceOfNote;
+    private Dictionary<Note, FmodChannelWrap> fmodChannelOfNote;
     private AudioSourceManager sourceManager;
     private AudioClip assistTick;
 
@@ -19,32 +19,32 @@ public class KeysoundPlayer
 
     public void Prepare()
     {
-        audioSourceOfNote = new Dictionary<Note, AudioSource>();
+        fmodChannelOfNote = new Dictionary<Note, FmodChannelWrap>();
     }
 
     public void Pause()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
-            source.Pause();
+            channel.Pause();
         }
     }
 
     public void Unpause()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
-            source.UnPause();
+            channel.UnPause();
         }
     }
 
     public void Dispose()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
-            source.Stop();
+            channel.Stop();
         }
-        audioSourceOfNote.Clear();
+        fmodChannelOfNote.Clear();
     }
 
     public void Play(Note n, bool hidden, bool emptyHit)
@@ -76,7 +76,7 @@ public class KeysoundPlayer
             hidden,
             startTime: 0f,
             n.volumePercent, n.panPercent);
-        audioSourceOfNote[n] = source;
+        fmodChannelOfNote[n] = source;
     }
 
     // Only play if the note's keysound starts before baseTime
@@ -91,7 +91,7 @@ public class KeysoundPlayer
         float startTime = baseTime - n.time;
         AudioSource source = sourceManager.PlayKeysound(clip,
             hidden, startTime, n.volumePercent, n.panPercent);
-        audioSourceOfNote[n] = source;
+        fmodChannelOfNote[n] = source;
     }
 
     public void StopIfPlaying(Note n)
@@ -99,10 +99,10 @@ public class KeysoundPlayer
         if (string.IsNullOrEmpty(n.sound)) return;
 
         AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        if (audioSourceOfNote[n].clip == clip)
+        if (fmodChannelOfNote[n].clip == clip)
         {
-            audioSourceOfNote[n].Stop();
-            audioSourceOfNote.Remove(n);
+            fmodChannelOfNote[n].Stop();
+            fmodChannelOfNote.Remove(n);
         }
     }
 
