@@ -266,13 +266,13 @@ public class ResourceLoader : MonoBehaviour
 
     public static void GetSoundFromWebRequest(
         UnityWebRequest request,
-        out FmodSoundWrap clip, out Status status)
+        out FmodSoundWrap sound, out Status status)
     {
-        clip = null;
+        sound = null;
         string fullPath = request.uri.LocalPath;
         if (request.result != UnityWebRequest.Result.Success)
         {
-            clip = null;
+            sound = null;
             status = Status.Error(Status.Code.OtherError,
                 request.error, fullPath);
             return;
@@ -292,7 +292,7 @@ public class ResourceLoader : MonoBehaviour
                 request.error, fullPath);
             return;
         }
-        clip = FmodManager.CreateSoundFromAudioClip(clipFromRequest);
+        sound = FmodManager.CreateSoundFromAudioClip(clipFromRequest);
         status = Status.OKStatus();
     }
     #endregion

@@ -198,9 +198,6 @@ public class BootScreen : MonoBehaviour
 
     private IEnumerator BootSequence()
     {
-        // Initialize FMOD.
-        FmodManager.instance.Initialize();
-
         // Step 1: load skins.
         yield return LoadSkins();
 

@@ -44,6 +44,7 @@ public class FmodManager
 
     public void Initialize()
     {
+        Debug.Log("Initializing FMOD.");
         system = FMODUnity.RuntimeManager.CoreSystem;
 
         // Create channel groups.

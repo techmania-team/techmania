@@ -34,6 +34,8 @@ public class Startup : MonoBehaviour
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
 
+        FmodManager.instance.Initialize();
+
         Options.RefreshInstance();
         Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();

@@ -343,6 +343,7 @@ public class Options : OptionsBase
     // the audio mixer after calling this.
     public void ApplyAudioBufferSize()
     {
+        // TODO: apply to FMOD instead.
         AudioConfiguration config = AudioSettings.GetConfiguration();
         if (config.dspBufferSize != audioBufferSize)
         {

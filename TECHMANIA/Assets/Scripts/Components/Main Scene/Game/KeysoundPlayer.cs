@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class KeysoundPlayer
 {
-    // Records which AudioSource is playing the keysounds of which
+    // Records which FmodChannelWrap is playing the keysounds of which
     // note, so they can be stopped later. This is meant for long
     // notes, and do not care about assist ticks.
     private Dictionary<Note, FmodChannelWrap> fmodChannelOfNote;
