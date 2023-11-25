@@ -55,6 +55,9 @@ public class PatternPanel : MonoBehaviour
     public AudioClip metronome1;
     public AudioClip metronome2;
     public AudioClip assistTick;
+    private FmodSoundWrap metronome1Sound;
+    private FmodSoundWrap metronome2Sound;
+    private FmodSoundWrap assistTickSound;
 
     [Header("Options")]
     public TextMeshProUGUI beatSnapDividerDisplay;
@@ -177,6 +180,16 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region MonoBehavior APIs
+    private void Start()
+    {
+        metronome1Sound = FmodManager.CreateSoundFromAudioClip(
+            metronome1);
+        metronome2Sound = FmodManager.CreateSoundFromAudioClip(
+            metronome2);
+        assistTickSound = FmodManager.CreateSoundFromAudioClip(
+            assistTick);
+    }
+
     private void OnEnable()
     {
         Options.RefreshInstance();
@@ -3706,9 +3719,9 @@ public class PatternPanel : MonoBehaviour
     // a note is removed from the queue.
     private Queue<Note> sortedNotesForPlayback;
 
-    // Keep a reference to the audio source playing a keysound preview
+    // Keep a reference to the FMOD channel playing a keysound preview
     // so we can stop a preview before starting the next one.
-    private AudioSource keysoundPreviewSource;
+    private FmodChannelWrap keysoundPreviewChannel;
 
     private void OnResourceLoadComplete(Status status)
     {
@@ -3768,12 +3781,12 @@ public class PatternPanel : MonoBehaviour
         {
             if (n.time < playbackStartingTime)
             {
-                AudioClip clip = ResourceLoader.GetCachedSound(
+                FmodSoundWrap sound = ResourceLoader.GetCachedSound(
                     n.sound);
-                if (clip == null) continue;
-                if (n.time + clip.length > playbackStartingTime)
+                if (sound == null) continue;
+                if (n.time + sound.length > playbackStartingTime)
                 {
-                    audioSourceManager.PlayKeysound(clip,
+                    audioSourceManager.PlayKeysound(sound,
                         EditorContext.Pattern.ShouldPlayInMusicChannel(n.lane),
                         startTime: playbackStartingTime - n.time,
                         n.volumePercent, n.panPercent);
@@ -3833,9 +3846,10 @@ public class PatternPanel : MonoBehaviour
                 int wholeBeat = Mathf.FloorToInt(beat);
                 bool wholeScan = wholeBeat % 
                     EditorContext.Pattern.patternMetadata.bps == 0;
-                AudioClip clip = wholeScan ? metronome2 : metronome1;
+                FmodSoundWrap sound = wholeScan ? 
+                    metronome2Sound : metronome1Sound;
 
-                MenuSfx.instance.PlaySound(clip);
+                MenuSfx.instance.PlaySound(sound);
             }
             playbackBeatOnPreviousFrame = beat;
         }
@@ -3869,15 +3883,16 @@ public class PatternPanel : MonoBehaviour
             if (playbackCurrentTime < nextNote.time) break;
 
             sortedNotesForPlayback.Dequeue();
-            AudioClip clip = ResourceLoader.GetCachedSound(
+            FmodSoundWrap sound = ResourceLoader.GetCachedSound(
                 nextNote.sound);
-            if (clip == null && Options.instance.editorOptions
+            if (sound == null && Options.instance.editorOptions
                 .assistTickOnSilentNotes)
             {
-                clip = assistTick;
+                sound = assistTickSound;
             }
-            audioSourceManager.PlayKeysound(clip,
-                EditorContext.Pattern.ShouldPlayInMusicChannel(nextNote.lane),
+            audioSourceManager.PlayKeysound(sound,
+                EditorContext.Pattern.ShouldPlayInMusicChannel(
+                    nextNote.lane),
                 startTime: 0f,
                 nextNote.volumePercent, nextNote.panPercent);
         }
@@ -3891,14 +3906,14 @@ public class PatternPanel : MonoBehaviour
 
     public void PreviewKeysound(Note n)
     {
-        if (keysoundPreviewSource != null)
+        if (keysoundPreviewChannel != null)
         {
-            keysoundPreviewSource.Stop();
+            keysoundPreviewChannel.Stop();
         }
-        AudioClip clip = ResourceLoader.GetCachedSound(
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(
             n.sound);
-        keysoundPreviewSource = audioSourceManager.PlayKeysound(
-            clip,
+        keysoundPreviewChannel = audioSourceManager.PlayKeysound(
+            sound,
             EditorContext.Pattern.ShouldPlayInMusicChannel(n.lane),
             0f,
             n.volumePercent, n.panPercent);
