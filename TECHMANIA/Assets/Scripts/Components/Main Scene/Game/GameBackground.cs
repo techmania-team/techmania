@@ -10,9 +10,7 @@ public class GameBackground
 
     // null if no backing track.
     public FmodSoundWrap backingTrack { get; private set; }
-    // TODO: play the backing track on load and record the channel here.
-    private AudioSource backingSource => AudioSourceManager.instance
-        .musicSource;
+    private FmodChannelWrap backingChannel;
 
     private VisualElement bgContainer;
     // null if no video.
@@ -38,6 +36,7 @@ public class GameBackground
         this.trackOptions = trackOptions;
 
         backingTrack = null;
+        backingChannel = null;
         bgaElement = null;
         bgaCovered = false;
     }
@@ -87,31 +86,25 @@ public class GameBackground
 
     public void Pause()
     {
-        if (backingTrack != null)
-        {
-            backingSource.Pause();
-        }
+        backingChannel?.Pause();
         bgaElement?.Pause();
     }
 
     public void Unpause()
     {
-        if (backingTrack != null)
-        {
-            backingSource.UnPause();
-        }
+        backingChannel?.UnPause();
         bgaElement?.Unpause();
     }
 
     public void Conclude()
     {
-        backingTrack?.Release();
         bgaElement?.Dispose();
     }
 
     public void StopBackingTrack()
     {
-        if (backingTrack != null) backingSource.Stop();
+        backingChannel?.Stop();
+        backingChannel = null;
     }
 
     public void StopBga()
@@ -186,20 +179,20 @@ public class GameBackground
 
         if (baseTime >= 0f)
         {
-            if (backingSource.isPlaying)
+            if (backingChannel != null)
             {
-                backingSource.time = baseTime;
+                backingChannel.time = baseTime;
             }
             else
             {
-                AudioSourceManager.instance.PlayMusic(
+                backingChannel = AudioSourceManager.instance.PlayMusic(
                     backingTrack,
                     startTime: baseTime);
             }
         }
-        else if (backingSource.isPlaying)
+        else
         {
-            backingSource.Stop();
+            StopBackingTrack();
         }
     }
 
