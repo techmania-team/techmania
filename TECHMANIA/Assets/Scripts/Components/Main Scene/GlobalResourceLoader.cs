@@ -755,7 +755,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         Options.TemporarilyDisableVSync();
         GlobalResource.themeContent =
-            new Dictionary<string, UnityEngine.Object>();
+            new Dictionary<string, object>();
         progressCallback?.Invoke(path);
         AssetBundleCreateRequest bundleRequest = 
             AssetBundle.LoadFromFileAsync(path);

@@ -5,7 +5,7 @@ using UnityEngine;
 
 // Imitates a Unity AudioClip.
 [MoonSharpUserData]
-public class FmodSoundWrap : UnityEngine.Object
+public class FmodSoundWrap
 {
     public FMOD.Sound sound;  // internal handle, copyable
     public FmodSoundWrap(FMOD.Sound sound)
