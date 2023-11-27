@@ -1,6 +1,8 @@
 using MoonSharp.Interpreter;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 // When playing a sound via FMOD, it returns a channel. We wrap
 // around that channel in attempt to imitate a Unity AudioSource.
@@ -153,5 +155,44 @@ public class FmodChannelWrap
     public void UnPause()
     {
         FmodManager.EnsureOk(channel.setPaused(true));
+    }
+
+    // This callback must be static or FMOD will crash Unity hard.
+    private static FMOD.RESULT InternalCallback(
+        IntPtr channelControl,
+        FMOD.CHANNELCONTROL_TYPE channelControlType,
+        FMOD.CHANNELCONTROL_CALLBACK_TYPE callbackType,
+        IntPtr commandData1, IntPtr commandData2)
+    {
+        if (channelControlType != FMOD.CHANNELCONTROL_TYPE.CHANNEL ||
+            callbackType != FMOD.CHANNELCONTROL_CALLBACK_TYPE.END)
+        {
+            return FMOD.RESULT.OK;
+        }
+
+        // Retrieve the FmodChannelWrap object from userdata.
+        FMOD.Channel internalChannel = new FMOD.Channel(channelControl);
+        IntPtr pointer;
+        FmodManager.EnsureOk(internalChannel.getUserData(out pointer));
+        GCHandle handle = GCHandle.FromIntPtr(pointer);
+        FmodChannelWrap channel = handle.Target as FmodChannelWrap;
+
+        // Now we can finally call the callback.
+        channel.soundEndCallback();
+        return FMOD.RESULT.OK;
+    }
+
+    private Action soundEndCallback;
+    public void SetSoundEndCallback(Action callback)
+    {
+        // Store the FmodChannelWrap's pointer inside the channel,
+        // so we can retrieve it later from the static callback.
+        GCHandle handle = GCHandle.Alloc(this);
+        IntPtr pointer = GCHandle.ToIntPtr(handle);
+        FmodManager.EnsureOk(channel.setUserData(pointer));
+
+        // Store and set callback.
+        this.soundEndCallback = callback;
+        FmodManager.EnsureOk(channel.setCallback(InternalCallback));
     }
 }

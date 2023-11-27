@@ -1,3 +1,4 @@
+using AOT;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class KeysoundPlayer
     public void Prepare()
     {
         fmodChannelOfNote = new Dictionary<Note, FmodChannelWrap>();
+        removeChannelFromMapOnSoundEnd = true;
     }
 
     public void Pause()
@@ -40,6 +42,7 @@ public class KeysoundPlayer
 
     public void Dispose()
     {
+        removeChannelFromMapOnSoundEnd = false;
         foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
             channel.Stop();
@@ -47,6 +50,7 @@ public class KeysoundPlayer
         fmodChannelOfNote.Clear();
     }
 
+    private bool removeChannelFromMapOnSoundEnd;
     public void Play(Note n, bool hidden, bool emptyHit)
     {
         if (emptyHit && (
@@ -76,6 +80,13 @@ public class KeysoundPlayer
             hidden,
             startTime: 0f,
             n.volumePercent, n.panPercent);
+        channel.SetSoundEndCallback(() =>
+        {
+            if (removeChannelFromMapOnSoundEnd)
+            {
+                fmodChannelOfNote.Remove(n);
+            }
+        });
         fmodChannelOfNote[n] = channel;
     }
 
