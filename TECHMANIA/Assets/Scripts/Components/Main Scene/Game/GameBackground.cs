@@ -98,6 +98,7 @@ public class GameBackground
 
     public void Conclude()
     {
+        backingChannel?.Stop();
         bgaElement?.Dispose();
     }
 
