@@ -154,7 +154,7 @@ public class FmodChannelWrap
 
     public void UnPause()
     {
-        FmodManager.EnsureOk(channel.setPaused(true));
+        FmodManager.EnsureOk(channel.setPaused(false));
     }
 
     // This callback must be static or FMOD will crash Unity hard.
