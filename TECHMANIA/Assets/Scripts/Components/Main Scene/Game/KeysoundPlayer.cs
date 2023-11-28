@@ -1,4 +1,3 @@
-using AOT;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,12 +41,7 @@ public class KeysoundPlayer
 
     public void Dispose()
     {
-        removeChannelFromMapOnSoundEnd = false;
-        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
-        {
-            channel.Stop();
-        }
-        fmodChannelOfNote.Clear();
+        StopAll();
     }
 
     private bool removeChannelFromMapOnSoundEnd;
@@ -119,6 +113,15 @@ public class KeysoundPlayer
 
     public void StopAll()
     {
-        Dispose();
+        // We need to prevent the sound end callback from modifying
+        // fmodChannelOfNote.
+        removeChannelFromMapOnSoundEnd = false;
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
+        {
+            channel.Stop();
+        }
+        removeChannelFromMapOnSoundEnd = true;
+
+        fmodChannelOfNote.Clear();
     }
 }
