@@ -455,6 +455,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
             while (true) do
                 local timer = 0
                 -- Start at volume 0
+                -- TODO: release this clip when done
                 selectPatternPanel.previewTrackAudioSource = tm.audio.PlayMusic(clip, startTime, 0)
                 while (timer < fadeLength) do
                     selectPatternPanel.previewTrackAudioSource.volume = timer / fadeLength

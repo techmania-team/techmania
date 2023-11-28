@@ -99,6 +99,7 @@ public class GameBackground
     public void Conclude()
     {
         backingChannel?.Stop();
+        backingTrack?.Release();
         bgaElement?.Dispose();
     }
 
