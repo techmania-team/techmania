@@ -71,7 +71,7 @@ public class Curtain : MonoBehaviour
         }
         yield return new WaitUntil(() =>
         {
-            return !audioSourceManager.IsAnySourcePlaying();
+            return !audioSourceManager.IsAnySoundPlaying();
         });
 
         SceneManager.LoadScene(name);
@@ -90,7 +90,7 @@ public class Curtain : MonoBehaviour
         }
         yield return new WaitUntil(() =>
         {
-            return !audioSourceManager.IsAnySourcePlaying();
+            return !audioSourceManager.IsAnySoundPlaying();
         });
 
 #if UNITY_EDITOR

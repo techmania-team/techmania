@@ -57,7 +57,7 @@ public class Options : OptionsBase
     public int musicVolumePercent;
     public int keysoundVolumePercent;
     public int sfxVolumePercent;
-    public int audioBufferSize;
+    public int audioBufferSize;  // Deprecated
 
     // Appearance
 
@@ -155,11 +155,6 @@ public class Options : OptionsBase
         musicVolumePercent = 80;
         keysoundVolumePercent = 100;
         sfxVolumePercent = 100;
-        // Cannot call GetDefaultAudioBufferSize() here, because
-        // somehow Unity calls this constructor during serialization,
-        // and calling AudioSettings.GetConfiguration() at that time
-        // causes an exception.
-        audioBufferSize = 512;
 
         locale = L10n.kDefaultLocale;
         noteSkin = "Default";
@@ -335,22 +330,13 @@ public class Options : OptionsBase
 
     public static int GetDefaultAudioBufferSize()
     {
-        return AudioSettings.GetConfiguration().dspBufferSize;
+        Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
+        return 1024;
     }
 
-    // This resets the audio mixer, AND it only happens in
-    // the standalone player. What the heck? Anyway always reset
-    // the audio mixer after calling this.
     public void ApplyAudioBufferSize()
     {
-        // TODO: apply to FMOD instead.
-        AudioConfiguration config = AudioSettings.GetConfiguration();
-        if (config.dspBufferSize != audioBufferSize)
-        {
-            config.dspBufferSize = audioBufferSize;
-            AudioSettings.Reset(config);
-            ResourceLoader.forceReload = true;
-        }
+        Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
     }
 
     public static float VolumeValueToDb(int volumePercent)

@@ -94,9 +94,15 @@ public class AudioSourceManager : MonoBehaviour
     }
     #endregion
 
-    public bool IsAnySourcePlaying()
+    public bool IsAnySoundPlaying()
     {
         return FmodManager.instance.AnySoundPlaying();
+    }
+
+    // For backwards compatibility with API version 1.
+    public bool IsAnySourcePlaying()
+    {
+        return IsAnySoundPlaying();
     }
 
     public void ApplyVolume()

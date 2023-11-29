@@ -9,7 +9,9 @@ using System.Runtime.InteropServices;
 [MoonSharpUserData]
 public class FmodChannelWrap
 {
+    [MoonSharpHidden]
     public FMOD.Channel channel;  // internal handle, copyable
+    [MoonSharpHidden]
     public FmodChannelWrap(FMOD.Channel channel)
     {
         this.channel = channel;
@@ -194,5 +196,10 @@ public class FmodChannelWrap
         // Store and set callback.
         this.soundEndCallback = callback;
         FmodManager.EnsureOk(channel.setCallback(InternalCallback));
+    }
+
+    public void SetSoundEndCallback(DynValue callback)
+    {
+        SetSoundEndCallback(() => callback.Function.Call());
     }
 }

@@ -7,7 +7,9 @@ using UnityEngine;
 [MoonSharpUserData]
 public class FmodSoundWrap
 {
+    [MoonSharpHidden]
     public FMOD.Sound sound;  // internal handle, copyable
+    [MoonSharpHidden]
     public FmodSoundWrap(FMOD.Sound sound)
     {
         this.sound = sound;
