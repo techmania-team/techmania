@@ -61,6 +61,7 @@ public class FmodSoundWrap
         }
     }
 
+    // Themes may want to use this on preview tracks.
     public void Release()
     {
         sound.release();

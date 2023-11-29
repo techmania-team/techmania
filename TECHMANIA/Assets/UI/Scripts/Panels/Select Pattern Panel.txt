@@ -19,6 +19,7 @@ selectPatternPanel = {
     },
 
     previewPlaybackCoroutine = nil,
+    previewTrack = nil,
     previewTrackAudioSource = nil,
 
     radarLayoutInitialized = false,
@@ -442,6 +443,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
         -- If the user transitioned away while loading the clip, don't play.
         if (not selectPatternPanel.panel.display) then return end
 
+        selectPatternPanel.previewTrack = clip
         local startTime = trackMetadata.previewStartTime
         local endTime = trackMetadata.previewEndTime
         if (startTime < 0) then startTime = 0 end
@@ -495,6 +497,7 @@ selectPatternPanel.StopPreviewTrackPlayback = function()
                 coroutine.yield()
             end
             selectPatternPanel.previewTrackAudioSource.Stop()
+            selectPatternPanel.previewTrack.Release()
         end)
     end
 end
