@@ -263,19 +263,10 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#options-panel #music #label,Music,音乐音量,音樂音量,音楽,반주음
 ,#options-panel #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
 ,#options-panel #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
-Deleted in 2.1,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
-Deleted in 2.1,#options-panel #audio-buffer-size-explanation #label,"Lower value reduces audio latency,
-but may cause audio issues such as stuttering.","数值越小，音频延迟越低，
-但也越可能出现卡壳等问题。","數值越小，音效延遲越低，
-但也越可能出現問題。","バッファを減らせば遅延が小さくなりますが、
-ノイズ、音ズレなどが発生することがあります。","버퍼 크기가 작을수록 오디오 지연이 감소하지만,
-노이즈, 싱크 밀림 등의 문제가 발생할 수 있습니다."
 Added in 2.1,#options-panel #asio #label,Use ASIO,使用ASIO,,,
-Added in 2.1,asio_error,"TECHMANIA could not turn on ASIO.
-
-Please make sure you have installed ASIO4ALL.","TECHMANIA无法启用ASIO。
-
-请确保您已经安装ASIO4ALL。",,,
+Added in 2.1,#options-panel #asio-explanation #content,"After installing ASIO4ALL, you can enable ASIO to enjoy low latency audio.
+Other applications will be unable to produce any sound.","如果安装了ASIO4ALL，可以启用ASIO以降低音频延迟。
+其他应用程序将无法发声。",,,
 ,#options-panel #appearance-header,Appearance,界面,介面,表示,화면
 ,#options-panel #language #label,Language,语言,語言,言語,언어
 ,#options-panel #theme #label,Theme,主题,主題,テーマ,테마

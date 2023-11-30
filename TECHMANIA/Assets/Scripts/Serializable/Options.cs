@@ -341,17 +341,9 @@ public class Options : OptionsBase
         Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
     }
 
-    public Status ApplyAsio()
+    public void ApplyAsio()
     {
-        try
-        {
-            FmodManager.instance.useASIO = useAsio;
-            return Status.OKStatus();
-        }
-        catch (Exception e)
-        {
-            return Status.FromException(e);
-        }
+        FmodManager.instance.useASIO = useAsio;
     }
 
     public static float VolumeValueToDb(int volumePercent)

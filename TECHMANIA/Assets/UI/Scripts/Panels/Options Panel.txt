@@ -254,20 +254,18 @@ optionsPanel.Initialize = function()
 
     commonUI.InitializeVolumeSliders(panel)
     local asio = panel.Q("asio")
+    local asioExplanation = panel.Q("asio-explanation")
     if (platform == "Windows") then
         asio.display = true
+        asioExplanation.display = true
         local asioToggle = asio.Q("track")
         asioToggle.RegisterCallback(eventType.Click, function()
             tm.options.useAsio = not tm.options.useAsio
             local status = tm.options.ApplyAsio()
-            if (tm.options.useAsio and not status.Ok()) then
-                tm.options.useAsio = false
-                controls.SetToggleIsOn(pasioToggle, tm.options.useAsio)
-                alertBox.Alert(tm.l10n.GetString("asio_error"))
-            end
         end)
     else
         asio.display = false
+        asioExplanation.display = false
     end
 
     local languageDropdown = panel.Q("language").Q("dropdown")

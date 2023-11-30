@@ -658,6 +658,9 @@
                     <ui:Label text="Use ASIO" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
+                <ui:VisualElement name="asio-explanation" class="options-item" style="padding-left: 100px; align-items: flex-start; height: auto; padding-bottom: 10px;">
+                    <ui:Label text="After installing ASIO4ALL, you can enable ASIO to enjoy low latency audio.&#10;Other applications will be unable to produce any sound." display-tooltip-when-elided="true" name="content" class="text-caption" style="white-space: normal; margin-top: -10px;" />
+                </ui:VisualElement>
                 <ui:Label text="Appearance" display-tooltip-when-elided="true" name="appearance-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="language" class="options-item">
                     <ui:Label text="Language" display-tooltip-when-elided="true" name="label" class="text-body" />
