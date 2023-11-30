@@ -653,13 +653,10 @@
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="audio-divider-3" class="options-divider" />
-                <ui:VisualElement name="audio-buffer-size" class="options-item">
-                    <ui:Label text="Audio buffer size" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
-                    <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
-                </ui:VisualElement>
-                <ui:VisualElement name="audio-buffer-size-explanation" class="options-item" style="height: auto; padding-bottom: 10px;">
-                    <ui:Label text="Lower value reduces audio latency, but may cause audio issues such as stuttering." display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1; margin-left: 335px; margin-right: 0; white-space: normal;" />
+                <ui:VisualElement name="audio-divider-4" class="options-divider" />
+                <ui:VisualElement name="asio" class="options-item">
+                    <ui:Label text="Use ASIO" display-tooltip-when-elided="true" name="label" class="text-body" />
+                    <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
                 <ui:Label text="Appearance" display-tooltip-when-elided="true" name="appearance-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="language" class="options-item">

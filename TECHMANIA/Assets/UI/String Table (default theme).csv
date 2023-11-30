@@ -110,7 +110,7 @@ Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred whe
 ,track_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
 ,track_filter_sidesheet_sort_basis_artist,Artist,艺术家,演出者,アーティスト,아티스트
 ,track_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
-Added in 2.0,track_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
+,track_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
 ,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
 ,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
 ,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
@@ -157,7 +157,7 @@ Added in 2.0,track_filter_sidesheet_sort_basis_modified_time,Modified time,修�
 ,#select-pattern-panel #modifier-sidesheet #fever #label,Fever,Fever,Fever,Fever,피버
 ,#select-pattern-panel #modifier-sidesheet #keysound #label,Keysound,按键音,按鍵音,ノート音,연주음
 ,#select-pattern-panel #modifier-sidesheet #assist-tick #label,Assist tick,辅助音效,輔助音效,打撃音,클릭음
-Added in 2.0,#select-pattern-panel #modifier-sidesheet #sudden-death #label,Sudden death,即死,即死,サドンデス,서든데스
+,#select-pattern-panel #modifier-sidesheet #sudden-death #label,Sudden death,即死,即死,サドンデス,서든데스
 ,#select-pattern-panel #modifier-sidesheet #appearance-header,Appearance,界面,介面,表示,화면 표시
 ,#select-pattern-panel #modifier-sidesheet #skins #label,Skins,皮肤,造型,スキン,스킨
 ,#select-pattern-panel #modifier-sidesheet #skins #select-button,SELECT,选择,選擇,選択,선택
@@ -189,7 +189,7 @@ Added in 2.0,#select-pattern-panel #modifier-sidesheet #sudden-death #label,Sudd
 ,modifier_auto_keysound,Auto keysound,自动按键音,自動按鍵音,オートノート音,자동 재생
 ,modifier_assist_tick,Assist tick,辅助音效,輔助音效,打撃音,수동
 ,modifier_auto_assist_tick,Auto assist tick,自动辅助音效,自動輔助音效,オート打撃音,자동
-Added in 2.0,modifier_sudden_death,Sudden death,即死,即死,サドンデス,서든데스
+,modifier_sudden_death,Sudden death,即死,即死,サドンデス,서든데스
 ,modifier_no_video,No video,不播放视频,不播放影片,BGAオフ,BGA 끄기
 ,modifier_no_fail,No fail,无失败,無失敗,No Fail,게임오버 없음
 ,modifier_auto_play,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
@@ -198,7 +198,7 @@ Added in 2.0,modifier_sudden_death,Sudden death,即死,即死,サドンデス,�
 ,modifier_override_to_keys,Override to Keys,强制使用键盘,強制使用鍵盤,キーボードで操作,키보드
 ,modifier_override_to_km,Override to KM,强制使用键鼠,強制使用鍵鼠,キーボード・マウスで操作,키보드+마우스
 ,modifier_half_speed,Half speed,半速,半速,0.5x,0.5x
-Added in 2.0,modifier_shifted_half_speed,Shifted half speed,半速+偏移,半速 + 偏移,0.5x(シフト),0.5x(마디 당기기)
+,modifier_shifted_half_speed,Shifted half speed,半速+偏移,半速 + 偏移,0.5x(シフト),0.5x(마디 당기기)
 ,,,,,,
 Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-indicator,No fail,无失败,No fail,No fail,No fail
 ,#game-panel #top-bar #score-label,Score,分数,SCORE,SCORE,SCORE
@@ -263,17 +263,23 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#options-panel #music #label,Music,音乐音量,音樂音量,音楽,반주음
 ,#options-panel #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
 ,#options-panel #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
-,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
-,#options-panel #audio-buffer-size-explanation #label,"Lower value reduces audio latency,
+Deleted in 2.1,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
+Deleted in 2.1,#options-panel #audio-buffer-size-explanation #label,"Lower value reduces audio latency,
 but may cause audio issues such as stuttering.","数值越小，音频延迟越低，
 但也越可能出现卡壳等问题。","數值越小，音效延遲越低，
 但也越可能出現問題。","バッファを減らせば遅延が小さくなりますが、
 ノイズ、音ズレなどが発生することがあります。","버퍼 크기가 작을수록 오디오 지연이 감소하지만,
 노이즈, 싱크 밀림 등의 문제가 발생할 수 있습니다."
+Added in 2.1,#options-panel #asio #label,Use ASIO,使用ASIO,,,
+Added in 2.1,asio_error,"TECHMANIA could not turn on ASIO.
+
+Please make sure you have installed ASIO4ALL.","TECHMANIA无法启用ASIO。
+
+请确保您已经安装ASIO4ALL。",,,
 ,#options-panel #appearance-header,Appearance,界面,介面,表示,화면
 ,#options-panel #language #label,Language,语言,語言,言語,언어
-Added in 2.0,#options-panel #theme #label,Theme,主题,主題,テーマ,테마
-Added in 2.0,change_theme_warning,"WARNING
+,#options-panel #theme #label,Theme,主题,主題,テーマ,테마
+,change_theme_warning,"WARNING
 
 Themes contain executable scripts, which may contain malicious code that could harm your device or compromise your data. Please only use themes from sources you trust.
 
@@ -294,9 +300,9 @@ Are you sure you want to change theme?","警告
 테마는 실행 가능한 스크립트를 포함하고 있으며, 이는 디바이스나 사용자 데이터를 손상시키는 코드를 포함할 수 있습니다. 반드시 신뢰할 수 있는 출처에서 받은 데이터를 사용하십시오.
 
 계속하시겠습니까?"
-Added in 2.0,change_theme_confirm,CHANGE,更改,變更,変更,변경
-Added in 2.0,change_theme_cancel,CANCEL,取消,取消,キャンセル,취소
-Added in 2.0,change_theme_instruction,The new theme will be applied the next time you start TECHMANIA.,新主题将在下次启动TECHMANIA时生效。,新主題將在下次啟動 TECHMANIA 時套用,テーマはTECHMANIAを再起動すると適用されます。,TECHMANIA를 재시작하면 테마가 적용됩니다.
+,change_theme_confirm,CHANGE,更改,變更,変更,변경
+,change_theme_cancel,CANCEL,取消,取消,キャンセル,취소
+,change_theme_instruction,The new theme will be applied the next time you start TECHMANIA.,新主题将在下次启动TECHMANIA时生效。,新主題將在下次啟動 TECHMANIA 時套用,テーマはTECHMANIAを再起動すると適用されます。,TECHMANIA를 재시작하면 테마가 적용됩니다.
 ,#options-panel #skins #label,Skins,皮肤,造型,スキン,스킨
 ,#options-panel #skins #button,SELECT,选择,選擇,選択,선택
 ,#options-panel #show-loading-bar #label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
@@ -328,17 +334,17 @@ Added in 2.0,change_theme_instruction,The new theme will be applied the next tim
 ,#options-panel #tracks-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
 ,#options-panel #skins-folder-location #label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
 ,#options-panel #skins-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
-Added in 2.0,#options-panel #themes-folder-location #label,Themes folder,主题文件夹,主題資料夾,テーマフォルダ,테마 폴더
-Added in 2.0,#options-panel #themes-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
+,#options-panel #themes-folder-location #label,Themes folder,主题文件夹,主題資料夾,テーマフォルダ,테마 폴더
+,#options-panel #themes-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
 ,#options-panel #touchscreen-test #label,Touchscreen test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
 ,#options-panel #touchscreen-test #button,START,开始,開始,開始,시작
 ,#options-panel #offset-latency #label,Offset & latency,偏移与延迟,偏移與延遲,オフセット/遅延,오프셋/지연
 ,#options-panel #offset-latency #button,CALIBRATE,校对,校正,調整,보정하기
 ,#options-panel #pause-when-lose-focus #label,Pause when game loses focus,失去焦点时暂停游戏,失去焦點時暫停遊戲,ゲームのフォーカスを外したときに一時停止,백그라운드 상태에서 일시정지
-Added in 2.0,#options-panel #pause-button-interaction #label,Pause button interaction,暂停按钮操作方式,暫停按鈕操作方式,一時停止の操作方式,일시정지 버튼 작동 방식
-Added in 2.0,pause_button_interaction_single_tap,Single tap,点击一次,點擊一次,一回タップ,한 번 터치
-Added in 2.0,pause_button_interaction_double_tap,Double tap,点击两次,點擊兩次,二回タップ,두 번 터치
-Added in 2.0,pause_button_interaction_hold,Hold,长按,長按,長押し,길게 터치
+,#options-panel #pause-button-interaction #label,Pause button interaction,暂停按钮操作方式,暫停按鈕操作方式,一時停止の操作方式,일시정지 버튼 작동 방식
+,pause_button_interaction_single_tap,Single tap,点击一次,點擊一次,一回タップ,한 번 터치
+,pause_button_interaction_double_tap,Double tap,点击两次,點擊兩次,二回タップ,두 번 터치
+,pause_button_interaction_hold,Hold,长按,長按,長押し,길게 터치
 ,#options-panel #discord-rich-presence #label,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord Rich Presence,Discord 상태 메시지
 ,,,,,,
 ,#touchscreen-test-panel #title,Touchscreen Test,触屏测试,觸控測試,タッチスクリーンテスト,터치스크린 테스트
