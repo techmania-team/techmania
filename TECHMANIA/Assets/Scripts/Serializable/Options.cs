@@ -58,6 +58,7 @@ public class Options : OptionsBase
     public int keysoundVolumePercent;
     public int sfxVolumePercent;
     public int audioBufferSize;  // Deprecated
+    public bool useAsio;
 
     // Appearance
 
@@ -155,6 +156,7 @@ public class Options : OptionsBase
         musicVolumePercent = 80;
         keysoundVolumePercent = 100;
         sfxVolumePercent = 100;
+        useAsio = false;
 
         locale = L10n.kDefaultLocale;
         noteSkin = "Default";
@@ -337,6 +339,19 @@ public class Options : OptionsBase
     public void ApplyAudioBufferSize()
     {
         Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
+    }
+
+    public Status ApplyAsio()
+    {
+        try
+        {
+            FmodManager.instance.useASIO = useAsio;
+            return Status.OKStatus();
+        }
+        catch (Exception e)
+        {
+            return Status.FromException(e);
+        }
     }
 
     public static float VolumeValueToDb(int volumePercent)

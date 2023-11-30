@@ -55,6 +55,21 @@ public class FmodManager
         EnsureOk(system.createChannelGroup("SFX", out sfxGroup));
     }
 
+    public bool useASIO
+    {
+        get
+        {
+            FMOD.OUTPUTTYPE outputType;
+            EnsureOk(system.getOutput(out outputType));
+            return outputType == FMOD.OUTPUTTYPE.ASIO;
+        }
+        set
+        {
+            EnsureOk(system.setOutput(value ?
+                FMOD.OUTPUTTYPE.ASIO : FMOD.OUTPUTTYPE.AUTODETECT));
+        }
+    }
+
     public FMOD.Channel Play(FMOD.Sound sound, ChannelGroupType group,
         bool paused = true)
     {

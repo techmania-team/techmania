@@ -40,6 +40,7 @@ public class Startup : MonoBehaviour
         Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();
         audioSourceManager.ApplyVolume();
+        Options.instance.ApplyAsio();
         LoadRuleset();
         
         L10n.Initialize(stringTable.text, L10n.Instance.System);

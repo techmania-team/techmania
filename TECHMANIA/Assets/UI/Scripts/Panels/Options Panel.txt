@@ -1,5 +1,3 @@
--- TODO: remove audio buffer
-
 function InitializeThemeOptions()
     function InitializeOneOption(key, defaultValue)
         if (not themeOptions.ContainsKey(key)) then
@@ -100,9 +98,9 @@ optionsPanel.Show = function()
     end
 
     commonUI.ShowVolumeSliders(panel)
-
-    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
-    audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
+    if (platform == "Windows") then
+        controls.SetToggleIsOn(panel.Q("asio").Q("track"), tm.options.useAsio)
+    end
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local locale = tm.l10n.GetAllLocales()[tm.options.locale]
@@ -255,13 +253,22 @@ optionsPanel.Initialize = function()
     end
 
     commonUI.InitializeVolumeSliders(panel)
-
-    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
-    audioBufferDropdown.choices = {"128", "256", "512", "1024"}
-    audioBufferDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
-        tm.options.audioBufferSize = net.int.Parse(event.newValue)
-        tm.options.ApplyAudioBufferSize()
-    end)
+    local asio = panel.Q("asio")
+    if (platform == "Windows") then
+        asio.display = true
+        local asioToggle = asio.Q("track")
+        asioToggle.RegisterCallback(eventType.Click, function()
+            tm.options.useAsio = not tm.options.useAsio
+            local status = tm.options.ApplyAsio()
+            if (tm.options.useAsio and not status.Ok()) then
+                tm.options.useAsio = false
+                controls.SetToggleIsOn(pasioToggle, tm.options.useAsio)
+                alertBox.Alert(tm.l10n.GetString("asio_error"))
+            end
+        end)
+    else
+        asio.display = false
+    end
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local languageChoices = {}
