@@ -123,9 +123,18 @@ public class FmodManager
     #region Utilities
     public static void EnsureOk(FMOD.RESULT result)
     {
-        if (result != FMOD.RESULT.OK)
+        switch (result)
         {
-            throw new Exception(result.ToString());
+            case FMOD.RESULT.OK:
+                return;
+            case FMOD.RESULT.ERR_INVALID_HANDLE:
+                Debug.LogWarning(result.ToString() + ": please do not operate on a FmodChannelWrap after the sound has stopped.");
+                return;
+            case FMOD.RESULT.ERR_CHANNEL_STOLEN:
+                Debug.LogWarning(result.ToString() + ": the channel has been overtaken by another one due to playing too many sounds.");
+                return;
+            default:
+                throw new Exception(result.ToString());
         }
     }
 

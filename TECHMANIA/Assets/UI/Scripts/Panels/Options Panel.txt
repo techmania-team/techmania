@@ -1,3 +1,5 @@
+-- TODO: remove audio buffer
+
 function InitializeThemeOptions()
     function InitializeOneOption(key, defaultValue)
         if (not themeOptions.ContainsKey(key)) then
