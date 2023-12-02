@@ -57,7 +57,8 @@ public class Options : OptionsBase
     public int musicVolumePercent;
     public int keysoundVolumePercent;
     public int sfxVolumePercent;
-    public int audioBufferSize;  // Deprecated
+    public int audioBufferSize;
+    public int numAudioBuffers;
     public bool useAsio;
 
     // Appearance
@@ -156,6 +157,8 @@ public class Options : OptionsBase
         musicVolumePercent = 80;
         keysoundVolumePercent = 100;
         sfxVolumePercent = 100;
+        audioBufferSize = 1024;
+        numAudioBuffers = 4;
         useAsio = false;
 
         locale = L10n.kDefaultLocale;
@@ -332,13 +335,13 @@ public class Options : OptionsBase
 
     public static int GetDefaultAudioBufferSize()
     {
-        Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
+        Debug.LogWarning("GetDefaultAudioBufferSize() is deprecated, and hardcoded to 1024.");
         return 1024;
     }
 
     public void ApplyAudioBufferSize()
     {
-        Debug.LogError("TECHMANIA no longer allows setting audio buffer size.");
+        Debug.LogWarning("TECHMANIA no longer allows setting audio buffer size at runtime.");
     }
 
     public void ApplyAsio()

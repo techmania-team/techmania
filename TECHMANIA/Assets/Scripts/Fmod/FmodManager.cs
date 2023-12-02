@@ -42,10 +42,19 @@ public class FmodManager
     }
     #endregion
 
-    public void Initialize()
+    public void Initialize(int bufferSize, int numBuffers)
     {
         Debug.Log("Initializing FMOD.");
-        system = FMODUnity.RuntimeManager.CoreSystem;
+
+        // Release the Studio system because we don't need.
+        EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
+
+        // Re-create a Core system to apply buffer size.
+        FMOD.System newCoreSystem;
+        EnsureOk(FMOD.Factory.System_Create(out newCoreSystem));
+        system = newCoreSystem;
+        EnsureOk(system.setDSPBufferSize((uint)bufferSize, numBuffers));
+        EnsureOk(system.init(1024, FMOD.INITFLAGS.NORMAL, IntPtr.Zero));
 
         // Create channel groups.
         EnsureOk(system.getMasterChannelGroup(out masterGroup));
@@ -177,8 +186,8 @@ public class FmodManager
 
         // Open a user-created static sample.
         FMOD.Sound sound;
-        EnsureOk(FMODUnity.RuntimeManager.CoreSystem.createSound(
-            "", FMOD.MODE.OPENUSER, ref soundInfo, out sound));
+        EnsureOk(system.createSound("", FMOD.MODE.OPENUSER,
+            ref soundInfo, out sound));
 
         // `lock` gives access to the sample data for direct
         // manipulation.

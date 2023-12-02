@@ -33,10 +33,12 @@ public class Startup : MonoBehaviour
     {
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
-
-        FmodManager.instance.Initialize();
-
         Options.RefreshInstance();
+
+        FmodManager.instance.Initialize(
+            Options.instance.audioBufferSize,
+            Options.instance.numAudioBuffers);
+
         Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();
         audioSourceManager.ApplyVolume();
