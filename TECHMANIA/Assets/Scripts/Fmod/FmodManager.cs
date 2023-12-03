@@ -46,7 +46,7 @@ public class FmodManager
     {
         Debug.Log("Initializing FMOD.");
 
-        // Release the Studio system because we don't need.
+        // Release the Studio system because we don't need it.
         EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
 
         // Re-create a Core system to apply buffer size.

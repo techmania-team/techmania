@@ -610,7 +610,7 @@
             <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
+    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: flex;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="height: 100%; width: 800px;">
@@ -653,13 +653,25 @@
                     <ui:Instance template="SliderInt" name="slider-template" class="slider-template" />
                     <ui:Label text="100" display-tooltip-when-elided="true" name="value-display" class="text-body volume-display" />
                 </ui:VisualElement>
-                <ui:VisualElement name="audio-divider-4" class="options-divider" />
+                <ui:Label text="Advanced audio" display-tooltip-when-elided="true" name="advanced-audio-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="asio" class="options-item">
                     <ui:Label text="Use ASIO" display-tooltip-when-elided="true" name="label" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="asio-explanation" class="options-item" style="padding-left: 100px; align-items: flex-start; height: auto; padding-bottom: 10px;">
-                    <ui:Label text="After installing ASIO4ALL, you can enable ASIO to enjoy low latency audio.&#10;Other applications will be unable to produce any sound." display-tooltip-when-elided="true" name="content" class="text-caption" style="white-space: normal; margin-top: -10px;" />
+                <ui:VisualElement name="asio-explanation" class="options-item" style="padding-left: 100px; align-items: flex-start; height: auto; padding-bottom: 20px;">
+                    <ui:Label text="After installing ASIO4ALL, you can enable ASIO to enjoy low latency audio.&#10;Make sure no application is playing any sound when turning this on." display-tooltip-when-elided="true" name="content" class="text-caption" style="white-space: normal; margin-top: -10px;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="advanced-audio-divider" class="options-divider" />
+                <ui:VisualElement name="audio-buffer-size" class="options-item">
+                    <ui:Label text="Audio buffer size" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="num-audio-buffers" class="options-item" style="height: 70px;">
+                    <ui:Label text="Number of buffers" display-tooltip-when-elided="true" name="label" class="text-body" style="flex-grow: 1;" />
+                    <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="audio-buffer-explanation" class="options-item" style="height: auto; padding-bottom: 20px; padding-left: 100px; padding-top: 10px;">
+                    <ui:Label text="Using fewer and smaller buffers decreases latency,&#10;but may cause audio issues such as stuttering.&#10;You need to restart TECHMANIA to apply these options." display-tooltip-when-elided="true" name="label" class="text-caption" style="flex-grow: 1; white-space: normal;" />
                 </ui:VisualElement>
                 <ui:Label text="Appearance" display-tooltip-when-elided="true" name="appearance-header" class="text-headline-6 options-header" />
                 <ui:VisualElement name="language" class="options-item">
