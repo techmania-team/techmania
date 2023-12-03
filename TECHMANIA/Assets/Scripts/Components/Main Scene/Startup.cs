@@ -7,6 +7,7 @@ public class Startup : MonoBehaviour
 {
     public TextAsset stringTable;
     public AudioSourceManager audioSourceManager;
+    public FmodManager fmodManager;
     public BootScreen bootScreen;
 
     private static void LoadRuleset()
@@ -35,7 +36,7 @@ public class Startup : MonoBehaviour
         Paths.PrepareFolders();
         Options.RefreshInstance();
 
-        FmodManager.instance.Initialize(
+        fmodManager.Initialize(
             Options.instance.audioBufferSize,
             Options.instance.numAudioBuffers);
 

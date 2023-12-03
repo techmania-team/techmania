@@ -5,15 +5,16 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 
 // A basic wrapper around FMOD.
-public class FmodManager
+public class FmodManager : MonoBehaviour
 {
     public static FmodManager instance { get; private set; }
-    static FmodManager()
-    {
-        instance = new FmodManager();
-    }
 
     public static FMOD.System system { get; private set; }
+
+    private void Update()
+    {
+        EnsureOk(system.update());
+    }
 
     #region Channel groups
     private FMOD.ChannelGroup masterGroup;
@@ -45,6 +46,7 @@ public class FmodManager
     public void Initialize(int bufferSize, int numBuffers)
     {
         Debug.Log($"Initializing FMOD with {numBuffers} buffers of {bufferSize} samples.");
+        instance = this;
 
         // Release the Studio system because we don't need it.
         EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
