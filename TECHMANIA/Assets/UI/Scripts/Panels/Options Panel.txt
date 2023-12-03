@@ -101,6 +101,10 @@ optionsPanel.Show = function()
     if (platform == "Windows") then
         controls.SetToggleIsOn(panel.Q("asio").Q("track"), tm.options.useAsio)
     end
+    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
+    audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
+    local numAudioBuffersDropdown = panel.Q("num-audio-buffers").Q("dropdown")
+    numAudioBuffersDropdown.SetValueWithoutNotify(tostring(tm.options.numAudioBuffers))
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local locale = tm.l10n.GetAllLocales()[tm.options.locale]
@@ -267,6 +271,16 @@ optionsPanel.Initialize = function()
         asio.display = false
         asioExplanation.display = false
     end
+    local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
+    audioBufferDropdown.choices = {"128", "256", "512", "1024"}
+    audioBufferDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+        tm.options.audioBufferSize = net.int.Parse(event.newValue)
+    end)
+    local numAudioBuffersDropdown = panel.Q("num-audio-buffers").Q("dropdown")
+    numAudioBuffersDropdown.choices = {"1", "2", "4"}
+    numAudioBuffersDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+        tm.options.numAudioBuffers = net.int.Parse(event.newValue)
+    end)
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local languageChoices = {}
