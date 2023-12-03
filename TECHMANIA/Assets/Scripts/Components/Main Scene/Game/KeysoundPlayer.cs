@@ -104,10 +104,11 @@ public class KeysoundPlayer
         if (string.IsNullOrEmpty(n.sound)) return;
 
         FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
-        if (fmodChannelOfNote[n].sound == sound)
+        if (fmodChannelOfNote[n].sound.Equals(sound))
         {
+            // Sound end callback will delete the note
+            // from fmodChannelOfNote.
             fmodChannelOfNote[n].Stop();
-            fmodChannelOfNote.Remove(n);
         }
     }
 

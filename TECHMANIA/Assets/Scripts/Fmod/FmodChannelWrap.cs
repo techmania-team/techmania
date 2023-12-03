@@ -19,6 +19,8 @@ public class FmodChannelWrap
 
     // This field retains the name "clip" for backwards compatibility.
     // "sound" is the more proper name.
+    // Will create a new FmodSoundWrap object; make sure to use
+    // Equals, instead of ==, to check equality.
     public FmodSoundWrap clip
     {
         get

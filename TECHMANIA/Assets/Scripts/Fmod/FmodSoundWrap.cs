@@ -68,4 +68,9 @@ public class FmodSoundWrap
     {
         sound.release();
     }
+
+    public bool Equals(FmodSoundWrap other)
+    {
+        return sound.handle == other.sound.handle;
+    }
 }
