@@ -259,9 +259,11 @@ optionsPanel.Initialize = function()
     commonUI.InitializeVolumeSliders(panel)
     local asio = panel.Q("asio")
     local asioExplanation = panel.Q("asio-explanation")
+    local dividerUnderAsio = panel.Q("advanced-audio-divider")
     if (platform == "Windows") then
         asio.display = true
         asioExplanation.display = true
+        dividerUnderAsio.display = true
         local asioToggle = asio.Q("track")
         asioToggle.RegisterCallback(eventType.Click, function()
             tm.options.useAsio = not tm.options.useAsio
@@ -270,16 +272,19 @@ optionsPanel.Initialize = function()
     else
         asio.display = false
         asioExplanation.display = false
+        dividerUnderAsio.display = false
     end
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.choices = {"128", "256", "512", "1024"}
     audioBufferDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.audioBufferSize = net.int.Parse(event.newValue)
+        tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
     end)
     local numAudioBuffersDropdown = panel.Q("num-audio-buffers").Q("dropdown")
-    numAudioBuffersDropdown.choices = {"1", "2", "4"}
+    numAudioBuffersDropdown.choices = {"2", "4"}
     numAudioBuffersDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.numAudioBuffers = net.int.Parse(event.newValue)
+        tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
     end)
 
     local languageDropdown = panel.Q("language").Q("dropdown")

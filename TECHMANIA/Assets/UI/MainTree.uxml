@@ -610,7 +610,7 @@
             <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" class="scroll-view" style="height: 100%; width: 800px;">

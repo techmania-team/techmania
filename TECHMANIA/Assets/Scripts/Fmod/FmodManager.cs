@@ -44,7 +44,7 @@ public class FmodManager
 
     public void Initialize(int bufferSize, int numBuffers)
     {
-        Debug.Log("Initializing FMOD.");
+        Debug.Log($"Initializing FMOD with {numBuffers} buffers of {bufferSize} samples.");
 
         // Release the Studio system because we don't need it.
         EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
