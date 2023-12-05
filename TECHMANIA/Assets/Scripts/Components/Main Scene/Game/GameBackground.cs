@@ -130,7 +130,7 @@ public class GameBackground
 
         if (prevFrameBaseTime < 0f && baseTime >= 0f)
         {
-            backingChannel = AudioSourceManager.instance.PlayMusic(
+            backingChannel = AudioManager.instance.PlayMusic(
                 backingTrack,
                 startTime: baseTime);
         }
@@ -187,7 +187,7 @@ public class GameBackground
             }
             else
             {
-                backingChannel = AudioSourceManager.instance.PlayMusic(
+                backingChannel = AudioManager.instance.PlayMusic(
                     backingTrack,
                     startTime: baseTime);
             }

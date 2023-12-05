@@ -22,7 +22,7 @@ namespace ThemeApi
         public VFXManager vfxManager;
         [Header("Audio")]
         [MoonSharpHidden]
-        public AudioSourceManager audioSourceManager;
+        public AudioManager audioManager;
         [MoonSharpHidden]
         public AudioClip backingTrack;
         [MoonSharpHidden]
@@ -195,7 +195,7 @@ namespace ThemeApi
 
             inputMethod = InputMethod.Touch;
 
-            backingTrackChannel = audioSourceManager.PlayMusic(
+            backingTrackChannel = audioManager.PlayMusic(
                 backingTrackSound);
             backingTrackChannel.loop = true;
 
@@ -411,11 +411,11 @@ namespace ThemeApi
             switch (laneOfNote[noteIndex])
             {
                 case 0:
-                    audioSourceManager.PlayKeysound(snareSound,
+                    audioManager.PlayKeysound(snareSound,
                         hiddenLane: false);
                     break;
                 case 1:
-                    audioSourceManager.PlayKeysound(kickSound,
+                    audioManager.PlayKeysound(kickSound,
                         hiddenLane: false);
                     break;
                 default:

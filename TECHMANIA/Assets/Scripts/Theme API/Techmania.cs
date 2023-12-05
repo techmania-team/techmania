@@ -64,7 +64,7 @@ namespace ThemeApi
         public SkinPreview skinPreview => SkinPreview.instance;
         public CalibrationPreview calibrationPreview =>
             CalibrationPreview.instance;
-        public AudioSourceManager audio => AudioSourceManager.instance;
+        public AudioManager audio => AudioManager.instance;
         #endregion
 
         #region System dialogs

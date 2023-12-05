@@ -466,7 +466,7 @@ public class GameController : MonoBehaviour
 
     public void Conclude()
     {
-        AudioSourceManager.instance.SetSpeed(1f);
+        AudioManager.instance.SetSpeed(1f);
 
         timer.Dispose();
         bg.Conclude();
@@ -550,7 +550,7 @@ public class GameController : MonoBehaviour
         // It's up to GameState.SetSpeed to check if we are in
         // practice mode.
         timer.SetSpeed(speedPercent);
-        AudioSourceManager.instance.SetSpeed(timer.speed);
+        AudioManager.instance.SetSpeed(timer.speed);
         bg.SetBgaSpeed(timer.speed);
     }
     #endregion

@@ -330,7 +330,7 @@ public class Options : OptionsBase
     #region Audio
     public void ApplyVolumeSettings()
     {
-        AudioSourceManager.instance.ApplyVolume();
+        AudioManager.instance.ApplyVolume();
     }
 
     public static int GetDefaultAudioBufferSize()

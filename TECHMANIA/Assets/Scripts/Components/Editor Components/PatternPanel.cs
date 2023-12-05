@@ -51,7 +51,7 @@ public class PatternPanel : MonoBehaviour
     public GameObject dragNotePrefab;
 
     [Header("Audio")]
-    public AudioSourceManager audioSourceManager;
+    public AudioManager audioManager;
     public AudioClip metronome1;
     public AudioClip metronome2;
     public AudioClip assistTick;
@@ -3786,7 +3786,7 @@ public class PatternPanel : MonoBehaviour
                 if (sound == null) continue;
                 if (n.time + sound.length > playbackStartingTime)
                 {
-                    audioSourceManager.PlayKeysound(sound,
+                    audioManager.PlayKeysound(sound,
                         EditorContext.Pattern.ShouldPlayInMusicChannel(n.lane),
                         startTime: playbackStartingTime - n.time,
                         n.volumePercent, n.panPercent);
@@ -3809,7 +3809,7 @@ public class PatternPanel : MonoBehaviour
     {
         // This method is called from OnDisable, so we need to
         // stop all sound even not during playback.
-        audioSourceManager.StopAll();
+        audioManager.StopAll();
 
         if (!isPlaying) return;
         isPlaying = false;
@@ -3859,7 +3859,7 @@ public class PatternPanel : MonoBehaviour
             playbackCurrentTime >= 0f)
         {
             backingTrackPlaying = true;
-            audioSourceManager.PlayMusic(
+            audioManager.PlayMusic(
                 ResourceLoader.GetCachedSound(
                     EditorContext.Pattern.patternMetadata
                     .backingTrack),
@@ -3890,7 +3890,7 @@ public class PatternPanel : MonoBehaviour
             {
                 sound = assistTickSound;
             }
-            audioSourceManager.PlayKeysound(sound,
+            audioManager.PlayKeysound(sound,
                 EditorContext.Pattern.ShouldPlayInMusicChannel(
                     nextNote.lane),
                 startTime: 0f,
@@ -3912,7 +3912,7 @@ public class PatternPanel : MonoBehaviour
         }
         FmodSoundWrap sound = ResourceLoader.GetCachedSound(
             n.sound);
-        keysoundPreviewChannel = audioSourceManager.PlayKeysound(
+        keysoundPreviewChannel = audioManager.PlayKeysound(
             sound,
             EditorContext.Pattern.ShouldPlayInMusicChannel(n.lane),
             0f,

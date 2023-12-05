@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MenuSfx : MonoBehaviour
 {
-    public AudioSourceManager audioSourceManager;
+    public AudioManager audioManager;
     public AudioClip select;
     public AudioClip click;
     public AudioClip back;
@@ -28,7 +28,7 @@ public class MenuSfx : MonoBehaviour
     public void PlaySound(FmodSoundWrap sound)
     {
         if (sound == null) return;
-        audioSourceManager.PlaySfx(sound);
+        audioManager.PlaySfx(sound);
     }
 
     public void PlaySelectSound()

@@ -8,12 +8,12 @@ public class KeysoundPlayer
     // note, so they can be stopped later. This is meant for long
     // notes, and do not care about assist ticks.
     private Dictionary<Note, FmodChannelWrap> fmodChannelOfNote;
-    private AudioSourceManager sourceManager;
+    private AudioManager sourceManager;
     private FmodSoundWrap assistTick;
 
     public KeysoundPlayer(FmodSoundWrap assistTick)
     {
-        sourceManager = AudioSourceManager.instance;
+        sourceManager = AudioManager.instance;
         this.assistTick = assistTick;
     }
 

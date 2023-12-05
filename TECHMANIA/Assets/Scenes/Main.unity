@@ -32232,7 +32232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
-  audioSourceManager: {fileID: 8968253358376227239}
+  audioManager: {fileID: 759281148068718237}
   bootScreen: {fileID: 1622777474285759389}
 --- !u!114 &1144905155
 MonoBehaviour:
@@ -45239,7 +45239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cc5a224d786a84b9bc195513ba8eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 759281148068718238}
 --- !u!1001 &1492841596
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47395,7 +47395,7 @@ MonoBehaviour:
   calibrationPreviewTemplate: {fileID: 9197481963319205126, guid: bf6606f4faac98948b0338bf7e12bafc,
     type: 3}
   vfxManager: {fileID: 1865618701}
-  audioSourceManager: {fileID: 8968253358376227239}
+  audioManager: {fileID: 759281148068718237}
   backingTrack: {fileID: 8300000, guid: cde484f3bf79d8e4b91e767a36fc1b54, type: 3}
   kick: {fileID: 8300000, guid: c79be2f9a15da574fb604092127371ec, type: 3}
   snare: {fileID: 8300000, guid: bccf4483db9366d4d8fa9ee66756cb59, type: 3}
@@ -57321,7 +57321,7 @@ MonoBehaviour:
     type: 3}
   dragNotePrefab: {fileID: 6915570976975822383, guid: b274eba65f6eedc43bb31a20c2bc49ee,
     type: 3}
-  audioSourceManager: {fileID: 8968253358376227239}
+  audioManager: {fileID: 759281148068718237}
   metronome1: {fileID: 8300000, guid: 7c8bbd4660bff354e8675fc930c2e62c, type: 3}
   metronome2: {fileID: 8300000, guid: 8577deeb9f3fff64cae2060b40801fe7, type: 3}
   assistTick: {fileID: 8300000, guid: d2015313935379e42841c3284f874d3a, type: 3}
@@ -61027,7 +61027,7 @@ MonoBehaviour:
   previewTrack: {fileID: 1250505943}
   startTime: {fileID: 1121636471}
   endTime: {fileID: 389080040}
-  previewTrackPlayer: {fileID: 0}
+  previewTrackPlayer: {fileID: 759281148068718238}
   previewBga: {fileID: 1516361946}
   patternList: {fileID: 1330329998}
   autoOrderPatterns: {fileID: 2010692001}
@@ -64302,14 +64302,57 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 759281148068718179}
-  - component: {fileID: 8968253358376227239}
+  - component: {fileID: 759281148068718237}
+  - component: {fileID: 759281148068718238}
+  - component: {fileID: 759281148068718239}
   m_Layer: 5
-  m_Name: Audio Sources
+  m_Name: Audio Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &759281148068718237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759281148068718236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8655d4fc23b5392408e77b66ee6efd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &759281148068718238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759281148068718236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfaf2f14b828a154eaedd55353744fec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  messageDialog: {fileID: 1406082467}
+--- !u!114 &759281148068718239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759281148068718236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e254cee37cccd8d47a8593b333f74938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioManager: {fileID: 759281148068718237}
+  select: {fileID: 8300000, guid: bffef79e3b2cff94fa35addceeef87b2, type: 3}
+  click: {fileID: 8300000, guid: 2c760f7995e3f864aa70c5fcdc8add68, type: 3}
+  back: {fileID: 8300000, guid: 1bcf8e3f932c0754381d8287d6c85e4f, type: 3}
 --- !u!222 &863212124047569141
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -65110,18 +65153,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &8968253358376227239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759281148068718236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 534ba62181d21d24c837fd54274c7e1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

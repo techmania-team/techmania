@@ -70,7 +70,7 @@ public class PreviewTrackPlayer : MonoBehaviour
         if (endTime == 0f) endTime = sound.length;
         float previewLength = (float)endTime - (float)startTime;
 
-        channel = AudioSourceManager.instance.PlayMusic(sound);
+        channel = AudioManager.instance.PlayMusic(sound);
         channel.volume = 0f;
         float fadeLength = 1f;
         if (fadeLength > previewLength * 0.5f)

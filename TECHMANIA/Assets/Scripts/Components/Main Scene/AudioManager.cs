@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class AudioSourceManager : MonoBehaviour
+public class AudioManager : MonoBehaviour
 {
     [MoonSharpHidden]
-    public static AudioSourceManager instance { get; private set; }
+    public static AudioManager instance { get; private set; }
 
     // Start is called before the first frame update
     private void Start()

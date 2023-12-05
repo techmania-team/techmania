@@ -6,7 +6,7 @@ using UnityEngine;
 public class Startup : MonoBehaviour
 {
     public TextAsset stringTable;
-    public AudioSourceManager audioSourceManager;
+    public AudioManager audioManager;
     public BootScreen bootScreen;
 
     private static void LoadRuleset()
@@ -41,7 +41,7 @@ public class Startup : MonoBehaviour
 
         Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();
-        audioSourceManager.ApplyVolume();
+        audioManager.ApplyVolume();
         Options.instance.ApplyAsio();
         LoadRuleset();
         
