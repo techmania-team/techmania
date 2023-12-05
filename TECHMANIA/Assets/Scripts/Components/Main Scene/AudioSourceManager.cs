@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: merge this with FmodManager.
 [MoonSharpUserData]
 public class AudioSourceManager : MonoBehaviour
 {
@@ -16,6 +15,11 @@ public class AudioSourceManager : MonoBehaviour
     private void Start()
     {
         instance = this;
+    }
+
+    private void Update()
+    {
+        FmodManager.instance.Update();
     }
 
     private FmodChannelWrap PlaySound(FmodManager.ChannelGroupType group,

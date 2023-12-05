@@ -32233,7 +32233,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stringTable: {fileID: 4900000, guid: af39efa870a9d60408824d31a7d2bfc1, type: 3}
   audioSourceManager: {fileID: 8968253358376227239}
-  fmodManager: {fileID: 8968253358376227240}
   bootScreen: {fileID: 1622777474285759389}
 --- !u!114 &1144905155
 MonoBehaviour:
@@ -64304,7 +64303,6 @@ GameObject:
   m_Component:
   - component: {fileID: 759281148068718179}
   - component: {fileID: 8968253358376227239}
-  - component: {fileID: 8968253358376227240}
   m_Layer: 5
   m_Name: Audio Sources
   m_TagString: Untagged
@@ -65122,18 +65120,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 534ba62181d21d24c837fd54274c7e1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8968253358376227240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759281148068718236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b7a4404734858f479c280f96a6e52f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
