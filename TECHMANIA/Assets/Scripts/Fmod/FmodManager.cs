@@ -61,6 +61,10 @@ public class FmodManager
         system = newCoreSystem;
         EnsureOk(system.setDSPBufferSize((uint)bufferSize, numBuffers));
         EnsureOk(system.init(1024, FMOD.INITFLAGS.NORMAL, IntPtr.Zero));
+        uint actualBufferSize;
+        int actualNumBuffers;
+        EnsureOk(system.getDSPBufferSize(out actualBufferSize, out actualNumBuffers));
+        Debug.Log($"Actual: {actualNumBuffers} buffers of {actualBufferSize} samples.");
 
         // Create channel groups.
         EnsureOk(system.getMasterChannelGroup(out masterGroup));

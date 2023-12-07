@@ -13,32 +13,10 @@ public class PatternPanel : MonoBehaviour
     public RectTransform rootCanvas;
     public CanvasGroup canvasGroup;
 
-    [Header("Workspace")]
-    public ScrollRect workspaceScrollRect;
-    public ScrollRect headerScrollRect;
-    public RectTransform workspaceViewport;
-    public RectTransform workspaceContent;
-    public RectTransform headerContent;
-    public ScanlineInEditor scanline;
-
-    [Header("Lanes")]
-    public RectTransform hiddenLaneBackground;
-    public RectTransform header;
-
-    [Header("Markers")]
-    public Transform markerInHeaderContainer;
-    public GameObject scanMarkerInHeaderTemplate;
-    public GameObject beatMarkerInHeaderTemplate;
-    public GameObject bpmMarkerTemplate;
-    public GameObject timeStopMarkerTemplate;
-    public Transform markerContainer;
-    public GameObject scanMarkerTemplate;
-    public GameObject beatMarkerTemplate;
+    public PatternPanelWorkspace workspace;
 
     [Header("Notes")]
-    public Transform noteContainer;
     public Transform noteCemetary;
-    public NoteObject noteCursor;
     public RectTransform selectionRectangle;
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
@@ -123,8 +101,7 @@ public class PatternPanel : MonoBehaviour
 
     private NoteType noteType;
 
-    private float unsnappedCursorPulse;
-    private float unsnappedCursorLane;
+    
 
     public enum Tool
     {
@@ -139,39 +116,11 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Vertical Spacing
-    private static int PlayableLanes => 
+    public static int PlayableLanes => 
         EditorContext.Pattern.patternMetadata.playableLanes;
-    private static int TotalLanes => 64;
-
-    private static float WorkspaceViewportHeight;
-    private static int VisibleLanes =>
-        Options.instance.editorOptions.visibleLanes;
-    public static float LaneHeight =>
-        WorkspaceViewportHeight / VisibleLanes;
-    public static float WorkspaceContentHeight => LaneHeight *
-        TotalLanes;
-    #endregion
-
-    #region Horizontal Spacing
-    private int numScans;
-    private static int zoom = 0;
-    private const int kMinZoom = 10;
-    private const int kMaxZoom = 500;
-    public static float ScanWidth => 10f * zoom;
-    public static float PulseWidth
-    {
-        get
-        {
-            return ScanWidth /
-                EditorContext.Pattern.patternMetadata.bps /
-                Pattern.pulsesPerBeat;
-        }
-    }
-    private float WorkspaceContentWidth => numScans * ScanWidth;
     #endregion
 
     #region Outward Events
-    public static event UnityAction RepositionNeeded;
     public static event UnityAction<HashSet<Note>> 
         SelectionChanged;
     public static event UnityAction KeysoundVisibilityChanged;
@@ -194,24 +143,7 @@ public class PatternPanel : MonoBehaviour
     {
         Options.RefreshInstance();
 
-        // Hidden lanes
-        hiddenLaneBackground.anchorMin = Vector2.zero;
-        hiddenLaneBackground.anchorMax = new Vector2(
-            1f, 1f - (float)PlayableLanes / TotalLanes);
-
-        // Vertical spacing
-        Canvas.ForceUpdateCanvases();
-        WorkspaceViewportHeight = workspaceViewport.rect.height;
-
-        // Horizontal spacing
-        numScans = 0;  // Will be updated in Refresh()
-        if (zoom == 0) zoom = 100;  // Preserved through preview
-
         // Scanline
-        scanline.floatPulse = 0f;
-        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        workspaceScrollRect.horizontalNormalizedPosition = 0f;
-        headerScrollRect.horizontalNormalizedPosition = 0f;
         scanlinePositionSlider.SetValueWithoutNotify(0f);
 
         // UI and options
@@ -261,11 +193,10 @@ public class PatternPanel : MonoBehaviour
         // Restore editing session
         if (scanlinePulseBeforePreview.HasValue)
         {
-            scanline.floatPulse = scanlinePulseBeforePreview.Value;
-            scanline.GetComponent<SelfPositionerInEditor>()
-                .Reposition();
+            workspace.scanlineFloatPulse = 
+                scanlinePulseBeforePreview.Value;
+            workspace.ScrollScanlineIntoView();
             scanlinePulseBeforePreview = null;
-            ScrollScanlineIntoView();
             RefreshPlaybackBar();
         }
 
@@ -321,61 +252,12 @@ public class PatternPanel : MonoBehaviour
             return;
         }
 
-        bool mouseInWorkspace = RectTransformUtility
-            .RectangleContainsScreenPoint(
-                workspaceScrollRect.GetComponent<RectTransform>(),
-                Input.mousePosition);
-        bool mouseInHeader = RectTransformUtility
-            .RectangleContainsScreenPoint(
-                headerScrollRect.GetComponent<RectTransform>(), 
-                Input.mousePosition);
         if (Input.mouseScrollDelta.y != 0)
         {
-            HandleMouseScroll(Input.mouseScrollDelta.y,
-                mouseInWorkspace || mouseInHeader);
-        }
-
-        if (mouseInWorkspace && tool == Tool.Note)
-        {
-            noteCursor.gameObject.SetActive(true);
-            SnapNoteCursor();
-        }
-        else
-        {
-            noteCursor.gameObject.SetActive(false);
-        }
-
-        if (Input.GetMouseButton(0) &&
-            mouseInHeader &&
-            !isPlaying)
-        {
-            MoveScanlineToPointer(Input.mousePosition);
+            HandleMouseScroll(Input.mouseScrollDelta.y);
         }
 
         HandleKeyboardShortcuts();
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            bool touchInWorkspace = RectTransformUtility
-                .RectangleContainsScreenPoint(
-                    workspaceScrollRect.GetComponent<RectTransform>(),
-                    touch.position);
-            bool touchInHeader = RectTransformUtility
-                .RectangleContainsScreenPoint(
-                    headerScrollRect.GetComponent<RectTransform>(), 
-                    touch.position);
-
-            if (Input.touchCount == 1 && touchInHeader && !isPlaying)
-            {
-                MoveScanlineToPointer(touch.position);
-            }
-            else if (Input.touchCount == 2)
-            {
-                HandleTouchResize();
-            }
-        }
     }
     #endregion
 
@@ -541,79 +423,14 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Mouse and Keyboard Update
-    private void HandleMouseScroll(float y,
-        bool mouseInWorkspaceOrHeader)
+    private void HandleMouseScroll(float y)
     {
-        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
-                Input.GetKey(KeyCode.RightControl);
-        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
-            Input.GetKey(KeyCode.RightAlt);
-        bool shift = Input.GetKey(KeyCode.LeftShift) ||
-            Input.GetKey(KeyCode.RightShift);
-
-        if (mouseInWorkspaceOrHeader && ctrl)
-        {
-            // Adjust zoom.
-            int value = zoom + Mathf.FloorToInt(y * 5f);
-            AdjustZoom(value);
-        }
-        else if (alt)
+        if (Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt))
         {
             // Change beat snap divisor.
             OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
         }
-        else if (mouseInWorkspaceOrHeader)
-        {
-            if (shift)
-            {
-                // Vertical scroll.
-                workspaceScrollRect.verticalNormalizedPosition +=
-                    y * 100f / WorkspaceContentHeight;
-                workspaceScrollRect.verticalNormalizedPosition =
-                    Mathf.Clamp01(
-                    workspaceScrollRect.verticalNormalizedPosition);
-            }
-            else
-            {
-                // Horizontal scroll.
-                workspaceScrollRect.horizontalNormalizedPosition +=
-                    y * 100f / WorkspaceContentWidth;
-                workspaceScrollRect.horizontalNormalizedPosition =
-                    Mathf.Clamp01(
-                    workspaceScrollRect.horizontalNormalizedPosition);
-                SynchronizeScrollRects();
-            }
-        }
-    }
-
-    private void CalculateCursorPulseAndLane(
-        Vector2 mousePosition,
-        out float unsnappedPulse, out float unsnappedLane)
-    {
-        Vector2 pointInContainer = ScreenPointToPointInNoteContainer(
-            mousePosition);
-        PointInNoteContainerToPulseAndLane(pointInContainer,
-            out unsnappedPulse, out unsnappedLane);
-    }
-
-    private void SnapNoteCursor(Vector2 mousePositionOverride)
-    {
-        CalculateCursorPulseAndLane(mousePositionOverride,
-            out unsnappedCursorPulse, out unsnappedCursorLane);
-        
-        int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
-        int snappedCursorLane =
-            Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
-
-        noteCursor.note = new Note();
-        noteCursor.note.pulse = snappedCursorPulse;
-        noteCursor.note.lane = snappedCursorLane;
-        noteCursor.GetComponent<SelfPositionerInEditor>().Reposition();
-    }
-
-    private void SnapNoteCursor()
-    {
-        SnapNoteCursor(Input.mousePosition);
     }
 
     private void HandleKeyboardShortcuts()
@@ -694,49 +511,9 @@ public class PatternPanel : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.F) && selectedNotes.Count > 0)
-        {
-            foreach (Note n in selectedNotes)
-            {
-                ScrollNoteIntoView(n);
-                break;
-            }
-        }
-
-        UnityAction<float> moveScanlineTo = (float pulse) =>
-        {
-            scanline.floatPulse = pulse;
-            scanline.GetComponent<SelfPositionerInEditor>()
-                .Reposition();
-            RefreshPlaybackBar();
-            ScrollScanlineIntoView();
-        };
-        float pulsesPerScan =
-            EditorContext.Pattern.patternMetadata.bps *
-            Pattern.pulsesPerBeat;
-        if (Input.GetKeyDown(KeyCode.Home))
-        {
-            moveScanlineTo(0f);
-        }
-        if (Input.GetKeyDown(KeyCode.End))
-        {
-            moveScanlineTo(numScans * pulsesPerScan);
-        }
-        if (Input.GetKeyDown(KeyCode.PageUp))
-        {
-            moveScanlineTo(Mathf.Max(
-                scanline.floatPulse - pulsesPerScan,
-                0f));
-        }
-        if (Input.GetKeyDown(KeyCode.PageDown))
-        {
-            float maxPulse = numScans * pulsesPerScan;
-            moveScanlineTo(Mathf.Min(
-                scanline.floatPulse + pulsesPerScan,
-                maxPulse));
-        }
     }
-    private void DragWorkSpace (Vector2 deltaPosition)
+
+    private void DragWorkSpace(Vector2 deltaPosition)
     {
         float outOfViewWidth = WorkspaceContentWidth -
             workspaceViewport.rect.width;
@@ -760,24 +537,6 @@ public class PatternPanel : MonoBehaviour
             Mathf.Clamp01(vertical / outOfViewHeight);
 
         SynchronizeScrollRects();
-    }
-    #endregion
-
-    #region Touch
-    private void HandleTouchResize ()
-    {
-        Touch touchZero = Input.GetTouch(0);
-        Touch touchOne = Input.GetTouch(1);
-
-        Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
-        Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
-
-        float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
-        float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
-
-        float difference = currentMagnitude - prevMagnitude;
-
-        AdjustZoom(zoom + (int) Math.Round(difference * 0.02f));
     }
     #endregion
     
@@ -1166,7 +925,7 @@ public class PatternPanel : MonoBehaviour
     private void OnPatternTimingUpdated()
     {
         DestroyAndRespawnAllMarkers();
-        RepositionNeeded?.Invoke();
+        workspace.RepositionNotes();
         UpdateNumScansAndRelatedUI();
     }
 
@@ -1456,7 +1215,7 @@ public class PatternPanel : MonoBehaviour
         float scanlineRawPulse = totalPulses * newValue;
         scanline.floatPulse = SnapPulse(scanlineRawPulse);
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        ScrollScanlineIntoView();
+        workspace.ScrollScanlineIntoView();
         RefreshScanlineTimeDisplay();
     }
 
@@ -1567,22 +1326,7 @@ public class PatternPanel : MonoBehaviour
         radarDialog.Show();
     }
 
-    private void MoveScanlineToPointer (Vector2 position)
-    {
-        Vector2 pointInHeader;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            header, position,
-            cam: null, out pointInHeader);
-
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float cursorScan = pointInHeader.x / ScanWidth;
-        float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = SnapPulse(cursorPulse);
-
-        scanline.floatPulse = snappedCursorPulse;
-        scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        RefreshPlaybackBar();
-    }
+    
     #endregion
 
     #region Dragging And Dropping Notes
@@ -2525,7 +2269,7 @@ public class PatternPanel : MonoBehaviour
         DestroyAndSpawnExistingNotes();
         UpdateNumScans();
         DestroyAndRespawnAllMarkers();
-        ResizeWorkspace();
+        workspace.ResizeWorkspace();
         RefreshPlaybackBar();
     }
 
@@ -2586,40 +2330,25 @@ public class PatternPanel : MonoBehaviour
         if (UpdateNumScans())
         {
             DestroyAndRespawnAllMarkers();
-            ResizeWorkspace();
+            workspace.ResizeWorkspace();
         }
-    }
-
-    private void ResizeWorkspace()
-    {
-        workspaceContent.sizeDelta = new Vector2(
-            WorkspaceContentWidth,
-            WorkspaceContentHeight);
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.horizontalNormalizedPosition);
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.verticalNormalizedPosition);
-
-        SynchronizeScrollRects();
     }
 
     private void RefreshScanlineTimeDisplay()
     {
         float scanlineTime = EditorContext.Pattern.PulseToTime(
-            (int)scanline.floatPulse);
+            (int)workspace.scanlineFloatPulse);
         timeDisplay.text = UIUtils.FormatTime(scanlineTime,
             includeMillisecond: true);
     }
 
     // This includes both the time display and slider.
-    private void RefreshPlaybackBar()
+    public void RefreshPlaybackBar()
     {
         RefreshScanlineTimeDisplay();
 
         int bps = EditorContext.Pattern.patternMetadata.bps;
-        float scanlineNormalizedPosition = scanline.floatPulse /
+        float scanlineNormalizedPosition = workspace.scanlineFloatPulse /
             (numScans * bps * Pattern.pulsesPerBeat);
        
         scanlinePositionSlider.SetValueWithoutNotify(scanlineNormalizedPosition);
@@ -2838,7 +2567,7 @@ public class PatternPanel : MonoBehaviour
         SelectionChanged?.Invoke(selectedNotes);
 
         RefreshNotesInViewport();
-        AdjustAllPathsAndTrails();
+        workspace.AdjustAllPathsAndTrails();
     }
 
     private void GetPreviousAndNextNotes(
@@ -3024,71 +2753,7 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void AdjustAllPathsAndTrails()
-    {
-        Note prevChain = null;
-        // Indexed by lane
-        List<Note> previousRepeat = new List<Note>();
-        for (int i = 0; i < PlayableLanes; i++)
-        {
-            previousRepeat.Add(null);
-        }
-
-        foreach (Note n in EditorContext.Pattern.notes)
-        {
-            GameObject o = GetGameObjectFromNote(n);
-            if (n.type == NoteType.Hold ||
-                n.type == NoteType.RepeatHeadHold ||
-                n.type == NoteType.RepeatHold)
-            {
-                // Adjust the trails of hold notes.
-                o?.GetComponent<NoteInEditor>().ResetTrail();
-            }
-            if (n.type == NoteType.Drag)
-            {
-                // Draw curves of drag notes.
-                o?.GetComponent<NoteInEditor>().ResetCurve();
-                o?.GetComponent<NoteInEditor>()
-                    .ResetAllAnchorsAndControlPoints();
-            }
-
-            // For chain paths and repeat paths, ignore hidden notes.
-            if (n.lane >= PlayableLanes) continue;
-
-            if (n.type == NoteType.ChainHead ||
-                n.type == NoteType.ChainNode)
-            {
-                // Adjust the paths of chain nodes.
-                if (n.type == NoteType.ChainNode)
-                {
-                    o?.GetComponent<NoteInEditor>()
-                        .PointPathToward(prevChain);
-                    if (prevChain != null &&
-                        prevChain.type == NoteType.ChainHead)
-                    {
-                        GetGameObjectFromNote(prevChain)
-                            ?.GetComponent<NoteInEditor>()
-                            .RotateNoteHeadToward(n);
-                    }
-                }
-                prevChain = n;
-            }
-            if (n.type == NoteType.RepeatHead ||
-                n.type == NoteType.Repeat ||
-                n.type == NoteType.RepeatHeadHold ||
-                n.type == NoteType.RepeatHold)
-            {
-                // Adjust the paths of repeat notes.
-                if (n.type == NoteType.Repeat ||
-                    n.type == NoteType.RepeatHold)
-                {
-                    o?.GetComponent<NoteInEditor>()
-                        .PointPathToward(previousRepeat[n.lane]);
-                }
-                previousRepeat[n.lane] = n;
-            }
-        }
-    }
+    
     #endregion
 
     #region Pattern Modification
@@ -3669,31 +3334,9 @@ public class PatternPanel : MonoBehaviour
         Options.instance.editorOptions.visibleLanes =
             Mathf.Clamp(newValue, 8, 16);
 
-        ResizeWorkspace();
-        RepositionNeeded?.Invoke();
-        AdjustAllPathsAndTrails();
-    }
-
-    public void HorizontalZoomIn ()
-    {
-        AdjustZoom(zoom + 10);
-    }
-
-    public void HorizontalZoomOut ()
-    {
-        AdjustZoom(zoom - 10);
-    }
-
-    private void AdjustZoom (int value)
-    {
-        zoom = Mathf.Clamp(value, kMinZoom, kMaxZoom);
-        float horizontal = workspaceScrollRect
-            .horizontalNormalizedPosition;
-        ResizeWorkspace();
-        RepositionNeeded?.Invoke();
-        AdjustAllPathsAndTrails();
-        workspaceScrollRect.horizontalNormalizedPosition =
-            horizontal;
+        workspace.ResizeWorkspace();
+        workspace.RepositionNotes();
+        workspace.AdjustAllPathsAndTrails();
     }
     #endregion
 
@@ -3707,7 +3350,7 @@ public class PatternPanel : MonoBehaviour
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
     private bool audioLoaded;
-    private bool isPlaying;
+    public bool isPlaying;
     private float playbackStartingPulse;
     private float playbackStartingTime;
     private bool backingTrackPlaying;
@@ -3820,7 +3463,7 @@ public class PatternPanel : MonoBehaviour
             scanline.floatPulse = playbackStartingPulse;
         }
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        ScrollScanlineIntoView();
+        workspace.ScrollScanlineIntoView();
         RefreshPlaybackBar();
 
         PlaybackStopped?.Invoke();
@@ -3900,7 +3543,7 @@ public class PatternPanel : MonoBehaviour
         // Move scanline.
         scanline.floatPulse = playbackCurrentPulse;
         scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        ScrollScanlineIntoView();
+        workspace.ScrollScanlineIntoView();
         RefreshPlaybackBar();
     }
 
@@ -3921,7 +3564,7 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Utilities
-    private int SnapPulse(float rawPulse)
+    public int SnapPulse(float rawPulse)
     {
         int pulsesPerDivision = Pattern.pulsesPerBeat
             / Options.instance.editorOptions.beatSnapDivisor;
@@ -3929,84 +3572,6 @@ public class PatternPanel : MonoBehaviour
             rawPulse / pulsesPerDivision)
             * pulsesPerDivision;
         return snappedPulse;
-    }
-
-    private Vector2 ScreenPointToPointInNoteContainer(
-        Vector2 screenPoint)
-    {
-        Vector2 pointInContainer;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            noteContainer.GetComponent<RectTransform>(),
-            screenPoint,
-            cam: null,
-            out pointInContainer);
-        return pointInContainer;
-    }
-
-    private void PointInNoteContainerToPulseAndLane(
-        Vector2 pointInContainer,
-        out float pulse, out float lane)
-    {
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float scan = pointInContainer.x / ScanWidth;
-        pulse = scan * bps * Pattern.pulsesPerBeat;
-        lane = -pointInContainer.y / LaneHeight - 0.5f;
-    }
-
-    private void ScrollScanlineIntoView()
-    {
-        if (!Options.instance.editorOptions.keepScanlineInView) return;
-
-        UIUtils.ScrollIntoView(
-            scanline.GetComponent<RectTransform>(),
-            workspaceScrollRect,
-            normalizedMargin: 0.8f,
-            viewRectAsPoint: true,
-            horizontal: true,
-            vertical: false);
-        SynchronizeScrollRects();
-    }
-
-    private void ScrollNoteIntoView(Note n)
-    {
-        Vector2 position = SelfPositionerInEditor.PositionOf(n);
-        Vector3 worldPosition = workspaceContent.TransformPoint(
-            position);
-        UIUtils.ScrollIntoView(
-            worldPosition, 
-            workspaceScrollRect,
-            normalizedMargin: 0.1f,
-            viewRectAsPoint: true,
-            horizontal: true,
-            vertical: true);
-    }
-
-    // This was used to implement continuous scrolling during playback,
-    // but the frame rate is too low, so it's abandoned.
-    private void KeepScanlineAtLeftOfView()
-    {
-        float viewPortWidth = workspaceScrollRect
-            .GetComponent<RectTransform>().rect.width;
-        if (WorkspaceContentWidth <= viewPortWidth) return;
-
-        float scanlinePosition = scanline
-            .GetComponent<RectTransform>().anchoredPosition.x;
-
-        float desiredXAtLeft = scanlinePosition - viewPortWidth * 0.1f;
-        float normalizedPosition =
-            desiredXAtLeft / (WorkspaceContentWidth - viewPortWidth);
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(normalizedPosition);
-        SynchronizeScrollRects();
-    }
-
-    private void SynchronizeScrollRects()
-    {
-        headerContent.sizeDelta = new Vector2(
-            workspaceContent.sizeDelta.x,
-            headerContent.sizeDelta.y);
-        headerScrollRect.horizontalNormalizedPosition =
-            workspaceScrollRect.horizontalNormalizedPosition;
     }
     #endregion
 }

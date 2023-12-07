@@ -57216,6 +57216,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1897794178}
+    - targetCorrespondingSourceObject: {fileID: 397205365400588432, guid: 7c56afc9b10373e4486c4490701fa985,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1897794180}
     - targetCorrespondingSourceObject: {fileID: 397205364207462270, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
       insertIndex: -1
@@ -57369,6 +57373,35 @@ MonoBehaviour:
   title: {fileID: 1897794174}
   undoButton: {fileID: 340013982}
   redoButton: {fileID: 26732623}
+--- !u!114 &1897794180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897794177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e5b2fb87be1e14b9eb135dc53175f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 0}
+  workspaceScrollRect: {fileID: 1299100498}
+  headerScrollRect: {fileID: 167642880}
+  workspaceViewport: {fileID: 1299100497}
+  workspaceContent: {fileID: 1299100492}
+  headerContent: {fileID: 167642879}
+  scanline: {fileID: 1552096942}
+  hiddenLaneBackground: {fileID: 2141758703}
+  header: {fileID: 1903404518}
+  markerInHeaderContainer: {fileID: 0}
+  scanMarkerInHeaderTemplate: {fileID: 0}
+  beatMarkerInHeaderTemplate: {fileID: 0}
+  bpmMarkerTemplate: {fileID: 0}
+  timeStopMarkerTemplate: {fileID: 0}
+  markerContainer: {fileID: 0}
+  scanMarkerTemplate: {fileID: 0}
+  beatMarkerTemplate: {fileID: 0}
 --- !u!1001 &1899606905
 PrefabInstance:
   m_ObjectHideFlags: 0

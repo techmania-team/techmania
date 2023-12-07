@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Another layer of wrapper above FmodManager that exposes
+// more usable APIs.
 [MoonSharpUserData]
 public class AudioManager : MonoBehaviour
 {
