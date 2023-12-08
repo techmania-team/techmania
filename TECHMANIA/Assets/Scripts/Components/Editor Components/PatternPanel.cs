@@ -16,17 +16,7 @@ public class PatternPanel : MonoBehaviour
     public PatternPanelWorkspace workspace;
 
     [Header("Notes")]
-    public Transform noteCemetary;
     public RectTransform selectionRectangle;
-    public GameObject basicNotePrefab;
-    public GameObject chainHeadPrefab;
-    public GameObject chainNodePrefab;
-    public GameObject repeatHeadPrefab;
-    public GameObject repeatHeadHoldPrefab;
-    public GameObject repeatNotePrefab;
-    public GameObject repeatHoldPrefab;
-    public GameObject holdNotePrefab;
-    public GameObject dragNotePrefab;
 
     [Header("Audio")]
     public AudioManager audioManager;
@@ -65,28 +55,11 @@ public class PatternPanel : MonoBehaviour
     private float? scanlinePulseBeforePreview;
 
     #region Internal Data Structures
-    // Each NoteObject contains a reference to a Note, and this
-    // dictionary is the reverse of that. Only contains the notes
-    // close to the viewport.
-    private Dictionary<Note, NoteObject> noteToNoteObject;
-    // Maintain a list of all drag notes, so when the workspace
-    // receives a click, it can check if it should land on any
-    // drag note.
-    private HashSet<NoteInEditor> dragNotes;
-
-    private Note lastSelectedNoteWithoutShift;
-    private Note lastClickedNote;
     public HashSet<Note> selectedNotes { get; private set; }
 
     private Note GetNoteFromGameObject(GameObject o)
     {
         return o.GetComponent<NoteObject>().note;
-    }
-        
-    public GameObject GetGameObjectFromNote(Note n)
-    {
-        if (!noteToNoteObject.ContainsKey(n)) return null;
-        return noteToNoteObject[n].gameObject;
     }
 
     // Clipboard stores notes instead of GameObjects,
@@ -100,8 +73,6 @@ public class PatternPanel : MonoBehaviour
     private int minPulseInClipboard;
 
     private NoteType noteType;
-
-    
 
     public enum Tool
     {
@@ -276,7 +247,7 @@ public class PatternPanel : MonoBehaviour
                     OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
-                    DestroyAndRespawnAllMarkers();
+                    workspace.DestroyAndRespawnAllMarkers();
                     break;
                 case EditOperation.Type.AddNote:
                     {
@@ -309,7 +280,7 @@ public class PatternPanel : MonoBehaviour
                             break;
                         }
                         n.CopyFrom(op.noteBeforeOp);
-                        RefreshNoteInEditor(n);
+                        workspace.RefreshNoteInEditor(n);
                     }
                     break;
             }
@@ -328,7 +299,7 @@ public class PatternPanel : MonoBehaviour
                     OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
-                    DestroyAndRespawnAllMarkers();
+                    workspace.DestroyAndRespawnAllMarkers();
                     break;
                 case EditOperation.Type.AddNote:
                     {
@@ -361,7 +332,7 @@ public class PatternPanel : MonoBehaviour
                             break;
                         }
                         n.CopyFrom(op.noteAfterOp);
-                        RefreshNoteInEditor(n);
+                        workspace.RefreshNoteInEditor(n);
                     }
                     break;
             }
@@ -395,28 +366,6 @@ public class PatternPanel : MonoBehaviour
                     (n as DragNote).nodes, n.sound,
                     n.volumePercent, n.panPercent,
                     (n as DragNote).curveType);
-                break;
-        }
-    }
-
-    private void RefreshNoteInEditor(Note n)
-    {
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-
-        NoteInEditor e = o.GetComponent<NoteInEditor>();
-        e.SetKeysoundText();
-        e.UpdateEndOfScanIndicator();
-        switch (n.type)
-        {
-            case NoteType.Hold:
-            case NoteType.RepeatHold:
-            case NoteType.RepeatHeadHold:
-                e.ResetTrail();
-                break;
-            case NoteType.Drag:
-                e.ResetCurve();
-                e.ResetAllAnchorsAndControlPoints();
                 break;
         }
     }
@@ -512,134 +461,13 @@ public class PatternPanel : MonoBehaviour
             }
         }
     }
-
-    private void DragWorkSpace(Vector2 deltaPosition)
-    {
-        float outOfViewWidth = WorkspaceContentWidth -
-            workspaceViewport.rect.width;
-        float outOfViewHeight = WorkspaceContentHeight -
-            workspaceViewport.rect.height;
-        if (outOfViewWidth < 0f) outOfViewWidth = 0f;
-        if (outOfViewHeight < 0f) outOfViewHeight = 0f;
-
-        float horizontal =
-            workspaceScrollRect.horizontalNormalizedPosition *
-            outOfViewWidth;
-        horizontal -= deltaPosition.x / rootCanvas.localScale.x;
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(horizontal / outOfViewWidth);
-
-        float vertical =
-            workspaceScrollRect.verticalNormalizedPosition *
-            outOfViewHeight;
-        vertical -= deltaPosition.y / rootCanvas.localScale.x;
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(vertical / outOfViewHeight);
-
-        SynchronizeScrollRects();
-    }
     #endregion
     
     #region Events From Workspace and NoteObjects
-    public void OnWorkspaceScrollRectValueChanged()
-    {
-        RefreshNotesInViewport();
-        SynchronizeScrollRects();
-    }
-
-    private void RefreshNotesInViewport()
-    {
-        // Calculate the pulse and lane range visible through the
-        // viewport.
-        Vector2 topLeftOfViewport = new Vector2(
-            workspaceScrollRect.horizontalNormalizedPosition *
-            (WorkspaceContentWidth - workspaceViewport.rect.width),
-            (1f - workspaceScrollRect.verticalNormalizedPosition) *
-            (workspaceViewport.rect.height - WorkspaceContentHeight));
-        if (workspaceViewport.rect.width > WorkspaceContentWidth)
-        {
-            topLeftOfViewport.x = 0f;
-        }
-        Vector2 bottomRightOfViewport = new Vector2(
-            topLeftOfViewport.x + workspaceViewport.rect.width,
-            topLeftOfViewport.y - workspaceViewport.rect.height);
-        float minPulse, maxPulse, minLane, maxLane;
-        PointInNoteContainerToPulseAndLane(
-            topLeftOfViewport, out minPulse, out minLane);
-        PointInNoteContainerToPulseAndLane(
-            bottomRightOfViewport, out maxPulse, out maxLane);
-
-        // Expand the range to compensate for paths, trails and curves.
-        minPulse -= Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps * 2;
-        maxPulse += Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps * 2;
-        minLane -= EditorContext.Pattern.patternMetadata.playableLanes;
-        maxLane += EditorContext.Pattern.patternMetadata.playableLanes;
-
-        // Find all notes that should spawn.
-        Note topLeftNote = new Note()
-        {
-            pulse = Mathf.FloorToInt(minPulse),
-            lane = Mathf.FloorToInt(minLane)
-        };
-        Note bottomRightNote = new Note()
-        {
-            pulse = Mathf.CeilToInt(maxPulse),
-            lane = Mathf.CeilToInt(maxLane)
-        };
-        List<Note> visibleNotes = EditorContext.Pattern
-            .GetRangeBetween(topLeftNote, bottomRightNote);
-        HashSet<Note> visibleNotesAsSet = new HashSet<Note>(
-            visibleNotes);
-        // All selected notes should remain visible.
-        visibleNotesAsSet.UnionWith(selectedNotes);
-
-        // Make a copy of noteToNoteObject because the code below
-        // will modify it.
-        Dictionary<Note, NoteObject> noteToNoteObjectClone
-            = new Dictionary<Note, NoteObject>(noteToNoteObject);
-
-        // Destroy notes that go out of view.
-        foreach (KeyValuePair<Note, NoteObject> pair in
-            noteToNoteObjectClone)
-        {
-            if (!visibleNotesAsSet.Contains(pair.Key))
-            {
-                DeleteNoteObject(pair.Key, pair.Value.gameObject,
-                    intendToDeleteNote: false);
-            }
-        }
-
-        // Spawn notes that come into view.
-        foreach (Note n in visibleNotesAsSet)
-        {
-            if (!noteToNoteObjectClone.ContainsKey(n))
-            {
-                GameObject o = SpawnNoteObject(n);
-                AdjustPathOrTrailAround(o);
-            }
-        }
-    }
-
     private void RefreshNotesInViewportWhenSelectionChanged(
         HashSet<Note> _)
     {
-        RefreshNotesInViewport();
-    }
-
-    // If no drag note should receive this event, returns null.
-    private NoteInEditor FindDragNoteToReceiveEvent(
-        PointerEventData eventData)
-    {
-        foreach (NoteInEditor dragNote in dragNotes)
-        {
-            if (dragNote.ClickLandsOnCurve(eventData.position))
-            {
-                return dragNote;
-            }
-        }
-        return null;
+        workspace.RefreshNotesInViewport();
     }
 
     public void OnNoteContainerClick(BaseEventData eventData)
@@ -2267,71 +2095,10 @@ public class PatternPanel : MonoBehaviour
     private void Refresh()
     {
         DestroyAndSpawnExistingNotes();
-        UpdateNumScans();
+        workspace.UpdateNumScans();
         DestroyAndRespawnAllMarkers();
         workspace.ResizeWorkspace();
         RefreshPlaybackBar();
-    }
-
-    // Returns whether the number changed.
-    // During an editing session the number of scans will never
-    // decrease. This prevents unintended scrolling when deleting
-    // the last notes.
-    private bool UpdateNumScans()
-    {
-        int numScansBackup = numScans;
-
-        int lastPulse = 0;
-        if (EditorContext.Pattern.notes.Count > 0)
-        {
-            lastPulse = EditorContext.Pattern.notes.Max.pulse;
-        }
-        int pulsesPerScan = Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps;
-
-        // Look at all hold and drag notes in the last few scans
-        // in case their duration outlasts the currently considered
-        // last scan.
-        foreach (Note n in EditorContext.Pattern.GetViewBetween(
-            minPulseInclusive: lastPulse - pulsesPerScan * 2,
-            maxPulseInclusive: lastPulse))
-        {
-            int endingPulse;
-            if (n is HoldNote)
-            {
-                endingPulse = n.pulse + (n as HoldNote).duration;
-            }
-            else if (n is DragNote)
-            {
-                endingPulse = n.pulse + (n as DragNote).Duration();
-            }
-            else
-            {
-                continue;
-            }
-
-            if (endingPulse > lastPulse)
-            {
-                lastPulse = endingPulse;
-            }
-        }
-
-        int lastScan = lastPulse / pulsesPerScan;
-        // 1 empty scan at the end
-        numScans = Mathf.Max(numScansBackup, lastScan + 2);
-        // Minimal 16 scans
-        numScans = Mathf.Max(numScans, 16);
-
-        return numScans != numScansBackup;
-    }
-
-    private void UpdateNumScansAndRelatedUI()
-    {
-        if (UpdateNumScans())
-        {
-            DestroyAndRespawnAllMarkers();
-            workspace.ResizeWorkspace();
-        }
     }
 
     private void RefreshScanlineTimeDisplay()
@@ -2356,203 +2123,6 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Spawning
-    private void DestroyAndRespawnAllMarkers()
-    {
-        for (int i = 0; i < markerInHeaderContainer.childCount; i++)
-        {
-            GameObject child = markerInHeaderContainer.GetChild(i)
-                .gameObject;
-            if (child == scanMarkerInHeaderTemplate) continue;
-            if (child == beatMarkerInHeaderTemplate) continue;
-            if (child == bpmMarkerTemplate) continue;
-            if (child == timeStopMarkerTemplate) continue;
-            Destroy(child);
-        }
-        for (int i = 0; i < markerContainer.childCount; i++)
-        {
-            GameObject child = markerContainer.GetChild(i)
-                .gameObject;
-            if (child == scanMarkerTemplate) continue;
-            if (child == beatMarkerTemplate) continue;
-            Destroy(child);
-        }
-
-        EditorContext.Pattern.PrepareForTimeCalculation();
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-
-        for (int scan = 0; scan < numScans; scan++)
-        {
-            GameObject markerInHeader = Instantiate(
-                scanMarkerInHeaderTemplate, markerInHeaderContainer);
-            GameObject marker = Instantiate(
-                scanMarkerTemplate, markerContainer);
-            markerInHeader.SetActive(true);  // This calls OnEnabled
-            marker.SetActive(true);
-
-            int pulse = scan * bps * Pattern.pulsesPerBeat;
-            Marker m = markerInHeader.GetComponent<Marker>();
-            m.pulse = pulse;
-            m.SetTimeDisplay();
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-            m = marker.GetComponent<Marker>();
-            m.pulse = pulse;
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-
-            for (int beat = 1; beat < bps; beat++)
-            {
-                markerInHeader = Instantiate(
-                    beatMarkerInHeaderTemplate, 
-                    markerInHeaderContainer);
-                marker = Instantiate(
-                    beatMarkerTemplate,
-                    markerContainer);
-                markerInHeader.SetActive(true);
-                marker.SetActive(true);
-
-                pulse = (scan * bps + beat) *
-                    Pattern.pulsesPerBeat;
-                m = markerInHeader.GetComponent<Marker>();
-                m.pulse = pulse;
-                m.SetTimeDisplay();
-                m.GetComponent<SelfPositionerInEditor>()
-                    .Reposition();
-                m = marker.GetComponent<Marker>();
-                m.pulse = pulse;
-                m.GetComponent<SelfPositionerInEditor>()
-                    .Reposition();
-            }
-        }
-
-        foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
-        {
-            GameObject marker = Instantiate(
-                bpmMarkerTemplate, markerInHeaderContainer);
-            marker.SetActive(true);
-            Marker m = marker.GetComponent<Marker>();
-            m.pulse = e.pulse;
-            m.SetBpmText(e.bpm);
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-        }
-
-        foreach (TimeStop t in EditorContext.Pattern.timeStops)
-        {
-            GameObject marker = Instantiate(
-                timeStopMarkerTemplate, markerInHeaderContainer);
-            marker.SetActive(true);
-            Marker m = marker.GetComponent<Marker>();
-            m.pulse = t.pulse;
-            m.SetTimeStopText(t.duration);
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-        }
-    }
-
-    // This will call Reposition on the new object.
-    private GameObject SpawnNoteObject(Note n)
-    {
-        GameObject prefab;
-        switch (n.type)
-        {
-            case NoteType.Basic:
-                prefab = basicNotePrefab;
-                break;
-            case NoteType.ChainHead:
-                prefab = chainHeadPrefab;
-                break;
-            case NoteType.ChainNode:
-                prefab = chainNodePrefab;
-                break;
-            case NoteType.RepeatHead:
-                prefab = repeatHeadPrefab;
-                break;
-            case NoteType.RepeatHeadHold:
-                prefab = repeatHeadHoldPrefab;
-                break;
-            case NoteType.Repeat:
-                prefab = repeatNotePrefab;
-                break;
-            case NoteType.RepeatHold:
-                prefab = repeatHoldPrefab;
-                break;
-            case NoteType.Hold:
-                prefab = holdNotePrefab;
-                break;
-            case NoteType.Drag:
-                prefab = dragNotePrefab;
-                break;
-            default:
-                Debug.LogError("Unknown note type: " + n.type);
-                prefab = basicNotePrefab;
-                break;
-        }
-
-        NoteObject noteObject = 
-            Instantiate(prefab, noteContainer)
-            .GetComponent<NoteObject>();
-        noteObject.note = n;
-        NoteInEditor noteInEditor = noteObject
-            .GetComponent<NoteInEditor>();
-        noteInEditor.SetKeysoundText();
-        noteInEditor.UpdateKeysoundVisibility();
-        noteInEditor.UpdateEndOfScanIndicator();
-        noteInEditor.SetSprite(hidden: n.lane >= PlayableLanes);
-        noteInEditor.UpdateSelection(selectedNotes);
-        noteObject.GetComponent<SelfPositionerInEditor>()
-            .Reposition();
-
-        noteToNoteObject.Add(n, noteObject);
-        if (n.type == NoteType.Drag)
-        {
-            dragNotes.Add(noteInEditor);
-        }
-
-        // Binary search the appropriate sibling index of
-        // new note, so all notes are drawn from right to left.
-        //
-        // More specifically, we are looking for the smallest-index
-        // sibling that's located on the left of the new note.
-        if (noteContainer.childCount == 1)
-        {
-            return noteObject.gameObject;
-        }
-        float targetX = noteObject.transform.position.x;
-        int first = 0;
-        int last = noteContainer.childCount - 2;
-        while (true)
-        {
-            float firstX = noteContainer.GetChild(first).position.x;
-            float lastX = noteContainer.GetChild(last).position.x;
-            if (firstX <= targetX)
-            {
-                noteObject.transform.SetSiblingIndex(first);
-                break;
-            }
-            if (lastX >= targetX)
-            {
-                noteObject.transform.SetSiblingIndex(last + 1);
-                break;
-            }
-            // Now we know for sure that lastX < targetX < firstX.
-            int middle = (first + last) / 2;
-            float middleX = noteContainer.GetChild(middle)
-                .position.x;
-            if (middleX == targetX)
-            {
-                noteObject.transform.SetSiblingIndex(middle);
-                break;
-            }
-            if (middleX < targetX)
-            {
-                last = middle - 1;
-            }
-            else  // middleX > targetX
-            {
-                first = middle + 1;
-            }
-        }
-
-        return noteObject.gameObject;
-    }
-
     private void DestroyAndSpawnExistingNotes()
     {
         for (int i = 0; i < noteContainer.childCount; i++)
@@ -2585,7 +2155,7 @@ public class PatternPanel : MonoBehaviour
             maxLaneInclusive);
     }
 
-    private void GetPreviousAndNextChainNotes(Note n,
+    public void GetPreviousAndNextChainNotes(Note n,
         out Note prev, out Note next)
     {
         GetPreviousAndNextNotes( n,
@@ -2596,7 +2166,7 @@ public class PatternPanel : MonoBehaviour
             out prev, out next);
     }
 
-    private void GetPreviousAndNextRepeatNotes(Note n,
+    public void GetPreviousAndNextRepeatNotes(Note n,
         out Note prev, out Note next)
     {
         GetPreviousAndNextNotes(n,
@@ -2609,151 +2179,6 @@ public class PatternPanel : MonoBehaviour
             maxLaneInclusive: n.lane,
             out prev, out next);
     }
-
-    // This may modify o, the same-type note before o, and/or
-    // the same-type note after o.
-    private void AdjustPathOrTrailAround(GameObject o)
-    {
-        Note n = o.GetComponent<NoteObject>().note;
-        Note prev, next;
-
-        switch (n.type)
-        {
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-                if (n.lane >= PlayableLanes) break;
-                GetPreviousAndNextChainNotes(n,
-                    out prev, out next);
-
-                if (n.type == NoteType.ChainNode)
-                {
-                    o.GetComponent<NoteInEditor>()
-                        .PointPathToward(prev);
-                    if (prev != null &&
-                        prev.type == NoteType.ChainHead)
-                    {
-                        GetGameObjectFromNote(prev)
-                            ?.GetComponent<NoteInEditor>()
-                            .RotateNoteHeadToward(n);
-                    }
-                }
-                if (next != null &&
-                    next.type == NoteType.ChainNode)
-                {
-                    GetGameObjectFromNote(next)
-                        ?.GetComponent<NoteInEditor>()
-                        .PointPathToward(n);
-                    if (n.type == NoteType.ChainHead)
-                    {
-                        o.GetComponent<NoteInEditor>()
-                            .RotateNoteHeadToward(next);
-                    }
-                }
-                break;
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                if (n.lane >= PlayableLanes) break;
-                GetPreviousAndNextRepeatNotes(n,
-                    out prev, out next);
-
-                if (n.type == NoteType.Repeat ||
-                    n.type == NoteType.RepeatHold)
-                {
-                    o.GetComponent<NoteInEditor>()
-                        .PointPathToward(prev);
-                }
-
-                if (next != null)
-                {
-                    NoteType nextType = next.type;
-                    if (nextType == NoteType.Repeat ||
-                        nextType == NoteType.RepeatHold)
-                    {
-                        GetGameObjectFromNote(next)
-                            ?.GetComponent<NoteInEditor>()
-                            .PointPathToward(n);
-                    }
-                }
-                break;
-            case NoteType.Drag:
-                o.GetComponent<NoteInEditor>().ResetCurve();
-                o.GetComponent<NoteInEditor>()
-                    .ResetAllAnchorsAndControlPoints();
-                break;
-        }
-
-        if (n.type == NoteType.Hold ||
-            n.type == NoteType.RepeatHeadHold ||
-            n.type == NoteType.RepeatHold)
-        {
-            o.GetComponent<NoteInEditor>().ResetTrail();
-        }
-    }
-
-    // This may modify o, the same-type note before o, and/or
-    // the same-type note after o.
-    private void AdjustPathBeforeDeleting(GameObject o)
-    {
-        Note n = o.GetComponent<NoteObject>().note;
-        if (n.lane < 0 || n.lane >= PlayableLanes) return;
-        Note prev, next;
-
-        switch (n.type)
-        {
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-                GetPreviousAndNextChainNotes(n,
-                    out prev, out next);
-
-                if (next != null &&
-                    next.type == NoteType.ChainNode)
-                {
-                    GetGameObjectFromNote(next)
-                        ?.GetComponent<NoteInEditor>()
-                        .PointPathToward(prev);
-                    if (prev != null &&
-                        prev.type == NoteType.ChainHead)
-                    {
-                        GetGameObjectFromNote(prev)
-                            ?.GetComponent<NoteInEditor>()
-                            .RotateNoteHeadToward(next);
-                    }
-                }
-                else if (prev != null &&
-                    prev.type == NoteType.ChainHead)
-                {
-                    GetGameObjectFromNote(prev)
-                        ?.GetComponent<NoteInEditor>()
-                        .ResetNoteImageRotation();
-                }
-                break;
-            case NoteType.RepeatHead:
-            case NoteType.RepeatHeadHold:
-            case NoteType.Repeat:
-            case NoteType.RepeatHold:
-                GetPreviousAndNextRepeatNotes(n,
-                    out prev, out next);
-
-                if (next != null)
-                {
-                    NoteType nextType = next.type;
-                    if (nextType == NoteType.Repeat ||
-                        nextType == NoteType.RepeatHold)
-                    {
-                        GetGameObjectFromNote(next)
-                            ?.GetComponent<NoteInEditor>()
-                            .PointPathToward(prev);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    
     #endregion
 
     #region Pattern Modification
@@ -2954,29 +2379,6 @@ public class PatternPanel : MonoBehaviour
         {
             lastClickedNote = null;
         }
-    }
-
-    private void DeleteNoteObject(Note n, GameObject o,
-        bool intendToDeleteNote)
-    {
-        if (intendToDeleteNote)
-        {
-            AdjustPathBeforeDeleting(o);
-        }
-        else
-        {
-            AdjustPathOrTrailAround(o);
-        }
-        noteToNoteObject.Remove(n);
-        // No exception if the elements don't exist.
-        dragNotes.Remove(o.GetComponent<NoteInEditor>());
-        
-        // Destroy doesn't immediately destroy, so we move the note
-        // to the cemetary so as to not interfere with the
-        // binary searches when spawning new notes on the same frame.
-        o.transform.SetParent(noteCemetary);
-        Destroy(o);
-        UpdateNumScansAndRelatedUI();
     }
 
     private void ToggleEndOfScanOnSelectedNotes()
