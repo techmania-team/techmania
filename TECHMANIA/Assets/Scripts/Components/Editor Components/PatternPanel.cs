@@ -15,9 +15,6 @@ public class PatternPanel : MonoBehaviour
 
     public PatternPanelWorkspace workspace;
 
-    [Header("Notes")]
-    public RectTransform selectionRectangle;
-
     [Header("Audio")]
     public AudioManager audioManager;
     public AudioClip metronome1;
@@ -55,7 +52,7 @@ public class PatternPanel : MonoBehaviour
     private float? scanlinePulseBeforePreview;
 
     #region Internal Data Structures
-    public HashSet<Note> selectedNotes { get; private set; }
+    public HashSet<Note> selectedNotes;
 
     private Note GetNoteFromGameObject(GameObject o)
     {
@@ -72,7 +69,7 @@ public class PatternPanel : MonoBehaviour
     private List<Note> clipboard;
     private int minPulseInClipboard;
 
-    private NoteType noteType;
+    public NoteType noteType { get; private set; }
 
     public enum Tool
     {
@@ -136,11 +133,6 @@ public class PatternPanel : MonoBehaviour
         SelectionChanged += RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked += OnUndo;
         EditorContext.RedoInvoked += OnRedo;
-        NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
-        NoteInEditor.RightClicked += OnNoteObjectRightClick;
-        NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
-        NoteInEditor.Drag += OnNoteObjectDrag;
-        NoteInEditor.EndDrag += OnNoteObjectEndDrag;
         NoteInEditor.DurationHandleBeginDrag += 
             OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
@@ -181,11 +173,6 @@ public class PatternPanel : MonoBehaviour
         SelectionChanged -= RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked -= OnUndo;
         EditorContext.RedoInvoked -= OnRedo;
-        NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
-        NoteInEditor.RightClicked -= OnNoteObjectRightClick;
-        NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
-        NoteInEditor.Drag -= OnNoteObjectDrag;
-        NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
         NoteInEditor.DurationHandleBeginDrag -= 
             OnDurationHandleBeginDrag;
         NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
@@ -470,259 +457,12 @@ public class PatternPanel : MonoBehaviour
         workspace.RefreshNotesInViewport();
     }
 
-    public void OnNoteContainerClick(BaseEventData eventData)
+    public void NotifySelectionChanged()
     {
-        if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
-        if (pointerEventData.dragging) return;
-
-        // Special case: check drag notes because the curves do not
-        // receive clicks.
-        NoteInEditor dragNoteToReceiveEvent = 
-            FindDragNoteToReceiveEvent(pointerEventData);
-        if (dragNoteToReceiveEvent != null)
-        {
-            if (pointerEventData.button ==
-                    PointerEventData.InputButton.Left)
-            {
-                OnNoteObjectLeftClick(
-                    dragNoteToReceiveEvent.gameObject);
-            }
-            if (pointerEventData.button ==
-                PointerEventData.InputButton.Right)
-            {
-                OnNoteObjectRightClick(
-                    dragNoteToReceiveEvent.gameObject);
-            }
-            return;
-        }
-
-        // Special case: if rectangle tool, deselect all.
-        if (UsingRectangleTool())
-        {
-            selectedNotes.Clear();
-            SelectionChanged?.Invoke(selectedNotes);
-            return;
-        }
-
-        if (pointerEventData.button !=
-            PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-        if (!noteCursor.gameObject.activeSelf) return;
-        if (EditorContext.Pattern.HasNoteAt(
-            noteCursor.note.pulse, noteCursor.note.lane))
-        {
-            return;
-        }
-        if (isPlaying) return;
-
-        string invalidReason;
-        // No need to call CanAddHoldNote or CanAddDragNote here
-        // because durations and curves are flexible.
-        if (!CanAddNote(noteType, noteCursor.note.pulse,
-            noteCursor.note.lane, out invalidReason))
-        {
-            snackbar.Show(invalidReason);
-            return;
-        }
-
-        string sound = keysoundSheet.UpcomingKeysound();
-        keysoundSheet.AdvanceUpcoming();
-        EditorContext.BeginTransaction();
-        GameObject newNote = null;
-        switch (noteType)
-        {
-            case NoteType.Basic:
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-            case NoteType.RepeatHead:
-            case NoteType.Repeat:
-                newNote = AddNote(noteType, noteCursor.note.pulse,
-                    noteCursor.note.lane, sound);
-                break;
-            case NoteType.Hold:
-            case NoteType.RepeatHeadHold:
-            case NoteType.RepeatHold:
-                newNote = AddHoldNote(noteType, noteCursor.note.pulse,
-                    noteCursor.note.lane, duration: null, sound);
-                break;
-            case NoteType.Drag:
-                newNote = AddDragNote(noteCursor.note.pulse,
-                    noteCursor.note.lane,
-                    nodes: null,
-                    sound);
-                break;
-        }
-
-        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
-        EditorContext.EndTransaction();
-    }
-
-    private bool draggingDragCurve;
-    public void OnNoteContainerBeginDrag(BaseEventData eventData)
-    {
-        if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
-        if (UsingRectangleTool() &&
-            pointerEventData.button == 
-                PointerEventData.InputButton.Left)
-        {
-            OnBeginDragWhenRectangleToolActive();
-            return;
-        }
-        draggingDragCurve = false;
-
-        // Special case for drag notes.
-        NoteInEditor dragNoteToReceiveEvent =
-            FindDragNoteToReceiveEvent(pointerEventData);
-        if (dragNoteToReceiveEvent != null &&
-            pointerEventData.button == 
-                PointerEventData.InputButton.Left)
-        {
-            OnNoteObjectBeginDrag(pointerEventData,
-                dragNoteToReceiveEvent.gameObject);
-            draggingDragCurve = true;
-            return;
-        }
-    }
-
-    public void OnNoteContainerDrag(BaseEventData eventData)
-    {
-        if (!(eventData is PointerEventData)) return;
-        PointerEventData p = eventData as PointerEventData;
-        if (UsingRectangleTool() &&
-            p.button ==
-                PointerEventData.InputButton.Left)
-        {
-            OnDragWhenRectangleToolActive(p.delta);
-            return;
-        }
-
-        // Special case for drag notes.
-        if (draggingDragCurve && p.button == 
-            PointerEventData.InputButton.Left)
-        {
-            OnNoteObjectDrag(p);
-            return;
-        }
-
-        if (p.button == PointerEventData.InputButton.Middle || tool == Tool.Pan)
-        {
-            DragWorkSpace(p.delta);
-        }
-    }
-
-    public void OnNoteContainerEndDrag(BaseEventData eventData)
-    {
-        if (!(eventData is PointerEventData)) return;
-        PointerEventData pointerEventData =
-            eventData as PointerEventData;
-        if (UsingRectangleTool() &&
-            pointerEventData.button ==
-                PointerEventData.InputButton.Left)
-        {
-            OnEndDragWhenRectangleToolActive();
-            return;
-        }
-
-        // Special case for drag notes.
-        if (draggingDragCurve && pointerEventData.button == 
-            PointerEventData.InputButton.Left)
-        { 
-            OnNoteObjectEndDrag(pointerEventData);
-            return;
-        }
-    }
-
-    public void OnNoteObjectLeftClick(GameObject o)
-    {
-        bool shift = Input.GetKey(KeyCode.LeftShift) ||
-            Input.GetKey(KeyCode.RightShift);
-        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl);
-        Note clickedNote = GetNoteFromGameObject(o);
-        lastClickedNote = clickedNote;
-        if (shift)
-        {
-            if (lastSelectedNoteWithoutShift == null)
-            {
-                lastSelectedNoteWithoutShift =
-                    EditorContext.Pattern.notes.Min;
-            }
-            // At this point lastSelectedNoteObjectWithoutShift
-            // might still be null.
-            List<Note> range = EditorContext.Pattern
-                .GetRangeBetween(
-                lastSelectedNoteWithoutShift,
-                clickedNote);
-            if (ctrl)
-            {
-                // Add [prev, o] to current selection.
-                foreach (Note noteInRange in range)
-                {
-                    selectedNotes.Add(noteInRange);
-                }
-            }
-            else  // !ctrl
-            {
-                // Overwrite current selection with [prev, o].
-                selectedNotes.Clear();
-                foreach (Note noteInRange in range)
-                {
-                    selectedNotes.Add(noteInRange);
-                }
-            }
-        }
-        else  // !shift
-        {
-            lastSelectedNoteWithoutShift = clickedNote;
-            if (ctrl)
-            {
-                // Toggle o in current selection.
-                ToggleSelection(clickedNote);
-            }
-            else if (tool == Tool.RectangleAppend)
-            {
-                selectedNotes.Add(clickedNote);
-            }
-            else if (tool == Tool.RectangleSubtract)
-            {
-                selectedNotes.Remove(clickedNote);
-            }
-            else  // !ctrl
-            {
-                if (selectedNotes.Count > 1)
-                {
-                    selectedNotes.Clear();
-                    selectedNotes.Add(clickedNote);
-                }
-                else if (selectedNotes.Count == 1)
-                {
-                    if (selectedNotes.Contains(clickedNote))
-                    {
-                        selectedNotes.Remove(clickedNote);
-                    }
-                    else
-                    {
-                        selectedNotes.Clear();
-                        selectedNotes.Add(clickedNote);
-                    }
-                }
-                else  // Count == 0
-                {
-                    selectedNotes.Add(clickedNote);
-                }
-            }
-        }
-
         SelectionChanged?.Invoke(selectedNotes);
     }
 
-    private void ToggleSelection(Note n)
+    public void ToggleSelection(Note n)
     {
         if (selectedNotes.Contains(n))
         {
@@ -733,28 +473,14 @@ public class PatternPanel : MonoBehaviour
             selectedNotes.Add(n);
         }
     }
-
-    public void OnNoteObjectRightClick(GameObject o)
-    {
-        if (isPlaying) return;
-        Note n = GetNoteFromGameObject(o);
-
-        EditorContext.BeginTransaction();
-        EditorContext.RecordDeletedNote(n);
-        selectedNotes.Remove(n);
-        DeleteNote(n);
-        EditorContext.EndTransaction();
-
-        SelectionChanged?.Invoke(selectedNotes);
-    }
     #endregion
 
     #region UI Events And Updates
     private void OnPatternTimingUpdated()
     {
-        DestroyAndRespawnAllMarkers();
+        workspace.DestroyAndRespawnAllMarkers();
         workspace.RepositionNotes();
-        UpdateNumScansAndRelatedUI();
+        workspace.UpdateNumScansAndRelatedUI();
     }
 
     public void OnBeatSnapDivisorChanged(int direction)
@@ -787,7 +513,7 @@ public class PatternPanel : MonoBehaviour
 
     public void OnTimeEventButtonClick()
     {
-        int scanlineIntPulse = (int)scanline.floatPulse;
+        int scanlineIntPulse = (int)workspace.scanlineFloatPulse;
         BpmEvent currentBpmEvent = EditorContext.Pattern.bpmEvents.
             Find((BpmEvent e) =>
         {
@@ -860,7 +586,7 @@ public class PatternPanel : MonoBehaviour
                 });
             }
 
-            DestroyAndRespawnAllMarkers();
+            workspace.DestroyAndRespawnAllMarkers();
         });
     }
 
@@ -1152,328 +878,6 @@ public class PatternPanel : MonoBehaviour
     public void OnRadarButtonClick()
     {
         radarDialog.Show();
-    }
-
-    
-    #endregion
-
-    #region Dragging And Dropping Notes
-    private GameObject draggedNoteObject;
-    private void OnNoteObjectBeginDrag(PointerEventData eventData,
-        GameObject o)
-    {
-        if (isPlaying) return;
-        if (UsingRectangleTool() ||
-            eventData.button != PointerEventData.InputButton.Left)
-        {
-            // Event passes through.
-            OnNoteContainerBeginDrag(eventData);
-            return;
-        }
-
-        OnBeginDraggingNotes(o);
-    }
-
-    private void OnNoteObjectDrag(PointerEventData eventData)
-    {
-        if (isPlaying) return;
-        if (UsingRectangleTool() ||
-            eventData.button != PointerEventData.InputButton.Left)
-        {
-            // Event passes through.
-            OnNoteContainerDrag(eventData);
-            return;
-        }
-
-        OnDraggingNotes(eventData.delta);
-    }
-
-    private void OnNoteObjectEndDrag(PointerEventData eventData)
-    {
-        if (isPlaying) return;
-        if (UsingRectangleTool() ||
-            eventData.button != PointerEventData.InputButton.Left)
-        {
-            // Event passes through.
-            OnNoteContainerEndDrag(eventData);
-            return;
-        }
-
-        OnEndDraggingNotes();
-    }
-
-    // The following can be called in 2 ways:
-    // - from NoteObject's drag events, when any note type is active
-    // - from ctrl+drag on anything, when the rectangle tool is active
-    private void OnBeginDraggingNotes(GameObject o)
-    {
-        draggedNoteObject = o;
-        lastSelectedNoteWithoutShift = GetNoteFromGameObject(o);
-        if (!selectedNotes.Contains(lastSelectedNoteWithoutShift))
-        {
-            selectedNotes.Clear();
-            selectedNotes.Add(lastSelectedNoteWithoutShift);
-
-            SelectionChanged?.Invoke(selectedNotes);
-        }
-    }
-
-    private void OnDraggingNotes(Vector2 delta)
-    {
-        delta /= rootCanvas.localScale.x;
-        if (Options.instance.editorOptions.lockNotesInTime)
-        {
-            delta.x = 0f;
-        }
-
-        foreach (Note n in selectedNotes)
-        {
-            GameObject o = GetGameObjectFromNote(n);
-            if (o == null) continue;
-
-            // This is only visual. Notes are only really moved
-            // in OnNoteObjectEndDrag.
-            o.GetComponent<RectTransform>().anchoredPosition += delta;
-            o.GetComponent<NoteInEditor>()
-                .KeepPathInPlaceWhileNoteBeingDragged(delta);
-        }
-
-        ScrollWorkspaceWhenMouseIsCloseToEdge();
-    }
-
-    private void OnEndDraggingNotes()
-    {
-        // Calculate and snap where the note image lands at.
-        Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
-        Vector3 noteImagePosition =
-            draggedNoteObject.GetComponent<NoteInEditor>().noteImage
-            .position;
-        SnapNoteCursor(noteImagePosition);  // hackity hack
-        int newPulse = noteCursor.note.pulse;
-        int newLane = noteCursor.note.lane;
-        SnapNoteCursor();  // unhack
-
-        // Calculate delta pulse and delta lane.
-        int oldPulse = draggedNote.pulse;
-        int oldLane = draggedNote.lane;
-        int deltaPulse = newPulse - oldPulse;
-        int deltaLane = newLane - oldLane;
-        if (Options.instance.editorOptions.lockNotesInTime)
-        {
-            deltaPulse = 0;
-        }
-
-        // Is the move valid?
-        bool movable = true;
-        string invalidReason = "";
-        foreach (Note n in selectedNotes)
-        {
-            newPulse = n.pulse + deltaPulse;
-            newLane = n.lane + deltaLane;
-
-            switch (n.type)
-            {
-                case NoteType.Basic:
-                case NoteType.ChainHead:
-                case NoteType.ChainNode:
-                case NoteType.RepeatHead:
-                case NoteType.Repeat:
-                    movable = movable && CanAddNote(n.type,
-                        newPulse, newLane,
-                        ignoredExistingNotes: selectedNotes,
-                        out invalidReason);
-                    break;
-                case NoteType.Hold:
-                case NoteType.RepeatHeadHold:
-                case NoteType.RepeatHold:
-                    movable = movable && CanAddHoldNote(n.type,
-                        newPulse, newLane, (n as HoldNote).duration,
-                        ignoredExistingNotes: selectedNotes,
-                        out invalidReason);
-                    break;
-                case NoteType.Drag:
-                    movable = movable && CanAddDragNote(
-                        newPulse, newLane, (n as DragNote).nodes,
-                        ignoredExistingNotes: selectedNotes,
-                        out invalidReason);
-                    break;
-            }
-
-            if (!movable)
-            {
-                snackbar.Show(invalidReason);
-                break;
-            }
-        }
-
-        if (movable)
-        {
-            // Apply move. We need to delete and respawn note
-            // objects, because they may have been moved between
-            // playable and hidden lanes.
-            EditorContext.BeginTransaction();
-            HashSet<Note> replacedSelection =
-                new HashSet<Note>();
-            // These notes are not the ones added to the pattern.
-            // They are created only to pass information to AddNote
-            // methods.
-            List<Note> movedNotes = new List<Note>();
-            foreach (Note n in selectedNotes)
-            {
-                Note movedNote = n.Clone();
-                movedNote.pulse += deltaPulse;
-                movedNote.lane += deltaLane;
-                movedNotes.Add(movedNote);
-
-                EditorContext.RecordDeletedNote(n.Clone());
-                DeleteNote(n);
-            }
-            foreach (Note movedNote in movedNotes)
-            {
-                GameObject o = null;
-                switch (movedNote.type)
-                {
-                    case NoteType.Basic:
-                    case NoteType.ChainHead:
-                    case NoteType.ChainNode:
-                    case NoteType.RepeatHead:
-                    case NoteType.Repeat:
-                        o = AddNote(movedNote.type,
-                            movedNote.pulse,
-                            movedNote.lane,
-                            movedNote.sound,
-                            movedNote.volumePercent,
-                            movedNote.panPercent,
-                            movedNote.endOfScan);
-                        break;
-                    case NoteType.Hold:
-                    case NoteType.RepeatHeadHold:
-                    case NoteType.RepeatHold:
-                        o = AddHoldNote(movedNote.type,
-                            movedNote.pulse,
-                            movedNote.lane,
-                            (movedNote as HoldNote).duration,
-                            movedNote.sound,
-                            movedNote.volumePercent,
-                            movedNote.panPercent,
-                            movedNote.endOfScan);
-                        break;
-                    case NoteType.Drag:
-                        o = AddDragNote(
-                            movedNote.pulse,
-                            movedNote.lane,
-                            (movedNote as DragNote).nodes,
-                            movedNote.sound,
-                            movedNote.volumePercent,
-                            movedNote.panPercent,
-                            (movedNote as DragNote).curveType);
-                        break;
-                }
-                Note newNote = GetNoteFromGameObject(o);
-                EditorContext.RecordAddedNote(newNote);
-                replacedSelection.Add(newNote);
-                if (movedNote.pulse == oldPulse + deltaPulse &&
-                    movedNote.lane == oldLane + deltaLane)
-                {
-                    lastSelectedNoteWithoutShift =
-                        GetNoteFromGameObject(o);
-                }
-            }
-            EditorContext.EndTransaction();
-            selectedNotes = replacedSelection;
-            SelectionChanged?.Invoke(selectedNotes);
-        }
-
-        foreach (Note n in selectedNotes)
-        {
-            GameObject o = GetGameObjectFromNote(n);
-            if (o == null) continue;
-
-            o.GetComponent<SelfPositionerInEditor>().Reposition();
-            o.GetComponent<NoteInEditor>().ResetPathPosition();
-        }
-
-        if (selectedNotes.Count == 1)
-        {
-            foreach (Note n in selectedNotes)
-            {
-                lastClickedNote = n;
-            }
-        }
-    }
-
-    private void ScrollWorkspaceWhenMouseIsCloseToEdge()
-    {
-        // There was an attempt to scroll the workspace when
-        // dragging anything. However there are 2 problems:
-        //
-        // - Unity doesn't fire drag events when the mouse is
-        //   not moving, so the user has to wiggle the mouse
-        //   to keep the scrolling going. We can work around that
-        //   by calling this from Update but it will take too much
-        //   work to figure out when to call this and when not to.
-        //
-        // - When the workspace scrolls, the thing being dragged
-        //   moves a lot in screen space, but the mouse moves little,
-        //   so the delta passed to drag events is also little.
-        //   This results in the dragged thing moving away from
-        //   the mouse.
-        //
-        // Until we have a solution, it's better to not support
-        // drag-induced scrolling for now.
-
-        /*
-        const float kEdgeWidthInside = 10f;
-        const float kEdgeWidthOutside = 50f;
-        const float kHorizontalScrollSpeed = 0.01f;
-        const float kVerticalScrollSpeed = 0.01f;
-
-        Vector2 mousePosInViewport;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            workspaceViewport,
-            screenPoint: Input.mousePosition,
-            cam: null,
-            out mousePosInViewport);
-        float xScroll, yScroll;
-        if (mousePosInViewport.x < workspaceViewport.rect.center.x)
-        {
-            xScroll = Mathf.InverseLerp(
-                workspaceViewport.rect.xMin - kEdgeWidthOutside,
-                workspaceViewport.rect.xMin + kEdgeWidthInside,
-                mousePosInViewport.x) - 1f;
-        }
-        else
-        {
-            xScroll = Mathf.InverseLerp(
-                workspaceViewport.rect.xMax - kEdgeWidthInside,
-                workspaceViewport.rect.xMax + kEdgeWidthOutside,
-                mousePosInViewport.x);
-        }
-        if (mousePosInViewport.y < workspaceViewport.rect.center.y)
-        {
-            yScroll = Mathf.InverseLerp(
-                workspaceViewport.rect.yMin - kEdgeWidthOutside,
-                workspaceViewport.rect.yMin + kEdgeWidthInside,
-                mousePosInViewport.y) - 1f;
-        }
-        else
-        {
-            yScroll = Mathf.InverseLerp(
-                workspaceViewport.rect.yMax - kEdgeWidthInside,
-                workspaceViewport.rect.yMax + kEdgeWidthOutside,
-                mousePosInViewport.y);
-        }
-
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.horizontalNormalizedPosition +
-                xScroll * kHorizontalScrollSpeed);
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.verticalNormalizedPosition +
-                yScroll * kVerticalScrollSpeed);
-        SynchronizeScrollRects();
-        */
     }
     #endregion
 
@@ -2182,31 +1586,31 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Pattern Modification
-    private bool CanAddNote(NoteType type, int pulse, int lane,
+    public bool CanAddNote(NoteType type, int pulse, int lane,
         out string reason)
     {
         return CanAddNote(type, pulse, lane, null, out reason);
     }
 
-    private bool CanAddNote(NoteType type, int pulse, int lane,
+    public bool CanAddNote(NoteType type, int pulse, int lane,
         HashSet<Note> ignoredExistingNotes,
         out string reason)
     {
         return EditorContext.Pattern.CanAddNote(
-            type, pulse, lane, TotalLanes,
+            type, pulse, lane, PatternPanelWorkspace.TotalLanes,
             ignoredExistingNotes, out reason);
     }
 
-    private bool CanAddHoldNote(NoteType type, int pulse, int lane,
+    public bool CanAddHoldNote(NoteType type, int pulse, int lane,
         int duration, HashSet<Note> ignoredExistingNotes,
         out string reason)
     {
         return EditorContext.Pattern.CanAddHoldNote(
-            type, pulse, lane, TotalLanes, duration,
+            type, pulse, lane, PatternPanelWorkspace.TotalLanes, duration,
             ignoredExistingNotes, out reason);
     }
 
-    private bool CanAddDragNote(int pulse, int lane,
+    public bool CanAddDragNote(int pulse, int lane,
         List<DragNode> nodes,
         HashSet<Note> ignoredExistingNotes,
         out string reason)
@@ -2244,6 +1648,166 @@ public class PatternPanel : MonoBehaviour
         AdjustPathOrTrailAround(newNote);
         UpdateNumScansAndRelatedUI();
         return newNote;
+    }
+
+    // Intended to be called from workspace.
+    // Will show snack bar if the added note is invalid.
+    public void AddNoteAsTransaction(int pulse, int lane)
+    {
+        string invalidReason;
+        // No need to call CanAddHoldNote or CanAddDragNote here
+        // because durations and curves are flexible.
+        if (!CanAddNote(noteType, pulse, lane, out invalidReason))
+        {
+            snackbar.Show(invalidReason);
+            return;
+        }
+
+        string sound = keysoundSheet.UpcomingKeysound();
+        keysoundSheet.AdvanceUpcoming();
+        EditorContext.BeginTransaction();
+        GameObject newNote = null;
+        switch (noteType)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                newNote = AddNote(noteType, pulse, lane, sound);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                newNote = AddHoldNote(noteType, pulse, lane,
+                    duration: null, sound);
+                break;
+            case NoteType.Drag:
+                newNote = AddDragNote(pulse, lane,
+                    nodes: null, sound);
+                break;
+        }
+
+        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
+        EditorContext.EndTransaction();
+    }
+
+    // Intended to be called from workspace.
+    // Will show snack bar if the move is invalid.
+    public void MoveSelectedNotesAsTransaction(
+        int deltaPulse, int deltaLane)
+    {
+        // Is the move valid?
+        string invalidReason = "";
+        foreach (Note n in selectedNotes)
+        {
+            int newPulse = n.pulse + deltaPulse;
+            int newLane = n.lane + deltaLane;
+            bool movable = true;
+
+            switch (n.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    movable = CanAddNote(n.type,
+                        newPulse, newLane,
+                        ignoredExistingNotes: selectedNotes,
+                        out invalidReason);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    movable = CanAddHoldNote(n.type,
+                        newPulse, newLane, (n as HoldNote).duration,
+                        ignoredExistingNotes: selectedNotes,
+                        out invalidReason);
+                    break;
+                case NoteType.Drag:
+                    movable = CanAddDragNote(
+                        newPulse, newLane, (n as DragNote).nodes,
+                        ignoredExistingNotes: selectedNotes,
+                        out invalidReason);
+                    break;
+            }
+
+            if (!movable)
+            {
+                snackbar.Show(invalidReason);
+                return;
+            }
+        }
+
+        // Apply move. We need to delete and respawn note
+        // objects, because they may have been moved between
+        // playable and hidden lanes.
+        EditorContext.BeginTransaction();
+        HashSet<Note> replacedSelection =
+            new HashSet<Note>();
+        // These notes are not the ones added to the pattern.
+        // They are created only to pass information to AddNote
+        // methods.
+        List<Note> movedNotes = new List<Note>();
+        foreach (Note n in selectedNotes)
+        {
+            Note movedNote = n.Clone();
+            movedNote.pulse += deltaPulse;
+            movedNote.lane += deltaLane;
+            movedNotes.Add(movedNote);
+
+            EditorContext.RecordDeletedNote(n.Clone());
+            DeleteNote(n);
+        }
+        foreach (Note movedNote in movedNotes)
+        {
+            GameObject o = null;
+            switch (movedNote.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    o = AddNote(movedNote.type,
+                        movedNote.pulse,
+                        movedNote.lane,
+                        movedNote.sound,
+                        movedNote.volumePercent,
+                        movedNote.panPercent,
+                        movedNote.endOfScan);
+                    break;
+                case NoteType.Hold:
+                case NoteType.RepeatHeadHold:
+                case NoteType.RepeatHold:
+                    o = AddHoldNote(movedNote.type,
+                        movedNote.pulse,
+                        movedNote.lane,
+                        (movedNote as HoldNote).duration,
+                        movedNote.sound,
+                        movedNote.volumePercent,
+                        movedNote.panPercent,
+                        movedNote.endOfScan);
+                    break;
+                case NoteType.Drag:
+                    o = AddDragNote(
+                        movedNote.pulse,
+                        movedNote.lane,
+                        (movedNote as DragNote).nodes,
+                        movedNote.sound,
+                        movedNote.volumePercent,
+                        movedNote.panPercent,
+                        (movedNote as DragNote).curveType);
+                    break;
+            }
+            Note newNote = GetNoteFromGameObject(o);
+            EditorContext.RecordAddedNote(newNote);
+            replacedSelection.Add(newNote);
+        }
+        EditorContext.EndTransaction();
+        selectedNotes = replacedSelection;
+        NotifySelectionChanged();
     }
 
     private GameObject AddNote(NoteType type, int pulse, int lane,
@@ -2381,6 +1945,17 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
+    // Intended to be called from workspace.
+    public void DeleteNoteAsTransaction(Note n)
+    {
+        EditorContext.BeginTransaction();
+        EditorContext.RecordDeletedNote(n);
+        selectedNotes.Remove(n);
+        DeleteNote(n);
+        EditorContext.EndTransaction();
+        NotifySelectionChanged();
+    }
+
     private void ToggleEndOfScanOnSelectedNotes()
     {
         if (selectedNotes.Count == 0) return;
@@ -2419,147 +1994,11 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Rectangle Tool
-    private Vector2 rectangleStart;
-    private Vector2 rectangleEnd;
-    private bool movingNotesWhenRectangleToolActive;
-
-    private bool UsingRectangleTool()
+    public bool UsingRectangleTool()
     {
         return tool == Tool.Rectangle ||
             tool == Tool.RectangleAppend ||
             tool == Tool.RectangleSubtract;
-    }
-
-    private void OnBeginDragWhenRectangleToolActive()
-    {
-        movingNotesWhenRectangleToolActive =
-            Input.GetKey(KeyCode.LeftControl) ||
-            Input.GetKey(KeyCode.RightControl);
-        if (movingNotesWhenRectangleToolActive)
-        {
-            if (selectedNotes.Count == 0) return;
-            foreach (Note n in selectedNotes)
-            {
-                GameObject o = GetGameObjectFromNote(n);
-                if (o == null) continue;
-
-                OnBeginDraggingNotes(o);
-                break;
-            }
-        }
-        else
-        {
-            StartRectangle();
-        }
-    }
-
-    private void OnDragWhenRectangleToolActive(Vector2 delta)
-    {
-        if (movingNotesWhenRectangleToolActive)
-        {
-            if (selectedNotes.Count == 0) return;
-            OnDraggingNotes(delta);
-        }
-        else
-        {
-            UpdateRectangle();
-            ScrollWorkspaceWhenMouseIsCloseToEdge();
-        }
-    }
-
-    private void OnEndDragWhenRectangleToolActive()
-    {
-        if (movingNotesWhenRectangleToolActive)
-        {
-            if (selectedNotes.Count == 0) return;
-            OnEndDraggingNotes();
-        }
-        else
-        {
-            ProcessRectangle();
-        }
-    }
-
-    private void StartRectangle()
-    {
-        rectangleStart = ScreenPointToPointInNoteContainer(
-            Input.mousePosition);
-        selectionRectangle.gameObject.SetActive(true);
-
-        DrawRectangle();
-    }
-
-    private void UpdateRectangle()
-    {
-        rectangleEnd = ScreenPointToPointInNoteContainer(
-            Input.mousePosition);
-
-        DrawRectangle();
-    }
-
-    private void ProcessRectangle()
-    {
-        selectionRectangle.gameObject.SetActive(false);
-
-        float startPulse, startLane, endPulse, endLane;
-        PointInNoteContainerToPulseAndLane(rectangleStart,
-            out startPulse, out startLane);
-        PointInNoteContainerToPulseAndLane(rectangleEnd,
-            out endPulse, out endLane);
-
-        int minPulse = Mathf.RoundToInt(
-            Mathf.Min(startPulse, endPulse));
-        int maxPulse = Mathf.RoundToInt(
-            Mathf.Max(startPulse, endPulse));
-        float minLane = Mathf.Min(startLane, endLane);
-        float maxLane = Mathf.Max(startLane, endLane);
-        HashSet<Note> notesInRectangle =
-            new HashSet<Note>();
-        foreach (Note n in EditorContext.Pattern
-            .GetViewBetween(minPulse, maxPulse))
-        {
-            if (n.lane >= minLane && n.lane <= maxLane)
-            {
-                notesInRectangle.Add(n);
-            }
-        }
-
-        bool shift = Input.GetKey(KeyCode.LeftShift) ||
-            Input.GetKey(KeyCode.RightShift);
-        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
-            Input.GetKey(KeyCode.RightAlt);
-        if (shift || tool == Tool.RectangleAppend)
-        {
-            // Append rectangle to selection.
-            foreach (Note n in notesInRectangle)
-            {
-                selectedNotes.Add(n);
-            }
-        }
-        else if (alt || tool == Tool.RectangleSubtract)
-        {
-            // Subtract rectangle from selection.
-            foreach (Note n in notesInRectangle)
-            {
-                selectedNotes.Remove(n);
-            }
-        }
-        else
-        {
-            // Replace selection with rectangle.
-            selectedNotes = notesInRectangle;
-        }
-        SelectionChanged?.Invoke(selectedNotes);
-    }
-
-    private void DrawRectangle()
-    {
-        selectionRectangle.anchoredPosition = new Vector2(
-            Mathf.Min(rectangleStart.x, rectangleEnd.x),
-            Mathf.Max(rectangleStart.y, rectangleEnd.y));
-        selectionRectangle.sizeDelta = new Vector2(
-            Mathf.Abs(rectangleStart.x - rectangleEnd.x),
-            Mathf.Abs(rectangleStart.y - rectangleEnd.y));
     }
     #endregion
 
@@ -2752,7 +2191,7 @@ public class PatternPanel : MonoBehaviour
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
     private bool audioLoaded;
-    public bool isPlaying;
+    public bool isPlaying { get; private set; }
     private float playbackStartingPulse;
     private float playbackStartingTime;
     private bool backingTrackPlaying;

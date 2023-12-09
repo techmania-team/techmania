@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static TreeEditor.TreeEditorHelper;
 
 // Handles all UI inside the workspace.
 // Does not hold the notes or selection; these remain in
@@ -47,6 +48,7 @@ public class PatternPanelWorkspace : MonoBehaviour
     public GameObject repeatHoldPrefab;
     public GameObject holdNotePrefab;
     public GameObject dragNotePrefab;
+    public RectTransform selectionRectangle;
 
     #region Internal data structures
     // Each NoteObject contains a reference to a Note, and this
@@ -69,6 +71,11 @@ public class PatternPanelWorkspace : MonoBehaviour
     {
         if (!noteToNoteObject.ContainsKey(n)) return null;
         return noteToNoteObject[n].gameObject;
+    }
+
+    private Note GetNoteFromGameObject(GameObject o)
+    {
+        return o.GetComponent<NoteObject>().note;
     }
     #endregion
 
@@ -132,6 +139,22 @@ public class PatternPanelWorkspace : MonoBehaviour
         scanlineFloatPulse = 0f;
         workspaceScrollRect.horizontalNormalizedPosition = 0f;
         headerScrollRect.horizontalNormalizedPosition = 0f;
+
+        // Event handlers
+        NoteInEditor.LeftClicked += OnNoteObjectLeftClick;
+        NoteInEditor.RightClicked += OnNoteObjectRightClick;
+        NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
+        NoteInEditor.Drag += OnNoteObjectDrag;
+        NoteInEditor.EndDrag += OnNoteObjectEndDrag;
+    }
+
+    private void OnDisable()
+    {
+        NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
+        NoteInEditor.RightClicked -= OnNoteObjectRightClick;
+        NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
+        NoteInEditor.Drag -= OnNoteObjectDrag;
+        NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
     }
 
     // Update is called once per frame
@@ -459,6 +482,229 @@ public class PatternPanelWorkspace : MonoBehaviour
         }
         return null;
     }
+
+    public void OnNoteContainerClick(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (pointerEventData.dragging) return;
+
+        // Special case: check drag notes because the curves do not
+        // receive clicks.
+        NoteInEditor dragNoteToReceiveEvent =
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null)
+        {
+            if (pointerEventData.button ==
+                    PointerEventData.InputButton.Left)
+            {
+                OnNoteObjectLeftClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            if (pointerEventData.button ==
+                PointerEventData.InputButton.Right)
+            {
+                OnNoteObjectRightClick(
+                    dragNoteToReceiveEvent.gameObject);
+            }
+            return;
+        }
+
+        // Special case: if rectangle tool, deselect all.
+        if (panel.UsingRectangleTool())
+        {
+            panel.selectedNotes.Clear();
+            panel.NotifySelectionChanged();
+            return;
+        }
+
+        if (pointerEventData.button !=
+            PointerEventData.InputButton.Left)
+        {
+            return;
+        }
+        if (!noteCursor.gameObject.activeSelf) return;
+        if (EditorContext.Pattern.HasNoteAt(
+            noteCursor.note.pulse, noteCursor.note.lane))
+        {
+            return;
+        }
+        if (panel.isPlaying) return;
+
+        panel.AddNoteAsTransaction(
+            noteCursor.note.pulse, noteCursor.note.lane);
+    }
+
+    private bool draggingDragCurve;
+    public void OnNoteContainerBeginDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (panel.UsingRectangleTool() &&
+            pointerEventData.button ==
+                PointerEventData.InputButton.Left)
+        {
+            OnBeginDragWhenRectangleToolActive();
+            return;
+        }
+        draggingDragCurve = false;
+
+        // Special case for drag notes.
+        NoteInEditor dragNoteToReceiveEvent =
+            FindDragNoteToReceiveEvent(pointerEventData);
+        if (dragNoteToReceiveEvent != null &&
+            pointerEventData.button ==
+                PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectBeginDrag(pointerEventData,
+                dragNoteToReceiveEvent.gameObject);
+            draggingDragCurve = true;
+            return;
+        }
+    }
+
+    public void OnNoteContainerDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData p = eventData as PointerEventData;
+        if (panel.UsingRectangleTool() &&
+            p.button == PointerEventData.InputButton.Left)
+        {
+            OnDragWhenRectangleToolActive(p.delta);
+            return;
+        }
+
+        // Special case for drag notes.
+        if (draggingDragCurve && p.button ==
+            PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectDrag(p);
+            return;
+        }
+
+        if (p.button == PointerEventData.InputButton.Middle
+            || PatternPanel.tool == PatternPanel.Tool.Pan)
+        {
+            DragWorkSpace(p.delta);
+        }
+    }
+
+    public void OnNoteContainerEndDrag(BaseEventData eventData)
+    {
+        if (!(eventData is PointerEventData)) return;
+        PointerEventData pointerEventData =
+            eventData as PointerEventData;
+        if (panel.UsingRectangleTool() &&
+            pointerEventData.button ==
+                PointerEventData.InputButton.Left)
+        {
+            OnEndDragWhenRectangleToolActive();
+            return;
+        }
+
+        // Special case for drag notes.
+        if (draggingDragCurve && pointerEventData.button ==
+            PointerEventData.InputButton.Left)
+        {
+            OnNoteObjectEndDrag(pointerEventData);
+            return;
+        }
+    }
+
+    public void OnNoteObjectLeftClick(GameObject o)
+    {
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool ctrl = Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        Note clickedNote = GetNoteFromGameObject(o);
+        lastClickedNote = clickedNote;
+        if (shift)
+        {
+            if (lastSelectedNoteWithoutShift == null)
+            {
+                lastSelectedNoteWithoutShift =
+                    EditorContext.Pattern.notes.Min;
+            }
+            // At this point lastSelectedNoteObjectWithoutShift
+            // might still be null.
+            List<Note> range = EditorContext.Pattern
+                .GetRangeBetween(
+                lastSelectedNoteWithoutShift,
+                clickedNote);
+            if (ctrl)
+            {
+                // Add [prev, o] to current selection.
+                foreach (Note noteInRange in range)
+                {
+                    panel.selectedNotes.Add(noteInRange);
+                }
+            }
+            else  // !ctrl
+            {
+                // Overwrite current selection with [prev, o].
+                panel.selectedNotes.Clear();
+                foreach (Note noteInRange in range)
+                {
+                    panel.selectedNotes.Add(noteInRange);
+                }
+            }
+        }
+        else  // !shift
+        {
+            lastSelectedNoteWithoutShift = clickedNote;
+            if (ctrl)
+            {
+                // Toggle o in current selection.
+                panel.ToggleSelection(clickedNote);
+            }
+            else if (PatternPanel.tool == 
+                PatternPanel.Tool.RectangleAppend)
+            {
+                panel.selectedNotes.Add(clickedNote);
+            }
+            else if (PatternPanel.tool == 
+                PatternPanel.Tool.RectangleSubtract)
+            {
+                panel.selectedNotes.Remove(clickedNote);
+            }
+            else  // !ctrl
+            {
+                if (panel.selectedNotes.Count > 1)
+                {
+                    panel.selectedNotes.Clear();
+                    panel.selectedNotes.Add(clickedNote);
+                }
+                else if (panel.selectedNotes.Count == 1)
+                {
+                    if (panel.selectedNotes.Contains(clickedNote))
+                    {
+                        panel.selectedNotes.Remove(clickedNote);
+                    }
+                    else
+                    {
+                        panel.selectedNotes.Clear();
+                        panel.selectedNotes.Add(clickedNote);
+                    }
+                }
+                else  // Count == 0
+                {
+                    panel.selectedNotes.Add(clickedNote);
+                }
+            }
+        }
+
+        panel.NotifySelectionChanged();
+    }
+
+    public void OnNoteObjectRightClick(GameObject o)
+    {
+        if (panel.isPlaying) return;
+        Note n = GetNoteFromGameObject(o);
+        panel.DeleteNoteAsTransaction(n);
+    }
     #endregion
 
     #region Touch
@@ -499,6 +745,213 @@ public class PatternPanelWorkspace : MonoBehaviour
         scanlineFloatPulse = snappedCursorPulse;
         // TODO: make this an event?
         panel.RefreshPlaybackBar();
+    }
+    #endregion
+
+    #region Dragging and dropping notes
+    private void OnNoteObjectBeginDrag(PointerEventData eventData,
+        GameObject o)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
+
+        OnBeginDraggingNotes(o);
+    }
+
+    private void OnNoteObjectDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        OnDraggingNotes(eventData.delta);
+    }
+
+    private void OnNoteObjectEndDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
+
+        OnEndDraggingNotes();
+    }
+
+    private GameObject draggedNoteObject;
+    // The following can be called in 2 ways:
+    // - from NoteObject's drag events, when any note type is active
+    // - from ctrl+drag on anything, when the rectangle tool is active
+    private void OnBeginDraggingNotes(GameObject o)
+    {
+        draggedNoteObject = o;
+        lastSelectedNoteWithoutShift = GetNoteFromGameObject(o);
+        if (!panel.selectedNotes.Contains(lastSelectedNoteWithoutShift))
+        {
+            panel.selectedNotes.Clear();
+            panel.selectedNotes.Add(lastSelectedNoteWithoutShift);
+
+            panel.NotifySelectionChanged();
+        }
+    }
+
+    private void OnDraggingNotes(Vector2 delta)
+    {
+        delta /= panel.rootCanvas.localScale.x;
+        if (Options.instance.editorOptions.lockNotesInTime)
+        {
+            delta.x = 0f;
+        }
+
+        foreach (Note n in panel.selectedNotes)
+        {
+            GameObject o = GetGameObjectFromNote(n);
+            if (o == null) continue;
+
+            // This is only visual. Notes are only really moved
+            // in OnNoteObjectEndDrag.
+            o.GetComponent<RectTransform>().anchoredPosition += delta;
+            o.GetComponent<NoteInEditor>()
+                .KeepPathInPlaceWhileNoteBeingDragged(delta);
+        }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
+    }
+
+    private void OnEndDraggingNotes()
+    {
+        // Calculate and snap where the note image lands at.
+        Note draggedNote = GetNoteFromGameObject(draggedNoteObject);
+        Vector3 noteImagePosition =
+            draggedNoteObject.GetComponent<NoteInEditor>().noteImage
+            .position;
+        SnapNoteCursor(noteImagePosition);  // hackity hack
+        int newPulse = noteCursor.note.pulse;
+        int newLane = noteCursor.note.lane;
+        SnapNoteCursor();  // unhack
+
+        // Calculate delta pulse and delta lane.
+        int oldPulse = draggedNote.pulse;
+        int oldLane = draggedNote.lane;
+        int deltaPulse = newPulse - oldPulse;
+        int deltaLane = newLane - oldLane;
+        if (Options.instance.editorOptions.lockNotesInTime)
+        {
+            deltaPulse = 0;
+        }
+
+        panel.MoveSelectedNotesAsTransaction(deltaPulse, deltaLane);
+
+        foreach (Note n in panel.selectedNotes)
+        {
+            if (n.pulse == oldPulse + deltaPulse &&
+                n.lane == oldLane + deltaLane)
+            {
+                lastSelectedNoteWithoutShift = n;
+            }
+
+            GameObject o = GetGameObjectFromNote(n);
+            if (o == null) continue;
+
+            o.GetComponent<SelfPositionerInEditor>().Reposition();
+            o.GetComponent<NoteInEditor>().ResetPathPosition();
+        }
+
+        if (panel.selectedNotes.Count == 1)
+        {
+            foreach (Note n in panel.selectedNotes)
+            {
+                lastClickedNote = n;
+            }
+        }
+    }
+
+    private void ScrollWorkspaceWhenMouseIsCloseToEdge()
+    {
+        // There was an attempt to scroll the workspace when
+        // dragging anything. However there are 2 problems:
+        //
+        // - Unity doesn't fire drag events when the mouse is
+        //   not moving, so the user has to wiggle the mouse
+        //   to keep the scrolling going. We can work around that
+        //   by calling this from Update but it will take too much
+        //   work to figure out when to call this and when not to.
+        //
+        // - When the workspace scrolls, the thing being dragged
+        //   moves a lot in screen space, but the mouse moves little,
+        //   so the delta passed to drag events is also little.
+        //   This results in the dragged thing moving away from
+        //   the mouse.
+        //
+        // Until we have a solution, it's better to not support
+        // drag-induced scrolling for now.
+
+        /*
+        const float kEdgeWidthInside = 10f;
+        const float kEdgeWidthOutside = 50f;
+        const float kHorizontalScrollSpeed = 0.01f;
+        const float kVerticalScrollSpeed = 0.01f;
+
+        Vector2 mousePosInViewport;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            workspaceViewport,
+            screenPoint: Input.mousePosition,
+            cam: null,
+            out mousePosInViewport);
+        float xScroll, yScroll;
+        if (mousePosInViewport.x < workspaceViewport.rect.center.x)
+        {
+            xScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.xMin - kEdgeWidthOutside,
+                workspaceViewport.rect.xMin + kEdgeWidthInside,
+                mousePosInViewport.x) - 1f;
+        }
+        else
+        {
+            xScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.xMax - kEdgeWidthInside,
+                workspaceViewport.rect.xMax + kEdgeWidthOutside,
+                mousePosInViewport.x);
+        }
+        if (mousePosInViewport.y < workspaceViewport.rect.center.y)
+        {
+            yScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.yMin - kEdgeWidthOutside,
+                workspaceViewport.rect.yMin + kEdgeWidthInside,
+                mousePosInViewport.y) - 1f;
+        }
+        else
+        {
+            yScroll = Mathf.InverseLerp(
+                workspaceViewport.rect.yMax - kEdgeWidthInside,
+                workspaceViewport.rect.yMax + kEdgeWidthOutside,
+                mousePosInViewport.y);
+        }
+
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.horizontalNormalizedPosition +
+                xScroll * kHorizontalScrollSpeed);
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.verticalNormalizedPosition +
+                yScroll * kVerticalScrollSpeed);
+        SynchronizeScrollRects();
+        */
     }
     #endregion
 
@@ -575,7 +1028,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         return numScans != numScansBackup;
     }
 
-    private void UpdateNumScansAndRelatedUI()
+    public void UpdateNumScansAndRelatedUI()
     {
         if (UpdateNumScans())
         {
@@ -1016,6 +1469,146 @@ public class PatternPanelWorkspace : MonoBehaviour
         o.transform.SetParent(noteCemetary);
         Destroy(o);
         UpdateNumScansAndRelatedUI();
+    }
+    #endregion
+
+    #region Rectangle tool
+    private bool movingNotesWhenRectangleToolActive;
+    private Vector2 rectangleStart;
+    private Vector2 rectangleEnd;
+
+    private void OnBeginDragWhenRectangleToolActive()
+    {
+        movingNotesWhenRectangleToolActive =
+            Input.GetKey(KeyCode.LeftControl) ||
+            Input.GetKey(KeyCode.RightControl);
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (panel.selectedNotes.Count == 0) return;
+            foreach (Note n in panel.selectedNotes)
+            {
+                GameObject o = GetGameObjectFromNote(n);
+                if (o == null) continue;
+
+                OnBeginDraggingNotes(o);
+                break;
+            }
+        }
+        else
+        {
+            StartRectangle();
+        }
+    }
+
+    private void OnDragWhenRectangleToolActive(Vector2 delta)
+    {
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (panel.selectedNotes.Count == 0) return;
+            OnDraggingNotes(delta);
+        }
+        else
+        {
+            UpdateRectangle();
+            ScrollWorkspaceWhenMouseIsCloseToEdge();
+        }
+    }
+
+    private void OnEndDragWhenRectangleToolActive()
+    {
+        if (movingNotesWhenRectangleToolActive)
+        {
+            if (panel.selectedNotes.Count == 0) return;
+            OnEndDraggingNotes();
+        }
+        else
+        {
+            ProcessRectangle();
+        }
+    }
+
+    private void StartRectangle()
+    {
+        rectangleStart = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+        selectionRectangle.gameObject.SetActive(true);
+
+        DrawRectangle();
+    }
+
+    private void UpdateRectangle()
+    {
+        rectangleEnd = ScreenPointToPointInNoteContainer(
+            Input.mousePosition);
+
+        DrawRectangle();
+    }
+
+    private void ProcessRectangle()
+    {
+        selectionRectangle.gameObject.SetActive(false);
+
+        float startPulse, startLane, endPulse, endLane;
+        PointInNoteContainerToPulseAndLane(rectangleStart,
+            out startPulse, out startLane);
+        PointInNoteContainerToPulseAndLane(rectangleEnd,
+            out endPulse, out endLane);
+
+        int minPulse = Mathf.RoundToInt(
+            Mathf.Min(startPulse, endPulse));
+        int maxPulse = Mathf.RoundToInt(
+            Mathf.Max(startPulse, endPulse));
+        float minLane = Mathf.Min(startLane, endLane);
+        float maxLane = Mathf.Max(startLane, endLane);
+        HashSet<Note> notesInRectangle =
+            new HashSet<Note>();
+        foreach (Note n in EditorContext.Pattern
+            .GetViewBetween(minPulse, maxPulse))
+        {
+            if (n.lane >= minLane && n.lane <= maxLane)
+            {
+                notesInRectangle.Add(n);
+            }
+        }
+
+        bool shift = Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (shift || PatternPanel.tool == 
+            PatternPanel.Tool.RectangleAppend)
+        {
+            // Append rectangle to selection.
+            foreach (Note n in notesInRectangle)
+            {
+                panel.selectedNotes.Add(n);
+            }
+        }
+        else if (alt || PatternPanel.tool == 
+            PatternPanel.Tool.RectangleSubtract)
+        {
+            // Subtract rectangle from selection.
+            foreach (Note n in notesInRectangle)
+            {
+                panel.selectedNotes.Remove(n);
+            }
+        }
+        else
+        {
+            // Replace selection with rectangle.
+            panel.selectedNotes = notesInRectangle;
+        }
+        panel.NotifySelectionChanged();
+    }
+
+    private void DrawRectangle()
+    {
+        selectionRectangle.anchoredPosition = new Vector2(
+            Mathf.Min(rectangleStart.x, rectangleEnd.x),
+            Mathf.Max(rectangleStart.y, rectangleEnd.y));
+        selectionRectangle.sizeDelta = new Vector2(
+            Mathf.Abs(rectangleStart.x - rectangleEnd.x),
+            Mathf.Abs(rectangleStart.y - rectangleEnd.y));
     }
     #endregion
 
