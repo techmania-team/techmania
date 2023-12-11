@@ -195,12 +195,7 @@ public class NoteDetailSideSheet : MonoBehaviour
 
         foreach (Note n in selection)
         {
-            GameObject o = patternPanel.GetGameObjectFromNote(n);
-            if (o == null) continue;
-
-            o.GetComponent<NoteInEditor>().ResetCurve();
-            o.GetComponent<NoteInEditor>().
-                ResetAllAnchorsAndControlPoints();
+            patternPanel.workspace.RefreshDragNoteCurve(n);
         }
     }
 }

@@ -410,7 +410,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         int duration = (GetComponent<NoteObject>().note as 
             HoldNote).duration;
-        float width = duration * (PatternPanel.ScanWidth /
+        float width = duration * (PatternPanelWorkspace.ScanWidth /
             EditorContext.Pattern.patternMetadata.bps /
             Pattern.pulsesPerBeat);
         durationTrail.sizeDelta = new Vector2(width, 0f);
@@ -476,8 +476,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         foreach (FloatPoint p in dragNote.Interpolate())
         {
             Vector2 pointOnCurve = new Vector2(
-                p.pulse * PatternPanel.PulseWidth,
-                -p.lane * PatternPanel.LaneHeight);
+                p.pulse * PatternPanelWorkspace.PulseWidth,
+                -p.lane * PatternPanelWorkspace.LaneHeight);
             pointsOnCurve.Add(pointOnCurve);
         }
 
@@ -554,8 +554,10 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             anchor.GetComponent<DragNoteAnchor>().anchorIndex = i;
             anchor.GetComponent<RectTransform>().anchoredPosition
                 = new Vector2(
-                    dragNode.anchor.pulse * PatternPanel.PulseWidth,
-                    -dragNode.anchor.lane * PatternPanel.LaneHeight);
+                    dragNode.anchor.pulse * 
+                    PatternPanelWorkspace.PulseWidth,
+                    -dragNode.anchor.lane * 
+                    PatternPanelWorkspace.LaneHeight);
 
             for (int control = 0; control < 2; control++)
             {
@@ -578,8 +580,8 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
             point = new FloatPoint(0f, 0f);
         }
         Vector2 position = new Vector2(
-            point.pulse * PatternPanel.PulseWidth,
-            -point.lane * PatternPanel.LaneHeight);
+            point.pulse * PatternPanelWorkspace.PulseWidth,
+            -point.lane * PatternPanelWorkspace.LaneHeight);
         anchor.GetComponent<DragNoteAnchor>()
             .GetControlPoint(index)
             .GetComponent<RectTransform>()
@@ -604,21 +606,21 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
     {
         // Prune
         if (screenPosition.x < noteImage.transform.position.x
-            - PatternPanel.LaneHeight * 0.5f)
+            - PatternPanelWorkspace.LaneHeight * 0.5f)
         {
             return false;
         }
         if (screenPosition.x > noteImage.transform.position.x
             + pointsOnCurve[pointsOnCurve.Count - 1].x
-            + PatternPanel.LaneHeight * 0.5f)
+            + PatternPanelWorkspace.LaneHeight * 0.5f)
         {
             return false;
         }
 
         // Should be laneHeight^2 * 0.25f, but leave some room for
         // error.
-        float minSquaredDistance = PatternPanel.LaneHeight * 
-            PatternPanel.LaneHeight * 0.3f;
+        float minSquaredDistance = PatternPanelWorkspace.LaneHeight *
+            PatternPanelWorkspace.LaneHeight * 0.3f;
         for (int i = 0; i < pointsOnCurve.Count - 1; i++)
         {
             float squaredDistance = 

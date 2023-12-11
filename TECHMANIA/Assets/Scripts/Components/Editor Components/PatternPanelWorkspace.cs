@@ -62,7 +62,7 @@ public class PatternPanelWorkspace : MonoBehaviour
     private HashSet<NoteInEditor> dragNotes;
 
     private Note lastSelectedNoteWithoutShift;
-    private Note lastClickedNote;
+    public Note lastClickedNote { get; private set; }
 
     private float unsnappedCursorPulse;
     private float unsnappedCursorLane;
@@ -86,7 +86,7 @@ public class PatternPanelWorkspace : MonoBehaviour
     private static float WorkspaceViewportHeight;
     private static float WorkspaceContentHeight =>
         LaneHeight * TotalLanes;
-    private static float LaneHeight =>
+    public static float LaneHeight =>
         WorkspaceViewportHeight / VisibleLanes;
     #endregion
 
@@ -94,17 +94,11 @@ public class PatternPanelWorkspace : MonoBehaviour
     private static int zoom = 0;
     private const int kMinZoom = 10;
     private const int kMaxZoom = 500;
-    private static float ScanWidth => 10f * zoom;
-    private static float PulseWidth
-    {
-        get
-        {
-            return ScanWidth /
-                EditorContext.Pattern.patternMetadata.bps /
-                Pattern.pulsesPerBeat;
-        }
-    }
-    private int numScans;  // display only
+    public static float ScanWidth => 10f * zoom;
+    public static float PulseWidth => ScanWidth /
+        EditorContext.Pattern.patternMetadata.bps /
+        Pattern.pulsesPerBeat;
+    public int numScans { get; private set; }  // display only
     private float WorkspaceContentWidth => numScans * ScanWidth;
     #endregion
 
@@ -146,6 +140,20 @@ public class PatternPanelWorkspace : MonoBehaviour
         NoteInEditor.BeginDrag += OnNoteObjectBeginDrag;
         NoteInEditor.Drag += OnNoteObjectDrag;
         NoteInEditor.EndDrag += OnNoteObjectEndDrag;
+        NoteInEditor.DurationHandleBeginDrag +=
+            OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleDrag += OnDurationHandleDrag;
+        NoteInEditor.DurationHandleEndDrag += OnDurationHandleEndDrag;
+        NoteInEditor.AnchorReceiverClicked += OnAnchorReceiverClick;
+        NoteInEditor.AnchorClicked += OnAnchorClick;
+        NoteInEditor.AnchorBeginDrag += OnAnchorBeginDrag;
+        NoteInEditor.AnchorDrag += OnAnchorDrag;
+        NoteInEditor.AnchorEndDrag += OnAnchorEndDrag;
+        NoteInEditor.ControlPointClicked +=
+            OnControlPointClick;
+        NoteInEditor.ControlPointBeginDrag += OnControlPointBeginDrag;
+        NoteInEditor.ControlPointDrag += OnControlPointDrag;
+        NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
     }
 
     private void OnDisable()
@@ -155,6 +163,20 @@ public class PatternPanelWorkspace : MonoBehaviour
         NoteInEditor.BeginDrag -= OnNoteObjectBeginDrag;
         NoteInEditor.Drag -= OnNoteObjectDrag;
         NoteInEditor.EndDrag -= OnNoteObjectEndDrag;
+        NoteInEditor.DurationHandleBeginDrag -=
+            OnDurationHandleBeginDrag;
+        NoteInEditor.DurationHandleDrag -= OnDurationHandleDrag;
+        NoteInEditor.DurationHandleEndDrag -= OnDurationHandleEndDrag;
+        NoteInEditor.AnchorReceiverClicked -= OnAnchorReceiverClick;
+        NoteInEditor.AnchorClicked -= OnAnchorClick;
+        NoteInEditor.AnchorBeginDrag -= OnAnchorBeginDrag;
+        NoteInEditor.AnchorDrag -= OnAnchorDrag;
+        NoteInEditor.AnchorEndDrag -= OnAnchorEndDrag;
+        NoteInEditor.ControlPointClicked -=
+            OnControlPointClick;
+        NoteInEditor.ControlPointBeginDrag -= OnControlPointBeginDrag;
+        NoteInEditor.ControlPointDrag -= OnControlPointDrag;
+        NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
     }
 
     // Update is called once per frame
@@ -746,6 +768,645 @@ public class PatternPanelWorkspace : MonoBehaviour
         // TODO: make this an event?
         panel.RefreshPlaybackBar();
     }
+
+    public void RefreshKeysoundDisplay(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        o.GetComponent<NoteInEditor>().SetKeysoundText();
+        o.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
+    }
+
+    public void RefreshEndOfScanIndicator(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
+    }
+
+    public void RefreshDragNoteCurve(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+
+        o.GetComponent<NoteInEditor>().ResetCurve();
+        o.GetComponent<NoteInEditor>().
+            ResetAllAnchorsAndControlPoints();
+    }
+    #endregion
+
+    #region Hold Note Duration Adjustment
+    private List<Note> holdNotesBeingAdjusted;
+    private GameObject initialHoldNoteBeingAdjusted;
+    private void OnDurationHandleBeginDrag(
+        PointerEventData eventData, GameObject noteObject)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
+
+        Note n = GetNoteFromGameObject(noteObject);
+        holdNotesBeingAdjusted = new List<Note>();
+        if (panel.selectedNotes.Contains(n))
+        {
+            // Adjust all hold notes in the selection.
+            foreach (Note selectedNote in panel.selectedNotes)
+            {
+                NoteType noteType = selectedNote.type;
+                if (noteType == NoteType.Hold ||
+                    noteType == NoteType.RepeatHeadHold ||
+                    noteType == NoteType.RepeatHold)
+                {
+                    holdNotesBeingAdjusted.Add(selectedNote);
+                }
+            }
+        }
+        else
+        {
+            // Adjust only the dragged note and ignore selection.
+            holdNotesBeingAdjusted.Add(n);
+        }
+        initialHoldNoteBeingAdjusted = noteObject;
+
+        foreach (Note holdNote in holdNotesBeingAdjusted)
+        {
+            GameObject o = GetGameObjectFromNote(holdNote);
+            if (o == null) continue;
+            o.GetComponent<NoteInEditor>().RecordTrailActualLength();
+        }
+    }
+
+    private void OnDurationHandleDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+        Vector2 delta = eventData.delta;
+        delta /= panel.rootCanvas.localScale.x;
+
+        foreach (Note n in holdNotesBeingAdjusted)
+        {
+            GameObject o = GetGameObjectFromNote(n);
+            if (o == null) continue;
+            // This is only visual; duration is only really changed
+            // in OnDurationHandleEndDrag.
+            o.GetComponent<NoteInEditor>().AdjustTrailLength(
+                delta.x);
+        }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
+    }
+
+    private void OnDurationHandleEndDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
+
+        int oldDuration = (initialHoldNoteBeingAdjusted.
+            GetComponent<NoteObject>().note as HoldNote).duration;
+        int newDuration = noteCursor.note.pulse -
+            initialHoldNoteBeingAdjusted.GetComponent<NoteObject>().
+            note.pulse;
+        int deltaDuration = newDuration - oldDuration;
+
+        // Is the adjustment valid?
+        bool adjustable = true;
+        foreach (Note n in holdNotesBeingAdjusted)
+        {
+            HoldNote holdNote = n as HoldNote;
+            oldDuration = holdNote.duration;
+            newDuration = oldDuration + deltaDuration;
+            string reason;
+            if (!EditorContext.Pattern.CanAdjustHoldNoteDuration(
+                holdNote, newDuration, out reason))
+            {
+                panel.snackbar.Show(reason);
+                adjustable = false;
+                break;
+            }
+        }
+
+        if (adjustable)
+        {
+            // Apply adjustment. No need to delete and respawn notes
+            // this time.
+            EditorContext.BeginTransaction();
+            foreach (Note n in holdNotesBeingAdjusted)
+            {
+                EditOperation op = EditorContext
+                    .BeginModifyNoteOperation();
+                HoldNote holdNote = n as HoldNote;
+                op.noteBeforeOp = holdNote.Clone();
+                holdNote.duration += deltaDuration;
+                op.noteAfterOp = holdNote.Clone();
+            }
+            EditorContext.EndTransaction();
+            UpdateNumScansAndRelatedUI();
+        }
+
+        foreach (Note n in holdNotesBeingAdjusted)
+        {
+            GameObject o = GetGameObjectFromNote(n);
+            if (o == null) continue;
+            o.GetComponent<NoteInEditor>().ResetTrail();
+        }
+    }
+    #endregion
+
+    #region Drag Notes
+    // These may be snapped or unsnapped depending on options.
+    private void GetCursorPositionForAnchor(out float pulse,
+        out float lane)
+    {
+        if (Options.instance.editorOptions.snapDragAnchors)
+        {
+            pulse = noteCursor.note.pulse;
+            lane = noteCursor.note.lane;
+        }
+        else
+        {
+            pulse = unsnappedCursorPulse;
+            lane = unsnappedCursorLane;
+        }
+    }
+
+    private void OnAnchorReceiverClick(PointerEventData eventData,
+        GameObject note)
+    {
+        if (PatternPanel.tool != PatternPanel.Tool.Note)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+
+        if (eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Do nothing.
+            return;
+        }
+
+        DragNote dragNote = note.GetComponent<NoteObject>()
+            .note as DragNote;
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
+        FloatPoint newAnchor = new FloatPoint(
+            cursorPulse - dragNote.pulse,
+            cursorLane - dragNote.lane);
+
+        // Is there an existing anchor at the same pulse?
+        string reason;
+        if (!EditorContext.Pattern.CanAddDragAnchor(
+            dragNote, newAnchor.pulse, out reason))
+        {
+            panel.snackbar.Show(reason);
+            return;
+        }
+
+        DragNode newNode = new DragNode()
+        {
+            anchor = newAnchor,
+            controlLeft = new FloatPoint(0f, 0f),
+            controlRight = new FloatPoint(0f, 0f)
+        };
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
+        dragNote.nodes.Add(newNode);
+        dragNote.nodes.Sort((DragNode node1, DragNode node2) =>
+        {
+            return (int)Mathf.Sign(
+                node1.anchor.pulse - node2.anchor.pulse);
+        });
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
+        UpdateNumScansAndRelatedUI();
+
+        NoteInEditor noteInEditor = note
+            .GetComponent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
+    }
+
+    private GameObject draggedAnchor;
+    private DragNode draggedDragNode;
+    private DragNode draggedDragNodeBeforeDrag;
+    private bool ctrlHeldOnAnchorBeginDrag;
+    private bool dragCurveIsBSpline;
+    private Vector2 mousePositionRelativeToDraggedAnchor;
+    private void OnAnchorClick(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (eventData.dragging) return;
+        if (panel.UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (PatternPanel.tool != PatternPanel.Tool.Anchor &&
+            eventData.button != PointerEventData.InputButton.Right)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+
+        // Attempt to delete anchor.
+        GameObject anchor = eventData.pointerDrag;
+        int anchorIndex = anchor
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        DragNote dragNote = anchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+
+        string reason;
+        if (!EditorContext.Pattern.CanDeleteDragAnchor(
+            dragNote, anchorIndex, out reason))
+        {
+            panel.snackbar.Show(reason);
+            return;
+        }
+
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = dragNote.Clone();
+        dragNote.nodes.RemoveAt(anchorIndex);
+        op.noteAfterOp = dragNote.Clone();
+        EditorContext.EndTransaction();
+        UpdateNumScansAndRelatedUI();
+
+        NoteInEditor noteInEditor = anchor
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
+    }
+
+    private void OnAnchorBeginDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
+
+        GameObject anchor = eventData.pointerDrag;
+        draggedAnchor = anchor
+            .GetComponentInParent<DragNoteAnchor>().gameObject;
+
+        DragNote dragNote = anchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        int anchorIndex = anchor
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        draggedDragNode = dragNote.nodes[anchorIndex];
+        draggedDragNodeBeforeDrag = draggedDragNode.Clone();
+
+        ctrlHeldOnAnchorBeginDrag = Input.GetKey(KeyCode.LeftControl)
+            || Input.GetKey(KeyCode.RightControl);
+        dragCurveIsBSpline = dragNote.curveType == CurveType.BSpline;
+        if ((ctrlHeldOnAnchorBeginDrag
+            || PatternPanel.tool == PatternPanel.Tool.Anchor)
+            && !dragCurveIsBSpline)
+        {
+            // Reset control points.
+            mousePositionRelativeToDraggedAnchor = new Vector2();
+            draggedDragNode.controlLeft = new FloatPoint(0f, 0f);
+            draggedDragNode.controlRight = new FloatPoint(0f, 0f);
+
+            NoteInEditor noteInEditor = draggedAnchor
+                .GetComponentInParent<NoteInEditor>();
+            noteInEditor.ResetCurve();
+            noteInEditor.ResetControlPointPosition(draggedDragNode,
+                draggedAnchor, 0);
+            noteInEditor.ResetControlPointPosition(draggedDragNode,
+                draggedAnchor, 1);
+            noteInEditor.ResetPathsToControlPoints(
+                draggedAnchor.GetComponent<DragNoteAnchor>());
+        }
+    }
+
+    private void MoveDraggedAnchor()
+    {
+        Note noteHead = draggedAnchor
+            .GetComponentInParent<NoteObject>().note;
+        float cursorPulse, cursorLane;
+        GetCursorPositionForAnchor(out cursorPulse, out cursorLane);
+        if (!Options.instance.editorOptions.lockDragAnchorsInTime)
+        {
+            draggedDragNode.anchor.pulse = cursorPulse
+                - noteHead.pulse;
+        }
+        draggedDragNode.anchor.lane = cursorLane
+            - noteHead.lane;
+        draggedAnchor.GetComponent<RectTransform>().anchoredPosition
+            = new Vector2(
+                draggedDragNode.anchor.pulse * PulseWidth,
+                -draggedDragNode.anchor.lane * LaneHeight);
+
+        NoteInEditor noteInEditor = draggedAnchor
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+    }
+
+    private void MoveControlPointsBeingReset(Vector2 delta)
+    {
+        mousePositionRelativeToDraggedAnchor += delta;
+
+        Vector2 pointLeft, pointRight;
+        if (mousePositionRelativeToDraggedAnchor.x < 0f)
+        {
+            pointLeft = mousePositionRelativeToDraggedAnchor;
+        }
+        else
+        {
+            pointLeft = -mousePositionRelativeToDraggedAnchor;
+        }
+        pointRight = -pointLeft;
+
+        draggedDragNode.controlLeft = new FloatPoint(
+            pulse: pointLeft.x / PulseWidth,
+            lane: -pointLeft.y / LaneHeight);
+        draggedDragNode.controlRight = new FloatPoint(
+            pulse: pointRight.x / PulseWidth,
+            lane: -pointRight.y / LaneHeight);
+
+        NoteInEditor noteInEditor = draggedAnchor
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetControlPointPosition(draggedDragNode,
+            draggedAnchor, 0);
+        noteInEditor.ResetControlPointPosition(draggedDragNode,
+            draggedAnchor, 1);
+        noteInEditor.ResetPathsToControlPoints(
+            draggedAnchor.GetComponent<DragNoteAnchor>());
+    }
+
+    private void OnAnchorDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        Vector2 delta = eventData.delta;
+        delta /= panel.rootCanvas.localScale.x;
+
+        if (ctrlHeldOnAnchorBeginDrag ||
+            PatternPanel.tool == PatternPanel.Tool.Anchor)
+        {
+            if (!dragCurveIsBSpline)
+            {
+                MoveControlPointsBeingReset(delta);
+            }
+        }
+        else
+        {
+            if (draggedAnchor
+                .GetComponentInParent<DragNoteAnchor>()
+                .anchorIndex == 0)
+            {
+                return;
+            }
+            MoveDraggedAnchor();
+        }
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
+    }
+
+    private void OnAnchorEndDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
+        if (!ctrlHeldOnAnchorBeginDrag &&
+            draggedAnchor.GetComponentInParent<DragNoteAnchor>()
+                .anchorIndex == 0)
+        {
+            return;
+        }
+        if (ctrlHeldOnAnchorBeginDrag && dragCurveIsBSpline)
+        {
+            return;
+        }
+
+        DragNote dragNote = draggedAnchor
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        string reason;
+        if (!EditorContext.Pattern.CanEditDragNote(dragNote,
+            out reason))
+        {
+            panel.snackbar.Show(reason);
+            // Restore note to pre-drag state.
+            draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+            NoteInEditor noteInEditor = draggedAnchor
+                .GetComponentInParent<NoteInEditor>();
+            noteInEditor.ResetCurve();
+            noteInEditor.ResetAllAnchorsAndControlPoints();
+            return;
+        }
+
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteAfterOp = dragNote.Clone();
+        DragNode draggedDragNodeAfterDrag = draggedDragNode.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+        op.noteBeforeOp = dragNote.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeAfterDrag);
+        EditorContext.EndTransaction();
+
+        UpdateNumScansAndRelatedUI();
+    }
+
+    private void OnControlPointClick(PointerEventData eventData,
+        int controlPointIndex)
+    {
+        if (panel.isPlaying) return;
+        if (eventData.dragging) return;
+        if (panel.UsingRectangleTool())
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+        if (PatternPanel.tool != PatternPanel.Tool.Anchor &&
+            eventData.button != PointerEventData.InputButton.Right)
+        {
+            // Event passes through.
+            OnNoteContainerClick(eventData);
+            return;
+        }
+
+        // Delete control point.
+        GameObject controlPoint = eventData.pointerPress;
+        int anchorIndex = controlPoint
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        DragNote note = controlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        DragNode node = note.nodes[anchorIndex];
+
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteBeforeOp = note.Clone();
+        node.SetControlPoint(controlPointIndex,
+            new FloatPoint(0f, 0f));
+        op.noteAfterOp = note.Clone();
+        EditorContext.EndTransaction();
+
+        NoteInEditor noteInEditor = controlPoint
+            .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetCurve();
+        noteInEditor.ResetAllAnchorsAndControlPoints();
+    }
+
+    private GameObject draggedControlPoint;
+    private int draggedControlPointIndex;
+    private void OnControlPointBeginDrag(PointerEventData eventData,
+        int controlPointIndex)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerBeginDrag(eventData);
+            return;
+        }
+        draggedControlPoint = eventData.pointerDrag;
+        draggedControlPointIndex = controlPointIndex;
+
+        int anchorIndex = draggedControlPoint
+            .GetComponentInParent<DragNoteAnchor>().anchorIndex;
+        draggedDragNode = (draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote)
+            .nodes[anchorIndex];
+        draggedDragNodeBeforeDrag = draggedDragNode.Clone();
+    }
+
+    private void OnControlPointDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerDrag(eventData);
+            return;
+        }
+
+        Vector2 delta = eventData.delta;
+        delta /= panel.rootCanvas.localScale.x;
+        draggedControlPoint.GetComponent<RectTransform>()
+            .anchoredPosition += delta;
+
+        Vector2 newPosition = draggedControlPoint
+            .GetComponent<RectTransform>()
+            .anchoredPosition;
+        FloatPoint newPoint = new FloatPoint(
+            pulse: newPosition.x / PulseWidth,
+            lane: -newPosition.y / LaneHeight);
+        draggedDragNode.SetControlPoint(draggedControlPointIndex,
+            newPoint);
+
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
+        if (!alt && newPosition.sqrMagnitude > 0f)
+        {
+            // Rotate opposing control point.
+            int otherIndex = 1 - draggedControlPointIndex;
+            RectTransform otherTransform = draggedControlPoint
+                .GetComponentInParent<DragNoteAnchor>()
+                .GetControlPoint(otherIndex)
+                .GetComponent<RectTransform>();
+            Vector2 otherPosition = otherTransform
+                .anchoredPosition;
+
+            float angle = Mathf.Atan2(newPosition.y, newPosition.x);
+            angle += Mathf.PI;
+            otherPosition = new Vector2(
+                otherPosition.magnitude * Mathf.Cos(angle),
+                otherPosition.magnitude * Mathf.Sin(angle));
+            FloatPoint otherPoint = new FloatPoint(
+                pulse: otherPosition.x / PulseWidth,
+                lane: -otherPosition.y / LaneHeight);
+
+            otherTransform.anchoredPosition = otherPosition;
+            draggedDragNode.SetControlPoint(otherIndex,
+                otherPoint);
+        }
+
+        NoteInEditor noteInEditor = draggedControlPoint
+                .GetComponentInParent<NoteInEditor>();
+        noteInEditor.ResetPathsToControlPoints(
+            draggedControlPoint
+            .GetComponentInParent<DragNoteAnchor>());
+        noteInEditor.ResetCurve();
+
+        ScrollWorkspaceWhenMouseIsCloseToEdge();
+    }
+
+    private void OnControlPointEndDrag(PointerEventData eventData)
+    {
+        if (panel.isPlaying) return;
+        if (panel.UsingRectangleTool() ||
+            eventData.button != PointerEventData.InputButton.Left)
+        {
+            // Event passes through.
+            OnNoteContainerEndDrag(eventData);
+            return;
+        }
+
+        DragNote dragNote = draggedControlPoint
+            .GetComponentInParent<NoteObject>().note as DragNote;
+        string reason;
+        if (!EditorContext.Pattern.CanEditDragNote(
+            dragNote, out reason))
+        {
+            panel.snackbar.Show(reason);
+            // Restore note to pre-drag state.
+            draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+            NoteInEditor noteInEditor = draggedControlPoint
+                .GetComponentInParent<NoteInEditor>();
+            noteInEditor.ResetCurve();
+            noteInEditor.ResetAllAnchorsAndControlPoints();
+            return;
+        }
+
+        EditorContext.BeginTransaction();
+        EditOperation op = EditorContext.BeginModifyNoteOperation();
+        op.noteAfterOp = dragNote.Clone();
+        DragNode draggedDragNodeAfterDrag = draggedDragNode.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeBeforeDrag);
+        op.noteBeforeOp = dragNote.Clone();
+        draggedDragNode.CopyFrom(draggedDragNodeAfterDrag);
+        EditorContext.EndTransaction();
+    }
     #endregion
 
     #region Dragging and dropping notes
@@ -956,6 +1617,23 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region Refreshing
+    public void DestroyAndSpawnExistingNotes()
+    {
+        for (int i = 0; i < noteContainer.childCount; i++)
+        {
+            Destroy(noteContainer.GetChild(i).gameObject);
+        }
+        noteToNoteObject = new Dictionary<Note, NoteObject>();
+        dragNotes = new HashSet<NoteInEditor>();
+        lastSelectedNoteWithoutShift = null;
+        lastClickedNote = null;
+        panel.selectedNotes = new HashSet<Note>();
+        panel.NotifySelectionChanged();
+
+        RefreshNotesInViewport();
+        AdjustAllPathsAndTrails();
+    }
+
     public void ResizeWorkspace()
     {
         workspaceContent.sizeDelta = new Vector2(
@@ -1034,6 +1712,31 @@ public class PatternPanelWorkspace : MonoBehaviour
         {
             DestroyAndRespawnAllMarkers();
             ResizeWorkspace();
+        }
+    }
+
+    public GameObject CreateNewNoteObject(Note n)
+    {
+        GameObject newNote = SpawnNoteObject(n);
+        AdjustPathOrTrailAround(newNote);
+        UpdateNumScansAndRelatedUI();
+        return newNote;
+    }
+
+    public void DeleteNoteObject(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        DeleteNoteObject(n, o,
+            intendToDeleteNote: true);
+
+        if (lastSelectedNoteWithoutShift == n)
+        {
+            lastSelectedNoteWithoutShift = null;
+        }
+        if (lastClickedNote == n)
+        {
+            lastClickedNote = null;
         }
     }
     #endregion
@@ -1653,7 +2356,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         SynchronizeScrollRects();
     }
 
-    private void ScrollNoteIntoView(Note n)
+    public void ScrollNoteIntoView(Note n)
     {
         Vector2 position = SelfPositionerInEditor.PositionOf(n);
         Vector3 worldPosition = workspaceContent.TransformPoint(

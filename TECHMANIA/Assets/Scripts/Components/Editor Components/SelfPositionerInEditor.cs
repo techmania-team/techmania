@@ -11,12 +11,12 @@ public class SelfPositionerInEditor : MonoBehaviour
 
     private void OnEnable()
     {
-        PatternPanel.RepositionNeeded += Reposition;
+        PatternPanelWorkspace.RepositionNeeded += Reposition;
     }
 
     private void OnDisable()
     {
-        PatternPanel.RepositionNeeded -= Reposition;
+        PatternPanelWorkspace.RepositionNeeded -= Reposition;
     }
 
     public void Reposition()
@@ -61,7 +61,8 @@ public class SelfPositionerInEditor : MonoBehaviour
         {
             rect.anchoredPosition = new Vector2(x, y);
             rect.sizeDelta = new Vector2(
-                PatternPanel.LaneHeight, PatternPanel.LaneHeight);
+                PatternPanelWorkspace.LaneHeight, 
+                PatternPanelWorkspace.LaneHeight);
         }
     }
 
@@ -73,11 +74,11 @@ public class SelfPositionerInEditor : MonoBehaviour
     private static float PulseToX(float pulse)
     {
         float scan = pulse / pulsesPerScan;
-        return PatternPanel.ScanWidth * scan;
+        return PatternPanelWorkspace.ScanWidth * scan;
     }
 
     private static float LaneToY(int lane)
     {
-        return -PatternPanel.LaneHeight * (lane + 0.5f);
+        return -PatternPanelWorkspace.LaneHeight * (lane + 0.5f);
     }
 }
