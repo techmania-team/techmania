@@ -274,6 +274,8 @@ public class PatternPanelWorkspace : MonoBehaviour
                 Input.GetKey(KeyCode.RightControl);
         bool shift = Input.GetKey(KeyCode.LeftShift) ||
             Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) ||
+            Input.GetKey(KeyCode.RightAlt);
 
         if (ctrl)
         {
@@ -290,7 +292,7 @@ public class PatternPanelWorkspace : MonoBehaviour
                 Mathf.Clamp01(
                 workspaceScrollRect.verticalNormalizedPosition);
         }
-        else
+        else if (!alt)
         {
             // Horizontal scroll.
             workspaceScrollRect.horizontalNormalizedPosition +=
