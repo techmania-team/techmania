@@ -1481,30 +1481,6 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Zoom
-    public void VerticalZoomIn()
-    {
-        SetVisibleLaneNumber(Options.instance.editorOptions
-            .visibleLanes - 2);
-    }
-
-    public void VerticalZoomOut()
-    {
-        SetVisibleLaneNumber(Options.instance.editorOptions
-            .visibleLanes + 2);
-    }
-
-    private void SetVisibleLaneNumber(int newValue)
-    {
-        Options.instance.editorOptions.visibleLanes =
-            Mathf.Clamp(newValue, 8, 16);
-
-        workspace.ResizeWorkspace();
-        workspace.RepositionNotes();
-        workspace.AdjustAllPathsAndTrails();
-    }
-    #endregion
-
     #region Playback
     // During playback, the following features are disabled:
     // - All timing options

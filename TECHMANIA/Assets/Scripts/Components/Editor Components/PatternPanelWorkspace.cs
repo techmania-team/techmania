@@ -319,7 +319,6 @@ public class PatternPanelWorkspace : MonoBehaviour
         {
             scanlineFloatPulse = pulse;
             ScrollScanlineIntoView();
-            // TODO: make this an event?
             panel.RefreshPlaybackBar();
         };
         float pulsesPerScan =
@@ -761,7 +760,6 @@ public class PatternPanelWorkspace : MonoBehaviour
         int snappedCursorPulse = panel.SnapPulse(cursorPulse);
 
         scanlineFloatPulse = snappedCursorPulse;
-        // TODO: make this an event?
         panel.RefreshPlaybackBar();
     }
 
@@ -2312,13 +2310,11 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region Zoom
-    // TODO: remap UI event
     public void HorizontalZoomIn()
     {
         AdjustZoom(zoom + 10);
     }
 
-    // TODO: remap UI event
     public void HorizontalZoomOut()
     {
         AdjustZoom(zoom - 10);
@@ -2334,6 +2330,28 @@ public class PatternPanelWorkspace : MonoBehaviour
         AdjustAllPathsAndTrails();
         workspaceScrollRect.horizontalNormalizedPosition =
             horizontal;
+    }
+
+    public void VerticalZoomIn()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes - 2);
+    }
+
+    public void VerticalZoomOut()
+    {
+        SetVisibleLaneNumber(Options.instance.editorOptions
+            .visibleLanes + 2);
+    }
+
+    private void SetVisibleLaneNumber(int newValue)
+    {
+        Options.instance.editorOptions.visibleLanes =
+            Mathf.Clamp(newValue, 8, 16);
+
+        ResizeWorkspace();
+        RepositionNotes();
+        AdjustAllPathsAndTrails();
     }
     #endregion
 
