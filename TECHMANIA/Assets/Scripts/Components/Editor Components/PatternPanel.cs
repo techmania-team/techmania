@@ -14,6 +14,7 @@ public class PatternPanel : MonoBehaviour
     public CanvasGroup canvasGroup;
 
     public PatternPanelWorkspace workspace;
+    public PatternPanelToolbar toolbar;
 
     [Header("Audio")]
     public AudioManager audioManager;
@@ -25,17 +26,9 @@ public class PatternPanel : MonoBehaviour
     private FmodSoundWrap assistTickSound;
 
     [Header("Options")]
-    public TextMeshProUGUI beatSnapDividerDisplay;
     public GameObject optionsTab;
 
     [Header("UI")]
-    public MaterialToggleButton panButton;
-    public MaterialToggleButton noteToolButton;
-    public MaterialToggleButton rectangleToolButton;
-    public MaterialToggleButton rectangleAppendButton;
-    public MaterialToggleButton rectangleSubtractButton;
-    public MaterialToggleButton anchorButton;
-    public List<NoteTypeButton> noteTypeButtons;
     public KeysoundSideSheet keysoundSheet;
     public GameObject playButton;
     public GameObject stopButton;
@@ -80,7 +73,7 @@ public class PatternPanel : MonoBehaviour
         RectangleSubtract,
         Anchor
     }
-    public static Tool tool { get; private set; }
+    public static Tool tool;
     #endregion
 
     #region Vertical Spacing
@@ -117,8 +110,8 @@ public class PatternPanel : MonoBehaviour
         // UI and options
         tool = Tool.Note;
         noteType = NoteType.Basic;
-        UpdateToolAndNoteTypeButtons();
-        UpdateBeatSnapDivisorDisplay();
+        toolbar.RefreshToolAndNoteTypeButtons();
+        toolbar.RefreshBeatSnapDivisorDisplay();
         keysoundSheet.Initialize();
 
         // Playback
@@ -337,7 +330,7 @@ public class PatternPanel : MonoBehaviour
             Input.GetKey(KeyCode.RightAlt))
         {
             // Change beat snap divisor.
-            OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
+            toolbar.OnBeatSnapDivisorChanged(y < 0f ? -1 : 1);
         }
     }
 
@@ -388,7 +381,7 @@ public class PatternPanel : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
-            OnRectangleToolButtonClick();
+            toolbar.OnRectangleToolButtonClick();
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
             ChangeNoteType(NoteType.Basic);
@@ -453,34 +446,6 @@ public class PatternPanel : MonoBehaviour
         workspace.DestroyAndRespawnAllMarkers();
         workspace.RepositionNotes();
         workspace.UpdateNumScansAndRelatedUI();
-    }
-
-    public void OnBeatSnapDivisorChanged(int direction)
-    {
-        int divisor = Options.instance.editorOptions.beatSnapDivisor;
-        do
-        {
-            divisor += direction;
-            if (divisor <= 0 && direction < 0)
-            {
-                divisor = Pattern.pulsesPerBeat;
-            }
-            if (divisor > Pattern.pulsesPerBeat &&
-                direction > 0)
-            {
-                divisor = 1;
-            }
-        }
-        while (Pattern.pulsesPerBeat % divisor != 0);
-        Options.instance.editorOptions.beatSnapDivisor =
-            divisor;
-        UpdateBeatSnapDivisorDisplay();
-    }
-
-    private void UpdateBeatSnapDivisorDisplay()
-    {
-        beatSnapDividerDisplay.text =
-            Options.instance.editorOptions.beatSnapDivisor.ToString();
     }
 
     public void OnTimeEventButtonClick()
@@ -562,53 +527,10 @@ public class PatternPanel : MonoBehaviour
         });
     }
 
-    private void ChangeTool(Tool newTool)
-    {
-        tool = newTool;
-        UpdateToolAndNoteTypeButtons();
-    }
-
-    public void OnPanToolButtonClick()
-    {
-        ChangeTool(Tool.Pan);
-    }
-
-    public void OnNoteToolButtonClick()
-    {
-        ChangeTool(Tool.Note);
-    }
-
-    public void OnRectangleToolButtonClick()
-    {
-        ChangeTool(Tool.Rectangle);
-    }
-
-    public void OnRectangleAppendButtonClick()
-    {
-        ChangeTool(Tool.RectangleAppend);
-    }
-
-    public void OnRectangleSubtractButtonClick()
-    {
-        ChangeTool(Tool.RectangleSubtract);
-    }
-
-    public void OnAnchorButtonClick()
-    {
-        tool = Tool.Anchor;
-        UpdateToolAndNoteTypeButtons();
-    }
-
-    public void OnNoteTypeButtonClick(NoteTypeButton clickedButton)
-    {
-        ChangeNoteType(clickedButton.type);
-    }
-
-    private void ChangeNoteType(NoteType newType)
+    public void ChangeNoteType(NoteType newType)
     {
         tool = Tool.Note;
         noteType = newType;
-        UpdateToolAndNoteTypeButtons();
 
         // Apply to selection if asked to.
         if (!Options.instance.editorOptions
@@ -718,17 +640,7 @@ public class PatternPanel : MonoBehaviour
 
     private void UpdateToolAndNoteTypeButtons()
     {
-        panButton.SetIsOn(tool == Tool.Pan);
-        noteToolButton.SetIsOn(tool == Tool.Note);
-        rectangleToolButton.SetIsOn(tool == Tool.Rectangle);
-        rectangleAppendButton.SetIsOn(tool == Tool.RectangleAppend);
-        rectangleSubtractButton.SetIsOn(tool == Tool.RectangleSubtract);
-        anchorButton.SetIsOn(tool == Tool.Anchor);
-        foreach (NoteTypeButton b in noteTypeButtons)
-        {
-            b.GetComponent<MaterialToggleButton>().SetIsOn(
-                tool == Tool.Note && b.type == noteType);
-        }
+        
     }
 
     public void OnScanlinePositionSliderValueChanged(float newValue)

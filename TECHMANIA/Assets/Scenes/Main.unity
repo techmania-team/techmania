@@ -4407,7 +4407,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -4421,7 +4421,7 @@ PrefabInstance:
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -4546,11 +4546,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 152682028}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bef9b7e3d7a863d4e8287a5891cf122f, type: 3}
 --- !u!114 &152682025 stripped
 MonoBehaviour:
@@ -4558,7 +4554,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 152682024}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 152682027}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8fcb1df5e261e44eb52e78b3a3286a6, type: 3}
@@ -4570,25 +4566,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 152682024}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &152682027 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-    type: 3}
-  m_PrefabInstance: {fileID: 152682024}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &152682028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 152682027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e42e315d46b570409a2b3b491799f3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
 --- !u!1 &153881207
 GameObject:
   m_ObjectHideFlags: 0
@@ -4787,7 +4764,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -4797,6 +4774,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -8983,32 +8965,32 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 84.4
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 24.01
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 125
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -27
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9664,7 +9646,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -9674,6 +9656,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -15988,7 +15975,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -15998,6 +15985,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -17249,7 +17241,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -17259,6 +17251,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnBeatSnapDivisorChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
         type: 3}
@@ -18254,7 +18251,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -18268,7 +18265,7 @@ PrefabInstance:
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -18667,7 +18664,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -18681,7 +18678,7 @@ PrefabInstance:
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -18806,21 +18803,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 592280334}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bef9b7e3d7a863d4e8287a5891cf122f, type: 3}
 --- !u!224 &592280331 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7795559642927612108, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-    type: 3}
-  m_PrefabInstance: {fileID: 592280330}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &592280332 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
     type: 3}
   m_PrefabInstance: {fileID: 592280330}
   m_PrefabAsset: {fileID: 0}
@@ -18830,25 +18817,12 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 592280330}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592280332}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8fcb1df5e261e44eb52e78b3a3286a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &592280334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592280332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e42e315d46b570409a2b3b491799f3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
 --- !u!1 &595006546
 GameObject:
   m_ObjectHideFlags: 0
@@ -21893,7 +21867,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -21903,6 +21877,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -23214,7 +23193,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -23228,7 +23207,7 @@ PrefabInstance:
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -23353,21 +23332,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 751888720}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bef9b7e3d7a863d4e8287a5891cf122f, type: 3}
 --- !u!224 &751888717 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7795559642927612108, guid: bef9b7e3d7a863d4e8287a5891cf122f,
-    type: 3}
-  m_PrefabInstance: {fileID: 751888716}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &751888718 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7795559642927612109, guid: bef9b7e3d7a863d4e8287a5891cf122f,
     type: 3}
   m_PrefabInstance: {fileID: 751888716}
   m_PrefabAsset: {fileID: 0}
@@ -23377,25 +23346,12 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 751888716}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 751888718}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8fcb1df5e261e44eb52e78b3a3286a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &751888720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 751888718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e42e315d46b570409a2b3b491799f3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
 --- !u!1 &772622718
 GameObject:
   m_ObjectHideFlags: 0
@@ -26268,7 +26224,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -26278,6 +26234,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -27028,7 +26989,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -27038,6 +26999,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -29121,7 +29087,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -29131,6 +29097,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnRectangleToolButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -33957,7 +33928,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -33967,6 +33938,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnBeatSnapDivisorChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2556267816047191416, guid: dd6e0ef222fcaeb44909295e19646fed,
         type: 3}
@@ -37527,7 +37503,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -37537,6 +37513,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -46655,7 +46636,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -46665,6 +46646,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -53202,7 +53188,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -53216,7 +53202,7 @@ PrefabInstance:
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
@@ -57219,6 +57205,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 397205365400588432, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1897794184}
+    - targetCorrespondingSourceObject: {fileID: 397205365400588432, guid: 7c56afc9b10373e4486c4490701fa985,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1897794180}
     - targetCorrespondingSourceObject: {fileID: 397205364207462270, guid: 7c56afc9b10373e4486c4490701fa985,
         type: 3}
@@ -57288,28 +57278,12 @@ MonoBehaviour:
   rootCanvas: {fileID: 647367742}
   canvasGroup: {fileID: 260726060}
   workspace: {fileID: 1897794180}
+  toolbar: {fileID: 0}
   audioManager: {fileID: 759281148068718237}
   metronome1: {fileID: 8300000, guid: 7c8bbd4660bff354e8675fc930c2e62c, type: 3}
   metronome2: {fileID: 8300000, guid: 8577deeb9f3fff64cae2060b40801fe7, type: 3}
   assistTick: {fileID: 8300000, guid: d2015313935379e42841c3284f874d3a, type: 3}
-  beatSnapDividerDisplay: {fileID: 429624351}
   optionsTab: {fileID: 1765517528}
-  panButton: {fileID: 581482938}
-  noteToolButton: {fileID: 1794443977}
-  rectangleToolButton: {fileID: 1058423232}
-  rectangleAppendButton: {fileID: 751888719}
-  rectangleSubtractButton: {fileID: 592280333}
-  anchorButton: {fileID: 152682025}
-  noteTypeButtons:
-  - {fileID: 301190206}
-  - {fileID: 531420971}
-  - {fileID: 982191019}
-  - {fileID: 696261119}
-  - {fileID: 1264103730}
-  - {fileID: 1909102859}
-  - {fileID: 161699694}
-  - {fileID: 1520894886}
-  - {fileID: 949315587}
   keysoundSheet: {fileID: 1422110338}
   playButton: {fileID: 1420138122}
   stopButton: {fileID: 1309911189}
@@ -57387,6 +57361,36 @@ MonoBehaviour:
   dragNotePrefab: {fileID: 6915570976975822383, guid: b274eba65f6eedc43bb31a20c2bc49ee,
     type: 3}
   selectionRectangle: {fileID: 1507394623}
+--- !u!114 &1897794184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897794177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a263b8951611543a7490d28aafd2d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 1897794178}
+  beatSnapDividerDisplay: {fileID: 429624351}
+  panButton: {fileID: 581482938}
+  noteToolButton: {fileID: 1794443977}
+  rectangleToolButton: {fileID: 1058423232}
+  rectangleAppendButton: {fileID: 751888719}
+  rectangleSubtractButton: {fileID: 592280333}
+  anchorButton: {fileID: 152682025}
+  noteTypeButtons:
+  - {fileID: 301190206}
+  - {fileID: 531420971}
+  - {fileID: 982191019}
+  - {fileID: 696261119}
+  - {fileID: 1264103730}
+  - {fileID: 1909102859}
+  - {fileID: 161699694}
+  - {fileID: 1520894886}
+  - {fileID: 949315587}
 --- !u!1001 &1899606905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57685,7 +57689,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -57695,6 +57699,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNoteTypeButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7795559642927612087, guid: bef9b7e3d7a863d4e8287a5891cf122f,
         type: 3}
