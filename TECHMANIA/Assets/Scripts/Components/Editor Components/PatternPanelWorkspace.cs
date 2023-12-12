@@ -11,7 +11,7 @@ using static TreeEditor.TreeEditorHelper;
 // PatternPanel.
 public class PatternPanelWorkspace : MonoBehaviour
 {
-    private PatternPanel panel;
+    public PatternPanel panel;
 
     [Header("Workspace")]
     public ScrollRect workspaceScrollRect;
@@ -36,9 +36,9 @@ public class PatternPanelWorkspace : MonoBehaviour
     public GameObject beatMarkerTemplate;
 
     [Header("Notes")]
+    public NoteObject noteCursor;
     public Transform noteContainer;
     public Transform noteCemetary;
-    public NoteObject noteCursor;
     public GameObject basicNotePrefab;
     public GameObject chainHeadPrefab;
     public GameObject chainNodePrefab;
@@ -107,12 +107,6 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region MonoBehavior APIs
-    // Start is called before the first frame update
-    void Start()
-    {
-        panel = GetComponent<PatternPanel>();
-    }
-
     private void OnEnable()
     {
         // Hidden lanes

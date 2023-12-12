@@ -38440,7 +38440,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1897794178}
+      objectReference: {fileID: 1897794180}
     - target: {fileID: 8111477514770311784, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -38454,7 +38454,7 @@ PrefabInstance:
     - target: {fileID: 8111477514770311784, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternPanel, Assembly-CSharp
+      value: PatternPanelWorkspace, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8111477514770311784, guid: 6d71ded5003a93c4ca74d7e2eb0e4f62,
         type: 3}
@@ -51565,8 +51565,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1897794178}
-          m_TargetAssemblyTypeName: 
+        - m_Target: {fileID: 1897794180}
+          m_TargetAssemblyTypeName: PatternPanelWorkspace, Assembly-CSharp
           m_MethodName: OnNoteContainerDrag
           m_Mode: 0
           m_Arguments:
@@ -51581,8 +51581,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1897794178}
-          m_TargetAssemblyTypeName: 
+        - m_Target: {fileID: 1897794180}
+          m_TargetAssemblyTypeName: PatternPanelWorkspace, Assembly-CSharp
           m_MethodName: OnNoteContainerBeginDrag
           m_Mode: 0
           m_Arguments:
@@ -51597,8 +51597,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1897794178}
-          m_TargetAssemblyTypeName: 
+        - m_Target: {fileID: 1897794180}
+          m_TargetAssemblyTypeName: PatternPanelWorkspace, Assembly-CSharp
           m_MethodName: OnNoteContainerEndDrag
           m_Mode: 0
           m_Arguments:
@@ -51613,8 +51613,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1897794178}
-          m_TargetAssemblyTypeName: 
+        - m_Target: {fileID: 1897794180}
+          m_TargetAssemblyTypeName: PatternPanelWorkspace, Assembly-CSharp
           m_MethodName: OnNoteContainerClick
           m_Mode: 0
           m_Arguments:
@@ -57348,6 +57348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e5b2fb87be1e14b9eb135dc53175f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panel: {fileID: 1897794178}
   workspaceScrollRect: {fileID: 1299100498}
   headerScrollRect: {fileID: 167642880}
   workspaceViewport: {fileID: 1299100497}
@@ -57356,27 +57357,36 @@ MonoBehaviour:
   scanline: {fileID: 1552096942}
   hiddenLaneBackground: {fileID: 2141758703}
   header: {fileID: 1903404518}
-  markerInHeaderContainer: {fileID: 0}
-  scanMarkerInHeaderTemplate: {fileID: 0}
-  beatMarkerInHeaderTemplate: {fileID: 0}
-  bpmMarkerTemplate: {fileID: 0}
-  timeStopMarkerTemplate: {fileID: 0}
-  markerContainer: {fileID: 0}
-  scanMarkerTemplate: {fileID: 0}
-  beatMarkerTemplate: {fileID: 0}
-  noteContainer: {fileID: 0}
-  noteCemetary: {fileID: 0}
-  noteCursor: {fileID: 0}
-  basicNotePrefab: {fileID: 0}
-  chainHeadPrefab: {fileID: 0}
-  chainNodePrefab: {fileID: 0}
-  repeatHeadPrefab: {fileID: 0}
-  repeatHeadHoldPrefab: {fileID: 0}
-  repeatNotePrefab: {fileID: 0}
-  repeatHoldPrefab: {fileID: 0}
-  holdNotePrefab: {fileID: 0}
-  dragNotePrefab: {fileID: 0}
-  selectionRectangle: {fileID: 0}
+  markerInHeaderContainer: {fileID: 1363981962}
+  scanMarkerInHeaderTemplate: {fileID: 1379001536}
+  beatMarkerInHeaderTemplate: {fileID: 1224600310}
+  bpmMarkerTemplate: {fileID: 1604281847}
+  timeStopMarkerTemplate: {fileID: 627472427}
+  markerContainer: {fileID: 595006547}
+  scanMarkerTemplate: {fileID: 1482481330}
+  beatMarkerTemplate: {fileID: 1988443999}
+  noteCursor: {fileID: 1064444086}
+  noteContainer: {fileID: 1743535977}
+  noteCemetary: {fileID: 559628667}
+  basicNotePrefab: {fileID: 6915570976975822383, guid: 714aff4aaeb177b4095f064e865c1f03,
+    type: 3}
+  chainHeadPrefab: {fileID: 6915570976975822383, guid: 2409e2e87e978664bb488f79d7ee66c6,
+    type: 3}
+  chainNodePrefab: {fileID: 6915570976975822383, guid: 4244df8696b420f4386b640c73b127fd,
+    type: 3}
+  repeatHeadPrefab: {fileID: 6915570976975822383, guid: 908d0d4109c7fe44389abc635f4c0e60,
+    type: 3}
+  repeatHeadHoldPrefab: {fileID: 6915570976975822383, guid: 6e0a2f5462a5d704aa7ad739e01ec7a6,
+    type: 3}
+  repeatNotePrefab: {fileID: 6915570976975822383, guid: 77170dfb5fce1ab449e6270f3a431334,
+    type: 3}
+  repeatHoldPrefab: {fileID: 6915570976975822383, guid: 605aed8ea99d93948832f5e7e6a9d46e,
+    type: 3}
+  holdNotePrefab: {fileID: 6915570976975822383, guid: 2fc3a1d9c1219004bab39ddc82219bde,
+    type: 3}
+  dragNotePrefab: {fileID: 6915570976975822383, guid: b274eba65f6eedc43bb31a20c2bc49ee,
+    type: 3}
+  selectionRectangle: {fileID: 1507394623}
 --- !u!1001 &1899606905
 PrefabInstance:
   m_ObjectHideFlags: 0
