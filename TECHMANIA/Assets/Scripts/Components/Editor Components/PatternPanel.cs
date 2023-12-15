@@ -128,7 +128,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.RedoInvoked += OnRedo;
         KeysoundSideSheet.selectedKeysoundsUpdated += 
             OnSelectedKeysoundsUpdated;
-        PatternTimingTab.TimingUpdated += OnPatternTimingUpdated;
+        PatternPanelToolbar.TimingUpdated += OnPatternTimingUpdated;
         EditorOptionsTab.Opened += OnOptionsTabOpened;
         EditorOptionsTab.Closed += OnOptionsTabClosed;
 
@@ -154,7 +154,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.RedoInvoked -= OnRedo;
         KeysoundSideSheet.selectedKeysoundsUpdated -= 
             OnSelectedKeysoundsUpdated;
-        PatternTimingTab.TimingUpdated -= OnPatternTimingUpdated;
+        PatternPanelToolbar.TimingUpdated -= OnPatternTimingUpdated;
         EditorOptionsTab.Opened -= OnOptionsTabOpened;
         EditorOptionsTab.Closed -= OnOptionsTabClosed;
 

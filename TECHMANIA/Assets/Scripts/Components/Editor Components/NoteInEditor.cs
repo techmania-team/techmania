@@ -75,7 +75,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.SelectionChanged += UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged += 
             UpdateKeysoundVisibility;
-        PatternTimingTab.TimingUpdated += UpdateEndOfScanIndicator;
+        PatternPanelToolbar.TimingUpdated += UpdateEndOfScanIndicator;
 
         resizeCursorState = 0;
     }
@@ -85,7 +85,7 @@ public class NoteInEditor : MonoBehaviour, IPointsOnCurveProvider
         PatternPanel.SelectionChanged -= UpdateSelection;
         PatternPanel.KeysoundVisibilityChanged -=
             UpdateKeysoundVisibility;
-        PatternTimingTab.TimingUpdated -= UpdateEndOfScanIndicator;
+        PatternPanelToolbar.TimingUpdated -= UpdateEndOfScanIndicator;
 
         UIUtils.UseDefaultCursor();
     }

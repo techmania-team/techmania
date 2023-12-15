@@ -2,10 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
+// First beat offset, initial BPM, BPS and metronome are handled by
+// PatternTimingTab, which is less tightly coupled with PatternPanel.
 public class PatternPanelToolbar : MonoBehaviour
 {
     public PatternPanel panel;
+
+    [Header("Timing tab")]
+    public TMP_InputField firstBeatOffset;
+    public TMP_InputField initialBpm;
+    public TMP_InputField bps;
+    public Toggle metronome;
     public TextMeshProUGUI beatSnapDividerDisplay;
 
     [Header("Tools and note types")]
@@ -20,6 +30,135 @@ public class PatternPanelToolbar : MonoBehaviour
     [Header("Dialogs")]
     public TimeEventDialog timeEventDialog;
     public RadarDialog radarDialog;
+
+    public static event UnityAction TimingUpdated;
+
+    private void OnEnable()
+    {
+        SetTextFieldInteractable(true);
+        RefreshTimingTabDisplay();
+
+        EditorContext.UndoInvoked += OnUndoRedo;
+        EditorContext.RedoInvoked += OnUndoRedo;
+        PatternPanel.PlaybackStarted += OnPlaybackStarted;
+        PatternPanel.PlaybackStopped += OnPlaybackStopped;
+    }
+
+    private void OnDisable()
+    {
+        Options.instance.SaveToFile(Paths.GetOptionsFilePath());
+
+        EditorContext.UndoInvoked -= OnUndoRedo;
+        EditorContext.RedoInvoked -= OnUndoRedo;
+        PatternPanel.PlaybackStarted -= OnPlaybackStarted;
+        PatternPanel.PlaybackStopped -= OnPlaybackStopped;
+    }
+
+    #region Event handlers
+    private void OnUndoRedo(EditTransaction transaction)
+    {
+        foreach (EditOperation op in transaction.ops)
+        {
+            if (op.type == EditOperation.Type.Metadata)
+            {
+                RefreshTimingTabDisplay();
+                return;
+            }
+        }
+    }
+
+    private void OnPlaybackStarted()
+    {
+        SetTextFieldInteractable(false);
+    }
+
+    private void OnPlaybackStopped()
+    {
+        SetTextFieldInteractable(true);
+    }
+    #endregion
+
+    #region Timing tab
+    private void RefreshTimingTabDisplay()
+    {
+        PatternMetadata m = EditorContext.Pattern.patternMetadata;
+
+        firstBeatOffset.SetTextWithoutNotify(
+            m.firstBeatOffset.ToString());
+        initialBpm.SetTextWithoutNotify(m.initBpm.ToString());
+        bps.SetTextWithoutNotify(m.bps.ToString());
+
+        foreach (TMP_InputField field in new List<TMP_InputField>()
+        {
+            firstBeatOffset,
+            initialBpm,
+            bps
+        })
+        {
+            field.GetComponent<MaterialTextField>().RefreshMiniLabel();
+        }
+
+        metronome.SetIsOnWithoutNotify(
+            Options.instance.editorOptions.metronome);
+    }
+
+    public void OnInitialBpmChanged()
+    {
+        bool madeChange = false;
+
+        UIUtils.ClampInputField(initialBpm,
+            Pattern.minBpm, float.MaxValue);
+        UIUtils.UpdateMetadataInMemory(
+            ref EditorContext.Pattern.patternMetadata.initBpm, 
+            initialBpm.text, ref madeChange);
+
+        if (madeChange)
+        {
+            TimingUpdated?.Invoke();
+        }
+    }
+
+    public void OnFirstBeatOffsetChanged()
+    {
+        bool madeChange = false;
+
+        UIUtils.UpdateMetadataInMemory(
+            ref EditorContext.Pattern.patternMetadata.firstBeatOffset, 
+            firstBeatOffset.text, ref madeChange);
+
+        if (madeChange)
+        {
+            TimingUpdated?.Invoke();
+        }
+    }
+
+    public void OnBpsChanged()
+    {
+        bool madeChange = false;
+
+        UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
+        UIUtils.UpdateMetadataInMemory(
+            ref EditorContext.Pattern.patternMetadata.bps,
+            bps.text, ref madeChange);
+
+        if (madeChange)
+        {
+            TimingUpdated?.Invoke();
+        }
+    }
+
+    public void OnMetronomeChanged()
+    {
+        Options.instance.editorOptions.metronome = metronome.isOn;
+    }
+
+    private void SetTextFieldInteractable(bool interactable)
+    {
+        firstBeatOffset.interactable = interactable;
+        initialBpm.interactable = interactable;
+        bps.interactable = interactable;
+    }
+    #endregion
 
     #region Tools and note types
     private void ChangeTool(PatternPanel.Tool newTool)

@@ -6392,7 +6392,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1873896908}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -6401,12 +6401,12 @@ PrefabInstance:
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UIToMemory
+      value: OnInitialBpmChanged
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternTimingTab, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -21170,7 +21170,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1873896908}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -21179,12 +21179,12 @@ PrefabInstance:
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UIToMemory
+      value: OnBpsChanged
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternTimingTab, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -28575,7 +28575,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1873896908}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -28584,12 +28584,12 @@ PrefabInstance:
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UIToMemory
+      value: OnFirstBeatOffsetChanged
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PatternTimingTab, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2039164074471429732, guid: bfd215a7d6bbd0f498722381df931dcc,
         type: 3}
@@ -30554,7 +30554,7 @@ PrefabInstance:
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1873896908}
+      objectReference: {fileID: 1897794184}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -30563,7 +30563,7 @@ PrefabInstance:
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: UIToMemory
+      value: OnMetronomeChanged
       objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
@@ -30573,7 +30573,7 @@ PrefabInstance:
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: PatternTimingTab, Assembly-CSharp
+      value: PatternPanelToolbar, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1260019629886154125, guid: 38ddc5a75a4741f4081a6e86bcd0f904,
         type: 3}
@@ -56495,10 +56495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf3997f443023043896e7b16b1b0a8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstBeatOffset: {fileID: 1034141443}
-  initialBpm: {fileID: 201464091}
-  bps: {fileID: 679216261}
-  metronome: {fileID: 1100262309}
 --- !u!1001 &1874739371
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57373,6 +57369,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1897794178}
+  firstBeatOffset: {fileID: 1034141443}
+  initialBpm: {fileID: 201464091}
+  bps: {fileID: 679216261}
+  metronome: {fileID: 1100262309}
   beatSnapDividerDisplay: {fileID: 429624351}
   panButton: {fileID: 581482938}
   noteToolButton: {fileID: 1794443977}
