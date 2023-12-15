@@ -6,8 +6,9 @@ using UnityEngine;
 public class PatternPanelToolbar : MonoBehaviour
 {
     public PatternPanel panel;
-
     public TextMeshProUGUI beatSnapDividerDisplay;
+
+    [Header("Tools and note types")]
     public MaterialToggleButton panButton;
     public MaterialToggleButton noteToolButton;
     public MaterialToggleButton rectangleToolButton;
@@ -16,7 +17,11 @@ public class PatternPanelToolbar : MonoBehaviour
     public MaterialToggleButton anchorButton;
     public List<NoteTypeButton> noteTypeButtons;
 
-    #region Event handler
+    [Header("Dialogs")]
+    public TimeEventDialog timeEventDialog;
+    public RadarDialog radarDialog;
+
+    #region Tools and note types
     private void ChangeTool(PatternPanel.Tool newTool)
     {
         PatternPanel.tool = newTool;
@@ -58,7 +63,95 @@ public class PatternPanelToolbar : MonoBehaviour
         panel.ChangeNoteType(clickedButton.type);
         RefreshToolAndNoteTypeButtons();
     }
+    #endregion
 
+    #region Dialogs
+    public void OnTimeEventButtonClick()
+    {
+        int scanlineIntPulse = (int)panel.workspace.scanlineFloatPulse;
+        BpmEvent currentBpmEvent = EditorContext.Pattern.bpmEvents.
+            Find((BpmEvent e) =>
+            {
+                return e.pulse == scanlineIntPulse;
+            });
+        TimeStop currentTimeStop = EditorContext.Pattern.timeStops.
+            Find((TimeStop t) =>
+            {
+                return t.pulse == scanlineIntPulse;
+            });
+
+        timeEventDialog.Show(currentBpmEvent, currentTimeStop,
+            (double? newBpm, int? newTimeStopPulses) =>
+            {
+                bool bpmEventChanged = true, timeStopChanged = true;
+                if (currentBpmEvent == null && newBpm == null)
+                {
+                    bpmEventChanged = false;
+                }
+                if (currentBpmEvent != null && newBpm != null &&
+                    currentBpmEvent.bpm == newBpm.Value)
+                {
+                    bpmEventChanged = false;
+                }
+                if (newTimeStopPulses.HasValue &&
+                    newTimeStopPulses.Value == 0)
+                {
+                    newTimeStopPulses = null;
+                }
+                if (currentTimeStop == null && newTimeStopPulses == null)
+                {
+                    timeStopChanged = false;
+                }
+                if (currentTimeStop != null && newTimeStopPulses != null
+                    && currentTimeStop.duration == newTimeStopPulses.Value)
+                {
+                    timeStopChanged = false;
+                }
+                bool anyChange = bpmEventChanged || timeStopChanged;
+                if (!anyChange)
+                {
+                    return;
+                }
+
+                panel.ChangeTimeEvent(scanlineIntPulse,
+                    newBpm, newTimeStopPulses);
+                panel.workspace.DestroyAndRespawnAllMarkers();
+            });
+    }
+
+    public void OnInspectButtonClick()
+    {
+        List<Note> notesWithIssue = new List<Note>();
+        string issue = EditorContext.Pattern.Inspect(notesWithIssue);
+        if (issue == null)
+        {
+            panel.snackbar.Show(L10n.GetString(
+                "pattern_inspection_no_issue"));
+        }
+        else
+        {
+            panel.snackbar.Show(issue);
+            panel.selectedNotes.Clear();
+            foreach (Note n in notesWithIssue)
+            {
+                panel.selectedNotes.Add(n);
+            }
+            // Scroll the first selected note into view.
+            if (panel.selectedNotes.Count > 0)
+            {
+                panel.workspace.ScrollNoteIntoView(notesWithIssue[0]);
+            }
+            panel.NotifySelectionChanged();
+        }
+    }
+
+    public void OnRadarButtonClick()
+    {
+        radarDialog.Show();
+    }
+    #endregion
+
+    #region Beat snap divisor
     public void OnBeatSnapDivisorChanged(int direction)
     {
         int divisor = Options.instance.editorOptions.beatSnapDivisor;

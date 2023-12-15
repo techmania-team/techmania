@@ -37,7 +37,7 @@ public class PatternPanel : MonoBehaviour
     public Slider scanlinePositionSlider;
     public Snackbar snackbar;
     public MessageDialog messageDialog;
-    public TimeEventDialog timeEventDialog;
+    
     public RadarDialog radarDialog;
 
     [Header("Preview")]
@@ -169,7 +169,7 @@ public class PatternPanel : MonoBehaviour
             UpdatePlayback();
         }
         if (messageDialog.gameObject.activeSelf ||
-            timeEventDialog.gameObject.activeSelf ||
+            toolbar.timeEventDialog.gameObject.activeSelf ||
             optionsTab.activeSelf)
         {
             return;
@@ -238,7 +238,7 @@ public class PatternPanel : MonoBehaviour
             }
         }
         // To update note detail sheet.
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
 
     private void OnRedo(EditTransaction transaction)
@@ -290,7 +290,7 @@ public class PatternPanel : MonoBehaviour
             }
         }
         // To update note detail sheet.
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
 
     // Calls one of AddNote, AddHoldNote and AddDragNote.
@@ -448,85 +448,6 @@ public class PatternPanel : MonoBehaviour
         workspace.UpdateNumScansAndRelatedUI();
     }
 
-    public void OnTimeEventButtonClick()
-    {
-        int scanlineIntPulse = (int)workspace.scanlineFloatPulse;
-        BpmEvent currentBpmEvent = EditorContext.Pattern.bpmEvents.
-            Find((BpmEvent e) =>
-        {
-            return e.pulse == scanlineIntPulse;
-        });
-        TimeStop currentTimeStop = EditorContext.Pattern.timeStops.
-            Find((TimeStop t) =>
-        {
-            return t.pulse == scanlineIntPulse;
-        });
-
-        timeEventDialog.Show(currentBpmEvent, currentTimeStop,
-            (double? newBpm, int? newTimeStopPulses) =>
-        {
-            bool bpmEventChanged = true, timeStopChanged = true;
-            if (currentBpmEvent == null && newBpm == null)
-            {
-                bpmEventChanged = false;
-            }
-            if (currentBpmEvent != null && newBpm != null &&
-                currentBpmEvent.bpm == newBpm.Value)
-            {
-                bpmEventChanged = false;
-            }
-            if (newTimeStopPulses.HasValue &&
-                newTimeStopPulses.Value == 0)
-            {
-                newTimeStopPulses = null;
-            }
-            if (currentTimeStop == null && newTimeStopPulses == null)
-            {
-                timeStopChanged = false;
-            }
-            if (currentTimeStop != null && newTimeStopPulses != null
-                && currentTimeStop.duration == newTimeStopPulses.Value)
-            {
-                timeStopChanged = false;
-            }
-            bool anyChange = bpmEventChanged || timeStopChanged;
-            if (!anyChange)
-            {
-                return;
-            }
-
-            EditorContext.PrepareToModifyTimeEvent();
-            // Delete event.
-            EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
-            {
-                return e.pulse == scanlineIntPulse;
-            });
-            EditorContext.Pattern.timeStops.RemoveAll((TimeStop t) =>
-            {
-                return t.pulse == scanlineIntPulse;
-            });
-            // Add event if there is one.
-            if (newBpm.HasValue)
-            {
-                EditorContext.Pattern.bpmEvents.Add(new BpmEvent()
-                {
-                    pulse = scanlineIntPulse,
-                    bpm = newBpm.Value
-                });
-            }
-            if (newTimeStopPulses.HasValue)
-            {
-                EditorContext.Pattern.timeStops.Add(new TimeStop()
-                {
-                    pulse = scanlineIntPulse,
-                    duration = newTimeStopPulses.Value
-                });
-            }
-
-            workspace.DestroyAndRespawnAllMarkers();
-        });
-    }
-
     public void ChangeNoteType(NoteType newType)
     {
         tool = Tool.Note;
@@ -635,12 +556,39 @@ public class PatternPanel : MonoBehaviour
         EditorContext.EndTransaction();
 
         selectedNotes = newSelection;
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
 
-    private void UpdateToolAndNoteTypeButtons()
+    public void ChangeTimeEvent(int pulse,
+        double? newBpm, int? newTimeStopPulses)
     {
-        
+        EditorContext.PrepareToModifyTimeEvent();
+        // Delete event.
+        EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
+        {
+            return e.pulse == pulse;
+        });
+        EditorContext.Pattern.timeStops.RemoveAll((TimeStop t) =>
+        {
+            return t.pulse == pulse;
+        });
+        // Add event if there is one.
+        if (newBpm.HasValue)
+        {
+            EditorContext.Pattern.bpmEvents.Add(new BpmEvent()
+            {
+                pulse = pulse,
+                bpm = newBpm.Value
+            });
+        }
+        if (newTimeStopPulses.HasValue)
+        {
+            EditorContext.Pattern.timeStops.Add(new TimeStop()
+            {
+                pulse = pulse,
+                duration = newTimeStopPulses.Value
+            });
+        }
     }
 
     public void OnScanlinePositionSliderValueChanged(float newValue)
@@ -727,37 +675,6 @@ public class PatternPanel : MonoBehaviour
 
         previewButton.GetComponent<CustomTransitionToEditorPreview>()
             .Invoke();
-    }
-
-    public void OnInspectButtonClick()
-    {
-        List<Note> notesWithIssue = new List<Note>();
-        string issue = EditorContext.Pattern.Inspect(notesWithIssue);
-        if (issue == null)
-        {
-            snackbar.Show(L10n.GetString(
-                "pattern_inspection_no_issue"));
-        }
-        else
-        {
-            snackbar.Show(issue);
-            selectedNotes.Clear();
-            foreach (Note n in notesWithIssue)
-            {
-                selectedNotes.Add(n);
-            }
-            // Scroll the first selected note into view.
-            if (selectedNotes.Count > 0)
-            {
-                workspace.ScrollNoteIntoView(notesWithIssue[0]);
-            }
-            SelectionChanged?.Invoke(selectedNotes);
-        }
-    }
-
-    public void OnRadarButtonClick()
-    {
-        radarDialog.Show();
     }
     #endregion
 
@@ -1206,7 +1123,7 @@ public class PatternPanel : MonoBehaviour
         SetEndOfScanOnSelectedNotes(!currentValue);
 
         // Force the side sheet to update.
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
 
     public void SetEndOfScanOnSelectedNotes(bool newValue)
@@ -1246,7 +1163,7 @@ public class PatternPanel : MonoBehaviour
         {
             selectedNotes.Add(n);
         }
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
 
         // SelectAll is the only way of selection that can affect
         // notes outside the view port. So:
@@ -1256,7 +1173,7 @@ public class PatternPanel : MonoBehaviour
     public void SelectNone()
     {
         selectedNotes.Clear();
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
 
     public void CutSelection()
@@ -1389,7 +1306,7 @@ public class PatternPanel : MonoBehaviour
         EditorContext.EndTransaction();
 
         selectedNotes.Clear();
-        SelectionChanged?.Invoke(selectedNotes);
+        NotifySelectionChanged();
     }
     #endregion
 
