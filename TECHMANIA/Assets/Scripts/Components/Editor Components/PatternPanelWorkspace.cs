@@ -107,7 +107,7 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region MonoBehavior APIs
-    private void OnEnable()
+    public void InternalOnEnable()
     {
         // Hidden lanes
         hiddenLaneBackground.anchorMin = Vector2.zero;
@@ -150,7 +150,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
     }
 
-    private void OnDisable()
+    public void InternalOnDisable()
     {
         NoteInEditor.LeftClicked -= OnNoteObjectLeftClick;
         NoteInEditor.RightClicked -= OnNoteObjectRightClick;
@@ -319,7 +319,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         {
             scanlineFloatPulse = pulse;
             ScrollScanlineIntoView();
-            panel.RefreshPlaybackBar();
+            panel.playbackBar.Refresh();
         };
         float pulsesPerScan =
             EditorContext.Pattern.patternMetadata.bps *
@@ -760,7 +760,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         int snappedCursorPulse = panel.SnapPulse(cursorPulse);
 
         scanlineFloatPulse = snappedCursorPulse;
-        panel.RefreshPlaybackBar();
+        panel.playbackBar.Refresh();
     }
 
     public void RefreshKeysoundDisplay(Note n)
@@ -1630,6 +1630,7 @@ public class PatternPanelWorkspace : MonoBehaviour
 
     public void ResizeWorkspace()
     {
+        Debug.Log($"Resizing workspace content to: {WorkspaceContentWidth}, {WorkspaceContentHeight}");
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
             WorkspaceContentHeight);

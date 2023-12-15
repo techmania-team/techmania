@@ -31,7 +31,7 @@ public class PatternPanelToolbar : MonoBehaviour
 
     public static event UnityAction TimingUpdated;
 
-    private void OnEnable()
+    public void InternalOnEnable()
     {
         SetTextFieldInteractable(true);
         RefreshTimingTabDisplay();
@@ -42,7 +42,7 @@ public class PatternPanelToolbar : MonoBehaviour
         PatternPanel.PlaybackStopped += OnPlaybackStopped;
     }
 
-    private void OnDisable()
+    public void InternalOnDisable()
     {
         Options.instance.SaveToFile(Paths.GetOptionsFilePath());
 

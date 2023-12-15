@@ -13,9 +13,6 @@ public class PatternPanel : MonoBehaviour
     public RectTransform rootCanvas;
     public CanvasGroup canvasGroup;
 
-    public PatternPanelWorkspace workspace;
-    public PatternPanelToolbar toolbar;
-
     [Header("Audio")]
     public AudioManager audioManager;
     public AudioClip metronome1;
@@ -29,19 +26,14 @@ public class PatternPanel : MonoBehaviour
     public GameObject optionsTab;
 
     [Header("UI")]
+    public PatternPanelToolbar toolbar;
+    public PatternPanelWorkspace workspace;
+    public PatternPanelPlaybackBar playbackBar;
     public KeysoundSideSheet keysoundSheet;
-    public GameObject playButton;
-    public GameObject stopButton;
-    public GameObject audioLoadingIndicator;
-    public TextMeshProUGUI timeDisplay;
-    public Slider scanlinePositionSlider;
     public Snackbar snackbar;
     public MessageDialog messageDialog;
-    
-    public RadarDialog radarDialog;
 
     [Header("Preview")]
-    public Button previewButton;
     private float? scanlinePulseBeforePreview;
 
     #region Internal Data Structures
@@ -104,9 +96,6 @@ public class PatternPanel : MonoBehaviour
     {
         Options.RefreshInstance();
 
-        // Scanline
-        scanlinePositionSlider.SetValueWithoutNotify(0f);
-
         // UI and options
         tool = Tool.Note;
         noteType = NoteType.Basic;
@@ -117,10 +106,15 @@ public class PatternPanel : MonoBehaviour
         // Playback
         audioLoaded = false;
         isPlaying = false;
-        UpdatePlaybackUI();
+        playbackBar.UpdatePlaybackUI();
         ResourceLoader.CacheAudioResources(
             EditorContext.trackFolder,
             cacheAudioCompleteCallback: OnResourceLoadComplete);
+
+        // UI parts
+        toolbar.InternalOnEnable();
+        workspace.InternalOnEnable();
+        playbackBar.InternalOnEnable();
 
         Refresh();
         SelectionChanged += RefreshNotesInViewportWhenSelectionChanged;
@@ -139,7 +133,7 @@ public class PatternPanel : MonoBehaviour
                 scanlinePulseBeforePreview.Value;
             workspace.ScrollScanlineIntoView();
             scanlinePulseBeforePreview = null;
-            RefreshPlaybackBar();
+            playbackBar.Refresh();
         }
 
         DiscordController.SetActivity(
@@ -148,6 +142,11 @@ public class PatternPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        // UI parts
+        toolbar.InternalOnDisable();
+        workspace.InternalOnDisable();
+        playbackBar.InternalOnDisable();
+
         StopPlayback();
         SelectionChanged -= RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked -= OnUndo;
@@ -591,19 +590,6 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    public void OnScanlinePositionSliderValueChanged(float newValue)
-    {
-        if (isPlaying) return;
-
-        int totalPulses = workspace.numScans
-            * EditorContext.Pattern.patternMetadata.bps
-            * Pattern.pulsesPerBeat;
-        workspace.scanlineFloatPulse = totalPulses * newValue;
-        workspace.ScrollScanlineIntoView();
-
-        RefreshScanlineTimeDisplay();
-    }
-
     private void OnSelectedKeysoundsUpdated(List<string> keysounds)
     {
         if (selectedNotes == null ||
@@ -664,17 +650,9 @@ public class PatternPanel : MonoBehaviour
         KeysoundVisibilityChanged?.Invoke();
     }
 
-    public void OnPreviewButtonClicked()
+    public void RecordScanlinePulseBeforePreview()
     {
-        EditorContext.previewStartingScan =
-            Mathf.FloorToInt(
-                workspace.scanlineFloatPulse / 
-                Pattern.pulsesPerBeat /
-                EditorContext.Pattern.patternMetadata.bps);
         scanlinePulseBeforePreview = workspace.scanlineFloatPulse;
-
-        previewButton.GetComponent<CustomTransitionToEditorPreview>()
-            .Invoke();
     }
     #endregion
 
@@ -687,28 +665,7 @@ public class PatternPanel : MonoBehaviour
         workspace.UpdateNumScans();
         workspace.DestroyAndRespawnAllMarkers();
         workspace.ResizeWorkspace();
-        RefreshPlaybackBar();
-    }
-
-    private void RefreshScanlineTimeDisplay()
-    {
-        float scanlineTime = EditorContext.Pattern.PulseToTime(
-            (int)workspace.scanlineFloatPulse);
-        timeDisplay.text = UIUtils.FormatTime(scanlineTime,
-            includeMillisecond: true);
-    }
-
-    // This includes both the time display and slider.
-    public void RefreshPlaybackBar()
-    {
-        RefreshScanlineTimeDisplay();
-
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-        float scanlineNormalizedPosition = workspace.scanlineFloatPulse /
-            (workspace.numScans * bps * Pattern.pulsesPerBeat);
-       
-        scanlinePositionSlider.SetValueWithoutNotify(
-            scanlineNormalizedPosition);
+        playbackBar.Refresh();
     }
     #endregion
 
@@ -1319,7 +1276,7 @@ public class PatternPanel : MonoBehaviour
     //   specified in options
     // - Moving the scanline, including by clicking the header
     //   and dragging the scanline position slider.
-    private bool audioLoaded;
+    public bool audioLoaded { get; private set; }
     public bool isPlaying { get; private set; }
     private float playbackStartingPulse;
     private float playbackStartingTime;
@@ -1345,36 +1302,17 @@ public class PatternPanel : MonoBehaviour
                 status.errorMessage));
         }
         audioLoaded = true;
-        playButton.GetComponent<Button>().interactable =
-            status.Ok();
-        UpdatePlaybackUI();
-    }
-
-    private void UpdatePlaybackUI()
-    {
-        if (audioLoaded)
-        {
-            playButton.SetActive(!isPlaying);
-            stopButton.SetActive(isPlaying);
-        }
-        else
-        {
-            playButton.SetActive(false);
-            stopButton.SetActive(false);
-        }
-        audioLoadingIndicator.SetActive(!audioLoaded);
-        scanlinePositionSlider.interactable = !isPlaying;
-        previewButton.interactable = audioLoaded;
+        playbackBar.EnablePlayButton(status.Ok());
+        playbackBar.UpdatePlaybackUI();
     }
 
     public void StartPlayback()
     {
         if (!audioLoaded) return;
         if (isPlaying) return;
-        if (!playButton.GetComponent<Button>().interactable)
-            return;
+        if (!playbackBar.playButtonEnabled) return;
         isPlaying = true;
-        UpdatePlaybackUI();
+        playbackBar.UpdatePlaybackUI();
 
         Pattern pattern = EditorContext.Pattern;
         pattern.PrepareForTimeCalculation();
@@ -1426,14 +1364,14 @@ public class PatternPanel : MonoBehaviour
 
         if (!isPlaying) return;
         isPlaying = false;
-        UpdatePlaybackUI();
+        playbackBar.UpdatePlaybackUI();
 
         if (Options.instance.editorOptions.returnScanlineAfterPlayback)
         {
             workspace.scanlineFloatPulse = playbackStartingPulse;
         }
         workspace.ScrollScanlineIntoView();
-        RefreshPlaybackBar();
+        playbackBar.Refresh();
 
         PlaybackStopped?.Invoke();
     }
@@ -1512,7 +1450,7 @@ public class PatternPanel : MonoBehaviour
         // Move scanline.
         workspace.scanlineFloatPulse = playbackCurrentPulse;
         workspace.ScrollScanlineIntoView();
-        RefreshPlaybackBar();
+        playbackBar.Refresh();
     }
 
     public void PreviewKeysound(Note n)
