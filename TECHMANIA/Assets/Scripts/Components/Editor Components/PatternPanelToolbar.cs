@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-// First beat offset, initial BPM, BPS and metronome are handled by
-// PatternTimingTab, which is less tightly coupled with PatternPanel.
 public class PatternPanelToolbar : MonoBehaviour
 {
     public PatternPanel panel;
