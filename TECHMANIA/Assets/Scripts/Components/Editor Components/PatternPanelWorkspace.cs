@@ -148,6 +148,8 @@ public class PatternPanelWorkspace : MonoBehaviour
         NoteInEditor.ControlPointBeginDrag += OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag += OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag += OnControlPointEndDrag;
+        PatternPanel.SelectionChanged += OnSelectionChanged;
+        PatternPanelToolbar.TimingUpdated += OnPatternTimingUpdated;
     }
 
     public void InternalOnDisable()
@@ -171,6 +173,8 @@ public class PatternPanelWorkspace : MonoBehaviour
         NoteInEditor.ControlPointBeginDrag -= OnControlPointBeginDrag;
         NoteInEditor.ControlPointDrag -= OnControlPointDrag;
         NoteInEditor.ControlPointEndDrag -= OnControlPointEndDrag;
+        PatternPanel.SelectionChanged -= OnSelectionChanged;
+        PatternPanelToolbar.TimingUpdated -= OnPatternTimingUpdated;
     }
 
     // Update is called once per frame
@@ -362,7 +366,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         CalculateCursorPulseAndLane(mousePositionOverride,
             out unsnappedCursorPulse, out unsnappedCursorLane);
 
-        int snappedCursorPulse = panel.SnapPulse(unsnappedCursorPulse);
+        int snappedCursorPulse = SnapPulse(unsnappedCursorPulse);
         int snappedCursorLane =
             Mathf.FloorToInt(unsnappedCursorLane + 0.5f);
 
@@ -405,6 +409,11 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region Events From Workspace and NoteObjects
+    private void OnSelectionChanged(HashSet<Note> _)
+    {
+        RefreshNotesInViewport();
+    }
+
     public void OnWorkspaceScrollRectValueChanged()
     {
         RefreshNotesInViewport();
@@ -549,7 +558,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         }
         if (panel.isPlaying) return;
 
-        panel.AddNoteAsTransaction(
+        panel.AddNoteOfCurrentTypeAsTransaction(
             noteCursor.note.pulse, noteCursor.note.lane);
     }
 
@@ -757,7 +766,7 @@ public class PatternPanelWorkspace : MonoBehaviour
         int bps = EditorContext.Pattern.patternMetadata.bps;
         float cursorScan = pointInHeader.x / ScanWidth;
         float cursorPulse = cursorScan * bps * Pattern.pulsesPerBeat;
-        int snappedCursorPulse = panel.SnapPulse(cursorPulse);
+        int snappedCursorPulse = SnapPulse(cursorPulse);
 
         scanlineFloatPulse = snappedCursorPulse;
         panel.playbackBar.Refresh();
@@ -786,6 +795,13 @@ public class PatternPanelWorkspace : MonoBehaviour
         o.GetComponent<NoteInEditor>().ResetCurve();
         o.GetComponent<NoteInEditor>().
             ResetAllAnchorsAndControlPoints();
+    }
+
+    public void OnPatternTimingUpdated()
+    {
+        DestroyAndRespawnAllMarkers();
+        RepositionNotes();
+        UpdateNumScansAndRelatedUI();
     }
     #endregion
 
@@ -1630,7 +1646,6 @@ public class PatternPanelWorkspace : MonoBehaviour
 
     public void ResizeWorkspace()
     {
-        Debug.Log($"Resizing workspace content to: {WorkspaceContentWidth}, {WorkspaceContentHeight}");
         workspaceContent.sizeDelta = new Vector2(
             WorkspaceContentWidth,
             WorkspaceContentHeight);
@@ -2357,6 +2372,16 @@ public class PatternPanelWorkspace : MonoBehaviour
     #endregion
 
     #region Utilities
+    private int SnapPulse(float rawPulse)
+    {
+        int pulsesPerDivision = Pattern.pulsesPerBeat
+            / Options.instance.editorOptions.beatSnapDivisor;
+        int snappedPulse = Mathf.RoundToInt(
+            rawPulse / pulsesPerDivision)
+            * pulsesPerDivision;
+        return snappedPulse;
+    }
+
     public void ScrollScanlineIntoView()
     {
         if (!Options.instance.editorOptions.keepScanlineInView) return;

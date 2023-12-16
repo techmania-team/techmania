@@ -22,10 +22,8 @@ public class PatternPanel : MonoBehaviour
     private FmodSoundWrap metronome2Sound;
     private FmodSoundWrap assistTickSound;
 
-    [Header("Options")]
-    public GameObject optionsTab;
-
     [Header("UI")]
+    public GameObject optionsTab;
     public PatternPanelToolbar toolbar;
     public PatternPanelWorkspace workspace;
     public PatternPanelPlaybackBar playbackBar;
@@ -33,16 +31,10 @@ public class PatternPanel : MonoBehaviour
     public Snackbar snackbar;
     public MessageDialog messageDialog;
 
-    [Header("Preview")]
     private float? scanlinePulseBeforePreview;
 
     #region Internal Data Structures
     public HashSet<Note> selectedNotes;
-
-    private Note GetNoteFromGameObject(GameObject o)
-    {
-        return o.GetComponent<NoteObject>().note;
-    }
 
     // Clipboard stores notes instead of GameObjects,
     // so we are free of Unity stuff such as MonoBehaviors and
@@ -66,6 +58,18 @@ public class PatternPanel : MonoBehaviour
         Anchor
     }
     public static Tool tool;
+
+    public bool UsingRectangleTool()
+    {
+        return tool == Tool.Rectangle ||
+            tool == Tool.RectangleAppend ||
+            tool == Tool.RectangleSubtract;
+    }
+
+    private Note GetNoteFromGameObject(GameObject o)
+    {
+        return o.GetComponent<NoteObject>().note;
+    }
     #endregion
 
     #region Vertical Spacing
@@ -117,16 +121,14 @@ public class PatternPanel : MonoBehaviour
         playbackBar.InternalOnEnable();
 
         Refresh();
-        SelectionChanged += RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked += OnUndo;
         EditorContext.RedoInvoked += OnRedo;
         KeysoundSideSheet.selectedKeysoundsUpdated += 
             OnSelectedKeysoundsUpdated;
-        PatternPanelToolbar.TimingUpdated += OnPatternTimingUpdated;
         EditorOptionsTab.Opened += OnOptionsTabOpened;
         EditorOptionsTab.Closed += OnOptionsTabClosed;
 
-        // Restore editing session
+        // Restore editing session if returning from preview
         if (scanlinePulseBeforePreview.HasValue)
         {
             workspace.scanlineFloatPulse = 
@@ -148,12 +150,10 @@ public class PatternPanel : MonoBehaviour
         playbackBar.InternalOnDisable();
 
         StopPlayback();
-        SelectionChanged -= RefreshNotesInViewportWhenSelectionChanged;
         EditorContext.UndoInvoked -= OnUndo;
         EditorContext.RedoInvoked -= OnRedo;
         KeysoundSideSheet.selectedKeysoundsUpdated -= 
             OnSelectedKeysoundsUpdated;
-        PatternPanelToolbar.TimingUpdated -= OnPatternTimingUpdated;
         EditorOptionsTab.Opened -= OnOptionsTabOpened;
         EditorOptionsTab.Closed -= OnOptionsTabClosed;
 
@@ -195,7 +195,7 @@ public class PatternPanel : MonoBehaviour
             switch (op.type)
             {
                 case EditOperation.Type.Metadata:
-                    OnPatternTimingUpdated();
+                    workspace.OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
                     workspace.DestroyAndRespawnAllMarkers();
@@ -217,7 +217,7 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.DeleteNote:
                     {
                         Note n = op.deletedNote;
-                        GenericAddNote(n);
+                        AddExistingNote(n);
                     }
                     break;
                 case EditOperation.Type.ModifyNote:
@@ -247,7 +247,7 @@ public class PatternPanel : MonoBehaviour
             switch (op.type)
             {
                 case EditOperation.Type.Metadata:
-                    OnPatternTimingUpdated();
+                    workspace.OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
                     workspace.DestroyAndRespawnAllMarkers();
@@ -255,7 +255,7 @@ public class PatternPanel : MonoBehaviour
                 case EditOperation.Type.AddNote:
                     {
                         Note n = op.addedNote;
-                        GenericAddNote(n);
+                        AddExistingNote(n);
                     }
                     break;
                 case EditOperation.Type.DeleteNote:
@@ -290,35 +290,6 @@ public class PatternPanel : MonoBehaviour
         }
         // To update note detail sheet.
         NotifySelectionChanged();
-    }
-
-    // Calls one of AddNote, AddHoldNote and AddDragNote.
-    private void GenericAddNote(Note n)
-    {
-        switch (n.type)
-        {
-            case NoteType.Basic:
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-            case NoteType.RepeatHead:
-            case NoteType.Repeat:
-                AddNote(n.type, n.pulse, n.lane, n.sound,
-                    n.volumePercent, n.panPercent, n.endOfScan);
-                break;
-            case NoteType.Hold:
-            case NoteType.RepeatHeadHold:
-            case NoteType.RepeatHold:
-                AddHoldNote(n.type, n.pulse, n.lane,
-                    (n as HoldNote).duration, n.sound,
-                    n.volumePercent, n.panPercent, n.endOfScan);
-                break;
-            case NoteType.Drag:
-                AddDragNote(n.pulse, n.lane,
-                    (n as DragNote).nodes, n.sound,
-                    n.volumePercent, n.panPercent,
-                    (n as DragNote).curveType);
-                break;
-        }
     }
     #endregion
 
@@ -414,53 +385,399 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
     
-    #region Events From Workspace and NoteObjects
-    private void RefreshNotesInViewportWhenSelectionChanged(
-        HashSet<Note> _)
-    {
-        workspace.RefreshNotesInViewport();
-    }
-
-    public void NotifySelectionChanged()
-    {
-        SelectionChanged?.Invoke(selectedNotes);
-    }
-
-    public void ToggleSelection(Note n)
-    {
-        if (selectedNotes.Contains(n))
-        {
-            selectedNotes.Remove(n);
-        }
-        else
-        {
-            selectedNotes.Add(n);
-        }
-    }
-    #endregion
-
     #region UI Events And Updates
-    private void OnPatternTimingUpdated()
-    {
-        workspace.DestroyAndRespawnAllMarkers();
-        workspace.RepositionNotes();
-        workspace.UpdateNumScansAndRelatedUI();
-    }
-
     public void ChangeNoteType(NoteType newType)
     {
         tool = Tool.Note;
         noteType = newType;
 
         // Apply to selection if asked to.
-        if (!Options.instance.editorOptions
-            .applyNoteTypeToSelection)
+        if (Options.instance.editorOptions
+            .applyNoteTypeToSelection &&
+            !isPlaying &&
+            selectedNotes.Count > 0)
         {
+            ApplyNoteTypeToSelection(newType);
+        }
+    }
+
+    public void ChangeTimeEvent(int pulse,
+        double? newBpm, int? newTimeStopPulses)
+    {
+        EditorContext.PrepareToModifyTimeEvent();
+        // Delete event.
+        EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
+        {
+            return e.pulse == pulse;
+        });
+        EditorContext.Pattern.timeStops.RemoveAll((TimeStop t) =>
+        {
+            return t.pulse == pulse;
+        });
+        // Add event if there is one.
+        if (newBpm.HasValue)
+        {
+            EditorContext.Pattern.bpmEvents.Add(new BpmEvent()
+            {
+                pulse = pulse,
+                bpm = newBpm.Value
+            });
+        }
+        if (newTimeStopPulses.HasValue)
+        {
+            EditorContext.Pattern.timeStops.Add(new TimeStop()
+            {
+                pulse = pulse,
+                duration = newTimeStopPulses.Value
+            });
+        }
+    }
+
+    private void OnSelectedKeysoundsUpdated(List<string> keysounds)
+    {
+        if (selectedNotes == null) return;
+        if (Options.instance.editorOptions
+            .applyKeysoundToSelection &&
+            !isPlaying &&
+            selectedNotes.Count > 0)
+        {
+            ApplyKeysoundsToSelection(keysounds);
+        }
+    }
+
+    private void OnOptionsTabOpened()
+    {
+        canvasGroup.alpha = 0f;
+    }
+
+    private void OnOptionsTabClosed()
+    {
+        canvasGroup.alpha = 1f;
+        KeysoundVisibilityChanged?.Invoke();
+    }
+
+    public void RecordScanlinePulseBeforePreview()
+    {
+        scanlinePulseBeforePreview = workspace.scanlineFloatPulse;
+    }
+    #endregion
+
+    #region Refreshing
+    // This deletes and respawns everything, therefore is extremely
+    // slow.
+    private void Refresh()
+    {
+        workspace.DestroyAndSpawnExistingNotes();
+        workspace.UpdateNumScans();
+        workspace.DestroyAndRespawnAllMarkers();
+        workspace.ResizeWorkspace();
+        playbackBar.Refresh();
+    }
+    #endregion
+
+    #region Note utilities
+    private void GetPreviousAndNextNotes(
+        Note n, HashSet<NoteType> types,
+        int minLaneInclusive, int maxLaneInclusive,
+        out Note prev, out Note next)
+    {
+        prev = EditorContext.Pattern
+            .GetClosestNoteBefore(n.pulse, types,
+            minLaneInclusive,
+            maxLaneInclusive);
+        next = EditorContext.Pattern
+            .GetClosestNoteAfter(n.pulse, types,
+            minLaneInclusive,
+            maxLaneInclusive);
+    }
+
+    public void GetPreviousAndNextChainNotes(Note n,
+        out Note prev, out Note next)
+    {
+        GetPreviousAndNextNotes( n,
+            new HashSet<NoteType>()
+                { NoteType.ChainHead, NoteType.ChainNode },
+            minLaneInclusive: 0,
+            maxLaneInclusive: PlayableLanes - 1,
+            out prev, out next);
+    }
+
+    public void GetPreviousAndNextRepeatNotes(Note n,
+        out Note prev, out Note next)
+    {
+        GetPreviousAndNextNotes(n,
+            new HashSet<NoteType>()
+                { NoteType.RepeatHead,
+                NoteType.RepeatHeadHold,
+                NoteType.Repeat,
+                NoteType.RepeatHold},
+            minLaneInclusive: n.lane,
+            maxLaneInclusive: n.lane,
+            out prev, out next);
+    }
+
+    private int HoldNoteDefaultDuration(int pulse, int lane)
+    {
+        Note noteAfterPivot = EditorContext.Pattern
+            .GetClosestNoteAfter(
+                pulse, types: null,
+                minLaneInclusive: lane,
+                maxLaneInclusive: lane);
+        if (noteAfterPivot != null)
+        {
+            int nextPulse = noteAfterPivot.pulse;
+            if (nextPulse - pulse <= Pattern.pulsesPerBeat)
+            {
+                return nextPulse - pulse - 1;
+            }
+        }
+        return Pattern.pulsesPerBeat;
+    }
+    #endregion
+
+    #region Can we add a note here?
+    public bool CanAddNote(NoteType type, int pulse, int lane,
+        out string reason)
+    {
+        return CanAddNote(type, pulse, lane, null, out reason);
+    }
+
+    public bool CanAddNote(NoteType type, int pulse, int lane,
+        HashSet<Note> ignoredExistingNotes,
+        out string reason)
+    {
+        return EditorContext.Pattern.CanAddNote(
+            type, pulse, lane, PatternPanelWorkspace.TotalLanes,
+            ignoredExistingNotes, out reason);
+    }
+
+    public bool CanAddHoldNote(NoteType type, int pulse, int lane,
+        int duration, HashSet<Note> ignoredExistingNotes,
+        out string reason)
+    {
+        return EditorContext.Pattern.CanAddHoldNote(
+            type, pulse, lane, PatternPanelWorkspace.TotalLanes, duration,
+            ignoredExistingNotes, out reason);
+    }
+
+    public bool CanAddDragNote(int pulse, int lane,
+        List<DragNode> nodes,
+        HashSet<Note> ignoredExistingNotes,
+        out string reason)
+    {
+        return CanAddNote(NoteType.Drag, pulse, lane,
+            ignoredExistingNotes, out reason);
+    }
+    #endregion
+
+    #region Adding notes
+    // Called at the end of Add(|Hold|Drag)Note.
+    private GameObject FinishAddNote(Note n)
+    {
+        // Add to pattern.
+        EditorContext.Pattern.notes.Add(n);
+
+        // Add to UI. SpawnNoteObject will add n to
+        // noteToNoteObject.
+        return workspace.CreateNewNoteObject(n);
+    }
+
+    // The Add(|Hold|Drag)Note methods add the note to the pattern
+    // and UI, but do NOT create a transaction. That's up to the caller.
+    private GameObject AddNote(NoteType type, int pulse, int lane,
+        string sound,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
+        bool endOfScan = false)
+    {
+        Note n = new Note()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane,
+            sound = sound,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
+            endOfScan = endOfScan
+        };
+        return FinishAddNote(n);
+    }
+
+    private GameObject AddHoldNote(NoteType type,
+        int pulse, int lane, int? duration, string sound,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
+        bool endOfScan = false)
+    {
+        if (!duration.HasValue)
+        {
+            if (workspace.lastClickedNote != null &&
+                workspace.lastClickedNote.type == type)
+            {
+                // Attempt to inherit duration of last clicked note.
+                if (CanAddHoldNote(type, pulse, lane,
+                    (workspace.lastClickedNote as HoldNote).duration,
+                    null, out _))
+                {
+                    duration = (workspace.lastClickedNote
+                        as HoldNote).duration;
+                }
+            }
+
+            if (!duration.HasValue)
+            {
+                // If the above failed, then use default duration.
+                duration = HoldNoteDefaultDuration(pulse, lane);
+            }
+        }
+        HoldNote n = new HoldNote()
+        {
+            type = type,
+            pulse = pulse,
+            lane = lane,
+            sound = sound,
+            duration = duration.Value,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
+            endOfScan = endOfScan
+        };
+        return FinishAddNote(n);
+    }
+
+    private GameObject AddDragNote(int pulse, int lane,
+        List<DragNode> nodes, string sound,
+        int volumePercent = Note.defaultVolume,
+        int panPercent = Note.defaultPan,
+        CurveType curveType = CurveType.Bezier)
+    {
+        if (nodes == null)
+        {
+            nodes = new List<DragNode>();
+            if (workspace.lastClickedNote != null &&
+                workspace.lastClickedNote.type == NoteType.Drag)
+            {
+                // Inherit nodes from the last clicked note.
+                foreach (DragNode node in
+                    (workspace.lastClickedNote as DragNote).nodes)
+                {
+                    nodes.Add(node.Clone());
+                }
+            }
+            else
+            {
+                // Calculate default duration as hold note and
+                // use that to create node #1.
+                int relativePulseOfLastNode =
+                    HoldNoteDefaultDuration(pulse, lane);
+                nodes.Add(new DragNode()
+                {
+                    anchor = new FloatPoint(0f, 0f),
+                    controlLeft = new FloatPoint(0f, 0f),
+                    controlRight = new FloatPoint(0f, 0f)
+                });
+                nodes.Add(new DragNode()
+                {
+                    anchor = new FloatPoint(relativePulseOfLastNode, 0f),
+                    controlLeft = new FloatPoint(0f, 0f),
+                    controlRight = new FloatPoint(0f, 0f)
+                });
+            }
+        }
+        DragNote n = new DragNote()
+        {
+            type = NoteType.Drag,
+            pulse = pulse,
+            lane = lane,
+            sound = sound,
+            nodes = nodes,
+            volumePercent = volumePercent,
+            panPercent = panPercent,
+            curveType = curveType
+        };
+        return FinishAddNote(n);
+    }
+
+    // Called from undo and redo.
+    // Calls one of AddNote, AddHoldNote and AddDragNote, without
+    // validation.
+    private void AddExistingNote(Note n)
+    {
+        switch (n.type)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                AddNote(n.type, n.pulse, n.lane, n.sound,
+                    n.volumePercent, n.panPercent, n.endOfScan);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                AddHoldNote(n.type, n.pulse, n.lane,
+                    (n as HoldNote).duration, n.sound,
+                    n.volumePercent, n.panPercent, n.endOfScan);
+                break;
+            case NoteType.Drag:
+                AddDragNote(n.pulse, n.lane,
+                    (n as DragNote).nodes, n.sound,
+                    n.volumePercent, n.panPercent,
+                    (n as DragNote).curveType);
+                break;
+        }
+    }
+
+    // The only public method to add a note.
+    // Called from workspace.
+    // Calls one of AddNote, AddHoldNote and AddDragNote.
+    // Will create a transaction.
+    // Will show snack bar if the added note is invalid.
+    public void AddNoteOfCurrentTypeAsTransaction(int pulse, int lane)
+    {
+        string invalidReason;
+        // No need to call CanAddHoldNote or CanAddDragNote here
+        // because durations and curves are flexible.
+        if (!CanAddNote(noteType, pulse, lane, out invalidReason))
+        {
+            snackbar.Show(invalidReason);
             return;
         }
-        if (isPlaying) return;
-        if (selectedNotes.Count == 0) return;
 
+        string sound = keysoundSheet.UpcomingKeysound();
+        keysoundSheet.AdvanceUpcoming();
+        EditorContext.BeginTransaction();
+        GameObject newNote = null;
+        switch (noteType)
+        {
+            case NoteType.Basic:
+            case NoteType.ChainHead:
+            case NoteType.ChainNode:
+            case NoteType.RepeatHead:
+            case NoteType.Repeat:
+                newNote = AddNote(noteType, pulse, lane, sound);
+                break;
+            case NoteType.Hold:
+            case NoteType.RepeatHeadHold:
+            case NoteType.RepeatHold:
+                newNote = AddHoldNote(noteType, pulse, lane,
+                    duration: null, sound);
+                break;
+            case NoteType.Drag:
+                newNote = AddDragNote(pulse, lane,
+                    nodes: null, sound);
+                break;
+        }
+
+        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
+        EditorContext.EndTransaction();
+    }
+    #endregion
+
+    #region Editing notes
+    // Will create transaction, add and delete notes, and reset selection.
+    private void ApplyNoteTypeToSelection(NoteType newType)
+    {
         HashSet<Note> newSelection = new HashSet<Note>();
         EditorContext.BeginTransaction();
         foreach (Note n in selectedNotes)
@@ -558,48 +875,9 @@ public class PatternPanel : MonoBehaviour
         NotifySelectionChanged();
     }
 
-    public void ChangeTimeEvent(int pulse,
-        double? newBpm, int? newTimeStopPulses)
+    // Will create transaction, modify notes, and refresh keysound display.
+    private void ApplyKeysoundsToSelection(List<string> keysounds)
     {
-        EditorContext.PrepareToModifyTimeEvent();
-        // Delete event.
-        EditorContext.Pattern.bpmEvents.RemoveAll((BpmEvent e) =>
-        {
-            return e.pulse == pulse;
-        });
-        EditorContext.Pattern.timeStops.RemoveAll((TimeStop t) =>
-        {
-            return t.pulse == pulse;
-        });
-        // Add event if there is one.
-        if (newBpm.HasValue)
-        {
-            EditorContext.Pattern.bpmEvents.Add(new BpmEvent()
-            {
-                pulse = pulse,
-                bpm = newBpm.Value
-            });
-        }
-        if (newTimeStopPulses.HasValue)
-        {
-            EditorContext.Pattern.timeStops.Add(new TimeStop()
-            {
-                pulse = pulse,
-                duration = newTimeStopPulses.Value
-            });
-        }
-    }
-
-    private void OnSelectedKeysoundsUpdated(List<string> keysounds)
-    {
-        if (selectedNotes == null ||
-            selectedNotes.Count == 0) return;
-        if (!Options.instance.editorOptions
-            .applyKeysoundToSelection)
-        {
-            return;
-        }
-        if (isPlaying) return;
         if (keysounds.Count == 0)
         {
             keysounds.Add("");
@@ -639,180 +917,42 @@ public class PatternPanel : MonoBehaviour
         }
     }
 
-    private void OnOptionsTabOpened()
+    // This one is public, as it can be called from NoteDetailSideSheet.
+    // Will create transaction, modify notes and refresh end-of-scan
+    // display.
+    public void ApplyEndOfScanToSelection(bool newValue)
     {
-        canvasGroup.alpha = 0f;
-    }
-
-    private void OnOptionsTabClosed()
-    {
-        canvasGroup.alpha = 1f;
-        KeysoundVisibilityChanged?.Invoke();
-    }
-
-    public void RecordScanlinePulseBeforePreview()
-    {
-        scanlinePulseBeforePreview = workspace.scanlineFloatPulse;
-    }
-    #endregion
-
-    #region Refreshing
-    // This deletes and respawns everything, therefore is extremely
-    // slow.
-    private void Refresh()
-    {
-        workspace.DestroyAndSpawnExistingNotes();
-        workspace.UpdateNumScans();
-        workspace.DestroyAndRespawnAllMarkers();
-        workspace.ResizeWorkspace();
-        playbackBar.Refresh();
-    }
-    #endregion
-
-    #region Spawning
-    private void GetPreviousAndNextNotes(
-        Note n, HashSet<NoteType> types,
-        int minLaneInclusive, int maxLaneInclusive,
-        out Note prev, out Note next)
-    {
-        prev = EditorContext.Pattern
-            .GetClosestNoteBefore(n.pulse, types,
-            minLaneInclusive,
-            maxLaneInclusive);
-        next = EditorContext.Pattern
-            .GetClosestNoteAfter(n.pulse, types,
-            minLaneInclusive,
-            maxLaneInclusive);
-    }
-
-    public void GetPreviousAndNextChainNotes(Note n,
-        out Note prev, out Note next)
-    {
-        GetPreviousAndNextNotes( n,
-            new HashSet<NoteType>()
-                { NoteType.ChainHead, NoteType.ChainNode },
-            minLaneInclusive: 0,
-            maxLaneInclusive: PlayableLanes - 1,
-            out prev, out next);
-    }
-
-    public void GetPreviousAndNextRepeatNotes(Note n,
-        out Note prev, out Note next)
-    {
-        GetPreviousAndNextNotes(n,
-            new HashSet<NoteType>()
-                { NoteType.RepeatHead,
-                NoteType.RepeatHeadHold,
-                NoteType.Repeat,
-                NoteType.RepeatHold},
-            minLaneInclusive: n.lane,
-            maxLaneInclusive: n.lane,
-            out prev, out next);
-    }
-    #endregion
-
-    #region Pattern Modification
-    public bool CanAddNote(NoteType type, int pulse, int lane,
-        out string reason)
-    {
-        return CanAddNote(type, pulse, lane, null, out reason);
-    }
-
-    public bool CanAddNote(NoteType type, int pulse, int lane,
-        HashSet<Note> ignoredExistingNotes,
-        out string reason)
-    {
-        return EditorContext.Pattern.CanAddNote(
-            type, pulse, lane, PatternPanelWorkspace.TotalLanes,
-            ignoredExistingNotes, out reason);
-    }
-
-    public bool CanAddHoldNote(NoteType type, int pulse, int lane,
-        int duration, HashSet<Note> ignoredExistingNotes,
-        out string reason)
-    {
-        return EditorContext.Pattern.CanAddHoldNote(
-            type, pulse, lane, PatternPanelWorkspace.TotalLanes, duration,
-            ignoredExistingNotes, out reason);
-    }
-
-    public bool CanAddDragNote(int pulse, int lane,
-        List<DragNode> nodes,
-        HashSet<Note> ignoredExistingNotes,
-        out string reason)
-    {
-        return CanAddNote(NoteType.Drag, pulse, lane,
-            ignoredExistingNotes, out reason);
-    }
-
-    private int HoldNoteDefaultDuration(int pulse, int lane)
-    {
-        Note noteAfterPivot = EditorContext.Pattern
-            .GetClosestNoteAfter(
-                pulse, types: null,
-                minLaneInclusive: lane,
-                maxLaneInclusive: lane);
-        if (noteAfterPivot != null)
-        {
-            int nextPulse = noteAfterPivot.pulse;
-            if (nextPulse - pulse <= Pattern.pulsesPerBeat)
-            {
-                return nextPulse - pulse - 1;
-            }
-        }
-        return Pattern.pulsesPerBeat;
-    }
-
-    private GameObject FinishAddNote(Note n)
-    {
-        // Add to pattern.
-        EditorContext.Pattern.notes.Add(n);
-
-        // Add to UI. SpawnNoteObject will add n to
-        // noteToNoteObject.
-        return workspace.CreateNewNoteObject(n);
-    }
-
-    // Intended to be called from workspace.
-    // Will show snack bar if the added note is invalid.
-    public void AddNoteAsTransaction(int pulse, int lane)
-    {
-        string invalidReason;
-        // No need to call CanAddHoldNote or CanAddDragNote here
-        // because durations and curves are flexible.
-        if (!CanAddNote(noteType, pulse, lane, out invalidReason))
-        {
-            snackbar.Show(invalidReason);
-            return;
-        }
-
-        string sound = keysoundSheet.UpcomingKeysound();
-        keysoundSheet.AdvanceUpcoming();
         EditorContext.BeginTransaction();
-        GameObject newNote = null;
-        switch (noteType)
+        foreach (Note n in selectedNotes)
         {
-            case NoteType.Basic:
-            case NoteType.ChainHead:
-            case NoteType.ChainNode:
-            case NoteType.RepeatHead:
-            case NoteType.Repeat:
-                newNote = AddNote(noteType, pulse, lane, sound);
-                break;
-            case NoteType.Hold:
-            case NoteType.RepeatHeadHold:
-            case NoteType.RepeatHold:
-                newNote = AddHoldNote(noteType, pulse, lane,
-                    duration: null, sound);
-                break;
-            case NoteType.Drag:
-                newNote = AddDragNote(pulse, lane,
-                    nodes: null, sound);
-                break;
+            EditOperation op = EditorContext
+                .BeginModifyNoteOperation();
+            op.noteBeforeOp = n.Clone();
+            n.endOfScan = newValue;
+            op.noteAfterOp = n.Clone();
         }
-
-        EditorContext.RecordAddedNote(GetNoteFromGameObject(newNote));
         EditorContext.EndTransaction();
+
+        foreach (Note n in selectedNotes)
+        {
+            workspace.RefreshEndOfScanIndicator(n);
+        }
+    }
+
+    // Called from keyboard shortcut
+    private void ToggleEndOfScanOnSelectedNotes()
+    {
+        if (selectedNotes.Count == 0) return;
+        bool currentValue = false;
+        foreach (Note n in selectedNotes)
+        {
+            currentValue = n.endOfScan;
+            break;
+        }
+        ApplyEndOfScanToSelection(!currentValue);
+
+        // Force the side sheet to update.
+        NotifySelectionChanged();
     }
 
     // Intended to be called from workspace.
@@ -932,120 +1072,10 @@ public class PatternPanel : MonoBehaviour
         selectedNotes = replacedSelection;
         NotifySelectionChanged();
     }
+    #endregion
 
-    private GameObject AddNote(NoteType type, int pulse, int lane,
-        string sound,
-        int volumePercent = Note.defaultVolume,
-        int panPercent = Note.defaultPan,
-        bool endOfScan = false)
-    {
-        Note n = new Note()
-        {
-            type = type,
-            pulse = pulse,
-            lane = lane,
-            sound = sound,
-            volumePercent = volumePercent,
-            panPercent = panPercent,
-            endOfScan = endOfScan
-        };
-        return FinishAddNote(n);
-    }
-
-    private GameObject AddHoldNote(NoteType type,
-        int pulse, int lane, int? duration, string sound,
-        int volumePercent = Note.defaultVolume,
-        int panPercent = Note.defaultPan,
-        bool endOfScan = false)
-    {
-        if (!duration.HasValue)
-        {
-            if (workspace.lastClickedNote != null &&
-                workspace.lastClickedNote.type == type)
-            {
-                // Attempt to inherit duration of last clicked note.
-                if (CanAddHoldNote(type, pulse, lane,
-                    (workspace.lastClickedNote as HoldNote).duration,
-                    null, out _))
-                {
-                    duration = (workspace.lastClickedNote
-                        as HoldNote).duration;
-                }
-            }
-
-            if (!duration.HasValue)
-            {
-                // If the above failed, then use default duration.
-                duration = HoldNoteDefaultDuration(pulse, lane);
-            }
-        }
-        HoldNote n = new HoldNote()
-        {
-            type = type,
-            pulse = pulse,
-            lane = lane,
-            sound = sound,
-            duration = duration.Value,
-            volumePercent = volumePercent,
-            panPercent = panPercent,
-            endOfScan = endOfScan
-        };
-        return FinishAddNote(n);
-    }
-
-    private GameObject AddDragNote(int pulse, int lane,
-        List<DragNode> nodes, string sound,
-        int volumePercent = Note.defaultVolume,
-        int panPercent = Note.defaultPan,
-        CurveType curveType = CurveType.Bezier)
-    {
-        if (nodes == null)
-        {
-            nodes = new List<DragNode>();
-            if (workspace.lastClickedNote != null &&
-                workspace.lastClickedNote.type == NoteType.Drag)
-            {
-                // Inherit nodes from the last clicked note.
-                foreach (DragNode node in
-                    (workspace.lastClickedNote as DragNote).nodes)
-                {
-                    nodes.Add(node.Clone());
-                }
-            }
-            else
-            {
-                // Calculate default duration as hold note and
-                // use that to create node #1.
-                int relativePulseOfLastNode =
-                    HoldNoteDefaultDuration(pulse, lane);
-                nodes.Add(new DragNode()
-                {
-                    anchor = new FloatPoint(0f, 0f),
-                    controlLeft = new FloatPoint(0f, 0f),
-                    controlRight = new FloatPoint(0f, 0f)
-                });
-                nodes.Add(new DragNode()
-                {
-                    anchor = new FloatPoint(relativePulseOfLastNode, 0f),
-                    controlLeft = new FloatPoint(0f, 0f),
-                    controlRight = new FloatPoint(0f, 0f)
-                });
-            }
-        }
-        DragNote n = new DragNote()
-        {
-            type = NoteType.Drag,
-            pulse = pulse,
-            lane = lane,
-            sound = sound,
-            nodes = nodes,
-            volumePercent = volumePercent,
-            panPercent = panPercent,
-            curveType = curveType
-        };
-        return FinishAddNote(n);
-    }
-
+    #region Deleting notes
+    // Does not create a transaction.
     // Cannot remove n from selectedNotes because the
     // caller may be enumerating that list.
     private void DeleteNote(Note n)
@@ -1057,7 +1087,9 @@ public class PatternPanel : MonoBehaviour
         EditorContext.Pattern.notes.Remove(n);
     }
 
-    // Intended to be called from workspace.
+    // The only public method to delete a note.
+    // Called from workspace.
+    // Creates a transaction.
     public void DeleteNoteAsTransaction(Note n)
     {
         EditorContext.BeginTransaction();
@@ -1067,52 +1099,26 @@ public class PatternPanel : MonoBehaviour
         EditorContext.EndTransaction();
         NotifySelectionChanged();
     }
-
-    private void ToggleEndOfScanOnSelectedNotes()
-    {
-        if (selectedNotes.Count == 0) return;
-        bool currentValue = false;
-        foreach (Note n in selectedNotes)
-        {
-            currentValue = n.endOfScan;
-            break;
-        }
-        SetEndOfScanOnSelectedNotes(!currentValue);
-
-        // Force the side sheet to update.
-        NotifySelectionChanged();
-    }
-
-    public void SetEndOfScanOnSelectedNotes(bool newValue)
-    {
-        EditorContext.BeginTransaction();
-        foreach (Note n in selectedNotes)
-        {
-            EditOperation op = EditorContext
-                .BeginModifyNoteOperation();
-            op.noteBeforeOp = n.Clone();
-            n.endOfScan = newValue;
-            op.noteAfterOp = n.Clone();
-        }
-        EditorContext.EndTransaction();
-
-        foreach (Note n in selectedNotes)
-        {
-            workspace.RefreshEndOfScanIndicator(n);
-        }
-    }
-    #endregion
-
-    #region Rectangle Tool
-    public bool UsingRectangleTool()
-    {
-        return tool == Tool.Rectangle ||
-            tool == Tool.RectangleAppend ||
-            tool == Tool.RectangleSubtract;
-    }
     #endregion
 
     #region Selection And Clipboard
+    public void NotifySelectionChanged()
+    {
+        SelectionChanged?.Invoke(selectedNotes);
+    }
+
+    public void ToggleSelection(Note n)
+    {
+        if (selectedNotes.Contains(n))
+        {
+            selectedNotes.Remove(n);
+        }
+        else
+        {
+            selectedNotes.Add(n);
+        }
+    }
+
     public void SelectAll()
     {
         selectedNotes.Clear();
@@ -1453,7 +1459,7 @@ public class PatternPanel : MonoBehaviour
         playbackBar.Refresh();
     }
 
-    public void PreviewKeysound(Note n)
+    private void PreviewKeysound(Note n)
     {
         if (keysoundPreviewChannel != null)
         {
@@ -1466,18 +1472,6 @@ public class PatternPanel : MonoBehaviour
             EditorContext.Pattern.ShouldPlayInMusicChannel(n.lane),
             0f,
             n.volumePercent, n.panPercent);
-    }
-    #endregion
-
-    #region Utilities
-    public int SnapPulse(float rawPulse)
-    {
-        int pulsesPerDivision = Pattern.pulsesPerBeat
-            / Options.instance.editorOptions.beatSnapDivisor;
-        int snappedPulse = Mathf.RoundToInt(
-            rawPulse / pulsesPerDivision)
-            * pulsesPerDivision;
-        return snappedPulse;
     }
     #endregion
 }

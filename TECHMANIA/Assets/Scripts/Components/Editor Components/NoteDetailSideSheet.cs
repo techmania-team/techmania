@@ -176,7 +176,7 @@ public class NoteDetailSideSheet : MonoBehaviour
 
     public void OnEndOfScanToggleValueChanged(bool newValue)
     {
-        patternPanel.SetEndOfScanOnSelectedNotes(newValue);
+        patternPanel.ApplyEndOfScanToSelection(newValue);
     }
 
     public void OnBSplineToggleValueChanged(bool newValue)
