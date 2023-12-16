@@ -894,42 +894,10 @@ public class PatternPanelWorkspace : MonoBehaviour
             initialHoldNoteBeingAdjusted.GetComponent<NoteObject>().
             note.pulse;
         int deltaDuration = newDuration - oldDuration;
+        panel.ChangeHoldNoteDurationAsTransaction(holdNotesBeingAdjusted,
+            deltaDuration);
 
-        // Is the adjustment valid?
-        bool adjustable = true;
-        foreach (Note n in holdNotesBeingAdjusted)
-        {
-            HoldNote holdNote = n as HoldNote;
-            oldDuration = holdNote.duration;
-            newDuration = oldDuration + deltaDuration;
-            string reason;
-            if (!EditorContext.Pattern.CanAdjustHoldNoteDuration(
-                holdNote, newDuration, out reason))
-            {
-                panel.snackbar.Show(reason);
-                adjustable = false;
-                break;
-            }
-        }
-
-        if (adjustable)
-        {
-            // Apply adjustment. No need to delete and respawn notes
-            // this time.
-            EditorContext.BeginTransaction();
-            foreach (Note n in holdNotesBeingAdjusted)
-            {
-                EditOperation op = EditorContext
-                    .BeginModifyNoteOperation();
-                HoldNote holdNote = n as HoldNote;
-                op.noteBeforeOp = holdNote.Clone();
-                holdNote.duration += deltaDuration;
-                op.noteAfterOp = holdNote.Clone();
-            }
-            EditorContext.EndTransaction();
-            UpdateNumScansAndRelatedUI();
-        }
-
+        UpdateNumScansAndRelatedUI();
         foreach (Note n in holdNotesBeingAdjusted)
         {
             GameObject o = GetGameObjectFromNote(n);

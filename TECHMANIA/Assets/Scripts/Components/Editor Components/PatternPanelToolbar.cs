@@ -33,7 +33,7 @@ public class PatternPanelToolbar : MonoBehaviour
 
     public void InternalOnEnable()
     {
-        SetTextFieldInteractable(true);
+        SetTextFieldsInteractable(true);
         RefreshTimingTabDisplay();
 
         EditorContext.UndoInvoked += OnUndoRedo;
@@ -67,12 +67,12 @@ public class PatternPanelToolbar : MonoBehaviour
 
     private void OnPlaybackStarted()
     {
-        SetTextFieldInteractable(false);
+        SetTextFieldsInteractable(false);
     }
 
     private void OnPlaybackStopped()
     {
-        SetTextFieldInteractable(true);
+        SetTextFieldsInteractable(true);
     }
     #endregion
 
@@ -150,7 +150,7 @@ public class PatternPanelToolbar : MonoBehaviour
         Options.instance.editorOptions.metronome = metronome.isOn;
     }
 
-    private void SetTextFieldInteractable(bool interactable)
+    private void SetTextFieldsInteractable(bool interactable)
     {
         firstBeatOffset.interactable = interactable;
         initialBpm.interactable = interactable;
@@ -199,6 +199,28 @@ public class PatternPanelToolbar : MonoBehaviour
     {
         panel.ChangeNoteType(clickedButton.type);
         RefreshToolAndNoteTypeButtons();
+    }
+
+    public void RefreshToolAndNoteTypeButtons()
+    {
+        panButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.Pan);
+        noteToolButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.Note);
+        rectangleToolButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.Rectangle);
+        rectangleAppendButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.RectangleAppend);
+        rectangleSubtractButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.RectangleSubtract);
+        anchorButton.SetIsOn(
+            PatternPanel.tool == PatternPanel.Tool.Anchor);
+        foreach (NoteTypeButton b in noteTypeButtons)
+        {
+            b.GetComponent<MaterialToggleButton>().SetIsOn(
+                PatternPanel.tool == PatternPanel.Tool.Note &&
+                b.type == panel.noteType);
+        }
     }
     #endregion
 
@@ -309,30 +331,6 @@ public class PatternPanelToolbar : MonoBehaviour
         Options.instance.editorOptions.beatSnapDivisor =
             divisor;
         RefreshBeatSnapDivisorDisplay();
-    }
-    #endregion
-
-    #region UI refreshing
-    public void RefreshToolAndNoteTypeButtons()
-    {
-        panButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.Pan);
-        noteToolButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.Note);
-        rectangleToolButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.Rectangle);
-        rectangleAppendButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.RectangleAppend);
-        rectangleSubtractButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.RectangleSubtract);
-        anchorButton.SetIsOn(
-            PatternPanel.tool == PatternPanel.Tool.Anchor);
-        foreach (NoteTypeButton b in noteTypeButtons)
-        {
-            b.GetComponent<MaterialToggleButton>().SetIsOn(
-                PatternPanel.tool == PatternPanel.Tool.Note &&
-                b.type == panel.noteType);
-        }
     }
 
     public void RefreshBeatSnapDivisorDisplay()

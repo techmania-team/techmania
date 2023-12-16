@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Forms;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -536,13 +537,13 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Can we add a note here?
-    public bool CanAddNote(NoteType type, int pulse, int lane,
+    private bool CanAddNote(NoteType type, int pulse, int lane,
         out string reason)
     {
         return CanAddNote(type, pulse, lane, null, out reason);
     }
 
-    public bool CanAddNote(NoteType type, int pulse, int lane,
+    private bool CanAddNote(NoteType type, int pulse, int lane,
         HashSet<Note> ignoredExistingNotes,
         out string reason)
     {
@@ -551,7 +552,7 @@ public class PatternPanel : MonoBehaviour
             ignoredExistingNotes, out reason);
     }
 
-    public bool CanAddHoldNote(NoteType type, int pulse, int lane,
+    private bool CanAddHoldNote(NoteType type, int pulse, int lane,
         int duration, HashSet<Note> ignoredExistingNotes,
         out string reason)
     {
@@ -560,7 +561,7 @@ public class PatternPanel : MonoBehaviour
             ignoredExistingNotes, out reason);
     }
 
-    public bool CanAddDragNote(int pulse, int lane,
+    private bool CanAddDragNote(int pulse, int lane,
         List<DragNode> nodes,
         HashSet<Note> ignoredExistingNotes,
         out string reason)
@@ -775,6 +776,46 @@ public class PatternPanel : MonoBehaviour
     #endregion
 
     #region Editing notes
+    // Intended to be called from workspace.
+    // Will show snack bar if the move is invalid.
+    public void ChangeHoldNoteDurationAsTransaction(
+        List<Note> holdNotes, int deltaDuration)
+    {
+        // Is the adjustment valid?
+        bool adjustable = true;
+        foreach (Note n in holdNotes)
+        {
+            HoldNote holdNote = n as HoldNote;
+            int oldDuration = holdNote.duration;
+            int newDuration = oldDuration + deltaDuration;
+            string reason;
+            if (!EditorContext.Pattern.CanAdjustHoldNoteDuration(
+                holdNote, newDuration, out reason))
+            {
+                snackbar.Show(reason);
+                adjustable = false;
+                break;
+            }
+        }
+
+        if (adjustable)
+        {
+            // Apply adjustment. No need to delete and respawn notes
+            // this time.
+            EditorContext.BeginTransaction();
+            foreach (Note n in holdNotes)
+            {
+                EditOperation op = EditorContext
+                    .BeginModifyNoteOperation();
+                HoldNote holdNote = n as HoldNote;
+                op.noteBeforeOp = holdNote.Clone();
+                holdNote.duration += deltaDuration;
+                op.noteAfterOp = holdNote.Clone();
+            }
+            EditorContext.EndTransaction();
+        }
+    }
+
     // Will create transaction, add and delete notes, and reset selection.
     private void ApplyNoteTypeToSelection(NoteType newType)
     {
