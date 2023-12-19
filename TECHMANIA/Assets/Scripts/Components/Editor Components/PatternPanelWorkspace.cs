@@ -50,16 +50,6 @@ public class PatternPanelWorkspace : MonoBehaviour
     public GameObject dragNotePrefab;
     public RectTransform selectionRectangle;
 
-    public float scanlineFloatPulse
-    {
-        get { return scanline.floatPulse; }
-        set
-        {
-            scanline.floatPulse = value;
-            scanline.GetComponent<SelfPositionerInEditor>().Reposition();
-        }
-    }
-
     #region Internal data structures
     // Each NoteObject contains a reference to a Note, and this
     // dictionary is the reverse of that. Only contains the notes
@@ -86,6 +76,16 @@ public class PatternPanelWorkspace : MonoBehaviour
     private Note GetNoteFromGameObject(GameObject o)
     {
         return o.GetComponent<NoteObject>().note;
+    }
+
+    public float scanlineFloatPulse
+    {
+        get { return scanline.floatPulse; }
+        set
+        {
+            scanline.floatPulse = value;
+            scanline.GetComponent<SelfPositionerInEditor>().Reposition();
+        }
     }
     #endregion
 
@@ -383,6 +383,350 @@ public class PatternPanelWorkspace : MonoBehaviour
 
         scanlineFloatPulse = snappedCursorPulse;
         panel.playbackBar.Refresh();
+    }
+    #endregion
+
+    #region Incoming events
+    private void OnSelectionChanged(HashSet<Note> _)
+    {
+        RefreshNotesInViewport();
+    }
+
+    public void OnWorkspaceScrollRectValueChanged()
+    {
+        RefreshNotesInViewport();
+        SynchronizeScrollRects();
+    }
+
+    public void OnPatternTimingUpdated()
+    {
+        DestroyAndRespawnAllMarkers();
+        RepositionNotes();
+        UpdateNumScansAndRelatedUI();
+    }
+    #endregion
+
+    #region Refreshing at scale
+    public void RefreshNotesInViewport()
+    {
+        // Calculate the pulse and lane range visible through the
+        // viewport.
+        Vector2 topLeftOfViewport = new Vector2(
+            workspaceScrollRect.horizontalNormalizedPosition *
+            (WorkspaceContentWidth - workspaceViewport.rect.width),
+            (1f - workspaceScrollRect.verticalNormalizedPosition) *
+            (workspaceViewport.rect.height - WorkspaceContentHeight));
+        if (workspaceViewport.rect.width > WorkspaceContentWidth)
+        {
+            topLeftOfViewport.x = 0f;
+        }
+        Vector2 bottomRightOfViewport = new Vector2(
+            topLeftOfViewport.x + workspaceViewport.rect.width,
+            topLeftOfViewport.y - workspaceViewport.rect.height);
+        float minPulse, maxPulse, minLane, maxLane;
+        PointInNoteContainerToPulseAndLane(
+            topLeftOfViewport, out minPulse, out minLane);
+        PointInNoteContainerToPulseAndLane(
+            bottomRightOfViewport, out maxPulse, out maxLane);
+
+        // Expand the range to compensate for paths, trails and curves.
+        minPulse -= Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps * 2;
+        maxPulse += Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps * 2;
+        minLane -= EditorContext.Pattern.patternMetadata.playableLanes;
+        maxLane += EditorContext.Pattern.patternMetadata.playableLanes;
+
+        // Find all notes that should spawn.
+        Note topLeftNote = new Note()
+        {
+            pulse = Mathf.FloorToInt(minPulse),
+            lane = Mathf.FloorToInt(minLane)
+        };
+        Note bottomRightNote = new Note()
+        {
+            pulse = Mathf.CeilToInt(maxPulse),
+            lane = Mathf.CeilToInt(maxLane)
+        };
+        List<Note> visibleNotes = EditorContext.Pattern
+            .GetRangeBetween(topLeftNote, bottomRightNote);
+        HashSet<Note> visibleNotesAsSet = new HashSet<Note>(
+            visibleNotes);
+        // All selected notes should remain visible.
+        visibleNotesAsSet.UnionWith(panel.selectedNotes);
+
+        // Make a copy of noteToNoteObject because the code below
+        // will modify it.
+        Dictionary<Note, NoteObject> noteToNoteObjectClone
+            = new Dictionary<Note, NoteObject>(noteToNoteObject);
+
+        // Destroy notes that go out of view.
+        foreach (KeyValuePair<Note, NoteObject> pair in
+            noteToNoteObjectClone)
+        {
+            if (!visibleNotesAsSet.Contains(pair.Key))
+            {
+                DeleteNoteObject(pair.Key, pair.Value.gameObject,
+                    intendToDeleteNote: false);
+            }
+        }
+
+        // Spawn notes that come into view.
+        foreach (Note n in visibleNotesAsSet)
+        {
+            if (!noteToNoteObjectClone.ContainsKey(n))
+            {
+                GameObject o = SpawnNoteObject(n);
+                AdjustPathOrTrailAround(o);
+            }
+        }
+    }
+
+    public void DestroyAndSpawnExistingNotes()
+    {
+        for (int i = 0; i < noteContainer.childCount; i++)
+        {
+            Destroy(noteContainer.GetChild(i).gameObject);
+        }
+        noteToNoteObject = new Dictionary<Note, NoteObject>();
+        dragNotes = new HashSet<NoteInEditor>();
+        lastSelectedNoteWithoutShift = null;
+        lastClickedNote = null;
+        panel.selectedNotes = new HashSet<Note>();
+        panel.NotifySelectionChanged();
+
+        RefreshNotesInViewport();
+        AdjustAllPathsAndTrails();
+    }
+
+    public void DestroyAndRespawnAllMarkers()
+    {
+        for (int i = 0; i < markerInHeaderContainer.childCount; i++)
+        {
+            GameObject child = markerInHeaderContainer.GetChild(i)
+                .gameObject;
+            if (child == scanMarkerInHeaderTemplate) continue;
+            if (child == beatMarkerInHeaderTemplate) continue;
+            if (child == bpmMarkerTemplate) continue;
+            if (child == timeStopMarkerTemplate) continue;
+            Destroy(child);
+        }
+        for (int i = 0; i < markerContainer.childCount; i++)
+        {
+            GameObject child = markerContainer.GetChild(i)
+                .gameObject;
+            if (child == scanMarkerTemplate) continue;
+            if (child == beatMarkerTemplate) continue;
+            Destroy(child);
+        }
+
+        EditorContext.Pattern.PrepareForTimeCalculation();
+        int bps = EditorContext.Pattern.patternMetadata.bps;
+
+        for (int scan = 0; scan < numScans; scan++)
+        {
+            GameObject markerInHeader = Instantiate(
+                scanMarkerInHeaderTemplate, markerInHeaderContainer);
+            GameObject marker = Instantiate(
+                scanMarkerTemplate, markerContainer);
+            markerInHeader.SetActive(true);  // This calls OnEnabled
+            marker.SetActive(true);
+
+            int pulse = scan * bps * Pattern.pulsesPerBeat;
+            Marker m = markerInHeader.GetComponent<Marker>();
+            m.pulse = pulse;
+            m.SetTimeDisplay();
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+            m = marker.GetComponent<Marker>();
+            m.pulse = pulse;
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+
+            for (int beat = 1; beat < bps; beat++)
+            {
+                markerInHeader = Instantiate(
+                    beatMarkerInHeaderTemplate,
+                    markerInHeaderContainer);
+                marker = Instantiate(
+                    beatMarkerTemplate,
+                    markerContainer);
+                markerInHeader.SetActive(true);
+                marker.SetActive(true);
+
+                pulse = (scan * bps + beat) *
+                    Pattern.pulsesPerBeat;
+                m = markerInHeader.GetComponent<Marker>();
+                m.pulse = pulse;
+                m.SetTimeDisplay();
+                m.GetComponent<SelfPositionerInEditor>()
+                    .Reposition();
+                m = marker.GetComponent<Marker>();
+                m.pulse = pulse;
+                m.GetComponent<SelfPositionerInEditor>()
+                    .Reposition();
+            }
+        }
+
+        foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
+        {
+            GameObject marker = Instantiate(
+                bpmMarkerTemplate, markerInHeaderContainer);
+            marker.SetActive(true);
+            Marker m = marker.GetComponent<Marker>();
+            m.pulse = e.pulse;
+            m.SetBpmText(e.bpm);
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+        }
+
+        foreach (TimeStop t in EditorContext.Pattern.timeStops)
+        {
+            GameObject marker = Instantiate(
+                timeStopMarkerTemplate, markerInHeaderContainer);
+            marker.SetActive(true);
+            Marker m = marker.GetComponent<Marker>();
+            m.pulse = t.pulse;
+            m.SetTimeStopText(t.duration);
+            m.GetComponent<SelfPositionerInEditor>().Reposition();
+        }
+    }
+
+    private void ResizeWorkspace()
+    {
+        workspaceContent.sizeDelta = new Vector2(
+            WorkspaceContentWidth,
+            WorkspaceContentHeight);
+        workspaceScrollRect.horizontalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.horizontalNormalizedPosition);
+        workspaceScrollRect.verticalNormalizedPosition =
+            Mathf.Clamp01(
+                workspaceScrollRect.verticalNormalizedPosition);
+
+        SynchronizeScrollRects();
+    }
+
+    private void RepositionNotes()
+    {
+        RepositionNeeded?.Invoke();
+    }
+
+    // Returns whether the number changed.
+    // During an editing session the number of scans will never
+    // decrease. This prevents unintended scrolling when deleting
+    // the last notes.
+    private bool UpdateNumScans()
+    {
+        int numScansBackup = numScans;
+
+        int lastPulse = 0;
+        if (EditorContext.Pattern.notes.Count > 0)
+        {
+            lastPulse = EditorContext.Pattern.notes.Max.pulse;
+        }
+        int pulsesPerScan = Pattern.pulsesPerBeat *
+            EditorContext.Pattern.patternMetadata.bps;
+
+        // Look at all hold and drag notes in the last few scans
+        // in case their duration outlasts the currently considered
+        // last scan.
+        foreach (Note n in EditorContext.Pattern.GetViewBetween(
+            minPulseInclusive: lastPulse - pulsesPerScan * 2,
+            maxPulseInclusive: lastPulse))
+        {
+            int endingPulse;
+            if (n is HoldNote)
+            {
+                endingPulse = n.pulse + (n as HoldNote).duration;
+            }
+            else if (n is DragNote)
+            {
+                endingPulse = n.pulse + (n as DragNote).Duration();
+            }
+            else
+            {
+                continue;
+            }
+
+            if (endingPulse > lastPulse)
+            {
+                lastPulse = endingPulse;
+            }
+        }
+
+        int lastScan = lastPulse / pulsesPerScan;
+        // 1 empty scan at the end
+        numScans = Mathf.Max(numScansBackup, lastScan + 2);
+        // Minimal 16 scans
+        numScans = Mathf.Max(numScans, 16);
+
+        return numScans != numScansBackup;
+    }
+
+    public void UpdateNumScansAndRelatedUI()
+    {
+        if (UpdateNumScans())
+        {
+            DestroyAndRespawnAllMarkers();
+            ResizeWorkspace();
+        }
+    }
+
+    private void SynchronizeScrollRects()
+    {
+        headerContent.sizeDelta = new Vector2(
+            workspaceContent.sizeDelta.x,
+            headerContent.sizeDelta.y);
+        headerScrollRect.horizontalNormalizedPosition =
+            workspaceScrollRect.horizontalNormalizedPosition;
+    }
+    #endregion
+
+    #region Refreshing singular notes
+    public void RefreshKeysoundDisplay(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        o.GetComponent<NoteInEditor>().SetKeysoundText();
+        o.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
+    }
+
+    public void RefreshEndOfScanIndicator(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+        o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
+    }
+
+    public void RefreshDragNoteCurve(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+
+        o.GetComponent<NoteInEditor>().ResetCurve();
+        o.GetComponent<NoteInEditor>().
+            ResetAllAnchorsAndControlPoints();
+    }
+
+    // Called on undo and redo.
+    public void RefreshNoteInEditor(Note n)
+    {
+        GameObject o = GetGameObjectFromNote(n);
+        if (o == null) return;
+
+        NoteInEditor e = o.GetComponent<NoteInEditor>();
+        e.SetKeysoundText();
+        e.UpdateEndOfScanIndicator();
+        switch (n.type)
+        {
+            case NoteType.Hold:
+            case NoteType.RepeatHold:
+            case NoteType.RepeatHeadHold:
+                e.ResetTrail();
+                break;
+            case NoteType.Drag:
+                e.ResetCurve();
+                e.ResetAllAnchorsAndControlPoints();
+                break;
+        }
     }
     #endregion
 
@@ -861,456 +1205,6 @@ public class PatternPanelWorkspace : MonoBehaviour
                 yScroll * kVerticalScrollSpeed);
         SynchronizeScrollRects();
         */
-    }
-    #endregion
-
-    #region Unsorted
-    private void OnSelectionChanged(HashSet<Note> _)
-    {
-        RefreshNotesInViewport();
-    }
-
-    public void OnWorkspaceScrollRectValueChanged()
-    {
-        RefreshNotesInViewport();
-        SynchronizeScrollRects();
-    }
-
-    public void RefreshNotesInViewport()
-    {
-        // Calculate the pulse and lane range visible through the
-        // viewport.
-        Vector2 topLeftOfViewport = new Vector2(
-            workspaceScrollRect.horizontalNormalizedPosition *
-            (WorkspaceContentWidth - workspaceViewport.rect.width),
-            (1f - workspaceScrollRect.verticalNormalizedPosition) *
-            (workspaceViewport.rect.height - WorkspaceContentHeight));
-        if (workspaceViewport.rect.width > WorkspaceContentWidth)
-        {
-            topLeftOfViewport.x = 0f;
-        }
-        Vector2 bottomRightOfViewport = new Vector2(
-            topLeftOfViewport.x + workspaceViewport.rect.width,
-            topLeftOfViewport.y - workspaceViewport.rect.height);
-        float minPulse, maxPulse, minLane, maxLane;
-        PointInNoteContainerToPulseAndLane(
-            topLeftOfViewport, out minPulse, out minLane);
-        PointInNoteContainerToPulseAndLane(
-            bottomRightOfViewport, out maxPulse, out maxLane);
-
-        // Expand the range to compensate for paths, trails and curves.
-        minPulse -= Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps * 2;
-        maxPulse += Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps * 2;
-        minLane -= EditorContext.Pattern.patternMetadata.playableLanes;
-        maxLane += EditorContext.Pattern.patternMetadata.playableLanes;
-
-        // Find all notes that should spawn.
-        Note topLeftNote = new Note()
-        {
-            pulse = Mathf.FloorToInt(minPulse),
-            lane = Mathf.FloorToInt(minLane)
-        };
-        Note bottomRightNote = new Note()
-        {
-            pulse = Mathf.CeilToInt(maxPulse),
-            lane = Mathf.CeilToInt(maxLane)
-        };
-        List<Note> visibleNotes = EditorContext.Pattern
-            .GetRangeBetween(topLeftNote, bottomRightNote);
-        HashSet<Note> visibleNotesAsSet = new HashSet<Note>(
-            visibleNotes);
-        // All selected notes should remain visible.
-        visibleNotesAsSet.UnionWith(panel.selectedNotes);
-
-        // Make a copy of noteToNoteObject because the code below
-        // will modify it.
-        Dictionary<Note, NoteObject> noteToNoteObjectClone
-            = new Dictionary<Note, NoteObject>(noteToNoteObject);
-
-        // Destroy notes that go out of view.
-        foreach (KeyValuePair<Note, NoteObject> pair in
-            noteToNoteObjectClone)
-        {
-            if (!visibleNotesAsSet.Contains(pair.Key))
-            {
-                DeleteNoteObject(pair.Key, pair.Value.gameObject,
-                    intendToDeleteNote: false);
-            }
-        }
-
-        // Spawn notes that come into view.
-        foreach (Note n in visibleNotesAsSet)
-        {
-            if (!noteToNoteObjectClone.ContainsKey(n))
-            {
-                GameObject o = SpawnNoteObject(n);
-                AdjustPathOrTrailAround(o);
-            }
-        }
-    }
-
-    public void OnPatternTimingUpdated()
-    {
-        DestroyAndRespawnAllMarkers();
-        RepositionNotes();
-        UpdateNumScansAndRelatedUI();
-    }
-
-    public void DestroyAndSpawnExistingNotes()
-    {
-        for (int i = 0; i < noteContainer.childCount; i++)
-        {
-            Destroy(noteContainer.GetChild(i).gameObject);
-        }
-        noteToNoteObject = new Dictionary<Note, NoteObject>();
-        dragNotes = new HashSet<NoteInEditor>();
-        lastSelectedNoteWithoutShift = null;
-        lastClickedNote = null;
-        panel.selectedNotes = new HashSet<Note>();
-        panel.NotifySelectionChanged();
-
-        RefreshNotesInViewport();
-        AdjustAllPathsAndTrails();
-    }
-
-    public void ResizeWorkspace()
-    {
-        workspaceContent.sizeDelta = new Vector2(
-            WorkspaceContentWidth,
-            WorkspaceContentHeight);
-        workspaceScrollRect.horizontalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.horizontalNormalizedPosition);
-        workspaceScrollRect.verticalNormalizedPosition =
-            Mathf.Clamp01(
-                workspaceScrollRect.verticalNormalizedPosition);
-
-        SynchronizeScrollRects();
-    }
-
-    private void RepositionNotes()
-    {
-        RepositionNeeded?.Invoke();
-    }
-
-    // Returns whether the number changed.
-    // During an editing session the number of scans will never
-    // decrease. This prevents unintended scrolling when deleting
-    // the last notes.
-    private bool UpdateNumScans()
-    {
-        int numScansBackup = numScans;
-
-        int lastPulse = 0;
-        if (EditorContext.Pattern.notes.Count > 0)
-        {
-            lastPulse = EditorContext.Pattern.notes.Max.pulse;
-        }
-        int pulsesPerScan = Pattern.pulsesPerBeat *
-            EditorContext.Pattern.patternMetadata.bps;
-
-        // Look at all hold and drag notes in the last few scans
-        // in case their duration outlasts the currently considered
-        // last scan.
-        foreach (Note n in EditorContext.Pattern.GetViewBetween(
-            minPulseInclusive: lastPulse - pulsesPerScan * 2,
-            maxPulseInclusive: lastPulse))
-        {
-            int endingPulse;
-            if (n is HoldNote)
-            {
-                endingPulse = n.pulse + (n as HoldNote).duration;
-            }
-            else if (n is DragNote)
-            {
-                endingPulse = n.pulse + (n as DragNote).Duration();
-            }
-            else
-            {
-                continue;
-            }
-
-            if (endingPulse > lastPulse)
-            {
-                lastPulse = endingPulse;
-            }
-        }
-
-        int lastScan = lastPulse / pulsesPerScan;
-        // 1 empty scan at the end
-        numScans = Mathf.Max(numScansBackup, lastScan + 2);
-        // Minimal 16 scans
-        numScans = Mathf.Max(numScans, 16);
-
-        return numScans != numScansBackup;
-    }
-
-    public void UpdateNumScansAndRelatedUI()
-    {
-        if (UpdateNumScans())
-        {
-            DestroyAndRespawnAllMarkers();
-            ResizeWorkspace();
-        }
-    }
-
-    // This will call Reposition on the new object.
-    private GameObject SpawnNoteObject(Note n)
-    {
-        GameObject prefab;
-        switch (n.type)
-        {
-            case NoteType.Basic:
-                prefab = basicNotePrefab;
-                break;
-            case NoteType.ChainHead:
-                prefab = chainHeadPrefab;
-                break;
-            case NoteType.ChainNode:
-                prefab = chainNodePrefab;
-                break;
-            case NoteType.RepeatHead:
-                prefab = repeatHeadPrefab;
-                break;
-            case NoteType.RepeatHeadHold:
-                prefab = repeatHeadHoldPrefab;
-                break;
-            case NoteType.Repeat:
-                prefab = repeatNotePrefab;
-                break;
-            case NoteType.RepeatHold:
-                prefab = repeatHoldPrefab;
-                break;
-            case NoteType.Hold:
-                prefab = holdNotePrefab;
-                break;
-            case NoteType.Drag:
-                prefab = dragNotePrefab;
-                break;
-            default:
-                Debug.LogError("Unknown note type: " + n.type);
-                prefab = basicNotePrefab;
-                break;
-        }
-
-        NoteObject noteObject =
-            Instantiate(prefab, noteContainer)
-            .GetComponent<NoteObject>();
-        noteObject.note = n;
-        NoteInEditor noteInEditor = noteObject
-            .GetComponent<NoteInEditor>();
-        noteInEditor.SetKeysoundText();
-        noteInEditor.UpdateKeysoundVisibility();
-        noteInEditor.UpdateEndOfScanIndicator();
-        noteInEditor.SetSprite(hidden: n.lane >=
-            PatternPanel.PlayableLanes);
-        noteInEditor.UpdateSelection(panel.selectedNotes);
-        noteObject.GetComponent<SelfPositionerInEditor>()
-            .Reposition();
-
-        noteToNoteObject.Add(n, noteObject);
-        if (n.type == NoteType.Drag)
-        {
-            dragNotes.Add(noteInEditor);
-        }
-
-        // Binary search the appropriate sibling index of
-        // new note, so all notes are drawn from right to left.
-        //
-        // More specifically, we are looking for the smallest-index
-        // sibling that's located on the left of the new note.
-        if (noteContainer.childCount == 1)
-        {
-            return noteObject.gameObject;
-        }
-        float targetX = noteObject.transform.position.x;
-        int first = 0;
-        int last = noteContainer.childCount - 2;
-        while (true)
-        {
-            float firstX = noteContainer.GetChild(first).position.x;
-            float lastX = noteContainer.GetChild(last).position.x;
-            if (firstX <= targetX)
-            {
-                noteObject.transform.SetSiblingIndex(first);
-                break;
-            }
-            if (lastX >= targetX)
-            {
-                noteObject.transform.SetSiblingIndex(last + 1);
-                break;
-            }
-            // Now we know for sure that lastX < targetX < firstX.
-            int middle = (first + last) / 2;
-            float middleX = noteContainer.GetChild(middle)
-                .position.x;
-            if (middleX == targetX)
-            {
-                noteObject.transform.SetSiblingIndex(middle);
-                break;
-            }
-            if (middleX < targetX)
-            {
-                last = middle - 1;
-            }
-            else  // middleX > targetX
-            {
-                first = middle + 1;
-            }
-        }
-
-        return noteObject.gameObject;
-    }
-
-    public void DestroyAndRespawnAllMarkers()
-    {
-        for (int i = 0; i < markerInHeaderContainer.childCount; i++)
-        {
-            GameObject child = markerInHeaderContainer.GetChild(i)
-                .gameObject;
-            if (child == scanMarkerInHeaderTemplate) continue;
-            if (child == beatMarkerInHeaderTemplate) continue;
-            if (child == bpmMarkerTemplate) continue;
-            if (child == timeStopMarkerTemplate) continue;
-            Destroy(child);
-        }
-        for (int i = 0; i < markerContainer.childCount; i++)
-        {
-            GameObject child = markerContainer.GetChild(i)
-                .gameObject;
-            if (child == scanMarkerTemplate) continue;
-            if (child == beatMarkerTemplate) continue;
-            Destroy(child);
-        }
-
-        EditorContext.Pattern.PrepareForTimeCalculation();
-        int bps = EditorContext.Pattern.patternMetadata.bps;
-
-        for (int scan = 0; scan < numScans; scan++)
-        {
-            GameObject markerInHeader = Instantiate(
-                scanMarkerInHeaderTemplate, markerInHeaderContainer);
-            GameObject marker = Instantiate(
-                scanMarkerTemplate, markerContainer);
-            markerInHeader.SetActive(true);  // This calls OnEnabled
-            marker.SetActive(true);
-
-            int pulse = scan * bps * Pattern.pulsesPerBeat;
-            Marker m = markerInHeader.GetComponent<Marker>();
-            m.pulse = pulse;
-            m.SetTimeDisplay();
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-            m = marker.GetComponent<Marker>();
-            m.pulse = pulse;
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-
-            for (int beat = 1; beat < bps; beat++)
-            {
-                markerInHeader = Instantiate(
-                    beatMarkerInHeaderTemplate,
-                    markerInHeaderContainer);
-                marker = Instantiate(
-                    beatMarkerTemplate,
-                    markerContainer);
-                markerInHeader.SetActive(true);
-                marker.SetActive(true);
-
-                pulse = (scan * bps + beat) *
-                    Pattern.pulsesPerBeat;
-                m = markerInHeader.GetComponent<Marker>();
-                m.pulse = pulse;
-                m.SetTimeDisplay();
-                m.GetComponent<SelfPositionerInEditor>()
-                    .Reposition();
-                m = marker.GetComponent<Marker>();
-                m.pulse = pulse;
-                m.GetComponent<SelfPositionerInEditor>()
-                    .Reposition();
-            }
-        }
-
-        foreach (BpmEvent e in EditorContext.Pattern.bpmEvents)
-        {
-            GameObject marker = Instantiate(
-                bpmMarkerTemplate, markerInHeaderContainer);
-            marker.SetActive(true);
-            Marker m = marker.GetComponent<Marker>();
-            m.pulse = e.pulse;
-            m.SetBpmText(e.bpm);
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-        }
-
-        foreach (TimeStop t in EditorContext.Pattern.timeStops)
-        {
-            GameObject marker = Instantiate(
-                timeStopMarkerTemplate, markerInHeaderContainer);
-            marker.SetActive(true);
-            Marker m = marker.GetComponent<Marker>();
-            m.pulse = t.pulse;
-            m.SetTimeStopText(t.duration);
-            m.GetComponent<SelfPositionerInEditor>().Reposition();
-        }
-    }
-
-    private void SynchronizeScrollRects()
-    {
-        headerContent.sizeDelta = new Vector2(
-            workspaceContent.sizeDelta.x,
-            headerContent.sizeDelta.y);
-        headerScrollRect.horizontalNormalizedPosition =
-            workspaceScrollRect.horizontalNormalizedPosition;
-    }
-    #endregion
-
-    #region Refreshing singular notes
-    public void RefreshKeysoundDisplay(Note n)
-    {
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-        o.GetComponent<NoteInEditor>().SetKeysoundText();
-        o.GetComponent<NoteInEditor>().UpdateKeysoundVisibility();
-    }
-
-    public void RefreshEndOfScanIndicator(Note n)
-    {
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-        o.GetComponent<NoteInEditor>().UpdateEndOfScanIndicator();
-    }
-
-    public void RefreshDragNoteCurve(Note n)
-    {
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-
-        o.GetComponent<NoteInEditor>().ResetCurve();
-        o.GetComponent<NoteInEditor>().
-            ResetAllAnchorsAndControlPoints();
-    }
-
-    // Called on undo and redo.
-    public void RefreshNoteInEditor(Note n)
-    {
-        GameObject o = GetGameObjectFromNote(n);
-        if (o == null) return;
-
-        NoteInEditor e = o.GetComponent<NoteInEditor>();
-        e.SetKeysoundText();
-        e.UpdateEndOfScanIndicator();
-        switch (n.type)
-        {
-            case NoteType.Hold:
-            case NoteType.RepeatHold:
-            case NoteType.RepeatHeadHold:
-                e.ResetTrail();
-                break;
-            case NoteType.Drag:
-                e.ResetCurve();
-                e.ResetAllAnchorsAndControlPoints();
-                break;
-        }
     }
     #endregion
 
@@ -2111,7 +2005,117 @@ public class PatternPanelWorkspace : MonoBehaviour
     }
     #endregion
 
-    #region Pattern modification
+    #region Creating and deleting note objects
+    // This will call Reposition on the new object.
+    // Does not adjust path and trail, so the caller can decide
+    // whether to adjust them on just one note or in batch.
+    private GameObject SpawnNoteObject(Note n)
+    {
+        GameObject prefab;
+        switch (n.type)
+        {
+            case NoteType.Basic:
+                prefab = basicNotePrefab;
+                break;
+            case NoteType.ChainHead:
+                prefab = chainHeadPrefab;
+                break;
+            case NoteType.ChainNode:
+                prefab = chainNodePrefab;
+                break;
+            case NoteType.RepeatHead:
+                prefab = repeatHeadPrefab;
+                break;
+            case NoteType.RepeatHeadHold:
+                prefab = repeatHeadHoldPrefab;
+                break;
+            case NoteType.Repeat:
+                prefab = repeatNotePrefab;
+                break;
+            case NoteType.RepeatHold:
+                prefab = repeatHoldPrefab;
+                break;
+            case NoteType.Hold:
+                prefab = holdNotePrefab;
+                break;
+            case NoteType.Drag:
+                prefab = dragNotePrefab;
+                break;
+            default:
+                Debug.LogError("Unknown note type: " + n.type);
+                prefab = basicNotePrefab;
+                break;
+        }
+
+        NoteObject noteObject =
+            Instantiate(prefab, noteContainer)
+            .GetComponent<NoteObject>();
+        noteObject.note = n;
+        NoteInEditor noteInEditor = noteObject
+            .GetComponent<NoteInEditor>();
+        noteInEditor.SetKeysoundText();
+        noteInEditor.UpdateKeysoundVisibility();
+        noteInEditor.UpdateEndOfScanIndicator();
+        noteInEditor.SetSprite(hidden: n.lane >=
+            PatternPanel.PlayableLanes);
+        noteInEditor.UpdateSelection(panel.selectedNotes);
+        noteObject.GetComponent<SelfPositionerInEditor>()
+            .Reposition();
+
+        noteToNoteObject.Add(n, noteObject);
+        if (n.type == NoteType.Drag)
+        {
+            dragNotes.Add(noteInEditor);
+        }
+
+        // Binary search the appropriate sibling index of
+        // new note, so all notes are drawn from right to left.
+        //
+        // More specifically, we are looking for the smallest-index
+        // sibling that's located on the left of the new note.
+        if (noteContainer.childCount == 1)
+        {
+            return noteObject.gameObject;
+        }
+        float targetX = noteObject.transform.position.x;
+        int first = 0;
+        int last = noteContainer.childCount - 2;
+        while (true)
+        {
+            float firstX = noteContainer.GetChild(first).position.x;
+            float lastX = noteContainer.GetChild(last).position.x;
+            if (firstX <= targetX)
+            {
+                noteObject.transform.SetSiblingIndex(first);
+                break;
+            }
+            if (lastX >= targetX)
+            {
+                noteObject.transform.SetSiblingIndex(last + 1);
+                break;
+            }
+            // Now we know for sure that lastX < targetX < firstX.
+            int middle = (first + last) / 2;
+            float middleX = noteContainer.GetChild(middle)
+                .position.x;
+            if (middleX == targetX)
+            {
+                noteObject.transform.SetSiblingIndex(middle);
+                break;
+            }
+            if (middleX < targetX)
+            {
+                last = middle - 1;
+            }
+            else  // middleX > targetX
+            {
+                first = middle + 1;
+            }
+        }
+
+        return noteObject.gameObject;
+    }
+
     public GameObject CreateNewNoteObject(Note n)
     {
         GameObject newNote = SpawnNoteObject(n);
