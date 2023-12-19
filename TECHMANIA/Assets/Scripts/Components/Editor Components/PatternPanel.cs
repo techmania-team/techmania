@@ -34,7 +34,7 @@ public class PatternPanel : MonoBehaviour
 
     private float? scanlinePulseBeforePreview;
 
-    #region Internal Data Structures
+    #region Internal data structures
     public HashSet<Note> selectedNotes;
 
     // Clipboard stores notes instead of GameObjects,
@@ -73,12 +73,12 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Vertical Spacing
+    #region Vertical spacing
     public static int PlayableLanes => 
         EditorContext.Pattern.patternMetadata.playableLanes;
     #endregion
 
-    #region Outward Events
+    #region Outward events
     public static event UnityAction<HashSet<Note>> 
         SelectionChanged;
     public static event UnityAction KeysoundVisibilityChanged;
@@ -95,6 +95,15 @@ public class PatternPanel : MonoBehaviour
             metronome2);
         assistTickSound = FmodManager.CreateSoundFromAudioClip(
             assistTick);
+    }
+
+    // This deletes and respawns everything, therefore is extremely
+    // slow.
+    private void Refresh()
+    {
+        workspace.DestroyAndSpawnExistingNotes();
+        workspace.UpdateNumScansAndRelatedUI();
+        playbackBar.Refresh();
     }
 
     private void OnEnable()
@@ -184,7 +193,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Undo and Redo
+    #region Undo and redo
     private void OnUndo(EditTransaction transaction)
     {
         // Undo operations in reverse order.
@@ -294,7 +303,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Mouse and Keyboard Update
+    #region Mouse and keyboard update
     private void HandleMouseScroll(float y)
     {
         if (Input.GetKey(KeyCode.LeftAlt) ||
@@ -386,7 +395,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
     
-    #region UI Events And Updates
+    #region UI events
     public void ChangeNoteType(NoteType newType)
     {
         tool = Tool.Note;
@@ -460,19 +469,6 @@ public class PatternPanel : MonoBehaviour
     public void RecordScanlinePulseBeforePreview()
     {
         scanlinePulseBeforePreview = workspace.scanlineFloatPulse;
-    }
-    #endregion
-
-    #region Refreshing
-    // This deletes and respawns everything, therefore is extremely
-    // slow.
-    private void Refresh()
-    {
-        workspace.DestroyAndSpawnExistingNotes();
-        workspace.UpdateNumScans();
-        workspace.DestroyAndRespawnAllMarkers();
-        workspace.ResizeWorkspace();
-        playbackBar.Refresh();
     }
     #endregion
 
@@ -1142,7 +1138,7 @@ public class PatternPanel : MonoBehaviour
     }
     #endregion
 
-    #region Selection And Clipboard
+    #region Selection and clipboard
     public void NotifySelectionChanged()
     {
         SelectionChanged?.Invoke(selectedNotes);
