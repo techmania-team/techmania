@@ -9,6 +9,7 @@ using static TreeEditor.TreeEditorHelper;
 // Handles all UI inside the workspace.
 // Does not hold the notes or selection; these remain in
 // PatternPanel.
+// TODO: fix event bindings
 public class PatternPanelWorkspace : MonoBehaviour
 {
     public PatternPanel panel;
@@ -1366,7 +1367,7 @@ public class PatternPanelWorkspace : MonoBehaviour
             controlLeft = new FloatPoint(0f, 0f),
             controlRight = new FloatPoint(0f, 0f)
         };
-        EditorContext.BeginTransaction();  // TODO: move transactions out of Workspace
+        EditorContext.BeginTransaction();
         EditOperation op = EditorContext.BeginModifyNoteOperation();
         op.noteBeforeOp = dragNote.Clone();
         dragNote.nodes.Add(newNode);
