@@ -244,7 +244,6 @@ public class FmodManager
     #region Debug
 #if UNITY_EDITOR
     private Rect debugOverlayRect = new Rect(10, 10, 300, 100);
-    private FMOD.DSP mixerHead;
     private float lastDebugUpdate = 0f;
     private string lastDebugText = "";
 
@@ -256,43 +255,23 @@ public class FmodManager
         {
             if (Time.unscaledTime - lastDebugUpdate >= 0.25f)
             {
-                if (!mixerHead.hasHandle())
-                {
-                    FMOD.ChannelGroup master;
-                    EnsureOk(system.getMasterChannelGroup(
-                        out master));
-                    EnsureOk(master.getDSP(0, out mixerHead));
-                    EnsureOk(mixerHead.setMeteringEnabled(
-                        false, true));
-                }
-
                 StringBuilder debug = new StringBuilder();
-
-                FMOD.CPU_USAGE cpuUsage;
-                EnsureOk(system.getCPUUsage(out cpuUsage));
-                debug.AppendFormat("CPU: dsp = {0:F1}%, update = {1:F1}%\n", cpuUsage.dsp, cpuUsage.update);
 
                 int currentAlloc, maxAlloc;
                 EnsureOk(FMOD.Memory.GetStats(out currentAlloc, out maxAlloc));
                 debug.AppendFormat("MEMORY: cur = {0}MB, max = {1}MB\n", currentAlloc >> 20, maxAlloc >> 20);
 
+                FMOD.SoundGroup masterGroup;
+                EnsureOk(system.getMasterSoundGroup(
+                    out masterGroup));
+                int numSounds;
+                EnsureOk(masterGroup.getNumSounds(out numSounds));
+                debug.AppendFormat("SOUNDS: {0}\n", numSounds);
+
                 int realchannels, channels;
                 EnsureOk(system.getChannelsPlaying(out channels, out realchannels));
                 debug.AppendFormat("CHANNELS: real = {0}, total = {1}\n", realchannels, channels);
 
-                FMOD.DSP_METERING_INFO outputMetering;
-                EnsureOk(mixerHead.getMeteringInfo(IntPtr.Zero, out outputMetering));
-                float rms = 0;
-                for (int i = 0; i < outputMetering.numchannels; i++)
-                {
-                    rms += outputMetering.rmslevel[i] * outputMetering.rmslevel[i];
-                }
-                rms = Mathf.Sqrt(rms / (float)outputMetering.numchannels);
-
-                float db = rms > 0 ? 20.0f * Mathf.Log10(rms * Mathf.Sqrt(2.0f)) : -80.0f;
-                if (db > 10.0f) db = 10.0f;
-
-                debug.AppendFormat("VOLUME: RMS = {0:f2}db\n", db);
                 lastDebugText = debug.ToString();
                 lastDebugUpdate = Time.unscaledTime;
             }

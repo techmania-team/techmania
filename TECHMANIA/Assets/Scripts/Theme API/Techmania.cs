@@ -274,6 +274,15 @@ namespace ThemeApi
             Application.OpenURL(url);
         }
 
+        public bool InEditor()
+        {
+#if UNITY_EDITOR
+            return true;
+#else
+            return false;
+#endif
+        }
+
         // Returns one of "Windows", "Linux", "macOS", "Android"
         // "iOS", and "Unknown".
         public string GetPlatform()
@@ -306,7 +315,7 @@ namespace ThemeApi
             Application.Quit();
 #endif
         }
-        #endregion
+#endregion
 
         public void LogEvent(EventBase e)
         {

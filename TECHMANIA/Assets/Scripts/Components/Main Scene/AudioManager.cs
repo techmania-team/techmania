@@ -132,4 +132,11 @@ public class AudioManager : MonoBehaviour
             FmodManager.ChannelGroupType.SFX,
             Options.instance.sfxVolumePercent * 0.01f);
     }
+
+    // Themes can use this and the debug overlay to confirm
+    // there are no sounds lingering in memory.
+    public void ForceReleaseCachedSounds()
+    {
+        ResourceLoader.ClearAudioCache();
+    }
 }

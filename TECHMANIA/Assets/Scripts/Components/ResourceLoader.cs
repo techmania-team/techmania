@@ -56,7 +56,7 @@ public class ResourceLoader : MonoBehaviour
         }
     }
 
-    private static void ClearAudioCache()
+    public static void ClearAudioCache()
     {
         foreach (FmodSoundWrap s in sounds.Values)
         {
