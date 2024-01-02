@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine;
 
 // A basic wrapper around FMOD.
@@ -18,6 +19,13 @@ public class FmodManager
     public void Update()
     {
         EnsureOk(system.update());
+    }
+
+    public void OnGUI()
+    {
+#if UNITY_EDITOR
+        DrawDebugOverlay();
+#endif
     }
 
     #region Channel groups
@@ -52,15 +60,27 @@ public class FmodManager
         Debug.Log($"Initializing FMOD with {numBuffers} buffers of {bufferSize} samples.");
         instance = this;
 
-        // Release the Studio system because we don't need it.
-        EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
+        // Could be useful for debugging.
+        bool useDefaultSystem = false;
+        if (useDefaultSystem)
+        {
+            FMOD.System coreSystem;
+            EnsureOk(FMODUnity.RuntimeManager.StudioSystem
+                .getCoreSystem(out coreSystem));
+            system = coreSystem;
+        }
+        else
+        {
+            // Release the Studio system because we don't need it.
+            EnsureOk(FMODUnity.RuntimeManager.StudioSystem.release());
 
-        // Re-create a Core system to apply buffer size.
-        FMOD.System newCoreSystem;
-        EnsureOk(FMOD.Factory.System_Create(out newCoreSystem));
-        system = newCoreSystem;
-        EnsureOk(system.setDSPBufferSize((uint)bufferSize, numBuffers));
-        EnsureOk(system.init(1024, FMOD.INITFLAGS.NORMAL, IntPtr.Zero));
+            // Re-create a Core system to apply buffer size.
+            FMOD.System newCoreSystem;
+            EnsureOk(FMOD.Factory.System_Create(out newCoreSystem));
+            system = newCoreSystem;
+            EnsureOk(system.setDSPBufferSize((uint)bufferSize, numBuffers));
+            EnsureOk(system.init(1024, FMOD.INITFLAGS.NORMAL, IntPtr.Zero));
+        }
 
         // Create channel groups.
         EnsureOk(system.getMasterChannelGroup(out masterGroup));
@@ -219,5 +239,68 @@ public class FmodManager
         EnsureOk(sound.setMode(FMOD.MODE.LOOP_OFF | FMOD.MODE._2D));
         return new FmodSoundWrap(sound);
     }
+    #endregion
+
+    #region Debug
+#if UNITY_EDITOR
+    private Rect debugOverlayRect = new Rect(10, 10, 300, 100);
+    private FMOD.DSP mixerHead;
+    private float lastDebugUpdate = 0f;
+    private string lastDebugText = "";
+
+    private void DrawDebugOverlay()
+    {
+        // Copied from FMODUnity.RuntimeManager.DrawDebugOverlay
+        debugOverlayRect = GUI.Window(0, debugOverlayRect,
+            (int windowID) =>
+        {
+            if (Time.unscaledTime - lastDebugUpdate >= 0.25f)
+            {
+                if (!mixerHead.hasHandle())
+                {
+                    FMOD.ChannelGroup master;
+                    EnsureOk(system.getMasterChannelGroup(
+                        out master));
+                    EnsureOk(master.getDSP(0, out mixerHead));
+                    EnsureOk(mixerHead.setMeteringEnabled(
+                        false, true));
+                }
+
+                StringBuilder debug = new StringBuilder();
+
+                FMOD.CPU_USAGE cpuUsage;
+                EnsureOk(system.getCPUUsage(out cpuUsage));
+                debug.AppendFormat("CPU: dsp = {0:F1}%, update = {1:F1}%\n", cpuUsage.dsp, cpuUsage.update);
+
+                int currentAlloc, maxAlloc;
+                EnsureOk(FMOD.Memory.GetStats(out currentAlloc, out maxAlloc));
+                debug.AppendFormat("MEMORY: cur = {0}MB, max = {1}MB\n", currentAlloc >> 20, maxAlloc >> 20);
+
+                int realchannels, channels;
+                EnsureOk(system.getChannelsPlaying(out channels, out realchannels));
+                debug.AppendFormat("CHANNELS: real = {0}, total = {1}\n", realchannels, channels);
+
+                FMOD.DSP_METERING_INFO outputMetering;
+                EnsureOk(mixerHead.getMeteringInfo(IntPtr.Zero, out outputMetering));
+                float rms = 0;
+                for (int i = 0; i < outputMetering.numchannels; i++)
+                {
+                    rms += outputMetering.rmslevel[i] * outputMetering.rmslevel[i];
+                }
+                rms = Mathf.Sqrt(rms / (float)outputMetering.numchannels);
+
+                float db = rms > 0 ? 20.0f * Mathf.Log10(rms * Mathf.Sqrt(2.0f)) : -80.0f;
+                if (db > 10.0f) db = 10.0f;
+
+                debug.AppendFormat("VOLUME: RMS = {0:f2}db\n", db);
+                lastDebugText = debug.ToString();
+                lastDebugUpdate = Time.unscaledTime;
+            }
+
+            GUI.Label(new Rect(10, 20, 290, 100), lastDebugText);
+            GUI.DragWindow();
+        }, "FMOD Debug");
+    }
+#endif
     #endregion
 }
