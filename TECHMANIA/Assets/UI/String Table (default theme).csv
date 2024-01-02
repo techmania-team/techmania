@@ -87,7 +87,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 ,select_track_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
 ,select_track_upgrade_version_cancel,CANCEL,取消,取消,キャンセル,취소
 ,select_track_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
-Updated in 2.0.,select_track_upgrade_process_error_format,"An error occurred when upgrading tracks:
+,select_track_upgrade_process_error_format,"An error occurred when upgrading tracks:
 
 {0}","升级曲目时发生错误：
 
@@ -265,8 +265,9 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#options-panel #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
 Added in 2.1,#options-panel #advanced-audio-header,Advanced audio,高级音频选项,,,
 Added in 2.1,#options-panel #asio #label,Use ASIO,使用ASIO,,,
-Added in 2.1,#options-panel #asio-explanation #content,"After installing ASIO4ALL, you can enable ASIO to enjoy low latency audio.
-Make sure no application is playing any sound when turning this on.","如果安装了ASIO4ALL，可以启用ASIO以降低音频延迟。
+Added in 2.1,#options-panel #asio-explanation #content,"After installing ASIO4ALL (or an ASIO-compatible external sound card),
+you can enable ASIO to enjoy low latency audio.
+Make sure no application is playing any sound when turning this on.","如果安装了ASIO4ALL（或支持ASIO的外置声卡），可以启用ASIO以降低音频延迟。
 请确保启用此选项时没有应用程序在发声。",,,
 ,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファ,오디오 버퍼 크기
 Added in 2.1,#options-panel #num-audio-buffers #label,Number of buffers,音频缓冲数量,,,

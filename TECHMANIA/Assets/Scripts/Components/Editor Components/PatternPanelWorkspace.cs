@@ -4,12 +4,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static TreeEditor.TreeEditorHelper;
 
 // Handles all UI inside the workspace.
 // Does not hold the notes or selection; these remain in
 // PatternPanel.
-// TODO: fix event bindings
 public class PatternPanelWorkspace : MonoBehaviour
 {
     public PatternPanel panel;
