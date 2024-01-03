@@ -92,12 +92,15 @@ selectTrackPanel.ClearAllCards = function()
     local subfolderContainer = panel.Q("subfolder-container")
     for _, card in ipairs(subfolderContainer.Children()) do
         ReleaseEyecatch(card.Q("eyecatch"))
+        controls.DisposeScrollingText(card.Q("name-container"))
     end
     subfolderContainer.RemoveAllChildren()
     
     local trackContainer = panel.Q("track-container")
     for _, card in ipairs(trackContainer.Children()) do
         ReleaseEyecatch(card.Q("eyecatch"))
+        controls.DisposeScrollingText(card.Q("name-container"))
+        controls.DisposeScrollingText(card.Q("artist-container"))
     end
     trackContainer.RemoveAllChildren()
 end
@@ -288,11 +291,13 @@ end
 
 selectTrackPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
-
+    controls.ResetScrollingTextTimer()
+    
     if (selectTrackPanel.needsRefresh) then
         selectTrackPanel.Refresh()  -- Will call Show when done
         return
     end
+    
     selectTrackPanel.SpawnAllCards()
     selectTrackPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedTrack
 end

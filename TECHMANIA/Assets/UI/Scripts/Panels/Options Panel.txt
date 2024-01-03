@@ -82,6 +82,7 @@ optionsPanel.Show = function()
     local isMobile = (platform == "iOS" or platform == "Android")
 
     optionsPanel.SetDiscordActivity()
+    controls.ResetScrollingTextTimer()
 
     local panel = optionsPanel.panel
 

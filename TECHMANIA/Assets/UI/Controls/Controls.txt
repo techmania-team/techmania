@@ -84,6 +84,9 @@ function InitializeControls()
     end)
 
     -- Scrolling texts
+    tm.StartCoroutine(function()
+        controls.ScrollingTextCoroutine()
+    end)
     tm.root.Query(nil, "scrolling-text").ForEach(function (container)
         controls.SetUpScrollingText(container)
     end)
@@ -127,25 +130,42 @@ controls = {
         end
     end,
 
+    allScrollingTextContainers = {},
+    scrollingTextStartTime = 0,
+    ScrollingTextCoroutine = function()
+        while (true) do
+            local timeSinceReset = unity.time.time - controls.scrollingTextStartTime
+            local scrollDuration = 4
+            local pingPongTime = unity.mathf.PingPong(timeSinceReset, scrollDuration)
+            -- InverseLerp's output is clamped between 0 and 1.
+            local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
+
+            for element, _ in pairs(controls.allScrollingTextContainers) do
+                local low = element.horizontalScroller.lowValue
+                local high = element.horizontalScroller.highValue
+                if (not net.float.IsNaN(low) and not net.float.IsNaN(high) and low < high) then
+                    element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
+                end
+            end
+            coroutine.yield()
+        end
+    end,
+
+    ResetScrollingTextTimer = function()
+        controls.scrollingTextStartTime = unity.time.time
+    end,
+
+    -- Remember to call DisposeScrollingText before deleting an element
     SetUpScrollingText = function(scrollingTextContainer)
         scrollingTextContainer.Q("unity-content-and-vertical-scroll-container").pickable = false
         scrollingTextContainer.Q("unity-content-viewport").pickable = false
         scrollingTextContainer.Q("unity-content-container").pickable = false
-        function ContainerUpdate(element)
-            local low = element.horizontalScroller.lowValue
-            local high = element.horizontalScroller.highValue
-            if (net.float.IsNaN(high) or high <= low) then
-                return
-            end
-            local scrollDuration = 4
-            local pingPongTime = unity.mathf.PingPong(unity.time.time, scrollDuration)
-            -- InverseLerp's output is clamped between 0 and 1.
-            local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
-            element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
-        end
-        scrollingTextContainer.UnregisterCallback(eventType.FrameUpdate, ContainerUpdate)
-        scrollingTextContainer.RegisterCallback(eventType.FrameUpdate, ContainerUpdate)
-    end
+        controls.allScrollingTextContainers[scrollingTextContainer] = 0  -- Dummy value
+    end,
+
+    DisposeScrollingText = function(scrollingTextContainer)
+        controls.allScrollingTextContainers[scrollingTextContainer] = nil
+    end,
 }
 
 -- The "from" panel's x transitions from 0 to length;

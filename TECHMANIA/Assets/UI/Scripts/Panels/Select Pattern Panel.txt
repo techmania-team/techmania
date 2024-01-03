@@ -174,7 +174,6 @@ selectPatternPanel.ShowPatternDetails = function()
     else
         panel.Q("bpm").Q("content").text = FormatBpm(minBpm)
     end
-    controls.SetUpScrollingText(panel.Q("bpm").Q("container"))
 
     -- Length
     local length = 0
@@ -231,6 +230,7 @@ end
 
 selectPatternPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_pattern"))
+    controls.ResetScrollingTextTimer()
 
     local panel = selectPatternPanel.panel
     local track = selectTrackPanel.selectedFullTrack
@@ -303,6 +303,9 @@ selectPatternPanel.Hide = function()
     ReleaseEyecatch(selectPatternPanel.panel.Q("eyecatch"))
 
     local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
+    for _, element in ipairs(patternListContainer.Children()) do
+        controls.DisposeScrollingText(element.Q("pattern-name-container"))
+    end
     patternListContainer.RemoveAllChildren()
 
     selectPatternPanel.StopPreviewTrackPlayback()

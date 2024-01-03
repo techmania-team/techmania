@@ -11,6 +11,8 @@ resultPanel.Show = function()
     local patternMetadata = pattern.patternMetadata
     local scoreKeeper = tm.game.scoreKeeper
 
+    controls.ResetScrollingTextTimer()
+
     -- Panel title
     local panelTitle = panel.Q("top-bar").Q("title")
     if (scoreKeeper.stageFailed) then
