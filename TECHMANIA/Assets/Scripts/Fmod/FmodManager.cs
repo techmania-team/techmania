@@ -21,13 +21,6 @@ public class FmodManager
         EnsureOk(system.update());
     }
 
-    public void OnGUI()
-    {
-#if UNITY_EDITOR
-        DrawDebugOverlay();
-#endif
-    }
-
     #region Channel groups
     private FMOD.ChannelGroup masterGroup;
     private FMOD.ChannelGroup musicGroup;
@@ -242,49 +235,21 @@ public class FmodManager
     #endregion
 
     #region Debug
-#if UNITY_EDITOR
-    private Rect debugOverlayRect = new Rect(10, 10, 300, 200);
-    private float lastDebugUpdate = 0f;
-    private string lastDebugText = "";
-
-    private void DrawDebugOverlay()
+    public void GetStats(
+        out int currentMemoryBytes,
+        out int maxMemoryBytes,
+        out int totalSounds,
+        out int realChannels,
+        out int totalChannels)
     {
-        // Copied from FMODUnity.RuntimeManager.DrawDebugOverlay
-        debugOverlayRect = GUI.Window(0, debugOverlayRect,
-            (int windowID) =>
-        {
-            if (Time.unscaledTime - lastDebugUpdate >= 0.25f)
-            {
-                StringBuilder debug = new StringBuilder();
+        EnsureOk(FMOD.Memory.GetStats(out currentMemoryBytes, out maxMemoryBytes));
 
-                int currentAlloc, maxAlloc;
-                EnsureOk(FMOD.Memory.GetStats(out currentAlloc, out maxAlloc));
-                debug.AppendFormat("MEMORY: cur = {0}MB, max = {1}MB\n", currentAlloc >> 20, maxAlloc >> 20);
+        FMOD.SoundGroup masterGroup;
+        EnsureOk(system.getMasterSoundGroup(
+            out masterGroup));
+        EnsureOk(masterGroup.getNumSounds(out totalSounds));
 
-                FMOD.SoundGroup masterGroup;
-                EnsureOk(system.getMasterSoundGroup(
-                    out masterGroup));
-                int numSounds;
-                EnsureOk(masterGroup.getNumSounds(out numSounds));
-                debug.AppendFormat("SOUNDS: {0}\n", numSounds);
-
-                int realchannels, channels;
-                EnsureOk(system.getChannelsPlaying(out channels, out realchannels));
-                debug.AppendFormat("CHANNELS: real = {0}, total = {1}\n", realchannels, channels);
-
-                debug.AppendFormat("Textures from file: {0}\nSounds from file: {1}\nVideos from file: {2}\n",
-                    ThemeApi.IO.numTexturesFromFile,
-                    ThemeApi.IO.numSoundsFromFile,
-                    ThemeApi.IO.numVideosFromFile);
-
-                lastDebugText = debug.ToString();
-                lastDebugUpdate = Time.unscaledTime;
-            }
-
-            GUI.Label(new Rect(10, 20, 290, 100), lastDebugText);
-            GUI.DragWindow();
-        }, "FMOD Debug");
+        EnsureOk(system.getChannelsPlaying(out totalChannels, out realChannels));
     }
-#endif
     #endregion
 }

@@ -24,11 +24,6 @@ public class AudioManager : MonoBehaviour
         FmodManager.instance.Update();
     }
 
-    private void OnGUI()
-    {
-        FmodManager.instance.OnGUI();
-    }
-
     private FmodChannelWrap PlaySound(FmodManager.ChannelGroupType group,
         FmodSoundWrap sound,
         float startTime, int volumePercent, int panPercent)
