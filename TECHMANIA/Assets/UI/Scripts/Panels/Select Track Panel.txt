@@ -88,8 +88,18 @@ end
 
 selectTrackPanel.ClearAllCards = function()
     local panel = selectTrackPanel.panel
-    panel.Q("subfolder-container").RemoveAllChildren()
-    panel.Q("track-container").RemoveAllChildren()
+
+    local subfolderContainer = panel.Q("subfolder-container")
+    for _, card in ipairs(subfolderContainer.Children()) do
+        ReleaseEyecatch(card.Q("eyecatch"))
+    end
+    subfolderContainer.RemoveAllChildren()
+    
+    local trackContainer = panel.Q("track-container")
+    for _, card in ipairs(trackContainer.Children()) do
+        ReleaseEyecatch(card.Q("eyecatch"))
+    end
+    trackContainer.RemoveAllChildren()
 end
 
 selectTrackPanel.SpawnAllCards = function()

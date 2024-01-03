@@ -300,6 +300,8 @@ selectPatternPanel.Show = function()
 end
 
 selectPatternPanel.Hide = function()
+    ReleaseEyecatch(selectPatternPanel.panel.Q("eyecatch"))
+
     local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
     patternListContainer.RemoveAllChildren()
 

@@ -105,3 +105,7 @@ resultPanel.Show = function()
 
     tm.game.Conclude()
 end
+
+resultPanel.Hide = function()
+    ReleaseEyecatch(resultPanel.panel.Q("eyecatch"))
+end
