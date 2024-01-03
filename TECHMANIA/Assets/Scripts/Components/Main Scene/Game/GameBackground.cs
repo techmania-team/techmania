@@ -98,9 +98,11 @@ public class GameBackground
 
     public void Conclude()
     {
+        // TODO: if the backing track already stopped, this will
+        // print a warning.
         backingChannel?.Stop();
         backingTrack?.Release();
-        bgaElement?.Dispose();
+        bgaElement?.Release();
     }
 
     public void StopBackingTrack()

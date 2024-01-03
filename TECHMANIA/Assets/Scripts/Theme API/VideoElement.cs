@@ -47,7 +47,7 @@ namespace ThemeApi
             e.player.errorReceived += (
                 VideoPlayer source, string message) =>
             {
-                e.Dispose();
+                e.Release();
                 callback(Status.Error(
                     Status.Code.IOError, message, path),
                     null);
