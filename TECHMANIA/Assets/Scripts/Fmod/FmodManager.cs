@@ -243,7 +243,7 @@ public class FmodManager
 
     #region Debug
 #if UNITY_EDITOR
-    private Rect debugOverlayRect = new Rect(10, 10, 300, 100);
+    private Rect debugOverlayRect = new Rect(10, 10, 300, 200);
     private float lastDebugUpdate = 0f;
     private string lastDebugText = "";
 
@@ -271,6 +271,11 @@ public class FmodManager
                 int realchannels, channels;
                 EnsureOk(system.getChannelsPlaying(out channels, out realchannels));
                 debug.AppendFormat("CHANNELS: real = {0}, total = {1}\n", realchannels, channels);
+
+                debug.AppendFormat("Textures from file: {0}\nSounds from file: {1}\nVideos from file: {2}\n",
+                    ThemeApi.IO.numTexturesFromFile,
+                    ThemeApi.IO.numSoundsFromFile,
+                    ThemeApi.IO.numVideosFromFile);
 
                 lastDebugText = debug.ToString();
                 lastDebugUpdate = Time.unscaledTime;

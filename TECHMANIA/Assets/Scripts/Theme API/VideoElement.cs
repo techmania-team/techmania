@@ -64,7 +64,13 @@ namespace ThemeApi
             player.targetTexture = renderTexture;
         }
 
+        // Deprecated; new theme code should call IO.ReleaseVideo
         public void Dispose()
+        {
+            IO.ReleaseVideo(this);
+        }
+
+        public void Release()
         {
             if (renderTexture != null &&
                 renderTexture.IsCreated())

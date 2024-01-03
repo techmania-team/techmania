@@ -8,24 +8,21 @@ namespace ThemeApi
     [MoonSharpUserData]
     public static class IO
     {
-        #region Garbage collection
-        // VisualElementWrap.backgroundImage setter will destroy
-        // old textures if they are loaded from file.
+        #region Assets from file
         private static HashSet<Texture2D> texturesFromFile;
+        private static HashSet<FmodSoundWrap> soundsFromFile;
+        private static HashSet<VideoElement> videosFromFile;
         static IO()
         {
             texturesFromFile = new HashSet<Texture2D>();
+            soundsFromFile = new HashSet<FmodSoundWrap>();
+            videosFromFile = new HashSet<VideoElement>();
         }
 
-        public static void DestroyTextureIfFromFile(Texture2D texture)
-        {
-            if (texturesFromFile.Contains(texture))
-            {
-                texturesFromFile.Remove(texture);
-                Object.Destroy(texture);
-            }
-        }
-
+        public static int numTexturesFromFile => 
+            texturesFromFile.Count;
+        public static int numSoundsFromFile => soundsFromFile.Count;
+        public static int numVideosFromFile => videosFromFile.Count;
         #endregion
 
         public static bool FileExists(string path)
@@ -57,6 +54,19 @@ namespace ThemeApi
                 });
         }
 
+        public static void ReleaseTexture(Texture2D texture)
+        {
+            if (texturesFromFile.Contains(texture))
+            {
+                texturesFromFile.Remove(texture);
+            }
+            else
+            {
+                Debug.LogWarning("The texture being released was not loaded from a file. This may cause issues in the theme.");
+            }
+            Object.Destroy(texture);
+        }
+
         public static FmodSoundWrap LoadAudioFromTheme(string path)
         {
             return GlobalResource.GetThemeContent<FmodSoundWrap>(path);
@@ -70,8 +80,22 @@ namespace ThemeApi
                 (Status status, FmodSoundWrap sound) =>
                 {
                     if (callback.IsNil()) return;
+                    soundsFromFile.Add(sound);
                     callback.Function.Call(status, sound);
                 });
+        }
+
+        public static void ReleaseAudio(FmodSoundWrap sound)
+        {
+            if (soundsFromFile.Contains(sound))
+            {
+                soundsFromFile.Remove(sound);
+            }
+            else
+            {
+                Debug.LogWarning("The sound being released was not loaded from a file. This may cause issues in the theme.");
+            }
+            sound.Release();
         }
 
         // Callback parameter: VideoElement
@@ -99,6 +123,19 @@ namespace ThemeApi
                     if (callback.IsNil()) return;
                     callback.Function.Call(status, element);
                 });
+        }
+
+        public static void ReleaseVideo(VideoElement video)
+        {
+            if (videosFromFile.Contains(video))
+            {
+                videosFromFile.Remove(video);
+            }
+            else
+            {
+                Debug.LogWarning("The video being released was not loaded from a file. This may cause issues in the theme.");
+            }
+            video.Release();
         }
 
         public static UnityEngine.TextCore.Text.FontAsset
@@ -228,3 +265,4 @@ namespace ThemeApi
         }
     }
 }
+

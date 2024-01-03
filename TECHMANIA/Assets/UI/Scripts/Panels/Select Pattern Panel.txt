@@ -496,7 +496,7 @@ selectPatternPanel.StopPreviewTrackPlayback = function()
                 coroutine.yield()
             end
             selectPatternPanel.previewTrackChannel.Stop()
-            selectPatternPanel.previewTrack.Release()
+            tm.io.ReleaseAudio(selectPatternPanel.previewTrack)
         end)
     end
 end

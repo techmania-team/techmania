@@ -523,13 +523,6 @@ namespace ThemeApi
             get { return style.backgroundImage.value.texture; }
             set 
             {
-                if (style.backgroundImage != null &&
-                    style.backgroundImage.value != null &&
-                    style.backgroundImage.value.texture != null)
-                {
-                    IO.DestroyTextureIfFromFile(
-                        style.backgroundImage.value.texture);
-                }
                 style.backgroundImage = new StyleBackground(value);
             }
         }
