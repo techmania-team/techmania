@@ -53,12 +53,12 @@ public class DebugWindow : MonoBehaviour
             }
 
             GUI.Label(new Rect(10, 20, 290, 200), lastDebugText);
-            GUI.DragWindow();
-
             if (GUI.Button(new Rect(10, 170, 50, 20), "Close"))
             {
                 display = false;
             }
+
+            GUI.DragWindow();  // Must be at end of window function
         }, "Debug information");
     }
 }
