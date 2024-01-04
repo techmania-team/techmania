@@ -8,6 +8,9 @@ namespace ThemeApi
 {
     // A wrapper around VideoPlayer that plays video on a
     // VisualElement.
+    // Different from textures and sounds, themes should call
+    // IO.ReleaseVideo on all videos after being done with them,
+    // whether it's from the theme or a file.
     [MoonSharpUserData]
     public class VideoElement
     {

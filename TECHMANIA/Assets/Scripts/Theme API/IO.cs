@@ -141,10 +141,6 @@ namespace ThemeApi
             {
                 videosFromFile.Remove(video);
             }
-            else
-            {
-                Debug.LogWarning("The video being released was not loaded from a file. This may cause issues in the theme.");
-            }
             video.Release();
         }
 
