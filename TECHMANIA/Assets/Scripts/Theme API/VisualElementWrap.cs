@@ -646,6 +646,12 @@ namespace ThemeApi
         {
             return base.Equals(obj);
         }
+
+        [MoonSharpHidden]
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         #endregion
 
         #region Custom mesh
