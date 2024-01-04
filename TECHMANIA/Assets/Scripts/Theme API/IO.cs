@@ -49,7 +49,10 @@ namespace ThemeApi
                 (Status status, Texture2D texture) =>
                 {
                     if (callback.IsNil()) return;
-                    texturesFromFile.Add(texture);
+                    if (status.Ok())
+                    {
+                        texturesFromFile.Add(texture);
+                    }
                     callback.Function.Call(status, texture);
                 });
         }
@@ -80,7 +83,10 @@ namespace ThemeApi
                 (Status status, FmodSoundWrap sound) =>
                 {
                     if (callback.IsNil()) return;
-                    soundsFromFile.Add(sound);
+                    if (status.Ok())
+                    {
+                        soundsFromFile.Add(sound);
+                    }
                     callback.Function.Call(status, sound);
                 });
         }
@@ -121,6 +127,10 @@ namespace ThemeApi
                 callback: (Status status, VideoElement element) =>
                 {
                     if (callback.IsNil()) return;
+                    if (status.Ok())
+                    {
+                        videosFromFile.Add(element);
+                    }
                     callback.Function.Call(status, element);
                 });
         }

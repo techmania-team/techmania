@@ -18,7 +18,12 @@ selectTrackPanel = {
     
     selectedTrackFolder = "",
     selectedFullTrack = nil,
-    selectedTrackOptions = nil
+    selectedTrackOptions = nil,
+
+    -- Key: eyecatch element, value: bool
+    eyecatchVisible = {},
+    -- Key: eyecatch element, value: string
+    eyecatchFullPath = {}
 }
 
 filterSideSheet = {
@@ -89,16 +94,20 @@ end
 selectTrackPanel.ClearAllCards = function()
     local panel = selectTrackPanel.panel
 
+    panel.UnregisterCallback(eventType.FrameUpdate, selectTrackPanel.UpdateEyecatches)
+
+    for element, visible in pairs(selectTrackPanel.eyecatchVisible) do
+        if (visible) then ReleaseEyecatch(element) end
+    end
+
     local subfolderContainer = panel.Q("subfolder-container")
     for _, card in ipairs(subfolderContainer.Children()) do
-        ReleaseEyecatch(card.Q("eyecatch"))
         controls.DisposeScrollingText(card.Q("name-container"))
     end
     subfolderContainer.RemoveAllChildren()
     
     local trackContainer = panel.Q("track-container")
     for _, card in ipairs(trackContainer.Children()) do
-        ReleaseEyecatch(card.Q("eyecatch"))
         controls.DisposeScrollingText(card.Q("name-container"))
         controls.DisposeScrollingText(card.Q("artist-container"))
     end
@@ -144,6 +153,10 @@ selectTrackPanel.SpawnAllCards = function()
         tracksWithError = tm.resources.GetTracksWithError(selectTrackPanel.location)
     end
 
+    -- Reset the eyecatch list. Eyecatches will be dynamically loaded and unloaded as they enter and leave the screen.
+    selectTrackPanel.eyecatchVisible = {}
+    selectTrackPanel.eyecatchFullPath = {}
+
     -- Render lists as cards.
     table.sort(subfolders, function(s1, s2)
         return s1.name < s2.name
@@ -152,7 +165,9 @@ selectTrackPanel.SpawnAllCards = function()
         anythingInFolder = true
         local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
         if (subfolder.eyecatchFullPath != nil) then
-            LoadAndShowEyecatch(subfolder.eyecatchFullPath, card.Q("eyecatch"))
+            local eyecatchElement = card.Q("eyecatch")
+            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+            selectTrackPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
         end
         controls.SetUpButtonSounds(card)
         card.Q("name").text = subfolder.name
@@ -195,9 +210,14 @@ selectTrackPanel.SpawnAllCards = function()
             card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
             card.Q("error-icon").visible = false
             card.Q("new-track-icon").visible = false
+
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
-            LoadAndShowEyecatch(eyecatchPath, card.Q("eyecatch"))
+            local eyecatchElement = card.Q("eyecatch")
+            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+            selectTrackPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
+
             controls.SetUpButtonSounds(card)
+
             card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
             card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
             controls.SetUpScrollingText(card.Q("name-container"))
@@ -287,12 +307,14 @@ selectTrackPanel.SpawnAllCards = function()
             panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedTrack)
         end)
     end
+
+    panel.RegisterCallback(eventType.FrameUpdate, selectTrackPanel.UpdateEyecatches)
 end
 
 selectTrackPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_track"))
     controls.ResetScrollingTextTimer()
-    
+
     if (selectTrackPanel.needsRefresh) then
         selectTrackPanel.Refresh()  -- Will call Show when done
         return
@@ -377,6 +399,27 @@ selectTrackPanel.Initialize = function()
     panel.Q("open-button").RegisterCallback(eventType.Click, function()
         tm.OpenURL(selectTrackPanel.location)
     end)
+end
+
+selectTrackPanel.UpdateEyecatches = function()
+    -- When transitioning away from the panel, there may be 1 frame when the panel's display is set to false,
+    -- but this update is still called because Hide() hasn't been called yet. In this frame, card layouts are
+    -- messed up because the panel is not displayed, and we don't want to load a bunch of eyecatches. Therefore,
+    -- we check whether the panel is displayed before doing anything.
+    if (not selectTrackPanel.panel.display) then return end
+
+    local screenHeight = unity.screen.height
+    for element, visible in pairs(selectTrackPanel.eyecatchVisible) do
+        local screenPosition = element.LocalSpaceToScreenSpace(unity.vector2.__new(0, 0))
+        local shouldBeVisible = (screenPosition.y >= 0) and (screenPosition.y <= screenHeight)
+        if (visible and not shouldBeVisible) then
+            ReleaseEyecatch(element)
+            selectTrackPanel.eyecatchVisible[element] = false
+        elseif (not visible and shouldBeVisible) then
+            LoadAndShowEyecatch(selectTrackPanel.eyecatchFullPath[element], element)
+            selectTrackPanel.eyecatchVisible[element] = true
+        end
+    end
 end
 
 filterSideSheet.SetDropdownValues = function()
