@@ -120,6 +120,8 @@ namespace ThemeApi
             addType(tmEnums, typeof(Options.Ruleset));
             addTypeAs(tmEnums, typeof(GameState.State), "gameState");
             addType(tmEnums, typeof(SkinType));
+            addType(tmEnums, typeof(Techmania.Platform));
+            addTypeAs(tmEnums, typeof(Status.Code), "statusCode");
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));
             addType(tmEnums, typeof(NoteType));
