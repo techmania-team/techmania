@@ -7,6 +7,7 @@ public class DebugWindow : MonoBehaviour
 {
     public bool display;
 
+#if UNITY_EDITOR
     private Rect debugOverlayRect = new Rect(10, 10, 300, 200);
     private float lastDebugUpdate = 0f;
     private string lastDebugText = "";
@@ -61,4 +62,5 @@ public class DebugWindow : MonoBehaviour
             GUI.DragWindow();  // Must be at end of window function
         }, "Debug information");
     }
+#endif
 }
