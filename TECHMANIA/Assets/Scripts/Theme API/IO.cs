@@ -48,11 +48,11 @@ namespace ThemeApi
             ResourceLoader.LoadImage(path,
                 (Status status, Texture2D texture) =>
                 {
-                    if (callback.IsNil()) return;
                     if (status.Ok())
                     {
                         texturesFromFile.Add(texture);
                     }
+                    if (callback.IsNil()) return;
                     callback.Function.Call(status, texture);
                 });
         }
@@ -82,11 +82,11 @@ namespace ThemeApi
             ResourceLoader.LoadAudio(path,
                 (Status status, FmodSoundWrap sound) =>
                 {
-                    if (callback.IsNil()) return;
                     if (status.Ok())
                     {
                         soundsFromFile.Add(sound);
                     }
+                    if (callback.IsNil()) return;
                     callback.Function.Call(status, sound);
                 });
         }
@@ -126,11 +126,11 @@ namespace ThemeApi
             VideoElement.CreateFromFile(path,
                 callback: (Status status, VideoElement element) =>
                 {
-                    if (callback.IsNil()) return;
                     if (status.Ok())
                     {
                         videosFromFile.Add(element);
                     }
+                    if (callback.IsNil()) return;
                     callback.Function.Call(status, element);
                 });
         }

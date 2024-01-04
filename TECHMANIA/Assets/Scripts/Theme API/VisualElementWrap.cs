@@ -638,6 +638,14 @@ namespace ThemeApi
         {
             return inner == other.inner;
         }
+
+        // If we don't hide this, somehow Moonsharp pipes
+        // Equals calls to this overload.
+        [MoonSharpHidden]
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
         #endregion
 
         #region Custom mesh
