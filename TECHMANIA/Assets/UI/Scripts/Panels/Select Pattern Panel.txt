@@ -235,7 +235,7 @@ selectPatternPanel.Show = function()
     local panel = selectPatternPanel.panel
     local track = selectTrackPanel.selectedFullTrack
 
-    -- Load per-track options.
+    -- Load per-track options. TECHMANIA will create one if none exists, so this shouldn't be nil.
     selectTrackPanel.selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
 
     -- Display metadata.
