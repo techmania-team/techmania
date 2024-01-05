@@ -140,13 +140,16 @@ controls = {
             -- InverseLerp's output is clamped between 0 and 1.
             local value = unity.mathf.InverseLerp(scrollDuration * 0.25, scrollDuration * 0.75, pingPongTime)
 
+            -- local numElements = 0
             for element, _ in pairs(controls.allScrollingTextContainers) do
+                -- numElements = numElements + 1
                 local low = element.horizontalScroller.lowValue
                 local high = element.horizontalScroller.highValue
                 if (not net.float.IsNaN(low) and not net.float.IsNaN(high) and low < high) then
                     element.horizontalScroller.value = unity.mathf.Lerp(low, high, value)
                 end
             end
+            -- print("Number of scrolling texts: " .. tostring(numElements))
             coroutine.yield()
         end
     end,
@@ -164,7 +167,16 @@ controls = {
     end,
 
     DisposeScrollingText = function(scrollingTextContainer)
-        controls.allScrollingTextContainers[scrollingTextContainer] = nil
+        -- Cannot use the element as index directly because:
+        -- * The Q method creates new VisualElementWrap objects on the same element
+        -- * Even if we key the table with VisualElement, MoonSharp still creates new userdata values on the same object
+        for element, _ in pairs(controls.allScrollingTextContainers) do
+            if (element.Equals(scrollingTextContainer)) then
+                controls.allScrollingTextContainers[element] = nil
+                return
+            end
+        end
+        print("Warning: the scrolling text to be disposed is not found in controls.allScrollingTextContainers.")
     end,
 }
 

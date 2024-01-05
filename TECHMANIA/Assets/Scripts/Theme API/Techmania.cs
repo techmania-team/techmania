@@ -42,6 +42,11 @@ namespace ThemeApi
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
 
+        public VisualElementWrap WrapVisualElement(VisualElement e)
+        {
+            return new VisualElementWrap(e);
+        }
+
         public void SetPanelSettings(string path)
         {
             PanelSettings settings = GlobalResource
