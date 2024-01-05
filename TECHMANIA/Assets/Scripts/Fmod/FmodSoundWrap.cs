@@ -63,6 +63,7 @@ public class FmodSoundWrap
         }
     }
 
+    [MoonSharpHidden]
     // Themes may want to use this on preview tracks.
     public void Release()
     {

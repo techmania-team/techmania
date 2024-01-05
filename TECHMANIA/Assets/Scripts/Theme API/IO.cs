@@ -135,6 +135,8 @@ namespace ThemeApi
                 });
         }
 
+        // This should be called on all videos that the theme no
+        // longer needs, whether loaded from theme or file.
         public static void ReleaseVideo(VideoElement video)
         {
             if (videosFromFile.Contains(video))
