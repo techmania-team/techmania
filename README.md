@@ -56,13 +56,13 @@ For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then 
 For general discussions, head to [Discord](https://discord.gg/K4Nf7AnAZt).
 
 ## Making your own builds
-It's not clearly documented whether we can distribute FMOD for Unity in an open source project, so to be on the safe side, we DO NOT INCLUDE FMOD for Unity in this repo, and ask you to acquire your own FMOD license and plugin. They are [free](https://fmod.com/licensing) for developers with less than $200k revenue per year.
+It's not clearly documented whether we can distribute FMOD for Unity in an open source project, so to be on the safe side, we do not include FMOD for Unity in this repo, and ask you to acquire your own FMOD license and plugin. They are [free](https://fmod.com/licensing) for developers with less than $200k revenue per year.
 * Go to [fmod.com](http://fmod.com) and register an account, if you don't already have one.
 * Go to [Download](https://fmod.com/download#fmodforunity) and download "FMOD for Unity". You should receive a file named `fmodstudio20219.unitypackage`.
 
 To build TECHMANIA:
-* Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
-* Clone this repo, then open it from Unity. You may need to open it in safe mode, as the code will not compile without FMOD.
+* Install [Unity Hub](https://unity.com/download).
+* Clone this repo, then open it from Unity Hub, after downloading the project's Unity version. You may need to open it in safe mode, as the code will not compile without FMOD.
 * In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20219.unitypackage` you downloaded earlier.
 * At any point if the FMOD Setup Wizard popups up, you can simply dismiss it.
 * Close and reopen the project, it should now be buildable. Go to File - Build Settings.
