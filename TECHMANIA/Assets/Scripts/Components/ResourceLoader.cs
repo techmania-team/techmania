@@ -11,19 +11,23 @@ public class ResourceLoader : MonoBehaviour
     private static ResourceLoader instance;
 
     public AudioClip emptyClip;
+    private FmodSoundWrap emptySound;
 
     private static ResourceLoader GetInstance()
     {
         if (instance == null)
         {
             instance = FindObjectOfType<ResourceLoader>();
+            instance.emptySound = FmodManager
+                .CreateSoundFromAudioClip(
+                instance.emptyClip);
         }
         return instance;
     }
 
     #region Audio Caching
     // Keys do not contain folder.
-    private static Dictionary<string, AudioClip> audioClips;
+    private static Dictionary<string, FmodSoundWrap> sounds;
     // If a cache request is on the same folder, then audioClips
     // will not be cleared.
     private static string cachedFolder;
@@ -34,31 +38,31 @@ public class ResourceLoader : MonoBehaviour
 
     static ResourceLoader()
     {
-        audioClips = new Dictionary<string, AudioClip>();
+        sounds = new Dictionary<string, FmodSoundWrap>();
         cachedFolder = "";
         forceReload = false;
     }
 
     private void ReportAudioCache()
     {
-        Debug.Log("Cached clips: " + audioClips.Count);
+        Debug.Log("Cached clips: " + sounds.Count);
         Debug.Log("Sample sizes:");
         int logs = 0;
-        foreach (AudioClip c in audioClips.Values)
+        foreach (FmodSoundWrap s in sounds.Values)
         {
-            Debug.Log(c.samples);
+            Debug.Log(s.samples);
             logs++;
             if (logs > 5) break;
         }
     }
 
-    private static void ClearAudioCache()
+    public static void ClearAudioCache()
     {
-        foreach (AudioClip c in audioClips.Values)
+        foreach (FmodSoundWrap s in sounds.Values)
         {
-            c.UnloadAudioData();
+            s.Release();
         }
-        audioClips.Clear();
+        sounds.Clear();
     }
 
     // Cache all audio files in the given path.
@@ -139,15 +143,15 @@ public class ResourceLoader : MonoBehaviour
         {
             string fileRelativePath = Paths.RelativePath(
                 trackFolder, file);
-            if (!audioClips.ContainsKey(fileRelativePath))
+            if (!sounds.ContainsKey(fileRelativePath))
             {
                 // Handle empty files.
                 try
                 {
                     if (IsEmptyFile(file))
                     {
-                        Debug.Log($"{file} is a 0-byte file, loaded as empty clip.");
-                        audioClips.Add(fileRelativePath, emptyClip);
+                        Debug.Log($"{file} is a 0-byte file, loaded as empty sound.");
+                        sounds.Add(fileRelativePath, emptySound);
                         continue;
                     }
                 }
@@ -165,16 +169,16 @@ public class ResourceLoader : MonoBehaviour
                         Paths.FullPathToUri(file), AudioType.UNKNOWN);
                 yield return request.SendWebRequest();
 
-                AudioClip clip;
+                FmodSoundWrap sound;
                 Status status;
-                GetAudioClipFromWebRequest(request,
-                    out clip, out status);
+                GetSoundFromWebRequest(request,
+                    out sound, out status);
                 if (!status.Ok())
                 {
                     cacheAudioCompleteCallback?.Invoke(status);
                     yield break;
                 }
-                audioClips.Add(fileRelativePath, clip);
+                sounds.Add(fileRelativePath, sound);
             }
             
             numLoaded++;
@@ -186,12 +190,12 @@ public class ResourceLoader : MonoBehaviour
         Options.RestoreVSync();
     }
 
-    public static AudioClip GetCachedClip(
+    public static FmodSoundWrap GetCachedSound(
         string filenameWithoutFolder)
     {
-        if (audioClips.ContainsKey(filenameWithoutFolder))
+        if (sounds.ContainsKey(filenameWithoutFolder))
         {
-            return audioClips[filenameWithoutFolder];
+            return sounds[filenameWithoutFolder];
         }
         else
         {
@@ -202,7 +206,7 @@ public class ResourceLoader : MonoBehaviour
 
     #region Audio
     public delegate void AudioLoadCompleteCallback(
-        Status status, AudioClip clip = null);
+        Status status, FmodSoundWrap sound);
 
     public static void LoadAudio(string fullPath,
         AudioLoadCompleteCallback loadAudioCompleteCallback)
@@ -221,7 +225,7 @@ public class ResourceLoader : MonoBehaviour
             {
                 Debug.Log($"{fullPath} is a 0-byte file, loaded as empty clip.");
                 loadAudioCompleteCallback?.Invoke(
-                    Status.OKStatus(), emptyClip);
+                    Status.OKStatus(), emptySound);
                 yield break;
             }
         }
@@ -237,14 +241,14 @@ public class ResourceLoader : MonoBehaviour
             Paths.FullPathToUri(fullPath), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
-        AudioClip clip;
+        FmodSoundWrap sound;
         Status status;
-        GetAudioClipFromWebRequest(request, out clip, out status);
-        if (clip != null)
+        GetSoundFromWebRequest(request, out sound, out status);
+        if (sound != null)
         {
             Debug.Log("Loaded: " + fullPath);
         }
-        loadAudioCompleteCallback?.Invoke(status, clip);
+        loadAudioCompleteCallback?.Invoke(status, sound);
     }
 
     private static bool IsEmptyFile(string fullPath)
@@ -260,33 +264,35 @@ public class ResourceLoader : MonoBehaviour
         return fileInfo.Length == 0;
     }
 
-    public static void GetAudioClipFromWebRequest(
+    public static void GetSoundFromWebRequest(
         UnityWebRequest request,
-        out AudioClip clip, out Status status)
+        out FmodSoundWrap sound, out Status status)
     {
+        sound = null;
         string fullPath = request.uri.LocalPath;
         if (request.result != UnityWebRequest.Result.Success)
         {
-            clip = null;
+            sound = null;
             status = Status.Error(Status.Code.OtherError,
                 request.error, fullPath);
             return;
         }
-        clip = DownloadHandlerAudioClip.GetContent(request);
+        AudioClip clipFromRequest = DownloadHandlerAudioClip
+            .GetContent(request);
 
-        if (clip == null)
+        if (clipFromRequest == null)
         {
             status = Status.Error(Status.Code.OtherError,
                 request.error, fullPath);
             return;
         }
-        if (clip.loadState != AudioDataLoadState.Loaded)
+        if (clipFromRequest.loadState != AudioDataLoadState.Loaded)
         {
-            clip = null;
             status = Status.Error(Status.Code.OtherError,
                 request.error, fullPath);
             return;
         }
+        sound = FmodManager.CreateSoundFromAudioClip(clipFromRequest);
         status = Status.OKStatus();
     }
     #endregion

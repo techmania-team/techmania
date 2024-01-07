@@ -282,6 +282,7 @@ gamePanel.Show = function()
 end
 
 gamePanel.Hide = function()
+    tm.options.SaveToFile()  -- to save per-track option in case it's modified
     tm.RestoreVfxAndComboText()
 end
 

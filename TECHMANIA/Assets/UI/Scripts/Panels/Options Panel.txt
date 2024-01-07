@@ -47,11 +47,11 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
             tm.options.themesFolderLocation = tm.paths.GetThemeFolder()
         end
         tracksContainer.display = true
-        tracksContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.tracksFolderLocation)
+        tracksContainer.Q("location-display").text = tm.options.tracksFolderLocation
         skinsContainer.display = true
-        skinsContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.skinsFolderLocation)
+        skinsContainer.Q("location-display").text = tm.options.skinsFolderLocation
         themesContainer.display = true
-        themesContainer.Q("location-display").text = tm.paths.EscapeBackslash(tm.options.themesFolderLocation)
+        themesContainer.Q("location-display").text = tm.options.themesFolderLocation
     else
         tracksContainer.display = false
         skinsContainer.display = false
@@ -82,6 +82,7 @@ optionsPanel.Show = function()
     local isMobile = (platform == "iOS" or platform == "Android")
 
     optionsPanel.SetDiscordActivity()
+    controls.ResetScrollingTextTimer()
 
     local panel = optionsPanel.panel
 
@@ -98,9 +99,13 @@ optionsPanel.Show = function()
     end
 
     commonUI.ShowVolumeSliders(panel)
-
+    if (platform == "Windows") then
+        controls.SetToggleIsOn(panel.Q("asio").Q("track"), tm.options.useAsio)
+    end
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.SetValueWithoutNotify(tostring(tm.options.audioBufferSize))
+    local numAudioBuffersDropdown = panel.Q("num-audio-buffers").Q("dropdown")
+    numAudioBuffersDropdown.SetValueWithoutNotify(tostring(tm.options.numAudioBuffers))
 
     local languageDropdown = panel.Q("language").Q("dropdown")
     local locale = tm.l10n.GetAllLocales()[tm.options.locale]
@@ -253,12 +258,34 @@ optionsPanel.Initialize = function()
     end
 
     commonUI.InitializeVolumeSliders(panel)
-
+    local asio = panel.Q("asio")
+    local asioExplanation = panel.Q("asio-explanation")
+    local dividerUnderAsio = panel.Q("advanced-audio-divider")
+    if (platform == "Windows") then
+        asio.display = true
+        asioExplanation.display = true
+        dividerUnderAsio.display = true
+        local asioToggle = asio.Q("track")
+        asioToggle.RegisterCallback(eventType.Click, function()
+            tm.options.useAsio = not tm.options.useAsio
+            local status = tm.options.ApplyAsio()
+        end)
+    else
+        asio.display = false
+        asioExplanation.display = false
+        dividerUnderAsio.display = false
+    end
     local audioBufferDropdown = panel.Q("audio-buffer-size").Q("dropdown")
     audioBufferDropdown.choices = {"128", "256", "512", "1024"}
     audioBufferDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
         tm.options.audioBufferSize = net.int.Parse(event.newValue)
-        tm.options.ApplyAudioBufferSize()
+        tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
+    end)
+    local numAudioBuffersDropdown = panel.Q("num-audio-buffers").Q("dropdown")
+    numAudioBuffersDropdown.choices = {"2", "4"}
+    numAudioBuffersDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+        tm.options.numAudioBuffers = net.int.Parse(event.newValue)
+        tm.options.SaveToFile()  -- In case the user presses Alt+F4 immediately
     end)
 
     local languageDropdown = panel.Q("language").Q("dropdown")
@@ -333,8 +360,7 @@ optionsPanel.Initialize = function()
             local status = tm.ruleset.LoadCustomRuleset()
             if (not status.Ok()) then
                 local errorFormat = tm.l10n.GetString("custom_ruleset_load_error_format")
-                local errorMessage = net.string.Format(errorFormat, 
-                    tm.paths.EscapeBackslash(status.errorMessage))
+                local errorMessage = net.string.Format(errorFormat, status.errorMessage)
                 alertBox.Alert(errorMessage)
                 tm.options.ruleset = tm.enum.ruleset.Standard
                 rulesetDropdown.SetValueWithoutNotify(optionsPanel.rulesetDisplayString[tm.enum.ruleset.Standard])

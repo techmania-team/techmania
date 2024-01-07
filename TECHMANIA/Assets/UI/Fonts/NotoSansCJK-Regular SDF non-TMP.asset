@@ -70,9 +70,9 @@ Texture2D:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 2
-  m_Width: 0
-  m_Height: 0
-  m_CompleteImageSize: 0
+  m_Width: 1
+  m_Height: 1
+  m_CompleteImageSize: 1
   m_MipsStripped: 0
   m_TextureFormat: 1
   m_MipCount: 1
@@ -97,8 +97,8 @@ Texture2D:
   m_LightmapFormat: 0
   m_ColorSpace: 0
   m_PlatformBlob: 
-  image data: 0
-  _typelessdata: 
+  image data: 1
+  _typelessdata: 00
   m_StreamData:
     serializedVersion: 2
     offset: 0
@@ -119,6 +119,24 @@ MonoBehaviour:
   m_Version: 1.1.0
   m_Material: {fileID: -6358748357043466910}
   m_SourceFontFileGUID: b41a2edfa77a92c49a24ebde1a6b2946
+  m_fontAssetCreationEditorSettings:
+    sourceFontFileGUID: 27aa884eb72e4824da69b3ce90c7fa42
+    faceIndex: 2
+    pointSizeSamplingMode: 0
+    pointSize: 90
+    padding: 9
+    paddingMode: 0
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 7
+    characterSequence: 
+    referencedFontAssetGUID: 
+    referencedTextAssetGUID: 
+    fontStyle: 0
+    fontStyleModifier: 0
+    renderMode: 4165
+    includeFontFeatures: 0
   m_SourceFontFile: {fileID: 12800000, guid: b41a2edfa77a92c49a24ebde1a6b2946, type: 3}
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
@@ -169,24 +187,6 @@ MonoBehaviour:
     m_MarkToBaseAdjustmentRecords: []
     m_MarkToMarkAdjustmentRecords: []
   m_FallbackFontAssetTable: []
-  m_fontAssetCreationEditorSettings:
-    sourceFontFileGUID: 27aa884eb72e4824da69b3ce90c7fa42
-    faceIndex: 2
-    pointSizeSamplingMode: 0
-    pointSize: 90
-    padding: 9
-    paddingMode: 0
-    packingMode: 0
-    atlasWidth: 1024
-    atlasHeight: 1024
-    characterSetSelectionMode: 7
-    characterSequence: 
-    referencedFontAssetGUID: 
-    referencedTextAssetGUID: 
-    fontStyle: 0
-    fontStyleModifier: 0
-    renderMode: 4165
-    includeFontFeatures: 0
   m_FontWeightTable:
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}

@@ -58,6 +58,8 @@ public class Options : OptionsBase
     public int keysoundVolumePercent;
     public int sfxVolumePercent;
     public int audioBufferSize;
+    public int numAudioBuffers;
+    public bool useAsio;
 
     // Appearance
 
@@ -112,7 +114,26 @@ public class Options : OptionsBase
 
     // Per-track options. Dictionary is keyed by GUID.
     // Themes should access this with GetPerTrackOptions.
+    //
+    // There is a non-serialized, in-memory version and a
+    // serialized version of the same dictionary. This is because
+    // most per-track options will be the same as default, and
+    // we don't want to save those to disk. But we still want to
+    // keep them in memory so references to them can be retained.
+    // Therefore:
+    //
+    // - GetPerTrackOptions serves from the in-memory version, and
+    //   all callers operate on it without caring about the
+    //   serialized version
+    // - On serialization, non-default options are copied from
+    //   in-memory to serialized
+    // - On deserialization, all options are copied from serialized
+    //   to in-memory
 
+    [NonSerialized]
+    [MoonSharp.Interpreter.MoonSharpHidden]
+    public Dictionary<string, PerTrackOptions> 
+        inMemoryPerTrackOptions;
     [MoonSharp.Interpreter.MoonSharpHidden]
     public Dictionary<string, PerTrackOptions> perTrackOptions;
 
@@ -155,11 +176,9 @@ public class Options : OptionsBase
         musicVolumePercent = 80;
         keysoundVolumePercent = 100;
         sfxVolumePercent = 100;
-        // Cannot call GetDefaultAudioBufferSize() here, because
-        // somehow Unity calls this constructor during serialization,
-        // and calling AudioSettings.GetConfiguration() at that time
-        // causes an exception.
-        audioBufferSize = 512;
+        audioBufferSize = 1024;
+        numAudioBuffers = 4;
+        useAsio = false;
 
         locale = L10n.kDefaultLocale;
         noteSkin = "Default";
@@ -212,7 +231,7 @@ public class Options : OptionsBase
 
     protected override void InitAfterDeserialize()
     {
-        // Do nothing
+        InitPerTrackOptionsAfterDeserialize();
     }
 
     public void ResetCustomDataLocation ()
@@ -330,26 +349,23 @@ public class Options : OptionsBase
     #region Audio
     public void ApplyVolumeSettings()
     {
-        AudioSourceManager.instance.ApplyVolume();
+        AudioManager.instance.ApplyVolume();
     }
 
     public static int GetDefaultAudioBufferSize()
     {
-        return AudioSettings.GetConfiguration().dspBufferSize;
+        Debug.LogWarning("GetDefaultAudioBufferSize() is deprecated, and hardcoded to 1024.");
+        return 1024;
     }
 
-    // This resets the audio mixer, AND it only happens in
-    // the standalone player. What the heck? Anyway always reset
-    // the audio mixer after calling this.
     public void ApplyAudioBufferSize()
     {
-        AudioConfiguration config = AudioSettings.GetConfiguration();
-        if (config.dspBufferSize != audioBufferSize)
-        {
-            config.dspBufferSize = audioBufferSize;
-            AudioSettings.Reset(config);
-            ResourceLoader.forceReload = true;
-        }
+        Debug.LogWarning("TECHMANIA no longer allows setting audio buffer size at runtime.");
+    }
+
+    public void ApplyAsio()
+    {
+        FmodManager.instance.useASIO = useAsio;
     }
 
     public static float VolumeValueToDb(int volumePercent)
@@ -409,27 +425,36 @@ public class Options : OptionsBase
     #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
-        if (!perTrackOptions.ContainsKey(guid))
+        if (!inMemoryPerTrackOptions.ContainsKey(guid))
         {
             PerTrackOptions newOptions = new PerTrackOptions();
-            perTrackOptions.Add(guid, newOptions);
+            inMemoryPerTrackOptions.Add(guid, newOptions);
             // At this time the new options are not written to disk.
         }
 
-        return perTrackOptions[guid];
+        return inMemoryPerTrackOptions[guid];
     }
 
     private void PreparePerTrackOptionsToSerialize()
     {
-        Dictionary<string, PerTrackOptions> nonDefaultOptions
-            = new Dictionary<string, PerTrackOptions>();
-        foreach (KeyValuePair<string, PerTrackOptions> pair in 
-            perTrackOptions)
+        perTrackOptions = new Dictionary<string, PerTrackOptions>();
+        foreach (KeyValuePair<string, PerTrackOptions> pair in
+            inMemoryPerTrackOptions)
         {
             if (pair.Value.SameAsDefault()) continue;
-            nonDefaultOptions.Add(pair.Key, pair.Value);
+            perTrackOptions.Add(pair.Key, pair.Value);
         }
-        perTrackOptions = nonDefaultOptions;
+    }
+
+    private void InitPerTrackOptionsAfterDeserialize()
+    {
+        inMemoryPerTrackOptions = new
+            Dictionary<string, PerTrackOptions>();
+        foreach (KeyValuePair<string, PerTrackOptions> pair in
+            perTrackOptions)
+        {
+            inMemoryPerTrackOptions.Add(pair.Key, pair.Value);
+        }
     }
     #endregion
 

@@ -45,10 +45,6 @@ public class PanelTransitioner : MonoBehaviour
         TransitionToPanel.Direction direction,
         Action callbackOnFinish)
     {
-        // TODO: when transitioning from track setup to theme,
-        // "from" is null. Why?
-        // TODO: when transitioning from track setup to pattern panel,
-        // track setup panel does not disappear. Why?
         transitioning = true;
 
         if (to != null)

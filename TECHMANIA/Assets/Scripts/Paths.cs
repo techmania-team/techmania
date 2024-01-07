@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using UnityEngine.Events;
 using System;
+using ThemeApi;
 
 [MoonSharp.Interpreter.MoonSharpUserData]
 public static class Paths
@@ -353,9 +354,29 @@ public static class Paths
             ;
     }
 
-    public static string EscapeBackslash(string path)
+    public static string ForceEscapeBackslash(string path)
     {
         return path.Replace("\\", "\\\\");
+    }
+
+    public static string EscapeBackslash(string path)
+    {
+        // On API version 1 (Unity 2022.3.2f1), UI Toolkit parsed
+        // escape sequences in strings, so this was necessary
+        // for any element that has the potential to display
+        // paths with backslashes.
+        // On 2 and onward, the parsing is disabled by default,
+        // but older theme code still called this, resulting in
+        // double backslashes. To ensure no change in behavior,
+        // we change this function to do nothing on version 1.
+        if (ScriptSession.apiVersion == 1)
+        {
+            return path;
+        }
+        else
+        {
+            return ForceEscapeBackslash(path);
+        }
     }
 
     // Similar to Path.GetDirectoryName but allows going up

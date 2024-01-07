@@ -6,7 +6,7 @@ using UnityEngine;
 public class Startup : MonoBehaviour
 {
     public TextAsset stringTable;
-    public AudioSourceManager audioSourceManager;
+    public AudioManager audioManager;
     public BootScreen bootScreen;
 
     private static void LoadRuleset()
@@ -33,12 +33,16 @@ public class Startup : MonoBehaviour
     {
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
-
         Options.RefreshInstance();
+
+        FmodManager.instance.Initialize(
+            Options.instance.audioBufferSize,
+            Options.instance.numAudioBuffers);
+
         Options.instance.SetDefaultResolutionIfInvalid();
         Options.instance.ApplyGraphicSettings();
-        Options.instance.ApplyAudioBufferSize();
-        audioSourceManager.ApplyVolume();
+        audioManager.ApplyVolume();
+        Options.instance.ApplyAsio();
         LoadRuleset();
         
         L10n.Initialize(stringTable.text, L10n.Instance.System);

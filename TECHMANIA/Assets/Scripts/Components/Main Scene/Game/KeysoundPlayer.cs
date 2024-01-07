@@ -4,49 +4,47 @@ using UnityEngine;
 
 public class KeysoundPlayer
 {
-    // Records which AudioSource is playing the keysounds of which
+    // Records which FmodChannelWrap is playing the keysounds of which
     // note, so they can be stopped later. This is meant for long
     // notes, and do not care about assist ticks.
-    private Dictionary<Note, AudioSource> audioSourceOfNote;
-    private AudioSourceManager sourceManager;
-    private AudioClip assistTick;
+    private Dictionary<Note, FmodChannelWrap> fmodChannelOfNote;
+    private AudioManager sourceManager;
+    private FmodSoundWrap assistTick;
 
-    public KeysoundPlayer(AudioClip assistTick)
+    public KeysoundPlayer(FmodSoundWrap assistTick)
     {
-        sourceManager = AudioSourceManager.instance;
+        sourceManager = AudioManager.instance;
         this.assistTick = assistTick;
     }
 
     public void Prepare()
     {
-        audioSourceOfNote = new Dictionary<Note, AudioSource>();
+        fmodChannelOfNote = new Dictionary<Note, FmodChannelWrap>();
+        removeChannelFromMapOnSoundEnd = true;
     }
 
     public void Pause()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
-            source.Pause();
+            channel.Pause();
         }
     }
 
     public void Unpause()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
         {
-            source.UnPause();
+            channel.UnPause();
         }
     }
 
     public void Dispose()
     {
-        foreach (AudioSource source in audioSourceOfNote.Values)
-        {
-            source.Stop();
-        }
-        audioSourceOfNote.Clear();
+        StopAll();
     }
 
+    private bool removeChannelFromMapOnSoundEnd;
     public void Play(Note n, bool hidden, bool emptyHit)
     {
         if (emptyHit && (
@@ -71,12 +69,19 @@ public class KeysoundPlayer
 
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        AudioSource source = sourceManager.PlayKeysound(clip,
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        FmodChannelWrap channel = sourceManager.PlayKeysound(sound,
             hidden,
             startTime: 0f,
             n.volumePercent, n.panPercent);
-        audioSourceOfNote[n] = source;
+        channel.SetSoundEndCallback(() =>
+        {
+            if (removeChannelFromMapOnSoundEnd)
+            {
+                fmodChannelOfNote.Remove(n);
+            }
+        });
+        fmodChannelOfNote[n] = channel;
     }
 
     // Only play if the note's keysound starts before baseTime
@@ -85,29 +90,39 @@ public class KeysoundPlayer
     {
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        if (n.time + clip.length <= baseTime) return;
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        if (n.time + sound.length <= baseTime) return;
 
         float startTime = baseTime - n.time;
-        AudioSource source = sourceManager.PlayKeysound(clip,
+        FmodChannelWrap channel = sourceManager.PlayKeysound(sound,
             hidden, startTime, n.volumePercent, n.panPercent);
-        audioSourceOfNote[n] = source;
+        fmodChannelOfNote[n] = channel;
     }
 
     public void StopIfPlaying(Note n)
     {
         if (string.IsNullOrEmpty(n.sound)) return;
 
-        AudioClip clip = ResourceLoader.GetCachedClip(n.sound);
-        if (audioSourceOfNote[n].clip == clip)
+        FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
+        if (fmodChannelOfNote[n].sound.Equals(sound))
         {
-            audioSourceOfNote[n].Stop();
-            audioSourceOfNote.Remove(n);
+            // Sound end callback will delete the note
+            // from fmodChannelOfNote.
+            fmodChannelOfNote[n].Stop();
         }
     }
 
     public void StopAll()
     {
-        Dispose();
+        // We need to prevent the sound end callback from modifying
+        // fmodChannelOfNote.
+        removeChannelFromMapOnSoundEnd = false;
+        foreach (FmodChannelWrap channel in fmodChannelOfNote.Values)
+        {
+            channel.Stop();
+        }
+        removeChannelFromMapOnSoundEnd = true;
+
+        fmodChannelOfNote.Clear();
     }
 }

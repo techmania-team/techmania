@@ -19,7 +19,8 @@ selectPatternPanel = {
     },
 
     previewPlaybackCoroutine = nil,
-    previewTrackAudioSource = nil,
+    previewTrack = nil,
+    previewTrackChannel = nil,
 
     radarLayoutInitialized = false,
     radarOfSelectedPattern = nil,
@@ -173,7 +174,6 @@ selectPatternPanel.ShowPatternDetails = function()
     else
         panel.Q("bpm").Q("content").text = FormatBpm(minBpm)
     end
-    controls.SetUpScrollingText(panel.Q("bpm").Q("container"))
 
     -- Length
     local length = 0
@@ -230,19 +230,20 @@ end
 
 selectPatternPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_pattern"))
+    controls.ResetScrollingTextTimer()
 
     local panel = selectPatternPanel.panel
     local track = selectTrackPanel.selectedFullTrack
 
-    -- Load per-track options.
+    -- Load per-track options. TECHMANIA will create one if none exists, so this shouldn't be nil.
     selectTrackPanel.selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
 
     -- Display metadata.
     local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, track.trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
-    panel.Q("metadata-wrap").Q("genre").text = tm.paths.EscapeBackslash(track.trackMetadata.genre)
-    panel.Q("metadata-wrap").Q("title").text = tm.paths.EscapeBackslash(track.trackMetadata.title)
-    panel.Q("metadata-wrap").Q("artist").text = tm.paths.EscapeBackslash(track.trackMetadata.artist)
+    panel.Q("metadata-wrap").Q("genre").text = track.trackMetadata.genre
+    panel.Q("metadata-wrap").Q("title").text = track.trackMetadata.title
+    panel.Q("metadata-wrap").Q("artist").text = track.trackMetadata.artist
 
     -- Display pattern list.
     panel.Q("pattern-list").Q("no-pattern-text").display = (#track.patterns == 0)
@@ -299,7 +300,12 @@ selectPatternPanel.Show = function()
 end
 
 selectPatternPanel.Hide = function()
+    ReleaseEyecatch(selectPatternPanel.panel.Q("eyecatch"))
+
     local patternListContainer = selectPatternPanel.panel.Q("pattern-list").Q("unity-content-container")
+    for _, element in ipairs(patternListContainer.Children()) do
+        controls.DisposeScrollingText(element.Q("pattern-name-container"))
+    end
     patternListContainer.RemoveAllChildren()
 
     selectPatternPanel.StopPreviewTrackPlayback()
@@ -437,16 +443,17 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
     if (trackMetadata.previewStartTime > trackMetadata.previewEndTime) then return end
     local previewPath = tm.paths.Combine(trackFolder, trackMetadata.previewTrack)
 
-    tm.io.LoadAudioFromFile(previewPath, function(status, clip)
+    tm.io.LoadAudioFromFile(previewPath, function(status, sound)
         if (not status.Ok()) then return end
-        -- If the user transitioned away while loading the clip, don't play.
+        -- If the user transitioned away while loading the sound, don't play.
         if (not selectPatternPanel.panel.display) then return end
 
+        selectPatternPanel.previewTrack = sound
         local startTime = trackMetadata.previewStartTime
         local endTime = trackMetadata.previewEndTime
         if (startTime < 0) then startTime = 0 end
-        if (endTime > clip.length) then endTime = clip.length end
-        if (endTime == 0) then endTime = clip.length end
+        if (endTime > sound.length) then endTime = sound.length end
+        if (endTime == 0) then endTime = sound.length end
         local previewLength = endTime - startTime
         local fadeLength = 1
         if (fadeLength > previewLength * 0.5) then fadeLength = previewLength * 0.5 end
@@ -455,13 +462,13 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
             while (true) do
                 local timer = 0
                 -- Start at volume 0
-                selectPatternPanel.previewTrackAudioSource = tm.audio.PlayMusic(clip, startTime, 0)
+                selectPatternPanel.previewTrackChannel = tm.audio.PlayMusic(sound, startTime, 0)
                 while (timer < fadeLength) do
-                    selectPatternPanel.previewTrackAudioSource.volume = timer / fadeLength
+                    selectPatternPanel.previewTrackChannel.volume = timer / fadeLength
                     timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
-                selectPatternPanel.previewTrackAudioSource.volume = 1
+                selectPatternPanel.previewTrackChannel.volume = 1
                 timer = 0
                 while (timer < previewLength - fadeLength * 2) do
                     timer = timer + unity.time.deltaTime
@@ -469,7 +476,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
                 end
                 timer = 0
                 while (timer < fadeLength) do
-                    selectPatternPanel.previewTrackAudioSource.volume = 1 - timer / fadeLength
+                    selectPatternPanel.previewTrackChannel.volume = 1 - timer / fadeLength
                     timer = timer + unity.time.deltaTime
                     coroutine.yield()
                 end
@@ -484,16 +491,17 @@ selectPatternPanel.StopPreviewTrackPlayback = function()
         selectPatternPanel.previewPlaybackCoroutine = nil
     end
     
-    if (selectPatternPanel.previewTrackAudioSource != nil and selectPatternPanel.previewTrackAudioSource.isPlaying) then
+    if (selectPatternPanel.previewTrackChannel != nil and selectPatternPanel.previewTrackChannel.isPlaying) then
         tm.StartCoroutine(function()
             local timer = 0
             local fadeLength = 0.2
             while (timer < fadeLength) do
-                selectPatternPanel.previewTrackAudioSource.volume = 1 - timer / fadeLength
+                selectPatternPanel.previewTrackChannel.volume = 1 - timer / fadeLength
                 timer = timer + unity.time.deltaTime
                 coroutine.yield()
             end
-            selectPatternPanel.previewTrackAudioSource.Stop()
+            selectPatternPanel.previewTrackChannel.Stop()
+            tm.io.ReleaseAudio(selectPatternPanel.previewTrack)
         end)
     end
 end

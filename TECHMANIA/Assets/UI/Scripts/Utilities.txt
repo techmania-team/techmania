@@ -26,6 +26,14 @@ function LoadAndShowEyecatch(path, eyecatchElement)
     end)
 end
 
+function ReleaseEyecatch(eyecatchElement)
+    if (eyecatchElement.Q("default-eyecatch").visible) then
+        -- Nothing to release
+    else
+        tm.io.ReleaseTexture(eyecatchElement.backgroundImage)
+    end
+end
+
 commonUI = {}
 
 commonUI.InitializeVolumeSliders = function(container)

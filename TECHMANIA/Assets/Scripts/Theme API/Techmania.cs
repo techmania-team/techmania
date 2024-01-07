@@ -42,6 +42,11 @@ namespace ThemeApi
         public PanelSettings panelSettings => 
             uiDocument.panelSettings;
 
+        public VisualElementWrap WrapVisualElement(VisualElement e)
+        {
+            return new VisualElementWrap(e);
+        }
+
         public void SetPanelSettings(string path)
         {
             PanelSettings settings = GlobalResource
@@ -64,7 +69,7 @@ namespace ThemeApi
         public SkinPreview skinPreview => SkinPreview.instance;
         public CalibrationPreview calibrationPreview =>
             CalibrationPreview.instance;
-        public AudioSourceManager audio => AudioSourceManager.instance;
+        public AudioManager audio => AudioManager.instance;
         #endregion
 
         #region System dialogs
@@ -274,23 +279,50 @@ namespace ThemeApi
             Application.OpenURL(url);
         }
 
-        // Returns one of "Windows", "Linux", "macOS", "Android"
-        // "iOS", and "Unknown".
-        public string GetPlatform()
+        public bool InEditor()
+        {
+#if UNITY_EDITOR
+            return true;
+#else
+            return false;
+#endif
+        }
+
+        public enum Platform
+        {
+            Windows,
+            Linux,
+            macOS,
+            Android,
+            iOS,
+            Unknown
+        }
+
+        // The name contains "enum" because the string version
+        // came first.
+        public Platform GetPlatformEnum()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            return "Windows";
+            return Platform.Windows;
 #elif UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
-            return "Linux";
+            return Platform.Linux;
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            return "macOS";
+            return Platform.macOS;
 #elif UNITY_ANDROID
-            return "Android";
+            return Platform.Android;
 #elif UNITY_IOS
-            return "iOS";
+            return Platform.iOS;
 #else
-            return "Unknown";
+            return Platform.Unknown;
 #endif
+        }
+
+        // Returns one of "Windows", "Linux", "macOS", "Android"
+        // "iOS", and "Unknown". Deprecated; new code should use
+        // GetPlatformEnum().
+        public string GetPlatform()
+        {
+            return GetPlatformEnum().ToString();
         }
 
         public string Version()
@@ -306,7 +338,7 @@ namespace ThemeApi
             Application.Quit();
 #endif
         }
-        #endregion
+#endregion
 
         public void LogEvent(EventBase e)
         {

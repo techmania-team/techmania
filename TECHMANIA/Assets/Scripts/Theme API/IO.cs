@@ -8,24 +8,21 @@ namespace ThemeApi
     [MoonSharpUserData]
     public static class IO
     {
-        #region Garbage collection
-        // VisualElementWrap.backgroundImage setter will destroy
-        // old textures if they are loaded from file.
+        #region Assets from file
         private static HashSet<Texture2D> texturesFromFile;
+        private static HashSet<FmodSoundWrap> soundsFromFile;
+        private static HashSet<VideoElement> videosFromFile;
         static IO()
         {
             texturesFromFile = new HashSet<Texture2D>();
+            soundsFromFile = new HashSet<FmodSoundWrap>();
+            videosFromFile = new HashSet<VideoElement>();
         }
 
-        public static void DestroyTextureIfFromFile(Texture2D texture)
-        {
-            if (texturesFromFile.Contains(texture))
-            {
-                texturesFromFile.Remove(texture);
-                Object.Destroy(texture);
-            }
-        }
-
+        public static int numTexturesFromFile => 
+            texturesFromFile.Count;
+        public static int numSoundsFromFile => soundsFromFile.Count;
+        public static int numVideosFromFile => videosFromFile.Count;
         #endregion
 
         public static bool FileExists(string path)
@@ -51,27 +48,60 @@ namespace ThemeApi
             ResourceLoader.LoadImage(path,
                 (Status status, Texture2D texture) =>
                 {
+                    if (status.Ok())
+                    {
+                        texturesFromFile.Add(texture);
+                    }
                     if (callback.IsNil()) return;
-                    texturesFromFile.Add(texture);
                     callback.Function.Call(status, texture);
                 });
         }
 
-        public static AudioClip LoadAudioFromTheme(string path)
+        public static void ReleaseTexture(Texture2D texture)
         {
-            return GlobalResource.GetThemeContent<AudioClip>(path);
+            if (texturesFromFile.Contains(texture))
+            {
+                texturesFromFile.Remove(texture);
+            }
+            else
+            {
+                Debug.LogWarning("The texture being released was not loaded from a file. This may cause issues in the theme.");
+            }
+            Object.Destroy(texture);
         }
 
-        // Callback parameter: Status, AudioClip
+        public static FmodSoundWrap LoadAudioFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<FmodSoundWrap>(path);
+        }
+
+        // Callback parameter: Status, FmodSoundWrap
         public static void LoadAudioFromFile(string path,
             DynValue callback)
         {
             ResourceLoader.LoadAudio(path,
-                (Status status, AudioClip clip) =>
+                (Status status, FmodSoundWrap sound) =>
                 {
+                    if (status.Ok())
+                    {
+                        soundsFromFile.Add(sound);
+                    }
                     if (callback.IsNil()) return;
-                    callback.Function.Call(status, clip);
+                    callback.Function.Call(status, sound);
                 });
+        }
+
+        public static void ReleaseAudio(FmodSoundWrap sound)
+        {
+            if (soundsFromFile.Contains(sound))
+            {
+                soundsFromFile.Remove(sound);
+            }
+            else
+            {
+                Debug.LogWarning("The sound being released was not loaded from a file. This may cause issues in the theme.");
+            }
+            sound.Release();
         }
 
         // Callback parameter: VideoElement
@@ -96,9 +126,24 @@ namespace ThemeApi
             VideoElement.CreateFromFile(path,
                 callback: (Status status, VideoElement element) =>
                 {
+                    if (status.Ok())
+                    {
+                        videosFromFile.Add(element);
+                    }
                     if (callback.IsNil()) return;
                     callback.Function.Call(status, element);
                 });
+        }
+
+        // This should be called on all videos that the theme no
+        // longer needs, whether loaded from theme or file.
+        public static void ReleaseVideo(VideoElement video)
+        {
+            if (videosFromFile.Contains(video))
+            {
+                videosFromFile.Remove(video);
+            }
+            video.Release();
         }
 
         public static UnityEngine.TextCore.Text.FontAsset
@@ -228,3 +273,4 @@ namespace ThemeApi
         }
     }
 }
+

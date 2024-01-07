@@ -8,6 +8,9 @@ namespace ThemeApi
 {
     // A wrapper around VideoPlayer that plays video on a
     // VisualElement.
+    // Different from textures and sounds, themes should call
+    // IO.ReleaseVideo on all videos after being done with them,
+    // whether it's from the theme or a file.
     [MoonSharpUserData]
     public class VideoElement
     {
@@ -47,7 +50,7 @@ namespace ThemeApi
             e.player.errorReceived += (
                 VideoPlayer source, string message) =>
             {
-                e.Dispose();
+                e.Release();
                 callback(Status.Error(
                     Status.Code.IOError, message, path),
                     null);
@@ -64,7 +67,13 @@ namespace ThemeApi
             player.targetTexture = renderTexture;
         }
 
+        // Deprecated; new theme code should call IO.ReleaseVideo
         public void Dispose()
+        {
+            IO.ReleaseVideo(this);
+        }
+
+        public void Release()
         {
             if (renderTexture != null &&
                 renderTexture.IsCreated())

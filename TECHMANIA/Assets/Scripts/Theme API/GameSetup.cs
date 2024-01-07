@@ -30,7 +30,7 @@ namespace ThemeApi
 
         // Audio
 
-        public AudioClip assistTick;
+        public FmodSoundWrap assistTick;
 
         // Callbacks during Loading state
 

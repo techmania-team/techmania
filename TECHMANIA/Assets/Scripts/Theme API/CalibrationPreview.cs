@@ -22,13 +22,16 @@ namespace ThemeApi
         public VFXManager vfxManager;
         [Header("Audio")]
         [MoonSharpHidden]
-        public AudioSourceManager audioSourceManager;
+        public AudioManager audioManager;
         [MoonSharpHidden]
         public AudioClip backingTrack;
         [MoonSharpHidden]
         public AudioClip kick;
         [MoonSharpHidden]
         public AudioClip snare;
+        private FmodSoundWrap backingTrackSound;
+        private FmodSoundWrap kickSound;
+        private FmodSoundWrap snareSound;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;
@@ -69,7 +72,7 @@ namespace ThemeApi
         private Stopwatch stopwatch;
         private float baseTime;
         private float gameTime;
-        private AudioSource backingTrackSource;
+        private FmodChannelWrap backingTrackChannel;
 
         private enum InputMethod
         {
@@ -83,6 +86,13 @@ namespace ThemeApi
         {
             running = false;
             instance = this;
+
+            backingTrackSound = FmodManager.CreateSoundFromAudioClip(
+                backingTrack);
+            kickSound = FmodManager.CreateSoundFromAudioClip(
+                kick);
+            snareSound = FmodManager.CreateSoundFromAudioClip(
+                snare);
         }
 
         #region Helpers
@@ -185,9 +195,9 @@ namespace ThemeApi
 
             inputMethod = InputMethod.Touch;
 
-            backingTrackSource = audioSourceManager.PlayMusic(
-                backingTrack);
-            backingTrackSource.loop = true;
+            backingTrackChannel = audioManager.PlayMusic(
+                backingTrackSound);
+            backingTrackChannel.loop = true;
 
             stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -292,8 +302,8 @@ namespace ThemeApi
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
             vfxManager.Dispose();
-            backingTrackSource.loop = false;
-            backingTrackSource.Stop();
+            backingTrackChannel.loop = false;
+            backingTrackChannel.Stop();
 
             running = false;
         }
@@ -401,11 +411,11 @@ namespace ThemeApi
             switch (laneOfNote[noteIndex])
             {
                 case 0:
-                    audioSourceManager.PlayKeysound(snare,
+                    audioManager.PlayKeysound(snareSound,
                         hiddenLane: false);
                     break;
                 case 1:
-                    audioSourceManager.PlayKeysound(kick,
+                    audioManager.PlayKeysound(kickSound,
                         hiddenLane: false);
                     break;
                 default:

@@ -12,6 +12,7 @@ namespace ThemeApi
     public static class ScriptSession
     {
         public static Script session { get; private set; }
+        public static int apiVersion { get; private set; }
 
         public static void Prepare()
         {
@@ -83,9 +84,11 @@ namespace ThemeApi
 
         public static Table GetApi(int version)
         {
+            apiVersion = version;
             switch (version)
             {
                 case 1:
+                case 2:
                     return GetApiVersion1();
                 default:
                     throw new ApiNotSupportedException();
@@ -117,6 +120,8 @@ namespace ThemeApi
             addType(tmEnums, typeof(Options.Ruleset));
             addTypeAs(tmEnums, typeof(GameState.State), "gameState");
             addType(tmEnums, typeof(SkinType));
+            addType(tmEnums, typeof(Techmania.Platform));
+            addTypeAs(tmEnums, typeof(Status.Code), "statusCode");
             // Enums used by Track
             addType(tmEnums, typeof(ControlScheme));
             addType(tmEnums, typeof(NoteType));

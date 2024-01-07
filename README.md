@@ -56,13 +56,19 @@ For technical issues, read the [contribution guidelines](CONTRIBUTING.md), then 
 For general discussions, head to [Discord](https://discord.gg/K4Nf7AnAZt).
 
 ## Making your own builds
-Follow the standard building process:
-* Install Unity, making sure your Unity version matches this project's. Check the project's Unity version at [ProjectVersion.txt](TECHMANIA/ProjectSettings/ProjectVersion.txt).
-* Clone this repo, then open it from Unity.
-* File - Build Settings
+It's not clearly documented whether we can distribute FMOD for Unity in an open source project, so to be on the safe side, we do not include FMOD for Unity in this repo, and ask you to acquire your own FMOD license and plugin. They are [free](https://fmod.com/licensing) for developers with less than $200k revenue per year.
+* Go to [fmod.com](http://fmod.com) and register an account, if you don't already have one.
+* Go to [Download](https://fmod.com/download#fmodforunity) and download "FMOD for Unity". You should receive a file named `fmodstudio20219.unitypackage`.
+
+To build TECHMANIA:
+* Install [Unity Hub](https://unity.com/download).
+* Clone this repo, then open it from Unity Hub, after downloading the project's Unity version. You may need to open it in safe mode, as the code will not compile without FMOD.
+* In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20219.unitypackage` you downloaded earlier.
+* At any point if the FMOD Setup Wizard popups up, you can simply dismiss it.
+* Close and reopen the project, it should now be buildable. Go to File - Build Settings.
 * Choose your target platform, then build.
 
-Please note that the default skins are not part of the project, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable. Alternatively, set up [streaming assets](#on-streaming-assets) in your local clone.
+Please note that the default skins are not part of the project either, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable. Alternatively, set up [streaming assets](#on-streaming-assets) in your local clone.
 
 If the build fails or produces a platform-specific bug, you can submit an issue, but we do not guarantee support.
 

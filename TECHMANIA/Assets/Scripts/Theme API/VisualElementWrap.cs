@@ -523,13 +523,6 @@ namespace ThemeApi
             get { return style.backgroundImage.value.texture; }
             set 
             {
-                if (style.backgroundImage != null &&
-                    style.backgroundImage.value != null &&
-                    style.backgroundImage.value.texture != null)
-                {
-                    IO.DestroyTextureIfFromFile(
-                        style.backgroundImage.value.texture);
-                }
                 style.backgroundImage = new StyleBackground(value);
             }
         }
@@ -642,6 +635,20 @@ namespace ThemeApi
         public bool Equals(VisualElementWrap other)
         {
             return inner == other.inner;
+        }
+
+        // If we don't hide this, somehow Moonsharp pipes
+        // Equals calls to this overload.
+        [MoonSharpHidden]
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        [MoonSharpHidden]
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
         #endregion
 

@@ -202,7 +202,7 @@ public static class GlobalResource
         return themeNames;
     }
 
-    public static Dictionary<string, UnityEngine.Object> themeContent;
+    public static Dictionary<string, object> themeContent;
 
     /// <summary>
     /// Returns null if the specified file doesn't exist, or isn't
@@ -212,7 +212,7 @@ public static class GlobalResource
     /// <param name="name"></param>
     /// <returns></returns>
     public static T GetThemeContent<T>(string name)
-        where T : UnityEngine.Object
+        where T : class
     {
         name = name.ToLower();
         if (!themeContent.ContainsKey(name))
@@ -220,7 +220,7 @@ public static class GlobalResource
             Debug.LogError($"The asset {name} does not exist in the current theme.");
             return null;
         }
-        UnityEngine.Object asset = themeContent[name];
+        object asset = themeContent[name];
         if (asset.GetType() != typeof(T))
         {
             Debug.LogError($"The asset {name} exists in the current theme, but is not of the expected type. Expected type: {typeof(T).Name}; actual type: {asset.GetType().Name}");

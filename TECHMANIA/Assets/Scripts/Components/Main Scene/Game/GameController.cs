@@ -257,13 +257,13 @@ public class GameController : MonoBehaviour
                 backingTrackFilename);
             bool loaded = false;
             Status status = null;
-            AudioClip clip = null;
+            FmodSoundWrap sound = null;
             ResourceLoader.LoadAudio(path,
-                (Status loadStatus, AudioClip loadedClip) =>
+                (Status loadStatus, FmodSoundWrap loadedSound) =>
                 {
                     loaded = true;
                     status = loadStatus;
-                    clip = loadedClip;
+                    sound = loadedSound;
                 });
             yield return new WaitUntil(() => loaded);
             if (!status.Ok())
@@ -271,7 +271,7 @@ public class GameController : MonoBehaviour
                 reportLoadError(status);
                 yield break;
             }
-            bg.SetBackingTrack(clip);
+            bg.SetBackingTrack(sound);
         }
         reportLoadProgress(backingTrackFilename);
 
@@ -466,7 +466,7 @@ public class GameController : MonoBehaviour
 
     public void Conclude()
     {
-        AudioSourceManager.instance.SetSpeed(1f);
+        AudioManager.instance.SetSpeed(1f);
 
         timer.Dispose();
         bg.Conclude();
@@ -550,7 +550,7 @@ public class GameController : MonoBehaviour
         // It's up to GameState.SetSpeed to check if we are in
         // practice mode.
         timer.SetSpeed(speedPercent);
-        AudioSourceManager.instance.SetSpeed(timer.speed);
+        AudioManager.instance.SetSpeed(timer.speed);
         bg.SetBgaSpeed(timer.speed);
     }
     #endregion

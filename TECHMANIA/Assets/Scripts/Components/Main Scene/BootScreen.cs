@@ -3,11 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using ThemeApi;
 using TMPro;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static System.Collections.Specialized.BitVector32;
 
 public class BootScreen : MonoBehaviour
 {
@@ -16,6 +15,11 @@ public class BootScreen : MonoBehaviour
     public GameObject revertButtonContainer;
     public TextMeshProUGUI revertMessage;
     public MessageDialog messageDialog;
+
+    [Header("Components referencing Audio Clips")]
+    public MenuSfx menuSfx;
+    public PatternPanel patternPanel;
+    public CalibrationPreview calibrationPreview;
 
     private bool themeDecided;
     private Coroutine revertPromptCoroutine;

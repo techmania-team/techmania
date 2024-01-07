@@ -9,12 +9,13 @@ public class PreviewTrackPlayer : MonoBehaviour
 {
     public MessageDialog messageDialog;
 
-    private AudioSource source;
+    private FmodSoundWrap sound;
+    private FmodChannelWrap channel;
 
     // Start is called before the first frame update
     void Start()
     {
-        source = GetComponent<AudioSource>();
+
     }
 
     public void Play(string trackFolder,
@@ -55,10 +56,9 @@ public class PreviewTrackPlayer : MonoBehaviour
             Paths.FullPathToUri(filename), AudioType.UNKNOWN);
         yield return request.SendWebRequest();
 
-        AudioClip clip;
         Status status;
-        ResourceLoader.GetAudioClipFromWebRequest(
-            request, out clip, out status);
+        ResourceLoader.GetSoundFromWebRequest(
+            request, out sound, out status);
         if (!status.Ok())
         {
             messageDialog?.Show(status.errorMessage);
@@ -66,13 +66,12 @@ public class PreviewTrackPlayer : MonoBehaviour
         }
 
         if (startTime < 0f) startTime = 0f;
-        if (endTime > clip.length) endTime = clip.length;
-        if (endTime == 0f) endTime = clip.length;
+        if (endTime > sound.length) endTime = sound.length;
+        if (endTime == 0f) endTime = sound.length;
         float previewLength = (float)endTime - (float)startTime;
 
-        source.clip = clip;
-        source.loop = false;
-        source.volume = 0f;
+        channel = AudioManager.instance.PlayMusic(sound);
+        channel.volume = 0f;
         float fadeLength = 1f;
         if (fadeLength > previewLength * 0.5f)
         {
@@ -82,24 +81,24 @@ public class PreviewTrackPlayer : MonoBehaviour
         int numLoops = loop ? int.MaxValue : 1;
         for (int i = 0; i < numLoops; i++)
         {
-            source.time = (float)startTime;
-            source.Play();
+            channel.time = (float)startTime;
+            channel.Play();
             
             for (float time = 0f; time < fadeLength; time += Time.deltaTime)
             {
                 float progress = time / fadeLength;
-                source.volume = progress;
+                channel.volume = progress;
                 yield return null;
             }
-            source.volume = 1f;
+            channel.volume = 1f;
             yield return new WaitForSeconds(previewLength - fadeLength * 2f);
             for (float time = 0f; time < fadeLength; time += Time.deltaTime)
             {
                 float progress = time / fadeLength;
-                source.volume = 1f - progress;
+                channel.volume = 1f - progress;
                 yield return null;
             }
-            source.volume = 0f;
+            channel.volume = 0f;
         }
     }
 
@@ -111,13 +110,16 @@ public class PreviewTrackPlayer : MonoBehaviour
 
     private IEnumerator InnerStop()
     {
-        if (source.volume == 0f) yield break;
+        if (channel == null) yield break;
+        if (channel.volume == 0f) yield break;
 
-        for (; source.volume > 0f; source.volume -= Time.deltaTime * 5f)
+        for (; channel.volume > 0f;
+            channel.volume -= Time.deltaTime * 5f)
         {
             yield return null;
         }
-        source.volume = 0f;
-        source.Stop();
+        channel.volume = 0f;
+        channel.Stop();
+        sound.Release();
     }
 }
