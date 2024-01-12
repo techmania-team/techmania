@@ -70,9 +70,11 @@ namespace ThemeApi
         // Deprecated; new theme code should call IO.ReleaseVideo
         public void Dispose()
         {
+            Debug.LogWarning("VideoPlayer.Dispose is deprecated; please call IO.ReleaseVideo instead.");
             IO.ReleaseVideo(this);
         }
 
+        [MoonSharpHidden]
         public void Release()
         {
             if (renderTexture != null &&
@@ -128,6 +130,16 @@ namespace ThemeApi
                 // Not sure why.
                 player.time = 0;
             }
+        }
+
+        // For looping videos, will be called each time the video
+        // reaches its end.
+        public void SetVideoEndCallback(DynValue callback)
+        {
+            player.loopPointReached += (VideoPlayer player) =>
+            {
+                callback.Function.Call();
+            };
         }
         #endregion
     }

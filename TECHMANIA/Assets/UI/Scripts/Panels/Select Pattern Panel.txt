@@ -475,6 +475,7 @@ selectPatternPanel.StartPreviewTrackPlayback = function()
                     coroutine.yield()
                 end
                 timer = 0
+                -- TODO: what if the sound played to its end and got auto-released?
                 while (timer < fadeLength) do
                     selectPatternPanel.previewTrackChannel.volume = 1 - timer / fadeLength
                     timer = timer + unity.time.deltaTime
