@@ -162,6 +162,7 @@ public class FmodChannelWrap
     }
 
     // This callback must be static or FMOD will crash Unity hard.
+    [AOT.MonoPInvokeCallback(typeof(FMOD.SYSTEM_CALLBACK))]
     private static FMOD.RESULT InternalCallback(
         IntPtr channelControl,
         FMOD.CHANNELCONTROL_TYPE channelControlType,
