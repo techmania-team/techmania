@@ -442,6 +442,11 @@ public class Options : OptionsBase
 
     private void PreparePerTrackOptionsToSerialize()
     {
+        if (inMemoryPerTrackOptions == null)
+        {
+            inMemoryPerTrackOptions = new Dictionary<string, PerTrackOptions>();
+        }
+
         perTrackOptions = new Dictionary<string, PerTrackOptions>();
         foreach (KeyValuePair<string, PerTrackOptions> pair in
             inMemoryPerTrackOptions)
