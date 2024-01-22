@@ -425,6 +425,11 @@ public class Options : OptionsBase
     #region Per-track options
     public PerTrackOptions GetPerTrackOptions(string guid)
     {
+        if (inMemoryPerTrackOptions == null)
+        {
+            inMemoryPerTrackOptions = new Dictionary<string, PerTrackOptions>();
+        }
+
         if (!inMemoryPerTrackOptions.ContainsKey(guid))
         {
             PerTrackOptions newOptions = new PerTrackOptions();
@@ -437,6 +442,11 @@ public class Options : OptionsBase
 
     private void PreparePerTrackOptionsToSerialize()
     {
+        if (inMemoryPerTrackOptions == null)
+        {
+            inMemoryPerTrackOptions = new Dictionary<string, PerTrackOptions>();
+        }
+
         perTrackOptions = new Dictionary<string, PerTrackOptions>();
         foreach (KeyValuePair<string, PerTrackOptions> pair in
             inMemoryPerTrackOptions)
