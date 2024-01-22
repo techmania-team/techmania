@@ -62,10 +62,10 @@ It's not clearly documented whether we can distribute FMOD for Unity in an open 
 
 To build TECHMANIA:
 * Install [Unity Hub](https://unity.com/download).
-* Clone this repo, then open it from Unity Hub, after downloading the project's Unity version. You may need to open it in safe mode, as the code will not compile without FMOD.
-* In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20219.unitypackage` you downloaded earlier.
+* Clone this repo, then open it from Unity Hub, after downloading the project's Unity version. When warned about scripts failing to compile, you can ignore the warning and open the project anyway.
+* In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20219.unitypackage` you downloaded earlier. Import everything from the package.
 * At any point if the FMOD Setup Wizard popups up, you can simply dismiss it.
-* Close and reopen the project, it should now be buildable. Go to File - Build Settings.
+* The compile errors should now be gone and the project now buildable. Go to File - Build Settings.
 * Choose your target platform, then build.
 
 Please note that the default skins are not part of the project either, so you'll need to copy the `Skins` folder from an official release into your build folder, in order for your build to be playable. Alternatively, set up [streaming assets](#on-streaming-assets) in your local clone.
