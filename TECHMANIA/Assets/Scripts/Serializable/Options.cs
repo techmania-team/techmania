@@ -202,6 +202,8 @@ public class Options : OptionsBase
 
         editorOptions = new EditorOptions();
         modifiers = new Modifiers();
+        inMemoryPerTrackOptions = new Dictionary<
+            string, PerTrackOptions>();
         perTrackOptions = new Dictionary<string, PerTrackOptions>();
         themeOptions = new Dictionary<string,
             Dictionary<string, string>>();
@@ -995,6 +997,8 @@ public class OptionsV2 : OptionsBase
 
             editorOptions = editorOptions.Clone(),
             modifiers = modifiers.Clone(),
+            inMemoryPerTrackOptions = new Dictionary<
+                string, PerTrackOptions>(),
             perTrackOptions = new Dictionary<string, PerTrackOptions>(),
             themeOptions = new Dictionary<string,
                 Dictionary<string, string>>()
@@ -1002,6 +1006,8 @@ public class OptionsV2 : OptionsBase
 
         foreach (PerTrackOptionsWithGuid o in perTrackOptions)
         {
+            upgraded.inMemoryPerTrackOptions.Add(o.trackGuid, 
+                o.DropGuid());
             upgraded.perTrackOptions.Add(o.trackGuid, o.DropGuid());
         }
 
