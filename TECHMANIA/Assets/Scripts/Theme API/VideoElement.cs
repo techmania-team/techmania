@@ -35,26 +35,41 @@ namespace ThemeApi
             e.player.Prepare();
         }
 
+        private VideoPrepareCountdown prepareCountdown;
         [MoonSharpHidden]
         public static void CreateFromFile(string path,
             System.Action<Status, VideoElement> callback)
         {
             VideoElement e = new VideoElement();
             e.player = VideoElementManager.InstantiatePlayer();
+            e.prepareCountdown = e.player.GetComponent<VideoPrepareCountdown>();
+
             e.player.url = path;
             e.player.prepareCompleted += (VideoPlayer source) =>
             {
+                e.prepareCountdown.StopCountdown();
                 e.PrepareToPlay();
                 callback(Status.OKStatus(), e);
             };
             e.player.errorReceived += (
                 VideoPlayer source, string message) =>
             {
+                e.prepareCountdown.StopCountdown();
                 e.Release();
                 callback(Status.Error(
                     Status.Code.IOError, message, path),
                     null);
             };
+            // Some videos cause `Prepare()` to print an error, and then never
+            // call any callback. To work around that, we start a 10-second
+            // countdown with each video we load.
+            e.prepareCountdown.StartCountdown(() =>
+            {
+                e.Release();
+                callback(Status.Error(Status.Code.OtherError,
+                    "The video failed to load for an unknown reason.", path),
+                    null);
+            });
             e.player.Prepare();
         }
 
