@@ -116,6 +116,14 @@ public class GameController : MonoBehaviour
                 });
         };
 
+        // Clean slate.
+        timer = null;
+        bg = null;
+        keysoundPlayer = null;
+        layout = null;
+        noteManager = null;
+        input = null;
+
         // Reload custom ruleset if using it.
         if (Options.instance.ruleset == Options.Ruleset.Custom)
         {
@@ -468,12 +476,12 @@ public class GameController : MonoBehaviour
     {
         AudioManager.instance.SetSpeed(1f);
 
-        timer.Dispose();
-        bg.Conclude();
-        keysoundPlayer.Dispose();
-        layout.Dispose();
-        noteManager.Dispose();
-        input.Dispose();
+        timer?.Dispose();
+        bg?.Conclude();
+        keysoundPlayer?.Dispose();
+        layout?.Dispose();
+        noteManager?.Dispose();
+        input?.Dispose();
         vfxManager.Dispose();
         comboText.Hide();
     }

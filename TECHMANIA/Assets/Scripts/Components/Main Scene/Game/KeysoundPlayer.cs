@@ -103,6 +103,10 @@ public class KeysoundPlayer
     {
         if (string.IsNullOrEmpty(n.sound)) return;
 
+        // It's possible that the keysound was short and has
+        // already stopped and erased itself.
+        if (!fmodChannelOfNote.ContainsKey(n)) return;
+
         FmodSoundWrap sound = ResourceLoader.GetCachedSound(n.sound);
         if (fmodChannelOfNote[n].sound.Equals(sound))
         {

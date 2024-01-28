@@ -72,7 +72,15 @@ public class FmodManager
             EnsureOk(FMOD.Factory.System_Create(out newCoreSystem));
             system = newCoreSystem;
             EnsureOk(system.setDSPBufferSize((uint)bufferSize, numBuffers));
-            EnsureOk(system.init(1024, FMOD.INITFLAGS.NORMAL, IntPtr.Zero));
+
+            // The default virtual channel count is 128, according
+            // to FMODUnity.Platform.PropertyAccessors
+            // .VirtualChannelCount.
+            // Likewise, the default real channel count is 32,
+            // but we increase it to 64.
+            EnsureOk(system.setSoftwareChannels(64));
+            EnsureOk(system.init(128, FMOD.INITFLAGS.NORMAL, 
+                IntPtr.Zero));
         }
 
         // Create channel groups.
