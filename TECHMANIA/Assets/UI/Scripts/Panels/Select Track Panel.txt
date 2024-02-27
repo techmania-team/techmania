@@ -120,6 +120,9 @@ selectTrackPanel.SpawnAllCards = function()
     if (selectTrackPanel.filter.showTracksInAllFolders) then
         selectTrackPanel.location = tm.paths.GetTrackRootFolder()
     end
+    if (selectTrackPanel.inEditor and tm.paths.IsInStreamingAssets(selectTrackPanel.location)) then
+        selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+    end
 
     panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(selectTrackPanel.location)
     panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
@@ -162,21 +165,24 @@ selectTrackPanel.SpawnAllCards = function()
         return s1.name < s2.name
     end)
     for _, subfolder in ipairs(subfolders) do
-        anythingInFolder = true
-        local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
-        if (subfolder.eyecatchFullPath != nil) then
-            local eyecatchElement = card.Q("eyecatch")
-            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
-            selectTrackPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
+        -- Skip subfolders in streaming assets if in editor.
+        if (not selectTrackPanel.inEditor or not tm.paths.IsInStreamingAssets(subfolder.fullPath)) then
+            anythingInFolder = true
+            local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
+            if (subfolder.eyecatchFullPath != nil) then
+                local eyecatchElement = card.Q("eyecatch")
+                selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+                selectTrackPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
+            end
+            controls.SetUpButtonSounds(card)
+            card.Q("name").text = subfolder.name
+            controls.SetUpScrollingText(card.Q("name-container"))
+            card.RegisterCallback(eventType.Click, function(_, _, subfolder)
+                selectTrackPanel.location = subfolder.fullPath
+                selectTrackPanel.ClearAllCards()
+                selectTrackPanel.SpawnAllCards()
+            end, subfolder)
         end
-        controls.SetUpButtonSounds(card)
-        card.Q("name").text = subfolder.name
-        controls.SetUpScrollingText(card.Q("name-container"))
-        card.RegisterCallback(eventType.Click, function(_, _, subfolder)
-            selectTrackPanel.location = subfolder.fullPath
-            selectTrackPanel.ClearAllCards()
-            selectTrackPanel.SpawnAllCards()
-        end, subfolder)
     end
 
     function TrackContainsAnyFilterKeyword(metadata)
@@ -203,45 +209,47 @@ selectTrackPanel.SpawnAllCards = function()
     end)
     local cardOfPreviouslySelectedTrack = nil
     for _, trackInFolder in ipairs(tracksInFolder) do
-        anythingInFolder = true
+        -- Skip tracks in streaming assets if in editor.
+        if (not selectTrackPanel.inEditor or not tm.paths.IsInStreamingAssets(trackInFolder.folder)) then
+            anythingInFolder = true
+            if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
+                local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+                card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+                card.Q("error-icon").visible = false
+                card.Q("new-track-icon").visible = false
 
-        if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
-            local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
-            card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
-            card.Q("error-icon").visible = false
-            card.Q("new-track-icon").visible = false
+                local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+                local eyecatchElement = card.Q("eyecatch")
+                selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+                selectTrackPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
 
-            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
-            local eyecatchElement = card.Q("eyecatch")
-            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
-            selectTrackPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
+                controls.SetUpButtonSounds(card)
 
-            controls.SetUpButtonSounds(card)
+                card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
+                card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
+                controls.SetUpScrollingText(card.Q("name-container"))
+                controls.SetUpScrollingText(card.Q("artist-container"))
+                card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
+                    if (selectTrackPanel.inEditor) then
+                        editorTrackSetupPanel.trackFolder = trackInFolder.folder
+                        navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
+                    else
+                        -- Load full track and navigate to select pattern panel.
+                        selectTrackPanel.selectedTrackFolder = trackInFolder.folder
+                        local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
+                        selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
+                        navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
+                    end
+                end, trackInFolder)
 
-            card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
-            card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
-            controls.SetUpScrollingText(card.Q("name-container"))
-            controls.SetUpScrollingText(card.Q("artist-container"))
-            card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
-                if (selectTrackPanel.inEditor) then
-                    editorTrackSetupPanel.trackFolder = trackInFolder.folder
-                    navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
-                else
-                    -- Load full track and navigate to select pattern panel.
-                    selectTrackPanel.selectedTrackFolder = trackInFolder.folder
-                    local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
-                    selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
-                    navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
+                if (selectTrackPanel.selectedFullTrack != nil and
+                    trackInFolder.minimizedTrack.trackMetadata.guid ==
+                    selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
+                    cardOfPreviouslySelectedTrack = card
                 end
-            end, trackInFolder)
-
-            if (selectTrackPanel.selectedFullTrack != nil and
-                trackInFolder.minimizedTrack.trackMetadata.guid ==
-                selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
-                cardOfPreviouslySelectedTrack = card
+            else
+                hiddenTracks = hiddenTracks + 1
             end
-        else
-            hiddenTracks = hiddenTracks + 1
         end
     end
 
