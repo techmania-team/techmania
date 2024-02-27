@@ -379,8 +379,11 @@ public static class Paths
         }
     }
 
-    // Similar to Path.GetDirectoryName but allows going up
-    // from streaming assets to track root folder.
+    // Similar to Path.GetDirectoryName but, if going up from
+    // a subdirectory of streaming assets, this returns the non-streaming
+    // track root instead of streaming track root.
+    //
+    // This will also not go further above the non-streaming track root.
     public static string GoUpFrom(string path)
     {
         if (path == GetTrackRootFolder(streamingAssets: false) ||
@@ -388,20 +391,28 @@ public static class Paths
         {
             return GetTrackRootFolder();
         }
+
+        string up = Path.GetDirectoryName(path);
 #if UNITY_ANDROID
-        // Paths variables on Android are in the form of
+        // On Android, the following variables / methods
+        // take the following values:
+        //
         // path
         // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks/Official Tracks
-        // GetStreamingTrackRootFolder()
+        //
+        // GetTrackRootFolder(streamingAssets: true)
         // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
-        // GetTrackRootFolder()
+        //
+        // GetTrackRootFolder(streamingAssets: false)
         // /storage/emulated/0/Android/data/com.TECHMANIATeam.TECHMANIA/files/Tracks
-        // Path.GetDirectoryName(path)
+        //
+        // up = Path.GetDirectoryName(path)
         // jar:file:/storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
-        string up = Path.GetDirectoryName(path)
-            .Replace("jar:file:/", "jar:file:///");
-#else
-        string up = Path.GetDirectoryName(path);
+        //
+        // Notice that GetDirectoryName turns "///" to "/" so we
+        // restore it.
+
+        up = up.Replace("jar:file:/", "jar:file:///");
 #endif
         if (up == GetTrackRootFolder(streamingAssets: false) ||
             up == GetTrackRootFolder(streamingAssets: true))
@@ -434,9 +445,12 @@ public static class Paths
     public static string AbsolutePathInStreamingAssets(string
         relativePath)
     {
-        // If an argument other than the first contains a rooted path,
-        // any previous path components are ignored, and the
-        // returned string begins with that rooted path component.
+        // In Path.Combine, if an argument other than the first
+        // contains a rooted path, any previous path components
+        // are ignored, and the returned string begins with that
+        // rooted path component.
+        //
+        // To work around that, we trim slashes.
         relativePath = relativePath.TrimStart('/', '\\');
         string absolutePath = Path.Combine(streamingAssetsFolder,
             relativePath);

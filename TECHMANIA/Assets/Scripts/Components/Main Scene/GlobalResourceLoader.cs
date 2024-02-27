@@ -476,8 +476,10 @@ public class GlobalResourceLoader : MonoBehaviour
     private void BuildStreamingTrackList(BackgroundWorker worker)
     {
         // We can't enumerate directories in streaming assets,
-        // so instead we enumerate track.tech files and process each
-        // directory above them.
+        // so instead we enumerate track.tech files and process them
+        // as tracks; then, process each folder above the track folder
+        // until the root, each as a track subfolder.
+
         if (!BetterStreamingAssets.DirectoryExists(
                 Paths.RelativePathInStreamingAssets(
                     Paths.GetTrackRootFolder(streamingAssets: true))))
@@ -494,20 +496,19 @@ public class GlobalResourceLoader : MonoBehaviour
             SearchOption.AllDirectories
         );
 
-        // Get all directories above them.
+        // Get all directories above them, and process each one
+        // as a track subfolder.
         foreach (string relativeTrackFile in relativeTrackFiles)
         {
-            // Get absolute track.tech file path.
             string absoluteTrackFile = Paths
                 .AbsolutePathInStreamingAssets(relativeTrackFile);
-            // Get relative directory path.
             string relativeTrackFolder = Path
                 .GetDirectoryName(relativeTrackFile);
-            // Get absolute directory path.
             string absoluteTrackFolder = Paths
                 .AbsolutePathInStreamingAssets(relativeTrackFolder);
 
-            // These two start as the folder above track folder.
+            // These two start as the folder above track folder. They
+            // will go up one level on each loop.
             string processingRelativeFolder = Path
                 .GetDirectoryName(relativeTrackFolder);
             string processingAbsoluteFolder = Paths
