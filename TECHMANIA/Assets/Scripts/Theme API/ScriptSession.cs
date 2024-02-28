@@ -89,6 +89,7 @@ namespace ThemeApi
             {
                 case 1:
                 case 2:
+                case 3:
                     return GetApiVersion1();
                 default:
                     throw new ApiNotSupportedException();

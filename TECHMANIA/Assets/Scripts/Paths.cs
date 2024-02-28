@@ -11,13 +11,16 @@ using ThemeApi;
 public static class Paths
 {
     public const string kTrackFilename = "track.tech";
+    public const string kSetlistFilename = "setlist.tech";
     public const string kSkinFilename = "skin.json";
     public const string kSubfolderEyecatchPngFilename = 
         "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = 
         "eyecatch.jpg";
     public const string kThemeExtension = ".tmtheme";
+
     public const string kTrackFolderName = "Tracks";
+    public const string kSetlistFolderName = "Setlists";
     public const string kSkinFolderName = "Skins";
     public const string kNoteSkinFolderName = "Note";
     public const string kVfxSkinFolderName = "VFX";
@@ -49,6 +52,8 @@ public static class Paths
     private static string streamingAssetsFolder;
     private static string trackRootFolder;
     private static string streamingTrackRootFolder;
+    private static string setlistRootFolder;
+    private static string streamingSetlistRootFolder;
     private static string skinRootFolder;
     private static string streamingSkinRootFolder;
     private static string themeFolder;
@@ -89,6 +94,13 @@ public static class Paths
         streamingTrackRootFolder = Path.Combine(
             streamingAssetsFolder, kTrackFolderName);
 
+        // Setlist root folder
+        setlistRootFolder = Path.Combine(workingDirectory,
+            kSetlistFolderName);
+        Directory.CreateDirectory(setlistRootFolder);
+        streamingSetlistRootFolder = Path.Combine(
+            streamingAssetsFolder, kSetlistFolderName);
+
         // Skin folder
         skinRootFolder = Path.Combine(workingDirectory, 
             kSkinFolderName);
@@ -125,6 +137,8 @@ public static class Paths
     {
         trackRootFolder = Path.Combine(workingDirectory,
             kTrackFolderName);
+        setlistRootFolder = Path.Combine(workingDirectory,
+            kSetlistFolderName);
         skinRootFolder = Path.Combine(workingDirectory,
             kSkinFolderName);
         themeFolder = Path.Combine(workingDirectory,
@@ -135,6 +149,12 @@ public static class Paths
                 Options.instance.tracksFolderLocation))
             {
                 trackRootFolder = Options.instance.tracksFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.setlistsFolderLocation))
+            {
+                setlistRootFolder = Options.instance
+                    .setlistsFolderLocation;
             }
             if (!string.IsNullOrEmpty(
                 Options.instance.skinsFolderLocation))
@@ -156,6 +176,13 @@ public static class Paths
     {
         return streamingAssets ? streamingTrackRootFolder :
             trackRootFolder;
+    }
+
+    public static string GetSetlistRootFolder(
+        bool streamingAssets = false)
+    {
+        return streamingAssets ? streamingSetlistRootFolder :
+            setlistRootFolder;
     }
 
     public static string GetSkinRootFolder(
@@ -391,6 +418,11 @@ public static class Paths
         {
             return GetTrackRootFolder();
         }
+        if (path == GetSetlistRootFolder(streamingAssets: false) ||
+            path == GetSetlistRootFolder(streamingAssets: true))
+        {
+            return GetSetlistRootFolder();
+        }
 
         string up = Path.GetDirectoryName(path);
 #if UNITY_ANDROID
@@ -418,6 +450,11 @@ public static class Paths
             up == GetTrackRootFolder(streamingAssets: true))
         {
             return GetTrackRootFolder();
+        }
+        if (path == GetSetlistRootFolder(streamingAssets: false) ||
+            path == GetSetlistRootFolder(streamingAssets: true))
+        {
+            return GetSetlistRootFolder();
         }
         return up;
     }
