@@ -74,10 +74,12 @@ public static class GlobalResource
     #endregion
 
     #region Track list
+    // Shared by tracks and setlists.
+    //
+    // Subfolders in streaming assets are seen as subfolders of
+    // Paths.GetTrack/SetlistRootFolder().
     [MoonSharpUserData]
-    // Note: subfolders in streaming assets are seen as
-    // subfolders for Paths.GetTrackRootFolder().
-    public class TrackSubfolder
+    public class Subfolder
     {
         public string name;
         public string fullPath;
@@ -96,8 +98,9 @@ public static class GlobalResource
         // Minimized to save RAM; does not contain notes or time events.
         public Track minimizedTrack;
     }
+    // Shared by tracks and setlists.
     [MoonSharpUserData]
-    public class TrackWithError
+    public class ResourceWithError
     {
         public enum Type
         {
@@ -110,15 +113,21 @@ public static class GlobalResource
     }
 
     // Cached, keyed by track folder's parent folder.
-    public static Dictionary<string, List<TrackSubfolder>>
+    public static Dictionary<string, List<Subfolder>>
         trackSubfolderList;
     public static Dictionary<string, List<TrackInFolder>>
         trackList;
-    public static Dictionary<string, List<TrackWithError>>
+    public static Dictionary<string, List<ResourceWithError>>
         trackWithErrorList;
 
     #region Lua accessor
-    public static List<TrackSubfolder> GetSubfolders(string parent)
+    // DEPRECATED; new code should use GetTrackSubfolders.
+    public static List<Subfolder> GetSubfolders(string parent)
+    {
+        return GetTrackSubfolders(parent);
+    }
+
+    public static List<Subfolder> GetTrackSubfolders(string parent)
     {
         if (trackSubfolderList.ContainsKey(parent))
         {
@@ -126,7 +135,7 @@ public static class GlobalResource
         }
         else
         {
-            return new List<TrackSubfolder>();
+            return new List<Subfolder>();
         }
     }
 
@@ -142,7 +151,7 @@ public static class GlobalResource
         }
     }
 
-    public static List<TrackWithError> GetTracksWithError(
+    public static List<ResourceWithError> GetTracksWithError(
         string parent)
     {
         if (trackWithErrorList.ContainsKey(parent))
@@ -151,7 +160,7 @@ public static class GlobalResource
         }
         else
         {
-            return new List<TrackWithError>();
+            return new List<ResourceWithError>();
         }
     }
 
@@ -164,6 +173,78 @@ public static class GlobalResource
     #endregion
 
     public static bool anyOutdatedTrack;
+    #endregion
+
+    #region Setlist list
+    [MoonSharpUserData]
+    public class SetlistInFolder
+    {
+        // The folder that setlist.tech is in.
+        public string folder;
+        // The last modified time of the folder.
+        // Newly unzipped folders will have the modified time be set
+        // to the time of unzipping.
+        public DateTime modifiedTime;
+        // Unlike tracks, here we can keep the entire setlist in RAM.
+        public Setlist setlist;
+    }
+
+    // Cached, keyed by setlist folder's parent folder.
+    public static Dictionary<string, List<Subfolder>>
+        setlistSubfolderList;
+    public static Dictionary<string, List<SetlistInFolder>>
+        setlistList;
+    public static Dictionary<string, List<ResourceWithError>>
+        setlistWithErrorList;
+
+    #region Lua accessor
+    public static List<Subfolder> GetSetlistSubfolders(string parent)
+    {
+        if (setlistSubfolderList.ContainsKey(parent))
+        {
+            return setlistSubfolderList[parent];
+        }
+        else
+        {
+            return new List<Subfolder>();
+        }
+    }
+
+    public static List<SetlistInFolder> GetSetlistsInFolder(
+        string parent)
+    {
+        if (setlistList.ContainsKey(parent))
+        {
+            return setlistList[parent];
+        }
+        else
+        {
+            return new List<SetlistInFolder>();
+        }
+    }
+
+    public static List<ResourceWithError> GetSetlistsWithError(
+        string parent)
+    {
+        if (setlistWithErrorList.ContainsKey(parent))
+        {
+            return setlistWithErrorList[parent];
+        }
+        else
+        {
+            return new List<ResourceWithError>();
+        }
+    }
+
+    public static void ClearSetlistList()
+    {
+        setlistSubfolderList.Clear();
+        setlistList.Clear();
+        setlistWithErrorList.Clear();
+    }
+    #endregion
+
+    public static bool anyOutdatedSetlist;
     #endregion
 
     #region Theme

@@ -272,11 +272,11 @@ public class GlobalResourceLoader : MonoBehaviour
         bool upgradeVersion)
     {
         GlobalResource.trackSubfolderList = new Dictionary<
-            string, List<GlobalResource.TrackSubfolder>>();
+            string, List<GlobalResource.Subfolder>>();
         GlobalResource.trackList = new Dictionary<
             string, List<GlobalResource.TrackInFolder>>();
         GlobalResource.trackWithErrorList = new Dictionary<
-            string, List<GlobalResource.TrackWithError>>();
+            string, List<GlobalResource.ResourceWithError>>();
         GlobalResource.anyOutdatedTrack = false;
 
         trackListBuilder = new BackgroundWorker();
@@ -335,11 +335,11 @@ public class GlobalResourceLoader : MonoBehaviour
         string folder, bool upgradeVersion)
     {
         GlobalResource.trackSubfolderList.Add(folder,
-            new List<GlobalResource.TrackSubfolder>());
+            new List<GlobalResource.Subfolder>());
         GlobalResource.trackList.Add(folder,
             new List<GlobalResource.TrackInFolder>());
         GlobalResource.trackWithErrorList.Add(folder,
-            new List<GlobalResource.TrackWithError>());
+            new List<GlobalResource.ResourceWithError>());
 
         foreach (string file in Directory.EnumerateFiles(
             folder, "*.zip"))
@@ -371,8 +371,8 @@ public class GlobalResourceLoader : MonoBehaviour
             if (!File.Exists(possibleTrackFile))
             {
                 // Treat as a subfolder.
-                GlobalResource.TrackSubfolder subfolder =
-                    new GlobalResource.TrackSubfolder()
+                GlobalResource.Subfolder subfolder =
+                    new GlobalResource.Subfolder()
                 {
                     name = Path.GetFileName(dir),
                     modifiedTime = modifiedTime,
@@ -424,9 +424,9 @@ public class GlobalResourceLoader : MonoBehaviour
             catch (Exception ex)
             {
                 GlobalResource.trackWithErrorList[folder].Add(
-                    new GlobalResource.TrackWithError()
+                    new GlobalResource.ResourceWithError()
                     {
-                        typeEnum = GlobalResource.TrackWithError.Type.Load,
+                        typeEnum = GlobalResource.ResourceWithError.Type.Load,
                         status = Status.FromException(
                             ex, possibleTrackFile)
                     });
@@ -446,9 +446,9 @@ public class GlobalResourceLoader : MonoBehaviour
                     catch (Exception ex)
                     {
                         GlobalResource.trackWithErrorList[folder]
-                            .Add(new GlobalResource.TrackWithError()
+                            .Add(new GlobalResource.ResourceWithError()
                         {
-                            typeEnum = GlobalResource.TrackWithError
+                            typeEnum = GlobalResource.ResourceWithError
                                 .Type.Upgrade,
                             status = Status.FromException(
                                 ex, possibleTrackFile)
@@ -552,13 +552,13 @@ public class GlobalResourceLoader : MonoBehaviour
                 {
                     GlobalResource.trackWithErrorList.Add(
                         processingAbsoluteFolder,
-                        new List<GlobalResource.TrackWithError>());
+                        new List<GlobalResource.ResourceWithError>());
                 }
                 GlobalResource.trackWithErrorList[
                     processingAbsoluteFolder].Add(
-                    new GlobalResource.TrackWithError()
+                    new GlobalResource.ResourceWithError()
                 {
-                    typeEnum = GlobalResource.TrackWithError.Type.Load,
+                    typeEnum = GlobalResource.ResourceWithError.Type.Load,
                     status = Status.FromException(
                             ex, absoluteTrackFile)
                 });
@@ -584,17 +584,17 @@ public class GlobalResourceLoader : MonoBehaviour
                     dirKey))
                 {
                     GlobalResource.trackSubfolderList.Add(dirKey,
-                        new List<GlobalResource.TrackSubfolder>());
+                        new List<GlobalResource.Subfolder>());
                 }
                 if (!GlobalResource.trackSubfolderList[dirKey]
                     .Exists(
-                    (GlobalResource.TrackSubfolder s) =>
+                    (GlobalResource.Subfolder s) =>
                     {
                         return s.fullPath == processingAbsoluteFolder;
                     }))
                 {
-                    GlobalResource.TrackSubfolder s = new 
-                        GlobalResource.TrackSubfolder()
+                    GlobalResource.Subfolder s = new 
+                        GlobalResource.Subfolder()
                     {
                         name = Path.GetFileName(
                             processingAbsoluteFolder),
