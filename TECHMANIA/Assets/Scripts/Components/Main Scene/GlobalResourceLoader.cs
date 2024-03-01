@@ -252,22 +252,6 @@ public class GlobalResourceLoader : MonoBehaviour
 
     public void LoadTrackList(
         ProgressCallback progressCallback,
-        CompleteCallback completeCallback)
-    {
-        StartCoroutine(LoadTrackListCoroutine(progressCallback,
-            completeCallback, upgradeVersion: false));
-    }
-
-    public void UpdateTrackVersions(
-        ProgressCallback progressCallback,
-        CompleteCallback completeCallback)
-    {
-        StartCoroutine(LoadTrackListCoroutine(progressCallback,
-            completeCallback, upgradeVersion: true));
-    }
-
-    private IEnumerator LoadTrackListCoroutine(
-        ProgressCallback progressCallback,
         CompleteCallback completeCallback,
         bool upgradeVersion)
     {
@@ -280,17 +264,31 @@ public class GlobalResourceLoader : MonoBehaviour
         GlobalResource.anyOutdatedTrack = false;
 
         trackListBuilder = new BackgroundWorker();
-        trackListBuilder.WorkerReportsProgress = true;
-        Status builderStatus = null;
         trackListBuilder.DoWork += TrackListBuilderDoWork;
-        trackListBuilder.ProgressChanged +=
+        StartCoroutine(BuildListCoroutine(
+            trackListBuilder,
+            progressCallback, completeCallback, upgradeVersion));
+    }
+
+    // Shared between tracks and setlists. Caller should set up
+    // the worker's DoWork handler.
+    private IEnumerator BuildListCoroutine(
+        BackgroundWorker worker,
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback,
+        bool upgradeVersion)
+    {
+        Status builderStatus = null;
+
+        worker.WorkerReportsProgress = true;
+        worker.ProgressChanged +=
             (object _, ProgressChangedEventArgs userState) =>
             {
                 string currentlyLoadingFile = userState.UserState
                     as string;
                 progressCallback?.Invoke(currentlyLoadingFile);
             };
-        trackListBuilder.RunWorkerCompleted +=
+        worker.RunWorkerCompleted +=
             (object _, RunWorkerCompletedEventArgs userState) =>
             {
                 if (userState.Error == null)
@@ -301,7 +299,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 builderStatus = Status.FromException(userState.Error);
             };
 
-        trackListBuilder.RunWorkerAsync(
+        worker.RunWorkerAsync(
             new BackgroundWorkerArgument()
             {
                 upgradeVersion = upgradeVersion
@@ -349,7 +347,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 Paths.HidePlatformInternalPath(file));
             try
             {
-                ExtractZipFile(file);
+                ExtractZipFileAsTrack(file);
             }
             catch (Exception ex)
             {
@@ -380,18 +378,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 };
 
                 // Look for eyecatch, if any.
-                string pngEyecatch = Path.Combine(dir,
-                    Paths.kSubfolderEyecatchPngFilename);
-                if (File.Exists(pngEyecatch))
-                {
-                    subfolder.eyecatchFullPath = pngEyecatch;
-                }
-                string jpgEyecatch = Path.Combine(dir,
-                    Paths.kSubfolderEyecatchJpgFilename);
-                if (File.Exists(jpgEyecatch))
-                {
-                    subfolder.eyecatchFullPath = jpgEyecatch;
-                }
+                subfolder.FindEyecatch();
 
                 // Record as a subfolder.
                 if (folder.Equals(
@@ -426,7 +413,8 @@ public class GlobalResourceLoader : MonoBehaviour
                 GlobalResource.trackWithErrorList[folder].Add(
                     new GlobalResource.ResourceWithError()
                     {
-                        typeEnum = GlobalResource.ResourceWithError.Type.Load,
+                        typeEnum = GlobalResource.ResourceWithError
+                            .Type.Load,
                         status = Status.FromException(
                             ex, possibleTrackFile)
                     });
@@ -601,26 +589,7 @@ public class GlobalResourceLoader : MonoBehaviour
                         modifiedTime = DateTime.UnixEpoch,
                         fullPath = processingAbsoluteFolder
                     };
-                    string pngEyecatch = Path.Combine(
-                        processingRelativeFolder,
-                        Paths.kSubfolderEyecatchPngFilename);
-                    if (BetterStreamingAssets.FileExists(
-                        pngEyecatch))
-                    {
-                        s.eyecatchFullPath = Paths.
-                            AbsolutePathInStreamingAssets(
-                            pngEyecatch);
-                    }
-                    string jpgEyecatch = Path.Combine(
-                        processingRelativeFolder,
-                        Paths.kSubfolderEyecatchJpgFilename);
-                    if (BetterStreamingAssets.FileExists(
-                        jpgEyecatch))
-                    {
-                        s.eyecatchFullPath = Paths.
-                            AbsolutePathInStreamingAssets(
-                            jpgEyecatch);
-                    }
+                    s.FindStreamingEyecatch(processingRelativeFolder);
                     GlobalResource.trackSubfolderList[dirKey].Add(s);
                 }
                 processingRelativeFolder = 
@@ -631,7 +600,29 @@ public class GlobalResourceLoader : MonoBehaviour
         }
     }
 
-    private void ExtractZipFile(string zipFilename)
+    private void ExtractZipFileAsTrack(string zipFilename)
+    {
+        ExtractZipFile(zipFilename,
+            expectedFilename: Paths.kTrackFilename,
+            fileContentToFolderName: (string trackFileContent) =>
+            {
+                Track track = TrackBase.Deserialize(
+                    trackFileContent) as Track;
+                return ThemeApi.EditorInterface.TrackToDirectoryName(
+                    track.trackMetadata.title,
+                    track.trackMetadata.artist);
+            });
+    }
+
+    // Shared by tracks and setlists.
+    //
+    // Extract the file at zipFilename to the folder it's at.
+    // If a file named "expectedFilename" is found in the zip and it's
+    // NOT in a folder, this method will call "fileContentToFolderName"
+    // to produce a folder name, create it, and extract the zip into it.
+    private void ExtractZipFile(string zipFilename,
+        string expectedFilename,
+        Func<string, string> fileContentToFolderName)
     {
         Debug.Log("Extracting: " + zipFilename);
         string zipLocation = Path.GetDirectoryName(zipFilename);
@@ -642,30 +633,30 @@ public class GlobalResourceLoader : MonoBehaviour
         {
             byte[] buffer = new byte[4096];  // Recommended length
 
-            // 1st pass: find track.tech, determine whether we need
+            // 1st pass: find the expected file, determine whether we need
             // to create a folder to extract into.
-            bool foundTrackFile = false;
+            bool foundExpectedFile = false;
             foreach (ICSharpCode.SharpZipLib.Zip.ZipEntry entry in
                 zipFile)
             {
-                if (Path.GetFileName(entry.Name) != Paths.kTrackFilename)
-                { 
+                if (Path.GetFileName(entry.Name) != expectedFilename)
+                {
                     continue;
                 }
-                foundTrackFile = true;
+                foundExpectedFile = true;
 
                 if (!string.IsNullOrEmpty(Path.GetDirectoryName(
                     entry.Name)))
                 {
-                    // Track file is in a folder, no need to
+                    // Expected file is in a folder, no need to
                     // create a new one.
                     break;
                 }
 
-                // Track file is not in a folder, we need to
-                // create a track folder to extract into.
-                // In order to do that, extract the track.tech file
-                // to memory, then deserialize.
+                // Expected file is not in a folder, we need to
+                // create a new folder to extract into.
+                // In order to do that, extract the expected file
+                // to memory, then call fileContentToFolderName.
                 using var inputStream = zipFile.GetInputStream(entry);
                 using MemoryStream outputStream = new MemoryStream();
                 ICSharpCode.SharpZipLib.Core.StreamUtils.Copy(
@@ -673,19 +664,15 @@ public class GlobalResourceLoader : MonoBehaviour
                 outputStream.Position = 0;
                 using StreamReader reader = new StreamReader(
                     outputStream);
-                string trackFileContent = reader.ReadToEnd();
-                Track track = TrackBase.Deserialize(
-                    trackFileContent) as Track;
+                string expectedFileContent = reader.ReadToEnd();
                 zipLocation = Path.Combine(zipLocation,
-                    ThemeApi.EditorInterface.TrackToDirectoryName(
-                        track.trackMetadata.title, 
-                        track.trackMetadata.artist));
+                    fileContentToFolderName(expectedFileContent));
                 Directory.CreateDirectory(zipLocation);
                 break;
             }
-            if (!foundTrackFile)
+            if (!foundExpectedFile)
             {
-                throw new Exception(Paths.kTrackFilename + " is not found in the zip file. Unable to extract.");
+                throw new Exception(expectedFilename + " is not found in the zip file. Unable to extract.");
             }
 
             // 2nd pass: actually extract files to disk.
@@ -714,6 +701,332 @@ public class GlobalResourceLoader : MonoBehaviour
 
         Debug.Log($"Extract successful. Deleting: {zipFilename}");
         File.Delete(zipFilename);
+    }
+    #endregion
+
+    #region Setlist list
+    private BackgroundWorker setlistListBuilder;
+
+    public void LoadSetlistList(
+        ProgressCallback progressCallback,
+        CompleteCallback completeCallback,
+        bool upgradeVersion)
+    {
+        GlobalResource.setlistSubfolderList = new Dictionary<
+            string, List<GlobalResource.Subfolder>>();
+        GlobalResource.setlistList = new Dictionary<
+            string, List<GlobalResource.SetlistInFolder>>();
+        GlobalResource.setlistWithErrorList = new Dictionary<
+            string, List<GlobalResource.ResourceWithError>>();
+        GlobalResource.anyOutdatedSetlist = false;
+
+        setlistListBuilder = new BackgroundWorker();
+        setlistListBuilder.DoWork += SetlistListBuilderDoWork;
+        StartCoroutine(BuildListCoroutine(
+            setlistListBuilder,
+            progressCallback, completeCallback, upgradeVersion));
+    }
+
+    public static void ClearCachedSetlistList()
+    {
+        GlobalResource.setlistSubfolderList.Clear();
+        GlobalResource.setlistList.Clear();
+        GlobalResource.setlistWithErrorList.Clear();
+        GlobalResource.anyOutdatedSetlist = false;
+    }
+
+    private void SetlistListBuilderDoWork(object sender,
+        DoWorkEventArgs e)
+    {
+        BackgroundWorker worker = sender as BackgroundWorker;
+        BuildSetlistList(worker, Paths.GetSetlistRootFolder(),
+            (e.Argument as BackgroundWorkerArgument).upgradeVersion);
+        BuildStreamingSetlistList(worker);
+    }
+
+    private void BuildSetlistList(BackgroundWorker worker,
+        string folder, bool upgradeVersion)
+    {
+        GlobalResource.setlistSubfolderList.Add(folder,
+            new List<GlobalResource.Subfolder>());
+        GlobalResource.setlistList.Add(folder,
+            new List<GlobalResource.SetlistInFolder>());
+        GlobalResource.setlistWithErrorList.Add(folder,
+            new List<GlobalResource.ResourceWithError>());
+
+        foreach (string file in Directory.EnumerateFiles(
+            folder, "*.zip"))
+        {
+            // Attempt to extract this archive.
+            worker.ReportProgress(0,
+                Paths.HidePlatformInternalPath(file));
+            try
+            {
+                ExtractZipFileAsSetlist(file);
+            }
+            catch (Exception ex)
+            {
+                // Log error and move on.
+                Debug.LogError(ex.ToString());
+            }
+        }
+
+        foreach (string dir in Directory.EnumerateDirectories(
+            folder))
+        {
+            worker.ReportProgress(0,
+                Paths.HidePlatformInternalPath(dir));
+            DateTime modifiedTime = new DirectoryInfo(dir).LastWriteTime;
+
+            // Is there a setlist?
+            string possibleSetlistFile = Path.Combine(
+                dir, Paths.kSetlistFilename);
+            if (!File.Exists(possibleSetlistFile))
+            {
+                // Treat as a subfolder.
+                GlobalResource.Subfolder subfolder =
+                    new GlobalResource.Subfolder()
+                    {
+                        name = Path.GetFileName(dir),
+                        modifiedTime = modifiedTime,
+                        fullPath = dir
+                    };
+
+                // Look for eyecatch, if any.
+                subfolder.FindEyecatch();
+
+                // Record as a subfolder.
+                if (folder.Equals(
+                    Paths.GetSetlistRootFolder(streamingAssets: true)))
+                {
+                    GlobalResource.setlistSubfolderList[
+                        Paths.GetSetlistRootFolder()]
+                        .Add(subfolder);
+                }
+                else
+                {
+                    GlobalResource.setlistSubfolderList[
+                        folder].Add(subfolder);
+                }
+
+                // Build recursively.
+                BuildSetlistList(worker, dir, upgradeVersion);
+
+                continue;
+            }
+
+            // Attempt to load setlist.
+            Setlist setlist = null;
+            bool upgradedWhenLoading;
+            try
+            {
+                setlist = Setlist.LoadFromFile(possibleSetlistFile,
+                    out upgradedWhenLoading) as Setlist;
+            }
+            catch (Exception ex)
+            {
+                GlobalResource.setlistWithErrorList[folder].Add(
+                    new GlobalResource.ResourceWithError()
+                    {
+                        typeEnum = GlobalResource.ResourceWithError
+                            .Type.Load,
+                        status = Status.FromException(
+                            ex, possibleSetlistFile)
+                    });
+                continue;
+            }
+            if (upgradedWhenLoading)
+            {
+                // If upgrading, write the setlist back to disk.
+                if (upgradeVersion)
+                {
+                    Debug.Log(possibleSetlistFile +
+                        " is being upgraded.");
+                    try
+                    {
+                        setlist.SaveToFile(possibleSetlistFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        GlobalResource.setlistWithErrorList[folder]
+                            .Add(new GlobalResource.ResourceWithError()
+                        {
+                            typeEnum = GlobalResource.ResourceWithError
+                                .Type.Upgrade,
+                            status = Status.FromException(
+                                ex, possibleSetlistFile)
+                        });
+                        continue;
+                    }
+                }
+                else
+                {
+                    Debug.Log(possibleSetlistFile + " is outdated.");
+                    GlobalResource.anyOutdatedSetlist = true;
+                }
+            }
+
+            GlobalResource.setlistList[folder].Add(
+                new GlobalResource.SetlistInFolder()
+                {
+                    folder = dir,
+                    modifiedTime = modifiedTime,
+                    setlist = setlist
+                });
+        }
+    }
+
+    private void BuildStreamingSetlistList(BackgroundWorker worker)
+    {
+        // We can't enumerate directories in streaming assets,
+        // so instead we enumerate setlist.tech files and process them
+        // as setlists; then, process each folder above the setlist folder
+        // until the root, each as a setlist subfolder.
+
+        if (!BetterStreamingAssets.DirectoryExists(
+                Paths.RelativePathInStreamingAssets(
+                    Paths.GetSetlistRootFolder(streamingAssets: true))))
+        {
+            return;
+        }
+
+        // Get all setlist.tech files.
+        string[] relativeSetlistFiles = BetterStreamingAssets.GetFiles(
+            Paths.RelativePathInStreamingAssets(
+                Paths.GetSetlistRootFolder(streamingAssets: true)
+            ),
+            Paths.kSetlistFilename,
+            SearchOption.AllDirectories
+        );
+
+        // Get all directories above them, and process each one
+        // as a setlist subfolder.
+        foreach (string relativeSetlistFile in relativeSetlistFiles)
+        {
+            string absoluteSetlistFile = Paths
+                .AbsolutePathInStreamingAssets(relativeSetlistFile);
+            string relativeSetlistFolder = Path
+                .GetDirectoryName(relativeSetlistFile);
+            string absoluteSetlistFolder = Paths
+                .AbsolutePathInStreamingAssets(relativeSetlistFolder);
+
+            // These two start as the folder above setlist folder. They
+            // will go up one level on each loop.
+            string processingRelativeFolder = Path
+                .GetDirectoryName(relativeSetlistFolder);
+            string processingAbsoluteFolder = Paths
+                .AbsolutePathInStreamingAssets(
+                processingRelativeFolder);
+
+            if (processingAbsoluteFolder == Paths.GetSetlistRootFolder(
+                streamingAssets: true))
+            {
+                processingAbsoluteFolder = Paths
+                    .GetSetlistRootFolder();
+            }
+
+            worker.ReportProgress(0, Paths.HidePlatformInternalPath(
+                absoluteSetlistFolder));
+
+            Setlist t = null;
+            try
+            {
+                t = SetlistBase.LoadFromFile(absoluteSetlistFile)
+                    as Setlist;
+                if (!GlobalResource.setlistList.ContainsKey(
+                    processingAbsoluteFolder))
+                {
+                    GlobalResource.setlistList.Add(
+                        processingAbsoluteFolder,
+                        new List<GlobalResource.SetlistInFolder>());
+                }
+                GlobalResource.setlistList[processingAbsoluteFolder]
+                    .Add(new GlobalResource.SetlistInFolder()
+                    {
+                        setlist = t,
+                        modifiedTime = DateTime.UnixEpoch,
+                        folder = absoluteSetlistFolder
+                    });
+            }
+            catch (Exception ex)
+            {
+                if (!GlobalResource.setlistWithErrorList.ContainsKey(
+                    processingAbsoluteFolder))
+                {
+                    GlobalResource.setlistWithErrorList.Add(
+                        processingAbsoluteFolder,
+                        new List<GlobalResource.ResourceWithError>());
+                }
+                GlobalResource.setlistWithErrorList[
+                    processingAbsoluteFolder].Add(
+                    new GlobalResource.ResourceWithError()
+                    {
+                        typeEnum = GlobalResource.ResourceWithError
+                            .Type.Load,
+                        status = Status.FromException(
+                            ex, absoluteSetlistFile)
+                    });
+            }
+
+            // Process folders upward from processingAbsoluteFolder.
+            while (processingAbsoluteFolder != Paths
+                .GetSetlistRootFolder(streamingAssets: true))
+            {
+                string processingRelativeParentFolder = Path
+                    .GetDirectoryName(processingRelativeFolder);
+                string processingAbsoluteParentFolder = Paths
+                    .AbsolutePathInStreamingAssets(
+                    processingRelativeParentFolder);
+                string dirKey = processingAbsoluteParentFolder;
+
+                if (processingAbsoluteParentFolder == Paths
+                    .GetSetlistRootFolder(streamingAssets: true))
+                {
+                    dirKey = Paths.GetSetlistRootFolder();
+                }
+                if (!GlobalResource.setlistSubfolderList.ContainsKey(
+                    dirKey))
+                {
+                    GlobalResource.setlistSubfolderList.Add(dirKey,
+                        new List<GlobalResource.Subfolder>());
+                }
+                if (!GlobalResource.setlistSubfolderList[dirKey]
+                    .Exists(
+                    (GlobalResource.Subfolder s) =>
+                    {
+                        return s.fullPath == processingAbsoluteFolder;
+                    }))
+                {
+                    GlobalResource.Subfolder s = new
+                        GlobalResource.Subfolder()
+                    {
+                        name = Path.GetFileName(
+                            processingAbsoluteFolder),
+                        modifiedTime = DateTime.UnixEpoch,
+                        fullPath = processingAbsoluteFolder
+                    };
+                    s.FindStreamingEyecatch(processingRelativeFolder);
+                    GlobalResource.setlistSubfolderList[dirKey].Add(s);
+                }
+                processingRelativeFolder =
+                    processingRelativeParentFolder;
+                processingAbsoluteFolder =
+                    processingAbsoluteParentFolder;
+            }
+        }
+    }
+
+    private void ExtractZipFileAsSetlist(string zipFilename)
+    {
+        ExtractZipFile(zipFilename,
+            expectedFilename: Paths.kSetlistFilename,
+            fileContentToFolderName: (string setlistFileContent) =>
+            {
+                Setlist setlist = SetlistBase.Deserialize(
+                    setlistFileContent) as Setlist;
+                return ThemeApi.EditorInterface.SetlistToDirectoryName(
+                    setlist.setlistMetadata.title);
+            });
     }
     #endregion
 

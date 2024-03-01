@@ -4,6 +4,7 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
 using System;
+using static GlobalResource;
 
 public enum SkinType
 {
@@ -85,6 +86,43 @@ public static class GlobalResource
         public string fullPath;
         public DateTime modifiedTime;
         public string eyecatchFullPath;
+
+        public void FindEyecatch()
+        {
+            string pngEyecatch = Path.Combine(fullPath,
+                Paths.kSubfolderEyecatchPngFilename);
+            if (File.Exists(pngEyecatch))
+            {
+                eyecatchFullPath = pngEyecatch;
+                return;
+            }
+
+            string jpgEyecatch = Path.Combine(fullPath,
+                Paths.kSubfolderEyecatchJpgFilename);
+            if (File.Exists(jpgEyecatch))
+            {
+                eyecatchFullPath = jpgEyecatch;
+            }
+        }
+
+        public void FindStreamingEyecatch(string relativePath)
+        {
+            string pngEyecatch = Path.Combine(relativePath,
+                Paths.kSubfolderEyecatchPngFilename);
+            if (BetterStreamingAssets.FileExists(pngEyecatch))
+            {
+                eyecatchFullPath = Paths.
+                    AbsolutePathInStreamingAssets(pngEyecatch);
+                return;
+            }
+            string jpgEyecatch = Path.Combine(relativePath,
+                Paths.kSubfolderEyecatchJpgFilename);
+            if (BetterStreamingAssets.FileExists(jpgEyecatch))
+            {
+                eyecatchFullPath = Paths.
+                    AbsolutePathInStreamingAssets(jpgEyecatch);
+            }
+        }
     }
     [MoonSharpUserData]
     public class TrackInFolder

@@ -70,6 +70,15 @@ namespace ThemeApi
             return $"{filteredArtist} - {filteredTitle} - {timestamp}";
         }
 
+        public static string SetlistToDirectoryName(
+            string title)
+        {
+            string filteredTitle = Paths.
+                RemoveCharsNotAllowedOnFileSystem(title);
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            return $"{timestamp} - {filteredTitle}";
+        }
+
         // In Lua, this function returns 2 values, the Status
         // and newTrackFolder.
         // If successful, this will update the track lists in

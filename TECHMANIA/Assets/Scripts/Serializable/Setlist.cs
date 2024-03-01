@@ -39,16 +39,24 @@ public class Setlist : SetlistBase
     // hidden pattern in order, and choose the first hidden pattern
     // whose criteria is fully met. Each criteria has a type, a
     // direction, and a value.
+    //
+    // The criteria of the last hidden pattern is ignored.
     public enum HiddenPatternCriteriaType
     {
         // The total index of the 3 selected patterns in 1-index
         Index,
         // The total level of the 3 selected patterns
         Level,
-        // The remaining HP percentage after the 3rd pattern
+        // The remaining HP percentage in [0, 100] after the 3rd pattern
         HP,
         // The total score, including bonuses, after the 3rd pattern
-        Score
+        Score,
+        // The current combo after the 3rd pattern
+        Combo,
+        // The max combo after the 3rd pattern
+        MaxCombo,
+        // A random number in [1, 100]
+        D100
     }
 
     public enum HiddenPatternCriteriaDirection

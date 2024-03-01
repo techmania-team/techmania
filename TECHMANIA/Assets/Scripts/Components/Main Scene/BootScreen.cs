@@ -40,7 +40,7 @@ public class BootScreen : MonoBehaviour
     {
         bool loaded = false;
         progressLine1.text = L10n.GetStringAndFormat(
-            "resource_loader_loading_skins", 1, 3);
+            "resource_loader_loading_skins", 1, 4);
 
         // Attempt 1: load currently selected skins.
         if (Options.instance.noteSkin != Options.kDefaultSkin ||
@@ -123,7 +123,7 @@ public class BootScreen : MonoBehaviour
     {
         bool loaded = false;
         progressLine1.text = L10n.GetStringAndFormat(
-            "resource_loader_loading_theme", 3, 3);
+            "resource_loader_loading_theme", 4, 4);
 
         // Attempt 1: load currently selected theme.
         if (Options.instance.theme != Options.kDefaultTheme)
@@ -204,14 +204,22 @@ public class BootScreen : MonoBehaviour
         // Step 2: load track list. No sub-coroutine since errors
         // in this step are not fatal.
         progressLine1.text = L10n.GetStringAndFormat(
-            "resource_loader_loading_track_list", 2, 3);
+            "resource_loader_loading_track_list", 2, 4);
         loadStatus = null;
         GlobalResourceLoader.GetInstance().LoadTrackList(
-            ProgressCallback, CompleteCallback);
+            ProgressCallback, CompleteCallback, upgradeVersion: false);
         yield return new WaitUntil(() => loadStatus != null);
-        yield return new WaitUntil(() => themeDecided);
 
-        // Step 3: load theme.
+        // Step 3: load setlist list.
+        progressLine1.text = L10n.GetStringAndFormat(
+            "resource_loader_loading_setlist_list", 3, 4);
+        loadStatus = null;
+        GlobalResourceLoader.GetInstance().LoadSetlistList(
+            ProgressCallback, CompleteCallback, upgradeVersion: false);
+        yield return new WaitUntil(() => loadStatus != null);
+
+        // Step 4: load theme.
+        yield return new WaitUntil(() => themeDecided);
         yield return LoadTheme();
 
         // Load main tree and main script.
