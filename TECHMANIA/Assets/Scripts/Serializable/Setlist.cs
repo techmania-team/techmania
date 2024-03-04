@@ -87,6 +87,7 @@ public class SetlistMetadata
 
     public string title;
     public string description;
+    public string eyecatchImage;
     public string backImage;
     public ControlScheme controlScheme;
 }

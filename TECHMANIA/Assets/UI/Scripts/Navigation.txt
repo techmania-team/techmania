@@ -3,6 +3,15 @@ mainMenu = {
 
     Show = function()
         tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_main_menu"))
+    end,
+
+    Initialize = function()
+        local panel = mainMenu.panel
+        local editorSubButtons = panel.Q("editor-sub-buttons")
+        editorSubButtons.display = false
+        panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+            editorSubButtons.display = not editorSubButtons.display
+        end)
     end
 }
 
@@ -85,7 +94,15 @@ function SetUpNavigation()
         navigation.TransitionTo(resultPanel, selectTrackPanel)
     end)
 
-    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+    mainMenu.panel.Q("setlists-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.inEditor = false
+        navigation.TransitionTo(mainMenu, selectSetlistPanel)
+    end)
+    selectSetlistPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(selectSetlistPanel, mainMenu)
+    end)
+
+    mainMenu.panel.Q("edit-tracks-button").RegisterCallback(eventType.Click, function()
         selectTrackPanel.inEditor = true
         navigation.TransitionTo(mainMenu, selectTrackPanel)
     end)
@@ -109,6 +126,13 @@ function SetUpNavigation()
         gamePanel.ConcludeGame()
         navigation.TransitionBackTo(gamePanel, editorPatternPanel)
     end)
+
+    mainMenu.panel.Q("edit-setlists-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.inEditor = true
+        navigation.TransitionTo(mainMenu, selectSetlistPanel)
+    end)
+    -- select setlist panel (editor) --> main menu is the same as
+    -- select setlist panel --> main menu.
 
     mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
         navigation.TransitionTo(mainMenu, optionsPanel)
@@ -149,3 +173,5 @@ function SetUpNavigation()
         tm.Quit()
     end)
 end
+
+mainMenu.Initialize()

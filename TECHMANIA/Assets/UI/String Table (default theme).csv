@@ -132,6 +132,87 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 {1}"
 ,,,,,,
+All strings on setlists are added in 2.2,#select-setlist-panel #top-bar #title,Select Setlist,选择组曲,,,
+"{0} is the number of setlists hidden;
+{1} is the search term.",select_setlist_some_setlists_hidden_text,"{0} setlist(s) are hidden as they don't match the search term ""{1}"".",{0}首组曲不包含搜索关键字“{1}”，因而没有显示。,,,
+,select_setlist_no_setlist_text,TECHMANIA cannot find any setlist in this folder.,TECHMANIA没有在此文件夹内找到任何组曲。,,,
+"When there's an error with a setlist,
+the select setlist panel will create an ""error card"" for it,
+with the title as listed here.",select_setlist_error_card_title,Could not load setlist,无法读取组曲,,,
+,select_setlist_upgrade_error_card_title,Could not upgrade setlist,无法升级组曲,,,
+,select_setlist_error_card_artist,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
+"{0} is setlist.tech's full path;
+{1} is the error message.",select_setlist_error_format,"An error occurred when loading {0}:
+
+{1}","读取{0}时发生错误：
+
+{1}","載入 {0} 時發生錯誤：
+
+{1}","{0} の読み込み中にエラーが発生しました：
+
+{1}","{0}을(를) 불러오는 중 오류가 발생했습니다.
+
+{1}"
+,select_setlist_upgrade_error_format,"An error occurred when upgrading {0}:
+
+{1}","升级{0}时发生错误：
+
+{1}","升級 {0} 時發生錯誤：
+
+{1}","{0}の更新中にエラーが発生しました：
+
+{1}","{0}을/를 업그레이드하는 중 오류가 발생했습니다.
+
+{1}"
+,select_setlist_upgrade_version_confirmation,"Some setlists are created with older versions of TECHMANIA. They will still work, but it will take longer for the select setlist screen to scan them.
+
+Would you like to upgrade all setlists to the current version?
+
+It is recommended that you backup your setlists before upgrading.","有一部分组曲是使用旧版本的TECHMANIA制作。你仍然可以游玩这些组曲，但是扫描这些组曲将需要更长时间。
+
+是否将所有组曲升级至当前版本？
+
+建议在备份所有组曲后再开始升级。",,,
+,select_setlist_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
+,select_setlist_upgrade_version_cancel,CANCEL,取消,取消,キャンセル,취소
+,select_setlist_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
+,select_setlist_upgrade_process_error_format,"An error occurred when upgrading setlists:
+
+{0}","升级组曲时发生错误：
+
+{0}",,,
+,select_setlist_new_setlist_card_title,New,新建,新增,新しいトラック,새 음악
+,,,,,,
+,#select-setlist-panel #filter-sidesheet #search-header,Search,搜索,搜尋,検索,검색
+,#select-setlist-panel #filter-sidesheet #keyword-field #mini-label,Keyword,关键字,關鍵字,キーワード,키워드
+,#select-setlist-panel #filter-sidesheet #options-header,Options,设置,設定,設定,정렬 옵션
+,#select-setlist-panel #filter-sidesheet #all-folders,Show setlists in all folders,显示所有文件夹内的组曲,,,
+,#select-setlist-panel #filter-sidesheet #sort-by,Sort by,排序,排序,並べ替え,정렬 기준
+,#select-setlist-panel #filter-sidesheet #ascending-radio #text,Ascending,升序,升冪,昇順,오름차순
+,#select-setlist-panel #filter-sidesheet #descending-radio #text,Descending,降序,降冪,降順,내림차순
+,setlist_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
+,setlist_filter_sidesheet_sort_basis_artist,Artist,艺术家,演出者,アーティスト,아티스트
+,setlist_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
+,setlist_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
+,setlist_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
+,setlist_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
+,setlist_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
+,,,,,,
+,#select-setlist-panel #new-setlist-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
+,#select-setlist-panel #new-setlist-dialog #create-button,CREATE,新建,新增,作成,생성
+,#select-setlist-panel #new-setlist-dialog #cancel-button,CANCEL,取消,取消,キャンセル,취소
+{0} is a folder or file's full path.,new_setlist_error_format,"An error occurred when creating or writing to {0}:
+
+{1}","写入{0}时发生错误：
+
+{1}","儲存 {0} 時發生錯誤：
+
+{1}","{0} の書き込み中にエラーが発生しました：
+
+{1}","{0}을/를 생성하는 중 오류가 발생했습니다.
+
+{1}"
+,,,,,,
 ,#select-pattern-panel #top-bar #title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
 ,#select-pattern-panel #pattern-list #no-pattern-text,This track does not contain any pattern.,本曲目不包含任何谱面。,本歌曲不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
 ,#select-pattern-panel #bpm #title,BPM,BPM,BPM,BPM,템포
