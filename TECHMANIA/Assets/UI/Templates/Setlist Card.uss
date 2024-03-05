@@ -1,6 +1,6 @@
 #setlist-card {
     width: 600px;
-    height: 310px;
+    height: 350px;
     background-color: var(--elevation-2dp);
     flex-direction: column;
     align-items: center;
@@ -40,13 +40,31 @@
     left: 10px;
     right: 10px;
     height: 40px;
-    bottom: 15px;
+    bottom: 55px;
 }
 
-#setlist-card #artist-container {
+#setlist-card #level-container {
     position: absolute;
-    left: 10px;
-    right: 10px;
-    height: 30px;
     bottom: 15px;
+    height: 40px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#setlist-card #scheme-icon-container {
+    width: 40px;
+    margin-right: 10px;
+}
+
+#setlist-card #scheme-icon-container .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#setlist-card #level {
 }

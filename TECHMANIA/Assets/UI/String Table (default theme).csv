@@ -24,6 +24,7 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,トラック選択,음악 선택 중
 ,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,パターン選択,패턴 선택 중
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
+Added in 2.2,discord_state_selecting_setlist,Selecting Setlist,正在选择组曲,,,
 ,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button #label,START,开始,開始,スタート,게임 시작
@@ -191,12 +192,8 @@ It is recommended that you backup your setlists before upgrading.","有一部分
 ,#select-setlist-panel #filter-sidesheet #ascending-radio #text,Ascending,升序,升冪,昇順,오름차순
 ,#select-setlist-panel #filter-sidesheet #descending-radio #text,Descending,降序,降冪,降順,내림차순
 ,setlist_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
-,setlist_filter_sidesheet_sort_basis_artist,Artist,艺术家,演出者,アーティスト,아티스트
-,setlist_filter_sidesheet_sort_basis_genre,Genre,流派,曲風,ジャンル,장르
 ,setlist_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
-,setlist_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
-,setlist_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
-,setlist_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
+,setlist_filter_sidesheet_sort_basis_level,Level,难度,,,
 ,,,,,,
 ,#select-setlist-panel #new-setlist-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
 ,#select-setlist-panel #new-setlist-dialog #create-button,CREATE,新建,新增,作成,생성

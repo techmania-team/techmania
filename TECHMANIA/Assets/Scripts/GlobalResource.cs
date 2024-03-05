@@ -162,6 +162,7 @@ public static class GlobalResource
     // DEPRECATED; new code should use GetTrackSubfolders.
     public static List<Subfolder> GetSubfolders(string parent)
     {
+        Debug.LogWarning("GlobalResource.GetSubfolders is deprecated. Call GlobalResource.GetTrackSubfolders instead.");
         return GetTrackSubfolders(parent);
     }
 

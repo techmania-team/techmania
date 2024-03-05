@@ -14,5 +14,13 @@
         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
             <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-center;" />
         </ui:ScrollView>
+        <ui:VisualElement name="level-container" style="flex-grow: 1;">
+            <ui:VisualElement name="scheme-icon-container" picking-mode="Ignore">
+                <ui:VisualElement name="touch-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_touch_app_white_48dp.png?fileID=2800000&amp;guid=f749762052b211d4594bd6772a8948ca&amp;type=3#baseline_touch_app_white_48dp&quot;);" />
+                <ui:VisualElement name="keys-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_keyboard_white_48dp.png?fileID=2800000&amp;guid=a12dad0c68a5aa04387f88c04117b74f&amp;type=3#baseline_keyboard_white_48dp&quot;); display: none;" />
+                <ui:VisualElement name="km-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/KM.png?fileID=2800000&amp;guid=8732849deafd43847ab0e226a2a3ef0c&amp;type=3#KM&quot;); display: none;" />
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="1 - 12" display-tooltip-when-elided="true" name="level" picking-mode="Ignore" class="text-subtitle" />
+        </ui:VisualElement>
     </ui:Button>
 </ui:UXML>

@@ -30,7 +30,6 @@ public class Setlist : SetlistBase
 
         public string patternName;
         public int patternLevel;
-        public ControlScheme patternControlScheme;
         public int patternPlayableLanes;
         public string patternGuid;
     }

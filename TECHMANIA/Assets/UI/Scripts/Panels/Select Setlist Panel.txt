@@ -3,5 +3,431 @@ selectSetlistPanel = {
 
     location = "",
     needsRefresh = false,
-    inEditor = false
+    inEditor = false,
+
+    filter = {
+        keywords = {},
+        keywordsPreSplit = "",  -- for display
+        showSetlistsInAllFolders = false,
+        -- Possible values: Title, ModifiedTime, Level
+        sortBasis = "Title",
+        -- key: enum, value: display string
+        sortBasisDisplayString = {},
+        ascending = true
+    },
+    
+    selectedSetlistFolder = "",
+    selectedSetlist = nil,
+
+    -- Key: eyecatch element, value: bool
+    eyecatchVisible = {},
+    -- Key: eyecatch element, value: string
+    eyecatchFullPath = {}
 }
+
+setlistFilterSideSheet = {
+    bg = selectSetlistPanel.panel.Q("filter-sidesheet-background"),
+    sheet = selectSetlistPanel.panel.Q("filter-sidesheet-background").Q("filter-sidesheet")
+}
+
+newSetlistDialog = {
+    bg = selectSetlistPanel.panel.Q("new-setlist-dialog-bg"),
+    dialog = selectSetlistPanel.panel.Q("new-setlist-dialog-bg").Q("new-setlist-dialog")
+}
+
+function CompareSetlists(setlistInFolder1, setlistInFolder2)
+    local s1 = setlistInFolder1.setlist
+    local s2 = setlistInFolder2.setlist
+    local basis1, bases2
+
+    function CalculateAverageLevel(setlist)
+        local totalLevel = 0
+        local numPatterns = 0
+        for _, patternRef in ipairs(setlist.selectablePatterns) do
+            totalLevel = totalLevel + patternRef.patternLevel
+            numPatterns = numPatterns + 1
+        end
+        for _, hiddenPattern in ipairs(setlist.hiddenPatterns) do
+            local patternRef = hiddenPattern.reference
+            totalLevel = totalLevel + patternRef.patternLevel
+            numPatterns = numPatterns + 1
+        end
+        return totalLevel / numPatterns
+    end
+
+    if (selectSetlistPanel.filter.sortBasis == "Title") then
+        basis1 = s1.setlistMetadata.title
+        basis2 = s2.setlistMetadata.title
+    elseif (selectSetlistPanel.filter.sortBasis == "ModifiedTime") then
+        basis1 = setlistInFolder1.modifiedTime
+        basis2 = setlistInFolder2.modifiedTime
+    elseif (selectSetlistPanel.filter.sortBasis == "Level") then
+        basis1 = CalculateAverageLevel(s1)
+        basis2 = CalculateAverageLevel(s2)
+    end
+
+    if (selectSetlistPanel.filter.ascending) then
+        return basis1 < basis2
+    else
+        return basis1 > basis2
+    end
+end
+
+selectSetlistPanel.ClearAllCards = function()
+    local panel = selectSetlistPanel.panel
+
+    panel.UnregisterCallback(eventType.FrameUpdate, selectSetlistPanel.UpdateEyecatches)
+
+    for element, visible in pairs(selectSetlistPanel.eyecatchVisible) do
+        if (visible) then ReleaseEyecatch(element) end
+    end
+
+    local subfolderContainer = panel.Q("subfolder-container")
+    for _, card in ipairs(subfolderContainer.Children()) do
+        controls.DisposeScrollingText(card.Q("name-container"))
+    end
+    subfolderContainer.RemoveAllChildren()
+    
+    local setlistContainer = panel.Q("setlist-container")
+    for _, card in ipairs(setlistContainer.Children()) do
+        controls.DisposeScrollingText(card.Q("name-container"))
+    end
+    setlistContainer.RemoveAllChildren()
+end
+
+selectSetlistPanel.SpawnAllCards = function()
+    local panel = selectSetlistPanel.panel
+
+    if (selectSetlistPanel.filter.showSetlistsInAllFolders) then
+        selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
+    end
+    if (selectSetlistPanel.inEditor and tm.paths.IsInStreamingAssets(selectSetlistPanel.location)) then
+        selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
+    end
+
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(selectSetlistPanel.location)
+    panel.Q("up-button").SetEnabled(selectSetlistPanel.location != tm.paths.GetSetlistRootFolder())
+
+    local subfolderContainer = panel.Q("subfolder-container")
+    local setlistContainer = panel.Q("setlist-container")
+
+    local anythingInFolder = false
+    local hiddenSetlists = 0
+
+    -- Prepare the subfolder list, setlist list and error list.
+    local subfolders = {}
+    local setlistsInFolder = {}
+    local setlistsWithError = {}
+    if (selectSetlistPanel.filter.showSetlistsInAllFolders) then
+        function SearchAndProcessFolder(folder)
+            for _, setlistInFolder in ipairs(tm.resources.GetSetlistsInFolder(folder)) do
+                table.insert(setlistsInFolder, setlistInFolder)
+            end
+            for _, setlistWithError in ipairs(tm.resources.GetSetlistsWithError(folder)) do
+                table.insert(setlistsWithError, setlistWithError)
+            end
+            for _, subfolder in ipairs(tm.resources.GetSetlistSubfolders(folder)) do
+                SearchAndProcessFolder(subfolder.fullPath)
+            end
+        end
+        SearchAndProcessFolder(selectSetlistPanel.location)
+    else
+        subfolders = tm.resources.GetSetlistSubfolders(selectSetlistPanel.location)
+        setlistsInFolder = tm.resources.GetSetlistsInFolder(selectSetlistPanel.location)
+        setlistsWithError = tm.resources.GetSetlistsWithError(selectSetlistPanel.location)
+    end
+
+    -- Reset the eyecatch list. Eyecatches will be dynamically loaded and unloaded as they enter and leave the screen.
+    selectSetlistPanel.eyecatchVisible = {}
+    selectSetlistPanel.eyecatchFullPath = {}
+
+    -- Render lists as cards.
+    table.sort(subfolders, function(s1, s2)
+        return s1.name < s2.name
+    end)
+    for _, subfolder in ipairs(subfolders) do
+        -- Skip subfolders in streaming assets if in editor.
+        if (not selectSetlistPanel.inEditor or not tm.paths.IsInStreamingAssets(subfolder.fullPath)) then
+            anythingInFolder = true
+            local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
+            if (subfolder.eyecatchFullPath != nil) then
+                local eyecatchElement = card.Q("eyecatch")
+                selectSetlistPanel.eyecatchVisible[eyecatchElement] = false
+                selectSetlistPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
+            end
+            controls.SetUpButtonSounds(card)
+            card.Q("name").text = subfolder.name
+            controls.SetUpScrollingText(card.Q("name-container"))
+            card.RegisterCallback(eventType.Click, function(_, _, subfolder)
+                selectSetlistPanel.location = subfolder.fullPath
+                selectSetlistPanel.ClearAllCards()
+                selectSetlistPanel.SpawnAllCards()
+            end, subfolder)
+        end
+    end
+
+    function SetlistContainsAnyFilterKeyword(metadata)
+        if (#selectSetlistPanel.filter.keywords == 0) then
+            return true
+        end
+        local title = net.string.ToLower(metadata.title)
+        for _, keyword in ipairs(selectSetlistPanel.filter.keywords) do
+            if (net.string.Contains(title, keyword)) then
+                return true
+            end
+        end
+        return false
+    end
+
+    table.sort(setlistsInFolder, function(setlistInFolder1, setlistInFolder2)
+        return CompareSetlists(setlistInFolder1, setlistInFolder2)
+    end)
+    local cardOfPreviouslySelectedSetlist = nil
+    for _, setlistInFolder in ipairs(setlistsInFolder) do
+        -- Skip setlists in streaming assets if in editor.
+        if (not selectSetlistPanel.inEditor or not tm.paths.IsInStreamingAssets(setlistInFolder.folder)) then
+            anythingInFolder = true
+            if (SetlistContainsAnyFilterKeyword(setlistInFolder.setlist.setlistMetadata)) then
+                local card = setlistContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Card.uxml").Q("setlist-card")
+
+                -- Eyecatch
+                card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+                card.Q("error-icon").visible = false
+                card.Q("new-setlist-icon").visible = false
+
+                local eyecatchPath = tm.paths.Combine(setlistInFolder.folder, setlistInFolder.setlist.setlistMetadata.eyecatchImage)
+                local eyecatchElement = card.Q("eyecatch")
+                selectSetlistPanel.eyecatchVisible[eyecatchElement] = false
+                selectSetlistPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
+
+                -- Sounds
+                controls.SetUpButtonSounds(card)
+
+                -- Name
+                local setlist = setlistInFolder.setlist
+                card.Q("name").text = setlist.setlistMetadata.title
+                controls.SetUpScrollingText(card.Q("name-container"))
+
+                -- Control scheme icon
+                local scheme = setlist.setlistMetadata.controlScheme
+                local schemeIconContainer = card.Q("scheme-icon-container")
+                schemeIconContainer.Q("touch-icon").display = scheme == tm.enum.controlScheme.Touch
+                schemeIconContainer.Q("keys-icon").display = scheme == tm.enum.controlScheme.Keys
+                schemeIconContainer.Q("km-icon").display = scheme == tm.enum.controlScheme.KM
+
+                -- Level
+                local minLevel = 65535
+                local maxLevel = -65535
+                for _, patternRef in ipairs(setlist.selectablePatterns) do
+                    local level = patternRef.patternLevel
+                    if (level < minLevel) then minLevel = level end
+                    if (level > maxLevel) then maxLevel = level end
+                end
+                for _, hiddenPattern in ipairs(setlist.hiddenPatterns) do
+                    local level = hiddenPattern.reference.patternLevel
+                    if (level < minLevel) then minLevel = level end
+                    if (level > maxLevel) then maxLevel = level end
+                end
+                card.Q("level").text = tostring(minLevel) .. " - " .. tostring(maxLevel)
+
+                -- Event handler
+                card.RegisterCallback(eventType.Click, function(_, _, setlistInFolder)
+                    if (selectSetlistPanel.inEditor) then
+                        -- editorSetlistSetupPanel.setlistFolder = setlistInFolder.folder
+                        -- navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
+                    else
+                        -- Navigate to setlist setup panel.
+                        -- selectSetlistPanel.selectedSetlistFolder = setlistInFolder.folder
+                        -- local setlistPath = tm.paths.Combine(setlistInFolder.folder, tm.paths.kSetlistFilename)
+                        -- selectSetlistPanel.selectedSetlist = setlist
+                        -- navigation.TransitionTo(selectSetlistPanel, ???)
+                    end
+                end, setlistInFolder)
+
+                -- Previously selected setlist
+                if (selectSetlistPanel.selectedSetlist != nil and
+                    setlistInFolder.setlist.setlistMetadata.guid ==
+                    selectSetlistPanel.selectedSetlist.setlistMetadata.guid) then
+                    cardOfPreviouslySelectedSetlist = card
+                end
+            else
+                hiddenSetlists = hiddenSetlists + 1
+            end
+        end
+    end
+
+    for _, setlistWithError in ipairs(setlistsWithError) do
+        anythingInFolder = true
+        local card = setlistContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Card.uxml").Q("setlist-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = true
+        card.Q("new-setlist-icon").visible = false
+        controls.SetUpButtonSounds(card)
+        local errorMessage = ""
+        if (setlistWithError.type == "Load") then
+            card.Q("name").text = tm.l10n.GetString("select_setlist_error_card_title")
+            errorMessage = net.string.Format(tm.l10n.GetString("select_setlist_error_format"),
+                setlistWithError.status.filePath,
+                setlistWithError.status.errorMessage)
+        elseif (setlistWithError.type == "Upgrade") then
+            card.Q("name").text = tm.l10n.GetString("select_setlist_upgrade_error_card_title")
+            errorMessage = net.string.Format(tm.l10n.GetString("select_setlist_upgrade_error_format"),
+                setlistWithError.status.filePath,
+                setlistWithError.status.errorMessage)
+        end
+        card.Q("scheme-icon-container").display = false
+        card.Q("level").text = ""
+        controls.SetUpScrollingText(card.Q("name-container"))
+        card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
+            alertBox.Alert(errorMessage)
+        end, errorMessage)
+    end
+
+    if (selectSetlistPanel.inEditor) then
+        local card = setlistContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Card.uxml").Q("setlist-card")
+        card.Q("eyecatch").visible = false
+        card.Q("default-eyecatch").visible = false
+        card.Q("error-icon").visible = false
+        card.Q("new-setlist-icon").visible = true
+        controls.SetUpButtonSounds(card)
+        card.Q("name").text = tm.l10n.GetString("select_setlist_new_setlist_card_title")
+        controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("artist-container"))
+        card.RegisterCallback(eventType.Click, function()
+            FadeInDialog(newSetlistDialog.bg, newSetlistDialog.dialog)
+        end)
+    end
+
+    if (hiddenSetlists > 0) then
+        panel.Q("setlist-status").text = net.string.Format(
+            tm.l10n.GetString("select_setlist_some_setlists_hidden_text"),
+            hiddenSetlists,
+            selectSetlistPanel.filter.keywordsPreSplit)
+    elseif (not anythingInFolder) then
+        panel.Q("setlist-status").text = tm.l10n.GetString("select_setlist_no_setlist_text")
+    else
+        panel.Q("setlist-status").text = ""
+    end
+
+    if (cardOfPreviouslySelectedSetlist != nil) then
+        cardOfPreviouslySelectedSetlist.Focus()
+        tm.StartCoroutine(function()
+            coroutine.yield()  -- for layout update
+            panel.Q("scroll-view").ScrollTo(cardOfPreviouslySelectedSetlist)
+        end)
+    end
+
+    panel.RegisterCallback(eventType.FrameUpdate, selectSetlistPanel.UpdateEyecatches)
+end
+
+selectSetlistPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_setlist"))
+    controls.ResetScrollingTextTimer()
+
+    if (selectSetlistPanel.needsRefresh) then
+        selectSetlistPanel.Refresh()  -- Will call Show when done
+        return
+    end
+    
+    selectSetlistPanel.SpawnAllCards()
+    selectSetlistPanel.panel.Q("upgrade-button").display = tm.resources.anyOutdatedSetlist
+end
+
+selectSetlistPanel.Hide = function()
+    selectSetlistPanel.ClearAllCards()
+    -- When creating a new setlist and transitioning to editor, hide
+    -- the new setlist dialog so it isn't visible when transitioning back.
+    newSetlistDialog.Hide()
+end
+
+selectSetlistPanel.Refresh = function()
+    selectSetlistPanel.ClearAllCards()
+    local panel = selectSetlistPanel.panel
+    selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
+    selectSetlistPanel.needsRefresh = false
+    panel.Q("back-button").SetEnabled(false)
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(selectSetlistPanel.location)
+    tm.io.ReloadSetlistList(function(currentlyLoadingFile)
+        panel.Q("setlist-status").text = currentlyLoadingFile
+    end,
+    function(reloadStatus)
+        panel.Q("back-button").SetEnabled(true)
+        selectSetlistPanel.Show()
+    end)
+end
+
+selectSetlistPanel.Initialize = function()
+    selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
+
+    local panel = selectSetlistPanel.panel
+    panel.Q("refresh-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.Refresh()
+    end)
+
+    local sidesheetBg = setlistFilterSideSheet.bg
+    sidesheetBg.display = false
+    panel.Q("filter-button").RegisterCallback(eventType.Click, function()
+        if (sidesheetBg.display) then
+            setlistFilterSideSheet.FadeOut()
+        else
+            setlistFilterSideSheet.Show()
+            setlistFilterSideSheet.FadeIn()
+        end
+    end)
+
+    panel.Q("upgrade-button").RegisterCallback(eventType.Click, function()
+        alertBox.Confirm(tm.l10n.GetString("select_setlist_upgrade_version_confirmation"),
+            tm.l10n.GetString("select_setlist_upgrade_version_confirm"),
+            tm.l10n.GetString("select_setlist_upgrade_version_cancel"),
+            function()
+                selectSetlistPanel.ClearAllCards()
+                panel.Q("back-button").SetEnabled(false)
+                tm.io.UpgradeAllSetlists(function(currentlyLoadingFile)
+                    panel.Q("setlist-status").text = currentlyLoadingFile
+                end,
+                function(reloadStatus)
+                    panel.Q("back-button").SetEnabled(true)
+                    selectSetlistPanel.Show()
+                    if (reloadStatus.Ok()) then
+                        alertBox.Alert(tm.l10n.GetString("select_setlist_upgrade_complete_message"))
+                    else
+                        alertBox.Alert(net.string.Format(
+                            tm.l10n.GetString("select_setlist_upgrade_process_error_format"),
+                            reloadStatus.errorMessage))
+                    end
+                end)
+            end)
+    end)
+
+    panel.Q("up-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.location = tm.paths.GoUpFrom(selectSetlistPanel.location)
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+
+    panel.Q("open-button").RegisterCallback(eventType.Click, function()
+        tm.OpenURL(selectSetlistPanel.location)
+    end)
+end
+
+selectSetlistPanel.UpdateEyecatches = function()
+    -- When transitioning away from the panel, there may be 1 frame when the panel's display is set to false,
+    -- but this update is still called because Hide() hasn't been called yet. In this frame, card layouts are
+    -- messed up because the panel is not displayed, and we don't want to load a bunch of eyecatches. Therefore,
+    -- we check whether the panel is displayed before doing anything.
+    if (not selectSetlistPanel.panel.display) then return end
+
+    local screenHeight = unity.screen.height
+    for element, visible in pairs(selectSetlistPanel.eyecatchVisible) do
+        local screenPosition = element.LocalSpaceToScreenSpace(unity.vector2.__new(0, 0))
+        local shouldBeVisible = (screenPosition.y >= 0) and (screenPosition.y <= screenHeight)
+        if (visible and not shouldBeVisible) then
+            ReleaseEyecatch(element)
+            selectSetlistPanel.eyecatchVisible[element] = false
+        elseif (not visible and shouldBeVisible) then
+            LoadAndShowEyecatch(selectSetlistPanel.eyecatchFullPath[element], element)
+            selectSetlistPanel.eyecatchVisible[element] = true
+        end
+    end
+end
