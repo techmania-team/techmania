@@ -276,9 +276,9 @@ selectSetlistPanel.SpawnAllCards = function()
                 setlistWithError.status.filePath,
                 setlistWithError.status.errorMessage)
         end
+        controls.SetUpScrollingText(card.Q("name-container"))
         card.Q("scheme-icon-container").display = false
         card.Q("level").text = ""
-        controls.SetUpScrollingText(card.Q("name-container"))
         card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
             alertBox.Alert(errorMessage)
         end, errorMessage)
@@ -293,7 +293,8 @@ selectSetlistPanel.SpawnAllCards = function()
         controls.SetUpButtonSounds(card)
         card.Q("name").text = tm.l10n.GetString("select_setlist_new_setlist_card_title")
         controls.SetUpScrollingText(card.Q("name-container"))
-        controls.SetUpScrollingText(card.Q("artist-container"))
+        card.Q("scheme-icon-container").display = false
+        card.Q("level").text = ""
         card.RegisterCallback(eventType.Click, function()
             FadeInDialog(newSetlistDialog.bg, newSetlistDialog.dialog)
         end)
@@ -431,3 +432,162 @@ selectSetlistPanel.UpdateEyecatches = function()
         end
     end
 end
+
+setlistFilterSideSheet.SetDropdownValues = function()
+    local sortBasisDropdown = setlistFilterSideSheet.sheet.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.SetValueWithoutNotify(selectSetlistPanel.filter.sortBasisDisplayString[selectSetlistPanel.filter.sortBasis])
+end
+
+setlistFilterSideSheet.Show = function()
+    local sheet = setlistFilterSideSheet.sheet
+
+    sheet.Q("keyword-field").Q("text-field").stringValue = selectSetlistPanel.filter.keywordsPreSplit
+
+    controls.SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectSetlistPanel.filter.showSetlistsInAllFolders)
+
+    setlistFilterSideSheet.SetDropdownValues()
+
+    local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
+    if (selectSetlistPanel.filter.ascending) then
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    else
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+    end
+end
+
+setlistFilterSideSheet.FadeIn = function()
+    local bg = setlistFilterSideSheet.bg
+    bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(bg.Q("filter-sidesheet"), 100, 0)
+    end)
+end
+
+setlistFilterSideSheet.FadeOut = function()
+    local bg = setlistFilterSideSheet.bg
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(bg.Q("filter-sidesheet"), 100, 0, function()
+            bg.display = false
+        end)
+    end)
+end
+
+setlistFilterSideSheet.Initialize = function()
+    local bg = setlistFilterSideSheet.bg
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        setlistFilterSideSheet.FadeOut()
+    end)
+
+    bg.Q("filter-sidesheet").RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
+        setlistFilterSideSheet.FadeOut()
+    end)
+
+    bg.Q("keyword-field").Q("text-field").RegisterCallback(eventType.ChangeString, function(element, event)
+        selectSetlistPanel.filter.keywordsPreSplit = net.string.Trim(event.newValue)
+        local keywords = net.string.Split(selectSetlistPanel.filter.keywordsPreSplit, ' ')
+        selectSetlistPanel.filter.keywords = {}
+        for _, keyword in ipairs(keywords) do
+            if (net.string.Length(keyword) > 0) then
+                table.insert(selectSetlistPanel.filter.keywords, net.string.ToLower(keyword))
+            end
+        end
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+
+    bg.Q("all-folders").Q("track").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.filter.showSetlistsInAllFolders = not selectSetlistPanel.filter.showSetlistsInAllFolders
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+
+    function LocalizeDropdown()
+        local bg = setlistFilterSideSheet.bg
+        selectSetlistPanel.filter.sortBasisDisplayString = {
+            Title = tm.l10n.GetString("setlist_filter_sidesheet_sort_basis_title"),
+            ModifiedTime = tm.l10n.GetString("setlist_filter_sidesheet_sort_basis_modified_time"),
+            Level = tm.l10n.GetString("setlist_filter_sidesheet_sort_basis_level")
+        }
+        local sortBasisChoices = {}
+        for _, display in pairs(selectSetlistPanel.filter.sortBasisDisplayString) do
+            table.insert(sortBasisChoices, display)
+        end
+        local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+        sortBasisDropdown.choices = sortBasisChoices
+    end
+    LocalizeDropdown()
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdown()
+        setlistFilterSideSheet.SetDropdownValues()
+    end)
+    local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
+    sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
+        selectSetlistPanel.filter.sortBasis = KeyFromValue(selectSetlistPanel.filter.sortBasisDisplayString, event.newValue)
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+
+    local ascendingRadioButton = bg.Q("ascending-radio").Q("radio-button")
+    local descendingRadioButton = bg.Q("descending-radio").Q("radio-button")
+    ascendingRadioButton.RegisterCallback(eventType.Click, function()
+        controls.SetRadioButton(ascendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        selectSetlistPanel.filter.ascending = true
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+    descendingRadioButton.RegisterCallback(eventType.Click, function()
+        controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
+        selectSetlistPanel.filter.ascending = false
+        selectSetlistPanel.ClearAllCards()
+        selectSetlistPanel.SpawnAllCards()
+    end)
+end
+
+newSetlistDialog.Initialize = function()
+    local bg = newSetlistDialog.bg
+    local dialog = newSetlistDialog.dialog
+
+    bg.display = false
+    dialog.Q("create-button").RegisterCallback(eventType.Click, function()
+        local title = dialog.Q("title-field").Q("text-field").stringValue
+        -- local status, newSetlistFolder = tm.editor.CreateNewSetlist(selectSetlistPanel.location, title, artist)
+        -- if (status.Ok()) then
+        --     editorSetlistSetupPanel.setlistFolder = newSetlistFolder
+        --     navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
+        -- else
+        --     FadeOutDialog(bg, dialog)
+        --     alertBox.Alert(
+        --         tm.paths.HidePlatformInternalPath(net.string.Format(
+        --             tm.l10n.GetString("new_setlist_error_format"),
+        --             status.filePath,
+        --             status.errorMessage)))
+        -- end
+    end)
+    dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
+        FadeOutDialog(bg, dialog)
+    end)
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        FadeOutDialog(bg, dialog)
+    end)
+
+    dialog.RegisterCallback(eventType.Click, function(_, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+end
+
+newSetlistDialog.Hide = function()
+    newSetlistDialog.bg.display = false
+end
+
+selectSetlistPanel.Initialize()
+setlistFilterSideSheet.Initialize()
+newSetlistDialog.Initialize()

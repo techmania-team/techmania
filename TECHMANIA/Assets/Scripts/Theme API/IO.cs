@@ -202,6 +202,50 @@ namespace ThemeApi
                 upgradeVersion: true);
         }
 
+        // progressCallback parameter: string (the setlist currently
+        // being loaded)
+        // completeCallback parameter: Status
+        public static void ReloadSetlistList(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadSetlistList(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback.Function.Call(status);
+                },
+                upgradeVersion: false);
+        }
+
+        // progressCallback parameter: string (the setlist currently
+        // being loaded)
+        // completeCallback parameter: Status
+        public static void UpgradeAllSetlists(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadSetlistList(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback.Function.Call(status);
+                },
+                upgradeVersion: true);
+        }
+
         public static void ReloadNoteSkin(
             DynValue progressCallback,
             DynValue completeCallback)
