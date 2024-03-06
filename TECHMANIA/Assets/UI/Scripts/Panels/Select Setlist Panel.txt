@@ -137,6 +137,11 @@ selectSetlistPanel.SpawnAllCards = function()
         setlistsWithError = tm.resources.GetSetlistsWithError(selectSetlistPanel.location)
     end
 
+    -- TODO: move setlists to error list if any is true:
+    -- * any pattern is missing
+    -- * selectable patterns < 3
+    -- * hidden patterns < 1
+
     -- Reset the eyecatch list. Eyecatches will be dynamically loaded and unloaded as they enter and leave the screen.
     selectSetlistPanel.eyecatchVisible = {}
     selectSetlistPanel.eyecatchFullPath = {}
@@ -557,18 +562,18 @@ newSetlistDialog.Initialize = function()
     bg.display = false
     dialog.Q("create-button").RegisterCallback(eventType.Click, function()
         local title = dialog.Q("title-field").Q("text-field").stringValue
-        -- local status, newSetlistFolder = tm.editor.CreateNewSetlist(selectSetlistPanel.location, title, artist)
-        -- if (status.Ok()) then
-        --     editorSetlistSetupPanel.setlistFolder = newSetlistFolder
-        --     navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
-        -- else
-        --     FadeOutDialog(bg, dialog)
-        --     alertBox.Alert(
-        --         tm.paths.HidePlatformInternalPath(net.string.Format(
-        --             tm.l10n.GetString("new_setlist_error_format"),
-        --             status.filePath,
-        --             status.errorMessage)))
-        -- end
+        local status, newSetlistFolder = tm.editor.CreateNewSetlist(selectSetlistPanel.location, title)
+        if (status.Ok()) then
+            editorSetlistSetupPanel.setlistFolder = newSetlistFolder
+            navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
+        else
+            FadeOutDialog(bg, dialog)
+            alertBox.Alert(
+                tm.paths.HidePlatformInternalPath(net.string.Format(
+                    tm.l10n.GetString("new_setlist_error_format"),
+                    status.filePath,
+                    status.errorMessage)))
+        end
     end)
     dialog.Q("cancel-button").RegisterCallback(eventType.Click, function()
         FadeOutDialog(bg, dialog)

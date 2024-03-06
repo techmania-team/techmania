@@ -10,6 +10,15 @@ editorTrackSetupPanel = {
     end
 }
 
+editorSetlistSetupPanel = {
+    panel = nil,
+    setlistFolder = "",
+
+    Show = function()
+        tm.editor.LaunchOnSetlist(editorSetlistSetupPanel.setlistFolder)
+    end
+}
+
 editorPatternPanel = {
     panel = nil,
 

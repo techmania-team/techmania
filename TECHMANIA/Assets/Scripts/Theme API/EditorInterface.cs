@@ -4,6 +4,7 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
 using System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace ThemeApi
 {
@@ -55,6 +56,11 @@ namespace ThemeApi
                 TopLevelObjects.instance.trackSetupPanel
                 .GetComponent<Panel>(), 
                 TransitionToPanel.Direction.Right);
+        }
+
+        public void LaunchOnSetlist(string setlistFolder)
+        {
+
         }
 
         // Contains timestamp so collisions are very unlikely.
@@ -122,9 +128,51 @@ namespace ThemeApi
             return Status.OKStatus();
         }
 
+        // In Lua, this function returns 2 values, the Status
+        // and newSetlistFolder.
+        // If successful, this will update the setlist lists in
+        // tm.resources.
+        public Status CreateNewSetlist(string parentFolder,
+            string title, out string newSetlistFolder)
+        {
+            // Attempt to create setlist directory.
+            newSetlistFolder = Path.Combine(parentFolder,
+                SetlistToDirectoryName(title));
+            try
+            {
+                Directory.CreateDirectory(newSetlistFolder);
+            }
+            catch (Exception e)
+            {
+                return Status.FromException(e, newSetlistFolder);
+            }
+
+            // Create empty setlist.
+            Setlist setlist = new Setlist(title);
+            string filename = Path.Combine(newSetlistFolder,
+                Paths.kSetlistFilename);
+            try
+            {
+                setlist.SaveToFile(filename);
+            }
+            catch (Exception e)
+            {
+                return Status.FromException(e, filename);
+            }
+
+            // Update in-memory setlist list.
+            GlobalResource.setlistList[parentFolder].Add(
+                new GlobalResource.SetlistInFolder()
+                {
+                    folder = newSetlistFolder,
+                    setlist = setlist
+                });
+            return Status.OKStatus();
+        }
+
         // No parameter.
-        // Beware that when this is called, the track lists in
-        // tm.resources may have changed.
+        // Beware that when this is called, the track lists and
+        // setlist lists in tm.resources may have changed.
         public DynValue onExit;
         #endregion
 

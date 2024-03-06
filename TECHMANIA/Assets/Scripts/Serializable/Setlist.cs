@@ -19,6 +19,17 @@ public class Setlist : SetlistBase
 {
     public const string kVersion = "1";
 
+    public Setlist(string title)
+    {
+        version = kVersion;
+        setlistMetadata = new SetlistMetadata()
+        {
+            title = title
+        };
+        selectablePatterns = new List<PatternReference>();
+        hiddenPatterns = new List<HiddenPattern>();
+    }
+
     public SetlistMetadata setlistMetadata;
 
     [Serializable]
