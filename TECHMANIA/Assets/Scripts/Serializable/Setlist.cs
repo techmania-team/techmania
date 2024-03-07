@@ -24,6 +24,7 @@ public class Setlist : SetlistBase
         version = kVersion;
         setlistMetadata = new SetlistMetadata()
         {
+            guid = Guid.NewGuid().ToString(),
             title = title
         };
         selectablePatterns = new List<PatternReference>();

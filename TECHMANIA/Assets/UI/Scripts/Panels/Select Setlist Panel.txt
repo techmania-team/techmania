@@ -213,6 +213,8 @@ selectSetlistPanel.SpawnAllCards = function()
                 card.Q("name").text = setlist.setlistMetadata.title
                 controls.SetUpScrollingText(card.Q("name-container"))
 
+                -- TODO: display description
+
                 -- Control scheme icon
                 local scheme = setlist.setlistMetadata.controlScheme
                 local schemeIconContainer = card.Q("scheme-icon-container")
