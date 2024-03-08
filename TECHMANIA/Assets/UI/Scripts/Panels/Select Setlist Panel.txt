@@ -240,8 +240,8 @@ selectSetlistPanel.SpawnAllCards = function()
                 -- Event handler
                 card.RegisterCallback(eventType.Click, function(_, _, setlistInFolder)
                     if (selectSetlistPanel.inEditor) then
-                        -- editorSetlistSetupPanel.setlistFolder = setlistInFolder.folder
-                        -- navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
+                        editorSetlistSetupPanel.setlistFolder = setlistInFolder.folder
+                        navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
                     else
                         -- Navigate to setlist setup panel.
                         -- selectSetlistPanel.selectedSetlistFolder = setlistInFolder.folder

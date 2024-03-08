@@ -60,7 +60,28 @@ namespace ThemeApi
 
         public void LaunchOnSetlist(string setlistFolder)
         {
+            // TODO: set other parts of EditorContext
+            EditorContext.exitCallback = () =>
+            {
+                TopLevelObjects.instance.ShowUiDocument();
+                TopLevelObjects.instance.editorCanvas.gameObject
+                    .SetActive(false);
+                TopLevelObjects.instance.eventSystem.gameObject
+                    .SetActive(false);
+                onExit.Function.Call();
+            };
 
+            // Show track setup panel
+            Panel.current = null;
+            TopLevelObjects.instance.HideUiDocument();
+            TopLevelObjects.instance.editorCanvas.gameObject
+                .SetActive(true);
+            TopLevelObjects.instance.eventSystem.gameObject
+                .SetActive(true);
+            PanelTransitioner.TransitionTo(
+                TopLevelObjects.instance.editSetlistPanel
+                .GetComponent<Panel>(),
+                TransitionToPanel.Direction.Right);
         }
 
         // Contains timestamp so collisions are very unlikely.

@@ -6,6 +6,8 @@ editorTrackSetupPanel = {
     trackFolder = "",
 
     Show = function()
+        navigation.transitionSourceOnEditorExit = editorTrackSetupPanel
+        navigation.transitionDestinationOnEditorExit = selectTrackPanel
         tm.editor.LaunchOnTrack(editorTrackSetupPanel.trackFolder)
     end
 }
@@ -15,6 +17,8 @@ editorSetlistSetupPanel = {
     setlistFolder = "",
 
     Show = function()
+        navigation.transitionSourceOnEditorExit = editorSetlistSetupPanel
+        navigation.transitionDestinationOnEditorExit = selectSetlistPanel
         tm.editor.LaunchOnSetlist(editorSetlistSetupPanel.setlistFolder)
     end
 }

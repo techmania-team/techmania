@@ -53,6 +53,9 @@ navigation = {
                 end)
         end)
     end,
+
+    transitionSourceOnEditorExit = nil,
+    transitionDestinationOnEditorExit = nil
 }
 
 function SetUpNavigation()
@@ -112,7 +115,8 @@ function SetUpNavigation()
     -- select track panel (editor) --> track setup panel is registered on track cards,
     -- handled by Select Track Panel.txt
     tm.editor.onExit = function()
-        navigation.TransitionBackTo(editorTrackSetupPanel, selectTrackPanel)
+        navigation.TransitionBackTo(navigation.transitionSourceOnEditorExit,
+            navigation.transitionDestinationOnEditorExit)
     end
 
     tm.editor.onPreview = function(trackFolder, track, pattern)
