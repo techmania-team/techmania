@@ -594,4 +594,43 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
 ,,,,,,
-Added in 2.2,edit_setlist_panel_title,Editing Setlist,编辑组曲,,,
+All strings on setlists are added in 2.2,edit_setlist_panel_title,Editing Setlist,编辑组曲,,,
+,edit_setlist_panel_resources_and_metadata_header,Resources and metadata,资源与元数据,,,
+,edit_setlist_panel_import_button,Import,导入,匯入,インポート,가져오기
+,edit_setlist_panel_import_button_help,"Import image files so they can be used
+as background and eyecatch images.","导入图像文件后，
+可以将它们用作背景和封面图片。",,,
+,edit_setlist_panel_title_label,Title,标题,,,
+,edit_setlist_panel_description_label,Description,描述,,,
+,edit_setlist_panel_control_scheme_label,Control scheme,操作方式,,,
+,edit_setlist_panel_background_image_label,Background image,背景图片,,,
+,edit_setlist_panel_eyecatch_image_label,Eyecatch image,封面,,,
+,edit_setlist_panel_selectable_patterns_header,Selectable patterns,可选谱面,,,
+,edit_setlist_panel_add_pattern_button,Add,添加,,,
+,edit_setlist_panel_hidden_patterns_header,Hidden patterns,隐藏谱面,,,
+,edit_setlist_panel_hidden_pattern_criteria_label,Criteria,条件,,,
+,edit_setlist_panel_help_header,Help,帮助,,,
+,edit_setlist_panel_help_content,"A setlist consists of at least 3 selectable patterns and at least 1 hidden pattern, all of the same control scheme.
+
+After the player chooses and finishes 3 selectable patterns, TECHMANIA will go through every hidden pattern from top to bottom, and pick the first one whose criteria is met, to be the player's 4th pattern.
+
+The last hidden pattern has no criteria and will be picked if all hidden patterns above it are not.
+
+Types of hidden pattern criteria:
+-<indent=3%><b>Index</b>: the combined index of the 3 selected patterns. For example, if the player selects the 2nd, 4th and 5th pattern from the list, the total index is 2+4+5=11.</indent>
+-<indent=3%><b>Level</b>: the combined difficulty level of the 3 selected patterns.</indent>
+-<indent=3%><b>HP</b>: the player's remaining HP at the end of the 3rd pattern, in percentage between 0 and 100 (inclusive).</indent>
+-<indent=3%><b>Score, Combo, Max Combo</b>: the player's score / current combo / max combo at the end of the 3rd pattern.</indent>
+-<indent=3%><b>D100</b>: a random whole number selected between 1 and 100 (inclusive).</indent>","一套组曲需要包含至少3个可选谱面和至少1个隐藏谱面，并且它们使用同一种操作方式。
+
+玩家选择并完成3个可选谱面后，TECHMANIA将自上而下判断每个隐藏谱面的条件，并将第一个满足条件的谱面作为第4曲。
+
+最后一个隐藏谱面没有条件，它将在其他隐藏谱面的条件全部不满足时使用。
+
+隐藏谱面的条件有以下种类：
+-<indent=3%><b>序号</b>：玩家所选3首可选谱面的序号之和。例如，如果玩家选择了可选谱面中的第2、第4和第5个，那么序号之和是2+4+5=11。</indent>
+-<indent=3%><b>难度</b>：玩家所选3首可选谱面的难度之和。</indent>
+-<indent=3%><b>HP</b>：玩家完成第3曲时剩余HP的百分比，在0到100之间，包括边界。</indent>
+-<indent=3%><b>分数、当前连击、最大连击</b>：玩家完成第3曲时的分数、当前连击数或最大连击数。</indent>
+-<indent=3%><b>D100</b>：在1到100之间随机选择的整数，包括边界。</indent>",,,
+,edit_setlist_panel_delete_setlist_button,Delete setlist,删除组曲,,,
