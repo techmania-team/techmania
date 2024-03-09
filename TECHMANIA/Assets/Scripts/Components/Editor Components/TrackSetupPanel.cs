@@ -468,7 +468,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnAutoOrderPatternChanged()
     {
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         EditorContext.track.trackMetadata.autoOrderPatterns =
             !EditorContext.track.trackMetadata.autoOrderPatterns;
         if (EditorContext.track.trackMetadata.autoOrderPatterns)
@@ -498,7 +498,7 @@ public class TrackSetupPanel : MonoBehaviour
         {
             if (!madeChange)
             {
-                EditorContext.PrepareToModifyMetadata();
+                EditorContext.PrepareToModifyTrackOrPatternMetadata();
                 madeChange = true;
             }
             m.controlScheme = (ControlScheme)controlScheme.value;
@@ -509,7 +509,7 @@ public class TrackSetupPanel : MonoBehaviour
         {
             if (!madeChange)
             {
-                EditorContext.PrepareToModifyMetadata();
+                EditorContext.PrepareToModifyTrackOrPatternMetadata();
                 madeChange = true;
             }
             m.playableLanes = playableLanes.value + 2;
@@ -552,7 +552,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnNewPatternButtonClick()
     {
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         EditorContext.track.patterns.Add(new Pattern());
         if (EditorContext.track.trackMetadata.autoOrderPatterns)
         {
@@ -566,7 +566,7 @@ public class TrackSetupPanel : MonoBehaviour
     public void OnDeletePatternButtonClick()
     {
         // This is undoable, so no need for confirmation.
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         EditorContext.track.patterns.Remove(selectedPattern);
 
         selectedPattern = null;
@@ -576,7 +576,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnDuplicatePatternButtonClick()
     {
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         EditorContext.track.patterns.Add(
             selectedPattern.CloneWithDifferentGuid());
         if (EditorContext.track.trackMetadata.autoOrderPatterns)
@@ -608,7 +608,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnMovePatternUpButtonClick()
     {
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         int index = EditorContext.track.FindPatternIndexByGuid(
             selectedPattern.patternMetadata.guid);
         int newIndex = index - 1;
@@ -622,7 +622,7 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnMovePatternDownButtonClick()
     {
-        EditorContext.PrepareToModifyMetadata();
+        EditorContext.PrepareToModifyTrackOrPatternMetadata();
         int index = EditorContext.track.FindPatternIndexByGuid(
             selectedPattern.patternMetadata.guid);
         int newIndex = index + 1;

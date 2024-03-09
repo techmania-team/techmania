@@ -83,7 +83,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareToModifyMetadata();
+            EditorContext.PrepareToModifyTrackOrPatternMetadata();
             madeChange = true;
         }
         property = newValue;
@@ -99,7 +99,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareToModifyMetadata();
+            EditorContext.PrepareToModifyTrackOrPatternMetadata();
             madeChange = true;
         }
         property = newValue;
@@ -115,7 +115,7 @@ public class UIUtils
         }
         if (!madeChange)
         {
-            EditorContext.PrepareToModifyMetadata();
+            EditorContext.PrepareToModifyTrackOrPatternMetadata();
             madeChange = true;
         }
         property = newValue;
@@ -140,7 +140,7 @@ public class UIUtils
         if (property == newValue) return;
         if (!madeChange)
         {
-            EditorContext.PrepareToModifyMetadata();
+            EditorContext.PrepareToModifyTrackOrPatternMetadata();
             madeChange = true;
         }
         property = newValue;

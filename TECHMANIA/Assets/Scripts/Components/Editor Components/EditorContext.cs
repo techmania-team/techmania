@@ -11,13 +11,15 @@ public class EditOperation
         // - modifying track metadata
         // - any pattern-level operation (add, delete, duplicate)
         // - modifying pattern metadata
-        Metadata,
+        TrackOrPatternMetadata,
         // Add, modify or delete.
         TimeEvent,
         AddNote,
         DeleteNote,
         // Any field other than pulse and lane.
-        ModifyNote
+        ModifyNote,
+        // Anything in setlist
+        Setlist
     }
     public Type type;
 
@@ -63,6 +65,15 @@ public class EditOperation
 
     public Note noteBeforeOp;
     public Note noteAfterOp;
+
+    // Setlist
+
+    public string setlistSnapshotBeforeOp;
+    public void TakeSetlistSnapshot()
+    {
+        setlistSnapshotBeforeOp = EditorContext.setlist.Serialize(
+            formatForFile: false);
+    }
 }
 
 // The unit of undo/redo.
@@ -79,6 +90,7 @@ public class EditorContext
     public static bool inPreview;
     public static int previewStartingScan;
 
+    #region Editing track
     public static Track track;
     // Full path of the track.tech file.
     public static string trackPath;
@@ -95,6 +107,20 @@ public class EditorContext
     {
         get { return track.patterns[patternIndex]; }
     }
+    #endregion
+
+    #region Editing setlist
+    public static Setlist setlist;
+    // Full path of the setlist.tech file.
+    public static string setlistPath;
+    public static string setlistFolder
+    {
+        get
+        {
+            return Path.GetDirectoryName(setlistPath);
+        }
+    }
+    #endregion
 
     public static bool Dirty { get; private set; }
     private static LimitedStack<EditTransaction> undoStack;
@@ -126,7 +152,7 @@ public class EditorContext
     // Modify tracks in the following pattern to enable undo and redo.
     //
     // To modify metadata:
-    //   EditorContext.PrepareToModifyMetadata();
+    //   EditorContext.PrepareToModifyTrackOrPatternMetadata();
     //   (then modify metadata)
     //
     // To modify BPM events:
@@ -148,6 +174,11 @@ public class EditorContext
     //   op.noteAfterOp = (note after modification).Clone();
     //
     //   EditorContext.EndTransaction();
+    //
+    // For anything in setlists:
+    //
+    //   EditorContext.PrepareToModifySetlist();
+    //   (then modify setlist)
 
     public static void BeginTransaction()
     {
@@ -179,11 +210,14 @@ public class EditorContext
         currentTransaction.ops.Add(op);
         switch (type)
         {
-            case EditOperation.Type.Metadata:
+            case EditOperation.Type.TrackOrPatternMetadata:
                 op.TakeTrackSnapshot();
                 break;
             case EditOperation.Type.TimeEvent:
                 op.TakeTimeEventSnapshot();
+                break;
+            case EditOperation.Type.Setlist:
+                op.TakeSetlistSnapshot();
                 break;
         }
         return op;
@@ -194,10 +228,10 @@ public class EditorContext
     // Call this shortcut before making any change to track
     // or pattern metadata. Afterwards there's no need to call
     // anything else.
-    public static void PrepareToModifyMetadata()
+    public static void PrepareToModifyTrackOrPatternMetadata()
     {
         BeginTransaction();
-        BeginOperation(EditOperation.Type.Metadata);
+        BeginOperation(EditOperation.Type.TrackOrPatternMetadata);
         EndTransaction();
     }
 
@@ -229,15 +263,31 @@ public class EditorContext
     {
         return BeginOperation(EditOperation.Type.ModifyNote);
     }
+
+    public static void PrepareToModifySetlist()
+    {
+        BeginTransaction();
+        BeginOperation(EditOperation.Type.Setlist);
+        EndTransaction();
+    }
     #endregion
 
+    #region Saving
     // May throw exceptions.
-    public static void Save()
+    public static void SaveTrack()
     {
         track.SaveToFile(trackPath);
         Dirty = false;
         DirtynessUpdated?.Invoke(Dirty);
     }
+
+    public static void SaveSetlist()
+    {
+        setlist.SaveToFile(setlistPath);
+        Dirty = false;
+        DirtynessUpdated?.Invoke(Dirty);
+    }
+    #endregion
 
     #region Undo and Redo
     public static bool CanUndo()
@@ -292,7 +342,7 @@ public class EditorContext
         {
             switch (op.type)
             {
-                case EditOperation.Type.Metadata:
+                case EditOperation.Type.TrackOrPatternMetadata:
                     {
                         EditOperation convertedOp =
                             new EditOperation();
@@ -322,6 +372,17 @@ public class EditorContext
                         {
                             Pattern.timeStops.Add(t.Clone());
                         }
+                    }
+                    break;
+                case EditOperation.Type.Setlist:
+                    {
+                        EditOperation convertedOp = new EditOperation();
+                        convertedOp.type = op.type;
+                        convertedOp.TakeSetlistSnapshot();
+                        output.ops.Add(convertedOp);
+
+                        setlist = SetlistBase.Deserialize(
+                            op.setlistSnapshotBeforeOp) as Setlist;
                     }
                     break;
                 default:

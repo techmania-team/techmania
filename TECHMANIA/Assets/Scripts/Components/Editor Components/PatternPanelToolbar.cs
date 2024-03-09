@@ -57,7 +57,7 @@ public class PatternPanelToolbar : MonoBehaviour
     {
         foreach (EditOperation op in transaction.ops)
         {
-            if (op.type == EditOperation.Type.Metadata)
+            if (op.type == EditOperation.Type.TrackOrPatternMetadata)
             {
                 RefreshTimingTabDisplay();
                 return;

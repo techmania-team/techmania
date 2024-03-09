@@ -27,7 +27,7 @@ public class EditorTopBar : MonoBehaviour
 
     public void Save()
     {
-        EditorContext.Save();
+        EditorContext.SaveTrack();
     }
 
     public void Undo()

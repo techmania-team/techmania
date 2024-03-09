@@ -14,6 +14,9 @@
         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="name-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
             <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="name" class="text-headline-6" style="-unity-text-align: upper-center;" />
         </ui:ScrollView>
+        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="description-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="description" class="text-subtitle" style="-unity-text-align: upper-center;" />
+        </ui:ScrollView>
         <ui:VisualElement name="level-container" style="flex-grow: 1;">
             <ui:VisualElement name="scheme-icon-container" picking-mode="Ignore">
                 <ui:VisualElement name="touch-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_touch_app_white_48dp.png?fileID=2800000&amp;guid=f749762052b211d4594bd6772a8948ca&amp;type=3#baseline_touch_app_white_48dp&quot;);" />

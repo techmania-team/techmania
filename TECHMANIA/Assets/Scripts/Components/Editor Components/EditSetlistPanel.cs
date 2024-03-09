@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class EditSetlistPanel : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public MessageDialog messageDialog;
+    public ConfirmDialog confirmDialog;
 
-    // Update is called once per frame
-    void Update()
+    #region Filename caching
+    private List<string> imageFilesCache;
+
+    private void RefreshFilenameCaches()
     {
-        
+        imageFilesCache = Paths.GetAllImageFiles(
+            EditorContext.setlistFolder);
     }
+    #endregion
 }

@@ -60,7 +60,7 @@ namespace ThemeApi
 
         public void LaunchOnSetlist(string setlistFolder)
         {
-            // TODO: set other parts of EditorContext
+            // Set EditorContext
             EditorContext.exitCallback = () =>
             {
                 TopLevelObjects.instance.ShowUiDocument();
@@ -70,6 +70,11 @@ namespace ThemeApi
                     .SetActive(false);
                 onExit.Function.Call();
             };
+            EditorContext.setlistPath = Path.Combine(setlistFolder, 
+                Paths.kSetlistFilename);
+            EditorContext.setlist = Setlist.LoadFromFile(
+                EditorContext.setlistPath) as Setlist;
+            EditorContext.Reset();
 
             // Show track setup panel
             Panel.current = null;

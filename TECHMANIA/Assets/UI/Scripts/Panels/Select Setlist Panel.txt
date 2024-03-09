@@ -91,6 +91,7 @@ selectSetlistPanel.ClearAllCards = function()
     local setlistContainer = panel.Q("setlist-container")
     for _, card in ipairs(setlistContainer.Children()) do
         controls.DisposeScrollingText(card.Q("name-container"))
+        controls.DisposeScrollingText(card.Q("description-container"))
     end
     setlistContainer.RemoveAllChildren()
 end
@@ -213,7 +214,9 @@ selectSetlistPanel.SpawnAllCards = function()
                 card.Q("name").text = setlist.setlistMetadata.title
                 controls.SetUpScrollingText(card.Q("name-container"))
 
-                -- TODO: display description
+                -- Description
+                card.Q("description").text = setlist.setlistMetadata.description
+                controls.SetUpScrollingText(card.Q("description-container"))
 
                 -- Control scheme icon
                 local scheme = setlist.setlistMetadata.controlScheme
@@ -283,7 +286,9 @@ selectSetlistPanel.SpawnAllCards = function()
                 setlistWithError.status.filePath,
                 setlistWithError.status.errorMessage)
         end
+        card.Q("description").text = tm.l10n.GetString("select_setlist_error_card_description")
         controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("description-container"))
         card.Q("scheme-icon-container").display = false
         card.Q("level").text = ""
         card.RegisterCallback(eventType.Click, function(_, _, errorMessage)
@@ -299,7 +304,9 @@ selectSetlistPanel.SpawnAllCards = function()
         card.Q("new-setlist-icon").visible = true
         controls.SetUpButtonSounds(card)
         card.Q("name").text = tm.l10n.GetString("select_setlist_new_setlist_card_title")
+        card.Q("description").text = ""
         controls.SetUpScrollingText(card.Q("name-container"))
+        controls.SetUpScrollingText(card.Q("description-container"))
         card.Q("scheme-icon-container").display = false
         card.Q("level").text = ""
         card.RegisterCallback(eventType.Click, function()
