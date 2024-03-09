@@ -106,7 +106,7 @@ public class PatternPanelToolbar : MonoBehaviour
 
         UIUtils.ClampInputField(initialBpm,
             Pattern.minBpm, float.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref EditorContext.Pattern.patternMetadata.initBpm, 
             initialBpm.text, ref madeChange);
 
@@ -120,7 +120,7 @@ public class PatternPanelToolbar : MonoBehaviour
     {
         bool madeChange = false;
 
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref EditorContext.Pattern.patternMetadata.firstBeatOffset, 
             firstBeatOffset.text, ref madeChange);
 
@@ -135,7 +135,7 @@ public class PatternPanelToolbar : MonoBehaviour
         bool madeChange = false;
 
         UIUtils.ClampInputField(bps, Pattern.minBps, int.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref EditorContext.Pattern.patternMetadata.bps,
             bps.text, ref madeChange);
 

@@ -73,8 +73,8 @@ public class UIUtils
     // - If the new value is different from the old one,
     //   set madeChange to true.
     // - If madeChange was false before, also call 
-    //   EditorContext.PrepareToModifyMetadata().
-    public static void UpdateMetadataInMemory(
+    //   EditorContext.PrepareToModifyTrackOrPatternMetadata().
+    public static void UpdateTrackOrPatternMetadataInMemory(
         ref string property, string newValue, ref bool madeChange)
     {
         if (property == newValue)
@@ -89,7 +89,8 @@ public class UIUtils
         property = newValue;
     }
 
-    public static void UpdateMetadataInMemory(ref double property,
+    public static void UpdateTrackOrPatternMetadataInMemory(
+        ref double property,
         string newValueString, ref bool madeChange)
     {
         double newValue = double.Parse(newValueString);
@@ -105,7 +106,8 @@ public class UIUtils
         property = newValue;
     }
 
-    public static void UpdateMetadataInMemory(ref int property,
+    public static void UpdateTrackOrPatternMetadataInMemory(
+        ref int property,
         string newValueString, ref bool madeChange)
     {
         int newValue = int.Parse(newValueString);
@@ -121,7 +123,8 @@ public class UIUtils
         property = newValue;
     }
 
-    public static void UpdateMetadataInMemory(ref string property,
+    public static void UpdateTrackOrPatternMetadataInMemory(
+        ref string property,
         TMP_Dropdown dropdown, ref bool madeChange)
     {
         string newValueString = dropdown.options[dropdown.value].text;
@@ -130,11 +133,12 @@ public class UIUtils
         {
             newValueString = "";
         }
-        UpdateMetadataInMemory(ref property,
+        UpdateTrackOrPatternMetadataInMemory(ref property,
             newValueString, ref madeChange);
     }
 
-    public static void UpdateMetadataInMemory(ref bool property,
+    public static void UpdateTrackOrPatternMetadataInMemory(
+        ref bool property,
         bool newValue, ref bool madeChange)
     {
         if (property == newValue) return;
@@ -144,6 +148,35 @@ public class UIUtils
             madeChange = true;
         }
         property = newValue;
+    }
+
+    public static void UpdateSetlistMetadataInMemory(
+        ref string property, string newValue, ref bool madeChange)
+    {
+        if (property == newValue)
+        {
+            return;
+        }
+        if (!madeChange)
+        {
+            EditorContext.PrepareToModifySetlist();
+            madeChange = true;
+        }
+        property = newValue;
+    }
+
+    public static void UpdateSetlistMetadataInMemory(
+        ref string property,
+        TMP_Dropdown dropdown, ref bool madeChange)
+    {
+        string newValueString = dropdown.options[dropdown.value].text;
+        if (newValueString == NoneOptionInDropdowns() &&
+            dropdown.value == 0)
+        {
+            newValueString = "";
+        }
+        UpdateSetlistMetadataInMemory(ref property,
+            newValueString, ref madeChange);
     }
     #endregion
 
@@ -155,7 +188,8 @@ public class UIUtils
     //   allOptions; "(None)" otherwise
     // - No events are fired
     public static void MemoryToDropdown(TMP_Dropdown dropdown,
-        string currentOption, List<string> allOptions)
+        string currentOption, List<string> allOptions,
+        string folder)
     {
         int value = 0;
 
@@ -164,7 +198,7 @@ public class UIUtils
             NoneOptionInDropdowns()));
         for (int i = 0; i < allOptions.Count; i++)
         {
-            string name = Paths.RelativePath(EditorContext.trackFolder, allOptions[i]);
+            string name = Paths.RelativePath(folder, allOptions[i]);
             if (currentOption == name)
             {
                 value = i + 1;

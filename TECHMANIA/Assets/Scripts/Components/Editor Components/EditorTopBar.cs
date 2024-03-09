@@ -27,7 +27,15 @@ public class EditorTopBar : MonoBehaviour
 
     public void Save()
     {
-        EditorContext.SaveTrack();
+        if (GetComponentInParent<TrackSetupPanel>() != null ||
+            GetComponentInParent<PatternPanel>() != null)
+        {
+            EditorContext.SaveTrack();
+        }
+        if (GetComponentInParent<EditSetlistPanel>() != null)
+        {
+            EditorContext.SaveSetlist();
+        }
     }
 
     public void Undo()

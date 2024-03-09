@@ -15,7 +15,21 @@ public class CustomTransitionFromEditSetlistPanel : TransitionToPanel
 
     public void Transition()
     {
-        // TODO: Reload setlist into setlist list.
+        // Reload setlist into setlist list.
+        string parent = Path.GetDirectoryName(
+            EditorContext.setlistFolder);
+        foreach (GlobalResource.SetlistInFolder t in
+            GlobalResource.setlistList[parent])
+        {
+            if (t.folder == EditorContext.setlistFolder)
+            {
+                string setlistPath = Path.Combine(
+                    EditorContext.setlistFolder, Paths.kSetlistFilename);
+                t.setlist = SetlistBase.LoadFromFile(setlistPath)
+                    as Setlist;
+                break;
+            }
+        }
 
         PanelTransitioner.TransitionTo(null, Direction.Left,
             callbackOnFinish: EditorContext.exitCallback);

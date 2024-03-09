@@ -105,11 +105,11 @@ backgrounds, and more.","导入音频、图像、视频文件后，
 可以將它們使用在按鍵音、譜面背景等。","オーディオ/イメージ/ビデオをインポートしてノート音や
 背景などに使うことができます。",연주음 및 배경 등으로 사용할 파일을 가져옵니다.
 "Strings in the open file dialog shown when
-the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
-,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
-,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
+the user clicks Import button.",import_resource_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
+,import_resource_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
+,import_resource_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
 "A warning shown when the newly imported
-files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
+files will overwrite existing files.",import_resource_overwrite_warning,"The following files will be overwritten. Continue?
 
 {0}
 
@@ -131,10 +131,10 @@ If you choose to cancel, no file will be copied.","以下文件将被覆盖。�
 
 취소를 선택하면 파일을 가져오지 않습니다."
 "Shown in the above message if the number of
-files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,…… 以及 {0} 個檔案。,...外 {0},... 외 {0}개
-,track_setup_resource_tab_overwrite_confirm,Overwrite,覆盖,覆蓋,上書き,덮어쓰기
-,track_setup_resource_tab_overwrite_cancel,Cancel,取消,取消,キャンセル,취소
-,track_setup_resource_tab_import_error_format,"An error occurred when copying {0} to {1}:
+files exceeds 10.",import_resource_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,…… 以及 {0} 個檔案。,...外 {0},... 외 {0}개
+,import_resource_overwrite_confirm,Overwrite,覆盖,覆蓋,上書き,덮어쓰기
+,import_resource_overwrite_cancel,Cancel,取消,取消,キャンセル,취소
+,import_resource_copy_file_error_format,"An error occurred when copying {0} to {1}:
 
 {2}","将{0}复制到{1}时发生错误：
 
@@ -205,9 +205,9 @@ The default name of newly created patterns.,track_setup_patterns_tab_new_pattern
 ,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,名稱,パターン名,패턴 이름
 ,track_setup_patterns_tab_author_label,Author,作者,作者,投稿者,작성자
 ,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,操作方式,プレイタイプ,플레이 방식
-,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,觸控,タッチ,터치
-,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
-,track_setup_patterns_tab_control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
+,control_scheme_touch,Touch,触屏,觸控,タッチ,터치
+,control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
+,control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
 ,track_setup_patterns_tab_level_label,Level,难度,難度,レベル,난이도
 ,track_setup_patterns_tab_playable_lanes_label,Playable lanes,可操作轨道数,可遊玩軌道數,プレイ可能なレーン数,플레이 트랙 수
 ,track_setup_patterns_tab_background_header,Background,背景,背景,背景,배경
@@ -634,3 +634,6 @@ Types of hidden pattern criteria:
 -<indent=3%><b>分数、当前连击、最大连击</b>：玩家完成第3曲时的分数、当前连击数或最大连击数。</indent>
 -<indent=3%><b>D100</b>：在1到100之间随机选择的整数，包括边界。</indent>",,,
 ,edit_setlist_panel_delete_setlist_button,Delete setlist,删除组曲,,,
+,edit_setlist_panel_delete_setlist_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0} の全てのファイルを完全に削除します。続けますか？,{0}의 모든 파일을 영구 삭제합니다. 계속하시겠습니까?
+,edit_setlist_panel_delete_setlist_confirm,Delete,删除,刪除,削除,삭제
+,edit_setlist_panel_delete_setlist_cancel,Cancel,取消,取消,キャンセル,취소

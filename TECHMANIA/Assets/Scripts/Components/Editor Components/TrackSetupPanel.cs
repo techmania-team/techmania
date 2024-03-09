@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -102,116 +103,23 @@ public class TrackSetupPanel : MonoBehaviour
 
     public void OnImportButtonClick()
     {
-        SFB.ExtensionFilter[] extensionFilters =
-            new SFB.ExtensionFilter[2];
-        extensionFilters[0] = new SFB.ExtensionFilter(
-            L10n.GetString(
-                "track_setup_resource_tab_import_dialog_supported_formats"),
-            new string[] {
-                "wav",
-                "ogg",
-                "jpg",
-                "png",
-                "mp4",
-                "wmv"
+        EditorUtilities.ImportResource(new string[]
+            {
+                "wav", "ogg", "jpg", "png", "mp4", "wmv"
+            },
+            copyDestinationFolder: EditorContext.trackFolder,
+            messageDialog, confirmDialog,
+            completeCopyCallback: () =>
+            {
+                RefreshFilenameCaches();
+                RefreshResourcesTab();
             });
-        extensionFilters[1] = new SFB.ExtensionFilter(
-            L10n.GetString(
-                "track_setup_resource_tab_import_dialog_all_files"),
-            new string[] { "*" });
-        string[] sources = SFB.StandaloneFileBrowser.OpenFilePanel(
-            L10n.GetString(
-                "track_setup_resource_tab_import_dialog_title"),
-            "",
-            extensionFilters, multiselect: true);
-        string trackFolder = EditorContext.trackFolder;
-
-        List<Tuple<string, string>> pairs = new List<Tuple<string, string>>();
-        List<string> filesToBeOverwritten = new List<string>();
-        foreach (string source in sources)
-        {
-            FileInfo fileInfo = new FileInfo(source);
-            if (fileInfo.DirectoryName == trackFolder) continue;
-            string destination = Path.Combine(trackFolder, 
-                fileInfo.Name);
-
-            if (File.Exists(destination))
-            {
-                filesToBeOverwritten.Add(fileInfo.Name);
-            }
-            pairs.Add(new Tuple<string, string>(source, destination));
-        }
-
-        if (filesToBeOverwritten.Count > 0)
-        {
-            string fileList = "";
-            for (int i = 0; i < filesToBeOverwritten.Count; i++)
-            {
-                if (i == 10)
-                {
-                    fileList += "\n";
-                    fileList += L10n.GetStringAndFormat(
-                        "track_setup_resource_tab_overwrite_omitted_files",
-                        filesToBeOverwritten.Count - 10);
-                    break;
-                }
-                else
-                {
-                    if (fileList != "") fileList += "\n";
-                    fileList += Paths.HidePlatformInternalPath(filesToBeOverwritten[i]);
-                }
-            }
-            confirmDialog.Show(
-                L10n.GetStringAndFormat(
-                    "track_setup_resource_tab_overwrite_warning",
-                    fileList),
-                L10n.GetString(
-                    "track_setup_resource_tab_overwrite_confirm"),
-                L10n.GetString(
-                    "track_setup_resource_tab_overwrite_cancel"),
-                () =>
-                {
-                    StartCopy(pairs);
-                });
-        }
-        else
-        {
-            StartCopy(pairs);
-        }
-    }
-
-    private void StartCopy(List<Tuple<string, string>> pairs)
-    {
-        foreach (Tuple<string, string> pair in pairs)
-        {
-            try
-            {
-                File.Copy(pair.Item1, pair.Item2, overwrite: true);
-            }
-            catch (Exception e)
-            {
-                messageDialog.Show(
-                    L10n.GetStringAndFormatIncludingPaths(
-                        "track_setup_resource_tab_import_error_format",
-                        pair.Item1,
-                        pair.Item2,
-                        e.Message));
-                break;
-            }
-        }
-
-        RefreshFilenameCaches();
-        RefreshResourcesTab();
     }
 
     private string CondenseFileList(List<string> fullPaths)
     {
-        string str = "";
-        foreach (string file in fullPaths)
-        {
-            str += Paths.RelativePath(EditorContext.trackFolder, file) + "\n";
-        }
-        return str.TrimEnd('\n');
+        return EditorUtilities.CondenseFileList(fullPaths, 
+            EditorContext.trackFolder);
     }
 
     public void RefreshResourcesTab()
@@ -250,13 +158,16 @@ public class TrackSetupPanel : MonoBehaviour
             metadata.additionalCredits);
 
         UIUtils.MemoryToDropdown(eyecatchImage,
-            metadata.eyecatchImage, imageFilesCache);
+            metadata.eyecatchImage, imageFilesCache,
+            EditorContext.trackFolder);
         UIUtils.MemoryToDropdown(previewTrack,
-            metadata.previewTrack, audioFilesCache);
+            metadata.previewTrack, audioFilesCache,
+            EditorContext.trackFolder);
         startTime.SetTextWithoutNotify(metadata.previewStartTime.ToString());
         endTime.SetTextWithoutNotify(metadata.previewEndTime.ToString());
         UIUtils.MemoryToDropdown(previewBga,
-            metadata.previewBga, videoFilesCache);
+            metadata.previewBga, videoFilesCache,
+            EditorContext.trackFolder);
 
         foreach (TMP_InputField field in new List<TMP_InputField>()
         {
@@ -279,27 +190,27 @@ public class TrackSetupPanel : MonoBehaviour
         TrackMetadata metadata = EditorContext.track.trackMetadata;
         bool madeChange = false;
 
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.title, trackTitle.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.artist, artist.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.genre, genre.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.additionalCredits,
             additionalCredits.text, ref madeChange);
 
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.previewTrack, previewTrack, ref madeChange);
         UIUtils.ClampInputField(startTime, 0.0, double.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.previewStartTime, startTime.text, ref madeChange);
         UIUtils.ClampInputField(endTime, 0.0, double.MaxValue);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.previewEndTime, endTime.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref metadata.previewBga, previewBga, ref madeChange);
     }
 
@@ -423,14 +334,11 @@ public class TrackSetupPanel : MonoBehaviour
         patternAuthor.SetTextWithoutNotify(m.author);
         controlScheme.options.Clear();
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            L10n.GetString(
-                "track_setup_patterns_tab_control_scheme_touch")));
+            L10n.GetString("control_scheme_touch")));
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            L10n.GetString(
-                "track_setup_patterns_tab_control_scheme_keys")));
+            L10n.GetString("control_scheme_keys")));
         controlScheme.options.Add(new TMP_Dropdown.OptionData(
-            L10n.GetString(
-                "track_setup_patterns_tab_control_scheme_km")));
+            L10n.GetString("control_scheme_km")));
         controlScheme.SetValueWithoutNotify((int)m.controlScheme);
         controlScheme.RefreshShownValue();
         patternLevel.SetTextWithoutNotify(m.level.ToString());
@@ -438,11 +346,14 @@ public class TrackSetupPanel : MonoBehaviour
         playableLanes.RefreshShownValue();
 
         UIUtils.MemoryToDropdown(patternBackingTrack,
-            m.backingTrack, audioFilesCache);
+            m.backingTrack, audioFilesCache,
+            EditorContext.trackFolder);
         UIUtils.MemoryToDropdown(backgroundImage,
-            m.backImage, imageFilesCache);
+            m.backImage, imageFilesCache,
+            EditorContext.trackFolder);
         UIUtils.MemoryToDropdown(backgroundVideo,
-            m.bga, videoFilesCache);
+            m.bga, videoFilesCache,
+            EditorContext.trackFolder);
         bgaOffset.SetTextWithoutNotify(m.bgaOffset.ToString());
         waitForEndOfBga.SetIsOnWithoutNotify(m.waitForEndOfBga);
         waitForEndOfBga.interactable = !m.playBgaOnLoop;
@@ -484,13 +395,13 @@ public class TrackSetupPanel : MonoBehaviour
         PatternMetadata m = selectedPattern.patternMetadata;
         bool madeChange = false;
 
-        UIUtils.UpdateMetadataInMemory(ref m.patternName,
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(ref m.patternName,
             patternName.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(ref m.author,
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(ref m.author,
             patternAuthor.text, ref madeChange);
         UIUtils.ClampInputField(patternLevel,
             Pattern.minLevel, int.MaxValue);
-        UIUtils.UpdateMetadataInMemory(ref m.level,
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(ref m.level,
             patternLevel.text, ref madeChange);
 
         // Special handling for control scheme
@@ -515,17 +426,17 @@ public class TrackSetupPanel : MonoBehaviour
             m.playableLanes = playableLanes.value + 2;
         }
 
-        UIUtils.UpdateMetadataInMemory(ref m.backingTrack,
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(ref m.backingTrack,
             patternBackingTrack, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref m.backImage, backgroundImage, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref m.bga, backgroundVideo, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref m.bgaOffset, bgaOffset.text, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref m.waitForEndOfBga, waitForEndOfBga.isOn, ref madeChange);
-        UIUtils.UpdateMetadataInMemory(
+        UIUtils.UpdateTrackOrPatternMetadataInMemory(
             ref m.playBgaOnLoop, playBgaOnLoop.isOn, ref madeChange);
 
         // Disable waitForEndOfBga if playBgaOnLoop is turned on.
