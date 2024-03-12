@@ -188,6 +188,13 @@ public class EditSetlistPanel : MonoBehaviour
     #endregion
 
     #region Selectable patterns
+    [Header("Selectable patterns")]
+    public TrackAndPatternSideSheet sidesheet;
+
+    public void OnAddSelectablePatternButtonClick()
+    {
+        sidesheet.GetComponent<Sidesheet>().FadeIn();
+    }
     #endregion
 
     #region Hidden patterns
