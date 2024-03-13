@@ -284,6 +284,35 @@ public static class GlobalResource
     #endregion
 
     public static bool anyOutdatedSetlist;
+
+    public static Status SearchForPatternReference(
+        Setlist.PatternReference reference,
+        out TrackInFolder trackInFolder, out Pattern minimizedPattern)
+    {
+        foreach (KeyValuePair<string, List<TrackInFolder>> pair in
+            trackList)
+        {
+            foreach (TrackInFolder t in pair.Value)
+            {
+                string trackGuid = t.minimizedTrack.trackMetadata.guid;
+                if (trackGuid != reference.trackGuid) continue;
+
+                foreach (Pattern p in t.minimizedTrack.patterns)
+                {
+                    string patternGuid = p.patternMetadata.guid;
+                    if (patternGuid != reference.patternGuid) continue;
+
+                    trackInFolder = t;
+                    minimizedPattern = p;
+                    return Status.OKStatus();
+                }
+            }
+        }
+
+        trackInFolder = null;
+        minimizedPattern = null;
+        return Status.Error(Status.Code.NotFound);
+    }
     #endregion
 
     #region Theme

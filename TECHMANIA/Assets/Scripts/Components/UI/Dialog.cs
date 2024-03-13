@@ -43,10 +43,13 @@ public class Dialog : MonoBehaviour
         StartCoroutine(InternalFadeIn());
     }
 
-    public void FadeOut()
+    public void FadeOut(bool silent = false)
     {
         if (transitioning) return;
-        MenuSfx.instance.PlayBackSound();
+        if (!silent)
+        {
+            MenuSfx.instance.PlayBackSound();
+        }
         StartCoroutine(InternalFadeOut());
     }
 

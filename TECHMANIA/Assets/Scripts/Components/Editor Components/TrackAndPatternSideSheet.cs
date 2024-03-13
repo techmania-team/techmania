@@ -12,10 +12,12 @@ public class TrackAndPatternSideSheet : MonoBehaviour
     private void OnEnable()
     {
         selectTrackLayout.SetActive(true);
+        selectTrackLayout.GetComponent<CanvasGroup>().alpha = 1f;
         location = Paths.GetTrackRootFolder();
         ShowTracksInCurrentLocation();
 
         selectPatternLayout.SetActive(false);
+        selectPatternLayout.GetComponent<CanvasGroup>().alpha = 0f;
 
         transitioning = false;
     }
@@ -287,7 +289,19 @@ public class TrackAndPatternSideSheet : MonoBehaviour
     public void OnPatternButtonClick(Pattern pattern)
     {
         if (transitioning) return;
-        // TODO
+
+        Setlist.PatternReference reference =
+            new Setlist.PatternReference()
+        {
+            trackTitle = currentTrack.trackMetadata.title,
+            trackGuid = currentTrack.trackMetadata.guid,
+            patternName = pattern.patternMetadata.patternName,
+            patternLevel = pattern.patternMetadata.level,
+            patternPlayableLanes = pattern.patternMetadata.playableLanes,
+            patternGuid = pattern.patternMetadata.guid
+        };
+        callback(reference);
+        GetComponent<Sidesheet>().FadeOut(silent: true);
     }
     #endregion
 }

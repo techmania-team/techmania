@@ -18,8 +18,9 @@ public class EditOperation
         DeleteNote,
         // Any field other than pulse and lane.
         ModifyNote,
-        // Anything in setlist
-        Setlist
+
+        // Anything in setlists
+        Setlist,
     }
     public Type type;
 

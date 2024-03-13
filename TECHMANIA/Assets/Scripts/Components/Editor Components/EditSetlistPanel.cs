@@ -55,6 +55,7 @@ public class EditSetlistPanel : MonoBehaviour
     {
         RefreshResourceSection();
         RefreshMetadataSection();
+        RefreshSelectablePatterns();
     }
     #endregion
 
@@ -192,10 +193,72 @@ public class EditSetlistPanel : MonoBehaviour
     #region Selectable patterns
     [Header("Selectable patterns")]
     public TrackAndPatternSideSheet sidesheet;
+    public RectTransform selectablePatternContainer;
+    public GameObject selectablePatternPrefab;
+    public GameObject patternDividerPrefab;
+
+    public void RefreshSelectablePatterns()
+    {
+        for (int i = 0; i < selectablePatternContainer.childCount; i++)
+        {
+            Destroy(selectablePatternContainer.GetChild(i).gameObject);
+        }
+
+        int numPatterns = EditorContext.setlist
+            .selectablePatterns.Count;
+        for (int i = 0; i < numPatterns; i++)
+        {
+            Setlist.PatternReference reference = EditorContext.setlist
+                .selectablePatterns[i];
+
+            SelectablePatternInSetlist patternButton = Instantiate(
+                selectablePatternPrefab, selectablePatternContainer)
+                .GetComponent<SelectablePatternInSetlist>();
+
+            GlobalResource.TrackInFolder trackInFolder;
+            Pattern pattern;
+            Status status = GlobalResource.SearchForPatternReference(
+                reference, out trackInFolder, out pattern);
+            if (!status.Ok())
+            {
+                patternButton.SetUpNonExistant(this, i, numPatterns);
+            }
+            else
+            {
+                patternButton.SetUp(this,
+                    trackInFolder.minimizedTrack.trackMetadata.title,
+                    pattern.patternMetadata, i, numPatterns);
+            }
+
+            if (i < numPatterns - 1)
+            {
+                Instantiate(patternDividerPrefab, 
+                    selectablePatternContainer);
+            }
+        }
+    }
 
     public void OnAddSelectablePatternButtonClick()
     {
+        sidesheet.callback = AddSelectablePattern;
         sidesheet.GetComponent<Sidesheet>().FadeIn();
+    }
+
+    public void AddSelectablePattern(Setlist.PatternReference reference)
+    {
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.selectablePatterns.Add(reference);
+        RefreshSelectablePatterns();
+    }
+
+    public void DeleteSelectablePattern(int index)
+    {
+
+    }
+
+    public void MoveSelectablePattern(int index, int direction)
+    {
+
     }
     #endregion
 
