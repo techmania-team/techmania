@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 3229784542251961684}
   - component: {fileID: 2173725513635773083}
   - component: {fileID: 5252479813799405994}
+  - component: {fileID: 2836111402310235829}
   m_Layer: 5
   m_Name: Pattern Button
   m_TagString: Untagged
@@ -228,7 +229,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2653175069818770758
 CanvasRenderer:
@@ -324,14 +325,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db057b44617c1d04a98246b48b5f232c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textColor: {r: 0.64705884, g: 0.8392157, b: 0.654902, a: 1}
+  textColor: {r: 1, g: 1, b: 1, a: 0.6}
   disabledTextColor: {r: 1, g: 1, b: 1, a: 0.38039216}
   buttonColor: {r: 0, g: 0, b: 0, a: 0}
   disabledButtonColor: {r: 0, g: 0, b: 0, a: 0}
   selectedOutline: {fileID: 619719906233245047}
   useClickSoundOverride: 0
   clickSoundOverride: {fileID: 0}
-  silent: 0
+  noSelectSound: 1
+  noClickSound: 0
 --- !u!114 &5252479813799405994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,6 +354,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2836111402310235829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1887079744156819304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3f0e5443b4fc40448c8c72c1c819530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  banner: {fileID: 7844073416224789703}
 --- !u!1 &7901506625085632514
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,6 +537,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4476368606893756722, guid: 70ac3775d92d28447a90a0911994abd5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6744529770136800070, guid: 70ac3775d92d28447a90a0911994abd5,
         type: 3}
       propertyPath: m_Pivot.x
@@ -627,6 +647,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pattern Banner
       objectReference: {fileID: 0}
+    - target: {fileID: 8767939467814625351, guid: 70ac3775d92d28447a90a0911994abd5,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -145
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -638,3 +663,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7795521981266467363}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7844073416224789703 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 68960024332521188, guid: 70ac3775d92d28447a90a0911994abd5,
+    type: 3}
+  m_PrefabInstance: {fileID: 7795521981266467363}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845d598a9be470643a902b3802315e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

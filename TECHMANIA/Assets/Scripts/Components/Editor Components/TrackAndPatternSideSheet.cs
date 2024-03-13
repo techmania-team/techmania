@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class TrackAndPatternSideSheet : MonoBehaviour
         ShowTracksInCurrentLocation();
 
         selectPatternLayout.SetActive(false);
+
+        transitioning = false;
     }
 
     #region Tracks
@@ -99,6 +102,8 @@ public class TrackAndPatternSideSheet : MonoBehaviour
 
     public void OnSearchTermChanged(string newTerm)
     {
+        if (transitioning) return;
+
         newTerm = newTerm.Trim();
         if (newTerm == "")
         {
@@ -150,6 +155,8 @@ public class TrackAndPatternSideSheet : MonoBehaviour
 
     public void OnGoUpButtonClick()
     {
+        if (transitioning) return;
+
         if (location != Paths.GetTrackRootFolder())
         {
             location = System.IO.Path.GetDirectoryName(location);
@@ -159,31 +166,128 @@ public class TrackAndPatternSideSheet : MonoBehaviour
 
     public void OnTrackSubfolderButtonClick(string subfolderFullPath)
     {
+        if (transitioning) return;
+
         location = subfolderFullPath;
         ShowTracksInCurrentLocation();
     }
 
     public void OnTrackButtonClick(Track minimizedTrack)
     {
-        // TODO
+        if (transitioning) return;
+
+        currentTrack = minimizedTrack;
+        ShowPatternsInCurrentTrack();
+        StartCoroutine(TrackToPattern());
+    }
+    #endregion
+
+    #region Transition
+    private bool transitioning;
+
+    private IEnumerator TrackToPattern()
+    {
+        CanvasGroup track = selectTrackLayout.GetComponent<CanvasGroup>();
+        CanvasGroup pattern = selectPatternLayout
+            .GetComponent<CanvasGroup>();
+        transitioning = true;
+
+        const float transitionLength = 0.2f;
+        float timer = 0f;
+        track.alpha = 1f;
+        pattern.alpha = 0f;
+        while (timer < transitionLength)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / transitionLength;
+            track.alpha = 1f - progress;
+            yield return null;
+        }
+        track.alpha = 0f;
+        selectTrackLayout.SetActive(false);
+        selectPatternLayout.SetActive(true);
+        timer = 0f;
+        while (timer < transitionLength)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / transitionLength;
+            pattern.alpha = progress;
+            yield return null;
+        }
+        pattern.alpha = 1f;
+
+        transitioning = false;
     }
 
+    private IEnumerator PatternToTrack()
+    {
+        CanvasGroup track = selectTrackLayout.GetComponent<CanvasGroup>();
+        CanvasGroup pattern = selectPatternLayout
+            .GetComponent<CanvasGroup>();
+        transitioning = true;
+
+        const float transitionLength = 0.2f;
+        float timer = 0f;
+        track.alpha = 0f;
+        pattern.alpha = 1f;
+        while (timer < transitionLength)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / transitionLength;
+            pattern.alpha = 1f - progress;
+            yield return null;
+        }
+        pattern.alpha = 0f;
+        selectPatternLayout.SetActive(false);
+        selectTrackLayout.SetActive(true);
+        timer = 0f;
+        while (timer < transitionLength)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / transitionLength;
+            track.alpha = progress;
+            yield return null;
+        }
+        track.alpha = 1f;
+
+        transitioning = false;
+    }
     #endregion
 
     #region Patterns
     [Header("Select pattern")]
     public GameObject selectPatternLayout;
+    public RectTransform patternContainer;
+    public GameObject patternPrefab;
+
+    private Track currentTrack;
+
+    private void ShowPatternsInCurrentTrack()
+    {
+        for (int i = 0; i < patternContainer.childCount; i++)
+        {
+            Destroy(patternContainer.GetChild(i).gameObject);
+        }
+        foreach (Pattern p in currentTrack.patterns)
+        {
+            GameObject patternButton = Instantiate(patternPrefab,
+                patternContainer);
+            patternButton.GetComponent<TrackAndPatternSidesheet
+                .PatternButton>().SetUp(this, p);
+        }
+    }
+
+    public void OnBackToSelectTrackButtonClick()
+    {
+        if (transitioning) return;
+        ShowTracksInCurrentLocation();
+        StartCoroutine(PatternToTrack());
+    }
+
+    public void OnPatternButtonClick(Pattern pattern)
+    {
+        if (transitioning) return;
+        // TODO
+    }
     #endregion
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

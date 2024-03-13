@@ -27,6 +27,8 @@ public class EditSetlistPanel : MonoBehaviour
         EditorContext.RedoInvoked += OnUndoOrRedo;
         RefreshFilenameCaches();
         Refresh();
+
+        DiscordController.SetActivity(DiscordActivityType.EditorSetlist);
     }
 
     private void OnDisable()
