@@ -9753,32 +9753,32 @@ PrefabInstance:
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 84.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 24.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 125
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6181626878551084307, guid: 9216e6c758963bf4c97d2e773fcfebdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -27
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -28858,6 +28858,9 @@ MonoBehaviour:
   selectablePatternPrefab: {fileID: 8984324667290212360, guid: b96382973afa8234ea91de5cc95e4f91,
     type: 3}
   patternDividerPrefab: {fileID: 871179718239467495, guid: 6200cbd6e44765f4bb520f257954d9a2,
+    type: 3}
+  hiddenPatternContainer: {fileID: 380514065}
+  hiddenPatternPrefab: {fileID: 55719952660440200, guid: cb5cc216c161d5b4982cd7b653202876,
     type: 3}
 --- !u!1 &931571751 stripped
 GameObject:
@@ -62378,7 +62381,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2012463507}
+      objectReference: {fileID: 931571750}
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -62387,7 +62390,12 @@ PrefabInstance:
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnImportButtonClick
+      value: OnAddHiddenPatternButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: EditSetlistPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 738836231607621291, guid: ae7a546545397f24082cdb0ac3b747c5,
         type: 3}

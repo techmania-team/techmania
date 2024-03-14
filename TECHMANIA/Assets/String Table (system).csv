@@ -613,7 +613,7 @@ as background and eyecatch images.","导入图像文件后，
 ,edit_setlist_panel_hidden_pattern_criteria_none_label,(none),（无）,,,
 ,edit_setlist_panel_hidden_pattern_criteria_type_index,Index,序号,,,
 ,edit_setlist_panel_hidden_pattern_criteria_type_level,Level,难度,,,
-,edit_setlist_panel_hidden_pattern_criteria_type_hp,HP,HP,,,
+,edit_setlist_panel_hidden_pattern_criteria_type_hp,HP%,HP%,,,
 ,edit_setlist_panel_hidden_pattern_criteria_type_score,Score,分数,,,
 ,edit_setlist_panel_hidden_pattern_criteria_type_combo,Combo,当前连击,,,
 ,edit_setlist_panel_hidden_pattern_criteria_type_max_combo,Max combo,最大连击,,,
@@ -628,7 +628,7 @@ The last hidden pattern has no criteria and will be picked if all hidden pattern
 Types of hidden pattern criteria:
 -<indent=3%><b>Index</b>: the combined index of the 3 selected patterns. For example, if the player selects the 2nd, 4th and 5th pattern from the list, the total index is 2+4+5=11.</indent>
 -<indent=3%><b>Level</b>: the combined difficulty level of the 3 selected patterns.</indent>
--<indent=3%><b>HP</b>: the player's remaining HP at the end of the 3rd pattern, in percentage between 0 and 100 (inclusive).</indent>
+-<indent=3%><b>HP%</b>: the player's remaining HP at the end of the 3rd pattern, in percentage between 0 and 100 (inclusive).</indent>
 -<indent=3%><b>Score, Combo, Max Combo</b>: the player's score / current combo / max combo at the end of the 3rd pattern.</indent>
 -<indent=3%><b>D100</b>: a random whole number selected between 1 and 100 (inclusive).</indent>","一套组曲需要包含至少3个可选谱面和至少1个隐藏谱面，并且它们使用同一种操作方式。
 
@@ -639,7 +639,7 @@ Types of hidden pattern criteria:
 隐藏谱面的条件有以下种类：
 -<indent=3%><b>序号</b>：玩家所选3首可选谱面的序号之和。例如，如果玩家选择了可选谱面中的第2、第4和第5个，那么序号之和是2+4+5=11。</indent>
 -<indent=3%><b>难度</b>：玩家所选3首可选谱面的难度之和。</indent>
--<indent=3%><b>HP</b>：玩家完成第3曲时剩余HP的百分比，在0到100之间，包括边界。</indent>
+-<indent=3%><b>HP%</b>：玩家完成第3曲时剩余HP的百分比，在0到100之间，包括边界。</indent>
 -<indent=3%><b>分数、当前连击、最大连击</b>：玩家完成第3曲时的分数、当前连击数或最大连击数。</indent>
 -<indent=3%><b>D100</b>：在1到100之间随机选择的整数，包括边界。</indent>",,,
 ,edit_setlist_panel_delete_setlist_button,Delete setlist,删除组曲,,,

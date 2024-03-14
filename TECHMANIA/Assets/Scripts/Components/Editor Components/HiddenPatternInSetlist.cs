@@ -117,4 +117,25 @@ public class HiddenPatternInSetlist : MonoBehaviour
     {
         panel.MoveHiddenPattern(index, 1);
     }
+
+    public void OnCriteriaTypeChanged(int newValue)
+    {
+        panel.ChangeCriteriaType(index,
+            (Setlist.HiddenPatternCriteriaType)newValue);
+    }
+
+    public void OnCriteriaDirectionChanged(int newValue)
+    {
+        panel.ChangeCriteriaDirection(index,
+            (Setlist.HiddenPatternCriteriaDirection)newValue);
+    }
+
+    public void OnCriteriaValueChanged(string newValueString)
+    {
+        int newValue = 0;
+        if (int.TryParse(newValueString, out newValue))
+        {
+            panel.ChangeCriteriaValue(index, newValue);
+        }
+    }
 }

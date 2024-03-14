@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -355,6 +356,32 @@ public class EditSetlistPanel : MonoBehaviour
         EditorContext.setlist.hiddenPatterns.Insert(
             index + direction, hiddenPattern);
         RefreshHiddenPatterns();
+    }
+
+    public void ChangeCriteriaType(int index, 
+        Setlist.HiddenPatternCriteriaType newType)
+    {
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.hiddenPatterns[index]
+            .criteriaType = newType;
+        // No need to refresh
+    }
+
+    public void ChangeCriteriaDirection(int index,
+        Setlist.HiddenPatternCriteriaDirection newDirection)
+    {
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.hiddenPatterns[index]
+            .criteriaDirection = newDirection;
+        // No need to refresh
+    }
+
+    public void ChangeCriteriaValue(int index, int newValue)
+    {
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.hiddenPatterns[index]
+            .criteriaValue = newValue;
+        // No need to refresh
     }
     #endregion
 }
