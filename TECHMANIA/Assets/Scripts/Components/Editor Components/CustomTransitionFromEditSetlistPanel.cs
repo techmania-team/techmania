@@ -9,7 +9,11 @@ public class CustomTransitionFromEditSetlistPanel : TransitionToPanel
 
     public override void Invoke()
     {
-        // TODO: check for the number of patterns.
+        // TODO: check for the following issues with the setlist:
+        // - not enough selectable patterns
+        // - not enough hidden patterns
+        // - any pattern not found
+        // - any pattern with wrong control scheme
         Transition();
     }
 

@@ -13,9 +13,7 @@ public class SelectablePatternInSetlist : MonoBehaviour
     public PatternBanner banner;
     public UnityEngine.Color nonexistantPatternTitleColor;
 
-    [HideInInspector]
-    public EditSetlistPanel panel;
-
+    private EditSetlistPanel panel;
     private int index;
 
     public void SetUp(EditSetlistPanel panel, string trackTitle,

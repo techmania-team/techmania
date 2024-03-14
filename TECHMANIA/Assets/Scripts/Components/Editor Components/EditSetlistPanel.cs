@@ -56,6 +56,7 @@ public class EditSetlistPanel : MonoBehaviour
         RefreshResourceSection();
         RefreshMetadataSection();
         RefreshSelectablePatterns();
+        RefreshHiddenPatterns();
     }
     #endregion
 
@@ -253,15 +254,107 @@ public class EditSetlistPanel : MonoBehaviour
 
     public void DeleteSelectablePattern(int index)
     {
-
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.selectablePatterns.RemoveAt(index);
+        RefreshSelectablePatterns();
     }
 
     public void MoveSelectablePattern(int index, int direction)
     {
-
+        EditorContext.PrepareToModifySetlist();
+        Setlist.PatternReference reference = EditorContext.setlist
+            .selectablePatterns[index];
+        EditorContext.setlist.selectablePatterns.RemoveAt(index);
+        EditorContext.setlist.selectablePatterns.Insert(
+            index + direction, reference);
+        RefreshSelectablePatterns();
     }
     #endregion
 
     #region Hidden patterns
+    [Header("Hidden patterns")]
+    public RectTransform hiddenPatternContainer;
+    public GameObject hiddenPatternPrefab;
+
+    public void RefreshHiddenPatterns()
+    {
+        for (int i = 0; i < hiddenPatternContainer.childCount; i++)
+        {
+            Destroy(hiddenPatternContainer.GetChild(i).gameObject);
+        }
+
+        int numPatterns = EditorContext.setlist
+            .hiddenPatterns.Count;
+        for (int i = 0; i < numPatterns; i++)
+        {
+            Setlist.HiddenPattern hiddenPattern =
+                EditorContext.setlist.hiddenPatterns[i];
+            Setlist.PatternReference reference = hiddenPattern.reference;
+
+            HiddenPatternInSetlist patternButton = Instantiate(
+                hiddenPatternPrefab, hiddenPatternContainer)
+                .GetComponent<HiddenPatternInSetlist>();
+
+            GlobalResource.TrackInFolder trackInFolder;
+            Pattern pattern;
+            Status status = GlobalResource.SearchForPatternReference(
+                reference, out trackInFolder, out pattern);
+            if (!status.Ok())
+            {
+                patternButton.SetUpNonExistant(this, hiddenPattern,
+                    i, numPatterns);
+            }
+            else
+            {
+                patternButton.SetUp(this,
+                    trackInFolder.minimizedTrack.trackMetadata.title,
+                    pattern.patternMetadata,
+                    hiddenPattern,
+                    i, numPatterns);
+            }
+
+            if (i < numPatterns - 1)
+            {
+                Instantiate(patternDividerPrefab,
+                    hiddenPatternContainer);
+            }
+        }
+    }
+
+    public void OnAddHiddenPatternButtonClick()
+    {
+        sidesheet.callback = AddHiddenPattern;
+        sidesheet.GetComponent<Sidesheet>().FadeIn();
+    }
+
+    public void AddHiddenPattern(Setlist.PatternReference reference)
+    {
+        EditorContext.PrepareToModifySetlist();
+        Setlist.HiddenPattern hiddenPattern =
+            new Setlist.HiddenPattern()
+        {
+            reference = reference
+        };
+        EditorContext.setlist.hiddenPatterns.Add(hiddenPattern);
+        RefreshHiddenPatterns();
+    }
+
+    public void DeleteHiddenPattern(int index)
+    {
+        EditorContext.PrepareToModifySetlist();
+        EditorContext.setlist.hiddenPatterns.RemoveAt(index);
+        RefreshHiddenPatterns();
+    }
+
+    public void MoveHiddenPattern(int index, int direction)
+    {
+        EditorContext.PrepareToModifySetlist();
+        Setlist.HiddenPattern hiddenPattern = EditorContext.setlist
+            .hiddenPatterns[index];
+        EditorContext.setlist.hiddenPatterns.RemoveAt(index);
+        EditorContext.setlist.hiddenPatterns.Insert(
+            index + direction, hiddenPattern);
+        RefreshHiddenPatterns();
+    }
     #endregion
 }

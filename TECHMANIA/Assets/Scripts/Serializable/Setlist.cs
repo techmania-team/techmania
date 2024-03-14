@@ -72,8 +72,8 @@ public class Setlist : SetlistBase
 
     public enum HiddenPatternCriteriaDirection
     {
-        LargerThan,
-        SmallerThan
+        SmallerThan,
+        LargerThan
     }
 
     [Serializable]
