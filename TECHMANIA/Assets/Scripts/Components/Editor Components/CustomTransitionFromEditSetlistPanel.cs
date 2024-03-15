@@ -9,12 +9,24 @@ public class CustomTransitionFromEditSetlistPanel : TransitionToPanel
 
     public override void Invoke()
     {
-        // TODO: check for the following issues with the setlist:
-        // - not enough selectable patterns
-        // - not enough hidden patterns
-        // - any pattern not found
-        // - any pattern with wrong control scheme
-        Transition();
+        if (EditorContext.Dirty)
+        {
+            confirmDialog.Show(
+                L10n.GetString(
+                    "edit_setlist_panel_discard_changes_confirmation"),
+                L10n.GetString(
+                    "edit_setlist_panel_discard_changes_confirm"),
+                L10n.GetString(
+                    "edit_setlist_panel_discard_changes_cancel"),
+                () =>
+                {
+                    Transition();
+                });
+        }
+        else
+        {
+            Transition();
+        }
     }
 
     public void Transition()
