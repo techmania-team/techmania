@@ -149,6 +149,12 @@ public class EditSetlistPanel : MonoBehaviour
             ref metadata.eyecatchImage, eyecatchImage, ref madeChange);
     }
 
+    public void OnControlSchemeUpdated()
+    {
+        RefreshSelectablePatterns();
+        RefreshHiddenPatterns();
+    }
+
     public void OnEyecatchUpdated()
     {
         RefreshEyecatchPreview();
@@ -198,6 +204,7 @@ public class EditSetlistPanel : MonoBehaviour
     public RectTransform selectablePatternContainer;
     public GameObject selectablePatternPrefab;
     public GameObject patternDividerPrefab;
+    public GameObject selectablePatternNotEnoughLabel;
 
     public void RefreshSelectablePatterns()
     {
@@ -238,6 +245,9 @@ public class EditSetlistPanel : MonoBehaviour
                     selectablePatternContainer);
             }
         }
+
+        selectablePatternNotEnoughLabel.SetActive(
+            EditorContext.setlist.selectablePatterns.Count < 3);
     }
 
     public void OnAddSelectablePatternButtonClick()
@@ -276,6 +286,7 @@ public class EditSetlistPanel : MonoBehaviour
     [Header("Hidden patterns")]
     public RectTransform hiddenPatternContainer;
     public GameObject hiddenPatternPrefab;
+    public GameObject hiddenPatternNotEnoughLabel;
 
     public void RefreshHiddenPatterns()
     {
@@ -320,6 +331,9 @@ public class EditSetlistPanel : MonoBehaviour
                     hiddenPatternContainer);
             }
         }
+
+        hiddenPatternNotEnoughLabel.SetActive(EditorContext.setlist
+            .hiddenPatterns.Count < 1);
     }
 
     public void OnAddHiddenPatternButtonClick()

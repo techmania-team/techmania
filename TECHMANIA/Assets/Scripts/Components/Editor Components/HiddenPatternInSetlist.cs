@@ -33,6 +33,11 @@ public class HiddenPatternInSetlist : MonoBehaviour
         this.panel = panel;
         this.trackTitle.text = trackTitle;
         banner.Initialize(patternMetadata);
+        if (patternMetadata.controlScheme !=
+            EditorContext.setlist.setlistMetadata.controlScheme)
+        {
+            banner.MakeControlIconRed();
+        }
         this.index = index;
 
         SetUpCriteria(

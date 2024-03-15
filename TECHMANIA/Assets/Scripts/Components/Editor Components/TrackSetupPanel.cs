@@ -310,7 +310,7 @@ public class TrackSetupPanel : MonoBehaviour
     private void RefreshPatternList()
     {
         patternList.InitializeAndReturnFirstPatternObject(
-            EditorContext.track, records: null,
+            EditorContext.track,
             initialSelectedPattern: selectedPattern);
         autoOrderPatterns.SetIsOnWithoutNotify(
             EditorContext.track.trackMetadata.autoOrderPatterns);
