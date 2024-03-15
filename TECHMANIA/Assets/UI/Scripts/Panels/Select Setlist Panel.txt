@@ -228,17 +228,24 @@ selectSetlistPanel.SpawnAllCards = function()
                 -- Level
                 local minLevel = 65535
                 local maxLevel = -65535
+                local anyPattern = false
                 for _, patternRef in ipairs(setlist.selectablePatterns) do
                     local level = patternRef.patternLevel
                     if (level < minLevel) then minLevel = level end
                     if (level > maxLevel) then maxLevel = level end
+                    anyPattern = true
                 end
                 for _, hiddenPattern in ipairs(setlist.hiddenPatterns) do
                     local level = hiddenPattern.reference.patternLevel
                     if (level < minLevel) then minLevel = level end
                     if (level > maxLevel) then maxLevel = level end
+                    anyPattern = true
                 end
-                card.Q("level").text = tostring(minLevel) .. " - " .. tostring(maxLevel)
+                if (anyPattern) then
+                    card.Q("level").text = tostring(minLevel) .. " - " .. tostring(maxLevel)
+                else
+                    card.Q("level").text = "---"
+                end
 
                 -- Event handler
                 card.RegisterCallback(eventType.Click, function(_, _, setlistInFolder)
