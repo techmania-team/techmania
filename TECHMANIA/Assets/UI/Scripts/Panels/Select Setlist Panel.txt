@@ -138,11 +138,6 @@ selectSetlistPanel.SpawnAllCards = function()
         setlistsWithError = tm.resources.GetSetlistsWithError(selectSetlistPanel.location)
     end
 
-    -- TODO: move setlists to error list if any is true:
-    -- * any pattern is missing
-    -- * selectable patterns < 3
-    -- * hidden patterns < 1
-
     -- Reset the eyecatch list. Eyecatches will be dynamically loaded and unloaded as they enter and leave the screen.
     selectSetlistPanel.eyecatchVisible = {}
     selectSetlistPanel.eyecatchFullPath = {}

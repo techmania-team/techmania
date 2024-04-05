@@ -282,6 +282,30 @@
     width: 350px;
 }
 
+#setup-setlist-panel #selectable-patterns #unity-content-container {
+    align-items: center;
+    justify-content: center;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern {
+    width: 250px;
+    height: 300px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#setup-setlist-panel #record #patterns .mini-eyecatch {
+    width: 100px;
+    height: 100px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#setup-setlist-panel #record #patterns .no-image {
+    background-image: url("project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&guid=3ba6aa31247e7a943ac38aadeadb5920&type=3#Rectangle");
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
 #game-panel #fever-bar-wrap .text-headline-6 {
     position: absolute;
     left: 0;
@@ -437,4 +461,8 @@
 
 .primary-color {
     background-color: var(--primary-color);
+}
+
+.disabled-text-color {
+    -unity-background-image-tint-color: var(--disabled-text-color);
 }
