@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Style/Text.uss?fileID=7433441132597879392&amp;guid=f38f1ba42dcd05c4894cb0cb9f904493&amp;type=3#Text" />
+    <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
+    <Style src="project://database/Assets/UI/Templates/Setlist%20Selectable%20Pattern.uss?fileID=7433441132597879392&amp;guid=c54ba19e34121f84c91c7428719e1c2c&amp;type=3#Setlist Selectable Pattern" />
+    <ui:VisualElement name="selectable-pattern" picking-mode="Ignore" style="width: 100px; height: 150px; margin-left: 20px; margin-right: 20px;">
+        <ui:VisualElement name="mini-eyecatch" class="no-image" style="width: 100px; height: 100px;" />
+        <ui:Label tabindex="-1" text="12" parse-escape-sequences="true" display-tooltip-when-elided="true" name="level" picking-mode="Ignore" class="text-headline-6" style="flex-grow: 1; -unity-text-align: middle-center;" />
+    </ui:VisualElement>
+</ui:UXML>
