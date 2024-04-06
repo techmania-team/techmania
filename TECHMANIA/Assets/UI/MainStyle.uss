@@ -292,10 +292,6 @@
     height: 340px;
 }
 
-#setup-setlist-panel #selected-patterns .selected-pattern #pattern-banner #medal-container {
-    display: none;
-}
-
 #setup-setlist-panel #selected-patterns .selected-pattern #no-pattern {
     border-top-width: 2px;
     border-right-width: 2px;
@@ -305,6 +301,39 @@
     border-right-color: var(--medium-emphasis-text-color);
     border-bottom-color: var(--medium-emphasis-text-color);
     border-left-color: var(--medium-emphasis-text-color);
+    width: 200px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #eyecatch {
+    width: 200px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #default-eyecatch {
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #title-container {
+    height: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #Pattern-Banner {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #pattern-banner #medal-container {
+    display: none;
 }
 
 #setup-setlist-panel #record #patterns .mini-eyecatch {
@@ -317,7 +346,6 @@
 #setup-setlist-panel #record #patterns .no-image {
     background-image: url("project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&guid=3ba6aa31247e7a943ac38aadeadb5920&type=3#Rectangle");
     -unity-background-image-tint-color: var(--disabled-text-color);
-    background-color: rgb(207, 102, 121);
 }
 
 #game-panel #fever-bar-wrap .text-headline-6 {

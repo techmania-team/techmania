@@ -7,6 +7,7 @@
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Setlist Selectable Pattern" src="project://database/Assets/UI/Templates/Setlist%20Selectable%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6529138e2633cd241bd4be906f774234&amp;type=3#Setlist Selectable Pattern" />
     <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
+    <ui:Template name="Setlist Missing Pattern" src="project://database/Assets/UI/Templates/Setlist%20Missing%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6b9d46e8813bef8488f97af62ec4ed4f&amp;type=3#Setlist Missing Pattern" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Text Field Int" src="project://database/Assets/UI/Controls/Text%20Field%20Int.uxml?fileID=9197481963319205126&amp;guid=969b5e20ab88e7e42b1b372a11cb47fe&amp;type=3#Text Field Int" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
@@ -403,7 +404,7 @@
     <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: flex;">
         <AttributeOverrides element-name="title" text="Setup Setlist" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
-            <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center; display: flex;">
                 <ui:VisualElement name="selectable-patterns" picking-mode="Ignore" style="height: 180px;">
                     <ui:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" class="scroll-view" style="flex-grow: 1; align-items: center; justify-content: center;">
                         <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
@@ -420,17 +421,18 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="selected-patterns" picking-mode="Ignore" style="flex-direction: row; align-items: center; justify-content: space-between;">
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="eyecatch" style="width: 200px; height: 200px; background-color: rgba(186, 37, 37, 0.72); margin-top: 20px;" />
-                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="height: 40px; margin-top: 10px; margin-bottom: 10px;">
+                        <ui:VisualElement name="no-pattern" style="display: none;">
+                            <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="eyecatch" style="background-color: rgba(186, 37, 37, 0.72); display: flex;">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
                             <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-left;" />
                         </ui:ScrollView>
-                        <ui:Instance template="Pattern Banner" name="Pattern Banner" style="width: 100%; padding-left: 10px; padding-right: 10px;" />
+                        <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="no-pattern" style="width: 200px; height: 200px; margin-top: 20px;">
-                            <ui:Label tabindex="-1" text="2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;" />
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" />
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" />
                 </ui:VisualElement>
@@ -457,6 +459,19 @@
                         <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained special-click-sfx" style="margin-top: 20px;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="missing-pattern-warning" style="flex-grow: 1; height: 100%; width: 800px; justify-content: center; display: none;">
+                <ui:Label tabindex="-1" text="The following patterns are not found on your device:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="missing-pattern-label" picking-mode="Ignore" class="text-body" style="margin-bottom: 20px; -unity-text-align: upper-center;" />
+                <ui:VisualElement name="missing-pattern-list" picking-mode="Ignore" style="margin-bottom: 20px;">
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                </ui:VisualElement>
+                <ui:Label tabindex="-1" text="Click &quot;Continue&quot; to play the setlist with the available patterns." parse-escape-sequences="true" display-tooltip-when-elided="true" name="continue-playing-label" picking-mode="Ignore" class="text-body" style="margin-bottom: 50px; -unity-text-align: upper-center; display: none;" />
+                <ui:VisualElement name="continue-button-wrap" picking-mode="Ignore" style="align-items: center; display: none;">
+                    <ui:Button text="CONTINUE" parse-escape-sequences="true" display-tooltip-when-elided="true" name="continue-button" class="button-contained" style="width: 300px;" />
+                </ui:VisualElement>
+                <ui:Label tabindex="-1" text="There are not enough available patterns to play this setlist." parse-escape-sequences="true" display-tooltip-when-elided="true" name="not-enough-patterns-label" picking-mode="Ignore" class="text-body" style="display: flex; -unity-text-align: upper-center;" />
             </ui:VisualElement>
             <ui:VisualElement name="modifier-sidesheet-background" class="sidesheet-background" style="display: none;">
                 <ui:VisualElement name="modifier-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 750px;">
@@ -520,17 +535,6 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="item">
                             <ui:Label tabindex="-1" text="Show judgement tally" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Toggle" name="Toggle" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
-                                <ui:Instance template="SliderInt" name="slider-container" style="width: 300px;" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="No video" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
                                 <ui:Instance template="Toggle" name="Toggle" />
                             </ui:Label>
                         </ui:VisualElement>
