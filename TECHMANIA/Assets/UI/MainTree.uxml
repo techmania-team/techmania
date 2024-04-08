@@ -401,10 +401,10 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Setup Setlist" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
-            <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center; display: flex;">
+            <ui:VisualElement name="setup-setlist" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center; display: none;">
                 <ui:VisualElement name="selectable-patterns" picking-mode="Ignore" style="height: 180px;">
                     <ui:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" class="scroll-view" style="flex-grow: 1; align-items: center; justify-content: center;">
                         <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
@@ -424,7 +424,7 @@
                         <ui:VisualElement name="no-pattern" style="display: none;">
                             <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="eyecatch" style="background-color: rgba(186, 37, 37, 0.72); display: flex;">
+                        <ui:VisualElement name="eyecatch" style="display: flex;">
                             <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                         </ui:VisualElement>
                         <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
@@ -432,9 +432,35 @@
                         </ui:ScrollView>
                         <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;" />
-                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" />
-                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" />
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="no-pattern" style="display: none;">
+                            <ui:Label tabindex="-1" text="2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="eyecatch" style="display: flex;">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+                            <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-left;" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="no-pattern" style="display: none;">
+                            <ui:Label tabindex="-1" text="3" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="eyecatch" style="display: flex;">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+                            <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-left;" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="no-pattern" style="display: flex;">
+                            <ui:Label tabindex="-1" text="?" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-direction: row; height: 300px;">
                     <ui:VisualElement name="record" picking-mode="Ignore" class="elevation-1dp" style="margin-top: 20px; width: 620px; margin-right: 20px;">

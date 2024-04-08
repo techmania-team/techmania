@@ -105,6 +105,12 @@ function SetUpNavigation()
         navigation.TransitionBackTo(selectSetlistPanel, mainMenu)
     end)
 
+    -- select setlist panel --> setup setlist panel is registered on setlist cards,
+    -- handled by Select Setlist Panel.txt.
+    setupSetlistPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(setupSetlistPanel, selectSetlistPanel);
+    end)
+
     mainMenu.panel.Q("edit-tracks-button").RegisterCallback(eventType.Click, function()
         selectTrackPanel.inEditor = true
         navigation.TransitionTo(mainMenu, selectTrackPanel)

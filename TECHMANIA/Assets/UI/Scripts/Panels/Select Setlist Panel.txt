@@ -249,10 +249,9 @@ selectSetlistPanel.SpawnAllCards = function()
                         navigation.TransitionTo(selectSetlistPanel, editorSetlistSetupPanel)
                     else
                         -- Navigate to setlist setup panel.
-                        -- selectSetlistPanel.selectedSetlistFolder = setlistInFolder.folder
-                        -- local setlistPath = tm.paths.Combine(setlistInFolder.folder, tm.paths.kSetlistFilename)
-                        -- selectSetlistPanel.selectedSetlist = setlist
-                        -- navigation.TransitionTo(selectSetlistPanel, ???)
+                        selectSetlistPanel.selectedSetlistFolder = setlistInFolder.folder
+                        selectSetlistPanel.selectedSetlist = setlist
+                        navigation.TransitionTo(selectSetlistPanel, setupSetlistPanel)
                     end
                 end, setlistInFolder)
 
