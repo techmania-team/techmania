@@ -11,9 +11,26 @@ setupSetlistPanel = {
 }
 
 setupSetlistPanel.Initialize = function()
+    local panel = setupSetlistPanel.panel
+
+    local setupSetlist = panel.Q("setup-setlist")
+    local missingPatternWarning = panel.Q("missing-pattern-warning")
+    missingPatternWarning.Q("continue-button").RegisterCallback(eventType.Click, function()
+        tm.StartCoroutine(function()
+            
+            FadeOutCoroutine(missingPatternWarning, 0, 0, function()
+                missingPatternWarning.display = false
+                missingPatternWarning.style.opacity = StyleFloat(1)
+                setupSetlist.display = true
+                FadeInCoroutine(setupSetlist, 0, 0)
+            end)
+        end)
+    end)
 end
 
 setupSetlistPanel.Show = function()
+    local panel = setupSetlistPanel.panel
+
     local folder = selectSetlistPanel.selectedSetlistFolder
     local setlist = selectSetlistPanel.selectedSetlist
 
@@ -48,12 +65,12 @@ setupSetlistPanel.Show = function()
     -- Display missing pattern warning if necessary
     local enoughPatterns = availableSelectablePatterns >= 3 and availableHiddenPatterns >= 1
     if (#missingReferences > 0 or not enoughPatterns) then
-        setupSetlistPanel.panel.Q("setup-setlist").display = false
-        setupSetlistPanel.panel.Q("missing-pattern-warning").display = true
+        panel.Q("setup-setlist").display = false
+        panel.Q("missing-pattern-warning").display = true
 
         if (#missingReferences > 0) then
-            setupSetlistPanel.panel.Q("missing-pattern-label").display = true
-            local missingPatternList = setupSetlistPanel.panel.Q("missing-pattern-list")
+            panel.Q("missing-pattern-label").display = true
+            local missingPatternList = panel.Q("missing-pattern-list")
             missingPatternList.display = true
             missingPatternList.RemoveAllChildren()
             for _, ref in ipairs(missingReferences) do
@@ -69,16 +86,16 @@ setupSetlistPanel.Show = function()
                 missingPatternBanner.Q("medal-container").display = false
             end
         else
-            setupSetlistPanel.panel.Q("missing-pattern-label").display = false
-            setupSetlistPanel.panel.Q("missing-pattern-list").display = false
+            panel.Q("missing-pattern-label").display = false
+            panel.Q("missing-pattern-list").display = false
         end
 
-        setupSetlistPanel.panel.Q("continue-playing-label").display = enoughPatterns
-        setupSetlistPanel.panel.Q("continue-button-wrap").display = enoughPatterns
-        setupSetlistPanel.panel.Q("not-enough-patterns-label").display = not enoughPatterns
+        panel.Q("continue-playing-label").display = enoughPatterns
+        panel.Q("continue-button-wrap").display = enoughPatterns
+        panel.Q("not-enough-patterns-label").display = not enoughPatterns
     else
-        setupSetlistPanel.panel.Q("setup-setlist").display = true
-        setupSetlistPanel.panel.Q("missing-pattern-warning").display = false
+        panel.Q("setup-setlist").display = true
+        panel.Q("missing-pattern-warning").display = false
     end
 end
 
