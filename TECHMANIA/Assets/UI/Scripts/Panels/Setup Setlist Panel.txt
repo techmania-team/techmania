@@ -1,10 +1,12 @@
 setupSetlistPanel = {
     panel = tm.root.Q("setup-setlist-panel"),
 
-    -- Minimized, nil means not found on device
+    -- Minimized, selectable only, nil means not found on device
     tracksInSetlist = {},
-    -- Minimized, nil means not found on device
+    -- Minimized, selectable only, nil means not found on device
     patternsInSetlist = {},
+    -- nil means no eyecatch
+    eyecatchesInSetlist = {},
 
     -- -1 means none selected
     selectedPatternIndex = {-1, -1, -1}
@@ -40,6 +42,7 @@ setupSetlistPanel.Show = function()
     local availableSelectablePatterns = 0
     setupSetlistPanel.tracksInSetlist = {}
     setupSetlistPanel.patternsInSetlist = {}
+    setupSetlistPanel.eyecatchesInSetlist = {}
     for index, ref in ipairs(setlist.selectablePatterns) do
         local status, track, pattern = tm.resources.SearchForPatternReference(ref)
         if (status.Ok()) then
@@ -100,6 +103,7 @@ setupSetlistPanel.Show = function()
 end
 
 setupSetlistPanel.Hide = function()
+    -- TODO: hide eyecatches
 end
 
 setupSetlistPanel.Initialize()

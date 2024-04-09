@@ -326,6 +326,10 @@
     padding-right: 10px;
 }
 
+#setup-setlist-panel #selected-patterns .selected-pattern #title {
+    -unity-text-align: upper-center;
+}
+
 #setup-setlist-panel #selected-patterns .selected-pattern #Pattern-Banner {
     padding-left: 10px;
     padding-right: 10px;
@@ -336,14 +340,14 @@
     display: none;
 }
 
-#setup-setlist-panel #record #patterns .mini-eyecatch {
+#setup-setlist-panel #record .mini-eyecatch {
     width: 100px;
     height: 100px;
     margin-left: 10px;
     margin-right: 10px;
 }
 
-#setup-setlist-panel #record #patterns .no-image {
+#setup-setlist-panel #record .mini-eyecatch #default-eyecatch {
     background-image: url("project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&guid=3ba6aa31247e7a943ac38aadeadb5920&type=3#Rectangle");
     -unity-background-image-tint-color: var(--disabled-text-color);
 }

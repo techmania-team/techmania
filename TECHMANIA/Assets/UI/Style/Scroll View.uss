@@ -10,7 +10,15 @@
     border-right-width: 0;
     border-top-width: 0;
     border-bottom-width: 0;
+}
+
+.scroll-view .unity-scroller--vertical {
     width: 20px;
+}
+
+.scroll-view .unity-scroller--horizontal {
+    height: 20px;
+    width: 100%;
 }
 
 .scroll-view #unity-low-button {
@@ -26,7 +34,14 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+}
+
+.scroll-view .unity-scroller--vertical #unity-slider {
     width: 100%;
+}
+
+.scroll-view .unity-scroller--horizontal #unity-slider {
+    height: 100%;
 }
 
 .scroll-view #unity-tracker {
@@ -39,6 +54,13 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+}
+
+.scroll-view .unity-scroller--vertical #unity-tracker {
+    width: 100%;
+}
+
+.scroll-view .unity-scroller--horizontal #unity-tracker {
     width: 100%;
 }
 
@@ -60,7 +82,14 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.scroll-view .unity-scroller--vertical #unity-dragger {
     width: 100%;
+}
+
+.scroll-view .unity-scroller--horizontal #unity-dragger {
+    height: 100%;
 }
 
 .scrolling-text {
