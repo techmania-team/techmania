@@ -75,6 +75,7 @@ public class EditSetlistPanel : MonoBehaviour
             {
                 RefreshFilenameCaches();
                 RefreshResourceSection();
+                RefreshMetadataSection();
             });
     }
 
@@ -220,7 +221,7 @@ public class EditSetlistPanel : MonoBehaviour
             Setlist.PatternReference reference = EditorContext.setlist
                 .selectablePatterns[i];
 
-            SelectablePatternInSetlist patternButton = Instantiate(
+            SelectablePatternInSetlist selectablePattern = Instantiate(
                 selectablePatternPrefab, selectablePatternContainer)
                 .GetComponent<SelectablePatternInSetlist>();
 
@@ -230,11 +231,11 @@ public class EditSetlistPanel : MonoBehaviour
                 reference, out trackInFolder, out pattern);
             if (!status.Ok())
             {
-                patternButton.SetUpNonExistant(this, i, numPatterns);
+                selectablePattern.SetUpNonExistant(this, i, numPatterns);
             }
             else
             {
-                patternButton.SetUp(this,
+                selectablePattern.SetUp(this,
                     trackInFolder.minimizedTrack.trackMetadata.title,
                     pattern.patternMetadata, i, numPatterns);
             }

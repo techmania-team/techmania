@@ -62,6 +62,16 @@ public class PatternBanner : MonoBehaviour
         nameText.SetUp(p.patternName);
     }
 
+    public void InitializeNonExistant()
+    {
+        controlIcon.sprite = null;
+        controlIcon.color = Color.clear;
+        laneIcon.sprite = null;
+        laneIcon.color = Color.clear;
+        levelText.text = "";
+        nameText.SetUp("");
+    }
+
     public void MakeControlIconRed()
     {
         controlIcon.color = overrideColor;

@@ -250,7 +250,7 @@ selectSetlistPanel.SpawnAllCards = function()
                     else
                         -- Navigate to setlist setup panel.
                         selectSetlistPanel.selectedSetlistFolder = setlistInFolder.folder
-                        selectSetlistPanel.selectedSetlist = setlist
+                        selectSetlistPanel.selectedSetlist = setlistInFolder.setlist
                         navigation.TransitionTo(selectSetlistPanel, setupSetlistPanel)
                     end
                 end, setlistInFolder)

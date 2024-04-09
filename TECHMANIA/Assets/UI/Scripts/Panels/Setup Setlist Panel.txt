@@ -1,11 +1,85 @@
 setupSetlistPanel = {
-    panel = tm.root.Q("setup-setlist-panel")
+    panel = tm.root.Q("setup-setlist-panel"),
+
+    -- Minimized, nil means not found on device
+    tracksInSetlist = {},
+    -- Minimized, nil means not found on device
+    patternsInSetlist = {},
+
+    -- -1 means none selected
+    selectedPatternIndex = {-1, -1, -1}
 }
 
 setupSetlistPanel.Initialize = function()
 end
 
 setupSetlistPanel.Show = function()
+    local folder = selectSetlistPanel.selectedSetlistFolder
+    local setlist = selectSetlistPanel.selectedSetlist
+
+    local missingReferences = {}
+
+    -- Search for all pattern references
+    local availableSelectablePatterns = 0
+    setupSetlistPanel.tracksInSetlist = {}
+    setupSetlistPanel.patternsInSetlist = {}
+    for index, ref in ipairs(setlist.selectablePatterns) do
+        local status, track, pattern = tm.resources.SearchForPatternReference(ref)
+        if (status.Ok()) then
+            setupSetlistPanel.tracksInSetlist[index] = track
+            setupSetlistPanel.patternsInSetlist[index] = pattern
+            availableSelectablePatterns = availableSelectablePatterns + 1
+        else
+            table.insert(missingReferences, ref)
+        end
+    end
+
+    local availableHiddenPatterns = 0
+    for index, hiddenPattern in ipairs(setlist.hiddenPatterns) do
+        local ref = hiddenPattern.reference
+        local status, track, pattern = tm.resources.SearchForPatternReference(ref)
+        if (status.Ok()) then
+            availableHiddenPatterns = availableHiddenPatterns + 1
+        else
+            table.insert(missingReferences, ref)
+        end
+    end
+
+    -- Display missing pattern warning if necessary
+    local enoughPatterns = availableSelectablePatterns >= 3 and availableHiddenPatterns >= 1
+    if (#missingReferences > 0 or not enoughPatterns) then
+        setupSetlistPanel.panel.Q("setup-setlist").display = false
+        setupSetlistPanel.panel.Q("missing-pattern-warning").display = true
+
+        if (#missingReferences > 0) then
+            setupSetlistPanel.panel.Q("missing-pattern-label").display = true
+            local missingPatternList = setupSetlistPanel.panel.Q("missing-pattern-list")
+            missingPatternList.display = true
+            missingPatternList.RemoveAllChildren()
+            for _, ref in ipairs(missingReferences) do
+                local missingPatternElement = missingPatternList.InstantiateTemplate("Assets/UI/Templates/Setlist Missing Pattern.uxml").Q("missing-pattern")
+                missingPatternElement.Q("title").text = ref.trackTitle
+                local missingPatternBanner = missingPatternElement.Q("pattern-banner")
+                SetUpPatternBanner({
+                    playableLanes = ref.patternPlayableLanes,
+                    controlScheme = setlist.setlistMetadata.controlScheme,
+                    level = ref.patternLevel,
+                    patternName = ref.patternName
+                }, missingPatternBanner)
+                missingPatternBanner.Q("medal-container").display = false
+            end
+        else
+            setupSetlistPanel.panel.Q("missing-pattern-label").display = false
+            setupSetlistPanel.panel.Q("missing-pattern-list").display = false
+        end
+
+        setupSetlistPanel.panel.Q("continue-playing-label").display = enoughPatterns
+        setupSetlistPanel.panel.Q("continue-button-wrap").display = enoughPatterns
+        setupSetlistPanel.panel.Q("not-enough-patterns-label").display = not enoughPatterns
+    else
+        setupSetlistPanel.panel.Q("setup-setlist").display = true
+        setupSetlistPanel.panel.Q("missing-pattern-warning").display = false
+    end
 end
 
 setupSetlistPanel.Hide = function()

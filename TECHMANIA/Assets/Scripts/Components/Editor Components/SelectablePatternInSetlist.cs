@@ -37,7 +37,9 @@ public class SelectablePatternInSetlist : MonoBehaviour
     {
         moveUpButton.interactable = index > 0;
         moveDownButton.interactable = index < numPatterns - 1;
-        this.trackTitle.text = $"<color={ColorUtility.ToHtmlStringRGB(nonexistantPatternTitleColor)}>{L10n.GetString("edit_setlist_panel_reference_not_found")}</color>";
+        this.trackTitle.text = $"<color=#{ColorUtility.ToHtmlStringRGB(nonexistantPatternTitleColor)}>{L10n.GetString("edit_setlist_panel_reference_not_found")}</color>";
+        banner.InitializeNonExistant();
+        this.index = index;
     }
 
     public void OnDeleteButtonClick()
