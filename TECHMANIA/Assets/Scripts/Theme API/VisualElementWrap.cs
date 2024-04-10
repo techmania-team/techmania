@@ -302,12 +302,7 @@ namespace ThemeApi
 
             // Command events: omitted
 
-            // Drag events
-            DragExited,
-            DragUpdated,
-            DragPerform,
-            DragEnter,
-            DragLeave,
+            // Drag events: omitted for being editor-only
 
             // Focus events
             FocusOut,
@@ -365,6 +360,7 @@ namespace ThemeApi
                 EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
                 EventType.PointerUp => typeof(PointerUpEvent),
+                EventType.PointerMove => typeof(PointerMoveEvent),
                 EventType.PointerEnter => typeof(PointerEnterEvent),
                 EventType.PointerLeave => typeof(PointerLeaveEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),

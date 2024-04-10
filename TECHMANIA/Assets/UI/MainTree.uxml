@@ -597,6 +597,11 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="drag-plane" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none;">
+            <ui:VisualElement name="mini-eyecatch-center" picking-mode="Ignore" style="position: absolute; width: 0; height: 0; align-items: center; justify-content: center;">
+                <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" style="position: absolute; width: 200px; height: 200px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:Instance>
     <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" style="-unity-background-scale-mode: scale-and-crop;" />

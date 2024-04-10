@@ -30,6 +30,36 @@ setupSetlistPanel.Initialize = function()
             end)
         end)
     end)
+
+    local dragPlane = panel.Q("drag-plane")
+    dragPlane.RegisterCallback(eventType.PointerMove, function(_, event)
+        local miniEyecatchCenter = dragPlane.Q("mini-eyecatch-center")
+        local x, y = XYFromStyleTranslate(miniEyecatchCenter.style.translate)
+        x = x + event.deltaPosition.x
+        y = y + event.deltaPosition.y
+        miniEyecatchCenter.style.translate = StyleTranslate(x, y)
+        -- TODO: highlight drop target borders if applicable
+    end)
+    dragPlane.RegisterCallback(eventType.PointerUp, function()
+        dragPlane.display = false
+        -- TODO: update selectedPatternIndex if applicable
+        setupSetlistPanel.Refresh()
+    end)
+end
+
+setupSetlistPanel.SetUpDragEvents = function(miniEyecatch)
+    miniEyecatch.RegisterCallback(eventType.PointerDown, function(_, event)
+        -- Move mini eyecatch to drag plane to allow dragging
+        local dragPlane = setupSetlistPanel.panel.Q("drag-plane")
+        dragPlane.Q("mini-eyecatch-center").style.translate = StyleTranslate(event.position.x, event.position.y)
+        if (miniEyecatch.backgroundImage == nil) then
+            dragPlane.Q("mini-eyecatch").backgroundImage = miniEyecatch.Q("default-eyecatch").backgroundImage
+        else
+            dragPlane.Q("mini-eyecatch").backgroundImage = miniEyecatch.backgroundImage
+        end
+        miniEyecatch.visible = false
+        dragPlane.display = true  -- will handle pointer move and up
+    end)
 end
 
 setupSetlistPanel.Show = function()
@@ -50,6 +80,7 @@ setupSetlistPanel.Show = function()
             availableSelectablePatterns = availableSelectablePatterns + 1
             local element = selectablePatternContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Selectable Pattern.uxml")
             element.Q("level").text = tostring(pattern.patternMetadata.level)
+            setupSetlistPanel.SetUpDragEvents(element.Q("mini-eyecatch"))
             setupSetlistPanel.selectablePatterns[index] = {
                 track = trackInFolder.minimizedTrack,
                 pattern = pattern,
@@ -139,6 +170,10 @@ end
 
 setupSetlistPanel.Hide = function()
     -- TODO: hide eyecatches
+end
+
+setupSetlistPanel.Refresh = function()
+    
 end
 
 setupSetlistPanel.Initialize()
