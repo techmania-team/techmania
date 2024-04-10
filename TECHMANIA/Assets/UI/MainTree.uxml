@@ -401,7 +401,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Instance>
-    <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: flex;">
+    <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Setup Setlist" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="setup-setlist" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center; display: flex;">

@@ -1,12 +1,15 @@
 setupSetlistPanel = {
     panel = tm.root.Q("setup-setlist-panel"),
 
-    -- Minimized, selectable only, nil means not found on device
-    tracksInSetlist = {},
-    -- Minimized, selectable only, nil means not found on device
-    patternsInSetlist = {},
+    -- Each element contains:
+    -- - track (minimized)
+    -- - pattern (minimized)
+    -- - eyecatch (may be nil)
+    -- - element
+    -- For missing references, the entire element is nil.
+    selectablePatterns = {},
     -- nil means no eyecatch
-    eyecatchesInSetlist = {},
+    hiddenPatternEyecatches = {},
 
     -- -1 means none selected
     selectedPatternIndex = {-1, -1, -1}
@@ -19,7 +22,6 @@ setupSetlistPanel.Initialize = function()
     local missingPatternWarning = panel.Q("missing-pattern-warning")
     missingPatternWarning.Q("continue-button").RegisterCallback(eventType.Click, function()
         tm.StartCoroutine(function()
-            
             FadeOutCoroutine(missingPatternWarning, 0, 0, function()
                 missingPatternWarning.display = false
                 missingPatternWarning.style.opacity = StyleFloat(1)
@@ -32,23 +34,40 @@ end
 
 setupSetlistPanel.Show = function()
     local panel = setupSetlistPanel.panel
-
-    local folder = selectSetlistPanel.selectedSetlistFolder
     local setlist = selectSetlistPanel.selectedSetlist
 
-    local missingReferences = {}
+    setupSetlistPanel.selectablePatterns = {}
+    local selectablePatternContainer = panel.Q("selectable-patterns").Q("unity-content-container")
+    selectablePatternContainer.RemoveAllChildren()
 
     -- Search for all pattern references
     local availableSelectablePatterns = 0
-    setupSetlistPanel.tracksInSetlist = {}
-    setupSetlistPanel.patternsInSetlist = {}
-    setupSetlistPanel.eyecatchesInSetlist = {}
+    local missingReferences = {}
+
     for index, ref in ipairs(setlist.selectablePatterns) do
-        local status, track, pattern = tm.resources.SearchForPatternReference(ref)
+        local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
         if (status.Ok()) then
-            setupSetlistPanel.tracksInSetlist[index] = track
-            setupSetlistPanel.patternsInSetlist[index] = pattern
             availableSelectablePatterns = availableSelectablePatterns + 1
+            local element = selectablePatternContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Selectable Pattern.uxml")
+            element.Q("level").text = tostring(pattern.patternMetadata.level)
+            setupSetlistPanel.selectablePatterns[index] = {
+                track = trackInFolder.minimizedTrack,
+                pattern = pattern,
+                eyecatch = nil,
+                element = element
+            }
+
+            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+                if (status.Ok()) then
+                    setupSetlistPanel.selectablePatterns[index].eyecatch = texture
+                    element.Q("mini-eyecatch").backgroundImage = texture
+                    element.Q("default-eyecatch").display = false
+                else
+                    element.Q("mini-eyecatch").backgroundImage = nil
+                    element.Q("default-eyecatch").display = true
+                end
+            end)
         else
             table.insert(missingReferences, ref)
         end
@@ -57,9 +76,16 @@ setupSetlistPanel.Show = function()
     local availableHiddenPatterns = 0
     for index, hiddenPattern in ipairs(setlist.hiddenPatterns) do
         local ref = hiddenPattern.reference
-        local status, track, pattern = tm.resources.SearchForPatternReference(ref)
+        local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
         if (status.Ok()) then
             availableHiddenPatterns = availableHiddenPatterns + 1
+
+            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+                if (status.Ok()) then
+                    setupSetlistPanel.hiddenPatternEyecatches[index] = texture
+                end
+            end)
         else
             table.insert(missingReferences, ref)
         end
@@ -99,6 +125,15 @@ setupSetlistPanel.Show = function()
     else
         panel.Q("setup-setlist").display = true
         panel.Q("missing-pattern-warning").display = false
+    end
+
+    -- Reset all selected patterns
+    for i = 1, 3 do
+        local element = panel.Q("selected-patterns").Children()[i]
+        element.Q("no-pattern").display = true
+        element.Q("eyecatch").display = false
+        element.Q("title-container").display = false
+        element.Q("Pattern-Banner").display = false
     end
 end
 
