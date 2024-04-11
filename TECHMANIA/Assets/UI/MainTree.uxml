@@ -421,7 +421,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="selected-patterns" picking-mode="Ignore" style="flex-direction: row; align-items: center; justify-content: space-between;">
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="no-pattern" style="display: none;">
+                        <ui:VisualElement name="no-pattern" class="at-rest" style="display: none;">
                             <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                         <ui:VisualElement name="eyecatch" style="display: flex;">
@@ -433,7 +433,7 @@
                         <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
                     </ui:VisualElement>
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="no-pattern" style="display: none;">
+                        <ui:VisualElement name="no-pattern" class="at-rest" style="display: none;">
                             <ui:Label tabindex="-1" text="2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                         <ui:VisualElement name="eyecatch" style="display: flex;">
@@ -445,7 +445,7 @@
                         <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
                     </ui:VisualElement>
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="no-pattern" style="display: none;">
+                        <ui:VisualElement name="no-pattern" class="at-rest" style="display: none;">
                             <ui:Label tabindex="-1" text="3" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                         <ui:VisualElement name="eyecatch" style="display: flex;">
@@ -457,7 +457,7 @@
                         <ui:Instance template="Pattern Banner" name="Pattern-Banner" />
                     </ui:VisualElement>
                     <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
-                        <ui:VisualElement name="no-pattern" style="display: flex;">
+                        <ui:VisualElement name="no-pattern" class="at-rest" style="display: flex;">
                             <ui:Label tabindex="-1" text="?" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="flex-grow: 1; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>

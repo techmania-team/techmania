@@ -191,8 +191,6 @@ controls = {
         end
         print("Warning: the scrolling text to be disposed is not found in controls.allScrollingTextContainers.")
     end,
-
-    currentDraggedElement = nil
 }
 
 -- The "from" panel's x transitions from 0 to length;

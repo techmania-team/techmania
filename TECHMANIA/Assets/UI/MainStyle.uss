@@ -297,17 +297,31 @@
 }
 
 #setup-setlist-panel #selected-patterns .selected-pattern #no-pattern {
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
+    width: 200px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .at-rest {
     border-top-color: var(--medium-emphasis-text-color);
     border-right-color: var(--medium-emphasis-text-color);
     border-bottom-color: var(--medium-emphasis-text-color);
     border-left-color: var(--medium-emphasis-text-color);
-    width: 200px;
-    height: 200px;
-    margin-top: 20px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .accepting-drop {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
 }
 
 #setup-setlist-panel #selected-patterns .selected-pattern #eyecatch {
@@ -515,4 +529,7 @@
 
 .disabled-text-color {
     -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
+#setup- {
 }

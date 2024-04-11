@@ -99,3 +99,7 @@ function WaitForSeconds(waitTime)
         coroutine.yield()
     end
 end
+
+function Vector3ToVector2(v3)
+    return unity.vector2.__new(v3.x, v3.y)
+end

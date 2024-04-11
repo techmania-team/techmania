@@ -38,11 +38,22 @@ setupSetlistPanel.Initialize = function()
         x = x + event.deltaPosition.x
         y = y + event.deltaPosition.y
         miniEyecatchCenter.style.translate = StyleTranslate(x, y)
-        -- TODO: highlight drop target borders if applicable
+
+        for i = 1, 3 do
+            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("no-pattern")
+            local onTarget = dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))
+            dropTarget.EnableInClassList("at-rest", not onTarget)
+            dropTarget.EnableInClassList("accepting-drop", onTarget)
+        end
     end)
-    dragPlane.RegisterCallback(eventType.PointerUp, function()
+    dragPlane.RegisterCallback(eventType.PointerUp, function(_, event)
         dragPlane.display = false
-        -- TODO: update selectedPatternIndex if applicable
+        for i = 1, 3 do
+            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("no-pattern")
+            if (dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))) then
+                -- TODO: set selected pattern index
+            end
+        end
         setupSetlistPanel.Refresh()
     end)
 end
@@ -53,7 +64,7 @@ setupSetlistPanel.SetUpDragEvents = function(miniEyecatch)
         local dragPlane = setupSetlistPanel.panel.Q("drag-plane")
         dragPlane.Q("mini-eyecatch-center").style.translate = StyleTranslate(event.position.x, event.position.y)
         if (miniEyecatch.backgroundImage == nil) then
-            dragPlane.Q("mini-eyecatch").backgroundImage = miniEyecatch.Q("default-eyecatch").backgroundImage
+            dragPlane.Q("mini-eyecatch").backgroundImage = tm.io.LoadTextureFromTheme("Assets/UI/Images/Rectangle.png")
         else
             dragPlane.Q("mini-eyecatch").backgroundImage = miniEyecatch.backgroundImage
         end
@@ -173,7 +184,21 @@ setupSetlistPanel.Hide = function()
 end
 
 setupSetlistPanel.Refresh = function()
-    
+    -- Cannot do ipairs(setupSetlistPanel.selectablePatterns) here as there may be nils in the middle.
+    for index, _ in ipairs(selectSetlistPanel.selectedSetlist.selectablePatterns) do
+        local pattern = setupSetlistPanel.selectablePatterns[index]
+        if (pattern != nil) then
+            local patternElement = pattern.element
+            -- Dragged mini eyecatches will turn invisible, restore them
+            patternElement.Q("mini-eyecatch").visible = true
+        end
+    end
+
+    for _, element in ipairs(setupSetlistPanel.panel.Q("selected-patterns").Children()) do
+        local noPattern = element.Q("no-pattern")
+        noPattern.AddToClassList("at-rest")
+        noPattern.RemoveFromClassList("accepting-drop")
+    end
 end
 
 setupSetlistPanel.Initialize()
