@@ -3,8 +3,8 @@
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <ui:VisualElement name="selectable-pattern" picking-mode="Ignore" style="width: 100px; height: 150px; margin-left: 20px; margin-right: 20px;">
         <ui:VisualElement name="mini-eyecatch" class="no-image" style="width: 100px; height: 100px;">
-            <ui:VisualElement name="default-eyecatch" style="background-image: url(&quot;project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&amp;guid=3ba6aa31247e7a943ac38aadeadb5920&amp;type=3#Rectangle&quot;); position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-            <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" class="text-headline-4" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; display: none;" />
+            <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" style="background-image: url(&quot;project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&amp;guid=3ba6aa31247e7a943ac38aadeadb5920&amp;type=3#Rectangle&quot;); position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+            <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" picking-mode="Ignore" class="text-headline-4" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; display: none;" />
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="12" parse-escape-sequences="true" display-tooltip-when-elided="true" name="level" picking-mode="Ignore" class="text-headline-6" style="flex-grow: 1; -unity-text-align: middle-center;" />
     </ui:VisualElement>

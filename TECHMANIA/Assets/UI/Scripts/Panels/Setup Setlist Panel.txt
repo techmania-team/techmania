@@ -11,9 +11,20 @@ setupSetlistPanel = {
     -- nil means no eyecatch
     hiddenPatternEyecatches = {},
 
+    patternBeingDragged = -1,
     -- -1 means none selected
     selectedPatternIndex = {-1, -1, -1}
 }
+
+setupSetlistPanel.GetStageNumber = function(selectablePatternIndex)
+    if (selectablePatternIndex == -1) then return -1 end
+    for stageNumber, index in ipairs(setupSetlistPanel.selectedPatternIndex) do
+        if (index == selectablePatternIndex) then
+            return stageNumber
+        end
+    end
+    return -1
+end
 
 setupSetlistPanel.Initialize = function()
     local panel = setupSetlistPanel.panel
@@ -51,25 +62,11 @@ setupSetlistPanel.Initialize = function()
         for i = 1, 3 do
             local dropTarget = panel.Q("selected-patterns").Children()[i].Q("no-pattern")
             if (dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))) then
-                -- TODO: set selected pattern index
+                setupSetlistPanel.selectedPatternIndex[i] = setupSetlistPanel.patternBeingDragged
+                setupSetlistPanel.patternBeingDragged = -1
             end
         end
         setupSetlistPanel.Refresh()
-    end)
-end
-
-setupSetlistPanel.SetUpDragEvents = function(miniEyecatch)
-    miniEyecatch.RegisterCallback(eventType.PointerDown, function(_, event)
-        -- Move mini eyecatch to drag plane to allow dragging
-        local dragPlane = setupSetlistPanel.panel.Q("drag-plane")
-        dragPlane.Q("mini-eyecatch-center").style.translate = StyleTranslate(event.position.x, event.position.y)
-        if (miniEyecatch.backgroundImage == nil) then
-            dragPlane.Q("mini-eyecatch").backgroundImage = tm.io.LoadTextureFromTheme("Assets/UI/Images/Rectangle.png")
-        else
-            dragPlane.Q("mini-eyecatch").backgroundImage = miniEyecatch.backgroundImage
-        end
-        miniEyecatch.visible = false
-        dragPlane.display = true  -- will handle pointer move and up
     end)
 end
 
@@ -89,9 +86,24 @@ setupSetlistPanel.Show = function()
         local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
         if (status.Ok()) then
             availableSelectablePatterns = availableSelectablePatterns + 1
+
             local element = selectablePatternContainer.InstantiateTemplate("Assets/UI/Templates/Setlist Selectable Pattern.uxml")
             element.Q("level").text = tostring(pattern.patternMetadata.level)
-            setupSetlistPanel.SetUpDragEvents(element.Q("mini-eyecatch"))
+            local miniEyecatch = element.Q("mini-eyecatch")
+            miniEyecatch.RegisterCallback(eventType.PointerDown, function(_, event)
+                -- Move mini eyecatch to drag plane to allow dragging
+                local dragPlane = setupSetlistPanel.panel.Q("drag-plane")
+                dragPlane.Q("mini-eyecatch-center").style.translate = StyleTranslate(event.position.x, event.position.y)
+                if (setupSetlistPanel.selectablePatterns[index].eyecatch == nil) then
+                    dragPlane.Q("mini-eyecatch").backgroundImage = tm.io.LoadTextureFromTheme("Assets/UI/Images/Rectangle.png")
+                else
+                    dragPlane.Q("mini-eyecatch").backgroundImage = setupSetlistPanel.selectablePatterns[index].eyecatch
+                end
+                miniEyecatch.visible = false
+                dragPlane.display = true  -- will handle pointer move and up
+                setupSetlistPanel.patternBeingDragged = index
+            end)
+
             setupSetlistPanel.selectablePatterns[index] = {
                 track = trackInFolder.minimizedTrack,
                 pattern = pattern,
@@ -188,9 +200,25 @@ setupSetlistPanel.Refresh = function()
     for index, _ in ipairs(selectSetlistPanel.selectedSetlist.selectablePatterns) do
         local pattern = setupSetlistPanel.selectablePatterns[index]
         if (pattern != nil) then
-            local patternElement = pattern.element
+            local element = pattern.element
             -- Dragged mini eyecatches will turn invisible, restore them
-            patternElement.Q("mini-eyecatch").visible = true
+            element.Q("mini-eyecatch").visible = true
+
+            local stageNumber = setupSetlistPanel.GetStageNumber(index)
+            if (stageNumber != -1) then
+                element.Q("mini-eyecatch").pickable = false
+                element.Q("mini-eyecatch").backgroundImage = nil
+                element.Q("default-eyecatch").display = false
+                element.Q("index").display = true
+                element.Q("index").text = tostring(stageNumber)
+                element.Q("level").display = false
+            else
+                element.Q("mini-eyecatch").pickable = true
+                element.Q("mini-eyecatch").backgroundImage = pattern.eyecatch
+                element.Q("default-eyecatch").display = pattern.eyecatch == nil
+                element.Q("index").display = false
+                element.Q("level").display = true
+            end
         end
     end
 
