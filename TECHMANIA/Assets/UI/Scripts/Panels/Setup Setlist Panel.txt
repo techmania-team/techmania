@@ -11,7 +11,9 @@ setupSetlistPanel = {
     -- nil means no eyecatch
     hiddenPatternEyecatches = {},
 
-    patternBeingDragged = -1,
+    selectablePatternBeingDragged = -1,
+    selectedPatternBeingDragged = -1,
+    
     -- -1 means none selected
     selectedPatternIndex = {-1, -1, -1}
 }
@@ -28,6 +30,7 @@ end
 
 setupSetlistPanel.Initialize = function()
     local panel = setupSetlistPanel.panel
+    local dragPlane = panel.Q("drag-plane")
 
     local setupSetlist = panel.Q("setup-setlist")
     local missingPatternWarning = panel.Q("missing-pattern-warning")
@@ -42,7 +45,29 @@ setupSetlistPanel.Initialize = function()
         end)
     end)
 
-    local dragPlane = panel.Q("drag-plane")
+    local selectedPatterns = panel.Q("selected-patterns")
+    for i = 1, 3 do
+        local element = selectedPatterns.Children()[i]
+        element.Q("eyecatch").RegisterCallback(eventType.PointerDown, function(_, event)
+            local index = setupSetlistPanel.selectedPatternIndex[i]
+            if (index == -1) then return end
+
+            -- Move mini eyecatch to drag plane to allow dragging
+            dragPlane.Q("mini-eyecatch-center").style.translate = StyleTranslate(event.position.x, event.position.y)
+            if (setupSetlistPanel.selectablePatterns[index].eyecatch == nil) then
+                dragPlane.Q("mini-eyecatch").backgroundImage = tm.io.LoadTextureFromTheme("Assets/UI/Images/Rectangle.png")
+            else
+                dragPlane.Q("mini-eyecatch").backgroundImage = setupSetlistPanel.selectablePatterns[index].eyecatch
+            end
+            element.Q("drop-target").visible = true
+            element.Q("drop-target").display = true
+            element.Q("eyecatch").display = false
+            element.Q("default-eyecatch").display = false
+            dragPlane.display = true  -- will handle pointer move and up
+            setupSetlistPanel.selectedPatternBeingDragged = i
+        end)
+    end
+
     dragPlane.RegisterCallback(eventType.PointerMove, function(_, event)
         local miniEyecatchCenter = dragPlane.Q("mini-eyecatch-center")
         local x, y = XYFromStyleTranslate(miniEyecatchCenter.style.translate)
@@ -51,7 +76,8 @@ setupSetlistPanel.Initialize = function()
         miniEyecatchCenter.style.translate = StyleTranslate(x, y)
 
         for i = 1, 3 do
-            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("drop-target")
+            local dropTarget = selectedPatterns.Children()[i].Q("drop-target")
+            -- TODO: should y be inverted here?
             local onTarget = dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))
             dropTarget.EnableInClassList("at-rest", not onTarget)
             dropTarget.EnableInClassList("accepting-drop", onTarget)
@@ -59,13 +85,43 @@ setupSetlistPanel.Initialize = function()
     end)
     dragPlane.RegisterCallback(eventType.PointerUp, function(_, event)
         dragPlane.display = false
+        local stageNumber = -1
         for i = 1, 3 do
-            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("drop-target")
+            local dropTarget = selectedPatterns.Children()[i].Q("drop-target")
             if (dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))) then
-                setupSetlistPanel.selectedPatternIndex[i] = setupSetlistPanel.patternBeingDragged
-                setupSetlistPanel.patternBeingDragged = -1
+                stageNumber = i
+                break
             end
         end
+
+        if (stageNumber != -1) then
+            if (setupSetlistPanel.selectablePatternBeingDragged != -1) then
+                -- selectable --> selected
+                setupSetlistPanel.selectedPatternIndex[stageNumber] = setupSetlistPanel.selectablePatternBeingDragged
+                tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Click.wav"))
+            end
+            if (setupSetlistPanel.selectedPatternBeingDragged != -1) then
+                -- selected --> selected: swap them
+                local stageNumberOld = setupSetlistPanel.selectedPatternBeingDragged
+                local stageNumberNew = stageNumber
+                if (stageNumberOld != stageNumberNew) then
+                    local patternIndexOld = setupSetlistPanel.selectedPatternIndex[stageNumberOld]
+                    local patternIndexNew = setupSetlistPanel.selectedPatternIndex[stageNumberNew] -- may be -1
+                    setupSetlistPanel.selectedPatternIndex[stageNumberOld] = patternIndexNew
+                    setupSetlistPanel.selectedPatternIndex[stageNumberNew] = patternIndexOld
+                    tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Click.wav"))
+                end
+            end
+        else
+            if (setupSetlistPanel.selectedPatternBeingDragged != -1) then
+                -- selected --> outside
+                setupSetlistPanel.selectedPatternIndex[setupSetlistPanel.selectedPatternBeingDragged] = -1
+                tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+            end
+        end
+        
+        setupSetlistPanel.selectablePatternBeingDragged = -1
+        setupSetlistPanel.selectedPatternBeingDragged = -1
         setupSetlistPanel.Refresh()
     end)
 end
@@ -74,7 +130,6 @@ setupSetlistPanel.Show = function()
     local panel = setupSetlistPanel.panel
     local setlist = selectSetlistPanel.selectedSetlist
 
-    setupSetlistPanel.selectablePatterns = {}
     local selectablePatternContainer = panel.Q("selectable-patterns").Q("unity-content-container")
     selectablePatternContainer.RemoveAllChildren()
 
@@ -101,7 +156,7 @@ setupSetlistPanel.Show = function()
                 end
                 miniEyecatch.visible = false
                 dragPlane.display = true  -- will handle pointer move and up
-                setupSetlistPanel.patternBeingDragged = index
+                setupSetlistPanel.selectablePatternBeingDragged = index
             end)
 
             setupSetlistPanel.selectablePatterns[index] = {
@@ -190,10 +245,27 @@ setupSetlistPanel.Show = function()
         element.Q("title-container").display = false
         element.Q("Pattern-Banner").display = false
     end
+
+    -- Disable play button, will re-enable once 3 patterns selected
+    panel.Q("play-button").SetEnabled(false)
 end
 
 setupSetlistPanel.Hide = function()
-    -- TODO: hide eyecatches
+    -- Release eyecatches
+    for index, _ in ipairs(setlist.selectablePatterns) do
+        local pattern = setupSetlistPanel.selectablePatterns[index]
+        if (pattern.eyecatch != nil) then
+            tm.io.ReleaseTexture(pattern.release)
+        end
+    end
+    setupSetlistPanel.selectablePatterns = {}
+    
+    for index, _ in ipairs(setlist.hiddenPatterns) do
+        if (setupSetlistPanel.hiddenPatternEyecatches[index] != nil) then
+            tm.io.ReleaseTexture(setupSetlistPanel.hiddenPatternEyecatches[index])
+        end
+    end
+    setupSetlistPanel.hiddenPatternEyecatches = {}
 end
 
 setupSetlistPanel.Refresh = function()
@@ -249,6 +321,11 @@ setupSetlistPanel.Refresh = function()
             element.Q("Pattern-Banner").display = false
         end
     end
+
+    setupSetlistPanel.panel.Q("play-button").SetEnabled(
+        setupSetlistPanel.selectedPatternIndex[1] != -1 and
+        setupSetlistPanel.selectedPatternIndex[2] != -1 and
+        setupSetlistPanel.selectedPatternIndex[3] != -1)
 end
 
 setupSetlistPanel.Initialize()
