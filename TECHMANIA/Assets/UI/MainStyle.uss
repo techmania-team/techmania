@@ -350,9 +350,8 @@
 }
 
 #setup-setlist-panel #selected-patterns .selected-pattern #Pattern-Banner {
-    padding-left: 10px;
-    padding-right: 10px;
-    width: 100%;
+    max-width: 280px;
+    overflow: hidden;
 }
 
 #setup-setlist-panel #selected-patterns .selected-pattern #pattern-banner #medal-container {
