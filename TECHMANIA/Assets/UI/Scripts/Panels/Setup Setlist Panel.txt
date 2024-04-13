@@ -51,7 +51,7 @@ setupSetlistPanel.Initialize = function()
         miniEyecatchCenter.style.translate = StyleTranslate(x, y)
 
         for i = 1, 3 do
-            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("no-pattern")
+            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("drop-target")
             local onTarget = dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))
             dropTarget.EnableInClassList("at-rest", not onTarget)
             dropTarget.EnableInClassList("accepting-drop", onTarget)
@@ -60,7 +60,7 @@ setupSetlistPanel.Initialize = function()
     dragPlane.RegisterCallback(eventType.PointerUp, function(_, event)
         dragPlane.display = false
         for i = 1, 3 do
-            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("no-pattern")
+            local dropTarget = panel.Q("selected-patterns").Children()[i].Q("drop-target")
             if (dropTarget.ContainsPointInScreenSpace(Vector3ToVector2(event.position))) then
                 setupSetlistPanel.selectedPatternIndex[i] = setupSetlistPanel.patternBeingDragged
                 setupSetlistPanel.patternBeingDragged = -1
@@ -184,8 +184,9 @@ setupSetlistPanel.Show = function()
     -- Reset all selected patterns
     for i = 1, 3 do
         local element = panel.Q("selected-patterns").Children()[i]
-        element.Q("no-pattern").display = true
+        element.Q("drop-target").display = true
         element.Q("eyecatch").display = false
+        element.Q("default-eyecatch").display = false
         element.Q("title-container").display = false
         element.Q("Pattern-Banner").display = false
     end
@@ -222,10 +223,31 @@ setupSetlistPanel.Refresh = function()
         end
     end
 
-    for _, element in ipairs(setupSetlistPanel.panel.Q("selected-patterns").Children()) do
-        local noPattern = element.Q("no-pattern")
-        noPattern.AddToClassList("at-rest")
-        noPattern.RemoveFromClassList("accepting-drop")
+    for index, element in ipairs(setupSetlistPanel.panel.Q("selected-patterns").Children()) do
+        local dropTarget = element.Q("drop-target")
+        dropTarget.AddToClassList("at-rest")
+        dropTarget.RemoveFromClassList("accepting-drop")
+
+        if (index > 3) then break end
+
+        local patternIndex = setupSetlistPanel.selectedPatternIndex[index]
+        if (patternIndex != -1) then
+            dropTarget.visible = false  -- don't turn off display as it still needs to receive drops
+            element.Q("eyecatch").display = true
+            element.Q("eyecatch").backgroundImage = setupSetlistPanel.selectablePatterns[patternIndex].eyecatch
+            element.Q("default-eyecatch").display = setupSetlistPanel.selectablePatterns[patternIndex].eyecatch == nil
+            element.Q("title-container").display = true
+            element.Q("title-container").Q("title").text = setupSetlistPanel.selectablePatterns[patternIndex].track.trackMetadata.title
+            element.Q("Pattern-Banner").display = true
+            SetUpPatternBanner(setupSetlistPanel.selectablePatterns[patternIndex].pattern.patternMetadata,
+                element.Q("Pattern-Banner"))
+        else
+            dropTarget.visible = true
+            element.Q("eyecatch").display = false
+            element.Q("default-eyecatch").display = false
+            element.Q("title-container").display = false
+            element.Q("Pattern-Banner").display = false
+        end
     end
 end
 
