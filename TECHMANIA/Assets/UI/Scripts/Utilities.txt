@@ -100,6 +100,10 @@ function WaitForSeconds(waitTime)
     end
 end
 
-function Vector3ToVector2(v3)
-    return unity.vector2.__new(v3.x, v3.y)
+function ElementContainsPointerPosition(element, pointerPosition)
+    -- TODO: this doesn't work in resolutions not 1080 in height.
+    return element.ContainsPointInScreenSpace(unity.vector2.__new(
+        pointerPosition.x,
+        unity.screen.height - pointerPosition.y
+    ))
 end
