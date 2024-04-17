@@ -22,24 +22,26 @@ navigation = {
     --
     -- Update: this is fixed in Unity 2022.2.14
 
-    TransitionTo = function(from, to)
+    TransitionTo = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
             TransitionPanelCoroutine(from.panel, to.panel,
                 -100,  -- length
                 function()  -- called 1 frame after "to" appears
                     if (from.Hide != nil) then from.Hide() end
                     if (to.Show != nil) then to.Show() end
+                    if (toPanelInitializer != nil) then toPanelInitializer() end
                 end)
         end)
     end,
 
-    TransitionBackTo = function(from, to)
+    TransitionBackTo = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
             TransitionPanelCoroutine(from.panel, to.panel,
                 100,  -- length
                 function()  -- called 1 frame after "to" appears
                     if (from.Hide != nil) then from.Hide() end
                     if (to.Show != nil) then to.Show() end
+                    if (toPanelInitializer != nil) then toPanelInitializer() end
                 end)
         end)
     end,
@@ -73,17 +75,18 @@ function SetUpNavigation()
         navigation.TransitionBackTo(selectPatternPanel, selectTrackPanel)
     end)
 
-    modifierSideSheet.sheet.Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
+    modifierSidesheet.sheet.Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
         selectSkinPanel.panelToGoBackTo = selectPatternPanel
-        modifierSideSheet.FadeOut()
+        modifierSidesheet.FadeOut()
         navigation.TransitionTo(selectPatternPanel, selectSkinPanel)
     end)
     selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
-            -- Restore modifier side sheet if we just navigated from select pattern / setup setlist panel.
-            modifierSideSheet.FadeIn()
-        end
-        navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo)
+        navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo, function()
+            if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
+                -- Restore modifier side sheet if we just navigated from select pattern / setup setlist panel.
+                modifierSidesheet.FadeIn()
+            end
+        end)
     end)
 
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()

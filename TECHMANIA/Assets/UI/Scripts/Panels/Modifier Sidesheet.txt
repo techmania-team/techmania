@@ -1,0 +1,223 @@
+modifierSidesheet = {
+    bg = tm.root.Q("modifier-sidesheet-background"),
+    sheet = tm.root.Q("modifier-sidesheet"),
+
+    -- In each table, key is enum, value is display string
+    modifierDisplayString = {
+        noteOpacity = {},
+        scanlineOpacity = {},
+        scanDirection = {},
+        notePosition = {},
+        scanPosition = {},
+        fever = {},
+        keysound = {},
+        assistTick = {},
+        suddenDeath = {},
+        mode = {},
+        controlOverride = {},
+        scrollSpeed = {}
+    },
+}
+
+modifierSidesheet.SetDropdownValues = function()
+    local sheet = modifierSidesheet.sheet
+    function SetDropdownValue(containerName, modifierKey)
+        local display = modifierSidesheet.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        sheet.Q(containerName).Q("dropdown").SetValueWithoutNotify(display)
+    end
+    SetDropdownValue("note-opacity", "noteOpacity")
+    SetDropdownValue("scanline-opacity", "scanlineOpacity")
+    SetDropdownValue("scan-direction", "scanDirection")
+    SetDropdownValue("note-position", "notePosition")
+    SetDropdownValue("scan-position", "scanPosition")
+    SetDropdownValue("fever", "fever")
+    SetDropdownValue("keysound", "keysound")
+    SetDropdownValue("assist-tick", "assistTick")
+    SetDropdownValue("sudden-death", "suddenDeath")
+    SetDropdownValue("mode", "mode")
+    SetDropdownValue("control-override", "controlOverride")
+    SetDropdownValue("scroll-speed", "scrollSpeed")
+end
+
+modifierSidesheet.Show = function()
+    local sheet = modifierSidesheet.sheet
+    modifierSidesheet.SetDropdownValues()
+
+    controls.SetToggleIsOn(
+        sheet.Q("judgement-tally").Q("track"),
+        themeOptions["showJudgementTally"] == "True")
+
+    commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
+
+    controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+end
+
+modifierSidesheet.FadeIn = function()
+    modifierSidesheet.bg.display = true
+    tm.StartCoroutine(function()
+        FadeInCoroutine(modifierSidesheet.sheet, 100, 0)
+    end)
+end
+
+modifierSidesheet.FadeOut = function()
+    tm.StartCoroutine(function()
+        FadeOutCoroutine(modifierSidesheet.sheet, 100, 0, function()
+            modifierSidesheet.bg.display = false
+        end)
+    end)
+end
+
+modifierSidesheet.Initialize = function()
+    local bg = modifierSidesheet.bg
+    bg.RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
+        modifierSidesheet.FadeOut()
+    end)
+
+    modifierSidesheet.sheet.RegisterCallback(eventType.Click, function(element, event)
+        -- Prevents bg from receiving this event on the bubble up phase
+        event.StopPropagation()
+    end)
+
+    bg.Q("close-button").RegisterCallback(eventType.Click, function()
+        modifierSidesheet.FadeOut()
+    end)
+
+    function LocalizeDropdowns()
+        modifierSidesheet.modifierDisplayString.noteOpacity = {
+            [tm.enum.noteOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.noteOpacity.FadeOut] = tm.l10n.GetString("modifier_fade_out"),
+            [tm.enum.noteOpacity.FadeOut2] = tm.l10n.GetString("modifier_fade_out_2"),
+            [tm.enum.noteOpacity.FadeIn] = tm.l10n.GetString("modifier_fade_in"),
+            [tm.enum.noteOpacity.FadeIn2] = tm.l10n.GetString("modifier_fade_in_2")
+        }
+        modifierSidesheet.modifierDisplayString.scanlineOpacity = {
+            [tm.enum.scanlineOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanlineOpacity.Blink] = tm.l10n.GetString("modifier_blink"),
+            [tm.enum.scanlineOpacity.Blink2] = tm.l10n.GetString("modifier_blink_2"),
+            [tm.enum.scanlineOpacity.Blind] = tm.l10n.GetString("modifier_blind")
+        }
+        modifierSidesheet.modifierDisplayString.scanDirection = {
+            [tm.enum.scanDirection.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanDirection.RR] = tm.l10n.GetString("modifier_right_right"),
+            [tm.enum.scanDirection.LR] = tm.l10n.GetString("modifier_left_right"),
+            [tm.enum.scanDirection.LL] = tm.l10n.GetString("modifier_left_left")
+        }
+        modifierSidesheet.modifierDisplayString.notePosition = {
+            [tm.enum.notePosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.notePosition.Mirror] = tm.l10n.GetString("modifier_mirror")
+        }
+        modifierSidesheet.modifierDisplayString.scanPosition = {
+            [tm.enum.scanPosition.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scanPosition.Swap] = tm.l10n.GetString("modifier_swap")
+        }
+        modifierSidesheet.modifierDisplayString.fever = {
+            [tm.enum.fever.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.fever.FeverOff] = tm.l10n.GetString("modifier_fever_off"),
+            [tm.enum.fever.AutoFever] = tm.l10n.GetString("modifier_auto_fever")
+        }
+        modifierSidesheet.modifierDisplayString.keysound = {
+            [tm.enum.keysound.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.keysound.AutoKeysound] = tm.l10n.GetString("modifier_auto_keysound")
+        }
+        modifierSidesheet.modifierDisplayString.assistTick = {
+            [tm.enum.assistTick.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.assistTick.AssistTick] = tm.l10n.GetString("modifier_assist_tick"),
+            [tm.enum.assistTick.AutoAssistTick] = tm.l10n.GetString("modifier_auto_assist_tick")
+        }
+        modifierSidesheet.modifierDisplayString.suddenDeath = {
+            [tm.enum.suddenDeath.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.suddenDeath.suddenDeath] = tm.l10n.GetString("modifier_sudden_death")
+        }
+        modifierSidesheet.modifierDisplayString.mode = {
+            [tm.enum.mode.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.mode.NoFail] = tm.l10n.GetString("modifier_no_fail"),
+            [tm.enum.mode.AutoPlay] = tm.l10n.GetString("modifier_auto_play"),
+            [tm.enum.mode.Practice] = tm.l10n.GetString("modifier_practice")
+        }
+        modifierSidesheet.modifierDisplayString.controlOverride = {
+            [tm.enum.controlOverride.None] = tm.l10n.GetString("modifier_none"),
+            [tm.enum.controlOverride.OverrideToTouch] = tm.l10n.GetString("modifier_override_to_touch"),
+            [tm.enum.controlOverride.OverrideToKeys] = tm.l10n.GetString("modifier_override_to_keys"),
+            [tm.enum.controlOverride.OverrideToKM] = tm.l10n.GetString("modifier_override_to_km")
+        }
+        modifierSidesheet.modifierDisplayString.scrollSpeed = {
+            [tm.enum.scrollSpeed.Normal] = tm.l10n.GetString("modifier_normal"),
+            [tm.enum.scrollSpeed.HalfSpeed] = tm.l10n.GetString("modifier_half_speed");
+            [tm.enum.scrollSpeed.ShiftedHalfSpeed] = tm.l10n.GetString("modifier_shifted_half_speed")
+        }
+
+        function LocalizeOneDropdown(bg, containerName, displayStringTable)
+            local choices = {}
+            for _, displayString in pairs(displayStringTable) do
+                table.insert(choices, displayString)
+            end
+            bg.Q(containerName).Q("dropdown").choices = choices
+        end
+        LocalizeOneDropdown(bg, "note-opacity", modifierSidesheet.modifierDisplayString.noteOpacity)
+        LocalizeOneDropdown(bg, "scanline-opacity", modifierSidesheet.modifierDisplayString.scanlineOpacity)
+        LocalizeOneDropdown(bg, "scan-direction", modifierSidesheet.modifierDisplayString.scanDirection)
+        LocalizeOneDropdown(bg, "note-position", modifierSidesheet.modifierDisplayString.notePosition)
+        LocalizeOneDropdown(bg, "scan-position", modifierSidesheet.modifierDisplayString.scanPosition)
+        LocalizeOneDropdown(bg, "fever", modifierSidesheet.modifierDisplayString.fever)
+        LocalizeOneDropdown(bg, "keysound", modifierSidesheet.modifierDisplayString.keysound)
+        LocalizeOneDropdown(bg, "assist-tick", modifierSidesheet.modifierDisplayString.assistTick)
+        LocalizeOneDropdown(bg, "sudden-death", modifierSidesheet.modifierDisplayString.suddenDeath)
+        LocalizeOneDropdown(bg, "mode", modifierSidesheet.modifierDisplayString.mode)
+        LocalizeOneDropdown(bg, "control-override", modifierSidesheet.modifierDisplayString.controlOverride)
+        LocalizeOneDropdown(bg, "scroll-speed", modifierSidesheet.modifierDisplayString.scrollSpeed)
+    end
+    LocalizeDropdowns()
+    table.insert(callbacksOnLocaleChange, function()
+        LocalizeDropdowns()
+        modifierSidesheet.SetDropdownValues()
+        selectPatternPanel.ShowCurrentModifiers()
+    end)
+
+    function InitializeDropdown(containerName, modifierKey)
+        -- tm.options.modifiers and modifierSidesheet.modifierDisplayString share the same keys.
+        bg.Q(containerName).Q("dropdown").RegisterCallback(eventType.ChangeString, function(element, event)
+            tm.options.modifiers[modifierKey] = KeyFromValue(modifierSidesheet.modifierDisplayString[modifierKey], event.newValue)
+            selectPatternPanel.ShowCurrentModifiers()
+        end)
+    end
+    InitializeDropdown("note-opacity", "noteOpacity")
+    InitializeDropdown("scanline-opacity", "scanlineOpacity")
+    InitializeDropdown("scan-direction", "scanDirection")
+    InitializeDropdown("note-position", "notePosition")
+    InitializeDropdown("scan-position", "scanPosition")
+    InitializeDropdown("fever", "fever")
+    InitializeDropdown("keysound", "keysound")
+    InitializeDropdown("assist-tick", "assistTick")
+    InitializeDropdown("sudden-death", "suddenDeath")
+    InitializeDropdown("mode", "mode")
+    InitializeDropdown("control-override", "controlOverride")
+    bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()
+        -- Update control scheme icons of all patterns
+        for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
+            local radioButton = selectPatternPanel.allPatternRadioButtons[index]
+            SetUpControlSchemeIcon(pattern.patternMetadata.controlScheme, radioButton.Q("pattern-banner").Q("scheme-icon-container"))
+        end
+    end)
+    InitializeDropdown("scroll-speed", "scrollSpeed")
+
+    local judgementTallyKey = "showJudgementTally"
+    bg.Q("judgement-tally").Q("track").RegisterCallback(eventType.Click, function()
+        local oldValue = themeOptions[judgementTallyKey]
+        if (oldValue == "True") then
+            themeOptions[judgementTallyKey] = "False"
+        else
+            themeOptions[judgementTallyKey] = "True"
+        end
+    end)
+
+    commonUI.InitializeBgBrightnessSlider(bg.Q("bg-brightness"))
+
+    bg.Q("no-video").Q("track").RegisterCallback(eventType.Click, function(element, event)
+        if (selectTrackPanel.selectedTrackOptions == nil) then return end
+        selectTrackPanel.selectedTrackOptions.noVideo = not selectTrackPanel.selectedTrackOptions.noVideo
+        selectPatternPanel.ShowCurrentModifiers()
+    end)
+end
+
+modifierSidesheet.Initialize()
