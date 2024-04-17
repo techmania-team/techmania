@@ -706,6 +706,12 @@ namespace ThemeApi
             return VisualElementTransform
                 .ElementContainsPointInScreenSpace(inner, screenSpace);
         }
+
+        public bool ContainsPointInScreenSpace(Vector3 screenSpace)
+        {
+            return ContainsPointInScreenSpace(
+                new Vector2(screenSpace.x, screenSpace.y));
+        }
         #endregion
     }
 

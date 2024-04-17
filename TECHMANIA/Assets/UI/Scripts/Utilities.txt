@@ -100,10 +100,15 @@ function WaitForSeconds(waitTime)
     end
 end
 
-function ElementContainsPointerPosition(element, pointerPosition)
-    -- TODO: this doesn't work in resolutions not 1080 in height.
-    return element.ContainsPointInScreenSpace(unity.vector2.__new(
-        pointerPosition.x,
-        unity.screen.height - pointerPosition.y
-    ))
+function ElementContainsPointerPosition(element, pointerEvent)
+    -- pointerEvent.position is not in screen space, while unity.Input is.
+    local pointerPosition = nil
+    if (pointerEvent.pointerId == 0) then
+        -- pointer is mouse
+        pointerPosition = unity.input.mousePosition
+    else
+        -- pointer is touch
+        pointerPosition = unity.input.GetTouch(pointerEvent.pointerId - 1).position
+    end
+    return element.ContainsPointInScreenSpace(pointerPosition)
 end

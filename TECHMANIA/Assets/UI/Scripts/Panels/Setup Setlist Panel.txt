@@ -82,7 +82,7 @@ setupSetlistPanel.Initialize = function()
 
         for i = 1, 3 do
             local dropTarget = selectedPatterns.Children()[i].Q("drop-target")
-            local onTarget = ElementContainsPointerPosition(dropTarget, event.position)
+            local onTarget = ElementContainsPointerPosition(dropTarget, event)
             dropTarget.EnableInClassList("at-rest", not onTarget)
             dropTarget.EnableInClassList("accepting-drop", onTarget)
         end
@@ -111,7 +111,7 @@ setupSetlistPanel.Initialize = function()
             local stageNumber = -1
             for i = 1, 3 do
                 local dropTarget = selectedPatterns.Children()[i].Q("drop-target")
-                if (ElementContainsPointerPosition(dropTarget, event.position)) then
+                if (ElementContainsPointerPosition(dropTarget, event)) then
                     stageNumber = i
                     break
                 end
