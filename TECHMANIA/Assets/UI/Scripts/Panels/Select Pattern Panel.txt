@@ -30,8 +30,8 @@ selectPatternPanel = {
 }
 
 modifierSideSheet = {
-    bg = selectPatternPanel.panel.Q("modifier-sidesheet-background"),
-    sheet = selectPatternPanel.panel.Q("modifier-sidesheet"),
+    bg = tm.root.Q("modifier-sidesheet-background"),
+    sheet = tm.root.Q("modifier-sidesheet"),
 }
 
 function RadarAngleForVertex(i)

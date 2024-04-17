@@ -73,11 +73,16 @@ function SetUpNavigation()
         navigation.TransitionBackTo(selectPatternPanel, selectTrackPanel)
     end)
 
-    selectPatternPanel.panel.Q("modifier-sidesheet").Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
+    modifierSideSheet.sheet.Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
         selectSkinPanel.panelToGoBackTo = selectPatternPanel
+        modifierSideSheet.FadeOut()
         navigation.TransitionTo(selectPatternPanel, selectSkinPanel)
     end)
     selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
+            -- Restore modifier side sheet if we just navigated from select pattern / setup setlist panel.
+            modifierSideSheet.FadeIn()
+        end
         navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo)
     end)
 
