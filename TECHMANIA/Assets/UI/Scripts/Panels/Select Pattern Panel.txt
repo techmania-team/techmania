@@ -289,6 +289,10 @@ selectPatternPanel.Hide = function()
     patternListContainer.RemoveAllChildren()
 
     selectPatternPanel.StopPreviewTrackPlayback()
+
+    if (modifierSidesheet.bg.display) then
+        modifierSidesheet.FadeOut()
+    end
 end
 
 selectPatternPanel.InitializeRadar = function()
