@@ -149,6 +149,11 @@ setupSetlistPanel.Initialize = function()
         setupSetlistPanel.totalDragDistance = 0
         setupSetlistPanel.Refresh()
     end)
+
+    panel.Q("modifiers-button").RegisterCallback(eventType.Click, function()
+        modifierSidesheet.Show(--[[inSetlist=]] true)
+        modifierSidesheet.FadeIn()
+    end)
 end
 
 setupSetlistPanel.Show = function()

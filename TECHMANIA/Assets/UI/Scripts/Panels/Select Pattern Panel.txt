@@ -321,10 +321,8 @@ end
 selectPatternPanel.Initialize = function()
     local panel = selectPatternPanel.panel
 
-    local sidesheetBg = modifierSidesheet.bg
-    sidesheetBg.display = false
     panel.Q("modifiers-button").RegisterCallback(eventType.Click, function()
-        modifierSidesheet.Show()
+        modifierSidesheet.Show(--[[inSetlist=]] false)
         modifierSidesheet.FadeIn()
     end)
 

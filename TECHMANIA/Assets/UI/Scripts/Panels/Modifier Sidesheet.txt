@@ -39,7 +39,18 @@ modifierSidesheet.SetDropdownValues = function()
     SetDropdownValue("scroll-speed", "scrollSpeed")
 end
 
-modifierSidesheet.Show = function()
+-- if inSetlist, the following will be hidden:
+-- - per-track options
+--   - BG brightness
+--   - no video
+-- - practice mode
+modifierSidesheet.Show = function(inSetlist)
+    if (inSetlist) then
+        if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
+            tm.options.modifiers.mode = tm.enum.mode.Normal
+        end
+    end
+
     local sheet = modifierSidesheet.sheet
     modifierSidesheet.SetDropdownValues()
 
@@ -47,9 +58,15 @@ modifierSidesheet.Show = function()
         sheet.Q("judgement-tally").Q("track"),
         themeOptions["showJudgementTally"] == "True")
 
-    commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
-
-    controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+    if (inSetlist) then
+        sheet.Q("bg-brightness").display = false
+        sheet.Q("no-video").display = false
+    else
+        sheet.Q("bg-brightness").display = true
+        sheet.Q("no-video").display = true
+        commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
+        controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+    end
 end
 
 modifierSidesheet.FadeIn = function()
@@ -69,6 +86,7 @@ end
 
 modifierSidesheet.Initialize = function()
     local bg = modifierSidesheet.bg
+    bg.display = false
     bg.RegisterCallback(eventType.Click, function()
         tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
         modifierSidesheet.FadeOut()
