@@ -2,6 +2,8 @@ modifierSidesheet = {
     bg = tm.root.Q("modifier-sidesheet-background"),
     sheet = tm.root.Q("modifier-sidesheet"),
 
+    inSetlist = nil,
+
     -- In each table, key is enum, value is display string
     modifierDisplayString = {
         noteOpacity = {},
@@ -45,6 +47,7 @@ end
 --   - no video
 -- - practice mode
 modifierSidesheet.Show = function(inSetlist)
+    modifierSidesheet.inSetlist = inSetlist
     if (inSetlist) then
         if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
             tm.options.modifiers.mode = tm.enum.mode.Normal
@@ -201,6 +204,7 @@ modifierSidesheet.Initialize = function()
         LocalizeDropdowns()
         modifierSidesheet.SetDropdownValues()
         selectPatternPanel.ShowCurrentModifiers()
+        setupSetlistPanel.ShowCurrentModifiers()
     end)
 
     function InitializeDropdown(containerName, modifierKey)
@@ -208,6 +212,7 @@ modifierSidesheet.Initialize = function()
         bg.Q(containerName).Q("dropdown").RegisterCallback(eventType.ChangeString, function(element, event)
             tm.options.modifiers[modifierKey] = KeyFromValue(modifierSidesheet.modifierDisplayString[modifierKey], event.newValue)
             selectPatternPanel.ShowCurrentModifiers()
+            setupSetlistPanel.ShowCurrentModifiers()
         end)
     end
     InitializeDropdown("note-opacity", "noteOpacity")
@@ -223,9 +228,10 @@ modifierSidesheet.Initialize = function()
     InitializeDropdown("control-override", "controlOverride")
     bg.Q("control-override").Q("dropdown").RegisterCallback(eventType.ChangeString, function()
         -- Update control scheme icons of all patterns
-        for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
-            local radioButton = selectPatternPanel.allPatternRadioButtons[index]
-            SetUpControlSchemeIcon(pattern.patternMetadata.controlScheme, radioButton.Q("pattern-banner").Q("scheme-icon-container"))
+        if (modifierSidesheet.inSetlist) then
+            setupSetlistPanel.Refresh()
+        else
+            selectPatternPanel.OnControlSchemeOverrideChanged()
         end
     end)
     InitializeDropdown("scroll-speed", "scrollSpeed")
@@ -247,6 +253,42 @@ modifierSidesheet.Initialize = function()
         selectTrackPanel.selectedTrackOptions.noVideo = not selectTrackPanel.selectedTrackOptions.noVideo
         selectPatternPanel.ShowCurrentModifiers()
     end)
+end
+
+function CurrentModifiersToString(includeNoVideo)
+    local allSegments = {}
+    function CheckAndAddSegment(modifierKey, isSpecial)
+        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
+        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
+        local segment = modifierSidesheet.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
+        if (isSpecial) then
+            segment = "<color=#CF6679>" .. segment .. "</color>"
+        end
+        table.insert(allSegments, segment)
+    end
+    CheckAndAddSegment("noteOpacity", false)
+    CheckAndAddSegment("scanlineOpacity", false)
+    CheckAndAddSegment("scanDirection", false)
+    CheckAndAddSegment("notePosition", false)
+    CheckAndAddSegment("scanPosition", false)
+    CheckAndAddSegment("fever", false)
+    CheckAndAddSegment("keysound", false)
+    CheckAndAddSegment("assistTick", false)
+    if (includeNoVideo and
+        selectTrackPanel.selectedTrackOptions != nil and
+        selectTrackPanel.selectedTrackOptions.noVideo) then
+        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
+    end
+    CheckAndAddSegment("suddenDeath", false)
+    CheckAndAddSegment("mode", true)
+    CheckAndAddSegment("controlOverride", true)
+    CheckAndAddSegment("scrollSpeed", true)
+
+    if (#allSegments == 0) then
+        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
+    end
+
+    return net.string.Join(" / ", allSegments)
 end
 
 modifierSidesheet.Initialize()

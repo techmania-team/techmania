@@ -156,6 +156,11 @@ setupSetlistPanel.Initialize = function()
     end)
 end
 
+setupSetlistPanel.ShowCurrentModifiers = function()
+    local container = setupSetlistPanel.panel.Q("modifier-display").Q("container")
+    container.Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]] false)
+end
+
 setupSetlistPanel.Show = function()
     local panel = setupSetlistPanel.panel
     local setlist = selectSetlistPanel.selectedSetlist
@@ -270,22 +275,28 @@ setupSetlistPanel.Show = function()
     for i = 1, 3 do
         local element = panel.Q("selected-patterns").Children()[i]
         element.Q("drop-target").display = true
+        element.Q("drop-target").visible = true
         element.Q("eyecatch").display = false
         element.Q("default-eyecatch").display = false
         element.Q("title-container").display = false
         element.Q("Pattern-Banner").display = false
     end
 
+    -- Display modifiers
+    setupSetlistPanel.ShowCurrentModifiers()
+
     -- Disable play button, will re-enable once 3 patterns selected
     panel.Q("play-button").SetEnabled(false)
 end
 
 setupSetlistPanel.Hide = function()
+    local setlist = selectSetlistPanel.selectedSetlist
+
     -- Release eyecatches
     for index, _ in ipairs(setlist.selectablePatterns) do
         local pattern = setupSetlistPanel.selectablePatterns[index]
         if (pattern.eyecatch != nil) then
-            tm.io.ReleaseTexture(pattern.release)
+            tm.io.ReleaseTexture(pattern.eyecatch)
         end
     end
     setupSetlistPanel.selectablePatterns = {}
@@ -296,6 +307,8 @@ setupSetlistPanel.Hide = function()
         end
     end
     setupSetlistPanel.hiddenPatternEyecatches = {}
+
+    setupSetlistPanel.selectedPatternIndex = {-1, -1, -1}
 end
 
 setupSetlistPanel.Refresh = function()

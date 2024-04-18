@@ -59,42 +59,6 @@ function SetUpPatternBanner(patternMetadata, banner)
     banner.Q("pattern-name").text = patternMetadata.patternName
 end
 
-function CurrentModifiersToString(includeNoVideo)
-    local allSegments = {}
-    function CheckAndAddSegment(modifierKey, isSpecial)
-        if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
-        if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
-        local segment = modifierSidesheet.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
-        if (isSpecial) then
-            segment = "<color=#CF6679>" .. segment .. "</color>"
-        end
-        table.insert(allSegments, segment)
-    end
-    CheckAndAddSegment("noteOpacity", false)
-    CheckAndAddSegment("scanlineOpacity", false)
-    CheckAndAddSegment("scanDirection", false)
-    CheckAndAddSegment("notePosition", false)
-    CheckAndAddSegment("scanPosition", false)
-    CheckAndAddSegment("fever", false)
-    CheckAndAddSegment("keysound", false)
-    CheckAndAddSegment("assistTick", false)
-    if (includeNoVideo and
-        selectTrackPanel.selectedTrackOptions != nil and
-        selectTrackPanel.selectedTrackOptions.noVideo) then
-        table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
-    end
-    CheckAndAddSegment("suddenDeath", false)
-    CheckAndAddSegment("mode", true)
-    CheckAndAddSegment("controlOverride", true)
-    CheckAndAddSegment("scrollSpeed", true)
-
-    if (#allSegments == 0) then
-        table.insert(allSegments, tm.l10n.GetString("select_pattern_modifier_none"))
-    end
-
-    return net.string.Join(" / ", allSegments)
-end
-
 -- Currently selected pattern may be nil.
 selectPatternPanel.ShowPatternDetails = function()
     local pattern = selectPatternPanel.selectedPattern
@@ -205,7 +169,7 @@ end
 
 selectPatternPanel.ShowCurrentModifiers = function()
     local container = selectPatternPanel.panel.Q("modifier-display").Q("container")
-    container.Q("content").text = CurrentModifiersToString(true)  -- include "no video"
+    container.Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]] true)
 end
 
 selectPatternPanel.Show = function()
@@ -486,6 +450,13 @@ selectPatternPanel.StopPreviewTrackPlayback = function()
             selectPatternPanel.previewTrackChannel.Stop()
             tm.io.ReleaseAudio(selectPatternPanel.previewTrack)
         end)
+    end
+end
+
+selectPatternPanel.OnControlSchemeOverrideChanged = function()
+    for index, pattern in ipairs(selectTrackPanel.selectedFullTrack.patterns) do
+        local radioButton = selectPatternPanel.allPatternRadioButtons[index]
+        SetUpControlSchemeIcon(pattern.patternMetadata.controlScheme, radioButton.Q("pattern-banner").Q("scheme-icon-container"))
     end
 end
 
