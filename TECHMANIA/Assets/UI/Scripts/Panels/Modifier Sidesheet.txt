@@ -54,6 +54,17 @@ modifierSidesheet.Show = function(inSetlist)
     local sheet = modifierSidesheet.sheet
     modifierSidesheet.SetDropdownValues()
 
+    -- Re-populate the mode dropdown
+    local choices = {
+        modifierSidesheet.modifierDisplayString.mode[tm.enum.mode.Normal],
+        modifierSidesheet.modifierDisplayString.mode[tm.enum.mode.NoFail],
+        modifierSidesheet.modifierDisplayString.mode[tm.enum.mode.AutoPlay]
+    }
+    if (not inSetlist) then
+        table.insert(choices, modifierSidesheet.modifierDisplayString.mode[tm.enum.mode.Practice])
+    end
+    sheet.Q("mode").Q("dropdown").choices = choices
+
     controls.SetToggleIsOn(
         sheet.Q("judgement-tally").Q("track"),
         themeOptions["showJudgementTally"] == "True")
