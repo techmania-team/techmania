@@ -16,7 +16,7 @@ setupSetlistPanel = {
     selectedPatternBeingDragged = -1,
     totalDragDistance = 0,
     
-    -- -1 means none selected
+    -- 1-index; -1 means none selected
     selectedPatternIndex = {-1, -1, -1}
 }
 
@@ -153,6 +153,24 @@ setupSetlistPanel.Initialize = function()
     panel.Q("modifiers-button").RegisterCallback(eventType.Click, function()
         modifierSidesheet.Show(--[[inSetlist=]] true)
         modifierSidesheet.FadeIn()
+    end)
+
+    panel.Q("play-button").RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
+
+        -- Populate game setup
+        tm.gameSetup.setlist.enabled = true
+        tm.gameSetup.setlist.setlistFolder = selectSetlistPanel.selectedSetlistFolder
+        tm.gameSetup.setlist.patternIndices = {
+            setupSetlistPanel.selectedPatternIndex[1] - 1,
+            setupSetlistPanel.selectedPatternIndex[2] - 1,
+            setupSetlistPanel.selectedPatternIndex[3] - 1,
+        }
+
+        -- Save options
+        tm.options.SaveToFile()
+
+        -- Navigation.txt will handle loading
     end)
 end
 

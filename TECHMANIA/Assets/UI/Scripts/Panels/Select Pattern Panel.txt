@@ -294,6 +294,7 @@ selectPatternPanel.Initialize = function()
         tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
 
         -- Populate game setup
+        tm.gameSetup.setlist.enabled = false
         tm.gameSetup.trackFolder = selectTrackPanel.selectedTrackFolder
         tm.gameSetup.patternGuid = selectPatternPanel.selectedPattern.patternMetadata.guid
 

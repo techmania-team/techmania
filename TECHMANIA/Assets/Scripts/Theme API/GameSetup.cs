@@ -8,10 +8,22 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class GameSetup
     {
+        [MoonSharpUserData]
+        public class SetlistFields
+        {
+            // Set to true to load setlist, otherwise will load track.
+            public bool enabled;
+            // The folder that contains the setlist.tech file.
+            public string setlistFolder;
+            // 0-index, must contain 3 elements
+            public List<int> patternIndices;
+        }
+
         [MoonSharpHidden]
         public GameSetup()
         {
             GameController.instance.SetSetupInstance(this);
+            setlist = new SetlistFields();
         }
 
         // Track and pattern (unused in editor preview)
@@ -19,6 +31,10 @@ namespace ThemeApi
         // The folder that contains the track.tech file.
         public string trackFolder;
         public string patternGuid;
+
+        // Setlist
+
+        public SetlistFields setlist;
 
         // VisualElements
 
@@ -74,6 +90,8 @@ namespace ThemeApi
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
+        // Parameter: TBD
+        public DynValue onCompletedPattern;
         // Parameter: ScoreKeeper. The game will be in Complete state
         // when this is called.
         public DynValue onStageClear;
@@ -86,6 +104,9 @@ namespace ThemeApi
         // The folder that contains the track.tech file.
         [MoonSharpHidden]
         public string lockedTrackFolder;
+        // The folder that contains the setlist.tech file.
+        [MoonSharpHidden]
+        public string lockedSetlistFolder;
         [MoonSharpHidden]
         public PerTrackOptions trackOptions;
         [MoonSharpHidden]

@@ -15,18 +15,34 @@ namespace ThemeApi
             // Any state can transition to Idle by calling Conclude().
             Idle,
             // Transitions to LoadError or LoadComplete.
-            // With each file loaded, fires onLoadProgress.
-            // When loading fails, fires both onStateChange and
-            // onLoadError; onLoadError will contain a Status.
+            // With each file loaded, calls onLoadProgress.
+            // When loading fails, calls onLoadError with a Status.
             Loading,
             LoadError,
             // Theme can start the game now, which transitions to
             // Ongoing state.
             LoadComplete,
-            // Transitions to Paused and Complete.
+            // Transitions to Paused, CompletePattern and Complete.
             Ongoing,
             // Transitions to Ongoing.
             Paused,
+            // Setlist only: completed one pattern with HP above
+            // stage threshold, but not completed the whole setlist yet.
+            //
+            // If completed the hidden pattern, game will treat it
+            // as stage clear and enter Complete state, skipping
+            // CompletePattern.
+            //
+            // If the pattern ended with HP below stage threshold,
+            // game will treat it as stage failed and enter Complete
+            // state, skipping CompletePattern.
+            //
+            // In this state, the game no longer updates or
+            // responds to input, and waits for Lua to call
+            // LoadNextPattern().
+            //
+            // Transitions to Loading.
+            CompletePattern,
             // The game is complete by either stage clear or
             // stage failed. The game no longer updates or responds
             // to input, and waits for Lua to call Conclude().
@@ -86,6 +102,13 @@ namespace ThemeApi
             GameController.instance.Unpause();
         }
 
+        public void LoadNextPattern()
+        {
+            CheckState(State.CompletePattern, "LoadNextPattern");
+            state = State.Loading;
+            // TODO
+        }
+
         public void Conclude()
         {
             state = State.Idle;
@@ -113,7 +136,7 @@ namespace ThemeApi
 
         #region Game control
         // Available in states LoadComplete, Ongoing,
-        // Paused and Complete.
+        // Paused, CompletePattern and Complete.
         public ScoreKeeper scoreKeeper => GameController.instance
             .scoreKeeper;
         // Available in states LoadComplete, Ongoing and Paused.
