@@ -313,7 +313,7 @@ setupSetlistPanel.Hide = function()
     -- Release eyecatches
     for index, _ in ipairs(setlist.selectablePatterns) do
         local pattern = setupSetlistPanel.selectablePatterns[index]
-        if (pattern.eyecatch != nil) then
+        if (pattern != nil and pattern.eyecatch != nil) then
             tm.io.ReleaseTexture(pattern.eyecatch)
         end
     end
