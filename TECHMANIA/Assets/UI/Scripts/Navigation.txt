@@ -121,7 +121,7 @@ function SetUpNavigation()
 
     setupSetlistPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
         gamePanel.inEditor = false
-        -- navigation.FadeTo(setupSetlistPanel, gamePanel)
+        navigation.FadeTo(setupSetlistPanel, gamePanel)
     end)
     -- game panel --> setup setlist panel can happen on multiple occasions, set up in
     -- Game Panel.txt.

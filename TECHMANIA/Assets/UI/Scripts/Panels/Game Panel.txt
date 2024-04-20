@@ -234,6 +234,7 @@ gamePanel.Initialize = function()
 end
 
 gamePanel.Show = function()
+    -- TODO: update selectPatternPanel references
     -- Discord activity
     local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
     local metadata = selectPatternPanel.selectedPattern.patternMetadata

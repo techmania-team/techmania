@@ -22,7 +22,7 @@ namespace ThemeApi
             // Theme can start the game now, which transitions to
             // Ongoing state.
             LoadComplete,
-            // Transitions to Paused, CompletePattern and Complete.
+            // Transitions to Paused, PartialComplete and Complete.
             Ongoing,
             // Transitions to Ongoing.
             Paused,
@@ -31,18 +31,18 @@ namespace ThemeApi
             //
             // If completed the hidden pattern, game will treat it
             // as stage clear and enter Complete state, skipping
-            // CompletePattern.
+            // PartialComplete.
             //
             // If the pattern ended with HP below stage threshold,
             // game will treat it as stage failed and enter Complete
-            // state, skipping CompletePattern.
+            // state, skipping PartialComplete.
             //
             // In this state, the game no longer updates or
             // responds to input, and waits for Lua to call
             // LoadNextPattern().
             //
             // Transitions to Loading.
-            CompletePattern,
+            PartialComplete,
             // The game is complete by either stage clear or
             // stage failed. The game no longer updates or responds
             // to input, and waits for Lua to call Conclude().
@@ -51,11 +51,63 @@ namespace ThemeApi
         }
         public State state { get; private set; }
 
+        [MoonSharpUserData]
+        public class SetlistFields
+        {
+            [MoonSharpHidden]
+            public GameState parent;
+
+            // 0, 1, 2 for selectable patterns, 3 for hidden pattern.
+            public int currentStage 
+            {
+                get;
+                [MoonSharpHidden]
+                set; 
+            }
+
+            // To play a setlist, theme should call this once,
+            // then setlist.LoadNextPattern() once for each stage.
+            // Do not call BeginLoading().
+            //
+            // This method synchronously loads the setlist (but not
+            // background image) from the disk, so it may block for
+            // a bit. It will return a non-OK Status on error.
+            public Status Prepare()
+            {
+                parent.CheckState(State.Idle, "setlist.Prepare");
+                Status status = GameController.instance.PrepareSetlist();
+                if (status.Ok())
+                {
+                    // Will be increment before each load
+                    currentStage = -1;
+                }
+                return status;
+            }
+
+            public void LoadNextPattern()
+            {
+                if (currentStage == -1)
+                {
+                    parent.CheckState(State.Idle, 
+                        "setlist.LoadNextPattern");
+                }
+                else
+                {
+                    parent.CheckState(State.PartialComplete,
+                        "setlist.LoadNextPattern");
+                }
+                currentStage++;
+                GameController.instance.BeginLoading();
+            }
+        }
+        public SetlistFields setlist;
+
         [MoonSharpHidden]
         public GameState()
         {
             state = State.Idle;
             GameController.instance.SetStateInstance(this);
+            setlist = new SetlistFields() { parent = this };
         }
 
         #region State changes
@@ -102,13 +154,6 @@ namespace ThemeApi
             GameController.instance.Unpause();
         }
 
-        public void LoadNextPattern()
-        {
-            CheckState(State.CompletePattern, "LoadNextPattern");
-            state = State.Loading;
-            // TODO
-        }
-
         public void Conclude()
         {
             state = State.Idle;
@@ -136,7 +181,7 @@ namespace ThemeApi
 
         #region Game control
         // Available in states LoadComplete, Ongoing,
-        // Paused, CompletePattern and Complete.
+        // Paused, PartialComplete and Complete.
         public ScoreKeeper scoreKeeper => GameController.instance
             .scoreKeeper;
         // Available in states LoadComplete, Ongoing and Paused.

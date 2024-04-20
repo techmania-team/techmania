@@ -17,6 +17,19 @@ namespace ThemeApi
             public string setlistFolder;
             // 0-index, must contain 3 elements
             public List<int> patternIndices;
+
+            // Parameter: TBD. The game will be in PartialComplete state
+            // when this is called.
+            public DynValue onPartialComplete;
+
+            // Internal stuff
+
+            [MoonSharpHidden]
+            public string lockedSetlistFolder;
+            [MoonSharpHidden]
+            public Setlist loadedSetlist;
+            [MoonSharpHidden]
+            public Texture2D loadedBackImage;
         }
 
         [MoonSharpHidden]
@@ -90,8 +103,6 @@ namespace ThemeApi
         public DynValue onFeverUpdate;
         // Parameter: Fever bonus.
         public DynValue onFeverEnd;
-        // Parameter: TBD
-        public DynValue onCompletedPattern;
         // Parameter: ScoreKeeper. The game will be in Complete state
         // when this is called.
         public DynValue onStageClear;
@@ -104,9 +115,6 @@ namespace ThemeApi
         // The folder that contains the track.tech file.
         [MoonSharpHidden]
         public string lockedTrackFolder;
-        // The folder that contains the setlist.tech file.
-        [MoonSharpHidden]
-        public string lockedSetlistFolder;
         [MoonSharpHidden]
         public PerTrackOptions trackOptions;
         [MoonSharpHidden]
