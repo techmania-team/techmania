@@ -79,7 +79,7 @@ modifierSidesheet.Show = function(inSetlist)
         sheet.Q("bg-brightness").display = true
         sheet.Q("no-video").display = true
         commonUI.ShowBgBrightnessSlider(sheet.Q("bg-brightness"))
-        controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), selectTrackPanel.selectedTrackOptions.noVideo)
+        controls.SetToggleIsOn(sheet.Q("no-video").Q("track"), commonUI.trackOptions.noVideo)
     end
 end
 
@@ -249,8 +249,8 @@ modifierSidesheet.Initialize = function()
     commonUI.InitializeBgBrightnessSlider(bg.Q("bg-brightness"))
 
     bg.Q("no-video").Q("track").RegisterCallback(eventType.Click, function(element, event)
-        if (selectTrackPanel.selectedTrackOptions == nil) then return end
-        selectTrackPanel.selectedTrackOptions.noVideo = not selectTrackPanel.selectedTrackOptions.noVideo
+        if (commonUI.trackOptions == nil) then return end
+        commonUI.trackOptions.noVideo = not commonUI.trackOptions.noVideo
         selectPatternPanel.ShowCurrentModifiers()
     end)
 end
@@ -275,8 +275,8 @@ function CurrentModifiersToString(includeNoVideo)
     CheckAndAddSegment("keysound", false)
     CheckAndAddSegment("assistTick", false)
     if (includeNoVideo and
-        selectTrackPanel.selectedTrackOptions != nil and
-        selectTrackPanel.selectedTrackOptions.noVideo) then
+        commonUI.trackOptions != nil and
+        commonUI.trackOptions.noVideo) then
         table.insert(allSegments, tm.l10n.GetString("modifier_no_video"))
     end
     CheckAndAddSegment("suddenDeath", false)

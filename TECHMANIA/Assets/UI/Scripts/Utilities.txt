@@ -34,7 +34,10 @@ function ReleaseEyecatch(eyecatchElement)
     end
 end
 
-commonUI = {}
+commonUI = {
+    -- Can be set by select pattern panel or game panel (in setlists).
+    trackOptions = nil,
+}
 
 commonUI.InitializeVolumeSliders = function(container)
     function InitializeOneVolumeSlider(wrapName, optionKey)
@@ -71,14 +74,13 @@ commonUI.ShowVolumeSliders = function(container)
     ShowOneVolumeSlider("sound-effects", "sfxVolumePercent")
 end
 
--- Uses the selectTrackPanel.selectedTrackOptions global variable.
 commonUI.InitializeBgBrightnessSlider = function(container)
     local slider = container.Q("slider")
     slider.lowValue = 0
     slider.highValue = 10
     slider.RegisterCallback(eventType.ChangeInt, function(element, event)
-        if (selectTrackPanel.selectedTrackOptions == nil) then return end
-        selectTrackPanel.selectedTrackOptions.backgroundBrightness = event.newValue
+        if (commonUI.trackOptions == nil) then return end
+        commonUI.trackOptions.backgroundBrightness = event.newValue
         container.Q("value-display").text = tostring(event.newValue)
         if (tm.game.state == tm.enum.gameState.Ongoing or tm.game.state == tm.enum.gameState.Paused) then
             tm.game.UpdateBgBrightness()
@@ -86,10 +88,9 @@ commonUI.InitializeBgBrightnessSlider = function(container)
     end)
 end
 
--- Uses the selectTrackPanel.selectedTrackOptions global variable.
 commonUI.ShowBgBrightnessSlider = function(container)
-    controls.SetSliderValueWithoutNotify(container.Q("slider"), selectTrackPanel.selectedTrackOptions.backgroundBrightness)
-    container.Q("value-display").text = tostring(selectTrackPanel.selectedTrackOptions.backgroundBrightness)
+    controls.SetSliderValueWithoutNotify(container.Q("slider"), commonUI.trackOptions.backgroundBrightness)
+    container.Q("value-display").text = tostring(commonUI.trackOptions.backgroundBrightness)
 end
 
 function WaitForSeconds(waitTime)

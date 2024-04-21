@@ -180,7 +180,7 @@ selectPatternPanel.Show = function()
     local track = selectTrackPanel.selectedFullTrack
 
     -- Load per-track options. TECHMANIA will create one if none exists, so this shouldn't be nil.
-    selectTrackPanel.selectedTrackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
+    commonUI.trackOptions = tm.options.GetPerTrackOptions(track.trackMetadata.guid)
 
     -- Display metadata.
     local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, track.trackMetadata.eyecatchImage)

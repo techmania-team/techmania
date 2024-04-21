@@ -249,7 +249,7 @@ end
 
 gamePanel.Show = function()
     tm.options.TemporarilyDisableVSync()
-    
+
     -- For setlists it's necessary to start loading now as it increments
     -- stage number.
     if (tm.gameSetup.setlist.enabled) then
@@ -258,15 +258,13 @@ gamePanel.Show = function()
         tm.game.BeginLoading()
     end
 
-    -- Copy track and pattern metadata for use by other parts
+    -- Copy track metadata and pattern metadata for use by other parts
     if (tm.gameSetup.setlist.enabled) then
         local setlist = selectSetlistPanel.selectedSetlist
         local stageNumber = tm.game.setlist.currentStage
-        print("stageNumber: " .. tostring(stageNumber))
         if (stageNumber < 3) then
             -- Copy from setupSetlistPanel
             local patternIndex = setupSetlistPanel.selectedPatternIndex[stageNumber + 1]
-            print("patternIndex: " .. tostring(patternIndex))
             gamePanel.trackMetadata = setupSetlistPanel.selectablePatterns[patternIndex].track.trackMetadata
             gamePanel.patternMetadata = setupSetlistPanel.selectablePatterns[patternIndex].pattern.patternMetadata
         else
@@ -277,6 +275,9 @@ gamePanel.Show = function()
             gamePanel.trackMetadata = trackInFolder.minimizedTrack.trackMetadata
             gamePanel.patternMetadata = pattern.patternMetadata
         end
+
+        -- Also prepare track options so pause menu can work
+        commonUI.trackOptions = tm.options.GetPerTrackOptions(gamePanel.trackMetadata.guid)
     else
         gamePanel.trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
         gamePanel.patternMetadata = selectPatternPanel.selectedPattern.patternMetadata
