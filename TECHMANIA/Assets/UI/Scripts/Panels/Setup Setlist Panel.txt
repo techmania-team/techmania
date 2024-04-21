@@ -166,6 +166,7 @@ setupSetlistPanel.Initialize = function()
             setupSetlistPanel.selectedPatternIndex[2] - 1,
             setupSetlistPanel.selectedPatternIndex[3] - 1,
         }
+        tm.game.setlist.Prepare()
 
         -- Save options
         tm.options.SaveToFile()
@@ -185,6 +186,10 @@ setupSetlistPanel.Show = function()
 
     local selectablePatternContainer = panel.Q("selectable-patterns").Q("unity-content-container")
     selectablePatternContainer.RemoveAllChildren()
+
+    -- Reset state
+    setupSetlistPanel.selectablePatterns = {}
+    setupSetlistPanel.selectedPatternIndex = {-1, -1, -1}
 
     -- Search for all pattern references
     local availableSelectablePatterns = 0
@@ -317,7 +322,6 @@ setupSetlistPanel.Hide = function()
             tm.io.ReleaseTexture(pattern.eyecatch)
         end
     end
-    setupSetlistPanel.selectablePatterns = {}
     
     for index, _ in ipairs(setlist.hiddenPatterns) do
         if (setupSetlistPanel.hiddenPatternEyecatches[index] != nil) then
@@ -325,8 +329,6 @@ setupSetlistPanel.Hide = function()
         end
     end
     setupSetlistPanel.hiddenPatternEyecatches = {}
-
-    setupSetlistPanel.selectedPatternIndex = {-1, -1, -1}
 end
 
 setupSetlistPanel.Refresh = function()

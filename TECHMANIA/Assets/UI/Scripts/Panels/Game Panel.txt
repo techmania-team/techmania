@@ -2,7 +2,12 @@ gamePanel = {
     panel = tm.root.Q("game-panel"),
     feverReadyCoroutine = nil,
     feverBonusCoroutine = nil,
-    inEditor = false
+    inEditor = false,
+
+    -- Copied on Show() from select pattern/setup setlist panel,
+    -- so other parts don't need to care where the pattern comes from.
+    trackMetadata = nil,
+    patternMetadata = nil,
 }
 
 pauseButton = {
@@ -137,6 +142,15 @@ gamePanel.Initialize = function()
                 local instructionTouch = feverBarBg.Q("fever-instruction-touch")
                 local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
 
+                local controlScheme = gamePanel.patternMetadata.controlScheme
+                if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
+                    controlScheme = tm.enum.controlScheme.Touch
+                elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
+                    controlScheme = tm.enum.controlScheme.Keys
+                elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
+                    controlScheme = tm.enum.controlScheme.KM
+                end
+
                 function OneFlash()
                     local fadeTimer = 0.5
                     local timer = 0
@@ -169,8 +183,8 @@ gamePanel.Initialize = function()
 
                     feverOff.display = false
                     feverReady.display = false
-                    instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
-                    instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
+                    instructionTouch.display = controlScheme == tm.enum.controlScheme.Touch
+                    instructionKeysKm.display = controlScheme != tm.enum.controlScheme.Touch
 
                     OneFlash()
                 end
@@ -234,26 +248,69 @@ gamePanel.Initialize = function()
 end
 
 gamePanel.Show = function()
-    -- TODO: update selectPatternPanel references
-    -- Discord activity
-    local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
-    local metadata = selectPatternPanel.selectedPattern.patternMetadata
-    local controlSchemeString
-    if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_touch")
-    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_keys")
-    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_km")
+    tm.options.TemporarilyDisableVSync()
+    
+    -- For setlists it's necessary to start loading now as it increments
+    -- stage number.
+    if (tm.gameSetup.setlist.enabled) then
+        tm.game.setlist.LoadNextPattern()
+    else
+        tm.game.BeginLoading()
     end
-    local discordActivity = net.string.format(discordActivityFormat,
-        metadata.playableLanes,
-        controlSchemeString,
-        metadata.level)
-    tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
-        discordActivity,
-        true)  -- show elapsed time
 
+    -- Copy track and pattern metadata for use by other parts
+    if (tm.gameSetup.setlist.enabled) then
+        local setlist = selectSetlistPanel.selectedSetlist
+        local stageNumber = tm.game.setlist.currentStage
+        print("stageNumber: " .. tostring(stageNumber))
+        if (stageNumber < 3) then
+            -- Copy from setupSetlistPanel
+            local patternIndex = setupSetlistPanel.selectedPatternIndex[stageNumber + 1]
+            print("patternIndex: " .. tostring(patternIndex))
+            gamePanel.trackMetadata = setupSetlistPanel.selectablePatterns[patternIndex].track.trackMetadata
+            gamePanel.patternMetadata = setupSetlistPanel.selectablePatterns[patternIndex].pattern.patternMetadata
+        else
+            -- Resolve from setlist
+            local patternIndex = tm.gameSetup.hiddenPatternIndex
+            local patternRef = selectSetlistPanel.selectedSetlist.hiddenPatterns[patternIndex + 1].reference
+            local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(patternRef)
+            gamePanel.trackMetadata = trackInFolder.minimizedTrack.trackMetadata
+            gamePanel.patternMetadata = pattern.patternMetadata
+        end
+    else
+        gamePanel.trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
+        gamePanel.patternMetadata = selectPatternPanel.selectedPattern.patternMetadata
+    end
+
+    -- Discord activity
+    if (tm.gameSetup.setlist.enabled) then
+        local discordActivity = net.string.format(
+            tm.l10n.GetString("discord_state_playing_pattern_in_setlist"),
+            gamePanel.patternMetadata.level,
+            gamePanel.trackMetadata.title)
+        tm.SetDiscordActivity(selectSetlistPanel.selectedSetlist.setlistMetadata.title,
+            discordActivity,
+            true)  -- show elapsed time
+    else
+        local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
+        local metadata = gamePanel.patternMetadata
+        local controlSchemeString
+        if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_touch")
+        elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_keys")
+        elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_km")
+        end
+        local discordActivity = net.string.format(discordActivityFormat,
+            metadata.playableLanes,
+            controlSchemeString,
+            metadata.level)
+        tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
+            discordActivity,
+            true)  -- show elapsed time
+    end
+    
     local panel = gamePanel.panel
 
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
@@ -277,9 +334,6 @@ gamePanel.Show = function()
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
     panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
-
-    tm.options.TemporarilyDisableVSync()
-    tm.game.BeginLoading()
 end
 
 gamePanel.Hide = function()
@@ -339,7 +393,7 @@ gamePanel.BeginGame = function()
 
     -- Display lane dividers, if requested.
     if (themeOptions["showLaneDividers"] == "True") then
-        local lanes = selectPatternPanel.selectedPattern.patternMetadata.playableLanes
+        local lanes = gamePanel.patternMetadata.playableLanes
         local indexInMarginArray = lanes - 1  -- Lua arrays are 1-index
         local marginTopBottom = tm.ruleset.scanMarginTopBottom[indexInMarginArray] * 100
         local marginMiddle = tm.ruleset.scanMarginMiddle[indexInMarginArray] * 100
@@ -368,7 +422,7 @@ gamePanel.BeginGame = function()
 
     -- Display beat markers, if requested.
     if (themeOptions["beatMarkers"] != "Hidden") then
-        local bps = selectPatternPanel.selectedPattern.patternMetadata.bps
+        local bps = gamePanel.patternMetadata.bps
         local marginBeforeFirstBeat = tm.ruleset.scanMarginBeforeFirstBeat * 100
         local marginAfterLastBeat = tm.ruleset.scanMarginAfterLastBeat * 100
         local scanDirection = tm.options.modifiers.scanDirection

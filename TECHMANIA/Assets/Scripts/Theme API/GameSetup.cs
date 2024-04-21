@@ -15,8 +15,17 @@ namespace ThemeApi
             public bool enabled;
             // The folder that contains the setlist.tech file.
             public string setlistFolder;
-            // 0-index, must contain 3 elements
+            // The indices of selected selectable patterns.
+            // 0-index, must contain 3 elements.
             public List<int> patternIndices;
+            // 0-index, will be set by TECHMANIA once the state machine
+            // enters PartialComplete state after stage 3
+            public int hiddenPatternIndex
+            {
+                get;
+                [MoonSharpHidden]
+                set;
+            }
 
             // Parameter: TBD. The game will be in PartialComplete state
             // when this is called.

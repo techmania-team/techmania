@@ -530,6 +530,8 @@ public class GameController : MonoBehaviour
         // Reset cache. This image will be loaded on the first
         // load sequence and cached for subsequent ones.
         setup.setlist.loadedBackImage = null;
+        // Reset hidden pattern index. Will be set after stage 3.
+        setup.setlist.hiddenPatternIndex = -1;
         return Status.OKStatus();
     }
 

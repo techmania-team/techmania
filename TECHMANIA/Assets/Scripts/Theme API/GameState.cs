@@ -58,6 +58,7 @@ namespace ThemeApi
             public GameState parent;
 
             // 0, 1, 2 for selectable patterns, 3 for hidden pattern.
+            // Will be incremented on each call to LoadNextPattern.
             public int currentStage 
             {
                 get;
