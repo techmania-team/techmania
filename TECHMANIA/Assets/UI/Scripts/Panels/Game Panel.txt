@@ -392,7 +392,7 @@ gamePanel.BeginGame = function()
     pauseButton.ResetState()
     gamePanel.UpdateHpDisplay(1, 1)
     topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
-    gamePanel.UpdateScoreDisplay(0, 0)
+    gamePanel.UpdateScoreDisplay(0, 0)  -- TODO: use value from score keeper
     gamePanel.UpdateFeverDisplay(0)
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false

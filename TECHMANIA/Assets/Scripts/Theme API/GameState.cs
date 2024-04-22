@@ -71,6 +71,9 @@ namespace ThemeApi
                 set; 
             }
 
+            public SetlistScoreKeeper scoreKeeper => 
+                GameController.instance.setlistScoreKeeper;
+
             // To play a setlist, theme should call this once,
             // then setlist.LoadNextPattern() once for each stage.
             // Do not call BeginLoading().

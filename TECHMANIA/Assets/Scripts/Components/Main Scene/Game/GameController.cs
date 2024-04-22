@@ -69,6 +69,8 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
     private InputFeedbackManager inputFeedback;
+    // Accessible from Lua via GameState.setlist.scoreKeeper
+    public SetlistScoreKeeper setlistScoreKeeper { get; private set; }
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
@@ -469,6 +471,11 @@ public class GameController : MonoBehaviour
         scoreKeeper.Prepare(setup.patternAfterModifier,
             timer.firstScan, timer.lastScan,
             playableNotes: noteManager.playableNotes);
+        if (setup.setlist.enabled)
+        {
+            setlistScoreKeeper.AddChild(scoreKeeper, 
+                state.setlist.currentStage);
+        }
 
         // Load complete; wait on theme to begin game.
         state.SetLoadComplete();
@@ -532,6 +539,8 @@ public class GameController : MonoBehaviour
         setup.setlist.loadedBackImage = null;
         // Reset hidden pattern index. Will be set after stage 3.
         setup.setlist.hiddenPatternIndex = -1;
+        // Prepare SetlistScoreKeeper.
+        setlistScoreKeeper = new SetlistScoreKeeper();
         return Status.OKStatus();
     }
 
@@ -743,7 +752,8 @@ public class GameController : MonoBehaviour
         if (setup.setlist.enabled)
         {
             state.SetPartialComplete();
-            setup.setlist.onPartialComplete?.Function?.Call();
+            setup.setlist.onPartialComplete?.Function?.Call(
+                setlistScoreKeeper);
         }
         else
         {

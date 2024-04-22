@@ -27,8 +27,9 @@ namespace ThemeApi
                 set;
             }
 
-            // Parameter: TBD. The game will be in PartialComplete state
-            // when this is called.
+            // Parameter: SetlistScoreKeeper.
+            // The game will be in PartialComplete state when
+            // this is called.
             public DynValue onPartialComplete;
 
             // Internal stuff

@@ -25,7 +25,7 @@ public enum PerformanceMedal
 // Keeps track of score, combo, HP and fever.
 public class ScoreKeeper
 {
-    // Reference to GameSetup so we can call callbacks.
+    // Reference to GameSetup so we can call Fever callbacks.
     private ThemeApi.GameSetup gameSetup;
 
     private LegacyRulesetOverride legacyRulesetOverride;
@@ -249,6 +249,7 @@ public class ScoreKeeper
     [MoonSharpHidden]
     public void JumpToScan()
     {
+        // TODO: don't do this in setlists
         SetCombo(0);
     }
 
@@ -425,4 +426,13 @@ public class ScoreKeeper
         }
     }
     #endregion
+
+    public void OverrideStatsFromSetlist(
+        int currentCombo, int maxCombo, int hp, float feverAmount)
+    {
+        this.currentCombo = currentCombo;
+        this.maxCombo = maxCombo;
+        this.hp = hp;
+        this.feverAmount = feverAmount;
+    }
 }
