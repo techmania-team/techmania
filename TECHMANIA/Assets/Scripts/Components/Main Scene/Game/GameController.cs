@@ -284,7 +284,7 @@ public class GameController : MonoBehaviour
                     });
                 yield return new WaitUntil(() => loaded);
             }
-            if (!status.Ok())
+            if (status != null && !status.Ok())
             {
                 reportLoadError(status);
                 yield break;

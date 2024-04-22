@@ -583,12 +583,14 @@ namespace ThemeApi
             inner.RemoveFromHierarchy();
         }
 
-        public void RemoveAllChildren()
+        // Reused by GameLayout
+        [MoonSharpHidden]
+        public static void RemoveAllChildren(VisualElement element)
         {
             // Make a copy of the child list so we don't modify
             // the child list while enumerating it.
             List<VisualElement> children = new List<VisualElement>();
-            foreach (VisualElement child in inner.Children())
+            foreach (VisualElement child in element.Children())
             {
                 children.Add(child);
             }
@@ -596,6 +598,11 @@ namespace ThemeApi
             {
                 new VisualElementWrap(child).RemoveFromHierarchy();
             }
+        }
+
+        public void RemoveAllChildren()
+        {
+            RemoveAllChildren(inner);
         }
 
         public void AddChild(VisualElementWrap child)

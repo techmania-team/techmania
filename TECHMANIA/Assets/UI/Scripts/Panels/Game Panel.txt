@@ -91,7 +91,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onLoadError = function(status)
-            tm.game.Conclude()
+            gamePanel.ConcludeGame()
             alertBox.Alert(status.errorMessage, nil, function()
                 gamePanel.ConcludeGame()
                 if (tm.gameSetup.setlist.enabled) then
@@ -224,7 +224,11 @@ gamePanel.Initialize = function()
 
         tm.gameSetup.onStageClear = function(scoreKeeper)
             -- Don't conclude the game yet
-            navigation.FadeTo(gamePanel, resultPanel)
+            if (tm.gameSetup.setlist.enabled) then
+                -- TODO
+            else
+                navigation.FadeTo(gamePanel, resultPanel)
+            end
         end
 
         tm.gameSetup.onStageFailed = function(scoreKeeper)
@@ -243,9 +247,18 @@ gamePanel.Initialize = function()
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
                 tm.game.StopAllGameAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
+
                 -- Don't conclude the game yet
-                navigation.FadeTo(gamePanel, resultPanel)
+                if (tm.gameSetup.setlist.enabled) then
+                    -- TODO
+                else
+                    navigation.FadeTo(gamePanel, resultPanel)
+                end
             end)
+        end
+
+        tm.gameSetup.setlist.onPartialComplete = function()
+            gamePanel.Show()
         end
     end
     InitializeGameSetup()
@@ -668,7 +681,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
-        tm.game.Conclude()
+        gamePanel.ConcludeGame()
         gamePanel.Show()
     end)
 
@@ -678,7 +691,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("restart-setlist-button").RegisterCallback(eventType.Click, function()
-        tm.game.Conclude()
+        gamePanel.ConcludeGame()
         tm.game.setlist.Prepare()
         gamePanel.Show()
     end)
