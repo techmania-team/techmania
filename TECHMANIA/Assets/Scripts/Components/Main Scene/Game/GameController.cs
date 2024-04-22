@@ -740,8 +740,16 @@ public class GameController : MonoBehaviour
         if (!scoreKeeper.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
-        state.SetComplete();
-        setup.onStageClear?.Function?.Call(scoreKeeper);
+        if (setup.setlist.enabled)
+        {
+            state.SetPartialComplete();
+            setup.setlist.onPartialComplete?.Function?.Call();
+        }
+        else
+        {
+            state.SetComplete();
+            setup.onStageClear?.Function?.Call(scoreKeeper);
+        }
     }
     #endregion
 

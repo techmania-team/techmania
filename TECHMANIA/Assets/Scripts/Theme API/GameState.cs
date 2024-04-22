@@ -11,9 +11,14 @@ namespace ThemeApi
         public enum State
         {
             // Waiting for Lua to fill in GameSetup and call
-            // BeginLoading.
+            // BeginLoading (transitions to Loading)
+            // or setlist.Prepare (transitions to PreparedSetlist).
             // Any state can transition to Idle by calling Conclude().
             Idle,
+            // Setlist only: loaded setlist into memory, waiting for
+            // Lua to call setlist.LoadNextPattern. Then transitions to
+            // Loading.
+            PreparedSetlist,
             // Transitions to LoadError or LoadComplete.
             // With each file loaded, calls onLoadProgress.
             // When loading fails, calls onLoadError with a Status.
@@ -79,8 +84,9 @@ namespace ThemeApi
                 Status status = GameController.instance.PrepareSetlist();
                 if (status.Ok())
                 {
-                    // Will be increment before each load
+                    // Will be incremented on LoadNextPattern
                     currentStage = -1;
+                    parent.state = State.PreparedSetlist;
                 }
                 return status;
             }
@@ -89,7 +95,7 @@ namespace ThemeApi
             {
                 if (currentStage == -1)
                 {
-                    parent.CheckState(State.Idle, 
+                    parent.CheckState(State.PreparedSetlist, 
                         "setlist.LoadNextPattern");
                 }
                 else
@@ -177,6 +183,12 @@ namespace ThemeApi
         public void SetComplete()
         {
             state = State.Complete;
+        }
+
+        [MoonSharpHidden]
+        public void SetPartialComplete()
+        {
+            state = State.PartialComplete;
         }
         #endregion
 

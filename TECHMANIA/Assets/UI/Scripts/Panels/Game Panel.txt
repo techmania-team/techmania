@@ -94,7 +94,11 @@ gamePanel.Initialize = function()
             tm.game.Conclude()
             alertBox.Alert(status.errorMessage, nil, function()
                 gamePanel.ConcludeGame()
-                navigation.FadeTo(gamePanel, selectTrackPanel)
+                if (tm.gameSetup.setlist.enabled) then
+                    navigation.FadeTo(gamePanel, selectSetlistPanel)
+                else
+                    navigation.FadeTo(gamePanel, selectTrackPanel)
+                end
             end)
         end
 
@@ -673,11 +677,29 @@ pauseMenu.Initialize = function()
         navigation.FadeTo(gamePanel, selectTrackPanel)
     end)
 
+    menu.Q("restart-setlist-button").RegisterCallback(eventType.Click, function()
+        tm.game.Conclude()
+        tm.game.setlist.Prepare()
+        gamePanel.Show()
+    end)
+
+    menu.Q("select-setlist-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
+        navigation.FadeTo(gamePanel, selectSetlistPanel)
+    end)
+
     commonUI.InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
     commonUI.InitializeVolumeSliders(menu)
 end
 
 pauseMenu.Show = function()
+    local menu = pauseMenu.menu
+    local setlistEnabled = tm.gameSetup.setlist.enabled
+    menu.Q("restart-button").display = not setlistEnabled
+    menu.Q("select-track-button").display = not setlistEnabled
+    menu.Q("restart-setlist-button").display = setlistEnabled
+    menu.Q("select-setlist-button").display = setlistEnabled
+
     commonUI.ShowBgBrightnessSlider(pauseMenu.menu.Q("bg-brightness-wrap"))
     commonUI.ShowVolumeSliders(pauseMenu.menu)
 end

@@ -721,6 +721,8 @@
                     <ui:Button tabindex="-1" text="RESUME" display-tooltip-when-elided="true" name="resume-button" class="button-contained" />
                     <ui:Button tabindex="-1" text="RESTART" display-tooltip-when-elided="true" name="restart-button" class="button-outlined" style="margin-top: 20px; margin-bottom: 20px;" />
                     <ui:Button tabindex="-1" text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-outlined" />
+                    <ui:Button tabindex="-1" text="RESTART SETLIST" display-tooltip-when-elided="true" name="restart-setlist-button" class="button-outlined" style="margin-top: 20px; margin-bottom: 20px; display: none;" />
+                    <ui:Button tabindex="-1" text="SELECT SETLIST" display-tooltip-when-elided="true" name="select-setlist-button" class="button-outlined" style="display: none;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="divider" />
                 <ui:VisualElement name="bg-brightness-wrap" picking-mode="Ignore" class="item">

@@ -19,7 +19,7 @@ namespace ThemeApi
             // 0-index, must contain 3 elements.
             public List<int> patternIndices;
             // 0-index, will be set by TECHMANIA once the state machine
-            // enters PartialComplete state after stage 3
+            // enters PartialComplete state after stage 3.
             public int hiddenPatternIndex
             {
                 get;
