@@ -249,8 +249,11 @@ public class ScoreKeeper
     [MoonSharpHidden]
     public void JumpToScan()
     {
-        // TODO: don't do this in setlists
-        SetCombo(0);
+        if (GameController.instance.modifiers.mode ==
+            Modifiers.Mode.Practice)
+        {
+            SetCombo(0);
+        }
     }
 
     #region Score

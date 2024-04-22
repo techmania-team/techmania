@@ -387,13 +387,14 @@ gamePanel.BeginGame = function()
     end
 
     -- Initialize top bar and middle fever bar.
+    local scoreKeeper = tm.game.scoreKeeper
     local topBar = panel.Q("top-bar")
     topBar.visible = true
     pauseButton.ResetState()
-    gamePanel.UpdateHpDisplay(1, 1)
+    gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
     topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
-    gamePanel.UpdateScoreDisplay(0, 0)  -- TODO: use value from score keeper
-    gamePanel.UpdateFeverDisplay(0)
+    gamePanel.UpdateScoreDisplay(scoreKeeper.ScoreFromNotes(), scoreKeeper.maxCombo)
+    gamePanel.UpdateFeverDisplay(scoreKeeper.feverAmount)
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
 

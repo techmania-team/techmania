@@ -751,9 +751,27 @@ public class GameController : MonoBehaviour
         scoreKeeper.DeactivateFever();
         if (setup.setlist.enabled)
         {
-            state.SetPartialComplete();
-            setup.setlist.onPartialComplete?.Function?.Call(
-                setlistScoreKeeper);
+            // Check whether HP is above threshold
+            int currentStage = state.setlist.currentStage;  // 0, 1, 2, 3
+            int hpPortionThreshold = 3 - currentStage;  // 3, 2, 1, 0
+
+            // The condition is: hp >= (hpPortionThreshold / 4) * maxHp,
+            // or hp * 4 >= maxHp * hpPortionThreshold.
+            if (setlistScoreKeeper.hp * 4 <
+                setlistScoreKeeper.maxHp * hpPortionThreshold &&
+                setup.modifiers.mode != Modifiers.Mode.NoFail)
+            {
+                scoreKeeper.stageFailed = true;
+                state.SetComplete();
+                setup.setlist.onHpBelowThreshold?.Function?.Call(
+                    setlistScoreKeeper);
+            }
+            else
+            {
+                state.SetPartialComplete();
+                setup.setlist.onPartialComplete?.Function?.Call(
+                    setlistScoreKeeper);
+            }
         }
         else
         {

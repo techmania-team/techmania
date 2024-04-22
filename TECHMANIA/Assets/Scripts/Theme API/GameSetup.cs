@@ -28,6 +28,11 @@ namespace ThemeApi
             }
 
             // Parameter: SetlistScoreKeeper.
+            // Called when the player survives a stage but the HP
+            // is below threshold.
+            // The game will be in Complete state when this is called.
+            public DynValue onHpBelowThreshold;
+            // Parameter: SetlistScoreKeeper.
             // The game will be in PartialComplete state when
             // this is called.
             public DynValue onPartialComplete;
