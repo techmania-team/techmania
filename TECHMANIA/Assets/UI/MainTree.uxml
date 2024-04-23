@@ -541,9 +541,16 @@
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement name="top-bar-content" picking-mode="Ignore" style="flex-grow: 1;">
-                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
+                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: flex;">
                     <ui:VisualElement name="hp-bar-wrap" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; padding-right: 50px; padding-top: 20px; padding-bottom: 20px;">
                         <ui:VisualElement name="hp-bar-bg" picking-mode="Ignore" class="surface" style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement name="hp-threshold-indicator" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; justify-content: space-between;">
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" style="visibility: hidden;" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" style="visibility: hidden;" />
+                            </ui:VisualElement>
                             <ui:Label tabindex="-1" text="No fail" display-tooltip-when-elided="true" name="no-fail-indicator" picking-mode="Ignore" class="text-headline-6" style="position: absolute; left: 50px; top: 0; right: 0; bottom: 0; -unity-text-align: middle-left;" />
                             <ui:VisualElement name="hp-bar" picking-mode="Ignore" class="blue-200" style="width: 80%;" />
                         </ui:VisualElement>
@@ -569,7 +576,7 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
                     <ui:VisualElement name="scan-number" picking-mode="Ignore" class="section">
                         <ui:VisualElement name="prev-scan-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="prev-scan-button" class="button-icon-outlined silent">

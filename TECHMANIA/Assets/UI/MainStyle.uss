@@ -447,6 +447,12 @@
     -unity-background-image-tint-color: var(--disabled-text-color);
 }
 
+#game-panel #regular-top-bar #hp-threshold-indicator .hp-threshold-indicator {
+    width: 2px;
+    background-color: var(--disabled-text-color);
+    height: 70px;
+}
+
 #game-panel #practice-top-bar .section {
     flex-direction: row;
     justify-content: center;

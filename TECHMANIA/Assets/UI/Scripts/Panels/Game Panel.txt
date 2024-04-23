@@ -260,6 +260,10 @@ gamePanel.Initialize = function()
         tm.gameSetup.setlist.onPartialComplete = function()
             gamePanel.Show()
         end
+
+        tm.gameSetup.setlist.onHpBelowThreshold = function()
+            -- TODO
+        end
     end
     InitializeGameSetup()
 end
@@ -341,6 +345,7 @@ gamePanel.Show = function()
         panel.Q("top-bar").Q("pause-button").display = true
         panel.Q("top-bar").Q("back-button").display = false
         panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
+        panel.Q("top-bar").Q("regular-top-bar").Q("hp-threshold-indicator").display = tm.gameSetup.setlist.enabled
         panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
     end
     panel.Q("markers").display = false
