@@ -8,6 +8,8 @@ gamePanel = {
     -- so other parts don't need to care where the pattern comes from.
     trackMetadata = nil,
     patternMetadata = nil,
+
+    setlistProgressEyecatches = {},
 }
 
 pauseButton = {
@@ -268,6 +270,27 @@ gamePanel.Initialize = function()
     InitializeGameSetup()
 end
 
+gamePanel.ShowEyecatchInSetlistProgress = function(ref, eyecatchContainer)
+    local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
+    if (status.Ok()) then
+        local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+        tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+            if (status.Ok()) then
+                table.insert(gamePanel.setlistProgressEyecatches, texture)
+                eyecatchContainer.Q("eyecatch").display = true
+                eyecatchContainer.Q("eyecatch").backgroundImage = texture
+                eyecatchContainer.Q("default-eyecatch").display = false
+            else
+                eyecatchContainer.Q("eyecatch").display = false
+                eyecatchContainer.Q("default-eyecatch").display = true
+            end
+        end)
+    else
+        eyecatchContainer.Q("eyecatch").display = false
+        eyecatchContainer.Q("default-eyecatch").display = true
+    end
+end
+
 gamePanel.Show = function()
     tm.options.TemporarilyDisableVSync()
 
@@ -352,11 +375,42 @@ gamePanel.Show = function()
     panel.Q("fps-counter").display = false
     panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
-    panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
+    panel.Q("loading-bar-wrap").display = true
+    panel.Q("loading-bar-wrap").Q("setlist-progress").visible = tm.gameSetup.setlist.enabled
+    panel.Q("loading-bar-wrap").Q("loading-bar").visible = themeOptions["showLoadingBar"] == "True"
     controls.SetProgressBar(panel.Q("loading-progress"), 0)
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
     panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
+
+    if (tm.gameSetup.setlist.enabled) then
+        local setlistProgress = panel.Q("loading-bar-wrap").Q("setlist-progress")
+        setlistProgress.Q("title").text = gamePanel.trackMetadata.title
+        setlistProgress.Q("pattern-banner").Q("medal-container").display = false
+        SetUpPatternBanner(gamePanel.patternMetadata, setlistProgress.Q("pattern-banner"))
+        
+        -- Load eyecatches of selectable patterns
+        for i, index in ipairs(tm.gameSetup.setlist.patternIndices) do
+            local eyecatchContainer = setlistProgress.Q("eyecatches").Children()[i]
+            local patternRef = selectSetlistPanel.selectedSetlist.selectablePatterns[index + 1]
+            gamePanel.ShowEyecatchInSetlistProgress(patternRef, eyecatchContainer)
+            eyecatchContainer.Q("current-eyecatch-border").display = i == tm.game.setlist.currentStage + 1
+        end
+
+        -- Load eyecatch of hidden pattern, if applicable
+        local hiddenPatternContainer = setlistProgress.Q("eyecatches").Children()[4]
+        if (tm.game.setlist.currentStage == 3) then
+            hiddenPatternContainer.Q("hidden-pattern-indicator").display = false
+            hiddenPatternContainer.Q("current-eyecatch-border").display = true
+            local patternRef = selectSetlistPanel.selectedSetlist.hiddenPatterns[tm.gameSetup.setlist.hiddenPatternIndex + 1].reference
+            gamePanel.ShowEyecatchInSetlistProgress(patternRef, hiddenPatternContainer)
+            hiddenPatternContainer.Q("current-eyecatch-border").display = true
+        else
+            hiddenPatternContainer.Q("hidden-pattern-indicator").display = true
+            hiddenPatternContainer.Q("current-eyecatch-border").display = false
+            hiddenPatternContainer.Q("current-eyecatch-border").display = false
+        end
+    end
 end
 
 gamePanel.Hide = function()
@@ -504,6 +558,12 @@ gamePanel.BeginGame = function()
     tm.RestoreVfxAndComboText()  -- In case a previous pause hid them
     tm.game.Begin()
 
+    -- Release eyecatches in setlist progress.
+    for _, texture in ipairs(gamePanel.setlistProgressEyecatches) do
+        tm.io.ReleaseTexture(texture)
+    end
+    gamePanel.setlistProgressEyecatches = {}
+
     -- Give game panel focus so it can receive keyboard events.
     panel.Focus()
 end
@@ -542,10 +602,16 @@ end
 
 gamePanel.UpdateHpDisplay = function(hp, maxHp)
     local hpPortion = hp / maxHp
+    local hpBar = gamePanel.panel.Q("top-bar").Q("hp-bar")
+    FillBar(hpBar, hpPortion)
+
     if (tm.gameSetup.setlist.enabled) then
-        -- TODO: turn red / blue if hpPortion is below / above threshold.
+        local stageNumber = tm.game.setlist.currentStage
+        local hpThreshold = (3 - stageNumber) * 0.25
+        local aboveThreshold = hpPortion >= hpThreshold
+        hpBar.EnableInClassList("blue-200", aboveThreshold)
+        hpBar.EnableInClassList("red-700", not aboveThreshold)
     end
-    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hpPortion)
 end
 
 gamePanel.UpdateScoreDisplay = function(score, maxCombo)

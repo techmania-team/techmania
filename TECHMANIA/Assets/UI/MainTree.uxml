@@ -713,8 +713,35 @@
                 <ui:Label tabindex="-1" text="FEVER BONUS   +123" display-tooltip-when-elided="true" name="fever-bonus" picking-mode="Ignore" class="text-headline-6" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="loading-bar-wrap" picking-mode="Ignore" style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; align-items: center; display: flex;">
-            <ui:VisualElement name="loading-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100%; padding-left: 20px; padding-right: 20px; flex-direction: row; align-items: center;">
+        <ui:VisualElement name="loading-bar-wrap" picking-mode="Ignore" style="position: absolute; bottom: 0; left: 0; right: 0; align-items: center; display: flex;">
+            <ui:VisualElement name="setlist-progress" picking-mode="Ignore" class="surface-8dp" style="width: 900px; margin-bottom: 20px; display: flex;">
+                <ui:Label tabindex="-1" text="Title of next pattern123111111111231231231231111111112312312312311111111123123123" parse-escape-sequences="false" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: upper-center; margin-top: 20px; margin-bottom: 10px; white-space: normal;" />
+                <ui:Instance template="Pattern Banner Centered" name="Pattern Banner Centered" style="align-items: center; margin-bottom: 20px;" />
+                <ui:VisualElement name="eyecatches" picking-mode="Ignore" style="margin-bottom: 20px; flex-direction: row; justify-content: center;">
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:Label tabindex="-1" text="?" display-tooltip-when-elided="true" name="hidden-pattern-indicator" class="centered-text fill-container text-headline-4" />
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="loading-bar" picking-mode="Ignore" class="surface-8dp" style="height: 60px; padding-left: 20px; padding-right: 20px; flex-direction: row; align-items: center;">
                 <ui:Label tabindex="-1" text="Loading..." display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                 <ui:VisualElement name="space" picking-mode="Ignore" style="width: 20px;" />
                 <ui:Instance template="Progress Bar" name="loading-progress" picking-mode="Ignore" style="width: 350px;" />

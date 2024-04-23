@@ -370,6 +370,36 @@
     -unity-background-image-tint-color: var(--disabled-text-color);
 }
 
+#game-panel #setlist-progress #eyecatch-container {
+    width: 200px;
+    height: 200px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#game-panel #setlist-progress #eyecatch-container .fill-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#game-panel #setlist-progress #eyecatch-container .centered-text {
+    -unity-text-align: middle-center;
+}
+
+#game-panel #setlist-progress #eyecatch-container #current-eyecatch-border {
+    border-top-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
+
 #game-panel #fever-bar-wrap .text-headline-6 {
     position: absolute;
     left: 0;
