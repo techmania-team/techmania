@@ -290,7 +290,7 @@ gamePanel.Show = function()
             gamePanel.patternMetadata = setupSetlistPanel.selectablePatterns[patternIndex].pattern.patternMetadata
         else
             -- Resolve from setlist
-            local patternIndex = tm.gameSetup.hiddenPatternIndex
+            local patternIndex = tm.gameSetup.setlist.hiddenPatternIndex
             local patternRef = selectSetlistPanel.selectedSetlist.hiddenPatterns[patternIndex + 1].reference
             local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(patternRef)
             gamePanel.trackMetadata = trackInFolder.minimizedTrack.trackMetadata
@@ -541,7 +541,11 @@ gamePanel.ActivateFever = function()
 end
 
 gamePanel.UpdateHpDisplay = function(hp, maxHp)
-    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hp / maxHp)
+    local hpPortion = hp / maxHp
+    if (tm.gameSetup.setlist.enabled) then
+        -- TODO: turn red / blue if hpPortion is below / above threshold.
+    end
+    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hpPortion)
 end
 
 gamePanel.UpdateScoreDisplay = function(score, maxCombo)

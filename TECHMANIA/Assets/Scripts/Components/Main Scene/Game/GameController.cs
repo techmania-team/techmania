@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -153,7 +154,10 @@ public class GameController : MonoBehaviour
                         patternIndex];
                     break;
                 case 3:
-                    // TODO: choose hidden pattern
+                    // Hidden pattern should have been chosen at
+                    // the completion of stage 3.
+                    r = setup.setlist.loadedSetlist.hiddenPatterns[
+                        setup.setlist.hiddenPatternIndex].reference;
                     break;
             }
             GlobalResource.TrackInFolder trackInFolder;
@@ -168,6 +172,15 @@ public class GameController : MonoBehaviour
 
             trackFolder = trackInFolder.folder;
             patternGuid = minimizedPattern.patternMetadata.guid;
+
+            if (state.setlist.currentStage < 3)
+            {
+                setup.setlist.selectedPatternTotalIndex += 
+                    setup.setlist.patternIndices[
+                        state.setlist.currentStage] + 1;
+                setup.setlist.selectedPatternTotalLevel +=
+                    minimizedPattern.patternMetadata.level;
+            }
         }
         else
         {
@@ -768,6 +781,14 @@ public class GameController : MonoBehaviour
             }
             else
             {
+                if (currentStage == 2)
+                {
+                    setup.setlist.hiddenPatternIndex =
+                        setup.setlist.loadedSetlist.ChooseHiddenPattern(
+                            setup.setlist.selectedPatternTotalIndex,
+                            setup.setlist.selectedPatternTotalLevel,
+                            setlistScoreKeeper);
+                }
                 state.SetPartialComplete();
                 setup.setlist.onPartialComplete?.Function?.Call(
                     setlistScoreKeeper);

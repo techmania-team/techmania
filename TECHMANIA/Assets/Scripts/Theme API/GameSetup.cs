@@ -18,6 +18,7 @@ namespace ThemeApi
             // The indices of selected selectable patterns.
             // 0-index, must contain 3 elements.
             public List<int> patternIndices;
+
             // 0-index, will be set by TECHMANIA once the state machine
             // enters PartialComplete state after stage 3.
             public int hiddenPatternIndex
@@ -45,6 +46,10 @@ namespace ThemeApi
             public Setlist loadedSetlist;
             [MoonSharpHidden]
             public Texture2D loadedBackImage;
+            [MoonSharpHidden]
+            public int selectedPatternTotalIndex;  // 1-index
+            [MoonSharpHidden]
+            public int selectedPatternTotalLevel;
         }
 
         [MoonSharpHidden]

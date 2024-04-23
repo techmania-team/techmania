@@ -2,6 +2,7 @@ using MoonSharp.Interpreter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 // A setlist is a collection of at least 3 selectable patterns and
@@ -88,6 +89,63 @@ public class Setlist : SetlistBase
 
     public List<PatternReference> selectablePatterns;
     public List<HiddenPattern> hiddenPatterns;
+
+    // Returns the index in hiddenPatterns.
+    public int ChooseHiddenPattern(
+        int totalIndex, int totalLevel,
+        SetlistScoreKeeper scoreKeeper)
+    {
+        for (int i = 0; i < hiddenPatterns.Count - 1; i++)
+        {
+            HiddenPattern h = hiddenPatterns[i];
+            StringBuilder log = new StringBuilder();
+            log.AppendLine($"Evaluating criteria for hidden pattern #{i}: {h.reference.trackTitle}, {h.reference.patternName}, level {h.reference.patternLevel}.");
+            log.AppendLine($"Criteria: {h.criteriaType} {h.criteriaDirection} {h.criteriaValue}");
+
+            int actualValue = h.criteriaType switch
+            {
+                HiddenPatternCriteriaType.Index => totalIndex,
+                HiddenPatternCriteriaType.Level => totalLevel,
+                HiddenPatternCriteriaType.HP =>
+                    (scoreKeeper.hp * 100 / scoreKeeper.maxHp),
+                HiddenPatternCriteriaType.Score =>
+                    scoreKeeper.TotalScore(),
+                HiddenPatternCriteriaType.Combo =>
+                    scoreKeeper.currentCombo,
+                HiddenPatternCriteriaType.MaxCombo =>
+                    scoreKeeper.maxCombo,
+                HiddenPatternCriteriaType.D100 =>
+                    UnityEngine.Random.Range(1, 100),
+                _ => throw new ArgumentException("Unknown criteria type: " + h.criteriaType)
+            };
+            log.AppendLine("Actual value: " + actualValue);
+
+            bool met = h.criteriaDirection switch
+            {
+                HiddenPatternCriteriaDirection.SmallerThan =>
+                    actualValue < h.criteriaValue,
+                HiddenPatternCriteriaDirection.LargerThan =>
+                    actualValue > h.criteriaValue,
+                _ => throw new ArgumentException("Unknown criteria direction: " + h.criteriaDirection)
+            };
+            if (met)
+            {
+                log.AppendLine("Criteria is met, choosing this hidden pattern.");
+            }
+            else
+            {
+                log.AppendLine("Criteria is not met, will try the next one.");
+            }
+            Debug.Log(log.ToString());
+
+            if (met)
+            {
+                return i;
+            }
+        }
+        Debug.Log("All hidden pattern criterias are not met, choosing the last hidden pattern.");
+        return hiddenPatterns.Count - 1;
+    }
 }
 
 [Serializable]
