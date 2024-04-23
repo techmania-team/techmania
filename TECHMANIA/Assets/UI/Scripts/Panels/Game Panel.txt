@@ -294,8 +294,8 @@ end
 gamePanel.Show = function()
     tm.options.TemporarilyDisableVSync()
 
-    -- For setlists it's necessary to start loading now as it increments
-    -- stage number.
+    -- For setlists it's necessary to start loading before doing anything else,
+    -- as it increments stage number.
     if (tm.gameSetup.setlist.enabled) then
         tm.game.setlist.LoadNextPattern()
     else
@@ -411,6 +411,9 @@ gamePanel.Show = function()
             hiddenPatternContainer.Q("current-eyecatch-border").display = false
         end
     end
+
+    -- Clear game container in case anything is left over from previous stage
+    panel.Q("game-layer").RemoveAllChildren()
 end
 
 gamePanel.Hide = function()
