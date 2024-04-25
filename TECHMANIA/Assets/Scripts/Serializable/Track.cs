@@ -279,7 +279,10 @@ public class TrackMetadata
 public partial class Pattern
 {
     public PatternMetadata patternMetadata;
-    public LegacyRulesetOverride legacyRulesetOverride;
+    // Empty list means no override.
+    public WindowsAndDeltas legacyRulesetOverride;
+    // 4 elements, one for each stage.
+    public List<WindowsAndDeltas> legacySetlistOverride;
     public List<BpmEvent> bpmEvents;
     public List<TimeStop> timeStops;
 
@@ -327,7 +330,7 @@ public partial class Pattern
     public Pattern()
     {
         patternMetadata = new PatternMetadata();
-        legacyRulesetOverride = new LegacyRulesetOverride();
+        legacyRulesetOverride = new WindowsAndDeltas();
         bpmEvents = new List<BpmEvent>();
         timeStops = new List<TimeStop>();
         notes = new SortedSet<Note>(new NoteComparer());
@@ -486,57 +489,6 @@ public class PatternMetadata
             initBpm = initBpm,
             bps = bps
         };
-    }
-}
-
-[Serializable]
-[MoonSharpUserData]
-public class LegacyRulesetOverride
-{
-    // Empty list means no override.
-
-    public List<float> timeWindows;
-    public List<int> hpDeltaBasic;
-    public List<int> hpDeltaChain;
-    public List<int> hpDeltaHold;
-    public List<int> hpDeltaDrag;
-    public List<int> hpDeltaRepeat;
-    public List<int> hpDeltaBasicDuringFever;
-    public List<int> hpDeltaChainDuringFever;
-    public List<int> hpDeltaHoldDuringFever;
-    public List<int> hpDeltaDragDuringFever;
-    public List<int> hpDeltaRepeatDuringFever;
-
-    public bool HasAny()
-    {
-        if (timeWindows != null && timeWindows.Count > 0)
-            return true;
-        if (hpDeltaBasic != null && hpDeltaBasic.Count > 0)
-            return true;
-        if (hpDeltaChain != null && hpDeltaChain.Count > 0)
-            return true;
-        if (hpDeltaHold != null && hpDeltaHold.Count > 0)
-            return true;
-        if (hpDeltaDrag != null && hpDeltaDrag.Count > 0)
-            return true;
-        if (hpDeltaRepeat != null && hpDeltaRepeat.Count > 0)
-            return true;
-        if (hpDeltaBasicDuringFever != null
-            && hpDeltaBasicDuringFever.Count > 0)
-            return true;
-        if (hpDeltaChainDuringFever != null
-            && hpDeltaChainDuringFever.Count > 0)
-            return true;
-        if (hpDeltaHoldDuringFever != null
-            && hpDeltaHoldDuringFever.Count > 0)
-            return true;
-        if (hpDeltaDragDuringFever != null
-            && hpDeltaDragDuringFever.Count > 0)
-            return true;
-        if (hpDeltaRepeatDuringFever != null
-            && hpDeltaRepeatDuringFever.Count > 0)
-            return true;
-        return false;
     }
 }
 #endregion

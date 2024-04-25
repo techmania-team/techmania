@@ -8,22 +8,78 @@ using UnityEngine;
 
 [Serializable]
 [FormatVersion(RulesetV1.kVersion, typeof(RulesetV1), isLatest: false)]
+[FormatVersion(RulesetV2.kVersion, typeof(RulesetV2), isLatest: false)]
 [FormatVersion(Ruleset.kVersion, typeof(Ruleset), isLatest: true)]
 public class RulesetBase : SerializableClass<RulesetBase> {}
 
-// Updates in version 2:
-// - Allows defining HP delta by each judgement.
+[Serializable]
+[MoonSharp.Interpreter.MoonSharpUserData]
+public class WindowsAndDeltas
+{
+    // 5 time windows for Rainbow MAX, MAX, COOL, GOOD and MISS,
+    // respectively. No input after the MISS window = BREAK.
+    public List<float> timeWindows;
+
+    // 6 values for Rainbow MAX, MAX, COOL, GOOD, MISS and BREAK,
+    // respectively.
+    public List<int> hpDeltaBasic;
+    public List<int> hpDeltaChain;
+    public List<int> hpDeltaHold;
+    public List<int> hpDeltaDrag;
+    public List<int> hpDeltaRepeat;
+    public List<int> hpDeltaBasicDuringFever;
+    public List<int> hpDeltaChainDuringFever;
+    public List<int> hpDeltaHoldDuringFever;
+    public List<int> hpDeltaDragDuringFever;
+    public List<int> hpDeltaRepeatDuringFever;
+
+    public bool HasAny()
+    {
+        if (timeWindows != null && timeWindows.Count > 0)
+            return true;
+        if (hpDeltaBasic != null && hpDeltaBasic.Count > 0)
+            return true;
+        if (hpDeltaChain != null && hpDeltaChain.Count > 0)
+            return true;
+        if (hpDeltaHold != null && hpDeltaHold.Count > 0)
+            return true;
+        if (hpDeltaDrag != null && hpDeltaDrag.Count > 0)
+            return true;
+        if (hpDeltaRepeat != null && hpDeltaRepeat.Count > 0)
+            return true;
+        if (hpDeltaBasicDuringFever != null
+            && hpDeltaBasicDuringFever.Count > 0)
+            return true;
+        if (hpDeltaChainDuringFever != null
+            && hpDeltaChainDuringFever.Count > 0)
+            return true;
+        if (hpDeltaHoldDuringFever != null
+            && hpDeltaHoldDuringFever.Count > 0)
+            return true;
+        if (hpDeltaDragDuringFever != null
+            && hpDeltaDragDuringFever.Count > 0)
+            return true;
+        if (hpDeltaRepeatDuringFever != null
+            && hpDeltaRepeatDuringFever.Count > 0)
+            return true;
+        return false;
+    }
+}
+
+// Updates in version 3:
+// - Extracted time windows and HP deltas into a class.
 [MoonSharp.Interpreter.MoonSharpUserData]
 [Serializable]
 public class Ruleset : RulesetBase
 {
-    public const string kVersion = "2";
+    public const string kVersion = "3";
+
+    public WindowsAndDeltas windowsAndDeltas;
+    // 4 elements, one for each stage.
+    public List<WindowsAndDeltas> windowsAndDeltasSetlist;
 
     // Time windows
 
-    // 5 time windows for Rainbow MAX, MAX, COOL, GOOD and MISS,
-    // respectively. No input after the MISS window = BREAK.
-    public List<float> timeWindows;
     // True: time windows are in pulses.
     // False: time windows are in seconds.
     public bool timeWindowsInPulses;
@@ -46,20 +102,7 @@ public class Ruleset : RulesetBase
     public float ongoingDragHitboxHeight;
 
     // HP
-
     public int maxHp;
-    // 6 values for Rainbow MAX, MAX, COOL, GOOD, MISS and BREAK,
-    // respectively.
-    public List<int> hpDeltaBasic;
-    public List<int> hpDeltaChain;
-    public List<int> hpDeltaHold;
-    public List<int> hpDeltaDrag;
-    public List<int> hpDeltaRepeat;
-    public List<int> hpDeltaBasicDuringFever;
-    public List<int> hpDeltaChainDuringFever;
-    public List<int> hpDeltaHoldDuringFever;
-    public List<int> hpDeltaDragDuringFever;
-    public List<int> hpDeltaRepeatDuringFever;
 
     // Score
     public bool comboBonus;
@@ -76,8 +119,53 @@ public class Ruleset : RulesetBase
 
         // The constructor constructs the standard ruleset, so
         // custom ruleset can selectively override fields.
-        timeWindows = new List<float>()
-            { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f };
+
+        windowsAndDeltas = new WindowsAndDeltas()
+        {
+            timeWindows = new List<float>()
+                { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
+            hpDeltaBasic = new List<int>()
+                { 3, 3, 3, 3, -50, -50 },
+            hpDeltaChain = new List<int>()
+                { 3, 3, 3, 3, -50, -50 },
+            hpDeltaHold = new List<int>()
+                { 3, 3, 3, 3, -50, -50 },
+            hpDeltaDrag = new List<int>()
+                { 3, 3, 3, 3, -50, -50 },
+            hpDeltaRepeat = new List<int>()
+                { 3, 3, 3, 3, -50, -50 },
+            hpDeltaBasicDuringFever = new List<int>()
+                { 5, 5, 5, 5, -50, -50 },
+            hpDeltaChainDuringFever = new List<int>()
+                { 5, 5, 5, 5, -50, -50 },
+            hpDeltaHoldDuringFever = new List<int>()
+                { 5, 5, 5, 5, -50, -50 },
+            hpDeltaDragDuringFever = new List<int>()
+                { 5, 5, 5, 5, -50, -50 },
+            hpDeltaRepeatDuringFever = new List<int>()
+                { 5, 5, 5, 5, -50, -50 },
+        };
+        windowsAndDeltasSetlist = new List<WindowsAndDeltas>()
+        {
+            // TODO: values
+            new WindowsAndDeltas()
+            {
+
+            },
+            new WindowsAndDeltas()
+            {
+
+            },
+            new WindowsAndDeltas()
+            {
+
+            },
+            new WindowsAndDeltas()
+            {
+
+            }
+        };
+
         timeWindowsInPulses = false;
         longNoteGracePeriod = 0.15f;
         longNoteGracePeriodInPulses = false;
@@ -98,26 +186,6 @@ public class Ruleset : RulesetBase
         ongoingDragHitboxHeight = 2f;
 
         maxHp = 1000;
-        hpDeltaBasic = new List<int>()
-            { 3, 3, 3, 3, -50, -50 };
-        hpDeltaChain = new List<int>()
-            { 3, 3, 3, 3, -50, -50 };
-        hpDeltaHold = new List<int>()
-            { 3, 3, 3, 3, -50, -50 };
-        hpDeltaDrag = new List<int>()
-            { 3, 3, 3, 3, -50, -50 };
-        hpDeltaRepeat = new List<int>()
-            { 3, 3, 3, 3, -50, -50 };
-        hpDeltaBasicDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 };
-        hpDeltaChainDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 };
-        hpDeltaHoldDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 };
-        hpDeltaDragDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 };
-        hpDeltaRepeatDuringFever = new List<int>()
-            { 5, 5, 5, 5, -50, -50 };
 
         comboBonus = false;
 
@@ -129,44 +197,51 @@ public class Ruleset : RulesetBase
 
     #region Accessors
     public int GetHpDelta(Judgement j, NoteType type, bool fever,
-        LegacyRulesetOverride legacyRulesetOverride)
+        WindowsAndDeltas legacyRulesetOverride,
+        int? setlistStageNumber = null)
     {
+        WindowsAndDeltas listSource = windowsAndDeltas;
+        if (setlistStageNumber.HasValue)
+        {
+            listSource = windowsAndDeltasSetlist[
+                setlistStageNumber.Value];
+        }
         List<int> list = null;
         switch (type)
         {
             case NoteType.Basic:
                 if (fever)
-                    list = hpDeltaBasicDuringFever;
+                    list = listSource.hpDeltaBasicDuringFever;
                 else
-                    list = hpDeltaBasic;
+                    list = listSource.hpDeltaBasic;
                 break;
             case NoteType.ChainHead:
             case NoteType.ChainNode:
                 if (fever)
-                    list = hpDeltaChainDuringFever;
+                    list = listSource.hpDeltaChainDuringFever;
                 else
-                    list = hpDeltaChain;
+                    list = listSource.hpDeltaChain;
                 break;
             case NoteType.Hold:
                 if (fever)
-                    list = hpDeltaHoldDuringFever;
+                    list = listSource.hpDeltaHoldDuringFever;
                 else
-                    list = hpDeltaHold;
+                    list = listSource.hpDeltaHold;
                 break;
             case NoteType.Drag:
                 if (fever)
-                    list = hpDeltaDragDuringFever;
+                    list = listSource.hpDeltaDragDuringFever;
                 else
-                    list = hpDeltaDrag;
+                    list = listSource.hpDeltaDrag;
                 break;
             case NoteType.RepeatHead:
             case NoteType.RepeatHeadHold:
             case NoteType.Repeat:
             case NoteType.RepeatHold:
                 if (fever)
-                    list = hpDeltaRepeatDuringFever;
+                    list = listSource.hpDeltaRepeatDuringFever;
                 else
-                    list = hpDeltaRepeat;
+                    list = listSource.hpDeltaRepeat;
                 break;
         }
 
@@ -175,7 +250,7 @@ public class Ruleset : RulesetBase
             legacyRulesetOverride != null &&
             legacyRulesetOverride.HasAny())
         {
-            LegacyRulesetOverride o = legacyRulesetOverride;
+            WindowsAndDeltas o = legacyRulesetOverride;
             switch (type)
             {
                 case NoteType.Basic:
@@ -250,8 +325,136 @@ public class Ruleset : RulesetBase
         standard = new Ruleset();
         legacy = new Ruleset()
         {
-            timeWindows = new List<float>()
-            { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+            windowsAndDeltas = new WindowsAndDeltas()
+            {
+                timeWindows = new List<float>()
+                    { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+                hpDeltaBasic = new List<int>()
+                    { 30, 30, 15, 0, -300, -600 },
+                hpDeltaChain = new List<int>()
+                    { 30, 30, 15, 0, -350, -500 },
+                hpDeltaHold = new List<int>()
+                    { 30, 30, 15, 0, -350, -500 },
+                hpDeltaDrag = new List<int>()
+                    { 30, 30, 15, 0, -350, -500 },
+                hpDeltaRepeat = new List<int>()
+                    { 30, 30, 15, 0, -350, -500 },
+                hpDeltaBasicDuringFever = new List<int>()
+                    { 30, 30, 30, 0, -300, -600 },
+                hpDeltaChainDuringFever = new List<int>()
+                    { 30, 30, 30, 0, -350, -500 },
+                hpDeltaHoldDuringFever = new List<int>()
+                    { 30, 30, 30, 0, -350, -500 },
+                hpDeltaDragDuringFever = new List<int>()
+                    { 30, 30, 30, 0, -350, -500 },
+                hpDeltaRepeatDuringFever = new List<int>()
+                    { 30, 30, 30, 0, -350, -500 },
+            },
+            windowsAndDeltasSetlist = new List<WindowsAndDeltas>()
+            {
+                // TODO: values
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>()
+                    { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+                    hpDeltaBasic = new List<int>()
+                    { 15, 15, 0, 0, -200, -300 },
+                    hpDeltaChain = new List<int>()
+                    { 15, 15, 0, 0, -200, -300 },
+                    hpDeltaHold = new List<int>()
+                    { 7, 7, 0, 0, -200, -380 },
+                    hpDeltaDrag = new List<int>()
+                    { 7, 7, 0, 0, -200, -380 },
+                    hpDeltaRepeat = new List<int>()
+                    { 15, 15, 0, 0, -200, -300 },
+                    hpDeltaBasicDuringFever = new List<int>()
+                    { 15, 15, 15, 0, -200, -300 },
+                    hpDeltaChainDuringFever = new List<int>()
+                    { 15, 15, 15, 0, -200, -300 },
+                    hpDeltaHoldDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -380 },
+                    hpDeltaDragDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -380 },
+                    hpDeltaRepeatDuringFever = new List<int>()
+                    { 15, 15, 15, 0, -200, -300 }
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>()
+                    { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+                    hpDeltaBasic = new List<int>()
+                    { 10, 10, 0, 0, -200, -400 },
+                    hpDeltaChain = new List<int>()
+                    { 10, 10, 0, 0, -200, -400 },
+                    hpDeltaHold = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaDrag = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaRepeat = new List<int>()
+                    { 10, 10, 0, 0, -200, -400 },
+                    hpDeltaBasicDuringFever = new List<int>()
+                    { 10, 10, 10, 0, -200, -400 },
+                    hpDeltaChainDuringFever = new List<int>()
+                    { 10, 10, 10, 0, -200, -400 },
+                    hpDeltaHoldDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaDragDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaRepeatDuringFever = new List<int>()
+                    { 10, 10, 10, 0, -200, -400 }
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>()
+                    { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+                    hpDeltaBasic = new List<int>()
+                    { 7, 7, 0, 0, -200, -400 },
+                    hpDeltaChain = new List<int>()
+                    { 7, 7, 0, 0, -200, -400 },
+                    hpDeltaHold = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaDrag = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaRepeat = new List<int>()
+                    { 10, 10, 0, 0, -200, -400 },
+                    hpDeltaBasicDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -400 },
+                    hpDeltaChainDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -400 },
+                    hpDeltaHoldDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaDragDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaRepeatDuringFever = new List<int>()
+                    { 10, 10, 10, 0, -200, -400 }
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>()
+                    { 12.5f, 37.5f, 51.25f, 65f, 83.75f },
+                    hpDeltaBasic = new List<int>()
+                    { 7, 7, 0, 0, -200, -400 },
+                    hpDeltaChain = new List<int>()
+                    { 7, 7, 0, 0, -200, -400 },
+                    hpDeltaHold = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaDrag = new List<int>()
+                    { 7, 7, 0, 0, -220, -460 },
+                    hpDeltaRepeat = new List<int>()
+                    { 7, 7, 0, 0, -200, -400 },
+                    hpDeltaBasicDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -400 },
+                    hpDeltaChainDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -400 },
+                    hpDeltaHoldDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaDragDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -220, -460 },
+                    hpDeltaRepeatDuringFever = new List<int>()
+                    { 7, 7, 7, 0, -200, -400 }
+                }
+            },
+            
             timeWindowsInPulses = true,
             longNoteGracePeriod = 0.1f,
             longNoteGracePeriodInPulses = false,
@@ -272,26 +475,6 @@ public class Ruleset : RulesetBase
             ongoingDragHitboxHeight = 1.15f,
 
             maxHp = 10000,
-            hpDeltaBasic = new List<int>()
-            { 30, 30, 15, 0, -300, -600 },
-            hpDeltaChain = new List<int>()
-            { 30, 30, 15, 0, -350, -500 },
-            hpDeltaHold = new List<int>()
-            { 30, 30, 15, 0, -350, -500 },
-            hpDeltaDrag = new List<int>()
-            { 30, 30, 15, 0, -350, -500 },
-            hpDeltaRepeat = new List<int>()
-            { 30, 30, 15, 0, -350, -500 },
-            hpDeltaBasicDuringFever = new List<int>()
-            { 30, 30, 30, 0, -300, -600 },
-            hpDeltaChainDuringFever = new List<int>()
-            { 30, 30, 30, 0, -350, -500 },
-            hpDeltaHoldDuringFever = new List<int>()
-            { 30, 30, 30, 0, -350, -500 },
-            hpDeltaDragDuringFever = new List<int>()
-            { 30, 30, 30, 0, -350, -500 },
-            hpDeltaRepeatDuringFever = new List<int>()
-            { 30, 30, 30, 0, -350, -500 },
 
             comboBonus = true,
 
@@ -346,6 +529,111 @@ public class Ruleset : RulesetBase
     #endregion
 }
 
+// Updates in version 2:
+// - Allows defining HP delta by each judgement.
+[Serializable]
+public class RulesetV2 : RulesetBase
+{
+    public const string kVersion = "2";
+
+    // Time windows
+
+    public List<float> timeWindows;
+    public bool timeWindowsInPulses;
+    public float longNoteGracePeriod;
+    public bool longNoteGracePeriodInPulses;
+
+    // Hitbox sizes
+
+    public List<float> scanMarginTopBottom;
+    public List<float> scanMarginMiddle;
+    public float scanMarginBeforeFirstBeat;
+    public float scanMarginAfterLastBeat;
+    public float hitboxWidth;
+    public float hitboxHeight;
+    public float chainHeadHitboxWidth;
+    public float chainNodeHitboxWidth;
+    public float dragHitboxWidth;
+    public float dragHitboxHeight;
+    public float ongoingDragHitboxWidth;
+    public float ongoingDragHitboxHeight;
+
+    // HP
+
+    public int maxHp;
+    public List<int> hpDeltaBasic;
+    public List<int> hpDeltaChain;
+    public List<int> hpDeltaHold;
+    public List<int> hpDeltaDrag;
+    public List<int> hpDeltaRepeat;
+    public List<int> hpDeltaBasicDuringFever;
+    public List<int> hpDeltaChainDuringFever;
+    public List<int> hpDeltaHoldDuringFever;
+    public List<int> hpDeltaDragDuringFever;
+    public List<int> hpDeltaRepeatDuringFever;
+
+    // Score
+    public bool comboBonus;
+
+    // Fever
+    public bool constantFeverCoefficient;
+    public int feverBonusOnMax;
+    public int feverBonusOnCool;
+    public int feverBonusOnGood;
+
+    protected override RulesetBase Upgrade()
+    {
+        return new Ruleset()
+        {
+            windowsAndDeltas = new WindowsAndDeltas()
+            {
+                timeWindows = new List<float>(timeWindows),
+                hpDeltaBasic = new List<int>(hpDeltaBasic),
+                hpDeltaChain = new List<int>(hpDeltaChain),
+                hpDeltaHold = new List<int>(hpDeltaHold),
+                hpDeltaDrag = new List<int>(hpDeltaDrag),
+                hpDeltaRepeat = new List<int>(hpDeltaRepeat),
+                hpDeltaBasicDuringFever = new List<int>(
+                    hpDeltaBasicDuringFever),
+                hpDeltaChainDuringFever = new List<int>(
+                    hpDeltaChainDuringFever),
+                hpDeltaHoldDuringFever = new List<int>(
+                    hpDeltaHoldDuringFever),
+                hpDeltaDragDuringFever = new List<int>(
+                    hpDeltaDragDuringFever),
+                hpDeltaRepeatDuringFever = new List<int>(
+                    hpDeltaRepeatDuringFever)
+            },
+
+            timeWindowsInPulses = timeWindowsInPulses,
+            longNoteGracePeriod = longNoteGracePeriod,
+            longNoteGracePeriodInPulses = longNoteGracePeriodInPulses,
+
+            scanMarginTopBottom = new List<float>(scanMarginTopBottom),
+            scanMarginMiddle = new List<float>(scanMarginMiddle),
+            scanMarginBeforeFirstBeat = scanMarginBeforeFirstBeat,
+            scanMarginAfterLastBeat = scanMarginAfterLastBeat,
+            hitboxWidth = hitboxWidth,
+            hitboxHeight = hitboxHeight,
+            chainHeadHitboxWidth = chainHeadHitboxWidth,
+            chainNodeHitboxWidth = chainNodeHitboxWidth,
+            dragHitboxWidth = dragHitboxWidth,
+            dragHitboxHeight = dragHitboxHeight,
+            ongoingDragHitboxWidth = ongoingDragHitboxWidth,
+            ongoingDragHitboxHeight = ongoingDragHitboxHeight,
+
+            maxHp = maxHp,
+
+            comboBonus = comboBonus,
+
+            constantFeverCoefficient = constantFeverCoefficient,
+            feverBonusOnMax = feverBonusOnMax,
+            feverBonusOnCool = feverBonusOnCool,
+            feverBonusOnGood = feverBonusOnGood
+        };
+    }
+}
+
 [Serializable]
 public class RulesetV1 : RulesetBase
 {
@@ -385,7 +673,7 @@ public class RulesetV1 : RulesetBase
 
     protected override RulesetBase Upgrade()
     {
-        return new Ruleset()
+        return new RulesetV2()
         {
             timeWindows = new List<float>()
             { 

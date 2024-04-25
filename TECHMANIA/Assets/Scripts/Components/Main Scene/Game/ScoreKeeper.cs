@@ -27,8 +27,9 @@ public class ScoreKeeper
 {
     // Reference to GameSetup so we can call Fever callbacks.
     private ThemeApi.GameSetup gameSetup;
+    private ThemeApi.GameState state;
 
-    private LegacyRulesetOverride legacyRulesetOverride;
+    private WindowsAndDeltas legacyRulesetOverride;
 
     public bool stageFailed
     {
@@ -68,9 +69,11 @@ public class ScoreKeeper
     public float feverAmount { get; private set; }  // [0, 1]
 
     [MoonSharpHidden]
-    public ScoreKeeper(ThemeApi.GameSetup gameSetup)
+    public ScoreKeeper(ThemeApi.GameSetup gameSetup,
+        ThemeApi.GameState state)
     {
         this.gameSetup = gameSetup;
+        this.state = state;
     }
 
     [MoonSharpHidden]
@@ -78,6 +81,11 @@ public class ScoreKeeper
         int playableNotes)
     {
         legacyRulesetOverride = pattern.legacyRulesetOverride;
+        if (gameSetup.setlist.enabled)
+        {
+            legacyRulesetOverride = pattern.legacySetlistOverride[
+                state.setlist.currentStage];
+        }
         stageFailed = false;
 
         // Score.
@@ -176,10 +184,13 @@ public class ScoreKeeper
         }
 
         // HP
+        int? setlistStageNumber = gameSetup.setlist.enabled ?
+            state.setlist.currentStage : null;
         hp += Ruleset.instance.GetHpDelta(
             judgement, noteType,
             feverState == FeverState.Active,
-            legacyRulesetOverride);
+            legacyRulesetOverride,
+            setlistStageNumber);
         if (Modifiers.instance.suddenDeath == 
             Modifiers.SuddenDeath.SuddenDeath &&
             (judgement == Judgement.Miss ||

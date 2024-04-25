@@ -261,9 +261,16 @@ public partial class Pattern
         scans = lastScan - firstScan + 1;
     }
 
-    public void CalculateTimeOfAllNotes(bool calculateTimeWindows)
+    public void CalculateTimeOfAllNotes(bool calculateTimeWindows,
+        int? setlistStageNumber = null)
     {
-        List<float> timeWindows = Ruleset.instance.timeWindows;
+        List<float> timeWindows = Ruleset.instance
+            .windowsAndDeltas.timeWindows;
+        if (setlistStageNumber.HasValue)
+        {
+            timeWindows = Ruleset.instance.windowsAndDeltasSetlist[
+                setlistStageNumber.Value].timeWindows;
+        }
         if (calculateTimeWindows &&
             Options.instance.ruleset == Options.Ruleset.Legacy &&
             legacyRulesetOverride != null &&

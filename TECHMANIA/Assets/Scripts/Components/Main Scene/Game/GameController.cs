@@ -480,7 +480,7 @@ public class GameController : MonoBehaviour
         comboText.Hide();
 
         // Initialize scores.
-        scoreKeeper = new ScoreKeeper(setup);
+        scoreKeeper = new ScoreKeeper(setup, state);
         scoreKeeper.Prepare(setup.patternAfterModifier,
             timer.firstScan, timer.lastScan,
             playableNotes: noteManager.playableNotes);
