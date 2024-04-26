@@ -181,6 +181,8 @@ setupSetlistPanel.ShowCurrentModifiers = function()
 end
 
 setupSetlistPanel.Show = function()
+    tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_setting_up_setlist"))
+
     local panel = setupSetlistPanel.panel
     local setlist = selectSetlistPanel.selectedSetlist
 

@@ -329,12 +329,15 @@ gamePanel.Show = function()
 
     -- Discord activity
     if (tm.gameSetup.setlist.enabled) then
+        local discordTitle = net.string.format(
+            tm.l10n.GetString("discord_state_playing_setlist"),
+            selectSetlistPanel.selectedSetlist.setlistMetadata.title,
+            tm.game.setlist.currentStage + 1)
         local discordActivity = net.string.format(
             tm.l10n.GetString("discord_state_playing_pattern_in_setlist"),
             gamePanel.patternMetadata.level,
             gamePanel.trackMetadata.title)
-        tm.SetDiscordActivity(selectSetlistPanel.selectedSetlist.setlistMetadata.title,
-            discordActivity,
+        tm.SetDiscordActivity(discordTitle, discordActivity,
             true)  -- show elapsed time
     else
         local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")

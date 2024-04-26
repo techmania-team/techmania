@@ -147,22 +147,105 @@ public class Ruleset : RulesetBase
         };
         windowsAndDeltasSetlist = new List<WindowsAndDeltas>()
         {
-            // TODO: values
             new WindowsAndDeltas()
             {
-
+                timeWindows = new List<float>()
+                    { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
+                hpDeltaBasic = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaChain = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaHold = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaDrag = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaRepeat = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaBasicDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaChainDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaHoldDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaDragDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaRepeatDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
             },
             new WindowsAndDeltas()
             {
-
+                timeWindows = new List<float>()
+                    { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
+                hpDeltaBasic = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaChain = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaHold = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaDrag = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaRepeat = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaBasicDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaChainDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaHoldDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaDragDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
+                hpDeltaRepeatDuringFever = new List<int>()
+                    { 3, 3, 3, 3, -30, -30 },
             },
             new WindowsAndDeltas()
             {
-
+                timeWindows = new List<float>()
+                    { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
+                hpDeltaBasic = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaChain = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaHold = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaDrag = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaRepeat = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaBasicDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaChainDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaHoldDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaDragDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaRepeatDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
             },
             new WindowsAndDeltas()
             {
-
+                timeWindows = new List<float>()
+                    { 0.04f, 0.07f, 0.1f, 0.15f, 0.2f },
+                hpDeltaBasic = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaChain = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaHold = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaDrag = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaRepeat = new List<int>()
+                    { 1, 1, 1, 1, -30, -30 },
+                hpDeltaBasicDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaChainDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaHoldDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaDragDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
+                hpDeltaRepeatDuringFever = new List<int>()
+                    { 2, 2, 2, 2, -30, -30 },
             }
         };
 
@@ -603,6 +686,85 @@ public class RulesetV2 : RulesetBase
                     hpDeltaDragDuringFever),
                 hpDeltaRepeatDuringFever = new List<int>(
                     hpDeltaRepeatDuringFever)
+            },
+            windowsAndDeltasSetlist = new List<WindowsAndDeltas>()
+            {
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>(timeWindows),
+                    hpDeltaBasic = new List<int>(hpDeltaBasic),
+                    hpDeltaChain = new List<int>(hpDeltaChain),
+                    hpDeltaHold = new List<int>(hpDeltaHold),
+                    hpDeltaDrag = new List<int>(hpDeltaDrag),
+                    hpDeltaRepeat = new List<int>(hpDeltaRepeat),
+                    hpDeltaBasicDuringFever = new List<int>(
+                        hpDeltaBasicDuringFever),
+                    hpDeltaChainDuringFever = new List<int>(
+                        hpDeltaChainDuringFever),
+                    hpDeltaHoldDuringFever = new List<int>(
+                        hpDeltaHoldDuringFever),
+                    hpDeltaDragDuringFever = new List<int>(
+                        hpDeltaDragDuringFever),
+                    hpDeltaRepeatDuringFever = new List<int>(
+                        hpDeltaRepeatDuringFever)
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>(timeWindows),
+                    hpDeltaBasic = new List<int>(hpDeltaBasic),
+                    hpDeltaChain = new List<int>(hpDeltaChain),
+                    hpDeltaHold = new List<int>(hpDeltaHold),
+                    hpDeltaDrag = new List<int>(hpDeltaDrag),
+                    hpDeltaRepeat = new List<int>(hpDeltaRepeat),
+                    hpDeltaBasicDuringFever = new List<int>(
+                        hpDeltaBasicDuringFever),
+                    hpDeltaChainDuringFever = new List<int>(
+                        hpDeltaChainDuringFever),
+                    hpDeltaHoldDuringFever = new List<int>(
+                        hpDeltaHoldDuringFever),
+                    hpDeltaDragDuringFever = new List<int>(
+                        hpDeltaDragDuringFever),
+                    hpDeltaRepeatDuringFever = new List<int>(
+                        hpDeltaRepeatDuringFever)
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>(timeWindows),
+                    hpDeltaBasic = new List<int>(hpDeltaBasic),
+                    hpDeltaChain = new List<int>(hpDeltaChain),
+                    hpDeltaHold = new List<int>(hpDeltaHold),
+                    hpDeltaDrag = new List<int>(hpDeltaDrag),
+                    hpDeltaRepeat = new List<int>(hpDeltaRepeat),
+                    hpDeltaBasicDuringFever = new List<int>(
+                        hpDeltaBasicDuringFever),
+                    hpDeltaChainDuringFever = new List<int>(
+                        hpDeltaChainDuringFever),
+                    hpDeltaHoldDuringFever = new List<int>(
+                        hpDeltaHoldDuringFever),
+                    hpDeltaDragDuringFever = new List<int>(
+                        hpDeltaDragDuringFever),
+                    hpDeltaRepeatDuringFever = new List<int>(
+                        hpDeltaRepeatDuringFever)
+                },
+                new WindowsAndDeltas()
+                {
+                    timeWindows = new List<float>(timeWindows),
+                    hpDeltaBasic = new List<int>(hpDeltaBasic),
+                    hpDeltaChain = new List<int>(hpDeltaChain),
+                    hpDeltaHold = new List<int>(hpDeltaHold),
+                    hpDeltaDrag = new List<int>(hpDeltaDrag),
+                    hpDeltaRepeat = new List<int>(hpDeltaRepeat),
+                    hpDeltaBasicDuringFever = new List<int>(
+                        hpDeltaBasicDuringFever),
+                    hpDeltaChainDuringFever = new List<int>(
+                        hpDeltaChainDuringFever),
+                    hpDeltaHoldDuringFever = new List<int>(
+                        hpDeltaHoldDuringFever),
+                    hpDeltaDragDuringFever = new List<int>(
+                        hpDeltaDragDuringFever),
+                    hpDeltaRepeatDuringFever = new List<int>(
+                        hpDeltaRepeatDuringFever)
+                }
             },
 
             timeWindowsInPulses = timeWindowsInPulses,

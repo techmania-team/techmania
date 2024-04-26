@@ -83,7 +83,7 @@ public class ScoreKeeper
         legacyRulesetOverride = pattern.legacyRulesetOverride;
         if (gameSetup.setlist.enabled)
         {
-            legacyRulesetOverride = pattern.legacySetlistOverride[
+            legacyRulesetOverride = pattern.legacySetlistOverride?[
                 state.setlist.currentStage];
         }
         stageFailed = false;

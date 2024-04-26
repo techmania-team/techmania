@@ -552,6 +552,9 @@ public class GameController : MonoBehaviour
         setup.setlist.loadedBackImage = null;
         // Reset hidden pattern index. Will be set after stage 3.
         setup.setlist.hiddenPatternIndex = -1;
+        // Reset states.
+        setup.setlist.selectedPatternTotalIndex = 0;
+        setup.setlist.selectedPatternTotalLevel = 0;
         // Prepare SetlistScoreKeeper.
         setlistScoreKeeper = new SetlistScoreKeeper();
         return Status.OKStatus();
