@@ -341,7 +341,7 @@ selectSetlistPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_selecting_setlist"))
     controls.ResetScrollingTextTimer()
 
-    if (selectSetlistPanel.needsRefresh) then
+    if (selectTrackPanel.needsRefresh or selectSetlistPanel.needsRefresh) then
         selectSetlistPanel.Refresh()  -- Will call Show when done
         return
     end
@@ -360,17 +360,34 @@ end
 selectSetlistPanel.Refresh = function()
     selectSetlistPanel.ClearAllCards()
     local panel = selectSetlistPanel.panel
-    selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
-    selectSetlistPanel.needsRefresh = false
     panel.Q("back-button").SetEnabled(false)
-    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(selectSetlistPanel.location)
-    tm.io.ReloadSetlistList(function(currentlyLoadingFile)
-        panel.Q("setlist-status").text = currentlyLoadingFile
-    end,
-    function(reloadStatus)
-        panel.Q("back-button").SetEnabled(true)
-        selectSetlistPanel.Show()
-    end)
+    panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(tm.paths.GetSetlistRootFolder())
+    
+    if (selectTrackPanel.needsRefresh) then
+        -- Refresh tracks if necessary
+        selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+        selectTrackPanel.needsRefresh = false
+        tm.io.ReloadTrackList(function(currentlyLoadingFile)
+            panel.Q("setlist-status").text = currentlyLoadingFile
+        end,
+        function(reloadStatus)
+            panel.Q("back-button").SetEnabled(true)
+            selectSetlistPanel.Show()
+        end)
+        return  -- if setlist panel also needs refreshing, Show() will call Refresh() again
+    end
+
+    if (selectSetlistPanel.needsRefresh) then
+        selectSetlistPanel.location = tm.paths.GetSetlistRootFolder()
+        selectSetlistPanel.needsRefresh = false
+        tm.io.ReloadSetlistList(function(currentlyLoadingFile)
+            panel.Q("setlist-status").text = currentlyLoadingFile
+        end,
+        function(reloadStatus)
+            panel.Q("back-button").SetEnabled(true)
+            selectSetlistPanel.Show()
+        end)
+    end
 end
 
 selectSetlistPanel.Initialize = function()
