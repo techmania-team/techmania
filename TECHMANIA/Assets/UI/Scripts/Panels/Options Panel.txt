@@ -31,12 +31,17 @@ optionsPanel = {
 optionsPanel.UpdateCustomDataLocationDisplay = function()
     local panel = optionsPanel.panel
     local tracksContainer = panel.Q("tracks-folder-location")
+    local setlistsContainer = panel.Q("setlists-folder-location")
     local skinsContainer = panel.Q("skins-folder-location")
     local themesContainer = panel.Q("themes-folder-location")
     if (tm.options.customDataLocation) then
         if (tm.options.tracksFolderLocation == nil or
             tm.options.tracksFolderLocation == "") then
             tm.options.tracksFolderLocation = tm.paths.GetTrackRootFolder()
+        end
+        if (tm.options.setlistsFolderLocation == nil or
+            tm.options.setlistsFolderLocation == "") then
+            tm.options.setlistsFolderLocation = tm.paths.GetSetlistRootFolder()
         end
         if (tm.options.skinsFolderLocation == nil or
             tm.options.skinsFolderLocation == "") then
@@ -48,12 +53,15 @@ optionsPanel.UpdateCustomDataLocationDisplay = function()
         end
         tracksContainer.display = true
         tracksContainer.Q("location-display").text = tm.options.tracksFolderLocation
+        setlistsContainer.display = true
+        setlistsContainer.Q("location-display").text = tm.options.setlistsFolderLocation
         skinsContainer.display = true
         skinsContainer.Q("location-display").text = tm.options.skinsFolderLocation
         themesContainer.display = true
         themesContainer.Q("location-display").text = tm.options.themesFolderLocation
     else
         tracksContainer.display = false
+        setlistsContainer.display = false
         skinsContainer.display = false
         themesContainer.display = false
     end
@@ -371,6 +379,7 @@ optionsPanel.Initialize = function()
     if (platform == "iOS") then
         panel.Q("custom-data-location").display = false
         panel.Q("tracks-folder-location").display = false
+        panel.Q("setlists-folder-location").display = false
         panel.Q("skins-folder-location").display = false
         panel.Q("themes-folder-location").display = false
         panel.Q("miscellaneous-divider-2").display = false
@@ -380,6 +389,7 @@ optionsPanel.Initialize = function()
             tm.options.customDataLocation = not tm.options.customDataLocation
             tm.paths.ApplyCustomDataLocation()
             selectTrackPanel.needsRefresh = true
+            selectSetlistPanel.needsRefresh = true
             optionsPanel.UpdateCustomDataLocationDisplay()
         end)
     end
@@ -397,6 +407,18 @@ optionsPanel.Initialize = function()
         tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation, OnTracksFolderSelected)
     end)
 
+    function OnSetlistsFolderSelected(newFolder)
+        if (newFolder != nil) then
+            tm.options.setlistsFolderLocation = newFolder
+            tm.paths.ApplyCustomDataLocation()
+            selectSetlistPanel.needsRefresh = true
+            optionsPanel.UpdateCustomDataLocationDisplay()
+        end
+    end
+    local setlistsFolderButton = panel.Q("setlists-folder-location").Q("button")
+    setlistsFolderButton.RegisterCallback(eventType.Click, function()
+        tm.OpenSelectFolderDialog("", tm.options.setlistsFolderLocation, OnSetlistsFolderSelected)
+    end)
     
     function OnSkinsFolderSelected(newFolder)
         if (newFolder != nil) then

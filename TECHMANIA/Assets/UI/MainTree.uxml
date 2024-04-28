@@ -1000,6 +1000,15 @@
                     </ui:VisualElement>
                     <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
                 </ui:VisualElement>
+                <ui:VisualElement name="setlists-folder-location" class="options-item" style="padding-left: 100px;">
+                    <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
+                        <ui:Label text="Setlists folder" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-caption" style="margin-left: 0; margin-right: 0;" />
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+                            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
+                </ui:VisualElement>
                 <ui:VisualElement name="skins-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
                         <ui:Label text="Skins folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
