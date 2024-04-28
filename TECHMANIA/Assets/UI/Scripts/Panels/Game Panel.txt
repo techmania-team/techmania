@@ -283,6 +283,7 @@ gamePanel.ShowEyecatchInSetlistProgress = function(ref, eyecatchContainer)
             else
                 eyecatchContainer.Q("eyecatch").display = false
                 eyecatchContainer.Q("default-eyecatch").display = true
+                eyecatchContainer.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
             end
         end)
     else

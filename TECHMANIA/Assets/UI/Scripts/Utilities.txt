@@ -22,6 +22,7 @@ function LoadAndShowEyecatch(path, eyecatchElement)
             eyecatchElement.Q("default-eyecatch").visible = false
         else
             eyecatchElement.Q("default-eyecatch").visible = true
+            eyecatchElement.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
         end
     end)
 end

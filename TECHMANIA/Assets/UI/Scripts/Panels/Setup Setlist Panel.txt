@@ -303,6 +303,7 @@ setupSetlistPanel.Show = function()
         element.Q("drop-target").visible = true
         element.Q("eyecatch").display = false
         element.Q("default-eyecatch").display = false
+        element.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
         element.Q("title-container").display = false
         element.Q("Pattern-Banner").display = false
     end
