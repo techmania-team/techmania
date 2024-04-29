@@ -416,9 +416,10 @@ selectTrackPanel.UpdateEyecatches = function()
     if (not selectTrackPanel.panel.display) then return end
 
     local screenHeight = unity.screen.height
+    local buffer = 200
     for element, visible in pairs(selectTrackPanel.eyecatchVisible) do
         local screenPosition = element.LocalSpaceToScreenSpace(unity.vector2.__new(0, 0))
-        local shouldBeVisible = (screenPosition.y >= 0) and (screenPosition.y <= screenHeight)
+        local shouldBeVisible = (screenPosition.y >= -buffer) and (screenPosition.y <= screenHeight + buffer)
         if (visible and not shouldBeVisible) then
             ReleaseEyecatch(element)
             selectTrackPanel.eyecatchVisible[element] = false
