@@ -873,6 +873,92 @@
             <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
         </ui:VisualElement>
     </ui:Instance>
+    <ui:Instance template="Panel" name="setlist-result-panel" class="panel-no-back-button panel" style="display: flex;">
+        <AttributeOverrides element-name="title" text="Result" />
+        <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center; justify-content: center;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; width: 1260px; justify-content: center;">
+                <ui:VisualElement name="setlist-title-and-description" picking-mode="Ignore" class="elevation-1dp" style="height: 110px; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">
+                    <ui:Label tabindex="-1" text="Setlist title" parse-escape-sequences="false" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: upper-center;" />
+                    <ui:Label tabindex="-1" text="Setlist description" parse-escape-sequences="false" display-tooltip-when-elided="true" name="description" picking-mode="Ignore" class="text-caption" style="-unity-text-align: upper-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="patterns" picking-mode="Ignore" style="margin-top: 20px; height: 390px; flex-direction: row; justify-content: space-between;">
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch" style="display: flex; background-color: rgb(13, 71, 161);">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch" style="display: flex; background-color: rgb(13, 71, 161);">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch" style="display: flex; background-color: rgb(13, 71, 161);">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch" style="display: flex; background-color: rgb(13, 71, 161);">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="row" picking-mode="Ignore" style="margin-top: 20px; height: 160px; flex-direction: row;">
+                    <ui:VisualElement name="total-score" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Total score" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="123456" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: middle-center; height: 60px;" />
+                        <ui:Label tabindex="-1" text="ALL COMBO" display-tooltip-when-elided="true" name="medal" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="rank" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Rank" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: middle-center; height: 60px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 20px; padding-right: 20px; display: flex; flex-grow: 1;">
+                        <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
+                        <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="margin-top: 10px; height: 40px;">
+                            <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="row" picking-mode="Ignore" style="margin-top: 20px; height: 150px; flex-direction: row;">
+                    <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="123456   S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
+                        <ui:Label tabindex="-1" text="NEW RECORD" display-tooltip-when-elided="true" name="new-record-indicator" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Ruleset" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="Custom" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="buttons" picking-mode="Ignore" style="flex-grow: 1; justify-content: space-between;">
+                        <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="display: flex; height: 65px;" />
+                        <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-setlist-button" class="button-contained" style="display: flex; height: 65px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
+        </ui:VisualElement>
+    </ui:Instance>
     <ui:Instance template="Panel" name="options-panel" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Options" />
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">

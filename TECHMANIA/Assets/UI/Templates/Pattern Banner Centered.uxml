@@ -15,7 +15,7 @@
             <ui:VisualElement name="km-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/KM.png?fileID=2800000&amp;guid=8732849deafd43847ab0e226a2a3ef0c&amp;type=3#KM&quot;); display: none;" />
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="12" display-tooltip-when-elided="true" name="level" picking-mode="Ignore" class="text-subtitle" />
-        <ui:Label tabindex="-1" text="Pattern name" display-tooltip-when-elided="true" name="pattern-name" picking-mode="Ignore" class="text-subtitle" style="-unity-text-align: upper-left; text-overflow: ellipsis;" />
+        <ui:Label tabindex="-1" text="Pattern name" display-tooltip-when-elided="true" name="pattern-name" picking-mode="Ignore" class="text-subtitle" style="-unity-text-align: upper-left; text-overflow: ellipsis; overflow: hidden;" />
         <ui:VisualElement name="medal-container" picking-mode="Ignore">
             <ui:VisualElement name="all-combo-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MedalAllCombo.png?fileID=2800000&amp;guid=536b903a28ea1834dae87e5d719b3fd1&amp;type=3#MedalAllCombo&quot;);" />
             <ui:VisualElement name="perfect-play-icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MedalPerfectPlay.png?fileID=2800000&amp;guid=d7544b4d8f10b334380b92af7ca81f25&amp;type=3#MedalPerfectPlay&quot;); display: none;" />
