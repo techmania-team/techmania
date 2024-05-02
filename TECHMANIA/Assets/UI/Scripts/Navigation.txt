@@ -105,6 +105,16 @@ function SetUpNavigation()
         navigation.TransitionTo(resultPanel, selectTrackPanel)
     end)
 
+    -- game panel --> setlist result panel can happen on multiple oocations, set up in
+    -- Game Panel.txt.
+    setlistResultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click, function()
+        tm.game.setlist.Prepare()
+        navigation.FadeTo(setlistResultPanel, gamePanel)
+    end)
+    setlistResultPanel.panel.Q("select-setlist-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(setlistResultPanel, selectSetlistPanel)
+    end)
+
     mainMenu.panel.Q("setlists-button").RegisterCallback(eventType.Click, function()
         selectSetlistPanel.inEditor = false
         navigation.TransitionTo(mainMenu, selectSetlistPanel)

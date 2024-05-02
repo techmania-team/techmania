@@ -753,7 +753,15 @@ public class GameController : MonoBehaviour
         {
             scoreKeeper.stageFailed = true;
             state.SetComplete();
-            setup.onStageFailed?.Function?.Call(scoreKeeper);
+            if (setup.setlist.enabled)
+            {
+                setup.setlist.onSetlistFailed?.Function?.Call(
+                    setlistScoreKeeper);
+            }
+            else
+            {
+                setup.onStageFailed?.Function?.Call(scoreKeeper);
+            }
         }
     }
 
@@ -784,17 +792,27 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                if (currentStage == 2)
+                if (currentStage == 3)
                 {
-                    setup.setlist.hiddenPatternIndex =
-                        setup.setlist.loadedSetlist.ChooseHiddenPattern(
-                            setup.setlist.selectedPatternTotalIndex,
-                            setup.setlist.selectedPatternTotalLevel,
-                            setlistScoreKeeper);
+                    state.SetComplete();
+                    setup.setlist.onSetlistAllClear?.Function?.Call(
+                        setlistScoreKeeper);
                 }
-                state.SetPartialComplete();
-                setup.setlist.onPartialComplete?.Function?.Call(
-                    setlistScoreKeeper);
+                else
+                {
+                    if (currentStage == 2)
+                    {
+                        setup.setlist.hiddenPatternIndex =
+                            setup.setlist.loadedSetlist
+                            .ChooseHiddenPattern(
+                                setup.setlist.selectedPatternTotalIndex,
+                                setup.setlist.selectedPatternTotalLevel,
+                                setlistScoreKeeper);
+                    }
+                    state.SetPartialComplete();
+                    setup.setlist.onPartialComplete?.Function?.Call(
+                        setlistScoreKeeper);
+                }
             }
         }
         else

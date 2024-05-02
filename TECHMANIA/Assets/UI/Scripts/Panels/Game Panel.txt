@@ -224,16 +224,16 @@ gamePanel.Initialize = function()
             end)
         end
 
-        tm.gameSetup.onStageClear = function(scoreKeeper)
+        tm.gameSetup.onStageClear = function(_)
             -- Don't conclude the game yet
             if (tm.gameSetup.setlist.enabled) then
-                -- TODO
+                navigation.FadeTo(gamePanel, setlistResultPanel)
             else
                 navigation.FadeTo(gamePanel, resultPanel)
             end
         end
 
-        tm.gameSetup.onStageFailed = function(scoreKeeper)
+        tm.gameSetup.onStageFailed = function(_)
             tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"))
             tm.StartCoroutine(function()
                 local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
@@ -252,7 +252,7 @@ gamePanel.Initialize = function()
 
                 -- Don't conclude the game yet
                 if (tm.gameSetup.setlist.enabled) then
-                    -- TODO
+                    navigation.FadeTo(gamePanel, setlistResultPanel)
                 else
                     navigation.FadeTo(gamePanel, resultPanel)
                 end
@@ -264,7 +264,15 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.setlist.onHpBelowThreshold = function()
-            -- TODO
+            navigation.FadeTo(gamePanel, setlistResultPanel)
+        end
+
+        tm.gameSetup.setlist.onSetlistAllClear = function()
+            tm.gameSetup.onStageClear()
+        end
+
+        tm.gameSetup.setlist.onSetlistFailed = function()
+            tm.gameSetup.onStageFailed()
         end
     end
     InitializeGameSetup()

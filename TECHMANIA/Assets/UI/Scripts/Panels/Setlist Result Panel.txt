@@ -1,0 +1,67 @@
+setlistResultPanel = {
+    panel = tm.root.Q("setlist-result-panel")
+}
+
+setlistResultPanel.Show = function()
+    local panel = setlistResultPanel.panel
+    local setlist = selectSetlistPanel.selectedSetlist
+    local setlistMetadata = setlist.setlistMetadata
+    local setlistScoreKeeper = tm.game.setlist.scoreKeeper
+
+    controls.ResetScrollingTextTimer()
+
+    -- Panel title
+    local panelTitle = panel.Q("top-bar").Q("title")
+    if (setlistScoreKeeper.stageFailed) then
+        panelTitle.text = tm.l10n.GetString("setlist_result_panel_failed_title")
+    else
+        panelTitle.text = tm.l10n.GetString("setlist_result_panel_all_clear_title")
+    end
+
+    -- Setlist metadata
+    panel.Q("setlist-title-and-description").Q("title").text = setlistMetadata.title
+    panel.Q("setlist-title-and-description").Q("description").text = setlistMetadata.description
+
+    -- TODO: Patterns
+
+    -- Score, rank and max combo
+    panel.Q("total-score").Q("value").text = tostring(setlistScoreKeeper.TotalScore())
+    local medal = setlistScoreKeeper.Medal()
+    local medalString = ""
+    if (medal == tm.enum.performanceMedal.AllCombo) then
+        medalString = tm.l10n.GetString("performance_medal_all_combo")
+    elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
+        medalString = tm.l10n.GetString("performance_medal_perfect_play")
+    elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
+        medalString = tm.l10n.GetString("performance_medal_absolute_perfect")
+    end
+    panel.Q("total-score").Q("medal").text = medalString
+
+    panel.Q("rank").Q("value").text = setlistScoreKeeper.Rank()
+    panel.Q("max-combo").Q("value").text = setlistScoreKeeper.maxCombo
+
+    -- TODO: record
+
+    -- Modifiers
+    panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
+    local rulesetString = ""
+    panel.Q("legacy-override-indicator").display = false
+    if (tm.options.ruleset == tm.enum.ruleset.Standard) then
+        rulesetString = tm.l10n.GetString("ruleset_standard")
+    elseif (tm.options.ruleset == tm.enum.ruleset.Legacy) then
+        rulesetString = tm.l10n.GetString("ruleset_legacy")
+        -- if (selectPatternPanel.selectedPattern.legacyRulesetOverride.HasAny()) then
+        --     rulesetString = rulesetString .. "*"
+        --     panel.Q("legacy-override-indicator").display = true
+        -- end
+    elseif (tm.options.ruleset == tm.enum.ruleset.Custom) then
+        rulesetString = tm.l10n.GetString("ruleset_custom")
+    end
+    panel.Q("ruleset").Q("value").text = rulesetString
+
+    tm.game.Conclude()
+end
+
+setlistResultPanel.Hide = function()
+    -- TODO: release eyecatches
+end
