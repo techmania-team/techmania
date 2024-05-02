@@ -22,7 +22,58 @@ setlistResultPanel.Show = function()
     panel.Q("setlist-title-and-description").Q("title").text = setlistMetadata.title
     panel.Q("setlist-title-and-description").Q("description").text = setlistMetadata.description
 
-    -- TODO: Patterns
+    -- Patterns
+    local anyPatternHasLegacySetlistOverride = false
+    -- stageNumber is in 1-index; patternRef can be nil
+    function ShowPattern(stageNumber, patternRef)
+        local patternElement = panel.Q("patterns").Children()[stageNumber]
+        function NoPattern()
+            patternElement.Q("eyecatch").display = false
+            patternElement.Q("title").display = false
+            patternElement.Q("pattern-banner").display = false
+        end
+        if (patternRef == nil) then
+            NoPattern()
+        else
+            local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(patternRef)
+            if (not status.Ok()) then
+                NoPattern()
+            else
+                patternElement.Q("eyecatch").display = true
+                local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+                LoadAndShowEyecatch(eyecatchPath, patternElement.Q("eyecatch"))
+                patternElement.Q("title").display = true
+                patternElement.Q("title").text = trackInFolder.minimizedTrack.trackMetadata.title
+                patternElement.Q("pattern-banner").display = true
+                SetUpPatternBanner(pattern.patternMetadata, patternElement.Q("pattern-banner"))
+
+                if (pattern.legacySetlistOverride != nil) then
+                    for _, override in ipairs(pattern.legacySetlistOverride) do
+                        if (override.HasAny()) then
+                            anyPatternHasLegacySetlistOverride = true
+                        end
+                    end
+                end
+            end
+        end
+        
+        local scoreKeeper = setlistScoreKeeper.GetScoreKeeperForStage(stageNumber - 1)
+        local score = 0
+        if (scoreKeeper != nil) then score = scoreKeeper.TotalScore() end
+        patternElement.Q("score").text = tostring(score)
+    end
+    for i, index in ipairs(tm.gameSetup.setlist.patternIndices) do
+        local patternRef = setlist.selectablePatterns[index + 1]
+        ShowPattern(i, patternRef)
+    end
+    -- TODO: show or hide hidden pattern indicator
+    if (tm.game.setlist.currentStage == 3) then
+        local hiddenPatternIndex = tm.gameSetup.setlist.hiddenPatternIndex
+        local patternRef = setlist.hiddenPatterns[hiddenPatternIndex + 1].reference
+        ShowPattern(4, patternRef)
+    else
+        ShowPattern(4, nil)
+    end
 
     -- Score, rank and max combo
     panel.Q("total-score").Q("value").text = tostring(setlistScoreKeeper.TotalScore())
@@ -50,10 +101,10 @@ setlistResultPanel.Show = function()
         rulesetString = tm.l10n.GetString("ruleset_standard")
     elseif (tm.options.ruleset == tm.enum.ruleset.Legacy) then
         rulesetString = tm.l10n.GetString("ruleset_legacy")
-        -- if (selectPatternPanel.selectedPattern.legacyRulesetOverride.HasAny()) then
-        --     rulesetString = rulesetString .. "*"
-        --     panel.Q("legacy-override-indicator").display = true
-        -- end
+        if (anyPatternHasLegacySetlistOverride) then
+            rulesetString = rulesetString .. "*"
+            panel.Q("legacy-override-indicator").display = true
+        end
     elseif (tm.options.ruleset == tm.enum.ruleset.Custom) then
         rulesetString = tm.l10n.GetString("ruleset_custom")
     end
