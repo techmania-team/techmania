@@ -66,13 +66,15 @@ setlistResultPanel.Show = function()
         local patternRef = setlist.selectablePatterns[index + 1]
         ShowPattern(i, patternRef)
     end
-    -- TODO: show or hide hidden pattern indicator
+    local hiddenPatternIndicator = panel.Q("patterns").Children()[4].Q("hidden-pattern-indicator")
     if (tm.game.setlist.currentStage == 3) then
         local hiddenPatternIndex = tm.gameSetup.setlist.hiddenPatternIndex
         local patternRef = setlist.hiddenPatterns[hiddenPatternIndex + 1].reference
         ShowPattern(4, patternRef)
+        hiddenPatternIndicator.display = false
     else
         ShowPattern(4, nil)
+        hiddenPatternIndicator.display = true
     end
 
     -- Score, rank and max combo

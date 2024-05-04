@@ -21,6 +21,7 @@ function LoadAndShowEyecatch(path, eyecatchElement)
             eyecatchElement.backgroundImage = texture
             eyecatchElement.Q("default-eyecatch").visible = false
         else
+            eyecatchElement.backgroundImage = nil
             eyecatchElement.Q("default-eyecatch").visible = true
             eyecatchElement.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
         end

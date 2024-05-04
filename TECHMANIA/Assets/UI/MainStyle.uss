@@ -575,13 +575,21 @@
     width: 300px;
 }
 
-#setlist-result-panel #pattern #eyecatch {
+#setlist-result-panel #pattern #eyecatch-container {
     width: 200px;
     height: 200px;
     margin-top: 10px;
 }
 
-#setlist-result-panel #pattern #default-eyecatch {
+#setlist-result-panel #pattern #eyecatch-container #eyecatch {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#setlist-result-panel #pattern #eyecatch-container #default-eyecatch {
     position: absolute;
     left: 0;
     top: 0;
