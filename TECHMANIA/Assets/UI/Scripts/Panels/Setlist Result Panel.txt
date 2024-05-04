@@ -29,8 +29,8 @@ setlistResultPanel.Show = function()
         local patternElement = panel.Q("patterns").Children()[stageNumber]
         function NoPattern()
             patternElement.Q("eyecatch").display = false
-            patternElement.Q("title").display = false
-            patternElement.Q("pattern-banner").display = false
+            patternElement.Q("title").visible = false
+            patternElement.Q("pattern-banner").visible = false
         end
         if (patternRef == nil) then
             NoPattern()
@@ -42,9 +42,9 @@ setlistResultPanel.Show = function()
                 patternElement.Q("eyecatch").display = true
                 local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
                 LoadAndShowEyecatch(eyecatchPath, patternElement.Q("eyecatch"))
-                patternElement.Q("title").display = true
+                patternElement.Q("title").visible = true
                 patternElement.Q("title").text = trackInFolder.minimizedTrack.trackMetadata.title
-                patternElement.Q("pattern-banner").display = true
+                patternElement.Q("pattern-banner").visible = true
                 SetUpPatternBanner(pattern.patternMetadata, patternElement.Q("pattern-banner"))
 
                 if (pattern.legacySetlistOverride != nil) then
