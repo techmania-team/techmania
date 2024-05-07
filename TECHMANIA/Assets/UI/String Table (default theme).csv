@@ -317,8 +317,8 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#game-panel #pause-menu #resume-button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
 ,#game-panel #pause-menu #restart-button,RESTART,重试,再試一次,RESTART,RESTART
 ,#game-panel #pause-menu #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
-,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,,,
-,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,,,
+Added in 2.2,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,,,
+Added in 2.2,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,,,
 ,#game-panel #pause-menu #bg-brightness-wrap #label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
 ,#game-panel #pause-menu #master #label,Master,主音量,主音量,マスター,마스터 볼륨
 ,#game-panel #pause-menu #music #label,Music,音乐音量,音樂音量,音楽,반주음
@@ -372,9 +372,9 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#options-panel #music #label,Music,音乐音量,音樂音量,音楽,반주음
 ,#options-panel #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
 ,#options-panel #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
-Added in 2.1,#options-panel #advanced-audio-header,Advanced audio,高级音频选项,進階音效選項,オーディオ詳細設定,고급 오디오 옵션
-Added in 2.1,#options-panel #asio #label,Use ASIO,使用ASIO,使用 ASIO,ASIOを使用,ASIO 사용
-Added in 2.1,#options-panel #asio-explanation #content,"After installing ASIO4ALL (or an ASIO-compatible sound card),
+,#options-panel #advanced-audio-header,Advanced audio,高级音频选项,進階音效選項,オーディオ詳細設定,고급 오디오 옵션
+,#options-panel #asio #label,Use ASIO,使用ASIO,使用 ASIO,ASIOを使用,ASIO 사용
+,#options-panel #asio-explanation #content,"After installing ASIO4ALL (or an ASIO-compatible sound card),
 you can enable ASIO to enjoy low latency audio.
 Make sure no application is playing any sound when turning this on.","如果安装了ASIO4ALL（或支持ASIO的外置声卡），可以启用ASIO以降低音频延迟。
 请确保启用此选项时没有应用程序在发声。","如果安裝了 ASIO4ALL （或支援 ASIO 的外接音效卡），
@@ -384,8 +384,8 @@ ASIOを使用して遅延の少ないオーディオを楽しめます。
 ASIOを使用する前に、他のプログラムでサウンドを再生していないか確認してください。","ASIO 대응 하드웨어 또는 ASIO4ALL 소프트웨어를 설치하면 기능을 활성화하여 저지연 오디오 환경에서 게임을 즐길 수 있습니다.
 ASIO 기능 활성화 전, 다른 프로그램에서 사운드 기능을 사용하고 있는지 확인하십시오."
 ,#options-panel #audio-buffer-size #label,Audio buffer size,音频缓冲长度,音效緩衝長度,オーディオバッファサイズ,오디오 버퍼 크기
-Added in 2.1,#options-panel #num-audio-buffers #label,Number of buffers,音频缓冲数量,音效緩衝數量,オーディオバッファ数,오디오 버퍼 수
-Updated in 2.1,#options-panel #audio-buffer-explanation #label,"Using fewer and smaller buffers decreases latency,
+,#options-panel #num-audio-buffers #label,Number of buffers,音频缓冲数量,音效緩衝數量,オーディオバッファ数,오디오 버퍼 수
+,#options-panel #audio-buffer-explanation #label,"Using fewer and smaller buffers decreases latency,
 but may cause audio issues such as stuttering.
 You need to restart TECHMANIA to apply these options.","减小缓冲数量和长度可以降低音频延迟，但也更可能产生卡壳等问题。
 这些选项将在TECHMANIA重新启动时生效。","減少緩衝數量和長度可以降低音效延遲，但也更可能產生卡頓等問題。

@@ -221,14 +221,7 @@ public class ScoreKeeper
                 gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
                 if (feverAmount >= 1f)
                 {
-                    feverState = FeverState.Ready;
-                    feverAmount = 1f;
-                    gameSetup.onFeverReady?.Function?.Call();
-                    if (GameController.instance.modifiers.fever
-                        == Modifiers.Fever.AutoFever)
-                    {
-                        ActivateFever();
-                    }
+                    OnFeverFull();
                 }
             }
         }
@@ -254,6 +247,18 @@ public class ScoreKeeper
                 }
                 gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
             }
+        }
+    }
+
+    private void OnFeverFull()
+    {
+        feverState = FeverState.Ready;
+        feverAmount = 1f;
+        gameSetup.onFeverReady?.Function?.Call();
+        if (GameController.instance.modifiers.fever
+            == Modifiers.Fever.AutoFever)
+        {
+            ActivateFever();
         }
     }
 
@@ -448,5 +453,9 @@ public class ScoreKeeper
         this.maxCombo = maxCombo;
         this.hp = hp;
         this.feverAmount = feverAmount;
+        if (this.feverAmount >= 1f)
+        {
+            OnFeverFull();
+        }
     }
 }

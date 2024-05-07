@@ -626,6 +626,13 @@ public class GameController : MonoBehaviour
             !scoreKeeper.stageFailed;
     }
 
+    public bool SetlistScoreIsValid()
+    {
+        return !setup.modifiers.HasAnySpecialModifier() &&
+            setup.ruleset != Options.Ruleset.Custom &&
+            !setlistScoreKeeper.stageFailed;
+    }
+
     public bool ScoreIsNewRecord()
     {
         if (!ScoreIsValid()) return false;
@@ -638,6 +645,18 @@ public class GameController : MonoBehaviour
         return newScore > currentScore;
     }
 
+    public bool SetlistScoreIsNewRecord()
+    {
+        if (!SetlistScoreIsValid()) return false;
+        SetlistRecord currentRecord = Records.instance.setlist.GetRecord(
+            setup.setlist.loadedSetlist, setup.ruleset);
+        if (currentRecord == null) return true;
+        int currentScore = currentRecord.score;
+        int newScore = setlistScoreKeeper.TotalScore();
+
+        return newScore > currentScore;
+    }
+
     public void UpdateRecord()
     {
         if (!ScoreIsValid()) return;
@@ -646,6 +665,18 @@ public class GameController : MonoBehaviour
             setup.ruleset,
             scoreKeeper.TotalScore(),
             scoreKeeper.Medal());
+    }
+
+    public void UpdateSetlistRecord()
+    {
+        if (!SetlistScoreIsValid()) return;
+        Records.instance.setlist.UpdateRecord(
+            setup.setlist.loadedSetlist,
+            setup.setlist.patternIndices,
+            setup.setlist.hiddenPatternIndex,
+            setup.ruleset,
+            setlistScoreKeeper.TotalScore(),
+            setlistScoreKeeper.Medal());
     }
     #endregion
 

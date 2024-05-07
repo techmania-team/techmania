@@ -109,6 +109,32 @@ namespace ThemeApi
                 currentStage++;
                 GameController.instance.BeginLoading();
             }
+
+            public bool ScoreIsValid()
+            {
+                return GameController.instance.SetlistScoreIsValid();
+            }
+
+            // Returns true if the current score is valid, AND it's
+            // greater than the current record on the setlist,
+            // if one exists.
+            public bool ScoreIsNewRecord()
+            {
+                parent.CheckState(State.Complete, 
+                    "setlist.ScoreIsNewRecord");
+                return GameController.instance.ScoreIsNewRecord();
+            }
+
+            // Updates the score and medal on the current setlist
+            // separately.
+            // Does not save to disk; call Records.SaveToFile()
+            // to do that.
+            public void UpdateRecord()
+            {
+                parent.CheckState(State.Complete,
+                    "setlist.UpdateRecord");
+                GameController.instance.UpdateSetlistRecord();
+            }
         }
         public SetlistFields setlist;
 
