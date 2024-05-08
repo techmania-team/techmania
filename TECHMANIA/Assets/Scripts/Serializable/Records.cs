@@ -208,7 +208,7 @@ public class Records : RecordsBase
         setlistRecordDict[Options.Ruleset.Legacy] =
             new Dictionary<string, SetlistRecord>();
 
-        setlist = new SetlistMethods();
+        setlist = new SetlistMethods() { parent = this };
     }
 
     // Returns null if a record doesn't exist.
@@ -479,6 +479,7 @@ public class Records : RecordsBase
             }
         }
     }
+    [NonSerialized]
     public SetlistMethods setlist;
 
     protected override void PrepareToSerialize()

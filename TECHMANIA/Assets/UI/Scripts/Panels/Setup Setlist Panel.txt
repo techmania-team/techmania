@@ -308,6 +308,26 @@ setupSetlistPanel.Show = function()
         element.Q("Pattern-Banner").display = false
     end
 
+    -- Display record
+    local record = tm.records.setlist.GetRecord(setlist)
+    local recordElement = panel.Q("record")
+    if (record == nil) then
+        recordElement.Q("content").text = "---"
+        recordElement.Q("medal-text").text = ""
+    else
+        recordElement.Q("content").text = record.score .. "   " .. record.Rank()
+        local medal = record.medal
+        if (medal == tm.enum.performanceMedal.NoMedal) then
+            recordElement.Q("medal-text").text = ""
+        elseif (medal == tm.enum.performanceMedal.AllCombo) then
+            recordElement.Q("medal-text").text = tm.l10n.GetString("performance_medal_all_combo")
+        elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
+            recordElement.Q("medal-text").text = tm.l10n.GetString("performance_medal_perfect_play")
+        elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
+            recordElement.Q("medal-text").text = tm.l10n.GetString("performance_medal_absolute_perfect")
+        end
+    end
+
     -- Display modifiers
     setupSetlistPanel.ShowCurrentModifiers()
 
