@@ -11,6 +11,8 @@ setupSetlistPanel = {
     -- nil means no eyecatch
     hiddenPatternEyecatches = {},
 
+    numEyecatchesBeingLoaded = 0,
+
     -- On dragging
     selectablePatternBeingDragged = -1,
     selectedPatternBeingDragged = -1,
@@ -171,6 +173,9 @@ setupSetlistPanel.Initialize = function()
         -- Save options
         tm.options.SaveToFile()
 
+        -- Cancel the coroutine that loads record eyecatches
+        setupSetlistPanel.numEyecatchesBeingLoaded = 0
+
         -- Navigation.txt will handle loading
     end)
 end
@@ -197,6 +202,7 @@ setupSetlistPanel.Show = function()
     local availableSelectablePatterns = 0
     local missingReferences = {}
 
+    setupSetlistPanel.numEyecatchesBeingLoaded = 0
     for index, ref in ipairs(setlist.selectablePatterns) do
         local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
         if (status.Ok()) then
@@ -227,7 +233,9 @@ setupSetlistPanel.Show = function()
             }
 
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            setupSetlistPanel.numEyecatchesBeingLoaded = setupSetlistPanel.numEyecatchesBeingLoaded + 1
             tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+                setupSetlistPanel.numEyecatchesBeingLoaded = setupSetlistPanel.numEyecatchesBeingLoaded - 1
                 if (status.Ok()) then
                     setupSetlistPanel.selectablePatterns[index].eyecatch = texture
                     element.Q("mini-eyecatch").backgroundImage = texture
@@ -250,7 +258,9 @@ setupSetlistPanel.Show = function()
             availableHiddenPatterns = availableHiddenPatterns + 1
 
             local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+            setupSetlistPanel.numEyecatchesBeingLoaded = setupSetlistPanel.numEyecatchesBeingLoaded + 1
             tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+                setupSetlistPanel.numEyecatchesBeingLoaded = setupSetlistPanel.numEyecatchesBeingLoaded - 1
                 if (status.Ok()) then
                     setupSetlistPanel.hiddenPatternEyecatches[index] = texture
                 end
@@ -311,6 +321,10 @@ setupSetlistPanel.Show = function()
     -- Display record
     local record = tm.records.setlist.GetRecord(setlist)
     local recordElement = panel.Q("record")
+    for _, miniEyecatchElement in ipairs(recordElement.Q("patterns").Children()) do
+        miniEyecatchElement.backgroundImage = nil
+        miniEyecatchElement.Q("default-eyecatch").display = true
+    end
     if (record == nil) then
         recordElement.Q("content").text = "---"
         recordElement.Q("medal-text").text = ""
@@ -326,6 +340,32 @@ setupSetlistPanel.Show = function()
         elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
             recordElement.Q("medal-text").text = tm.l10n.GetString("performance_medal_absolute_perfect")
         end
+
+        tm.StartCoroutine(function()
+            while (setupSetlistPanel.numEyecatchesBeingLoaded > 0) do
+                coroutine.yield()
+            end
+            for i = 1, 3 do
+                local guid = record.patternGuids[i]
+                for index, ref in ipairs(setlist.selectablePatterns) do
+                    if (ref.patternGuid == guid) then
+                        local miniEyecatchElement = recordElement.Q("patterns").Children()[i]
+                        miniEyecatchElement.backgroundImage = setupSetlistPanel.selectablePatterns[index].eyecatch
+                        miniEyecatchElement.Q("default-eyecatch").display = miniEyecatchElement.backgroundImage == nil
+                        break
+                    end
+                end
+            end
+            local hiddenGuid = record.patternGuids[4]
+            for index, hiddenPattern in ipairs(setlist.hiddenPatterns) do
+                if (hiddenPattern.reference.patternGuid == hiddenGuid) then
+                    local miniEyecatchElement = recordElement.Q("patterns").Children()[4]
+                    miniEyecatchElement.backgroundImage = setupSetlistPanel.hiddenPatternEyecatches[index]
+                    miniEyecatchElement.Q("default-eyecatch").display = miniEyecatchElement.backgroundImage == nil
+                    break
+                end
+            end
+        end)
     end
 
     -- Display modifiers

@@ -122,7 +122,7 @@ namespace ThemeApi
             {
                 parent.CheckState(State.Complete, 
                     "setlist.ScoreIsNewRecord");
-                return GameController.instance.ScoreIsNewRecord();
+                return GameController.instance.SetlistScoreIsNewRecord();
             }
 
             // Updates the score and medal on the current setlist
