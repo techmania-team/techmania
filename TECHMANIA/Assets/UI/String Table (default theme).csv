@@ -19,31 +19,31 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,ruleset_custom,Custom,自定义,自訂,カスタム,사용자 지정
 ,,,,,,
 ,discord_state_main_menu,Main Menu,主菜单,主選單,メインメニュー,메인 메뉴
-,discord_state_options,Options,设置,設定,オプション,설정 변경 중
+,discord_state_options,Options,设置,設定,設定,설정 변경 중
 ,discord_state_information,Information,须知,須知,情報,정보
 ,discord_state_selecting_track,Selecting Track,正在选择曲目,選擇歌曲,トラック選択,음악 선택 중
 ,discord_state_selecting_pattern,Selecting Pattern,正在选择谱面,選擇譜面,パターン選択,패턴 선택 중
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
-{0} is setlist title; {1} is stage number (1-4),discord_state_playing_setlist,{0} (stage {1}),{0}（第{1}曲）,,,
+{0} is setlist title; {1} is stage number (1-4),discord_state_playing_setlist,{0} (stage {1}),{0}（第{1}曲）,{0}（第{1}首）,{0}（ステージ{1}）,{0} (스테이지 {1})
 {0} is pattern level; {1} is track title,discord_state_playing_pattern_in_setlist,({0}) {1},({0}) {1},({0}) {1},({0}) {1},({0}) {1}
-Added in 2.2,discord_state_selecting_setlist,Selecting Setlist,正在选择组曲,,,
-Added in 2.2,discord_state_setting_up_setlist,Setting Up Setlist,正在配置组曲,,,
+Added in 2.2,discord_state_selecting_setlist,Selecting Setlist,正在选择组曲,正在選擇組曲,セットリスト選択,디스크셋 선택 중
+Added in 2.2,discord_state_setting_up_setlist,Setting Up Setlist,正在配置组曲,正在設定組曲,セットリスト構成,디스크셋 구성 중
 ,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button #label,START,开始,開始,スタート,게임 시작
-Added in 2.2,#main-menu #setlists-button #label,SETLISTS,组曲,,,
+Added in 2.2,#main-menu #setlists-button #label,SETLISTS,组曲,組曲,セットリスト,디스크셋
 ,#main-menu #editor-button #label,EDITOR,编辑,編輯,エディタ,편집기
-Added in 2.2,#main-menu #editor-sub-buttons #edit-tracks-button,TRACKS,单曲,,,
-Added in 2.2,#main-menu #editor-sub-buttons #edit-setlists-button,SETLISTS,组曲,,,
-,#main-menu #options-button #label,OPTIONS,设置,設定,オプション,설정
+Added in 2.2,#main-menu #editor-sub-buttons #edit-tracks-button,TRACKS,单曲,單曲,トラック,음악
+Added in 2.2,#main-menu #editor-sub-buttons #edit-setlists-button,SETLISTS,组曲,組曲,セットリスト,디스크셋
+,#main-menu #options-button #label,OPTIONS,设置,設定,設定,설정
 ,#main-menu #information-button #label,INFORMATION,须知,須知,情報,안내
 ,#main-menu #quit-button #label,QUIT,退出,離開,終了,종료
 ,,,,,,
 ,#select-track-panel #top-bar #title,Select Track,选择曲目,選擇歌曲,トラック選択,Select Track
 ,eyecatch_no_image_text,No image,没有预览,沒有預覽,イメージなし,No image
 "{0} is the number of tracks hidden;
-{1} is the search term.",select_track_some_tracks_hidden_text,"{0} track(s) are hidden as they don't match the search term ""{1}"".",{0}首曲目不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的曲目。,"キーワード""{1}""を含まない{0}曲が表示されていません。","검색어 ""{1}""을 포함하지 않는 {0}곡이 표시되지 않았습니다."
-,select_track_no_track_text,TECHMANIA cannot find any track in this folder.,TECHMANIA没有在此文件夹内找到任何曲目。,TECHMANIA 找不到任何曲目。,トラックがありません。,음악이 없습니다.
+{1} is the search term.",select_track_some_tracks_hidden_text,"{0} track(s) are hidden as they don't match the search term ""{1}"".",{0}首曲目不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的歌曲。,"キーワード""{1}""を含まないトラック{0}個が表示されていません。","검색어 ""{1}""을 포함하지 않는 {0}곡이 표시되지 않았습니다."
+,select_track_no_track_text,TECHMANIA cannot find any track in this folder.,TECHMANIA没有在此文件夹内找到任何曲目。,找不到任何歌曲。,トラックがありません。,음악이 없습니다.
 "When there's an error with a track,
 the select track panel will create an ""error card"" for it,
 with the title and artist as listed here.",select_track_error_card_title,Could not load track,无法读取曲目,無法載入歌曲,トラックを読み込めません。,음악을 불러올 수 없습니다.
@@ -80,7 +80,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 是否将所有曲目升级至当前版本？
 
-建议在备份所有曲目后再开始升级。","有一部分的歌曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些歌曲，但是掃描這些歌曲將需要更長時間。
+建议在备份所有曲目后再开始升级。","有一部分的歌曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些歌曲，但是掃描這些歌曲將需要更長的時間。
 
 是否將所有歌曲升級至目前版本？
 
@@ -88,7 +88,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 全てのトラックを更新しますか？
 
-更新する前にトラックのバックアップを推奨します。","패턴이 최신 버전이 아닌 곡이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
+更新する前にトラックのバックアップを推奨します。","이전 버전의 TECHMANIA에서 생성한 음악이 있습니다. 플레이할 수 있으나, 음악 선택 화면의 출력이 지연될 수 있습니다.
 
 모든 패턴을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 패턴 백업을 권장합니다."
 ,select_track_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
@@ -100,7 +100,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 {0}","升級歌曲時發生錯誤：
 
-{0}","トラックのアップグレード中にエラーが発生しました:
+{0}","トラックの更新中にエラーが発生しました:
 
 {0}","음악 데이터를 업그레이드하는 중 오류가 발생했습니다.
 
@@ -138,14 +138,14 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 {1}"
 ,,,,,,
-All strings on setlists are added in 2.2,#select-setlist-panel #top-bar #title,Select Setlist,选择组曲,,,
+All strings on setlists are added in 2.2,#select-setlist-panel #top-bar #title,Select Setlist,选择组曲,選擇組曲,セットリスト選択,Select Setlist
 "{0} is the number of setlists hidden;
-{1} is the search term.",select_setlist_some_setlists_hidden_text,"{0} setlist(s) are hidden as they don't match the search term ""{1}"".",{0}首组曲不包含搜索关键字“{1}”，因而没有显示。,,,
-,select_setlist_no_setlist_text,TECHMANIA cannot find any setlist in this folder.,TECHMANIA没有在此文件夹内找到任何组曲。,,,
+{1} is the search term.",select_setlist_some_setlists_hidden_text,"{0} setlist(s) are hidden as they don't match the search term ""{1}"".",{0}首组曲不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的組曲。,"キーワード""{1}""を含まないセットリスト{0}個が表示されていません。","검색어 ""{1}""을 포함하지 않는 디스크셋 {0}개가 표시되지 않았습니다."
+,select_setlist_no_setlist_text,TECHMANIA cannot find any setlist in this folder.,TECHMANIA没有在此文件夹内找到任何组曲。,找不到任何組曲,このフォルダにセットリストが見つかりませんでした,디스크셋이 없습니다.
 "When there's an error with a setlist,
 the select setlist panel will create an ""error card"" for it,
-with the title as listed here.",select_setlist_error_card_title,Could not load setlist,无法读取组曲,,,
-,select_setlist_upgrade_error_card_title,Could not upgrade setlist,无法升级组曲,,,
+with the title as listed here.",select_setlist_error_card_title,Could not load setlist,无法读取组曲,無法載入組曲,セットリストを読み込めません,디스크셋을 불러올 수 없습니다.
+,select_setlist_upgrade_error_card_title,Could not upgrade setlist,无法升级组曲,無法升級組曲,セットリストを更新できません,업그레이드할 수 없음
 ,select_setlist_error_card_description,Open for details,点击查看详情,查看詳細資訊,詳細,자세히
 "{0} is setlist.tech's full path;
 {1} is the error message.",select_setlist_error_format,"An error occurred when loading {0}:
@@ -178,7 +178,17 @@ It is recommended that you backup your setlists before upgrading.","有一部分
 
 是否将所有组曲升级至当前版本？
 
-建议在备份所有组曲后再开始升级。",,,
+建议在备份所有组曲后再开始升级。","有一部分的組曲是使用舊版本的 TECHMANIA 製作的。你仍然可以遊玩這些組曲，但是掃描這些組曲將需要更長的時間。
+
+是否將所有組曲升級至目前版本？
+
+建議備份所有組曲後再開始升級。","旧バージョンのTECHMANIAで作成されたセットリストがあります。プレイはできますが、セットリスト選択画面のロードに遅延が発生する可能性があります。
+
+全てのセットリストを更新しますか？
+
+更新する前にセットリストのバックアップを推奨します。","이전 버전의 TECHMANIA에서 제작한 디스크셋이 있습니다. 플레이할 수 있으나, 디스크셋 선택 화면의 출력이 지연될 수 있습니다.
+
+모든 디스크셋을 최신 버전으로 업그레이드하시겠습니까? 업그레이드하기 전에 기존 디스크셋 백업을 권장합니다."
 ,select_setlist_upgrade_version_confirm,UPGRADE,升级,升級,更新,업그레이드
 ,select_setlist_upgrade_version_cancel,CANCEL,取消,取消,キャンセル,취소
 ,select_setlist_upgrade_complete_message,Upgrade completed.,升级完毕。,升級完成。,更新が完了しました。,업그레이드를 완료하였습니다.
@@ -186,19 +196,25 @@ It is recommended that you backup your setlists before upgrading.","有一部分
 
 {0}","升级组曲时发生错误：
 
-{0}",,,
-,select_setlist_new_setlist_card_title,New,新建,新增,新しいトラック,새 음악
+{0}","升級組曲時發生錯誤：
+
+{1}","セットリストの更新中にエラーが発生しました:
+
+{0}","디스크셋을 업그레이드하는 중 오류가 발생했습니다.
+
+{0}"
+,select_setlist_new_setlist_card_title,New,新建,新增,新規,새 디스크셋
 ,,,,,,
 ,#select-setlist-panel #filter-sidesheet #search-header,Search,搜索,搜尋,検索,검색
 ,#select-setlist-panel #filter-sidesheet #keyword-field #mini-label,Keyword,关键字,關鍵字,キーワード,키워드
 ,#select-setlist-panel #filter-sidesheet #options-header,Options,设置,設定,設定,정렬 옵션
-,#select-setlist-panel #filter-sidesheet #all-folders,Show setlists in all folders,显示所有文件夹内的组曲,,,
+,#select-setlist-panel #filter-sidesheet #all-folders,Show setlists in all folders,显示所有文件夹内的组曲,顯示所有資料夾內的組曲,フォルダ内のすべてのセットリストを表示,모든 디스크셋 보기
 ,#select-setlist-panel #filter-sidesheet #sort-by,Sort by,排序,排序,並べ替え,정렬 기준
 ,#select-setlist-panel #filter-sidesheet #ascending-radio #text,Ascending,升序,升冪,昇順,오름차순
 ,#select-setlist-panel #filter-sidesheet #descending-radio #text,Descending,降序,降冪,降順,내림차순
 ,setlist_filter_sidesheet_sort_basis_title,Title,标题,標題,曲名,제목
 ,setlist_filter_sidesheet_sort_basis_modified_time,Modified time,修改时间,修改日期,更新日時,수정한 날짜
-,setlist_filter_sidesheet_sort_basis_level,Level,难度,,,
+,setlist_filter_sidesheet_sort_basis_level,Level,难度,難度,レベル,레벨
 ,,,,,,
 ,#select-setlist-panel #new-setlist-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
 ,#select-setlist-panel #new-setlist-dialog #create-button,CREATE,新建,新增,作成,생성
@@ -215,16 +231,16 @@ It is recommended that you backup your setlists before upgrading.","有一部分
 
 {1}"
 ,,,,,,
-,#setup-setlist-panel #top-bar #title,Setup Setlist,配置组曲,,,
-,#setup-setlist-panel #setup-setlist #drag-indicator #instruction,Drag to select 3 patterns,选择3个谱面拖拽至下方,,,
+,#setup-setlist-panel #top-bar #title,Setup Setlist,配置组曲,設定組曲,セットリスト構成,Setup Setlist
+,#setup-setlist-panel #setup-setlist #drag-indicator #instruction,Drag to select 3 patterns,选择3个谱面拖拽至下方,選擇 3 個譜面拖曳至下方,ドラッグして3個のパターンを選択,이미지를 드래그하여 패턴 3개를 선택하십시오
 ,#setup-setlist-panel #setup-setlist #record #title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
 ,#setup-setlist-panel #setup-setlist #modifier-display #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 ,#setup-setlist-panel #setup-setlist #modifiers-button,MODIFIERS,游戏选项,遊戲選項,モディファイア,플레이 옵션
 ,#setup-setlist-panel #setup-setlist #play-button,PLAY,开始,開始,プレイ,시작
-,#setup-setlist-panel #missing-pattern-warning #missing-pattern-label,The following patterns are not found on your device:,在设备上没有找到以下谱面：,,,
-,#setup-setlist-panel #missing-pattern-warning #continue-playing-label,Click "Continue" to play the setlist with the available patterns.,点击“继续”可以以现有的谱面继续游玩此组曲。,,,
-,#setup-setlist-panel #missing-pattern-warning #continue-button,CONTINUE,继续,,,
-,#setup-setlist-panel #missing-pattern-warning #not-enough-patterns-label,There are not enough available patterns to play this setlist.,谱面数量不足，无法游玩此组曲。,,,
+,#setup-setlist-panel #missing-pattern-warning #missing-pattern-label,The following patterns are not found on your device:,在设备上没有找到以下谱面：,找不到以下譜面：,下のパターンが見つかりませんでした：,아래 패턴을 찾을 수 없습니다.
+,#setup-setlist-panel #missing-pattern-warning #continue-playing-label,"Click ""Continue"" to play the setlist with the available patterns.",点击“继续”可以以现有的谱面继续游玩此组曲。,點擊“繼續”可以使用現有譜面繼續遊玩這個組曲,プレイ可能なパターンのみをプレイするには「続行」をクリックしてください。,"남은 패턴으로 디스크셋을 플레이하려면 ""계속""을 누르십시오."
+,#setup-setlist-panel #missing-pattern-warning #continue-button,CONTINUE,继续,繼續,続行,계속
+,#setup-setlist-panel #missing-pattern-warning #not-enough-patterns-label,There are not enough available patterns to play this setlist.,谱面数量不足，无法游玩此组曲。,譜面數量不足，無法遊玩這個組曲,このセットリストをプレイするためのパターンが不足しています。,플레이 가능한 패턴이 부족하여 디스크셋을 플레이할 수 없습니다.
 ,,,,,,
 ,#select-pattern-panel #top-bar #title,Select Pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
 ,#select-pattern-panel #pattern-list #no-pattern-text,This track does not contain any pattern.,本曲目不包含任何谱面。,本歌曲不包含任何譜面,このトラックにはパターンがありません。,이 음악에는 패턴이 없습니다.
@@ -317,48 +333,48 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#game-panel #pause-menu #resume-button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
 ,#game-panel #pause-menu #restart-button,RESTART,重试,再試一次,RESTART,RESTART
 ,#game-panel #pause-menu #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
-Added in 2.2,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,,,
-Added in 2.2,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,,,
+Added in 2.2,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,重新開始組曲,RESTART SETLIST,RESTART SETLIST
+Added in 2.2,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,選擇組曲,SELECT SETLIST,SELECT SETLIST
 ,#game-panel #pause-menu #bg-brightness-wrap #label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
 ,#game-panel #pause-menu #master #label,Master,主音量,主音量,マスター,마스터 볼륨
 ,#game-panel #pause-menu #music #label,Music,音乐音量,音樂音量,音楽,반주음
 ,#game-panel #pause-menu #keysounds #label,Keysounds,按键音音量,按鍵音音量,ノート音,연주음
 ,#game-panel #pause-menu #sound-effects #label,Sound effects,音效音量,音效音量,効果音,효과음
 ,,,,,,
-,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,STAGE CLEARED,STAGE CLEARED
-,result_panel_stage_failed_title,Stage Failed,挑战失败,STAGE FAILED,STAGE FAILED,STAGE FAILED
-,#result-panel #judgement-tally #labels #rainbow-max,Rainbow Max,Rainbow Max,RAINBOW MAX,RAINBOW MAX,RAINBOW MAX
-,#result-panel #judgement-tally #labels #max,Max,Max,MAX,MAX,MAX
-,#result-panel #judgement-tally #labels #cool,Cool,Cool,COOL,COOL,COOL
-,#result-panel #judgement-tally #labels #good,Good,Good,GOOD,GOOD,GOOD
-,#result-panel #judgement-tally #labels #miss,Miss,Miss,MISS,MISS,MISS
-,#result-panel #judgement-tally #labels #break,Break,Break,BREAK,BREAK,BREAK
-,#result-panel #judgement-tally #labels #max-combo,Max Combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
-,#result-panel #judgement-tally #labels #fever-bonus,Fever Bonus,Fever奖励,FEVER BONUS,FEVER BONUS,FEVER BONUS
-,#result-panel #judgement-tally #labels #combo-bonus,Combo Bonus,连击奖励,COMBO BONUS,COMBO BONUS,COMBO BONUS
-,#result-panel #total-score #title,Score,总分,SCORE,SCORE,SCORE
-,#result-panel #rank #title,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
-,#result-panel #my-record #title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
-,#result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,新記録,NEW RECORD
+,result_panel_stage_clear_title,Stage Clear,挑战成功,STAGE CLEARED,Stage Clear,STAGE CLEARED
+,result_panel_stage_failed_title,Stage Failed,挑战失败,STAGE FAILED,Stage Failed,STAGE FAILED
+,#result-panel #judgement-tally #labels #rainbow-max,Rainbow Max,Rainbow Max,RAINBOW MAX,Rainbow Max,RAINBOW MAX
+,#result-panel #judgement-tally #labels #max,Max,Max,MAX,Max,MAX
+,#result-panel #judgement-tally #labels #cool,Cool,Cool,COOL,Cool,COOL
+,#result-panel #judgement-tally #labels #good,Good,Good,GOOD,Good,GOOD
+,#result-panel #judgement-tally #labels #miss,Miss,Miss,MISS,Miss,MISS
+,#result-panel #judgement-tally #labels #break,Break,Break,BREAK,Break,BREAK
+,#result-panel #judgement-tally #labels #max-combo,Max Combo,最大连击,MAX COMBO,Max Combo,MAX COMBO
+,#result-panel #judgement-tally #labels #fever-bonus,Fever Bonus,Fever奖励,FEVER BONUS,Fever Bonus,FEVER BONUS
+,#result-panel #judgement-tally #labels #combo-bonus,Combo Bonus,连击奖励,COMBO BONUS,Combo Bonus,COMBO BONUS
+,#result-panel #total-score #title,Score,总分,SCORE,スコア,SCORE
+,#result-panel #rank #title,Rank,等级,YOUR RANK,ランク,YOUR RANK
+,#result-panel #my-record #title,My record,最高纪录,最高紀錄,記録,나의 기록
+,#result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,NEW RECORD,NEW RECORD
 ,#result-panel #ruleset #title,Ruleset,规则,規則,ルールセット,규칙
 ,#result-panel #modifiers #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
-,#result-panel #retry-button,RETRY,重试,重新開始,RETRY,RETRY
-,#result-panel #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
+,#result-panel #retry-button,RETRY,重试,重新開始,リトライ,RETRY
+,#result-panel #select-track-button,SELECT TRACK,选曲,選擇歌曲,トラック選択,SELECT MUSIC
 ,#result-panel #legacy-override-indicator,*Pattern contains legacy ruleset override,*谱面包含对经典规则的修改,*譜面包含對經典規則的修改,*レガシールールセットを使用中,* 레거시 규칙 사용 중
 ,,,,,,
-,setlist_result_panel_all_clear_title,All Cleared,挑战成功,,,
-,setlist_result_panel_failed_title,Setlist Failed,挑战失败,,,
-,#setlist-result-panel #total-score #title,Total score,总分,,,
-,#setlist-result-panel #rank #title,Rank,等级,YOUR RANK,YOUR RANK,YOUR RANK
-,#setlist-result-panel #max-combo #title,Max combo,最大连击,MAX COMBO,MAX COMBO,MAX COMBO
-,#setlist-result-panel #my-record #title,My record,最高纪录,最高紀錄,自分の記録,나의 기록
-,#setlist-result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,新記録,NEW RECORD
+,setlist_result_panel_all_clear_title,All Cleared,挑战成功,挑戰成功,All Cleared,All Cleared
+,setlist_result_panel_failed_title,Setlist Failed,挑战失败,挑戰失敗,Setlist Failed,Setlist Failed
+,#setlist-result-panel #total-score #title,Total score,总分,總分,スコア合計,Total score
+,#setlist-result-panel #rank #title,Rank,等级,YOUR RANK,ランク,YOUR RANK
+,#setlist-result-panel #max-combo #title,Max combo,最大连击,MAX COMBO,最大コンボ,MAX COMBO
+,#setlist-result-panel #my-record #title,My record,最高纪录,最高紀錄,記録,나의 기록
+,#setlist-result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,NEW RECORD,NEW RECORD
 ,#setlist-result-panel #modifiers #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 ,#setlist-result-panel #ruleset #title,Ruleset,规则,規則,ルールセット,규칙
 ,#setlist-result-panel #retry-button,RETRY,重试,重新開始,RETRY,RETRY
-,#setlist-result-panel #select-setlist-button,SELECT SETLIST,选择组曲,,,
+,#setlist-result-panel #select-setlist-button,SELECT SETLIST,选择组曲,選擇組曲,セットリスト選択,SELECT SETLIST
 ,,,,,,
-,#options-panel #title,Options,设置,設定,オプション,설정
+,#options-panel #title,Options,设置,設定,設定,설정
 ,#options-panel #graphics-header,Graphics,图像,影像,グラフィック,그래픽
 ,#options-panel #resolution #label,Resolution,分辨率,解析度,解像度,화면 해상도
 ,#options-panel #fullscreen-mode #label,Fullscreen mode,全屏模式,顯示模式,画面モード,출력 방식
@@ -423,7 +439,7 @@ Are you sure you want to change theme?","警告
 ,change_theme_instruction,The new theme will be applied the next time you start TECHMANIA.,新主题将在下次启动TECHMANIA时生效。,新主題將在下次啟動 TECHMANIA 時套用,テーマはTECHMANIAを再起動すると適用されます。,TECHMANIA를 재시작하면 테마가 적용됩니다.
 ,#options-panel #skins #label,Skins,皮肤,造型,スキン,스킨
 ,#options-panel #skins #button,SELECT,选择,選擇,選択,선택
-,#options-panel #show-loading-bar #label,Show loading bar,显示读取进度,顯示讀取進度,読み込みのプログレスバー表示,로딩 상태 표시
+,#options-panel #show-loading-bar #label,Show loading bar,显示读取进度,顯示載入進度,読み込みのプログレスバー表示,로딩 상태 표시
 ,#options-panel #show-fps #label,Show FPS,显示帧数,顯示幀數,フレームレート表示,FPS 표시
 ,#options-panel #show-judgement-tally #label,Show judgement tally,显示判定统计,顯示判定統計,リアルタイム判定表示,실시간 판정 보기
 ,#options-panel #show-lane-dividers #label,Show lane dividers,显示轨道分界线,顯示軌道分界線,レーン区切り線を表示,트랙 구분선 표시
@@ -450,7 +466,7 @@ Are you sure you want to change theme?","警告
 ,#options-panel #custom-data-location #label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
 ,#options-panel #tracks-folder-location #label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
 ,#options-panel #tracks-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
-Added in 2.2,#options-panel #setlists-folder-location #label,Setlists folder,组曲文件夹,,,
+Added in 2.2,#options-panel #setlists-folder-location #label,Setlists folder,组曲文件夹,組曲資料夾,セットリストフォルダ,디스크셋 폴더
 Added in 2.2,#options-panel #setlists-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
 ,#options-panel #skins-folder-location #label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
 ,#options-panel #skins-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
@@ -481,7 +497,7 @@ Added in 2.2,#options-panel #setlists-folder-location #button,BROWSE,浏览,瀏�
 
 {0}","读取皮肤时发生错误：
 
-{0}","讀取造型時發生錯誤：
+{0}","載入造型時發生錯誤：
 
 {0}","選択したスキンの読み込み中にエラーが発生しました。
 
@@ -546,6 +562,6 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
 
 현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
-,#information-panel #credits-header,Credits,制作人,製作者,クレジット,
+,#information-panel #credits-header,Credits,制作人,製作者,クレジット,제작진
 ,#information-panel #program-subheader,Program,程序,程式,プログラミング,프로그래밍
 ,#information-panel #localization-subheader,Localization (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
