@@ -693,11 +693,11 @@ pauseButton.Initialize = function()
 
     pauseButton.button.RegisterCallback(eventType.PointerDown, function(_, event)
         if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
-        local pointerId = event.pointerId  -- 0 if mouse, 1+ if finger
+        local pointerId = event.pointerId  -- 0 if mouse, (fingerId + 1) if finger
         local mouseButton = event.button  -- only meaningful if pointerId == 0
         local fingerId = 0  -- only meaningful if pointerId > 0
         if (pointerId > 0) then
-            fingerId = unity.input.GetTouch(pointerId - 1).fingerId
+            fingerId = pointerId - 1
         end
         pauseButton.stepCoroutine = tm.StartCoroutine(function()
             local timer = 0
