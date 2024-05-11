@@ -103,6 +103,14 @@ function WaitForSeconds(waitTime)
     end
 end
 
+function FindTouchWithFingerId(fingerId)
+    for i = 0, unity.input.touchCount - 1 do
+        local touch = unity.input.GetTouch(i)
+        if (touch.fingerId == fingerId) then return touch end
+    end
+    return nil
+end
+
 function ElementContainsPointerPosition(element, pointerEvent)
     -- pointerEvent.position is not in screen space, while unity.Input is.
     local pointerPosition = nil
@@ -111,7 +119,7 @@ function ElementContainsPointerPosition(element, pointerEvent)
         pointerPosition = unity.input.mousePosition
     else
         -- pointer is touch
-        pointerPosition = unity.input.GetTouch(pointerEvent.pointerId - 1).position
+        pointerPosition = FindTouchWithFingerId(pointerEvent.pointerId - 1).position
     end
     return element.ContainsPointInScreenSpace(pointerPosition)
 end
