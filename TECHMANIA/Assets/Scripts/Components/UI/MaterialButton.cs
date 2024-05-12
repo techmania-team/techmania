@@ -17,7 +17,8 @@ public class MaterialButton : MonoBehaviour,
     public GameObject selectedOutline;
     public bool useClickSoundOverride;
     public AudioClip clickSoundOverride;
-    public bool silent;
+    public bool noSelectSound;
+    public bool noClickSound;
     private FmodSoundWrap clickSoundOverrideFmod;
 
     private Button button;
@@ -84,7 +85,7 @@ public class MaterialButton : MonoBehaviour,
         selected = true;
         selectedOutline.SetActive(selected);
 
-        if (eventData is AxisEventData && !silent)
+        if (eventData is AxisEventData && !noSelectSound)
         {
             // Only play sound if selected with keyboard navigation.
             MenuSfx.instance.PlaySelectSound();
@@ -101,13 +102,13 @@ public class MaterialButton : MonoBehaviour,
     {
         StartRippleAt(Vector2.zero);
 
-        if (useClickSoundOverride && !silent)
+        if (useClickSoundOverride && !noClickSound)
         {
             MenuSfx.instance.PlaySound(clickSoundOverrideFmod);
             return;
         }
 
-        if (!silent)
+        if (!noClickSound)
         {
             if (isBackButton)
             {
@@ -127,13 +128,13 @@ public class MaterialButton : MonoBehaviour,
             return;
         }
 
-        if (useClickSoundOverride && !silent)
+        if (useClickSoundOverride && !noClickSound)
         {
             MenuSfx.instance.PlaySound(clickSoundOverrideFmod);
             return;
         }
 
-        if (!silent)
+        if (!noClickSound)
         {
             if (isBackButton)
             {
@@ -150,7 +151,7 @@ public class MaterialButton : MonoBehaviour,
     {
         if (TouchInducedPointer.EventIsFromActualMouse(eventData))
         {
-            if (interactable && !silent)
+            if (interactable && !noSelectSound)
             {
                 MenuSfx.instance.PlaySelectSound();
             }

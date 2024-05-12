@@ -14,6 +14,19 @@ function StyleLengthInPercent(percent)
     )
 end
 
+function XYFromStyleTranslate(styleTranslate)
+    return styleTranslate.value.x.value, styleTranslate.value.y.value
+end
+
+function StyleTranslate(x, y)
+    return unity.styleTranslate.__new(
+        unity.translate.__new(
+            unity.length.__new(x),
+            unity.length.__new(y)
+        )
+    )
+end
+
 function UpdateSliderAppearance(slider)
     local percent = (slider.value - slider.lowValue) * 100 / 
         (slider.highValue - slider.lowValue)

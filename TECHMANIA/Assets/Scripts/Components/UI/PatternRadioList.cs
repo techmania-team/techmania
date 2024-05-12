@@ -16,7 +16,6 @@ public class PatternRadioList : MonoBehaviour
     public static event UnityAction<Pattern> SelectedPatternChanged;
 
     public GameObject InitializeAndReturnFirstPatternObject(Track t,
-        Dictionary<Pattern, Record> records,
         Pattern initialSelectedPattern = null)
     {
         // Remove all patterns from list, except for template.
@@ -33,15 +32,12 @@ public class PatternRadioList : MonoBehaviour
         GameObject firstObject = null;
         foreach (Pattern p in t.patterns)
         {
-            Record r = null;
-            if (records != null) r = records[p];
-
             // Instantiate pattern representation.
             GameObject patternObject = Instantiate(
                 patternTemplate, list.transform);
             patternObject.name = "Pattern Radio Button";
             patternObject.GetComponentInChildren<PatternBanner>()
-                .Initialize(p.patternMetadata, r);
+                .Initialize(p.patternMetadata);
             patternObject.SetActive(true);
             if (firstObject == null)
             {

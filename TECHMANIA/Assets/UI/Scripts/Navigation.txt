@@ -3,6 +3,15 @@ mainMenu = {
 
     Show = function()
         tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_main_menu"))
+    end,
+
+    Initialize = function()
+        local panel = mainMenu.panel
+        local editorSubButtons = panel.Q("editor-sub-buttons")
+        editorSubButtons.display = false
+        panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+            editorSubButtons.display = not editorSubButtons.display
+        end)
     end
 }
 
@@ -13,24 +22,26 @@ navigation = {
     --
     -- Update: this is fixed in Unity 2022.2.14
 
-    TransitionTo = function(from, to)
+    TransitionTo = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
             TransitionPanelCoroutine(from.panel, to.panel,
                 -100,  -- length
                 function()  -- called 1 frame after "to" appears
                     if (from.Hide != nil) then from.Hide() end
                     if (to.Show != nil) then to.Show() end
+                    if (toPanelInitializer != nil) then toPanelInitializer() end
                 end)
         end)
     end,
 
-    TransitionBackTo = function(from, to)
+    TransitionBackTo = function(from, to, toPanelInitializer)
         tm.StartCoroutine(function()
             TransitionPanelCoroutine(from.panel, to.panel,
                 100,  -- length
                 function()  -- called 1 frame after "to" appears
                     if (from.Hide != nil) then from.Hide() end
                     if (to.Show != nil) then to.Show() end
+                    if (toPanelInitializer != nil) then toPanelInitializer() end
                 end)
         end)
     end,
@@ -44,6 +55,9 @@ navigation = {
                 end)
         end)
     end,
+
+    transitionSourceOnEditorExit = nil,
+    transitionDestinationOnEditorExit = nil
 }
 
 function SetUpNavigation()
@@ -61,12 +75,18 @@ function SetUpNavigation()
         navigation.TransitionBackTo(selectPatternPanel, selectTrackPanel)
     end)
 
-    selectPatternPanel.panel.Q("modifier-sidesheet").Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
+    modifierSidesheet.sheet.Q("skins").Q("select-button").RegisterCallback(eventType.Click, function()
         selectSkinPanel.panelToGoBackTo = selectPatternPanel
+        modifierSidesheet.FadeOut()
         navigation.TransitionTo(selectPatternPanel, selectSkinPanel)
     end)
     selectSkinPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
-        navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo)
+        navigation.TransitionBackTo(selectSkinPanel, selectSkinPanel.panelToGoBackTo, function()
+            if (selectSkinPanel.panelToGoBackTo == selectPatternPanel) then
+                -- Restore modifier side sheet if we just navigated from select pattern / setup setlist panel.
+                modifierSidesheet.FadeIn()
+            end
+        end)
     end)
 
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
@@ -85,7 +105,38 @@ function SetUpNavigation()
         navigation.TransitionTo(resultPanel, selectTrackPanel)
     end)
 
-    mainMenu.panel.Q("editor-button").RegisterCallback(eventType.Click, function()
+    -- game panel --> setlist result panel can happen on multiple oocations, set up in
+    -- Game Panel.txt.
+    setlistResultPanel.panel.Q("retry-button").RegisterCallback(eventType.Click, function()
+        tm.game.setlist.Prepare()
+        navigation.FadeTo(setlistResultPanel, gamePanel)
+    end)
+    setlistResultPanel.panel.Q("select-setlist-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionTo(setlistResultPanel, selectSetlistPanel)
+    end)
+
+    mainMenu.panel.Q("setlists-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.inEditor = false
+        navigation.TransitionTo(mainMenu, selectSetlistPanel)
+    end)
+    selectSetlistPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(selectSetlistPanel, mainMenu)
+    end)
+
+    -- select setlist panel --> setup setlist panel is registered on setlist cards,
+    -- handled by Select Setlist Panel.txt.
+    setupSetlistPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
+        navigation.TransitionBackTo(setupSetlistPanel, selectSetlistPanel);
+    end)
+
+    setupSetlistPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
+        gamePanel.inEditor = false
+        navigation.FadeTo(setupSetlistPanel, gamePanel)
+    end)
+    -- game panel --> setup setlist panel can happen on multiple occasions, set up in
+    -- Game Panel.txt.
+
+    mainMenu.panel.Q("edit-tracks-button").RegisterCallback(eventType.Click, function()
         selectTrackPanel.inEditor = true
         navigation.TransitionTo(mainMenu, selectTrackPanel)
     end)
@@ -95,7 +146,8 @@ function SetUpNavigation()
     -- select track panel (editor) --> track setup panel is registered on track cards,
     -- handled by Select Track Panel.txt
     tm.editor.onExit = function()
-        navigation.TransitionBackTo(editorTrackSetupPanel, selectTrackPanel)
+        navigation.TransitionBackTo(navigation.transitionSourceOnEditorExit,
+            navigation.transitionDestinationOnEditorExit)
     end
 
     tm.editor.onPreview = function(trackFolder, track, pattern)
@@ -109,6 +161,13 @@ function SetUpNavigation()
         gamePanel.ConcludeGame()
         navigation.TransitionBackTo(gamePanel, editorPatternPanel)
     end)
+
+    mainMenu.panel.Q("edit-setlists-button").RegisterCallback(eventType.Click, function()
+        selectSetlistPanel.inEditor = true
+        navigation.TransitionTo(mainMenu, selectSetlistPanel)
+    end)
+    -- select setlist panel (editor) --> main menu is the same as
+    -- select setlist panel --> main menu.
 
     mainMenu.panel.Q("options-button").RegisterCallback(eventType.Click, function()
         navigation.TransitionTo(mainMenu, optionsPanel)
@@ -149,3 +208,5 @@ function SetUpNavigation()
         tm.Quit()
     end)
 end
+
+mainMenu.Initialize()

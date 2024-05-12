@@ -71,6 +71,24 @@ MonoBehaviour:
   m_Version: 1.1.0
   m_Material: {fileID: -2806594663416307647}
   m_SourceFontFileGUID: f01b4eb72527dc94e835b2d3b7c252c0
+  m_fontAssetCreationEditorSettings:
+    sourceFontFileGUID: 6ef2046d84695cb4586b97e5e513f200
+    faceIndex: 0
+    pointSizeSamplingMode: 0
+    pointSize: 90
+    padding: 9
+    paddingMode: 0
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 7
+    characterSequence: 
+    referencedFontAssetGUID: 
+    referencedTextAssetGUID: 
+    fontStyle: 0
+    fontStyleModifier: 0
+    renderMode: 4165
+    includeFontFeatures: 0
   m_SourceFontFile: {fileID: 12800000, guid: f01b4eb72527dc94e835b2d3b7c252c0, type: 3}
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
@@ -123,24 +141,6 @@ MonoBehaviour:
   m_FallbackFontAssetTable:
   - {fileID: 11400000, guid: b9416fb16f6f90043a4902b774bccebe, type: 2}
   - {fileID: 11400000, guid: 8772ac9a682a4d3489c9d8fbe661ac65, type: 2}
-  m_fontAssetCreationEditorSettings:
-    sourceFontFileGUID: 6ef2046d84695cb4586b97e5e513f200
-    faceIndex: 0
-    pointSizeSamplingMode: 0
-    pointSize: 90
-    padding: 9
-    paddingMode: 0
-    packingMode: 0
-    atlasWidth: 1024
-    atlasHeight: 1024
-    characterSetSelectionMode: 7
-    characterSequence: 
-    referencedFontAssetGUID: 
-    referencedTextAssetGUID: 
-    fontStyle: 0
-    fontStyleModifier: 0
-    renderMode: 4165
-    includeFontFeatures: 0
   m_FontWeightTable:
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
@@ -182,9 +182,9 @@ Texture2D:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 2
-  m_Width: 0
-  m_Height: 0
-  m_CompleteImageSize: 0
+  m_Width: 1
+  m_Height: 1
+  m_CompleteImageSize: 1
   m_MipsStripped: 0
   m_TextureFormat: 1
   m_MipCount: 1
@@ -209,8 +209,8 @@ Texture2D:
   m_LightmapFormat: 0
   m_ColorSpace: 0
   m_PlatformBlob: 
-  image data: 0
-  _typelessdata: 
+  image data: 1
+  _typelessdata: 00
   m_StreamData:
     serializedVersion: 2
     offset: 0

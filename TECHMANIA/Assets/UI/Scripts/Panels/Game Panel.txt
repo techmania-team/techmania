@@ -2,7 +2,14 @@ gamePanel = {
     panel = tm.root.Q("game-panel"),
     feverReadyCoroutine = nil,
     feverBonusCoroutine = nil,
-    inEditor = false
+    inEditor = false,
+
+    -- Copied on Show() from select pattern/setup setlist panel,
+    -- so other parts don't need to care where the pattern comes from.
+    trackMetadata = nil,
+    patternMetadata = nil,
+
+    setlistProgressEyecatches = {},
 }
 
 pauseButton = {
@@ -86,10 +93,14 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onLoadError = function(status)
-            tm.game.Conclude()
+            gamePanel.ConcludeGame()
             alertBox.Alert(status.errorMessage, nil, function()
                 gamePanel.ConcludeGame()
-                navigation.FadeTo(gamePanel, selectTrackPanel)
+                if (tm.gameSetup.setlist.enabled) then
+                    navigation.FadeTo(gamePanel, selectSetlistPanel)
+                else
+                    navigation.FadeTo(gamePanel, selectTrackPanel)
+                end
             end)
         end
 
@@ -137,6 +148,15 @@ gamePanel.Initialize = function()
                 local instructionTouch = feverBarBg.Q("fever-instruction-touch")
                 local instructionKeysKm = feverBarBg.Q("fever-instruction-keys-km")
 
+                local controlScheme = gamePanel.patternMetadata.controlScheme
+                if (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToTouch) then
+                    controlScheme = tm.enum.controlScheme.Touch
+                elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKeys) then
+                    controlScheme = tm.enum.controlScheme.Keys
+                elseif (tm.options.modifiers.controlOverride == tm.enum.controlOverride.OverrideToKM) then
+                    controlScheme = tm.enum.controlScheme.KM
+                end
+
                 function OneFlash()
                     local fadeTimer = 0.5
                     local timer = 0
@@ -169,8 +189,8 @@ gamePanel.Initialize = function()
 
                     feverOff.display = false
                     feverReady.display = false
-                    instructionTouch.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme == tm.enum.controlScheme.Touch
-                    instructionKeysKm.display = selectPatternPanel.selectedPattern.patternMetadata.controlScheme != tm.enum.controlScheme.Touch
+                    instructionTouch.display = controlScheme == tm.enum.controlScheme.Touch
+                    instructionKeysKm.display = controlScheme != tm.enum.controlScheme.Touch
 
                     OneFlash()
                 end
@@ -204,12 +224,16 @@ gamePanel.Initialize = function()
             end)
         end
 
-        tm.gameSetup.onStageClear = function(scoreKeeper)
+        tm.gameSetup.onStageClear = function(_)
             -- Don't conclude the game yet
-            navigation.FadeTo(gamePanel, resultPanel)
+            if (tm.gameSetup.setlist.enabled) then
+                navigation.FadeTo(gamePanel, setlistResultPanel)
+            else
+                navigation.FadeTo(gamePanel, resultPanel)
+            end
         end
 
-        tm.gameSetup.onStageFailed = function(scoreKeeper)
+        tm.gameSetup.onStageFailed = function(_)
             tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Stage Failed.wav"))
             tm.StartCoroutine(function()
                 local stageFailedPanel = gamePanel.panel.Q("stage-failed-panel")
@@ -225,34 +249,125 @@ gamePanel.Initialize = function()
                 stageFailedPanel.style.bottom = StyleLengthInPercent(0)
                 tm.game.StopAllGameAudio()
                 WaitForSeconds(3.75)  -- Total wait is 4 seconds
+
                 -- Don't conclude the game yet
-                navigation.FadeTo(gamePanel, resultPanel)
+                if (tm.gameSetup.setlist.enabled) then
+                    navigation.FadeTo(gamePanel, setlistResultPanel)
+                else
+                    navigation.FadeTo(gamePanel, resultPanel)
+                end
             end)
+        end
+
+        tm.gameSetup.setlist.onPartialComplete = function()
+            gamePanel.Show()
+        end
+
+        tm.gameSetup.setlist.onHpBelowThreshold = function()
+            navigation.FadeTo(gamePanel, setlistResultPanel)
+        end
+
+        tm.gameSetup.setlist.onSetlistAllClear = function()
+            tm.gameSetup.onStageClear()
+        end
+
+        tm.gameSetup.setlist.onSetlistFailed = function()
+            tm.gameSetup.onStageFailed()
         end
     end
     InitializeGameSetup()
 end
 
-gamePanel.Show = function()
-    -- Discord activity
-    local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
-    local metadata = selectPatternPanel.selectedPattern.patternMetadata
-    local controlSchemeString
-    if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_touch")
-    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_keys")
-    elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
-        controlSchemeString = tm.l10n.GetString("control_scheme_km")
+gamePanel.ShowEyecatchInSetlistProgress = function(ref, eyecatchContainer)
+    local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(ref)
+    if (status.Ok()) then
+        local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+        tm.io.LoadTextureFromFile(eyecatchPath, function(status, texture)
+            if (status.Ok()) then
+                table.insert(gamePanel.setlistProgressEyecatches, texture)
+                eyecatchContainer.Q("eyecatch").display = true
+                eyecatchContainer.Q("eyecatch").backgroundImage = texture
+                eyecatchContainer.Q("default-eyecatch").display = false
+            else
+                eyecatchContainer.Q("eyecatch").display = false
+                eyecatchContainer.Q("default-eyecatch").display = true
+                eyecatchContainer.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+            end
+        end)
+    else
+        eyecatchContainer.Q("eyecatch").display = false
+        eyecatchContainer.Q("default-eyecatch").display = true
     end
-    local discordActivity = net.string.format(discordActivityFormat,
-        metadata.playableLanes,
-        controlSchemeString,
-        metadata.level)
-    tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
-        discordActivity,
-        true)  -- show elapsed time
+end
 
+gamePanel.Show = function()
+    tm.options.TemporarilyDisableVSync()
+
+    -- For setlists it's necessary to start loading before doing anything else,
+    -- as it increments stage number.
+    if (tm.gameSetup.setlist.enabled) then
+        tm.game.setlist.LoadNextPattern()
+    else
+        tm.game.BeginLoading()
+    end
+
+    -- Copy track metadata and pattern metadata for use by other parts
+    if (tm.gameSetup.setlist.enabled) then
+        local setlist = selectSetlistPanel.selectedSetlist
+        local stageNumber = tm.game.setlist.currentStage
+        if (stageNumber < 3) then
+            -- Copy from setupSetlistPanel
+            local patternIndex = setupSetlistPanel.selectedPatternIndex[stageNumber + 1]
+            gamePanel.trackMetadata = setupSetlistPanel.selectablePatterns[patternIndex].track.trackMetadata
+            gamePanel.patternMetadata = setupSetlistPanel.selectablePatterns[patternIndex].pattern.patternMetadata
+        else
+            -- Resolve from setlist
+            local patternIndex = tm.gameSetup.setlist.hiddenPatternIndex
+            local patternRef = selectSetlistPanel.selectedSetlist.hiddenPatterns[patternIndex + 1].reference
+            local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(patternRef)
+            gamePanel.trackMetadata = trackInFolder.minimizedTrack.trackMetadata
+            gamePanel.patternMetadata = pattern.patternMetadata
+        end
+
+        -- Also prepare track options so pause menu can work
+        commonUI.trackOptions = tm.options.GetPerTrackOptions(gamePanel.trackMetadata.guid)
+    else
+        gamePanel.trackMetadata = selectTrackPanel.selectedFullTrack.trackMetadata
+        gamePanel.patternMetadata = selectPatternPanel.selectedPattern.patternMetadata
+    end
+
+    -- Discord activity
+    if (tm.gameSetup.setlist.enabled) then
+        local discordTitle = net.string.format(
+            tm.l10n.GetString("discord_state_playing_setlist"),
+            selectSetlistPanel.selectedSetlist.setlistMetadata.title,
+            tm.game.setlist.currentStage + 1)
+        local discordActivity = net.string.format(
+            tm.l10n.GetString("discord_state_playing_pattern_in_setlist"),
+            gamePanel.patternMetadata.level,
+            gamePanel.trackMetadata.title)
+        tm.SetDiscordActivity(discordTitle, discordActivity,
+            true)  -- show elapsed time
+    else
+        local discordActivityFormat = tm.l10n.GetString("discord_state_playing_pattern")
+        local metadata = gamePanel.patternMetadata
+        local controlSchemeString
+        if (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_touch")
+        elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_keys")
+        elseif (metadata.controlScheme == tm.enum.controlScheme.Touch) then
+            controlSchemeString = tm.l10n.GetString("control_scheme_km")
+        end
+        local discordActivity = net.string.format(discordActivityFormat,
+            metadata.playableLanes,
+            controlSchemeString,
+            metadata.level)
+        tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
+            discordActivity,
+            true)  -- show elapsed time
+    end
+    
     local panel = gamePanel.panel
 
     panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
@@ -265,20 +380,52 @@ gamePanel.Show = function()
         panel.Q("top-bar").Q("pause-button").display = true
         panel.Q("top-bar").Q("back-button").display = false
         panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
+        panel.Q("top-bar").Q("regular-top-bar").Q("hp-threshold-indicator").display = tm.gameSetup.setlist.enabled
         panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
     end
     panel.Q("markers").display = false
     panel.Q("fps-counter").display = false
     panel.Q("judgement-tally").display = false
     panel.Q("middle-fever-bar-bg").display = false
-    panel.Q("loading-bar-wrap").display = themeOptions["showLoadingBar"] == "True"
+    panel.Q("loading-bar-wrap").display = true
+    panel.Q("loading-bar-wrap").Q("setlist-progress").visible = tm.gameSetup.setlist.enabled
+    panel.Q("loading-bar-wrap").Q("loading-bar").visible = themeOptions["showLoadingBar"] == "True"
     controls.SetProgressBar(panel.Q("loading-progress"), 0)
     panel.InsertChild(0, panel.Q("bg-layer"))
     pauseMenu.bg.display = false
     panel.Q("stage-failed-panel").style.bottom = StyleLengthInPercent(100)
 
-    tm.options.TemporarilyDisableVSync()
-    tm.game.BeginLoading()
+    if (tm.gameSetup.setlist.enabled) then
+        local setlistProgress = panel.Q("loading-bar-wrap").Q("setlist-progress")
+        setlistProgress.Q("title").text = gamePanel.trackMetadata.title
+        setlistProgress.Q("pattern-banner").Q("medal-container").display = false
+        SetUpPatternBanner(gamePanel.patternMetadata, setlistProgress.Q("pattern-banner"))
+        
+        -- Load eyecatches of selectable patterns
+        for i, index in ipairs(tm.gameSetup.setlist.patternIndices) do
+            local eyecatchContainer = setlistProgress.Q("eyecatches").Children()[i]
+            local patternRef = selectSetlistPanel.selectedSetlist.selectablePatterns[index + 1]
+            gamePanel.ShowEyecatchInSetlistProgress(patternRef, eyecatchContainer)
+            eyecatchContainer.Q("current-eyecatch-border").display = i == tm.game.setlist.currentStage + 1
+        end
+
+        -- Load eyecatch of hidden pattern, if applicable
+        local hiddenPatternContainer = setlistProgress.Q("eyecatches").Children()[4]
+        if (tm.game.setlist.currentStage == 3) then
+            hiddenPatternContainer.Q("hidden-pattern-indicator").display = false
+            hiddenPatternContainer.Q("current-eyecatch-border").display = true
+            local patternRef = selectSetlistPanel.selectedSetlist.hiddenPatterns[tm.gameSetup.setlist.hiddenPatternIndex + 1].reference
+            gamePanel.ShowEyecatchInSetlistProgress(patternRef, hiddenPatternContainer)
+            hiddenPatternContainer.Q("current-eyecatch-border").display = true
+        else
+            hiddenPatternContainer.Q("hidden-pattern-indicator").display = true
+            hiddenPatternContainer.Q("current-eyecatch-border").display = false
+            hiddenPatternContainer.Q("current-eyecatch-border").display = false
+        end
+    end
+
+    -- Clear game container in case anything is left over from previous stage
+    panel.Q("game-layer").RemoveAllChildren()
 end
 
 gamePanel.Hide = function()
@@ -314,13 +461,14 @@ gamePanel.BeginGame = function()
     end
 
     -- Initialize top bar and middle fever bar.
+    local scoreKeeper = tm.game.scoreKeeper
     local topBar = panel.Q("top-bar")
     topBar.visible = true
     pauseButton.ResetState()
-    gamePanel.UpdateHpDisplay(1, 1)
+    gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
     topBar.Q("no-fail-indicator").display = tm.options.modifiers.mode == tm.enum.mode.NoFail
-    gamePanel.UpdateScoreDisplay(0, 0)
-    gamePanel.UpdateFeverDisplay(0)
+    gamePanel.UpdateScoreDisplay(scoreKeeper.ScoreFromNotes(), scoreKeeper.maxCombo)
+    gamePanel.UpdateFeverDisplay(scoreKeeper.feverAmount)
     gamePanel.ShowFeverOff()
     panel.Q("middle-fever-bar-bg").Q("fever-bonus").display = false
 
@@ -338,7 +486,7 @@ gamePanel.BeginGame = function()
 
     -- Display lane dividers, if requested.
     if (themeOptions["showLaneDividers"] == "True") then
-        local lanes = selectPatternPanel.selectedPattern.patternMetadata.playableLanes
+        local lanes = gamePanel.patternMetadata.playableLanes
         local indexInMarginArray = lanes - 1  -- Lua arrays are 1-index
         local marginTopBottom = tm.ruleset.scanMarginTopBottom[indexInMarginArray] * 100
         local marginMiddle = tm.ruleset.scanMarginMiddle[indexInMarginArray] * 100
@@ -367,7 +515,7 @@ gamePanel.BeginGame = function()
 
     -- Display beat markers, if requested.
     if (themeOptions["beatMarkers"] != "Hidden") then
-        local bps = selectPatternPanel.selectedPattern.patternMetadata.bps
+        local bps = gamePanel.patternMetadata.bps
         local marginBeforeFirstBeat = tm.ruleset.scanMarginBeforeFirstBeat * 100
         local marginAfterLastBeat = tm.ruleset.scanMarginAfterLastBeat * 100
         local scanDirection = tm.options.modifiers.scanDirection
@@ -425,6 +573,12 @@ gamePanel.BeginGame = function()
     tm.RestoreVfxAndComboText()  -- In case a previous pause hid them
     tm.game.Begin()
 
+    -- Release eyecatches in setlist progress.
+    for _, texture in ipairs(gamePanel.setlistProgressEyecatches) do
+        tm.io.ReleaseTexture(texture)
+    end
+    gamePanel.setlistProgressEyecatches = {}
+
     -- Give game panel focus so it can receive keyboard events.
     panel.Focus()
 end
@@ -462,7 +616,17 @@ gamePanel.ActivateFever = function()
 end
 
 gamePanel.UpdateHpDisplay = function(hp, maxHp)
-    FillBar(gamePanel.panel.Q("top-bar").Q("hp-bar"), hp / maxHp)
+    local hpPortion = hp / maxHp
+    local hpBar = gamePanel.panel.Q("top-bar").Q("hp-bar")
+    FillBar(hpBar, hpPortion)
+
+    if (tm.gameSetup.setlist.enabled) then
+        local stageNumber = tm.game.setlist.currentStage
+        local hpThreshold = (3 - stageNumber) * 0.25
+        local aboveThreshold = hpPortion >= hpThreshold
+        hpBar.EnableInClassList("blue-200", aboveThreshold)
+        hpBar.EnableInClassList("red-700", not aboveThreshold)
+    end
 end
 
 gamePanel.UpdateScoreDisplay = function(score, maxCombo)
@@ -529,11 +693,11 @@ pauseButton.Initialize = function()
 
     pauseButton.button.RegisterCallback(eventType.PointerDown, function(_, event)
         if (themeOptions["pauseButtonInteraction"] != "Hold") then return end
-        local pointerId = event.pointerId  -- 0 if mouse, 1+ if finger
+        local pointerId = event.pointerId  -- 0 if mouse, (fingerId + 1) if finger
         local mouseButton = event.button  -- only meaningful if pointerId == 0
         local fingerId = 0  -- only meaningful if pointerId > 0
         if (pointerId > 0) then
-            fingerId = unity.input.GetTouch(pointerId - 1).fingerId
+            fingerId = pointerId - 1
         end
         pauseButton.stepCoroutine = tm.StartCoroutine(function()
             local timer = 0
@@ -608,7 +772,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("restart-button").RegisterCallback(eventType.Click, function()
-        tm.game.Conclude()
+        gamePanel.ConcludeGame()
         gamePanel.Show()
     end)
 
@@ -617,11 +781,29 @@ pauseMenu.Initialize = function()
         navigation.FadeTo(gamePanel, selectTrackPanel)
     end)
 
+    menu.Q("restart-setlist-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
+        tm.game.setlist.Prepare()
+        gamePanel.Show()
+    end)
+
+    menu.Q("select-setlist-button").RegisterCallback(eventType.Click, function()
+        gamePanel.ConcludeGame()
+        navigation.FadeTo(gamePanel, selectSetlistPanel)
+    end)
+
     commonUI.InitializeBgBrightnessSlider(menu.Q("bg-brightness-wrap"))
     commonUI.InitializeVolumeSliders(menu)
 end
 
 pauseMenu.Show = function()
+    local menu = pauseMenu.menu
+    local setlistEnabled = tm.gameSetup.setlist.enabled
+    menu.Q("restart-button").display = not setlistEnabled
+    menu.Q("select-track-button").display = not setlistEnabled
+    menu.Q("restart-setlist-button").display = setlistEnabled
+    menu.Q("select-setlist-button").display = setlistEnabled
+
     commonUI.ShowBgBrightnessSlider(pauseMenu.menu.Q("bg-brightness-wrap"))
     commonUI.ShowVolumeSliders(pauseMenu.menu)
 end

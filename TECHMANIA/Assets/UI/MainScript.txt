@@ -1,4 +1,4 @@
-api = getApi(2)
+api = getApi(3)
 tm = api.tm
 net = api.net
 unity = api.unity
@@ -21,7 +21,10 @@ InitializeControls()
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Alert Box.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Welcome Mat.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Track Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Setlist Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Modifier Sidesheet.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Pattern Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Setup Setlist Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Options Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Touchscreen Test Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Skin Panel.txt")
@@ -29,6 +32,7 @@ tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Timing Calibration Panel.txt
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Information Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Game Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Result Panel.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Setlist Result Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Editor.txt")
 
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Navigation.txt")

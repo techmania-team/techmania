@@ -18,7 +18,6 @@ selectTrackPanel = {
     
     selectedTrackFolder = "",
     selectedFullTrack = nil,
-    selectedTrackOptions = nil,
 
     -- Key: eyecatch element, value: bool
     eyecatchVisible = {},
@@ -26,7 +25,7 @@ selectTrackPanel = {
     eyecatchFullPath = {}
 }
 
-filterSideSheet = {
+trackFilterSideSheet = {
     bg = selectTrackPanel.panel.Q("filter-sidesheet-background"),
     sheet = selectTrackPanel.panel.Q("filter-sidesheet-background").Q("filter-sidesheet")
 }
@@ -120,6 +119,9 @@ selectTrackPanel.SpawnAllCards = function()
     if (selectTrackPanel.filter.showTracksInAllFolders) then
         selectTrackPanel.location = tm.paths.GetTrackRootFolder()
     end
+    if (selectTrackPanel.inEditor and tm.paths.IsInStreamingAssets(selectTrackPanel.location)) then
+        selectTrackPanel.location = tm.paths.GetTrackRootFolder()
+    end
 
     panel.Q("location-display").text = tm.paths.HidePlatformInternalPath(selectTrackPanel.location)
     panel.Q("up-button").SetEnabled(selectTrackPanel.location != tm.paths.GetTrackRootFolder())
@@ -142,13 +144,13 @@ selectTrackPanel.SpawnAllCards = function()
             for _, trackWithError in ipairs(tm.resources.GetTracksWithError(folder)) do
                 table.insert(tracksWithError, trackWithError)
             end
-            for _, subfolder in ipairs(tm.resources.GetSubfolders(folder)) do
+            for _, subfolder in ipairs(tm.resources.GetTrackSubfolders(folder)) do
                 SearchAndProcessFolder(subfolder.fullPath)
             end
         end
         SearchAndProcessFolder(selectTrackPanel.location)
     else
-        subfolders = tm.resources.GetSubfolders(selectTrackPanel.location)
+        subfolders = tm.resources.GetTrackSubfolders(selectTrackPanel.location)
         tracksInFolder = tm.resources.GetTracksInFolder(selectTrackPanel.location)
         tracksWithError = tm.resources.GetTracksWithError(selectTrackPanel.location)
     end
@@ -162,21 +164,24 @@ selectTrackPanel.SpawnAllCards = function()
         return s1.name < s2.name
     end)
     for _, subfolder in ipairs(subfolders) do
-        anythingInFolder = true
-        local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
-        if (subfolder.eyecatchFullPath != nil) then
-            local eyecatchElement = card.Q("eyecatch")
-            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
-            selectTrackPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
+        -- Skip subfolders in streaming assets if in editor.
+        if (not selectTrackPanel.inEditor or not tm.paths.IsInStreamingAssets(subfolder.fullPath)) then
+            anythingInFolder = true
+            local card = subfolderContainer.InstantiateTemplate("Assets/UI/Templates/Subfolder Card.uxml").Q("subfolder-card")
+            if (subfolder.eyecatchFullPath != nil) then
+                local eyecatchElement = card.Q("eyecatch")
+                selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+                selectTrackPanel.eyecatchFullPath[eyecatchElement] = subfolder.eyecatchFullPath
+            end
+            controls.SetUpButtonSounds(card)
+            card.Q("name").text = subfolder.name
+            controls.SetUpScrollingText(card.Q("name-container"))
+            card.RegisterCallback(eventType.Click, function(_, _, subfolder)
+                selectTrackPanel.location = subfolder.fullPath
+                selectTrackPanel.ClearAllCards()
+                selectTrackPanel.SpawnAllCards()
+            end, subfolder)
         end
-        controls.SetUpButtonSounds(card)
-        card.Q("name").text = subfolder.name
-        controls.SetUpScrollingText(card.Q("name-container"))
-        card.RegisterCallback(eventType.Click, function(_, _, subfolder)
-            selectTrackPanel.location = subfolder.fullPath
-            selectTrackPanel.ClearAllCards()
-            selectTrackPanel.SpawnAllCards()
-        end, subfolder)
     end
 
     function TrackContainsAnyFilterKeyword(metadata)
@@ -203,45 +208,47 @@ selectTrackPanel.SpawnAllCards = function()
     end)
     local cardOfPreviouslySelectedTrack = nil
     for _, trackInFolder in ipairs(tracksInFolder) do
-        anythingInFolder = true
+        -- Skip tracks in streaming assets if in editor.
+        if (not selectTrackPanel.inEditor or not tm.paths.IsInStreamingAssets(trackInFolder.folder)) then
+            anythingInFolder = true
+            if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
+                local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
+                card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
+                card.Q("error-icon").visible = false
+                card.Q("new-track-icon").visible = false
 
-        if (TrackContainsAnyFilterKeyword(trackInFolder.minimizedTrack.trackMetadata)) then
-            local card = trackContainer.InstantiateTemplate("Assets/UI/Templates/Track Card.uxml").Q("track-card")
-            card.Q("default-eyecatch").text = tm.l10n.GetString("eyecatch_no_image_text")
-            card.Q("error-icon").visible = false
-            card.Q("new-track-icon").visible = false
+                local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+                local eyecatchElement = card.Q("eyecatch")
+                selectTrackPanel.eyecatchVisible[eyecatchElement] = false
+                selectTrackPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
 
-            local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
-            local eyecatchElement = card.Q("eyecatch")
-            selectTrackPanel.eyecatchVisible[eyecatchElement] = false
-            selectTrackPanel.eyecatchFullPath[eyecatchElement] = eyecatchPath
+                controls.SetUpButtonSounds(card)
 
-            controls.SetUpButtonSounds(card)
+                card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
+                card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
+                controls.SetUpScrollingText(card.Q("name-container"))
+                controls.SetUpScrollingText(card.Q("artist-container"))
+                card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
+                    if (selectTrackPanel.inEditor) then
+                        editorTrackSetupPanel.trackFolder = trackInFolder.folder
+                        navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
+                    else
+                        -- Load full track and navigate to select pattern panel.
+                        selectTrackPanel.selectedTrackFolder = trackInFolder.folder
+                        local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
+                        selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
+                        navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
+                    end
+                end, trackInFolder)
 
-            card.Q("name").text = trackInFolder.minimizedTrack.trackMetadata.title
-            card.Q("artist").text = trackInFolder.minimizedTrack.trackMetadata.artist
-            controls.SetUpScrollingText(card.Q("name-container"))
-            controls.SetUpScrollingText(card.Q("artist-container"))
-            card.RegisterCallback(eventType.Click, function(_, _, trackInFolder)
-                if (selectTrackPanel.inEditor) then
-                    editorTrackSetupPanel.trackFolder = trackInFolder.folder
-                    navigation.TransitionTo(selectTrackPanel, editorTrackSetupPanel)
-                else
-                    -- Load full track and navigate to select pattern panel.
-                    selectTrackPanel.selectedTrackFolder = trackInFolder.folder
-                    local trackPath = tm.paths.Combine(trackInFolder.folder, tm.paths.kTrackFilename)
-                    selectTrackPanel.selectedFullTrack = tm.io.LoadFullTrack(trackPath)
-                    navigation.TransitionTo(selectTrackPanel, selectPatternPanel)
+                if (selectTrackPanel.selectedFullTrack != nil and
+                    trackInFolder.minimizedTrack.trackMetadata.guid ==
+                    selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
+                    cardOfPreviouslySelectedTrack = card
                 end
-            end, trackInFolder)
-
-            if (selectTrackPanel.selectedFullTrack != nil and
-                trackInFolder.minimizedTrack.trackMetadata.guid ==
-                selectTrackPanel.selectedFullTrack.trackMetadata.guid) then
-                cardOfPreviouslySelectedTrack = card
+            else
+                hiddenTracks = hiddenTracks + 1
             end
-        else
-            hiddenTracks = hiddenTracks + 1
         end
     end
 
@@ -355,14 +362,14 @@ selectTrackPanel.Initialize = function()
         selectTrackPanel.Refresh()
     end)
 
-    local sidesheetBg = filterSideSheet.bg
+    local sidesheetBg = trackFilterSideSheet.bg
     sidesheetBg.display = false
     panel.Q("filter-button").RegisterCallback(eventType.Click, function()
         if (sidesheetBg.display) then
-            filterSideSheet.FadeOut()
+            trackFilterSideSheet.FadeOut()
         else
-            filterSideSheet.Show()
-            filterSideSheet.FadeIn()
+            trackFilterSideSheet.Show()
+            trackFilterSideSheet.FadeIn()
         end
     end)
 
@@ -409,9 +416,10 @@ selectTrackPanel.UpdateEyecatches = function()
     if (not selectTrackPanel.panel.display) then return end
 
     local screenHeight = unity.screen.height
+    local buffer = 200
     for element, visible in pairs(selectTrackPanel.eyecatchVisible) do
         local screenPosition = element.LocalSpaceToScreenSpace(unity.vector2.__new(0, 0))
-        local shouldBeVisible = (screenPosition.y >= 0) and (screenPosition.y <= screenHeight)
+        local shouldBeVisible = (screenPosition.y >= -buffer) and (screenPosition.y <= screenHeight + buffer)
         if (visible and not shouldBeVisible) then
             ReleaseEyecatch(element)
             selectTrackPanel.eyecatchVisible[element] = false
@@ -422,19 +430,19 @@ selectTrackPanel.UpdateEyecatches = function()
     end
 end
 
-filterSideSheet.SetDropdownValues = function()
-    local sortBasisDropdown = filterSideSheet.sheet.Q("sort-by").Q("dropdown")
+trackFilterSideSheet.SetDropdownValues = function()
+    local sortBasisDropdown = trackFilterSideSheet.sheet.Q("sort-by").Q("dropdown")
     sortBasisDropdown.SetValueWithoutNotify(selectTrackPanel.filter.sortBasisDisplayString[selectTrackPanel.filter.sortBasis])
 end
 
-filterSideSheet.Show = function()
-    local sheet = filterSideSheet.sheet
+trackFilterSideSheet.Show = function()
+    local sheet = trackFilterSideSheet.sheet
 
     sheet.Q("keyword-field").Q("text-field").stringValue = selectTrackPanel.filter.keywordsPreSplit
 
     controls.SetToggleIsOn(sheet.Q("all-folders").Q("track"), selectTrackPanel.filter.showTracksInAllFolders)
 
-    filterSideSheet.SetDropdownValues()
+    trackFilterSideSheet.SetDropdownValues()
 
     local ascendingRadioButton = sheet.Q("ascending-radio").Q("radio-button")
     local descendingRadioButton = sheet.Q("descending-radio").Q("radio-button")
@@ -445,16 +453,16 @@ filterSideSheet.Show = function()
     end
 end
 
-filterSideSheet.FadeIn = function()
-    local bg = filterSideSheet.bg
+trackFilterSideSheet.FadeIn = function()
+    local bg = trackFilterSideSheet.bg
     bg.display = true
     tm.StartCoroutine(function()
         FadeInCoroutine(bg.Q("filter-sidesheet"), 100, 0)
     end)
 end
 
-filterSideSheet.FadeOut = function()
-    local bg = filterSideSheet.bg
+trackFilterSideSheet.FadeOut = function()
+    local bg = trackFilterSideSheet.bg
     tm.StartCoroutine(function()
         FadeOutCoroutine(bg.Q("filter-sidesheet"), 100, 0, function()
             bg.display = false
@@ -462,11 +470,11 @@ filterSideSheet.FadeOut = function()
     end)
 end
 
-filterSideSheet.Initialize = function()
-    local bg = filterSideSheet.bg
+trackFilterSideSheet.Initialize = function()
+    local bg = trackFilterSideSheet.bg
     bg.RegisterCallback(eventType.Click, function()
         tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Back.wav"))
-        filterSideSheet.FadeOut()
+        trackFilterSideSheet.FadeOut()
     end)
 
     bg.Q("filter-sidesheet").RegisterCallback(eventType.Click, function(element, event)
@@ -475,7 +483,7 @@ filterSideSheet.Initialize = function()
     end)
 
     bg.Q("close-button").RegisterCallback(eventType.Click, function()
-        filterSideSheet.FadeOut()
+        trackFilterSideSheet.FadeOut()
     end)
 
     bg.Q("keyword-field").Q("text-field").RegisterCallback(eventType.ChangeString, function(element, event)
@@ -498,7 +506,7 @@ filterSideSheet.Initialize = function()
     end)
 
     function LocalizeDropdown()
-        local bg = filterSideSheet.bg
+        local bg = trackFilterSideSheet.bg
         selectTrackPanel.filter.sortBasisDisplayString = {
             Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
             Artist = tm.l10n.GetString("track_filter_sidesheet_sort_basis_artist"),
@@ -518,7 +526,7 @@ filterSideSheet.Initialize = function()
     LocalizeDropdown()
     table.insert(callbacksOnLocaleChange, function()
         LocalizeDropdown()
-        filterSideSheet.SetDropdownValues()
+        trackFilterSideSheet.SetDropdownValues()
     end)
     local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
     sortBasisDropdown.RegisterCallback(eventType.ChangeString, function(element, event)
@@ -583,5 +591,5 @@ newTrackDialog.Hide = function()
 end
 
 selectTrackPanel.Initialize()
-filterSideSheet.Initialize()
+trackFilterSideSheet.Initialize()
 newTrackDialog.Initialize()

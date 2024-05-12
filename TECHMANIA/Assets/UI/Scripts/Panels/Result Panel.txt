@@ -103,7 +103,7 @@ resultPanel.Show = function()
     panel.Q("ruleset").Q("value").text = rulesetString
 
     -- Modifiers
-    panel.Q("modifiers").Q("content").text = CurrentModifiersToString(false)  -- don't include "no video"
+    panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
 
     tm.game.Conclude()
 end

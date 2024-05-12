@@ -4,6 +4,9 @@
     <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
     <ui:Template name="Radio Button" src="project://database/Assets/UI/Controls/Radio%20Button.uxml?fileID=9197481963319205126&amp;guid=afc8cda1eb6d97b44b97389cd11ad332&amp;type=3#Radio Button" />
+    <ui:Template name="Setlist Selectable Pattern" src="project://database/Assets/UI/Templates/Setlist%20Selectable%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6529138e2633cd241bd4be906f774234&amp;type=3#Setlist Selectable Pattern" />
+    <ui:Template name="Pattern Banner Centered" src="project://database/Assets/UI/Templates/Pattern%20Banner%20Centered.uxml?fileID=9197481963319205126&amp;guid=e5a3a332f569b85448172df66881ca9c&amp;type=3#Pattern Banner Centered" />
+    <ui:Template name="Setlist Missing Pattern" src="project://database/Assets/UI/Templates/Setlist%20Missing%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6b9d46e8813bef8488f97af62ec4ed4f&amp;type=3#Setlist Missing Pattern" />
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
     <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
@@ -17,13 +20,36 @@
     <Style src="project://database/Assets/UI/Style/Scroll%20View.uss?fileID=7433441132597879392&amp;guid=11c5e8c9b8b56934ba19ea4388f3fc97&amp;type=3#Scroll View" />
     <ui:VisualElement name="background" picking-mode="Ignore" class="surface" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
     <ui:VisualElement name="main-menu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
-        <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&apos;); width: 500px; height: 500px;" />
-        <ui:VisualElement name="buttons" style="width: 400px; height: 400px; justify-content: space-between; display: flex; visibility: hidden;">
-            <ui:Button text="START" display-tooltip-when-elided="true" name="start-button" class="button-contained" />
-            <ui:Button text="EDITOR" display-tooltip-when-elided="true" name="editor-button" class="button-outlined" />
-            <ui:Button text="OPTIONS" display-tooltip-when-elided="true" name="options-button" class="button-outlined" />
-            <ui:Button text="INFORMATION" display-tooltip-when-elided="true" name="information-button" class="button-outlined" />
-            <ui:Button text="QUIT" display-tooltip-when-elided="true" name="quit-button" class="button-outlined" />
+        <ui:VisualElement name="logo" style="background-image: url(&quot;project://database/Assets/UI/Images/Logo.png?fileID=2800000&amp;guid=aee193aca0c7a5a44a02ab2e6a812b47&amp;type=3#Logo&quot;); width: 500px; height: 500px;" />
+        <ui:VisualElement name="buttons" style="width: 640px; height: 320px; justify-content: space-between; display: flex; visibility: hidden; flex-direction: row; flex-wrap: wrap;">
+            <ui:Button display-tooltip-when-elided="true" name="start-button" class="button-contained">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MainMenu%20Start.png?fileID=2800000&amp;guid=4f30af1ee6120f44aba89b534da79af8&amp;type=3#MainMenu Start&quot;);" />
+                <ui:Label tabindex="-1" text="START" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button display-tooltip-when-elided="true" name="setlists-button" class="button-outlined">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MainMenu%20Setlists.png?fileID=2800000&amp;guid=accb8996d051c1d45b79d285fd225c53&amp;type=3#MainMenu Setlists&quot;);" />
+                <ui:Label tabindex="-1" text="SETLISTS" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button display-tooltip-when-elided="true" name="editor-button" class="button-outlined">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_edit_white_48dp.png?fileID=2800000&amp;guid=feb9baad0907d214e9ced11ad9e70fac&amp;type=3#baseline_edit_white_48dp&quot;);" />
+                <ui:Label tabindex="-1" text="EDITOR" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button display-tooltip-when-elided="true" name="options-button" class="button-outlined">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_settings_white_48dp.png?fileID=2800000&amp;guid=a231c7f1c7612fb4b84ec1635632787a&amp;type=3#baseline_settings_white_48dp&quot;);" />
+                <ui:Label tabindex="-1" text="OPTIONS" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button display-tooltip-when-elided="true" name="information-button" class="button-outlined">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MainMenu%20Information.png?fileID=2800000&amp;guid=2d8e0e82341590b4ca957a77a8df6189&amp;type=3#MainMenu Information&quot;);" />
+                <ui:Label tabindex="-1" text="INFORMATION" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button display-tooltip-when-elided="true" name="quit-button" class="button-outlined">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/MainMenu%20Close.png?fileID=2800000&amp;guid=d6fd8d0fcf5da1a459ef3b65a0a05711&amp;type=3#MainMenu Close&quot;);" />
+                <ui:Label tabindex="-1" text="QUIT" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:VisualElement name="editor-sub-buttons" style="flex-grow: 1; position: absolute; width: 220px; height: 150px; left: 100%; padding-left: 20px;">
+                <ui:Button text="TRACKS" parse-escape-sequences="true" display-tooltip-when-elided="true" name="edit-tracks-button" class="button-outlined" style="height: 65px;" />
+                <ui:Button text="SETLISTS" parse-escape-sequences="true" display-tooltip-when-elided="true" name="edit-setlists-button" class="button-outlined" style="height: 65px;" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="welcome-mat" focusable="true" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; display: flex;">
             <ui:Label text="Click / Touch / Press any key" display-tooltip-when-elided="true" name="welcome-mat-text" class="text-subtitle" style="position: absolute; top: 65%;" />
@@ -33,23 +59,23 @@
         <AttributeOverrides element-name="title" text="Select Track" />
         <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-in-top-bar button-icon" style="background-image: none;">
-                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&quot;);" />
             </ui:Button>
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="filter-button" class="button-in-top-bar button-icon" style="background-image: none;">
-                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_filter_alt_white_48dp.png?fileID=2800000&amp;guid=16904f37be0e99045ac8cffe57232e98&amp;type=3#baseline_filter_alt_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_filter_alt_white_48dp.png?fileID=2800000&amp;guid=16904f37be0e99045ac8cffe57232e98&amp;type=3#baseline_filter_alt_white_48dp&quot;);" />
             </ui:Button>
             <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="upgrade-button" class="button-in-top-bar button-icon" style="background-image: none;">
-                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_report_white_48dp.png?fileID=2800000&amp;guid=6b0e8b7fb1f94db4392186af9cc57c18&amp;type=3#baseline_report_white_48dp&apos;);" />
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_report_white_48dp.png?fileID=2800000&amp;guid=6b0e8b7fb1f94db4392186af9cc57c18&amp;type=3#baseline_report_white_48dp&quot;);" />
             </ui:Button>
         </ui:VisualElement>
         <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="layout-wrap" style="width: 1260px; height: 100%;">
                 <ui:VisualElement name="location-bar" style="height: 100px; position: absolute; left: 0; right: 0; flex-direction: row; align-items: center; justify-content: space-between;">
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="up-button" class="button-icon-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;); width: 36px; height: 36px; rotate: 90deg;" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&quot;); width: 36px; height: 36px; rotate: 90deg;" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="open-button" class="button-icon-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&apos;); width: 36px; height: 36px;" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&quot;); width: 36px; height: 36px;" />
                     </ui:Button>
                     <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" name="location-display" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
                 </ui:VisualElement>
@@ -64,7 +90,7 @@
                     <ui:VisualElement name="shadow" picking-mode="Ignore" />
                     <ui:ScrollView name="content" class="scroll-view">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="close-button" class="button-icon">
-                            <ui:VisualElement name="icon" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&apos;);" />
+                            <ui:VisualElement name="icon" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&quot;);" />
                         </ui:Button>
                         <ui:Label tabindex="-1" text="Search" display-tooltip-when-elided="true" name="search-header" picking-mode="Ignore" class="item text-headline-4" />
                         <ui:Instance template="Text Field" name="keyword-field" class="item">
@@ -199,124 +225,332 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="modifier-sidesheet-background" class="sidesheet-background" style="display: none;">
-                <ui:VisualElement name="modifier-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 750px;">
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:Instance template="Panel" name="select-setlist-panel" class="panel" style="display: none;">
+        <AttributeOverrides element-name="title" text="Select Setlist" />
+        <ui:VisualElement name="top-bar-buttons" picking-mode="Ignore" class="top-bar-buttons-container" style="align-items: center;">
+            <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="refresh-button" class="button-in-top-bar button-icon" style="background-image: none;">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_sync_white_48dp.png?fileID=2800000&amp;guid=4e2cd30f86111c748a68c3aaa763ea85&amp;type=3#baseline_sync_white_48dp&quot;);" />
+            </ui:Button>
+            <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="filter-button" class="button-in-top-bar button-icon" style="background-image: none;">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_filter_alt_white_48dp.png?fileID=2800000&amp;guid=16904f37be0e99045ac8cffe57232e98&amp;type=3#baseline_filter_alt_white_48dp&quot;);" />
+            </ui:Button>
+            <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="upgrade-button" class="button-in-top-bar button-icon" style="background-image: none;">
+                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_report_white_48dp.png?fileID=2800000&amp;guid=6b0e8b7fb1f94db4392186af9cc57c18&amp;type=3#baseline_report_white_48dp&quot;);" />
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement name="content" class="panel-content" style="align-items: center;">
+            <ui:VisualElement name="layout-wrap" style="width: 1260px; height: 100%;">
+                <ui:VisualElement name="location-bar" style="height: 100px; position: absolute; left: 0; right: 0; flex-direction: row; align-items: center; justify-content: space-between;">
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="up-button" class="button-icon-outlined">
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&quot;); width: 36px; height: 36px; rotate: 90deg;" />
+                    </ui:Button>
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="open-button" class="button-icon-outlined">
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_open_in_new_white_48dp.png?fileID=2800000&amp;guid=6a63eb29f327991498d41b0eb68d9ce5&amp;type=3#baseline_open_in_new_white_48dp&quot;); width: 36px; height: 36px;" />
+                    </ui:Button>
+                    <ui:Label tabindex="-1" text="A really really really really really really really really really really really really really really really really really really really really really really long path" display-tooltip-when-elided="true" name="location-display" class="text-body" style="position: absolute; left: 80px; right: 80px;" />
+                </ui:VisualElement>
+                <ui:ScrollView name="scroll-view" class="scroll-view" style="position: absolute; left: 0; top: 100px; right: 0; bottom: 0;">
+                    <ui:VisualElement name="subfolder-container" style="flex-direction: row; flex-wrap: wrap;" />
+                    <ui:VisualElement name="setlist-container" style="flex-direction: row; flex-wrap: wrap;" />
+                    <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="setlist-status" class="text-body" style="margin-top: 20px;" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement name="filter-sidesheet-background" class="sidesheet-background" style="display: none;">
+                <ui:VisualElement name="filter-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 600px;">
                     <ui:VisualElement name="shadow" picking-mode="Ignore" />
                     <ui:ScrollView name="content" class="scroll-view">
                         <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="close-button" class="button-icon">
-                            <ui:VisualElement name="icon" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&apos;);" />
+                            <ui:VisualElement name="icon" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&quot;);" />
                         </ui:Button>
-                        <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="modifiers-header" picking-mode="Ignore" class="item text-headline-4" />
-                        <ui:VisualElement name="note-opacity" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Note opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="scanline-opacity" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Scanline opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="scan-direction" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Scan direction" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="note-position" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Note position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="scan-position" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Scan position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="fever" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Fever" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="keysound" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Keysound" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="assist-tick" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Assist tick" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="sudden-death" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Sudden death" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Search" display-tooltip-when-elided="true" name="search-header" picking-mode="Ignore" class="item text-headline-4" />
+                        <ui:Instance template="Text Field" name="keyword-field" class="item">
+                            <AttributeOverrides element-name="mini-label" text="Keyword" />
+                        </ui:Instance>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
-                        <ui:Label tabindex="-1" text="Appearance" display-tooltip-when-elided="true" name="appearance-header" picking-mode="Ignore" class="item text-headline-4" />
-                        <ui:VisualElement name="skins" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Skins" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Button tabindex="-1" text="SELECT" display-tooltip-when-elided="true" name="select-button" class="button-outlined" style="width: 200px;" />
+                        <ui:Label tabindex="-1" text="Options" display-tooltip-when-elided="true" name="options-header" picking-mode="Ignore" class="item text-headline-4" />
+                        <ui:Label tabindex="-1" text="Show setlists in all folders" display-tooltip-when-elided="true" name="all-folders" picking-mode="Ignore" class="text-body item" style="height: 60px; -unity-text-align: middle-left;">
+                            <ui:Instance template="Toggle" name="Toggle" style="position: absolute; right: 0; top: 0; bottom: 0; justify-content: center;" />
+                        </ui:Label>
+                        <ui:VisualElement name="sort-order-wrap" picking-mode="Ignore" class="item">
+                            <ui:Label tabindex="-1" text="Sort by" display-tooltip-when-elided="true" name="sort-by" picking-mode="Ignore" class="text-body" style="height: 60px; -unity-text-align: middle-left; justify-content: center;">
+                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" style="margin-left: 170px;" />
                             </ui:Label>
+                            <ui:Instance template="Radio Button" name="ascending-radio" style="margin-left: 170px; margin-top: 10px;">
+                                <AttributeOverrides element-name="text" text="Ascending" />
+                            </ui:Instance>
+                            <ui:Instance template="Radio Button" name="descending-radio" style="margin-left: 170px;">
+                                <AttributeOverrides element-name="text" text="Descending" />
+                            </ui:Instance>
                         </ui:VisualElement>
-                        <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Show judgement tally" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Toggle" name="Toggle" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
-                                <ui:Instance template="SliderInt" name="slider-container" style="width: 300px;" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="No video" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Toggle" name="Toggle" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
-                        <ui:VisualElement name="special-modifiers" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Special Modifiers" display-tooltip-when-elided="true" name="header" picking-mode="Ignore" class="text-headline-4" />
-                            <ui:Label tabindex="-1" text="Warning: these options will invalidate your score." display-tooltip-when-elided="true" name="warning" class="text-caption text-warning" style="margin-left: 0; margin-right: 0;" />
-                        </ui:VisualElement>
-                        <ui:VisualElement name="mode" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Mode" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="control-override" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Control override" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="scroll-speed" picking-mode="Ignore" class="item">
-                            <ui:Label tabindex="-1" text="Scroll speed" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
-                                <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
-                            </ui:Label>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" style="height: 150px;" />
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="new-setlist-dialog-bg" class="dialog-background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); display: none;">
+            <ui:VisualElement name="new-setlist-dialog" class="surface-8dp dialog" style="width: 700px; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 35px; height: 250px; justify-content: space-between;">
+                <ui:Instance template="Text Field" name="title-field">
+                    <AttributeOverrides element-name="mini-label" text="Title" />
+                </ui:Instance>
+                <ui:VisualElement name="button-container" picking-mode="Ignore" class="dialog-button-container">
+                    <ui:Button text="CREATE" display-tooltip-when-elided="true" name="create-button" class="button-contained" />
+                    <ui:VisualElement name="divider" picking-mode="Ignore" class="dialog-button-divider" />
+                    <ui:Button text="CANCEL" display-tooltip-when-elided="true" name="cancel-button" class="button-text" />
+                </ui:VisualElement>
+                <ui:VisualElement name="shadow" picking-mode="Ignore" class="elevation-shadow" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:Instance>
+    <ui:Instance template="Panel" name="setup-setlist-panel" class="panel" style="display: none;">
+        <AttributeOverrides element-name="title" text="Setup Setlist" />
+        <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
+            <ui:VisualElement name="setup-setlist" picking-mode="Ignore" style="height: 100%; width: 1260px; justify-content: center; display: flex;">
+                <ui:VisualElement name="selectable-patterns" picking-mode="Ignore" style="height: 180px;">
+                    <ui:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" class="scroll-view" style="flex-grow: 1; align-items: center; justify-content: center;">
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                        <ui:Instance template="Setlist Selectable Pattern" name="Setlist Selectable Pattern" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:VisualElement name="drag-indicator" picking-mode="Ignore" style="height: 80px; align-items: center; justify-content: center; flex-direction: row; margin-bottom: 20px;">
+                    <ui:VisualElement name="arrow" picking-mode="Ignore" class="disabled-text-color" style="width: 40px; height: 40px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&quot;); rotate: -90deg; margin-right: 10px;" />
+                    <ui:Label tabindex="-1" text="Drag to select 3 patterns" parse-escape-sequences="true" display-tooltip-when-elided="true" name="instruction" class="text-caption" />
+                </ui:VisualElement>
+                <ui:VisualElement name="selected-patterns" picking-mode="Ignore" style="flex-direction: row; align-items: center; justify-content: space-between;">
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="drop-target" picking-mode="Ignore" class="at-rest fill-container" style="display: flex;">
+                                <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" picking-mode="Ignore" class="text-headline-4 fill-container centered-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+                            <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="drop-target" picking-mode="Ignore" class="at-rest fill-container" style="display: flex;">
+                                <ui:Label tabindex="-1" text="2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" picking-mode="Ignore" class="text-headline-4 fill-container centered-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+                            <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="drop-target" picking-mode="Ignore" class="at-rest fill-container" style="display: flex;">
+                                <ui:Label tabindex="-1" text="3" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" picking-mode="Ignore" class="text-headline-4 fill-container centered-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="title-container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text">
+                            <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="selected-pattern" picking-mode="Ignore" class="selected-pattern elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="drop-target" picking-mode="Ignore" class="at-rest fill-container" style="display: flex;">
+                                <ui:Label tabindex="-1" text="?" parse-escape-sequences="true" display-tooltip-when-elided="true" name="index" picking-mode="Ignore" class="text-headline-4 fill-container centered-text" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-direction: row; height: 300px;">
+                    <ui:VisualElement name="record" picking-mode="Ignore" class="elevation-1dp" style="margin-top: 20px; width: 620px; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" style="-unity-text-align: middle-center; margin-top: 20px; height: 30px;" />
+                        <ui:Label tabindex="-1" text="123456   S++" display-tooltip-when-elided="true" name="content" picking-mode="Ignore" class="text-headline-6 card-content" style="-unity-text-align: upper-center; margin-top: 20px;" />
+                        <ui:Label tabindex="-1" text="PERFECT PLAY" display-tooltip-when-elided="true" name="medal-text" class="text-overline" style="-unity-text-align: middle-center;" />
+                        <ui:VisualElement name="patterns" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: center;">
+                            <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" class="mini-eyecatch no-image">
+                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" style="flex-grow: 1;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" class="mini-eyecatch no-image">
+                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" style="flex-grow: 1;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" class="mini-eyecatch no-image">
+                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" style="flex-grow: 1;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" class="mini-eyecatch no-image">
+                                <ui:VisualElement name="default-eyecatch" picking-mode="Ignore" style="flex-grow: 1;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1;">
+                        <ui:VisualElement name="modifier-display" picking-mode="Ignore" class="elevation-1dp" style="margin-top: 20px; flex-direction: column; flex-grow: 1;">
+                            <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" style="-unity-text-align: middle-center; margin-top: 20px;" />
+                            <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text card-content" style="flex-grow: 1; padding-left: 20px; padding-right: 20px; margin-top: 10px;">
+                                <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: middle-center;" />
+                            </ui:ScrollView>
+                        </ui:VisualElement>
+                        <ui:Button tabindex="-1" text="MODIFIERS" display-tooltip-when-elided="true" name="modifiers-button" class="button-outlined" style="margin-top: 20px;" />
+                        <ui:Button tabindex="-1" text="PLAY" display-tooltip-when-elided="true" name="play-button" class="button-contained special-click-sfx" style="margin-top: 20px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="missing-pattern-warning" style="flex-grow: 1; height: 100%; width: 800px; justify-content: center; display: none;">
+                <ui:Label tabindex="-1" text="The following patterns are not found on your device:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="missing-pattern-label" picking-mode="Ignore" class="text-body" style="margin-bottom: 20px; -unity-text-align: upper-center;" />
+                <ui:VisualElement name="missing-pattern-list" picking-mode="Ignore" style="margin-bottom: 20px;">
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                    <ui:Instance template="Setlist Missing Pattern" name="Setlist Missing Pattern" />
+                </ui:VisualElement>
+                <ui:Label tabindex="-1" text="Click &quot;Continue&quot; to play the setlist with the available patterns." parse-escape-sequences="true" display-tooltip-when-elided="true" name="continue-playing-label" picking-mode="Ignore" class="text-body" style="margin-bottom: 50px; -unity-text-align: upper-center; display: none;" />
+                <ui:VisualElement name="continue-button-wrap" picking-mode="Ignore" style="align-items: center; display: none;">
+                    <ui:Button text="CONTINUE" parse-escape-sequences="true" display-tooltip-when-elided="true" name="continue-button" class="button-contained" style="width: 300px;" />
+                </ui:VisualElement>
+                <ui:Label tabindex="-1" text="There are not enough available patterns to play this setlist." parse-escape-sequences="true" display-tooltip-when-elided="true" name="not-enough-patterns-label" picking-mode="Ignore" class="text-body" style="display: flex; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="drag-plane" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none;">
+            <ui:VisualElement name="mini-eyecatch-center" picking-mode="Ignore" style="position: absolute; width: 0; height: 0; align-items: center; justify-content: center;">
+                <ui:VisualElement name="mini-eyecatch" picking-mode="Ignore" style="position: absolute; width: 200px; height: 200px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:VisualElement name="modifier-sidesheet-container" picking-mode="Ignore" class="panel" style="margin-top: 80px; display: flex;">
+        <ui:VisualElement name="modifier-sidesheet-background" class="sidesheet-background" style="display: none;">
+            <ui:VisualElement name="modifier-sidesheet" picking-mode="Ignore" class="sidesheet surface-4dp" style="width: 750px;">
+                <ui:VisualElement name="shadow" picking-mode="Ignore" />
+                <ui:ScrollView name="content" class="scroll-view">
+                    <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="close-button" class="button-icon">
+                        <ui:VisualElement name="icon" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&quot;);" />
+                    </ui:Button>
+                    <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="modifiers-header" picking-mode="Ignore" class="item text-headline-4" />
+                    <ui:VisualElement name="note-opacity" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Note opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="scanline-opacity" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Scanline opacity" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="scan-direction" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Scan direction" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="note-position" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Note position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="scan-position" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Scan position" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="fever" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Fever" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="keysound" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Keysound" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="assist-tick" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Assist tick" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="sudden-death" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Sudden death" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                    <ui:Label tabindex="-1" text="Appearance" display-tooltip-when-elided="true" name="appearance-header" picking-mode="Ignore" class="item text-headline-4" />
+                    <ui:VisualElement name="skins" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Skins" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Button tabindex="-1" text="SELECT" display-tooltip-when-elided="true" name="select-button" class="button-outlined" style="width: 200px;" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Show judgement tally" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Toggle" name="Toggle" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="bg-brightness" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Background brightness" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Label tabindex="-1" text="10" display-tooltip-when-elided="true" name="value-display" class="text-body" style="width: 50px; -unity-text-align: middle-center;" />
+                            <ui:Instance template="SliderInt" name="slider-container" style="width: 300px;" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="no-video" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="No video" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Toggle" name="Toggle" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                    <ui:VisualElement name="special-modifiers" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Special Modifiers" display-tooltip-when-elided="true" name="header" picking-mode="Ignore" class="text-headline-4" />
+                        <ui:Label tabindex="-1" text="Warning: these options will invalidate your score." display-tooltip-when-elided="true" name="warning" class="text-caption text-warning" style="margin-left: 0; margin-right: 0;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="mode" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Mode" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="control-override" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Control override" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="scroll-speed" picking-mode="Ignore" class="item">
+                        <ui:Label tabindex="-1" text="Scroll speed" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body">
+                            <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" />
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="space" picking-mode="Ignore" class="item space" style="height: 150px;" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
     <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" style="-unity-background-scale-mode: scale-and-crop;" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">
                 <ui:VisualElement name="pause-button" class="primary-color" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
                     <ui:VisualElement name="interaction-step-indicator" picking-mode="Ignore" style="position: absolute; left: 0; top: 100%; right: 0; bottom: 0; background-color: rgb(206, 147, 216);" />
-                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_pause_white_48dp.png?fileID=2800000&amp;guid=f310f17705df6d4469872455ba7372ab&amp;type=3#baseline_pause_white_48dp&apos;); width: 54px; height: 54px; -unity-background-image-tint-color: rgb(0, 0, 0);" />
+                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_pause_white_48dp.png?fileID=2800000&amp;guid=f310f17705df6d4469872455ba7372ab&amp;type=3#baseline_pause_white_48dp&quot;); width: 54px; height: 54px; -unity-background-image-tint-color: rgb(0, 0, 0);" />
                 </ui:VisualElement>
                 <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="back-button" class="button-icon" style="width: 80px; height: 80px; display: none;">
-                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="width: 60px; height: 60px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&apos;);" />
+                    <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="width: 60px; height: 60px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_arrow_back_white_48dp.png?fileID=2800000&amp;guid=0ae2448eb9dfa2047b83216ec12ea8c8&amp;type=3#baseline_arrow_back_white_48dp&quot;);" />
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement name="top-bar-content" picking-mode="Ignore" style="flex-grow: 1;">
-                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
+                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: flex;">
                     <ui:VisualElement name="hp-bar-wrap" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; padding-right: 50px; padding-top: 20px; padding-bottom: 20px;">
                         <ui:VisualElement name="hp-bar-bg" picking-mode="Ignore" class="surface" style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement name="hp-threshold-indicator" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; justify-content: space-between;">
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" style="visibility: hidden;" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" />
+                                <ui:VisualElement name="indicator" picking-mode="Ignore" class="hp-threshold-indicator" style="visibility: hidden;" />
+                            </ui:VisualElement>
                             <ui:Label tabindex="-1" text="No fail" display-tooltip-when-elided="true" name="no-fail-indicator" picking-mode="Ignore" class="text-headline-6" style="position: absolute; left: 50px; top: 0; right: 0; bottom: 0; -unity-text-align: middle-left;" />
                             <ui:VisualElement name="hp-bar" picking-mode="Ignore" class="blue-200" style="width: 80%;" />
                         </ui:VisualElement>
@@ -342,11 +576,11 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                <ui:VisualElement name="practice-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
                     <ui:VisualElement name="scan-number" picking-mode="Ignore" class="section">
                         <ui:VisualElement name="prev-scan-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="prev-scan-button" class="button-icon-outlined silent">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_expand_less_white_48dp.png?fileID=2800000&amp;guid=6c353a9e4babcc94aadadd4f4750f5e6&amp;type=3#baseline_expand_less_white_48dp&apos;); rotate: -90deg;" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_expand_less_white_48dp.png?fileID=2800000&amp;guid=6c353a9e4babcc94aadadd4f4750f5e6&amp;type=3#baseline_expand_less_white_48dp&quot;); rotate: -90deg;" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F3" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -356,7 +590,7 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="next-scan-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="next-scan-button" class="button-icon-outlined silent">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_expand_less_white_48dp.png?fileID=2800000&amp;guid=6c353a9e4babcc94aadadd4f4750f5e6&amp;type=3#baseline_expand_less_white_48dp&apos;); rotate: 90deg;" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_expand_less_white_48dp.png?fileID=2800000&amp;guid=6c353a9e4babcc94aadadd4f4750f5e6&amp;type=3#baseline_expand_less_white_48dp&quot;); rotate: 90deg;" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F4" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -364,7 +598,7 @@
                     <ui:VisualElement name="loop-control" picking-mode="Ignore" class="section">
                         <ui:VisualElement name="set-loop-start-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="set-loop-start-button" class="button-icon-outlined silent" style="width: 40px;">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/Repeat.png?fileID=2800000&amp;guid=c66bd9c70865400469519977c6576b4f&amp;type=3#Repeat&apos;); width: 42px; height: 42px;" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/Repeat.png?fileID=2800000&amp;guid=c66bd9c70865400469519977c6576b4f&amp;type=3#Repeat&quot;); width: 42px; height: 42px;" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F5" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -374,13 +608,13 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="set-loop-end-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="set-loop-end-button" class="button-icon-outlined silent" style="width: 40px;">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/Repeat.png?fileID=2800000&amp;guid=c66bd9c70865400469519977c6576b4f&amp;type=3#Repeat&apos;); rotate: 180deg; width: 42px; height: 42px;" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/Repeat.png?fileID=2800000&amp;guid=c66bd9c70865400469519977c6576b4f&amp;type=3#Repeat&quot;); rotate: 180deg; width: 42px; height: 42px;" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F6" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
                         <ui:VisualElement name="reset-loop-button-wrap" picking-mode="Ignore" style="justify-content: center; margin-left: 10px;">
                             <ui:Button display-tooltip-when-elided="true" name="reset-loop-button" class="button-icon-outlined silent" style="width: 40px;">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&apos;); rotate: 180deg;" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_close_white_48dp.png?fileID=2800000&amp;guid=8100a1c65af0dc840b3079a050dacdf9&amp;type=3#baseline_close_white_48dp&quot;); rotate: 180deg;" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F7" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -388,7 +622,7 @@
                     <ui:VisualElement name="speed-control" picking-mode="Ignore" class="section">
                         <ui:VisualElement name="decrease-speed-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="decrease-speed-button" class="button-icon-outlined silent">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_remove_white_48dp.png?fileID=2800000&amp;guid=775515192eaae9e4da79018d493e29fc&amp;type=3#baseline_remove_white_48dp&apos;);" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_remove_white_48dp.png?fileID=2800000&amp;guid=775515192eaae9e4da79018d493e29fc&amp;type=3#baseline_remove_white_48dp&quot;);" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F9" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -398,7 +632,7 @@
                         </ui:VisualElement>
                         <ui:VisualElement name="increase-speed-button-wrap" picking-mode="Ignore" style="justify-content: center;">
                             <ui:Button display-tooltip-when-elided="true" name="increase-speed-button" class="button-icon-outlined silent">
-                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&apos;project://database/Assets/UI/Images/baseline_add_white_48dp.png?fileID=2800000&amp;guid=39387d51d5e88f8428418daed0ba35e2&amp;type=3#baseline_add_white_48dp&apos;);" />
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/baseline_add_white_48dp.png?fileID=2800000&amp;guid=39387d51d5e88f8428418daed0ba35e2&amp;type=3#baseline_add_white_48dp&quot;);" />
                             </ui:Button>
                             <ui:Label tabindex="-1" text="F10" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" />
                         </ui:VisualElement>
@@ -479,8 +713,35 @@
                 <ui:Label tabindex="-1" text="FEVER BONUS   +123" display-tooltip-when-elided="true" name="fever-bonus" picking-mode="Ignore" class="text-headline-6" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="loading-bar-wrap" picking-mode="Ignore" style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; align-items: center; display: flex;">
-            <ui:VisualElement name="loading-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100%; padding-left: 20px; padding-right: 20px; flex-direction: row; align-items: center;">
+        <ui:VisualElement name="loading-bar-wrap" picking-mode="Ignore" style="position: absolute; bottom: 0; left: 0; right: 0; align-items: center; display: flex;">
+            <ui:VisualElement name="setlist-progress" picking-mode="Ignore" class="surface-8dp" style="width: 900px; margin-bottom: 20px; display: flex;">
+                <ui:Label tabindex="-1" text="Title of next pattern123111111111231231231231111111112312312312311111111123123123" parse-escape-sequences="false" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: upper-center; margin-top: 20px; margin-bottom: 10px; white-space: normal;" />
+                <ui:Instance template="Pattern Banner Centered" name="Pattern Banner Centered" style="align-items: center; margin-bottom: 20px;" />
+                <ui:VisualElement name="eyecatches" picking-mode="Ignore" style="margin-bottom: 20px; flex-direction: row; justify-content: center;">
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                        <ui:Label tabindex="-1" text="?" display-tooltip-when-elided="true" name="hidden-pattern-indicator" class="centered-text fill-container text-headline-4" />
+                        <ui:VisualElement name="eyecatch" class="fill-container" style="display: flex;" />
+                        <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body fill-container centered-text" style="display: none;" />
+                        <ui:VisualElement name="current-eyecatch-border" picking-mode="Ignore" class="fill-container" style="display: none;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="loading-bar" picking-mode="Ignore" class="surface-8dp" style="height: 60px; padding-left: 20px; padding-right: 20px; flex-direction: row; align-items: center;">
                 <ui:Label tabindex="-1" text="Loading..." display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                 <ui:VisualElement name="space" picking-mode="Ignore" style="width: 20px;" />
                 <ui:Instance template="Progress Bar" name="loading-progress" picking-mode="Ignore" style="width: 350px;" />
@@ -494,6 +755,8 @@
                     <ui:Button tabindex="-1" text="RESUME" display-tooltip-when-elided="true" name="resume-button" class="button-contained" />
                     <ui:Button tabindex="-1" text="RESTART" display-tooltip-when-elided="true" name="restart-button" class="button-outlined" style="margin-top: 20px; margin-bottom: 20px;" />
                     <ui:Button tabindex="-1" text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-outlined" />
+                    <ui:Button tabindex="-1" text="RESTART SETLIST" display-tooltip-when-elided="true" name="restart-setlist-button" class="button-outlined" style="margin-top: 20px; margin-bottom: 20px; display: none;" />
+                    <ui:Button tabindex="-1" text="SELECT SETLIST" display-tooltip-when-elided="true" name="select-setlist-button" class="button-outlined" style="display: none;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="divider" />
                 <ui:VisualElement name="bg-brightness-wrap" picking-mode="Ignore" class="item">
@@ -604,6 +867,105 @@
                         </ui:VisualElement>
                         <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="margin-top: 20px;" />
                         <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-contained" style="margin-top: 20px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />
+        </ui:VisualElement>
+    </ui:Instance>
+    <ui:Instance template="Panel" name="setlist-result-panel" class="panel-no-back-button panel" style="display: none;">
+        <AttributeOverrides element-name="title" text="Result" />
+        <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center; justify-content: center;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-grow: 1; width: 1260px; justify-content: center;">
+                <ui:VisualElement name="setlist-title-and-description" picking-mode="Ignore" class="elevation-1dp" style="height: 110px; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">
+                    <ui:Label tabindex="-1" text="Setlist title" parse-escape-sequences="false" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: upper-center;" />
+                    <ui:Label tabindex="-1" text="Setlist description" parse-escape-sequences="false" display-tooltip-when-elided="true" name="description" picking-mode="Ignore" class="text-caption" style="-unity-text-align: upper-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="patterns" picking-mode="Ignore" style="margin-top: 20px; height: 390px; flex-direction: row; justify-content: space-between;">
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="eyecatch" style="display: flex;">
+                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="eyecatch" style="display: flex;">
+                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="eyecatch" style="display: flex;">
+                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="pattern" picking-mode="Ignore" class="elevation-1dp" style="align-items: center;">
+                        <ui:VisualElement name="eyecatch-container" picking-mode="Ignore">
+                            <ui:VisualElement name="eyecatch" style="display: flex;">
+                                <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" style="display: flex;" />
+                            </ui:VisualElement>
+                            <ui:Label tabindex="-1" text="?" display-tooltip-when-elided="true" name="hidden-pattern-indicator" class="text-headline-4" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />
+                        </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Track title" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle" style="text-overflow: ellipsis; white-space: nowrap; -unity-text-align: upper-left; overflow: hidden;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern-Banner" style="overflow: hidden;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name" />
+                        </ui:Instance>
+                        <ui:Label tabindex="-1" text="234567" display-tooltip-when-elided="true" name="score" picking-mode="Ignore" class="text-headline-6" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="row" picking-mode="Ignore" style="margin-top: 20px; height: 160px; flex-direction: row;">
+                    <ui:VisualElement name="total-score" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Total score" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="123456" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: middle-center; height: 60px;" />
+                        <ui:Label tabindex="-1" text="ALL COMBO" display-tooltip-when-elided="true" name="medal" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="rank" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Rank" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: middle-center; height: 60px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="max-combo" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Max combo" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="1234" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 60px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="display: flex; flex-grow: 1;">
+                        <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="123456   S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
+                        <ui:Label tabindex="-1" text="NEW RECORD" display-tooltip-when-elided="true" name="new-record-indicator" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="row" picking-mode="Ignore" style="margin-top: 20px; height: 150px; flex-direction: row;">
+                    <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 20px; padding-right: 20px; display: flex; width: 300px; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
+                        <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="margin-top: 10px; height: 40px;">
+                            <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
+                        <ui:Label tabindex="-1" text="Ruleset" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
+                        <ui:Label tabindex="-1" text="Custom" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="buttons" picking-mode="Ignore" style="flex-grow: 1; justify-content: space-between;">
+                        <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="display: flex; height: 65px;" />
+                        <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-setlist-button" class="button-contained" style="display: flex; height: 65px;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -731,6 +1093,15 @@
                 <ui:VisualElement name="tracks-folder-location" class="options-item" style="padding-left: 100px;">
                     <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
                         <ui:Label text="Tracks folder" display-tooltip-when-elided="true" name="label" class="text-caption" style="margin-left: 0; margin-right: 0;" />
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+                            <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:Button text="BROWSE" display-tooltip-when-elided="true" name="button" class="button-outlined" />
+                </ui:VisualElement>
+                <ui:VisualElement name="setlists-folder-location" class="options-item" style="padding-left: 100px;">
+                    <ui:VisualElement name="labels" style="flex-grow: 1; padding-right: 5px;">
+                        <ui:Label text="Setlists folder" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-caption" style="margin-left: 0; margin-right: 0;" />
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="location-display-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="C:\\123\\456\\789\\0123" display-tooltip-when-elided="true" picking-mode="Ignore" name="location-display" class="text-caption" style="-unity-text-align: upper-left; margin-left: 0; margin-right: 0;" />
                         </ui:ScrollView>
@@ -873,23 +1244,23 @@
                 <ui:Label tabindex="-1" text="Links" display-tooltip-when-elided="true" name="links-header" class="text-headline-6 information-item" />
                 <ui:VisualElement name="links-container" class="information-item" style="flex-direction: row; justify-content: flex-start; flex-wrap: wrap;">
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="website-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&apos;);" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_language_white_48dp.png?fileID=2800000&amp;guid=a8d9f5571142d5a4a95604037bffb6e4&amp;type=3#baseline_language_white_48dp&quot;);" />
                         <ui:Label tabindex="-1" text="WEBSITE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="discord-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&apos;);" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_discord_white_48dp.png?fileID=2800000&amp;guid=f909a771583aebe4391a22d9c5118ca3&amp;type=3#baseline_discord_white_48dp&quot;);" />
                         <ui:Label tabindex="-1" text="DISCORD" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="github-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&apos;);" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&quot;project://database/Assets/UI/Images/GitHub-Mark-Light-120px-plus.png?fileID=2800000&amp;guid=8cafcc9b408fca94f8e51e0cbcbafee9&amp;type=3#GitHub-Mark-Light-120px-plus&quot;);" />
                         <ui:Label tabindex="-1" text="GITHUB" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="documentation-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&apos;);" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_description_white_48dp.png?fileID=2800000&amp;guid=ea92d87a3cda4c34fb17b42b85ab2275&amp;type=3#baseline_description_white_48dp&quot;);" />
                         <ui:Label tabindex="-1" text="DOCUMENTATION" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                     <ui:Button tabindex="-1" display-tooltip-when-elided="true" name="youtube-button" class="button-outlined">
-                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&apos;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&apos;);" />
+                        <ui:VisualElement name="icon" picking-mode="Ignore" class="icon-before-text" style="width: 28px; height: 28px; background-image: url(&quot;project://database/Assets/UI/Images/baseline_smart_display_white_48dp.png?fileID=2800000&amp;guid=49440156d80ecd3439adb2d2d7cffc91&amp;type=3#baseline_smart_display_white_48dp&quot;);" />
                         <ui:Label tabindex="-1" text="YOUTUBE" display-tooltip-when-elided="true" name="text" picking-mode="Ignore" class="text-in-button" />
                     </ui:Button>
                 </ui:VisualElement>

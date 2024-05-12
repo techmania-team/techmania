@@ -176,7 +176,8 @@ namespace ThemeApi
                 {
                     if (completeCallback.IsNil()) return;
                     completeCallback.Function.Call(status);
-                });
+                },
+                upgradeVersion: false);
         }
 
         // progressCallback parameter: string (the track currently
@@ -186,7 +187,7 @@ namespace ThemeApi
             DynValue progressCallback,
             DynValue completeCallback)
         {
-            GlobalResourceLoader.GetInstance().UpdateTrackVersions(
+            GlobalResourceLoader.GetInstance().LoadTrackList(
                 progressCallback: (string currentlyLoadingFile) =>
                 {
                     if (progressCallback.IsNil()) return;
@@ -197,7 +198,52 @@ namespace ThemeApi
                 {
                     if (completeCallback.IsNil()) return;
                     completeCallback.Function.Call(status);
-                });
+                },
+                upgradeVersion: true);
+        }
+
+        // progressCallback parameter: string (the setlist currently
+        // being loaded)
+        // completeCallback parameter: Status
+        public static void ReloadSetlistList(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadSetlistList(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback.Function.Call(status);
+                },
+                upgradeVersion: false);
+        }
+
+        // progressCallback parameter: string (the setlist currently
+        // being loaded)
+        // completeCallback parameter: Status
+        public static void UpgradeAllSetlists(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadSetlistList(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback.Function.Call(status);
+                },
+                upgradeVersion: true);
         }
 
         public static void ReloadNoteSkin(

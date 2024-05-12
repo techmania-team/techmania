@@ -1,0 +1,135 @@
+setlistResultPanel = {
+    panel = tm.root.Q("setlist-result-panel")
+}
+
+setlistResultPanel.Show = function()
+    local panel = setlistResultPanel.panel
+    local setlist = selectSetlistPanel.selectedSetlist
+    local setlistMetadata = setlist.setlistMetadata
+    local setlistScoreKeeper = tm.game.setlist.scoreKeeper
+
+    controls.ResetScrollingTextTimer()
+
+    -- Panel title
+    local panelTitle = panel.Q("top-bar").Q("title")
+    if (setlistScoreKeeper.stageFailed) then
+        panelTitle.text = tm.l10n.GetString("setlist_result_panel_failed_title")
+    else
+        panelTitle.text = tm.l10n.GetString("setlist_result_panel_all_clear_title")
+    end
+
+    -- Setlist metadata
+    panel.Q("setlist-title-and-description").Q("title").text = setlistMetadata.title
+    panel.Q("setlist-title-and-description").Q("description").text = setlistMetadata.description
+
+    -- Patterns
+    local anyPatternHasLegacySetlistOverride = false
+    -- stageNumber is in 1-index; patternRef can be nil
+    function ShowPattern(stageNumber, patternRef)
+        local patternElement = panel.Q("patterns").Children()[stageNumber]
+        function NoPattern()
+            patternElement.Q("eyecatch").display = false
+            patternElement.Q("title").visible = false
+            patternElement.Q("pattern-banner").visible = false
+        end
+        if (patternRef == nil) then
+            NoPattern()
+        else
+            local status, trackInFolder, pattern = tm.resources.SearchForPatternReference(patternRef)
+            if (not status.Ok()) then
+                NoPattern()
+            else
+                patternElement.Q("eyecatch").display = true
+                local eyecatchPath = tm.paths.Combine(trackInFolder.folder, trackInFolder.minimizedTrack.trackMetadata.eyecatchImage)
+                LoadAndShowEyecatch(eyecatchPath, patternElement.Q("eyecatch"))
+                patternElement.Q("title").visible = true
+                patternElement.Q("title").text = trackInFolder.minimizedTrack.trackMetadata.title
+                patternElement.Q("pattern-banner").visible = true
+                SetUpPatternBanner(pattern.patternMetadata, patternElement.Q("pattern-banner"))
+
+                if (pattern.legacySetlistOverride != nil) then
+                    for _, override in ipairs(pattern.legacySetlistOverride) do
+                        if (override.HasAny()) then
+                            anyPatternHasLegacySetlistOverride = true
+                        end
+                    end
+                end
+            end
+        end
+        
+        local scoreKeeper = setlistScoreKeeper.GetScoreKeeperForStage(stageNumber - 1)
+        local score = 0
+        if (scoreKeeper != nil) then score = scoreKeeper.TotalScore() end
+        patternElement.Q("score").text = tostring(score)
+    end
+    for i, index in ipairs(tm.gameSetup.setlist.patternIndices) do
+        local patternRef = setlist.selectablePatterns[index + 1]
+        ShowPattern(i, patternRef)
+    end
+    local hiddenPatternIndicator = panel.Q("patterns").Children()[4].Q("hidden-pattern-indicator")
+    if (tm.game.setlist.currentStage == 3) then
+        local hiddenPatternIndex = tm.gameSetup.setlist.hiddenPatternIndex
+        local patternRef = setlist.hiddenPatterns[hiddenPatternIndex + 1].reference
+        ShowPattern(4, patternRef)
+        hiddenPatternIndicator.display = false
+    else
+        ShowPattern(4, nil)
+        hiddenPatternIndicator.display = true
+    end
+
+    -- Score, rank and max combo
+    panel.Q("total-score").Q("value").text = tostring(setlistScoreKeeper.TotalScore())
+    local medal = setlistScoreKeeper.Medal()
+    local medalString = ""
+    if (medal == tm.enum.performanceMedal.AllCombo) then
+        medalString = tm.l10n.GetString("performance_medal_all_combo")
+    elseif (medal == tm.enum.performanceMedal.PerfectPlay) then
+        medalString = tm.l10n.GetString("performance_medal_perfect_play")
+    elseif (medal == tm.enum.performanceMedal.AbsolutePerfect) then
+        medalString = tm.l10n.GetString("performance_medal_absolute_perfect")
+    end
+    panel.Q("total-score").Q("medal").text = medalString
+
+    panel.Q("rank").Q("value").text = setlistScoreKeeper.Rank()
+    panel.Q("max-combo").Q("value").text = setlistScoreKeeper.maxCombo
+
+    -- Record
+    local record = tm.records.setlist.GetRecord(setlist)
+    local recordElement = panel.Q("my-record")
+    local recordString = "---"
+    if (record != nil) then
+        recordString = record.score .. "   " .. record.Rank()
+    end
+    recordElement.Q("value").text = recordString
+    
+    if (tm.game.setlist.ScoreIsValid() and tm.game.setlist.ScoreIsNewRecord()) then
+        recordElement.Q("new-record-indicator").display = true
+        tm.game.setlist.UpdateRecord()
+        tm.records.SaveToFile()
+    else
+        recordElement.Q("new-record-indicator").display = false
+    end
+
+    -- Modifiers
+    panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
+    local rulesetString = ""
+    panel.Q("legacy-override-indicator").display = false
+    if (tm.options.ruleset == tm.enum.ruleset.Standard) then
+        rulesetString = tm.l10n.GetString("ruleset_standard")
+    elseif (tm.options.ruleset == tm.enum.ruleset.Legacy) then
+        rulesetString = tm.l10n.GetString("ruleset_legacy")
+        if (anyPatternHasLegacySetlistOverride) then
+            rulesetString = rulesetString .. "*"
+            panel.Q("legacy-override-indicator").display = true
+        end
+    elseif (tm.options.ruleset == tm.enum.ruleset.Custom) then
+        rulesetString = tm.l10n.GetString("ruleset_custom")
+    end
+    panel.Q("ruleset").Q("value").text = rulesetString
+
+    tm.game.Conclude()
+end
+
+setlistResultPanel.Hide = function()
+    -- TODO: release eyecatches
+end

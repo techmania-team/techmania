@@ -292,8 +292,16 @@ public class ResourceLoader : MonoBehaviour
                 request.error, fullPath);
             return;
         }
-        sound = FmodManager.CreateSoundFromAudioClip(clipFromRequest);
-        status = Status.OKStatus();
+        try
+        {
+            sound = FmodManager.CreateSoundFromAudioClip(
+                clipFromRequest);
+            status = Status.OKStatus();
+        }
+        catch (System.Exception ex)
+        {
+            status = Status.FromException(ex, fullPath);
+        }
     }
     #endregion
 

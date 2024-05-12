@@ -25,10 +25,11 @@ public enum PerformanceMedal
 // Keeps track of score, combo, HP and fever.
 public class ScoreKeeper
 {
-    // Reference to GameSetup so we can call callbacks.
+    // Reference to GameSetup so we can call Fever callbacks.
     private ThemeApi.GameSetup gameSetup;
+    private ThemeApi.GameState state;
 
-    private LegacyRulesetOverride legacyRulesetOverride;
+    private WindowsAndDeltas legacyRulesetOverride;
 
     public bool stageFailed
     {
@@ -68,9 +69,11 @@ public class ScoreKeeper
     public float feverAmount { get; private set; }  // [0, 1]
 
     [MoonSharpHidden]
-    public ScoreKeeper(ThemeApi.GameSetup gameSetup)
+    public ScoreKeeper(ThemeApi.GameSetup gameSetup,
+        ThemeApi.GameState state)
     {
         this.gameSetup = gameSetup;
+        this.state = state;
     }
 
     [MoonSharpHidden]
@@ -78,6 +81,11 @@ public class ScoreKeeper
         int playableNotes)
     {
         legacyRulesetOverride = pattern.legacyRulesetOverride;
+        if (gameSetup.setlist.enabled)
+        {
+            legacyRulesetOverride = pattern.legacySetlistOverride?[
+                state.setlist.currentStage];
+        }
         stageFailed = false;
 
         // Score.
@@ -176,10 +184,13 @@ public class ScoreKeeper
         }
 
         // HP
+        int? setlistStageNumber = gameSetup.setlist.enabled ?
+            state.setlist.currentStage : null;
         hp += Ruleset.instance.GetHpDelta(
             judgement, noteType,
             feverState == FeverState.Active,
-            legacyRulesetOverride);
+            legacyRulesetOverride,
+            setlistStageNumber);
         if (Modifiers.instance.suddenDeath == 
             Modifiers.SuddenDeath.SuddenDeath &&
             (judgement == Judgement.Miss ||
@@ -210,14 +221,7 @@ public class ScoreKeeper
                 gameSetup.onFeverUpdate?.Function?.Call(feverAmount);
                 if (feverAmount >= 1f)
                 {
-                    feverState = FeverState.Ready;
-                    feverAmount = 1f;
-                    gameSetup.onFeverReady?.Function?.Call();
-                    if (GameController.instance.modifiers.fever
-                        == Modifiers.Fever.AutoFever)
-                    {
-                        ActivateFever();
-                    }
+                    OnFeverFull();
                 }
             }
         }
@@ -246,10 +250,26 @@ public class ScoreKeeper
         }
     }
 
+    private void OnFeverFull()
+    {
+        feverState = FeverState.Ready;
+        feverAmount = 1f;
+        gameSetup.onFeverReady?.Function?.Call();
+        if (GameController.instance.modifiers.fever
+            == Modifiers.Fever.AutoFever)
+        {
+            ActivateFever();
+        }
+    }
+
     [MoonSharpHidden]
     public void JumpToScan()
     {
-        SetCombo(0);
+        if (GameController.instance.modifiers.mode ==
+            Modifiers.Mode.Practice)
+        {
+            SetCombo(0);
+        }
     }
 
     #region Score
@@ -425,4 +445,17 @@ public class ScoreKeeper
         }
     }
     #endregion
+
+    public void OverrideStatsFromSetlist(
+        int currentCombo, int maxCombo, int hp, float feverAmount)
+    {
+        this.currentCombo = currentCombo;
+        this.maxCombo = maxCombo;
+        this.hp = hp;
+        this.feverAmount = feverAmount;
+        if (this.feverAmount >= 1f)
+        {
+            OnFeverFull();
+        }
+    }
 }

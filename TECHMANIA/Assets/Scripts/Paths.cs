@@ -11,13 +11,16 @@ using ThemeApi;
 public static class Paths
 {
     public const string kTrackFilename = "track.tech";
+    public const string kSetlistFilename = "setlist.tech";
     public const string kSkinFilename = "skin.json";
     public const string kSubfolderEyecatchPngFilename = 
         "eyecatch.png";
     public const string kSubfolderEyecatchJpgFilename = 
         "eyecatch.jpg";
     public const string kThemeExtension = ".tmtheme";
+
     public const string kTrackFolderName = "Tracks";
+    public const string kSetlistFolderName = "Setlists";
     public const string kSkinFolderName = "Skins";
     public const string kNoteSkinFolderName = "Note";
     public const string kVfxSkinFolderName = "VFX";
@@ -49,6 +52,8 @@ public static class Paths
     private static string streamingAssetsFolder;
     private static string trackRootFolder;
     private static string streamingTrackRootFolder;
+    private static string setlistRootFolder;
+    private static string streamingSetlistRootFolder;
     private static string skinRootFolder;
     private static string streamingSkinRootFolder;
     private static string themeFolder;
@@ -89,6 +94,13 @@ public static class Paths
         streamingTrackRootFolder = Path.Combine(
             streamingAssetsFolder, kTrackFolderName);
 
+        // Setlist root folder
+        setlistRootFolder = Path.Combine(workingDirectory,
+            kSetlistFolderName);
+        Directory.CreateDirectory(setlistRootFolder);
+        streamingSetlistRootFolder = Path.Combine(
+            streamingAssetsFolder, kSetlistFolderName);
+
         // Skin folder
         skinRootFolder = Path.Combine(workingDirectory, 
             kSkinFolderName);
@@ -125,6 +137,8 @@ public static class Paths
     {
         trackRootFolder = Path.Combine(workingDirectory,
             kTrackFolderName);
+        setlistRootFolder = Path.Combine(workingDirectory,
+            kSetlistFolderName);
         skinRootFolder = Path.Combine(workingDirectory,
             kSkinFolderName);
         themeFolder = Path.Combine(workingDirectory,
@@ -135,6 +149,12 @@ public static class Paths
                 Options.instance.tracksFolderLocation))
             {
                 trackRootFolder = Options.instance.tracksFolderLocation;
+            }
+            if (!string.IsNullOrEmpty(
+                Options.instance.setlistsFolderLocation))
+            {
+                setlistRootFolder = Options.instance
+                    .setlistsFolderLocation;
             }
             if (!string.IsNullOrEmpty(
                 Options.instance.skinsFolderLocation))
@@ -156,6 +176,13 @@ public static class Paths
     {
         return streamingAssets ? streamingTrackRootFolder :
             trackRootFolder;
+    }
+
+    public static string GetSetlistRootFolder(
+        bool streamingAssets = false)
+    {
+        return streamingAssets ? streamingSetlistRootFolder :
+            setlistRootFolder;
     }
 
     public static string GetSkinRootFolder(
@@ -379,8 +406,11 @@ public static class Paths
         }
     }
 
-    // Similar to Path.GetDirectoryName but allows going up
-    // from streaming assets to track root folder.
+    // Similar to Path.GetDirectoryName but, if going up from
+    // a subdirectory of streaming assets, this returns the non-streaming
+    // track root instead of streaming track root.
+    //
+    // This will also not go further above the non-streaming track root.
     public static string GoUpFrom(string path)
     {
         if (path == GetTrackRootFolder(streamingAssets: false) ||
@@ -388,25 +418,43 @@ public static class Paths
         {
             return GetTrackRootFolder();
         }
+        if (path == GetSetlistRootFolder(streamingAssets: false) ||
+            path == GetSetlistRootFolder(streamingAssets: true))
+        {
+            return GetSetlistRootFolder();
+        }
+
+        string up = Path.GetDirectoryName(path);
 #if UNITY_ANDROID
-        // Paths variables on Android are in the form of
+        // On Android, the following variables / methods
+        // take the following values:
+        //
         // path
         // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks/Official Tracks
-        // GetStreamingTrackRootFolder()
+        //
+        // GetTrackRootFolder(streamingAssets: true)
         // jar:file:///storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
-        // GetTrackRootFolder()
+        //
+        // GetTrackRootFolder(streamingAssets: false)
         // /storage/emulated/0/Android/data/com.TECHMANIATeam.TECHMANIA/files/Tracks
-        // Path.GetDirectoryName(path)
+        //
+        // up = Path.GetDirectoryName(path)
         // jar:file:/storage/emulated/0/Android/obb/com.TECHMANIATeam.TECHMANIA/main.1.com.TECHMANIATeam.TECHMANIA.obb!/assets/Tracks
-        string up = Path.GetDirectoryName(path)
-            .Replace("jar:file:/", "jar:file:///");
-#else
-        string up = Path.GetDirectoryName(path);
+        //
+        // Notice that GetDirectoryName turns "///" to "/" so we
+        // restore it.
+
+        up = up.Replace("jar:file:/", "jar:file:///");
 #endif
         if (up == GetTrackRootFolder(streamingAssets: false) ||
             up == GetTrackRootFolder(streamingAssets: true))
         {
             return GetTrackRootFolder();
+        }
+        if (path == GetSetlistRootFolder(streamingAssets: false) ||
+            path == GetSetlistRootFolder(streamingAssets: true))
+        {
+            return GetSetlistRootFolder();
         }
         return up;
     }
@@ -434,9 +482,12 @@ public static class Paths
     public static string AbsolutePathInStreamingAssets(string
         relativePath)
     {
-        // If an argument other than the first contains a rooted path,
-        // any previous path components are ignored, and the
-        // returned string begins with that rooted path component.
+        // In Path.Combine, if an argument other than the first
+        // contains a rooted path, any previous path components
+        // are ignored, and the returned string begins with that
+        // rooted path component.
+        //
+        // To work around that, we trim slashes.
         relativePath = relativePath.TrimStart('/', '\\');
         string absolutePath = Path.Combine(streamingAssetsFolder,
             relativePath);

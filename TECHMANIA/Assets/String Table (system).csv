@@ -7,7 +7,8 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 `===== Main Menu =====,,,,,,
 ,,,,,,
 ,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),正在載入造型…… ({0} / {1}),スキンをロード中… ({0} / {1}),스킨 로드 중... ({0} / {1})
-,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲列表…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
+,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲清單…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
+Added in 2.2,resource_loader_loading_setlist_list,Loading setlists... ({0} / {1}),正在读取组曲列表…… ({0} / {1}),正在載入組曲清單…… ({0} / {1}),セットリストをロード中… ({0} / {1}),디스크셋 로드 중... ({0} / {1})
 ,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),正在載入主題…… ({0} / {1}),テーマをロード中… ({0} / {1}),테마 로드 중... ({0} / {1})
 ,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),還原至預設主題 ({0}),デフォルトにします… ({0}),기본값으로 되돌리는 중... ({0})
 ,boot_screen_revert_default_theme_button,REVERT,复原,還原,デフォルトにする,기본값으로 복원
@@ -32,7 +33,7 @@ TECHMANIAのデフォルトスキンを使用します。","아래 스킨을 불
 {0}
 
 TECHMANIA 기본 스킨을 사용합니다."
-,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,,デフォルトスキンの読み込み失敗のため、TECHMANIAを起動できません。ゲームを再インストールしてください。,기본 스킨을 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
+,resource_loader_cannot_load_default_skin,"TECHMANIA cannot load the default skins, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认皮肤，因而无法启动。您可能需要重新安装TECHMANIA。,TECHMANIA 無法載入預設造型，因此無法啟動。您可能需要重新安裝 TECHMANIA。,デフォルトスキンの読み込み失敗のため、TECHMANIAを起動できません。ゲームを再インストールしてください。,기본 스킨을 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
 ,resource_loader_theme_error_format,"An error occurred when loading the theme:
 
 {0}
@@ -56,15 +57,16 @@ TECHMANIAのデフォルトテーマを使用します。","아래 테마를 로
 TECHMANIA 기본 테마를 사용합니다."
 ,resource_loader_cannot_load_default_theme,"TECHMANIA cannot load the default theme, and therefore is unable to launch. You may need to reinstall TECHMANIA.",TECHMANIA无法读取默认主题，因而无法启动。您可能需要重新安装TECHMANIA。,TECHMANIA 無法載入預設主題，因此無法啟動。您可能需要重新安裝 TECHMANIA。,デフォルトテーマの読み込み失敗のため、TECHMANIA を起動できません。ゲームを再インストールしてください。,기본 테마를 불러오지 못하여 TECHMANIA를 실행할 수 없습니다. 프로그램을 재설치해 보십시오.
 ,,,,,,
-,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,,您正在使用的主題缺少以下基本檔案，無法載入。,"使用中のテーマは次の重要ファイルが存在しないため、読み込めませんでした。
+,theme_error_critical_file_missing,The theme you are using is missing the following essential file and cannot load.,当前使用的主题缺少以下文件，因而无法启动。,您正在使用的主題缺少以下基本檔案，無法載入。,"使用中のテーマは次の重要ファイルが存在しないため、読み込めませんでした。
 ","사용 중인 테마를 불러올 수 없습니다. 아래 파일이 누락되었습니다.
 
 {0}"
-,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,,您使用的主題與您的 TECHMANIA 版本不相容,使用中のテーマは現在のTECHMANIAバージョンをサポートしません。,사용 중인 테마가 현재 TECHMANIA 버전과 호환되지 않습니다.
-,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",,請更新 TECHMANIA 到最新版本、使用預設主題，或聯繫主題的開發者。TECHMANIA 現在將關閉。,TECHMANIAをアップデートするか、デフォルトテーマを使用するか、制作者にお問い合わせください。TECHMANIAを終了します。,"TECHMANIA를 최신 버전으로 업데이트하거나, 기본 테마를 사용하거나, 개발자에게 문의하십시오. TECHMANIA를 종료합니다."
+,theme_error_api_not_supported,The theme you are using is not compatible with your TECHMANIA version.,当前使用的主题与TECHMANIA版本不兼容。,您使用的主題與您的 TECHMANIA 版本不相容,使用中のテーマは現在のTECHMANIAバージョンをサポートしません。,사용 중인 테마가 현재 TECHMANIA 버전과 호환되지 않습니다.
+,theme_error_instruction,"Please update TECHMANIA to the latest version, use the default theme, or contact the theme's developer. TECHMANIA will now close.",请升级TECHMANIA至最新版本，或者选择默认主题，或者联系主题开发者。TECHMANIA即将关闭。,請更新 TECHMANIA 到最新版本、使用預設主題，或聯繫主題的開發者。TECHMANIA 現在將關閉。,TECHMANIAをアップデートするか、デフォルトテーマを使用するか、制作者にお問い合わせください。TECHMANIAを終了します。,"TECHMANIA를 최신 버전으로 업데이트하거나, 기본 테마를 사용하거나, 개발자에게 문의하십시오. TECHMANIA를 종료합니다."
 ,,,,,,
 ,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중
+Added in 2.2,discord_state_editing_setlist,Editing Setlist,正在编辑组曲,正在編輯組曲,セットリスト編集,디스크셋 편집 중
 ,,,,,,
 ,message_dialog_ok_button,OK,确定,確定,OK,확인
 ,,,,,,
@@ -73,19 +75,19 @@ TECHMANIA 기본 테마를 사용합니다."
 
 {1}","读取{0}时发生错误：
 
-{1}","讀取 {0} 時發生錯誤：
+{1}","載入 {0} 時發生錯誤：
 
 {1}","{0} の読み込み中にエラーが発生しました：
 
 {1}","{0}을/를 불러오는 중 오류가 발생했습니다.
 
 {1}"
-,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,無法讀取 {0}。這個檔案可能損壞，或是不支援的格式。,{0} を読み込めません。正しくないファイルまたは対応していないファイル形式です。,{0}을/를 불러올 수 없습니다. 파일이 잘못되었거나 지원하지 않는 형식입니다.
+,resource_loader_unsupported_format_error_format,"Could not load {0}. The file may be corrupted, or be of an unsupported format.",无法读取{0}。此文件可能已损坏，或者是不支持的格式。,無法載入 {0}。這個檔案可能損壞，或是不支援的格式。,{0} を読み込めません。正しくないファイルまたは対応していないファイル形式です。,{0}을/를 불러올 수 없습니다. 파일이 잘못되었거나 지원하지 않는 형식입니다.
 ,,,,,,
 `===== Editor - Select track and setup =====,,,,,,
 ,,,,,,
 "Most dropdowns (eg. Backing track, BGA) in the
-editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,(無),(なし),(None)
+editor contains this as the 1st option.",none_option_in_dropdowns,(None),（无）,(無),（なし）,(None)
 ,,,,,,
 ,track_setup_panel_title,Track Setup,曲目设置,歌曲設定,トラック設定,음악 설정
 ,track_setup_discard_changes_confirmation,Unsaved changes to the track will be discarded. Continue?,未保存的更改将会丢失。是否继续？,未儲存的變更將遺失，是否繼續？,変更が保存されません。続けますか？,변경사항이 저장되지 않습니다. 계속하시겠습니까?
@@ -104,11 +106,11 @@ backgrounds, and more.","导入音频、图像、视频文件后，
 可以將它們使用在按鍵音、譜面背景等。","オーディオ/イメージ/ビデオをインポートしてノート音や
 背景などに使うことができます。",연주음 및 배경 등으로 사용할 파일을 가져옵니다.
 "Strings in the open file dialog shown when
-the user clicks Import button.",track_setup_resource_tab_import_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
-,track_setup_resource_tab_import_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
-,track_setup_resource_tab_import_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
+the user clicks Import button.",import_resource_dialog_title,Select resource to import,请选择要导入的资源,請選擇要匯入的檔案,インポートするファイルを選んでください,파일 가져오기
+,import_resource_dialog_supported_formats,Supported files,支持的格式,支援的格式,サポートするファイル,지원하는 파일
+,import_resource_dialog_all_files,All files,所有文件,所有檔案,全てのファイル,모든 파일
 "A warning shown when the newly imported
-files will overwrite existing files.",track_setup_resource_tab_overwrite_warning,"The following files will be overwritten. Continue?
+files will overwrite existing files.",import_resource_overwrite_warning,"The following files will be overwritten. Continue?
 
 {0}
 
@@ -130,16 +132,16 @@ If you choose to cancel, no file will be copied.","以下文件将被覆盖。�
 
 취소를 선택하면 파일을 가져오지 않습니다."
 "Shown in the above message if the number of
-files exceeds 10.",track_setup_resource_tab_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,…… 以及 {0} 個檔案。,...外 {0},... 외 {0}개
-,track_setup_resource_tab_overwrite_confirm,Overwrite,覆盖,覆蓋,上書き,덮어쓰기
-,track_setup_resource_tab_overwrite_cancel,Cancel,取消,取消,キャンセル,취소
-,track_setup_resource_tab_import_error_format,"An error occurred when copying {0} to {1}:
+files exceeds 10.",import_resource_overwrite_omitted_files,... and {0} more.,……以及{0}个未列出的文件。,…… 以及 {0} 個檔案。,...外 {0},... 외 {0}개
+,import_resource_overwrite_confirm,Overwrite,覆盖,覆蓋,上書き,덮어쓰기
+,import_resource_overwrite_cancel,Cancel,取消,取消,キャンセル,취소
+,import_resource_copy_file_error_format,"An error occurred when copying {0} to {1}:
 
 {2}","将{0}复制到{1}时发生错误：
 
 {2}","將 {0} 複製到 {1} 時發生錯誤：
 
-{2}","{0}を{1}へコピー中にエラーが発生しました：
+{2}","{0}を{1}にコピー中にエラーが発生しました：
 
 {2}","{0}을/를 {1}(으)로 복사하는 중 오류가 발생했습니다.
 
@@ -177,8 +179,8 @@ Set both start and end to 0 to play the entire file.","当玩家选择谱面时�
 
 미리듣기 음악 전체를 재생하려면 두 값을 모두
 0으로 설정하십시오."
-Added in 2.0,track_setup_metadata_tab_preview_bga_label,Preview BGA,预览BGA,預覽 BGA,プレビューBGA,미리보기 영상
-Added in 2.0,track_setup_metadata_tab_preview_bga_help,"Not used by the default theme, but
+,track_setup_metadata_tab_preview_bga_label,Preview BGA,预览BGA,預覽 BGA,プレビューBGA,미리보기 영상
+,track_setup_metadata_tab_preview_bga_help,"Not used by the default theme, but
 some themes may play this video while
 playing the preview track.","默认主题不使用这个视频，
 但某些主题可能会在播放预览曲的同时
@@ -204,9 +206,9 @@ The default name of newly created patterns.,track_setup_patterns_tab_new_pattern
 ,track_setup_patterns_tab_pattern_name_label,Pattern name,名称,名稱,パターン名,패턴 이름
 ,track_setup_patterns_tab_author_label,Author,作者,作者,投稿者,작성자
 ,track_setup_patterns_tab_control_scheme_label,Control scheme,操作方式,操作方式,プレイタイプ,플레이 방식
-,track_setup_patterns_tab_control_scheme_touch,Touch,触屏,觸控,タッチ,터치
-,track_setup_patterns_tab_control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
-,track_setup_patterns_tab_control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
+,control_scheme_touch,Touch,触屏,觸控,タッチ,터치
+,control_scheme_keys,Keys,键盘,鍵盤,キーボード,키보드
+,control_scheme_km,KM,键鼠,鍵鼠,キーボード・マウス,키보드/마우스
 ,track_setup_patterns_tab_level_label,Level,难度,難度,レベル,난이도
 ,track_setup_patterns_tab_playable_lanes_label,Playable lanes,可操作轨道数,可遊玩軌道數,プレイ可能なレーン数,플레이 트랙 수
 ,track_setup_patterns_tab_background_header,Background,背景,背景,背景,배경
@@ -523,7 +525,8 @@ When using B-spline, control points are hidden.","拖拽音符是由锚点和控
 點擊錨點接收線以增加錨點。
 用滑鼠左鍵拖曳移動錨點和控制點。
 用滑鼠右鍵點擊可以刪除錨點和控制點。
-按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線またはB-スプライン曲線に沿って進行します。
+按住 Ctrl 並用滑鼠左鍵拖曳錨點可以重置其控制點。
+使用 B-樣條時，將不會顯示控制點。","ドラッグノートはアンカーとコントロールポイントによって決められるベジェ曲線またはB-スプライン曲線に沿って進行します。
 ドラッグノートを選択するとアンカー、コントロールポイント、アンカーレシーバー（ノート中央の茶色の線）が表示されます。
 アンカーレシーバーをクリックしてアンカーを追加することができます。
 アンカーとコントロールポイントをドラックして移します。
@@ -590,5 +593,105 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * Suggested level is only a suggestion. Use your own judgement when deciding a pattern's level.","* 有关各数值的定义与计算方式请查阅文档。
 * 建议难度仅供参考，请以个人判断来确定谱面的最终难度。","* 有關個數值的定義與計算方式請查看說明文件。
 * 建議難度僅供參考，請以個人判斷來決定譜面的最終難度。","* それぞれの項目の定義と計算方式は公式マニュアルをご参照ください。
-* このレベルはおすすめのレベルです。参考用としてご利用ください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
+* このレベルはおすすめのレベルです。実際のレベルは自分で判断してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
+,,,,,,
+All strings on setlists are added in 2.2,edit_setlist_panel_title,Editing Setlist,编辑组曲,編輯組曲,セットリスト編集,디스크셋 편집
+,edit_setlist_panel_resources_and_metadata_header,Resources and metadata,资源与元数据,資源與組曲資訊,リソース及びメタデータ,리소스 & 메타데이터
+,edit_setlist_panel_import_button,Import,导入,匯入,インポート,가져오기
+,edit_setlist_panel_import_button_help,"Import image files so they can be used
+as background and eyecatch images.","导入图像文件后，
+可以将它们用作背景和封面图片。","匯入圖片檔案後，
+可以將它們當作背景和封面圖片使用。",背景及びアイキャッチに使用されるイメージをインポートします。,커버 이미지로 사용할 그림 파일을 등록합니다.
+,edit_setlist_panel_title_label,Title,标题,標題,タイトル,제목
+,edit_setlist_panel_description_label,Description,描述,說明,詳細,설명
+,edit_setlist_panel_control_scheme_label,Control scheme,操作方式,操作方式,プレイタイプ,플레이 방식
+,edit_setlist_panel_background_image_label,Background image,背景图片,背景圖片,背景イメージ,배경 이미지
+,edit_setlist_panel_eyecatch_image_label,Eyecatch image,封面,封面,アイキャッチイメージ,커버 이미지
+,edit_setlist_panel_selectable_patterns_header,Selectable patterns,可选谱面,可選譜面,選択可能なパターン,선택 가능한 패턴
+,edit_setlist_panel_selectable_patterns_not_enough_label,At least 3 required,需要至少3个,至少需要 3 個,少なくとも3個を選択してください,최소 3개가 필요합니다
+,edit_setlist_panel_add_pattern_button,Add,添加,加入,追加,추가
+,edit_setlist_panel_hidden_patterns_header,Hidden patterns,隐藏谱面,隱藏譜面,隠しパターン,히든 패턴
+,edit_setlist_panel_hidden_patterns_not_enough_label,At least 1 required,需要至少1个,至少需要 1 個,少なくとも1個を選択してください,최소 1개가 필요합니다
+,edit_setlist_panel_hidden_pattern_criteria_label,Criteria,条件,條件,条件,출현 조건
+,edit_setlist_panel_hidden_pattern_criteria_none_label,(none),（无）,（無）,(なし),(없음)
+,edit_setlist_panel_hidden_pattern_criteria_type_index,Index,序号,序號,番号,곡 번호
+,edit_setlist_panel_hidden_pattern_criteria_type_level,Level,难度,難度,レベル,레벨
+,edit_setlist_panel_hidden_pattern_criteria_type_hp,HP%,HP%,HP%,HP%,게이지
+,edit_setlist_panel_hidden_pattern_criteria_type_score,Score,分数,分數,スコア,스코어
+,edit_setlist_panel_hidden_pattern_criteria_type_combo,Combo,当前连击,COMBO,コンボ,콤보
+,edit_setlist_panel_hidden_pattern_criteria_type_max_combo,Max combo,最大连击,MAX COMBO,最大コンボ,최대 콤보
+,edit_setlist_panel_hidden_pattern_criteria_type_d100,D100,D100,D100,D100,무작위 정수
+,edit_setlist_panel_help_header,Help,帮助,幫助,ヘルプ,도움말
+,edit_setlist_panel_help_content,"A setlist consists of at least 3 selectable patterns and at least 1 hidden pattern, all of the same control scheme.
+
+After the player chooses and finishes 3 selectable patterns, TECHMANIA will go through every hidden pattern from top to bottom, and pick the first one whose criteria is met, to be the player's 4th pattern.
+
+The last hidden pattern has no criteria and will be picked if all hidden patterns above it are not.
+
+Types of hidden pattern criteria:
+
+-<indent=3%><b>Index</b>: the combined index of the 3 selected patterns. For example, if the player selects the 2nd, 4th and 5th pattern from the list, the total index is 2+4+5=11.</indent>
+-<indent=3%><b>Level</b>: the combined difficulty level of the 3 selected patterns.</indent>
+-<indent=3%><b>HP%</b>: the player's remaining HP at the end of the 3rd pattern, in percentage between 0 and 100 (inclusive).</indent>
+-<indent=3%><b>Score, Combo, Max Combo</b>: the player's score / current combo / max combo at the end of the 3rd pattern.</indent>
+-<indent=3%><b>D100</b>: a random whole number selected between 1 and 100 (inclusive).</indent>","一套组曲需要包含至少3个可选谱面和至少1个隐藏谱面，并且它们使用同一种操作方式。
+
+玩家选择并完成3个可选谱面后，TECHMANIA将自上而下判断每个隐藏谱面的条件，并将第一个满足条件的谱面作为第4曲。
+
+最后一个隐藏谱面没有条件，它将在其他隐藏谱面的条件全部不满足时使用。
+
+隐藏谱面的条件有以下种类：
+
+-<indent=3%><b>序号</b>：玩家所选3首可选谱面的序号之和。例如，如果玩家选择了可选谱面中的第2、第4和第5个，那么序号之和是2+4+5=11。</indent>
+-<indent=3%><b>难度</b>：玩家所选3首可选谱面的难度之和。</indent>
+-<indent=3%><b>HP%</b>：玩家完成第3曲时剩余HP的百分比，在0到100之间，包括边界。</indent>
+-<indent=3%><b>分数、当前连击、最大连击</b>：玩家完成第3曲时的分数、当前连击数或最大连击数。</indent>
+-<indent=3%><b>D100</b>：在1到100之间随机选择的整数，包括边界。</indent>","一套組曲需要包含至少 3 個可選譜面和至少 1 個隱藏譜面，並且它們使用同一種操作方式。
+
+玩家選擇並完成 3 個譜面後，TECHMANIA 將由上而下判斷每個隱藏譜面的條件，並將第一個滿足條件的譜面當作第 4 首。
+
+最後一個隱藏譜面沒有條件，它將在其他隱藏譜面的條件全部不滿足時使用。
+
+隱藏譜面的條件有以下幾種：
+
+-<indent=3%><b>序號</b>：玩家選擇的 3 首可選譜面的序號總和。例如，如果玩家選擇了可選譜面中的第 2、第 4 和第 5 個，那麼序號之和是 2 + 4 + 5 = 11。</indent>
+-<indent=3%><b>難度</b>：玩家選擇的 3 首可選譜面的難度總和。</indent>
+-<indent=3%><b>HP%</b>：玩家完成第 3 首時的剩餘 HP 的百分比，在 0 到 100 之間，包含 0 和 100。</indent>
+-<indent=3%><b>分數、COMBO、MAX COMBO</b>：玩家完成第 3 首時的分數、COMBO 或 MAX COMBO。</indent>
+-<indent=3%><b>D100</b>：在 1 到 100 之間隨機選擇的整數，包含 0 和 100。</indent>","セットリストは少なくとも3個の選択可能なパターンと1個以上の隠しパターンで構成され、すべてのプレイタイプは同じです。
+
+プレイヤーが3個のパターンを選択してクリアした後、TECHMANIAはすべての隠しパターンを順番に探索し、条件に合う一番最初のパターンがステージ4のパターンになります。
+
+最後の隠しパターンは条件がなく、以前のすべての隠しパターンの条件が合わない場合に選択されます。
+
+隠しパターンの条件の種類:
+
+-<indent=3%><b>番号</b>: 選択された3個のパターンの番号の合計。例えば、プレイヤーが2番目、4番目、5番目のパターンを選択すると番号の合計は2+4+5=11になります。</indent>
+-<indent=3%><b>レベル</b>: 選択された3個のパターンのレベルの合計。</indent>
+-<indent=3%><b>HP%</b>: 3番目のパターンまでプレイした後のプレイヤーのHP%（0~100）。</indent>
+-<indent=3%><b>スコア、コンボ、最大コンボ</b>: 3番目のパターンまでプレイした後のプレイヤーのスコア・コンボ・最大コンボ。</indent>
+-<indent=3%><b>D100</b>: 1から100までの乱数。</indent>","디스크셋은 최소 3개의 선택 가능한 패턴과 최소 1개의 히든 패턴으로 이루어져 있으며, 모두 같은 플레이 방식을 사용합니다.
+
+먼저 플레이어가 3개의 패턴을 선택하여 순서대로 플레이한 뒤, 히든 패턴 목록에서 사용자가 설정한 조건을 만족하는 첫 패턴을 네 번째 스테이지에서 플레이합니다.
+
+히든 패턴 목록의 마지막 패턴에는 조건이 없으며, 다른 패턴의 조건을 모두 만족하지 못하는 경우 이 패턴을 플레이합니다.
+
+조건 목록:
+
+-<indent=3%><b>곡 번호</b>: 패턴 목록에서 선택한 세 패턴이 위치한 순서의 합입니다. 플레이어가 패턴 목록에서 두 번째, 네 번째, 다섯 번째 패턴을 선택했다면 조건에 쓰이는 값은 2+4+5=11입니다.</indent>
+-<indent=3%><b>레벨</b>: 선택한 세 패턴의 레벨의 합입니다.</indent>
+-<indent=3%><b>게이지</b>: 세 번째 스테이지까지 플레이한 뒤 남아 있는 게이지의 백분율입니다.</indent>
+-<indent=3%><b>스코어·콤보·최대 콤보</b>: 세 번째 스테이지까지 플레이하여 달성한 스코어·콤보·최대 콤보 수치입니다.</indent>
+-<indent=3%><b>무작위 정수</b>: 1부터 100까지의 정수 중 하나를 무작위로 골라 조건으로 사용합니다.</indent>"
+,edit_setlist_panel_delete_setlist_button,Delete setlist,删除组曲,刪除組曲,セットリスト削除,디스크셋 삭제
+,edit_setlist_panel_delete_setlist_confirmation,This will permanently delete {0} and every file in it. Continue?,这将永久删除{0}及内部的所有文件。是否继续？,這將刪除 {0} 和裡面所有檔案。是否繼續？,{0}のすべてのファイルを削除します。続けますか？,{0}의 모든 파일을 영구 삭제합니다. 계속하시겠습니까?
+,edit_setlist_panel_delete_setlist_confirm,Delete,删除,刪除,削除,삭제
+,edit_setlist_panel_delete_setlist_cancel,Cancel,取消,取消,キャンセル,취소
+,edit_setlist_panel_sidesheet_select_track_label,Select track,选择曲目,選擇歌曲,トラック選択,음악 선택
+,edit_setlist_panel_sidesheet_search_in_title_label,Search in title,搜索标题,搜尋標題,タイトルで探す,제목으로 찾기
+,edit_setlist_panel_sidesheet_select_pattern_label,Select pattern,选择谱面,選擇譜面,パターン選択,패턴 선택
+,edit_setlist_panel_reference_not_found,(pattern not found),（未找到此谱面）,（找不到這個譜面）,（パターンが見つかりません）,(패턴을 찾을 수 없습니다)
+,edit_setlist_panel_discard_changes_confirmation,Unsaved changes to the setlist will be discarded. Continue?,未保存的更改将会丢失。是否继续？,未儲存的變更將遺失，是否繼續？,保存されていない変更は失われます。続けますか？,저장하지 않은 변경사항은 손실됩니다. 계속하시겠습니까?
+,edit_setlist_panel_discard_changes_confirm,Discard,继续,繼續,保存しない,나가기
+,edit_setlist_panel_discard_changes_cancel,Cancel,取消,取消,キャンセル,취소

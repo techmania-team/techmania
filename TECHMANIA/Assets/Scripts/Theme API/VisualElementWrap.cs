@@ -302,12 +302,7 @@ namespace ThemeApi
 
             // Command events: omitted
 
-            // Drag events
-            DragExited,
-            DragUpdated,
-            DragPerform,
-            DragEnter,
-            DragLeave,
+            // Drag events: omitted for being editor-only
 
             // Focus events
             FocusOut,
@@ -365,6 +360,7 @@ namespace ThemeApi
                 EventType.KeyUp => typeof(KeyUpEvent),
                 EventType.PointerDown => typeof(PointerDownEvent),
                 EventType.PointerUp => typeof(PointerUpEvent),
+                EventType.PointerMove => typeof(PointerMoveEvent),
                 EventType.PointerEnter => typeof(PointerEnterEvent),
                 EventType.PointerLeave => typeof(PointerLeaveEvent),
                 EventType.PointerOver => typeof(PointerOverEvent),
@@ -587,12 +583,14 @@ namespace ThemeApi
             inner.RemoveFromHierarchy();
         }
 
-        public void RemoveAllChildren()
+        // Reused by GameLayout
+        [MoonSharpHidden]
+        public static void RemoveAllChildren(VisualElement element)
         {
             // Make a copy of the child list so we don't modify
             // the child list while enumerating it.
             List<VisualElement> children = new List<VisualElement>();
-            foreach (VisualElement child in inner.Children())
+            foreach (VisualElement child in element.Children())
             {
                 children.Add(child);
             }
@@ -600,6 +598,11 @@ namespace ThemeApi
             {
                 new VisualElementWrap(child).RemoveFromHierarchy();
             }
+        }
+
+        public void RemoveAllChildren()
+        {
+            RemoveAllChildren(inner);
         }
 
         public void AddChild(VisualElementWrap child)
@@ -709,6 +712,12 @@ namespace ThemeApi
         {
             return VisualElementTransform
                 .ElementContainsPointInScreenSpace(inner, screenSpace);
+        }
+
+        public bool ContainsPointInScreenSpace(Vector3 screenSpace)
+        {
+            return ContainsPointInScreenSpace(
+                new Vector2(screenSpace.x, screenSpace.y));
         }
         #endregion
     }

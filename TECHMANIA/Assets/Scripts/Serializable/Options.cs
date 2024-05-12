@@ -93,6 +93,7 @@ public class Options : OptionsBase
     // these paths.
     public bool customDataLocation;
     public string tracksFolderLocation;
+    public string setlistsFolderLocation;
     public string skinsFolderLocation;
     public string themesFolderLocation;
     // Call TurnOn/OffDiscordRichPresence instead of setting this

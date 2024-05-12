@@ -8,10 +8,65 @@ namespace ThemeApi
     [MoonSharpUserData]
     public class GameSetup
     {
+        [MoonSharpUserData]
+        public class SetlistFields
+        {
+            // Set to true to load setlist, otherwise will load track.
+            public bool enabled;
+            // The folder that contains the setlist.tech file.
+            public string setlistFolder;
+            // The indices of selected selectable patterns.
+            // 0-index, must contain 3 elements.
+            public List<int> patternIndices;
+
+            // 0-index, will be set by TECHMANIA once the state machine
+            // enters PartialComplete state after stage 3.
+            public int hiddenPatternIndex
+            {
+                get;
+                [MoonSharpHidden]
+                set;
+            }
+
+            // Parameter: SetlistScoreKeeper.
+            // Called when the player completes one of the first 3
+            // stages.
+            // The game will be in PartialComplete state when
+            // this is called.
+            public DynValue onPartialComplete;
+            // Parameter: SetlistScoreKeeper.
+            // Called when the player completed a stage but the HP
+            // is below threshold.
+            // The game will be in Complete state when this is called.
+            public DynValue onHpBelowThreshold;
+            // Parameter: SetlistScoreKeeper.
+            // Called when the player completes stage 4.
+            // The game will be in Complete state when this is called.
+            public DynValue onSetlistAllClear;
+            // Parameter: SetlistScoreKeeper.
+            // Called when the player's HP hits 0.
+            // The game will be in Complete state when this is called.
+            public DynValue onSetlistFailed;
+
+            // Internal stuff
+
+            [MoonSharpHidden]
+            public string lockedSetlistFolder;
+            [MoonSharpHidden]
+            public Setlist loadedSetlist;
+            [MoonSharpHidden]
+            public Texture2D loadedBackImage;
+            [MoonSharpHidden]
+            public int selectedPatternTotalIndex;  // 1-index
+            [MoonSharpHidden]
+            public int selectedPatternTotalLevel;
+        }
+
         [MoonSharpHidden]
         public GameSetup()
         {
             GameController.instance.SetSetupInstance(this);
+            setlist = new SetlistFields();
         }
 
         // Track and pattern (unused in editor preview)
@@ -19,6 +74,10 @@ namespace ThemeApi
         // The folder that contains the track.tech file.
         public string trackFolder;
         public string patternGuid;
+
+        // Setlist
+
+        public SetlistFields setlist;
 
         // VisualElements
 

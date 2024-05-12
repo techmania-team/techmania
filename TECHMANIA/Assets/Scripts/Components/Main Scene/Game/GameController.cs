@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -69,6 +70,8 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
     private InputFeedbackManager inputFeedback;
+    // Accessible from Lua via GameState.setlist.scoreKeeper
+    public SetlistScoreKeeper setlistScoreKeeper { get; private set; }
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
@@ -134,6 +137,57 @@ public class GameController : MonoBehaviour
             catch (Exception) { /* silently ignore errors */ }
         }
 
+        // If playing a setlist, resolve pattern reference.
+        string trackFolder = "";
+        string patternGuid = "";
+        if (setup.setlist.enabled)
+        {
+            Setlist.PatternReference r = null;
+            switch (state.setlist.currentStage)
+            {
+                case 0:
+                case 1:
+                case 2:
+                    int patternIndex = setup.setlist.patternIndices[
+                        state.setlist.currentStage];
+                    r = setup.setlist.loadedSetlist.selectablePatterns[
+                        patternIndex];
+                    break;
+                case 3:
+                    // Hidden pattern should have been chosen at
+                    // the completion of stage 3.
+                    r = setup.setlist.loadedSetlist.hiddenPatterns[
+                        setup.setlist.hiddenPatternIndex].reference;
+                    break;
+            }
+            GlobalResource.TrackInFolder trackInFolder;
+            Pattern minimizedPattern;
+            Status status = GlobalResource.SearchForPatternReference(r,
+                out trackInFolder, out minimizedPattern);
+            if (!status.Ok())
+            {
+                reportLoadError(status);
+                yield break;
+            }
+
+            trackFolder = trackInFolder.folder;
+            patternGuid = minimizedPattern.patternMetadata.guid;
+
+            if (state.setlist.currentStage < 3)
+            {
+                setup.setlist.selectedPatternTotalIndex += 
+                    setup.setlist.patternIndices[
+                        state.setlist.currentStage] + 1;
+                setup.setlist.selectedPatternTotalLevel +=
+                    minimizedPattern.patternMetadata.level;
+            }
+        }
+        else
+        {
+            trackFolder = setup.lockedTrackFolder;
+            patternGuid = setup.patternGuid;
+        }
+
         // Load track, track options and pattern. These are all
         // synchronous.
         if (EditorContext.inPreview)
@@ -144,7 +198,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            string trackPath = Paths.Combine(setup.lockedTrackFolder,
+            string trackPath = Paths.Combine(trackFolder,
                 Paths.kTrackFilename);
             Track track;
             try
@@ -163,7 +217,7 @@ public class GameController : MonoBehaviour
             setup.patternBeforeModifier = null;
             foreach (Pattern p in track.patterns)
             {
-                if (p.patternMetadata.guid == setup.patternGuid)
+                if (p.patternMetadata.guid == patternGuid)
                 {
                     setup.patternBeforeModifier = p;
                     break;
@@ -197,7 +251,7 @@ public class GameController : MonoBehaviour
             if (n.sound != null && n.sound != "")
             {
                 keysoundFullPaths.Add(Paths.Combine(
-                    setup.lockedTrackFolder, n.sound));
+                    trackFolder, n.sound));
             }
         }
         totalFiles += keysoundFullPaths.Count;
@@ -209,29 +263,52 @@ public class GameController : MonoBehaviour
             setup.patternAfterModifier,
             setup.bgContainer.inner,
             trackOptions: setup.trackOptions);
-        string backImage = setup.patternAfterModifier.patternMetadata
-            .backImage;
+        string backImage = "";
+        string backImageFullPath = "";
+        if (setup.setlist.enabled)
+        {
+            backImage = setup.setlist.loadedSetlist.setlistMetadata
+                .backImage;
+            backImageFullPath = Paths.Combine(
+                setup.setlist.lockedSetlistFolder, backImage);
+        }
+        else
+        {
+            backImage = setup.patternAfterModifier.patternMetadata
+                .backImage;
+            backImageFullPath = Paths.Combine(
+                setup.lockedTrackFolder, backImage);
+        }
         if (!string.IsNullOrEmpty(backImage))
         {
-            string path = Paths.Combine(
-                setup.lockedTrackFolder, backImage);
-            bool loaded = false;
             Status status = null;
             Texture2D texture = null;
-            ResourceLoader.LoadImage(path,
-                (Status loadStatus, Texture2D loadedTexture) =>
-                {
-                    loaded = true;
-                    status = loadStatus;
-                    texture = loadedTexture;
-                });
-            yield return new WaitUntil(() => loaded);
-            if (!status.Ok())
+            if (setup.setlist.enabled)
+            {
+                texture = setup.setlist.loadedBackImage;
+            }
+            if (texture == null)
+            {
+                bool loaded = false;
+                ResourceLoader.LoadImage(backImageFullPath,
+                    (Status loadStatus, Texture2D loadedTexture) =>
+                    {
+                        loaded = true;
+                        status = loadStatus;
+                        texture = loadedTexture;
+                    });
+                yield return new WaitUntil(() => loaded);
+            }
+            if (status != null && !status.Ok())
             {
                 reportLoadError(status);
                 yield break;
             }
             bg.DisplayImage(texture);
+            if (setup.setlist.enabled)
+            {
+                setup.setlist.loadedBackImage = texture;
+            }
         }
         reportLoadProgress(backImage);
 
@@ -261,7 +338,7 @@ public class GameController : MonoBehaviour
             .patternMetadata.backingTrack;
         if (!string.IsNullOrEmpty(backingTrackFilename))
         {
-            string path = Paths.Combine(setup.lockedTrackFolder,
+            string path = Paths.Combine(trackFolder,
                 backingTrackFilename);
             bool loaded = false;
             Status status = null;
@@ -286,7 +363,7 @@ public class GameController : MonoBehaviour
         // Step 4: load keysounds.
         bool keysoundsLoaded = false;
         Status keysoundStatus = null;
-        ResourceLoader.CacheAllKeysounds(setup.lockedTrackFolder,
+        ResourceLoader.CacheAllKeysounds(trackFolder,
             keysoundFullPaths,
             cacheAudioCompleteCallback: (Status status) =>
             {
@@ -309,7 +386,7 @@ public class GameController : MonoBehaviour
         if (!string.IsNullOrEmpty(bga) &&
             !setup.trackOptions.noVideo)
         {
-            string path = Paths.Combine(setup.lockedTrackFolder,
+            string path = Paths.Combine(trackFolder,
                 bga);
             bool loaded = false;
             Status status = null;
@@ -403,10 +480,15 @@ public class GameController : MonoBehaviour
         comboText.Hide();
 
         // Initialize scores.
-        scoreKeeper = new ScoreKeeper(setup);
+        scoreKeeper = new ScoreKeeper(setup, state);
         scoreKeeper.Prepare(setup.patternAfterModifier,
             timer.firstScan, timer.lastScan,
             playableNotes: noteManager.playableNotes);
+        if (setup.setlist.enabled)
+        {
+            setlistScoreKeeper.AddChild(scoreKeeper, 
+                state.setlist.currentStage);
+        }
 
         // Load complete; wait on theme to begin game.
         state.SetLoadComplete();
@@ -432,12 +514,50 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            setup.lockedTrackFolder = string.Copy(setup.trackFolder);
+            if (!setup.setlist.enabled)
+            {
+                setup.lockedTrackFolder = string.Copy(setup.trackFolder);
+            }
             setup.modifiers = Modifiers.instance.Clone();
         }
         setup.ruleset = Options.instance.ruleset;
 
         StartCoroutine(LoadSequence());
+    }
+
+    public Status PrepareSetlist()
+    {
+        if (!setup.setlist.enabled)
+        {
+            throw new ArgumentException(
+                "GameSetup.setlist.enabled must be true when calling BeginSetlist.");
+        }
+
+        setup.setlist.lockedSetlistFolder = string.Copy(
+            setup.setlist.setlistFolder);
+        string setlistPath = Paths.Combine(setup.setlist.setlistFolder,
+            Paths.kSetlistFilename);
+        try
+        {
+            setup.setlist.loadedSetlist = Setlist.LoadFromFile(
+                setlistPath) as Setlist;
+        }
+        catch (Exception ex)
+        {
+            return Status.FromException(ex);
+        }
+
+        // Reset cache. This image will be loaded on the first
+        // load sequence and cached for subsequent ones.
+        setup.setlist.loadedBackImage = null;
+        // Reset hidden pattern index. Will be set after stage 3.
+        setup.setlist.hiddenPatternIndex = -1;
+        // Reset states.
+        setup.setlist.selectedPatternTotalIndex = 0;
+        setup.setlist.selectedPatternTotalLevel = 0;
+        // Prepare SetlistScoreKeeper.
+        setlistScoreKeeper = new SetlistScoreKeeper();
+        return Status.OKStatus();
     }
 
     public void Begin()
@@ -506,6 +626,13 @@ public class GameController : MonoBehaviour
             !scoreKeeper.stageFailed;
     }
 
+    public bool SetlistScoreIsValid()
+    {
+        return !setup.modifiers.HasAnySpecialModifier() &&
+            setup.ruleset != Options.Ruleset.Custom &&
+            !setlistScoreKeeper.stageFailed;
+    }
+
     public bool ScoreIsNewRecord()
     {
         if (!ScoreIsValid()) return false;
@@ -518,6 +645,18 @@ public class GameController : MonoBehaviour
         return newScore > currentScore;
     }
 
+    public bool SetlistScoreIsNewRecord()
+    {
+        if (!SetlistScoreIsValid()) return false;
+        SetlistRecord currentRecord = Records.instance.setlist.GetRecord(
+            setup.setlist.loadedSetlist, setup.ruleset);
+        if (currentRecord == null) return true;
+        int currentScore = currentRecord.score;
+        int newScore = setlistScoreKeeper.TotalScore();
+
+        return newScore > currentScore;
+    }
+
     public void UpdateRecord()
     {
         if (!ScoreIsValid()) return;
@@ -526,6 +665,18 @@ public class GameController : MonoBehaviour
             setup.ruleset,
             scoreKeeper.TotalScore(),
             scoreKeeper.Medal());
+    }
+
+    public void UpdateSetlistRecord()
+    {
+        if (!SetlistScoreIsValid()) return;
+        Records.instance.setlist.UpdateRecord(
+            setup.setlist.loadedSetlist,
+            setup.setlist.patternIndices,
+            setup.setlist.hiddenPatternIndex,
+            setup.ruleset,
+            setlistScoreKeeper.TotalScore(),
+            setlistScoreKeeper.Medal());
     }
     #endregion
 
@@ -633,7 +784,15 @@ public class GameController : MonoBehaviour
         {
             scoreKeeper.stageFailed = true;
             state.SetComplete();
-            setup.onStageFailed?.Function?.Call(scoreKeeper);
+            if (setup.setlist.enabled)
+            {
+                setup.setlist.onSetlistFailed?.Function?.Call(
+                    setlistScoreKeeper);
+            }
+            else
+            {
+                setup.onStageFailed?.Function?.Call(scoreKeeper);
+            }
         }
     }
 
@@ -645,8 +804,53 @@ public class GameController : MonoBehaviour
         if (!scoreKeeper.AllNotesResolved()) return;
 
         scoreKeeper.DeactivateFever();
-        state.SetComplete();
-        setup.onStageClear?.Function?.Call(scoreKeeper);
+        if (setup.setlist.enabled)
+        {
+            // Check whether HP is above threshold
+            int currentStage = state.setlist.currentStage;  // 0, 1, 2, 3
+            int hpPortionThreshold = 3 - currentStage;  // 3, 2, 1, 0
+
+            // The condition is: hp >= (hpPortionThreshold / 4) * maxHp,
+            // or hp * 4 >= maxHp * hpPortionThreshold.
+            if (setlistScoreKeeper.hp * 4 <
+                setlistScoreKeeper.maxHp * hpPortionThreshold &&
+                setup.modifiers.mode != Modifiers.Mode.NoFail)
+            {
+                scoreKeeper.stageFailed = true;
+                state.SetComplete();
+                setup.setlist.onHpBelowThreshold?.Function?.Call(
+                    setlistScoreKeeper);
+            }
+            else
+            {
+                if (currentStage == 3)
+                {
+                    state.SetComplete();
+                    setup.setlist.onSetlistAllClear?.Function?.Call(
+                        setlistScoreKeeper);
+                }
+                else
+                {
+                    if (currentStage == 2)
+                    {
+                        setup.setlist.hiddenPatternIndex =
+                            setup.setlist.loadedSetlist
+                            .ChooseHiddenPattern(
+                                setup.setlist.selectedPatternTotalIndex,
+                                setup.setlist.selectedPatternTotalLevel,
+                                setlistScoreKeeper);
+                    }
+                    state.SetPartialComplete();
+                    setup.setlist.onPartialComplete?.Function?.Call(
+                        setlistScoreKeeper);
+                }
+            }
+        }
+        else
+        {
+            state.SetComplete();
+            setup.onStageClear?.Function?.Call(scoreKeeper);
+        }
     }
     #endregion
 

@@ -31,6 +31,20 @@ public class EyecatchSelfLoader : MonoBehaviour
         }
     }
 
+    public void LoadImage(string folder, SetlistMetadata t)
+    {
+        if (t.eyecatchImage != null &&
+            t.eyecatchImage != "")
+        {
+            string fullPath = Path.Combine(folder, t.eyecatchImage);
+            ResourceLoader.LoadImage(fullPath, OnLoadImageComplete);
+        }
+        else
+        {
+            NoImage();
+        }
+    }
+
     public void LoadImage(string fullPath)
     {
         if (fullPath != null && fullPath != "")

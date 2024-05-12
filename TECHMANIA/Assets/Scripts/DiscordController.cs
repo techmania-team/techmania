@@ -3,7 +3,8 @@ using System;
 public enum DiscordActivityType
 {
     EditorTrack,
-    EditorPattern
+    EditorPattern,
+    EditorSetlist
 }
 
 public class DiscordController
@@ -68,6 +69,13 @@ public class DiscordController
                     details:
                     EditorContext.track.trackMetadata.title,
                     state: state,
+                    showElapsedTime: true);
+                break;
+            case DiscordActivityType.EditorSetlist:
+                SetActivity(
+                    details: EditorContext.setlist.setlistMetadata.title,
+                    state: L10n.GetString(
+                        "discord_state_editing_setlist"),
                     showElapsedTime: true);
                 break;
         }

@@ -86,6 +86,7 @@ public class GameLayout
             Overflow.Hidden);
         // Layout becomes visible on Begin().
         layoutContainer.style.visibility = Visibility.Hidden;
+        ThemeApi.VisualElementWrap.RemoveAllChildren(gameContainer);
         gameContainer.Add(layoutContainer);
 
         inputFeedbackContainer = layoutContainer.Q(

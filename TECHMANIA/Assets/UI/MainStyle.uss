@@ -20,7 +20,7 @@
     top: -128px;
     right: -128px;
     bottom: -128px;
-    background-image: url('project://database/Assets/UI/Images/Shadow.png?fileID=2800000&guid=384e19277f16d9646b840c9e2ccb15ac&type=3#Shadow');
+    background-image: url("project://database/Assets/UI/Images/Shadow.png?fileID=2800000&guid=384e19277f16d9646b840c9e2ccb15ac&type=3#Shadow");
     -unity-slice-left: 128;
     -unity-slice-top: 128;
     -unity-slice-right: 128;
@@ -35,6 +35,55 @@
 
 .blue-200 {
     background-color: rgb(144, 202, 249);
+}
+
+#main-menu #buttons Button {
+    width: 200px;
+    height: 150px;
+    margin-bottom: 20px;
+    flex-direction: column;
+}
+
+#main-menu #buttons .button-contained #icon {
+    width: 72px;
+    height: 72px;
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+    margin-bottom: 5px;
+}
+
+#main-menu #buttons .button-contained #label {
+    -unity-font: url("project://database/Assets/UI/Fonts/Lato-Regular%20in%20theme.ttf?fileID=12800000&guid=2a17b3b7fbb8b4c47ad336aae41a84df&type=3#Lato-Regular in theme");
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#main-menu #buttons .button-outlined #icon {
+    width: 72px;
+    height: 72px;
+    -unity-background-image-tint-color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+#main-menu #buttons .button-outlined #label {
+    -unity-font: url("project://database/Assets/UI/Fonts/Lato-Regular%20in%20theme.ttf?fileID=12800000&guid=2a17b3b7fbb8b4c47ad336aae41a84df&type=3#Lato-Regular in theme");
+    font-size: 20px;
+    color: var(--primary-color);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .panel {
@@ -164,7 +213,7 @@
     top: 0;
     right: 100%;
     bottom: 0;
-    background-image: url('project://database/Assets/UI/Images/ShadowSide.png?fileID=2800000&guid=6099628bb55e579449505a7779474164&type=3#ShadowSide');
+    background-image: url("project://database/Assets/UI/Images/ShadowSide.png?fileID=2800000&guid=6099628bb55e579449505a7779474164&type=3#ShadowSide");
     -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -231,6 +280,124 @@
 
 #modifier-sidesheet .item #Dropdown {
     width: 350px;
+}
+
+#setup-setlist-panel #selectable-patterns #unity-content-viewport {
+    overflow: visible;
+}
+
+#setup-setlist-panel #selectable-patterns #unity-content-container {
+    align-items: center;
+    justify-content: center;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern {
+    width: 300px;
+    height: 340px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #eyecatch-container {
+    width: 200px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .fill-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .centered-text {
+    -unity-text-align: middle-center;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .at-rest {
+    border-top-color: var(--medium-emphasis-text-color);
+    border-right-color: var(--medium-emphasis-text-color);
+    border-bottom-color: var(--medium-emphasis-text-color);
+    border-left-color: var(--medium-emphasis-text-color);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern .accepting-drop {
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-top-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #title-container {
+    height: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #title {
+    -unity-text-align: upper-center;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #Pattern-Banner {
+    max-width: 280px;
+    overflow: hidden;
+}
+
+#setup-setlist-panel #selected-patterns .selected-pattern #pattern-banner #medal-container {
+    display: none;
+}
+
+#setup-setlist-panel #record .mini-eyecatch {
+    width: 100px;
+    height: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#setup-setlist-panel #record .mini-eyecatch #default-eyecatch {
+    background-image: url("project://database/Assets/UI/Images/Rectangle.png?fileID=2800000&guid=3ba6aa31247e7a943ac38aadeadb5920&type=3#Rectangle");
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
+#game-panel #setlist-progress #eyecatch-container {
+    width: 200px;
+    height: 200px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#game-panel #setlist-progress #eyecatch-container .fill-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#game-panel #setlist-progress #eyecatch-container .centered-text {
+    -unity-text-align: middle-center;
+}
+
+#game-panel #setlist-progress #eyecatch-container #current-eyecatch-border {
+    border-top-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
 }
 
 #game-panel #fever-bar-wrap .text-headline-6 {
@@ -306,8 +473,14 @@
 
 #game-panel #markers .half-beat-marker {
     width: 2px;
-    background-image: url('project://database/Assets/UI/Images/DottedLine.png?fileID=2800000&guid=ef4bfbe9cfa688d4f83f5290d23698cc&type=3#DottedLine');
+    background-image: url("project://database/Assets/UI/Images/DottedLine.png?fileID=2800000&guid=ef4bfbe9cfa688d4f83f5290d23698cc&type=3#DottedLine");
     -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
+#game-panel #regular-top-bar #hp-threshold-indicator .hp-threshold-indicator {
+    width: 2px;
+    background-color: var(--disabled-text-color);
+    height: 70px;
 }
 
 #game-panel #practice-top-bar .section {
@@ -388,4 +561,64 @@
 
 .primary-color {
     background-color: var(--primary-color);
+}
+
+.disabled-text-color {
+    -unity-background-image-tint-color: var(--disabled-text-color);
+}
+
+#setlist-result-panel #pattern {
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    width: 300px;
+}
+
+#setlist-result-panel #pattern #eyecatch-container {
+    width: 200px;
+    height: 200px;
+    margin-top: 10px;
+}
+
+#setlist-result-panel #pattern #eyecatch-container #eyecatch {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#setlist-result-panel #pattern #eyecatch-container #default-eyecatch {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+}
+
+#setlist-result-panel #pattern #title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
+}
+
+#setlist-result-panel #pattern #Pattern-Banner {
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+#setlist-result-panel #patterns #pattern-banner #medal-container {
+    display: none;
+}
+
+#setlist-result-panel #pattern #score {
+    margin-top: 20px;
+}
+
+#setlist-result-panel .card-title {
+    -unity-text-align: upper-center;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }

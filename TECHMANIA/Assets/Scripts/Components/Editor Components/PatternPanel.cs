@@ -203,7 +203,7 @@ public class PatternPanel : MonoBehaviour
             EditOperation op = transaction.ops[opIndex];
             switch (op.type)
             {
-                case EditOperation.Type.Metadata:
+                case EditOperation.Type.TrackOrPatternMetadata:
                     workspace.OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:
@@ -255,7 +255,7 @@ public class PatternPanel : MonoBehaviour
         {
             switch (op.type)
             {
-                case EditOperation.Type.Metadata:
+                case EditOperation.Type.TrackOrPatternMetadata:
                     workspace.OnPatternTimingUpdated();
                     break;
                 case EditOperation.Type.TimeEvent:

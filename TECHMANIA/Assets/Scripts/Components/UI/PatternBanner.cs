@@ -25,18 +25,21 @@ public class PatternBanner : MonoBehaviour
 
     [Header("Name")]
     public ScrollingText nameText;
-
-    [Header("Performance medal")]
-    public Image medalIcon;
-    public Sprite allComboIcon;
-    public Sprite perfectPlayIcon;
-   
-    private ControlScheme intendedScheme;
     
-    public void Initialize(PatternMetadata p, Record r = null)
+    public void Initialize(PatternMetadata p)
     {
-        intendedScheme = p.controlScheme;
-        RefreshControlIcon();
+        switch (p.controlScheme)
+        {
+            case ControlScheme.Touch:
+                controlIcon.sprite = touchIcon;
+                break;
+            case ControlScheme.Keys:
+                controlIcon.sprite = keysIcon;
+                break;
+            case ControlScheme.KM:
+                controlIcon.sprite = kmIcon;
+                break;
+        }
 
         switch (p.playableLanes)
         {
@@ -57,72 +60,20 @@ public class PatternBanner : MonoBehaviour
         levelText.text = p.level.ToString();
 
         nameText.SetUp(p.patternName);
-
-        if (medalIcon != null)
-        {
-            PerformanceMedal medal = PerformanceMedal.NoMedal;
-            if (r != null)
-            {
-                medal = r.medal;
-            }
-            switch (medal)
-            {
-                case PerformanceMedal.AbsolutePerfect:
-                case PerformanceMedal.PerfectPlay:
-                    medalIcon.sprite = perfectPlayIcon;
-                    medalIcon.enabled = true;
-                    break;
-                case PerformanceMedal.AllCombo:
-                    medalIcon.sprite = allComboIcon;
-                    medalIcon.enabled = true;
-                    break;
-                case PerformanceMedal.NoMedal:
-                    medalIcon.enabled = false;
-                    break;
-            }
-        }
     }
 
-    private void RefreshControlIcon()
+    public void InitializeNonExistant()
     {
-        Sprite sprite = null;
-        Color color = defaultColor;
+        controlIcon.sprite = null;
+        controlIcon.color = Color.clear;
+        laneIcon.sprite = null;
+        laneIcon.color = Color.clear;
+        levelText.text = "";
+        nameText.SetUp("");
+    }
 
-        ControlScheme actualScheme = intendedScheme;
-        if (!inEditor)
-        {
-            switch (Modifiers.instance.controlOverride)
-            {
-                case Modifiers.ControlOverride.OverrideToTouch:
-                    actualScheme = ControlScheme.Touch;
-                    break;
-                case Modifiers.ControlOverride.OverrideToKeys:
-                    actualScheme = ControlScheme.Keys;
-                    break;
-                case Modifiers.ControlOverride.OverrideToKM:
-                    actualScheme = ControlScheme.KM;
-                    break;
-            }
-        }
-        if (actualScheme != intendedScheme)
-        {
-            color = overrideColor;
-        }
-
-        switch (actualScheme)
-        {
-            case ControlScheme.Touch:
-                sprite = touchIcon;
-                break;
-            case ControlScheme.Keys:
-                sprite = keysIcon;
-                break;
-            case ControlScheme.KM:
-                sprite = kmIcon;
-                break;
-        }
-
-        controlIcon.sprite = sprite;
-        controlIcon.color = color;
+    public void MakeControlIconRed()
+    {
+        controlIcon.color = overrideColor;
     }
 }
