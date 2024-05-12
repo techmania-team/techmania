@@ -131,5 +131,8 @@ setlistResultPanel.Show = function()
 end
 
 setlistResultPanel.Hide = function()
-    -- TODO: release eyecatches
+    -- Release eyecatches
+    for _, patternElement in ipairs(setlistResultPanel.panel.Q("patterns").Children()) do
+        ReleaseEyecatch(patternElement.Q("eyecatch"))
+    end
 end

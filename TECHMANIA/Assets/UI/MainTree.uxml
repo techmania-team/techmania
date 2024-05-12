@@ -955,8 +955,8 @@
                 <ui:VisualElement name="row" picking-mode="Ignore" style="margin-top: 20px; height: 150px; flex-direction: row;">
                     <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 20px; padding-right: 20px; display: flex; width: 300px; margin-right: 20px;">
                         <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
-                        <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="margin-top: 10px; height: 40px;">
-                            <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: upper-center;" />
+                        <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="height: 50px;">
+                            <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: middle-center;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
                     <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 300px; display: flex; margin-right: 20px;">
