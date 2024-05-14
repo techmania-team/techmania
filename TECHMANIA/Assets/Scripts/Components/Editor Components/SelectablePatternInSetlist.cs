@@ -10,7 +10,7 @@ public class SelectablePatternInSetlist : MonoBehaviour
     public Button moveUpButton;
     public Button moveDownButton;
     public TextMeshProUGUI trackTitle;
-    public PatternBanner banner;
+    public TMP_Dropdown patternDropdown;
     public UnityEngine.Color nonexistantPatternTitleColor;
 
     private EditSetlistPanel panel;
@@ -23,11 +23,10 @@ public class SelectablePatternInSetlist : MonoBehaviour
         moveDownButton.interactable = index < numPatterns - 1;
         this.panel = panel;
         this.trackTitle.text = trackTitle;
-        banner.Initialize(patternMetadata);
         if (patternMetadata.controlScheme !=
             EditorContext.setlist.setlistMetadata.controlScheme)
         {
-            banner.MakeControlIconRed();
+            // banner.MakeControlIconRed();
         }
         this.index = index;
     }
@@ -38,7 +37,7 @@ public class SelectablePatternInSetlist : MonoBehaviour
         moveUpButton.interactable = index > 0;
         moveDownButton.interactable = index < numPatterns - 1;
         this.trackTitle.text = $"<color=#{ColorUtility.ToHtmlStringRGB(nonexistantPatternTitleColor)}>{L10n.GetString("edit_setlist_panel_reference_not_found")}</color>";
-        banner.InitializeNonExistant();
+        // banner.InitializeNonExistant();
         this.index = index;
     }
 
