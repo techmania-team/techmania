@@ -354,20 +354,18 @@ public class EditSetlistPanel : MonoBehaviour
     public void OnAddHiddenPatternButtonClick()
     {
         sidesheet.startingTrack = null;
-        sidesheet.callback = AddHiddenPattern;
-        sidesheet.GetComponent<Sidesheet>().FadeIn();
-    }
-
-    public void AddHiddenPattern(Setlist.PatternReference reference)
-    {
-        EditorContext.PrepareToModifySetlist();
-        Setlist.HiddenPattern hiddenPattern =
-            new Setlist.HiddenPattern()
+        sidesheet.callback = (Setlist.PatternReference reference) =>
         {
-            reference = reference
+            EditorContext.PrepareToModifySetlist();
+            Setlist.HiddenPattern hiddenPattern =
+                new Setlist.HiddenPattern()
+                {
+                    reference = reference
+                };
+            EditorContext.setlist.hiddenPatterns.Add(hiddenPattern);
+            RefreshHiddenPatterns();
         };
-        EditorContext.setlist.hiddenPatterns.Add(hiddenPattern);
-        RefreshHiddenPatterns();
+        sidesheet.GetComponent<Sidesheet>().FadeIn();
     }
 
     public void DeleteHiddenPattern(int index)
@@ -386,6 +384,26 @@ public class EditSetlistPanel : MonoBehaviour
         EditorContext.setlist.hiddenPatterns.Insert(
             index + direction, hiddenPattern);
         RefreshHiddenPatterns();
+    }
+
+    public void ReplaceHiddenPattern(int index, bool changeTrack)
+    {
+        sidesheet.callback = (Setlist.PatternReference reference) =>
+        {
+            EditorContext.PrepareToModifySetlist();
+            Setlist.HiddenPattern hiddenPattern =
+                new Setlist.HiddenPattern()
+                {
+                    reference = reference
+                };
+            EditorContext.setlist.hiddenPatterns[index] = hiddenPattern;
+            RefreshHiddenPatterns();
+        };
+        // If changing pattern within the same track, need to tell
+        // the sidesheet about the track.
+        sidesheet.startingTrack = changeTrack ? null :
+            EditorContext.setlist.hiddenPatterns[index].reference;
+        sidesheet.GetComponent<Sidesheet>().FadeIn();
     }
 
     public void ChangeCriteriaType(int index, 

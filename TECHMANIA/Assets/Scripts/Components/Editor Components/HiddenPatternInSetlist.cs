@@ -125,6 +125,16 @@ public class HiddenPatternInSetlist : MonoBehaviour
         panel.MoveHiddenPattern(index, 1);
     }
 
+    public void OnTrackButtonClick()
+    {
+        panel.ReplaceHiddenPattern(index, changeTrack: true);
+    }
+
+    public void OnPatternButtonClick()
+    {
+        panel.ReplaceHiddenPattern(index, changeTrack: false);
+    }
+
     public void OnCriteriaTypeChanged(int newValue)
     {
         panel.ChangeCriteriaType(index,
