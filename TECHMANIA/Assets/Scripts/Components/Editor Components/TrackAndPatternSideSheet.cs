@@ -8,17 +8,42 @@ using UnityEngine.UI;
 public class TrackAndPatternSideSheet : MonoBehaviour
 {
     public Action<Setlist.PatternReference> callback;
+    // If null, will start from select track.
+    // If not null, will start from select pattern in the specified
+    // track.
+    public Setlist.PatternReference startingTrack;
 
     private void OnEnable()
     {
-        selectTrackLayout.SetActive(true);
-        selectTrackLayout.GetComponent<CanvasGroup>().alpha = 1f;
-        location = Paths.GetTrackRootFolder();
-        ShowTracksInCurrentLocation();
+        if (startingTrack == null)
+        {
+            // Start from select track
+            selectTrackLayout.SetActive(true);
+            selectTrackLayout.GetComponent<CanvasGroup>().alpha = 1f;
+            location = Paths.GetTrackRootFolder();
+            ShowTracksInCurrentLocation();
 
-        selectPatternLayout.SetActive(false);
-        selectPatternLayout.GetComponent<CanvasGroup>().alpha = 0f;
+            selectPatternLayout.SetActive(false);
+            selectPatternLayout.GetComponent<CanvasGroup>().alpha = 0f;
+        }
+        else
+        {
+            // First, find the starting track
+            GlobalResource.TrackInFolder trackInFolder;
+            Pattern pattern;
+            GlobalResource.SearchForPatternReference(startingTrack,
+                out trackInFolder, out pattern);
 
+            // Start from select pattern
+            selectTrackLayout.SetActive(false);
+            selectTrackLayout.GetComponent<CanvasGroup>().alpha = 0f;
+            location = Paths.GoUpFrom(trackInFolder.folder);
+
+            selectPatternLayout.SetActive(true);
+            selectPatternLayout.GetComponent<CanvasGroup>().alpha = 1f;
+            currentTrack = trackInFolder.minimizedTrack;
+            ShowPatternsInCurrentTrack();
+        }
         transitioning = false;
     }
 

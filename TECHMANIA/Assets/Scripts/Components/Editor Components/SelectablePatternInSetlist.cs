@@ -56,4 +56,14 @@ public class SelectablePatternInSetlist : MonoBehaviour
     {
         panel.MoveSelectablePattern(index, 1);
     }
+
+    public void OnTrackButtonClick()
+    {
+        panel.ReplaceSelectablePattern(index, changeTrack: true);
+    }
+
+    public void OnPatternButtonClick()
+    {
+        panel.ReplaceSelectablePattern(index, changeTrack: false);
+    }
 }

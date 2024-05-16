@@ -253,15 +253,14 @@ public class EditSetlistPanel : MonoBehaviour
 
     public void OnAddSelectablePatternButtonClick()
     {
-        sidesheet.callback = AddSelectablePattern;
+        sidesheet.callback = (Setlist.PatternReference reference) =>
+        {
+            EditorContext.PrepareToModifySetlist();
+            EditorContext.setlist.selectablePatterns.Add(reference);
+            RefreshSelectablePatterns();
+        };
+        sidesheet.startingTrack = null;
         sidesheet.GetComponent<Sidesheet>().FadeIn();
-    }
-
-    public void AddSelectablePattern(Setlist.PatternReference reference)
-    {
-        EditorContext.PrepareToModifySetlist();
-        EditorContext.setlist.selectablePatterns.Add(reference);
-        RefreshSelectablePatterns();
     }
 
     public void DeleteSelectablePattern(int index)
@@ -280,6 +279,21 @@ public class EditSetlistPanel : MonoBehaviour
         EditorContext.setlist.selectablePatterns.Insert(
             index + direction, reference);
         RefreshSelectablePatterns();
+    }
+
+    public void ReplaceSelectablePattern(int index, bool changeTrack)
+    {
+        sidesheet.callback = (Setlist.PatternReference reference) =>
+        {
+            EditorContext.PrepareToModifySetlist();
+            EditorContext.setlist.selectablePatterns[index] = reference;
+            RefreshSelectablePatterns();
+        };
+        // If changing pattern within the same track, need to tell
+        // the sidesheet about the track.
+        sidesheet.startingTrack = changeTrack ? null :
+            EditorContext.setlist.selectablePatterns[index];
+        sidesheet.GetComponent<Sidesheet>().FadeIn();
     }
     #endregion
 
@@ -339,6 +353,7 @@ public class EditSetlistPanel : MonoBehaviour
 
     public void OnAddHiddenPatternButtonClick()
     {
+        sidesheet.startingTrack = null;
         sidesheet.callback = AddHiddenPattern;
         sidesheet.GetComponent<Sidesheet>().FadeIn();
     }
