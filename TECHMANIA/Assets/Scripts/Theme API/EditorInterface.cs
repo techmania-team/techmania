@@ -4,7 +4,6 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
 using System;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace ThemeApi
 {
