@@ -85,7 +85,6 @@ public class TrackAndPatternSideSheet : MonoBehaviour
                 t2.minimizedTrack.trackMetadata.title));
         foreach (GlobalResource.Subfolder subfolder in subfolders)
         {
-            if (Paths.IsInStreamingAssets(subfolder.fullPath)) continue;
             GameObject button = Instantiate(subfolderPrefab,
                 trackContainer);
             button.GetComponent<TrackAndPatternSidesheet
@@ -94,7 +93,6 @@ public class TrackAndPatternSideSheet : MonoBehaviour
         foreach (GlobalResource.TrackInFolder trackInFolder in
             tracksInFolder)
         {
-            if (Paths.IsInStreamingAssets(trackInFolder.folder)) continue;
             GameObject button = Instantiate(trackPrefab,
                 trackContainer);
             button.GetComponent<TrackAndPatternSidesheet
@@ -149,15 +147,11 @@ public class TrackAndPatternSideSheet : MonoBehaviour
             foreach (GlobalResource.Subfolder subfolder in
                 GlobalResource.GetTrackSubfolders(folder))
             {
-                if (Paths.IsInStreamingAssets(subfolder.fullPath)) 
-                    continue;
                 search(subfolder.fullPath);
             }
             foreach (GlobalResource.TrackInFolder trackInFolder in
                 GlobalResource.GetTracksInFolder(folder))
             {
-                if (Paths.IsInStreamingAssets(trackInFolder.folder)) 
-                    continue;
                 string title = trackInFolder.minimizedTrack
                     .trackMetadata.title;
                 bool hasAllTerms = true;
