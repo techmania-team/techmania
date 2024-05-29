@@ -144,6 +144,10 @@ namespace ThemeApi
             addType(tmEnums, typeof(Judgement));
             addType(tmEnums, typeof(PerformanceMedal));
             addType(tmEnums, typeof(ScoreKeeper.FeverState));
+            // Enums used by setlists
+            addType(tmEnums, typeof(Setlist.HiddenPatternCriteriaType));
+            addType(tmEnums, typeof(
+                Setlist.HiddenPatternCriteriaDirection));
 
             tm.@enum = tmEnums;
             apiTable["tm"] = UserData.Create(tm);

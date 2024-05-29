@@ -435,7 +435,6 @@ public class Ruleset : RulesetBase
             },
             windowsAndDeltasSetlist = new List<WindowsAndDeltas>()
             {
-                // TODO: values
                 new WindowsAndDeltas()
                 {
                     timeWindows = new List<float>()

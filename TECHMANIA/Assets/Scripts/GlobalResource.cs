@@ -87,6 +87,7 @@ public static class GlobalResource
         public DateTime modifiedTime;
         public string eyecatchFullPath;
 
+        [MoonSharpHidden]
         public void FindEyecatch()
         {
             string pngEyecatch = Path.Combine(fullPath,
@@ -105,6 +106,7 @@ public static class GlobalResource
             }
         }
 
+        [MoonSharpHidden]
         public void FindStreamingEyecatch(string relativePath)
         {
             string pngEyecatch = Path.Combine(relativePath,

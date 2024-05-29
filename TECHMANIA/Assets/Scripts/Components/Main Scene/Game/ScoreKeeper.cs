@@ -446,6 +446,7 @@ public class ScoreKeeper
     }
     #endregion
 
+    [MoonSharpHidden]
     public void OverrideStatsFromSetlist(
         int currentCombo, int maxCombo, int hp, float feverAmount)
     {
