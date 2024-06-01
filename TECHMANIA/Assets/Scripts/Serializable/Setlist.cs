@@ -90,6 +90,7 @@ public class Setlist : SetlistBase
     public List<PatternReference> selectablePatterns;
     public List<HiddenPattern> hiddenPatterns;
 
+    [MoonSharpHidden]
     // Returns the index in hiddenPatterns.
     public int ChooseHiddenPattern(
         int totalIndex, int totalLevel,
