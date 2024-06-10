@@ -34,6 +34,7 @@ public class Startup : MonoBehaviour
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
         Options.RefreshInstance();
+        Statistics.RefreshInstance();
 
         FmodManager.instance.Initialize(
             Options.instance.audioBufferSize,

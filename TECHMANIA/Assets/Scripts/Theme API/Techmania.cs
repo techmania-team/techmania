@@ -59,6 +59,7 @@ namespace ThemeApi
         public Options options => Options.instance;
         public Ruleset ruleset => Ruleset.instance;
         public Records records => Records.instance;
+        public Statistics stats => Statistics.instance;
         public ThemeL10n l10n { get; private set; }
         public DynValue paths;  // Of type Paths
         public DynValue resources;  // Of type GlobalResource
@@ -332,6 +333,7 @@ namespace ThemeApi
 
         public static void Quit()
         {
+            Statistics.instance.SaveToFile();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
