@@ -14,19 +14,50 @@ public class StatisticsBase : SerializableClass<StatisticsBase>
     }
 }
 
+// All fields are read-only to Lua.
 [Serializable]
 [MoonSharpUserData]
 public class Statistics : StatisticsBase
 {
     public const string kVersion = "1";
 
-    public TimeSpan totalPlayTime;
-    public TimeSpan timeInGame;
-    public TimeSpan timeInEditor;
+    public TimeSpan totalPlayTime
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public TimeSpan timeInGame
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public TimeSpan timeInEditor
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
 
-    public int timesAppLaunched;
-    public int totalPatternsPlayed;
-    public int totalNotesHit;
+    public long timesAppLaunched
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public long totalPatternsPlayed
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
+    public long totalNotesHit
+    {
+        get;
+        [MoonSharpHidden]
+        set;
+    }
 
     public Statistics()
     {

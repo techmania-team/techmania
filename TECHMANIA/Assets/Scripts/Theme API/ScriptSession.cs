@@ -32,6 +32,7 @@ namespace ThemeApi
             // Register types
             UserData.RegisterAssembly();
             UserData.RegisterType<Dictionary<string, string>>();
+            UserData.RegisterType<TimeSpan>();
             UserData.RegisterType<Rect>();
             UserData.RegisterType<Texture2D>();
             UserData.RegisterType<VisualTreeAsset>();

@@ -522,6 +522,14 @@ public class GameController : MonoBehaviour
         }
         setup.ruleset = Options.instance.ruleset;
 
+        // Statistics.
+        if (Statistics.instance != null)
+        {
+            Statistics.instance.totalPatternsPlayed++;
+        }
+        StatsMaintainer.instance?.OnGameBeginLoad();
+
+        // Begin the load sequence.
         StartCoroutine(LoadSequence());
     }
 
@@ -594,6 +602,8 @@ public class GameController : MonoBehaviour
 
     public void Conclude()
     {
+        StatsMaintainer.instance?.OnGameConclude();
+
         AudioManager.instance.SetSpeed(1f);
 
         timer?.Dispose();
@@ -892,6 +902,12 @@ public class GameController : MonoBehaviour
     public void ResolveNote(NoteElements elements,
         Judgement judgement)
     {
+        if (judgement != Judgement.Break &&
+            Statistics.instance != null)
+        {
+            Statistics.instance.totalNotesHit++;
+        }
+
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxManager.SpawnResolvedVFX(elements, judgement);

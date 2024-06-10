@@ -13,6 +13,9 @@ namespace ThemeApi
         #region Launching and exiting
         public void LaunchOnTrack(string trackFolder)
         {
+            // Statistics
+            StatsMaintainer.instance?.OnEnterEditor();
+
             // Set EditorContext
             EditorContext.previewCallback = () =>
             {
@@ -31,6 +34,7 @@ namespace ThemeApi
             };
             EditorContext.exitCallback = () =>
             {
+                StatsMaintainer.instance?.OnLeaveEditor();
                 TopLevelObjects.instance.ShowUiDocument();
                 TopLevelObjects.instance.editorCanvas.gameObject
                     .SetActive(false);
@@ -59,9 +63,13 @@ namespace ThemeApi
 
         public void LaunchOnSetlist(string setlistFolder)
         {
+            // Statistics
+            StatsMaintainer.instance?.OnEnterEditor();
+
             // Set EditorContext
             EditorContext.exitCallback = () =>
             {
+                StatsMaintainer.instance?.OnLeaveEditor();
                 TopLevelObjects.instance.ShowUiDocument();
                 TopLevelObjects.instance.editorCanvas.gameObject
                     .SetActive(false);

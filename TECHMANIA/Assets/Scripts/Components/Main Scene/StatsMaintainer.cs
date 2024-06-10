@@ -27,12 +27,18 @@ public class StatsMaintainer : MonoBehaviour
     {
         if (!active) return;
 
-        UpdateStats();
+        Statistics stats = Statistics.instance;
+        if (stats == null) return;
+
+        TimeSpan span = TimeSpan.FromSeconds(Time.deltaTime);
+        stats.totalPlayTime += span;
+        if (inGame) stats.timeInGame += span;
+        if (inEditor) stats.timeInEditor += span;
 
         if (DateTime.Now - lastSaved >=
             TimeSpan.FromSeconds(savePeriodInSeconds))
         {
-            Statistics.instance.SaveToFile();
+            stats.SaveToFile();
             lastSaved = DateTime.Now;
         }
     }
@@ -45,38 +51,23 @@ public class StatsMaintainer : MonoBehaviour
         lastSaved = DateTime.Now;
     }
 
-    private void UpdateStats()
+    public void OnGameBeginLoad()
     {
-        Statistics stats = Statistics.instance;
-        if (stats == null) return;
-
-        TimeSpan span = TimeSpan.FromSeconds(Time.deltaTime);
-        stats.totalPlayTime += span;
-        if (inGame) stats.timeInGame += span;
-        if (inEditor) stats.timeInEditor += span;
-    }
-
-    public void OnEnterGame()
-    {
-        UpdateStats();
         inGame = true;
     }
 
-    public void OnLeaveGame()
+    public void OnGameConclude()
     {
-        UpdateStats();
         inGame = false;
     }
 
     public void OnEnterEditor()
     {
-        UpdateStats();
         inEditor = true;
     }
 
     public void OnLeaveEditor()
     {
-        UpdateStats();
         inEditor = false;
     }
 }
