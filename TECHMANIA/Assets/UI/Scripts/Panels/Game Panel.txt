@@ -449,7 +449,7 @@ gamePanel.BeginGame = function()
         practiceMode.BeginGame()
     end
 
-    -- Relocate game area if necessary.
+    -- Reposition BG layer if necessary.
     local scalingMode = themeOptions["backgroundScalingMode"]
     local bgLayer = panel.Q("bg-layer")
     if (scalingMode == "FillEntireScreen" and
