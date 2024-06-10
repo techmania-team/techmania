@@ -35,6 +35,8 @@ public class Startup : MonoBehaviour
         Paths.PrepareFolders();
         Options.RefreshInstance();
         Statistics.RefreshInstance();
+        Statistics.instance.timesAppLaunched++;
+        GetComponent<StatsMaintainer>().BeginWorking();
 
         FmodManager.instance.Initialize(
             Options.instance.audioBufferSize,
