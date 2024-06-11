@@ -36,7 +36,7 @@ public class StatsMaintainer : MonoBehaviour
         if (inEditor) stats.timeInEditor += span;
 
         if (DateTime.Now - lastSaved >=
-            TimeSpan.FromSeconds(savePeriodInSeconds))
+            TimeSpan.FromSeconds(savePeriodInSeconds) && !inGame)
         {
             stats.SaveToFile();
             lastSaved = DateTime.Now;
