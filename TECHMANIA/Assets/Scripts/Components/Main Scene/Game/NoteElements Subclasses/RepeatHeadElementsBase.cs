@@ -7,6 +7,13 @@ public class RepeatHeadElementsBase : NoteElements
 {
     public RepeatHeadElementsBase(Note n) : base(n) { }
 
+    protected override void TypeSpecificInitializeSizeExceptHitbox()
+    {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.repeatHead.flipWhenScanningLeft);
+    }
+
     protected override void TypeSpecificResolve()
     {
         state = State.PendingResolve;

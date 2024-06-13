@@ -55,7 +55,8 @@ public class RepeatPathElements
             layout.evenScanDirection : layout.oddScanDirection;
         bool scansToLeft = scanDirection ==
             GameLayout.ScanDirection.Left;
-        pathContainer.EnableInClassList("h-flipped", scansToLeft);
+        pathContainer.EnableInClassList(NoteElements.hFlippedClass,
+            scansToLeft);
 
         // Calculate startPulse and endPulse.
         int startPulseOfIntScan = intScan * pulsesPerScan;

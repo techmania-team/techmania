@@ -6,6 +6,13 @@ public class HoldNoteElements : NoteElements
 {
     public HoldNoteElements(Note n) : base(n) { }
 
+    protected override void TypeSpecificInitializeSizeExceptHitbox()
+    {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.holdHead.flipWhenScanningLeft);
+    }
+
     protected override void TypeSpecificUpdateState()
     {
         switch (state)

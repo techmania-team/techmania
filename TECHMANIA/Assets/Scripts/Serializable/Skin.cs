@@ -21,6 +21,7 @@ public class SpriteSheet
     public float scale;  // Relative to 1x lane height
     public float speed;  // Relative to 60 fps
     public bool additiveShader;
+    public bool flipWhenScanningLeft;
 
     [NonSerialized]  // Loaded at runtime
     public Texture2D texture;
@@ -39,6 +40,7 @@ public class SpriteSheet
         scale = 1f;
         speed = 1f;
         additiveShader = false;
+        flipWhenScanningLeft = false;
     }
 
     // Call after loading texture.

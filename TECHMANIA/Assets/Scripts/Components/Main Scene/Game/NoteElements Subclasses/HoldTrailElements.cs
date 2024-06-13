@@ -64,7 +64,8 @@ public class HoldTrailElements
             layout.evenScanDirection : layout.oddScanDirection;
         bool scansToLeft = scanDirection ==
             GameLayout.ScanDirection.Left;
-        trailContainer.EnableInClassList("h-flipped", scansToLeft);
+        trailContainer.EnableInClassList(NoteElements.hFlippedClass,
+            scansToLeft);
 
         // Calculate startPulse and endPulse.
         int pulsesPerScan = bps * Pattern.pulsesPerBeat;

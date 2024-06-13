@@ -82,6 +82,10 @@ public class DragNoteElements : NoteElements
 
     protected override void TypeSpecificInitializeSizeExceptHitbox()
     {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.dragHead.flipWhenScanningLeft);
+
         gameContainerWidthCopy = layout.gameContainerWidth;
         scanHeightCopy = layout.scanHeight;
         curveWidth = layout.laneHeight *
@@ -185,6 +189,8 @@ public class DragNoteElements : NoteElements
         if (pointList == null ||
             pointList.Count < 2) return;
         if (curveSprite == null) return;
+        bool hFlipped = scanDirection == GameLayout.ScanDirection.Left
+            && GlobalResource.noteSkin.dragCurve.flipWhenScanningLeft;
 
         // Convert relative positions to absolute ones.
         Vector2[] points = new Vector2[pointList.Count];
@@ -220,6 +226,8 @@ public class DragNoteElements : NoteElements
         System.Func<float, float, Vector2> projectUv =
             (float u, float v) =>
             {
+                if (hFlipped) v = 1f - v;
+
                 // First project from sprite to texture.
                 float uInTexture = Mathf.Lerp(
                     spriteRectInTexture.xMin,
