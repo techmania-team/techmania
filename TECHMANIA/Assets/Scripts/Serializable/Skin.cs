@@ -344,6 +344,8 @@ public class ComboSkin : ComboSkinBase
     public List<SpriteSheet> coolDigits;
     public List<SpriteSheet> goodDigits;
 
+    public string animationScript;
+
     public ComboSkin()
     {
         version = kVersion;
@@ -370,6 +372,11 @@ public class ComboSkin : ComboSkinBase
             coolDigits.Add(new SpriteSheet());
             goodDigits.Add(new SpriteSheet());
         }
+
+        animationScript = "for i = 1, 3 do\n" +
+            "print(tostring(i))\n" +
+            "coroutine.yield()\n" +
+            "end";
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()

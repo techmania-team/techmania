@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using MoonSharp.Interpreter;
+using System;
+using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using ThemeApi;
@@ -21,6 +24,9 @@ public class ComboText : MonoBehaviour
     private float startTime;
     private float sizeUnit;
 
+    // Lua script session for animation
+    private MoonSharp.Interpreter.Script scriptSession;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +41,8 @@ public class ComboText : MonoBehaviour
             comboDigitSpriteSheet.Add(null);
         }
         startTime = 0f;
+
+        InitializeScriptSession();
     }
 
     private float GetWidth(SpriteSheet spriteSheet)
@@ -210,7 +218,8 @@ public class ComboText : MonoBehaviour
 
         startTime = Time.time;
         UpdateSprites();
-        animator.SetTrigger("Activate");
+        animator.SetTrigger("Activate");// TODO: delete
+        RestartAnimation();
     }
 
     private void UpdateSprites()
@@ -247,4 +256,54 @@ public class ComboText : MonoBehaviour
         rect.anchorMin = viewportPoint;
         rect.anchorMax = viewportPoint;
     }
+
+    #region Animation
+    private UnityEngine.Coroutine unityCoroutine = null;
+
+    private void InitializeScriptSession()
+    {
+        scriptSession = new MoonSharp.Interpreter.Script(
+            MoonSharp.Interpreter.CoreModules.Preset_SoftSandbox);
+        scriptSession.Options.DebugPrint = (s) => { Debug.Log(s); };
+        scriptSession.Globals["startCoroutine"] = (
+            Action<MoonSharp.Interpreter.DynValue>)StartLuaCoroutine;
+
+        scriptSession.Globals["testFunc"] = (Action)TestAnimationFunc;
+    }
+
+    private void RestartAnimation()
+    {
+        string fullScript = "startCoroutine(function()\n" +
+            GlobalResource.comboSkin.animationScript + "\n" +
+            "end)";
+        scriptSession.DoString(fullScript);
+    }
+
+    private void TestAnimationFunc()
+    {
+        Debug.Log("test");
+    }
+
+    private void StartLuaCoroutine(MoonSharp.Interpreter.DynValue 
+        function)
+    {
+        if (unityCoroutine != null)
+        {
+            StopCoroutine(unityCoroutine);
+        }
+
+        unityCoroutine = StartCoroutine(RunAnimationCoroutine(
+            scriptSession.CreateCoroutine(function).Coroutine));
+    }
+
+    private IEnumerator RunAnimationCoroutine(
+        MoonSharp.Interpreter.Coroutine luaCoroutine)
+    {
+        while (luaCoroutine.State != CoroutineState.Dead)
+        {
+            luaCoroutine.Resume();
+            yield return null;
+        }
+    }
+    #endregion
 }
