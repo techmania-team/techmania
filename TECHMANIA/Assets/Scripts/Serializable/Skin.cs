@@ -182,14 +182,31 @@ public class SkinAnimationCurve
     // alpha
     public string attribute;
 
-    public AnimationCurve ToUnityCurve()
+    // "once" (default)
+    // "pingpong"
+    // "loop"
+    public string loopMode;
+
+    public Tuple<AnimationCurve, string> ToUnityCurveAndAttribute()
     {
         AnimationCurve curve = new AnimationCurve();
         foreach (SkinAnimationKeyframe k in keys)
         {
             curve.AddKey(k.ToUnityKeyframe());
         }
-        return curve;
+        switch (loopMode)
+        {
+            case "pingpong":
+                curve.postWrapMode = WrapMode.PingPong;
+                break;
+            case "loop":
+                curve.postWrapMode = WrapMode.Loop;
+                break;
+            default:
+                curve.postWrapMode = WrapMode.Once;
+                break;
+        }
+        return new Tuple<AnimationCurve, string>(curve, attribute);
     }
 }
 
@@ -423,6 +440,10 @@ public class ComboSkin : ComboSkinBase
             coolDigits.Add(new SpriteSheet());
             goodDigits.Add(new SpriteSheet());
         }
+
+        animationCurves = new List<SkinAnimationCurve>();
+
+        // TODO: default curves
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()

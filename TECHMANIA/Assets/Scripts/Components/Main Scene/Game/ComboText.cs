@@ -14,7 +14,6 @@ public class ComboText : MonoBehaviour
     public UnityEngine.UI.Image judgementText;
     public RectTransform space;
     public List<UnityEngine.UI.Image> comboDigits;
-    public Animator animator;
 
     private UnityEngine.UIElements.VisualElement elementToFollow;
     private RectTransform rect;
@@ -211,8 +210,46 @@ public class ComboText : MonoBehaviour
         }
 
         startTime = Time.time;
+        UpdateAnimationCurves();
         UpdateSprites();
-        animator.SetTrigger("Activate");  // TODO: replace
+    }
+
+    private void UpdateAnimationCurves()
+    {
+        float time = Time.time - startTime;
+
+        foreach (Tuple<AnimationCurve, string> tuple in
+            GlobalResource.comboAnimationCurvesAndAttributes)
+        {
+            AnimationCurve curve = tuple.Item1;
+            string attribute = tuple.Item2;
+
+            float value = curve.Evaluate(time);
+            switch (attribute)
+            {
+                // TODO: translation
+                case "rotationInDegrees":
+                    comboTextLayout.localRotation = Quaternion.Euler(
+                        0f, 0f, value);
+                    break;
+                case "scaleX":
+                    comboTextLayout.localScale = new Vector3(value, 
+                        comboTextLayout.localScale.y, 1f);
+                    break;
+                case "scaleY":
+                    comboTextLayout.localScale = new Vector3(
+                        comboTextLayout.localScale.x,
+                        value, 1f);
+                    break;
+                case "alpha":
+                    comboTextLayout.GetComponent<CanvasGroup>().alpha = 
+                        value;
+                    break;
+                default:
+                    Debug.LogWarning("Unknown attribute in combo animation: " + attribute);
+                    break;
+            }
+        }
     }
 
     private void UpdateSprites()
@@ -236,8 +273,12 @@ public class ComboText : MonoBehaviour
 
     private void Update()
     {
-        Follow();
-        UpdateSprites();
+        if (elementToFollow != null)
+        {
+            Follow();
+            UpdateAnimationCurves();
+            UpdateSprites();
+        }
     }
 
     private void Follow()

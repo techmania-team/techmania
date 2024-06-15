@@ -149,6 +149,7 @@ public class GlobalResourceLoader : MonoBehaviour
                 completeCallback(status);
                 return;
             }
+
             // The game expects 10 digits in each set.
             foreach (List<SpriteSheet> list in
                 GlobalResource.comboSkin.GetReferenceToDigitLists())
@@ -158,6 +159,17 @@ public class GlobalResourceLoader : MonoBehaviour
                     list.Add(SpriteSheet.MakeNewEmptySpriteSheet());
                 }
             }
+
+            // Convert animation from custom format to Unity format.
+            GlobalResource.comboAnimationCurvesAndAttributes = new
+                List<Tuple<AnimationCurve, string>>();
+            foreach (SkinAnimationCurve customCurve in
+                GlobalResource.comboSkin.animationCurves)
+            {
+                GlobalResource.comboAnimationCurvesAndAttributes.Add(
+                    customCurve.ToUnityCurveAndAttribute());
+            }
+
             completeCallback(Status.OKStatus());
         };
         List<SpriteSheet> spriteSheets = GlobalResource.comboSkin
