@@ -210,6 +210,7 @@ public class ComboText : MonoBehaviour
         }
 
         startTime = Time.time;
+        // TODO: reset translation, rotation, scale and alpha
         UpdateAnimationCurves();
         UpdateSprites();
     }

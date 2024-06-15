@@ -187,6 +187,23 @@ public class SkinAnimationCurve
     // "loop"
     public string loopMode;
 
+    public SkinAnimationCurve()
+    {
+        keys = new List<SkinAnimationKeyframe>();
+    }
+
+    public void AddKeyframe(float time, float value,
+        float inTangent = 0f, float outTangent = 0f)
+    {
+        keys.Add(new SkinAnimationKeyframe()
+        {
+            time = time,
+            value = value,
+            inTangent = inTangent,
+            outTangent = outTangent
+        });
+    }
+
     public Tuple<AnimationCurve, string> ToUnityCurveAndAttribute()
     {
         AnimationCurve curve = new AnimationCurve();
@@ -443,7 +460,40 @@ public class ComboSkin : ComboSkinBase
 
         animationCurves = new List<SkinAnimationCurve>();
 
-        // TODO: default curves
+        // Default curves
+
+        SkinAnimationCurve scaleXCurve = new SkinAnimationCurve()
+        {
+            attribute = "scaleX"
+        };
+        scaleXCurve.AddKeyframe(0f, 1.2f);
+        scaleXCurve.AddKeyframe(0.1f, 0.8f);
+        scaleXCurve.AddKeyframe(0.133f, 1.1f);
+        scaleXCurve.AddKeyframe(0.167f, 1f);
+        scaleXCurve.AddKeyframe(1f, 1f);
+        animationCurves.Add(scaleXCurve);
+
+        SkinAnimationCurve scaleYCurve = new SkinAnimationCurve()
+        {
+            attribute = "scaleY"
+        };
+        scaleYCurve.AddKeyframe(0f, 1.2f);
+        scaleYCurve.AddKeyframe(0.1f, 0.8f);
+        scaleYCurve.AddKeyframe(0.133f, 1.1f);
+        scaleYCurve.AddKeyframe(0.167f, 1f);
+        scaleYCurve.AddKeyframe(0.833f, 1f);
+        scaleYCurve.AddKeyframe(1f, 2f);
+        animationCurves.Add(scaleYCurve);
+
+        SkinAnimationCurve alphaCurve = new SkinAnimationCurve()
+        {
+            attribute = "alpha"
+        };
+        alphaCurve.AddKeyframe(0f, 0.5f, inTangent: 8f);
+        alphaCurve.AddKeyframe(0.1f, 1f);
+        alphaCurve.AddKeyframe(0.833f, 1f);
+        alphaCurve.AddKeyframe(1f, 0f);
+        animationCurves.Add(alphaCurve);
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
