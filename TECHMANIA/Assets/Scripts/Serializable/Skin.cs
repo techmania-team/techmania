@@ -143,6 +143,46 @@ public class SpriteSheet
 }
 
 [Serializable]
+[MoonSharpUserData]
+public class SkinAnimationKeyframe
+{
+    public float time;
+    public float value;
+    public float inTangent;
+    public float outTangent;
+    public float inWeight;
+    public float outWeight;
+    public int weightedMode;
+
+    public Keyframe ToUnityKeyframe()
+    {
+        return new Keyframe(time, value, inTangent, outTangent)
+        {
+            inWeight = inWeight,
+            outWeight = outWeight,
+            weightedMode = (WeightedMode)weightedMode
+        };
+    }
+}
+
+[Serializable]
+[MoonSharpUserData]
+public class SkinAnimationCurve
+{
+    public List<SkinAnimationKeyframe> keys;
+
+    public AnimationCurve ToUnityCurve()
+    {
+        AnimationCurve curve = new AnimationCurve();
+        foreach (SkinAnimationKeyframe k in keys)
+        {
+            curve.AddKey(k.ToUnityKeyframe());
+        }
+        return curve;
+    }
+}
+
+[Serializable]
 [FormatVersion(NoteSkin.kVersion, typeof(NoteSkin), isLatest: true)]
 public class NoteSkinBase : SerializableClass<NoteSkinBase> {}
 
@@ -344,7 +384,15 @@ public class ComboSkin : ComboSkinBase
     public List<SpriteSheet> coolDigits;
     public List<SpriteSheet> goodDigits;
 
-    public string animationScript;
+    public SkinAnimationCurve animationTranslateX;
+    public SkinAnimationCurve animationTranslateY;
+    public SkinAnimationCurve animationRotationInDegrees;
+    public SkinAnimationCurve animationScaleX;
+    public SkinAnimationCurve animationScaleY;
+    public SkinAnimationCurve animationColorR;
+    public SkinAnimationCurve animationColorG;
+    public SkinAnimationCurve animationColorB;
+    public SkinAnimationCurve animationColorA;
 
     public ComboSkin()
     {
@@ -372,11 +420,6 @@ public class ComboSkin : ComboSkinBase
             coolDigits.Add(new SpriteSheet());
             goodDigits.Add(new SpriteSheet());
         }
-
-        animationScript = "for i = 1, 3 do\n" +
-            "print(tostring(i))\n" +
-            "coroutine.yield()\n" +
-            "end";
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()
