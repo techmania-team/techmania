@@ -88,10 +88,10 @@ namespace ThemeApi
             apiVersion = version;
             switch (version)
             {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
+                case 1:  // 2.0
+                case 2:  // 2.1
+                case 3:  // 2.2
+                case 4:  // 2.3
                     return GetApiVersion1();
                 default:
                     throw new ApiNotSupportedException();

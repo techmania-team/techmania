@@ -317,6 +317,24 @@ namespace ThemeApi
                     completeCallback.Function.Call(status);
                 });
         }
+
+        public static void ReloadAllSkins(
+            DynValue progressCallback,
+            DynValue completeCallback)
+        {
+            GlobalResourceLoader.GetInstance().LoadAllSkins(
+                progressCallback: (string currentlyLoadingFile) =>
+                {
+                    if (progressCallback.IsNil()) return;
+                    progressCallback.Function.Call(
+                        currentlyLoadingFile);
+                },
+                completeCallback: (Status status) =>
+                {
+                    if (completeCallback.IsNil()) return;
+                    completeCallback.Function.Call(status);
+                });
+        }
     }
 }
 

@@ -86,6 +86,22 @@ selectSkinPanel.Initialize = function()
         tm.options.reloadSkinsWhenLoadingPattern = not tm.options.reloadSkinsWhenLoadingPattern
     end)
 
+    panel.Q("reload-skins-now").Q("reload-button").RegisterCallback(eventType.Click, function()
+        tm.skinPreview.Conclude()
+        tm.io.ReloadAllSkins(
+            nil,  -- progress callback
+            function(status)  -- complete callback
+                if (not status.Ok()) then
+                    local errorMessage = net.string.Format(
+                        tm.l10n.GetString("select_skin_panel_load_error_format"),
+                        status.errorMessage)
+                    alertBox.Alert(errorMessage)
+                end
+                tm.skinPreview.Begin()
+            end
+        )
+    end)
+
     -- Set up SkinPreview
     tm.skinPreview.previewContainer = panel.Q("preview-container")
     tm.skinPreview.bpm = 120

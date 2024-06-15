@@ -1166,7 +1166,7 @@
     <ui:Instance template="Panel" name="select-skin-panel" picking-mode="Ignore" class="panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Select Skins" />
         <ui:VisualElement picking-mode="Ignore" name="content" class="panel-content" style="align-items: center;">
-            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 800px; margin-top: 20px;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 800px; margin-top: 10px; margin-bottom: 10px;">
                 <ui:VisualElement name="note-skin" picking-mode="Ignore" class="options-item">
                     <ui:Label text="Note skin" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Dropdown" name="dropdown-template" class="no-mini-label" />
@@ -1191,7 +1191,12 @@
                     <ui:Label text="Reload skins when loading patterns" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
                     <ui:Instance template="Toggle" name="toggle" />
                 </ui:VisualElement>
-                <ui:VisualElement name="preview-wrap" style="margin-top: 30px; align-items: center;">
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="options-divider" />
+                <ui:VisualElement name="reload-skins-now" picking-mode="Ignore" class="options-item">
+                    <ui:Label text="Reload now" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-body" />
+                    <ui:Button text="RELOAD" parse-escape-sequences="true" display-tooltip-when-elided="true" name="reload-button" class="button-outlined" />
+                </ui:VisualElement>
+                <ui:VisualElement name="preview-wrap" style="margin-top: 10px; align-items: center;">
                     <ui:VisualElement name="preview-container" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: 500px; height: 500px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
