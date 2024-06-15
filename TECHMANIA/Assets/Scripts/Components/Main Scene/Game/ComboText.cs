@@ -37,8 +37,6 @@ public class ComboText : MonoBehaviour
             comboDigitSpriteSheet.Add(null);
         }
         startTime = 0f;
-
-        InitializeScriptSession();
     }
 
     private float GetWidth(SpriteSheet spriteSheet)

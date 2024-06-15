@@ -146,6 +146,8 @@ public class SpriteSheet
 [MoonSharpUserData]
 public class SkinAnimationKeyframe
 {
+    // All values default to 0.
+
     public float time;
     public float value;
     public float inTangent;
@@ -170,6 +172,15 @@ public class SkinAnimationKeyframe
 public class SkinAnimationCurve
 {
     public List<SkinAnimationKeyframe> keys;
+
+    // Which attribute this curve controls. Possible values:
+    // translationX
+    // translationY
+    // rotationInDegrees
+    // scaleX
+    // scaleY
+    // alpha
+    public string attribute;
 
     public AnimationCurve ToUnityCurve()
     {
@@ -384,15 +395,7 @@ public class ComboSkin : ComboSkinBase
     public List<SpriteSheet> coolDigits;
     public List<SpriteSheet> goodDigits;
 
-    public SkinAnimationCurve animationTranslateX;
-    public SkinAnimationCurve animationTranslateY;
-    public SkinAnimationCurve animationRotationInDegrees;
-    public SkinAnimationCurve animationScaleX;
-    public SkinAnimationCurve animationScaleY;
-    public SkinAnimationCurve animationColorR;
-    public SkinAnimationCurve animationColorG;
-    public SkinAnimationCurve animationColorB;
-    public SkinAnimationCurve animationColorA;
+    public List<SkinAnimationCurve> animationCurves;
 
     public ComboSkin()
     {

@@ -10,8 +10,6 @@ public class Startup : MonoBehaviour
     public AudioManager audioManager;
     public BootScreen bootScreen;
 
-    public AnimationCurve curve;
-
     private static void LoadRuleset()
     {
         if (Options.instance.ruleset != Options.Ruleset.Custom)
@@ -34,9 +32,6 @@ public class Startup : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
-        return;
-
         Input.simulateMouseWithTouches = false;
         Paths.PrepareFolders();
         Options.RefreshInstance();
@@ -88,26 +83,6 @@ public class Startup : MonoBehaviour
 #else
         StartBooting();
 #endif
-    }
-
-    private void OnGUI()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (Keyframe k in curve.keys)
-        {
-            stringBuilder.AppendLine($"time: {k.time}");
-            stringBuilder.AppendLine($"value: {k.value}");
-            stringBuilder.AppendLine($"inTangent: {k.inTangent}");
-            stringBuilder.AppendLine($"outTangent: {k.outTangent}");
-            stringBuilder.AppendLine($"inWeight: {k.inWeight}");
-            stringBuilder.AppendLine($"outWeight: {k.outWeight}");
-            stringBuilder.AppendLine($"weightedMode: {k.weightedMode}");
-            stringBuilder.AppendLine();
-        }
-        GUI.Window(0, new Rect(10, 10, 500, 500), (int windowID) =>
-        {
-            GUI.TextArea(new Rect(0, 20, 500, 500), stringBuilder.ToString());
-        }, "Curve");
     }
 
     private void StartBooting()
