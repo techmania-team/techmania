@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -210,47 +209,9 @@ public class ComboText : MonoBehaviour
         }
 
         startTime = Time.time;
-        // TODO: reset translation, rotation, scale and alpha
+        ResetAllAnimationAttributes();
         UpdateAnimationCurves();
         UpdateSprites();
-    }
-
-    private void UpdateAnimationCurves()
-    {
-        float time = Time.time - startTime;
-
-        foreach (Tuple<AnimationCurve, string> tuple in
-            GlobalResource.comboAnimationCurvesAndAttributes)
-        {
-            AnimationCurve curve = tuple.Item1;
-            string attribute = tuple.Item2;
-
-            float value = curve.Evaluate(time);
-            switch (attribute)
-            {
-                // TODO: translation
-                case "rotationInDegrees":
-                    comboTextLayout.localRotation = Quaternion.Euler(
-                        0f, 0f, value);
-                    break;
-                case "scaleX":
-                    comboTextLayout.localScale = new Vector3(value, 
-                        comboTextLayout.localScale.y, 1f);
-                    break;
-                case "scaleY":
-                    comboTextLayout.localScale = new Vector3(
-                        comboTextLayout.localScale.x,
-                        value, 1f);
-                    break;
-                case "alpha":
-                    comboTextLayout.GetComponent<CanvasGroup>().alpha = 
-                        value;
-                    break;
-                default:
-                    Debug.LogWarning("Unknown attribute in combo animation: " + attribute);
-                    break;
-            }
-        }
     }
 
     private void UpdateSprites()
@@ -291,4 +252,93 @@ public class ComboText : MonoBehaviour
         rect.anchorMin = viewportPoint;
         rect.anchorMax = viewportPoint;
     }
+
+    #region Animation
+    private void SetTranslationX(float value)
+    {
+        comboTextLayout.anchoredPosition = new Vector2(
+            value * sizeUnit,
+            comboTextLayout.anchoredPosition.y);
+    }
+
+    private void SetTranslationY(float value)
+    {
+        comboTextLayout.anchoredPosition = new Vector2(
+            comboTextLayout.anchoredPosition.x,
+            GlobalResource.comboSkin.distanceToNote * sizeUnit + value);
+    }
+
+    private void SetRotationInDegrees(float value)
+    {
+        comboTextLayout.localRotation = Quaternion.Euler(
+            0f, 0f, value);
+    }
+
+    private void SetScaleX(float value)
+    {
+        comboTextLayout.localScale = new Vector3(value,
+            comboTextLayout.localScale.y, 1f);
+    }
+
+    private void SetScaleY(float value)
+    {
+        comboTextLayout.localScale = new Vector3(
+            comboTextLayout.localScale.x, value, 1f);
+    }
+
+    private void SetAlpha(float value)
+    {
+        comboTextLayout.GetComponent<CanvasGroup>().alpha =
+            value;
+    }
+
+    private void ResetAllAnimationAttributes()
+    {
+        SetTranslationX(0f);
+        SetTranslationY(0f);
+        SetRotationInDegrees(0f);
+        SetScaleX(1f);
+        SetScaleY(1f);
+        SetAlpha(1f);
+    }
+
+    private void UpdateAnimationCurves()
+    {
+        float time = Time.time - startTime;
+
+        foreach (Tuple<AnimationCurve, string> tuple in
+            GlobalResource.comboAnimationCurvesAndAttributes)
+        {
+            AnimationCurve curve = tuple.Item1;
+            string attribute = tuple.Item2;
+
+            float value = curve.Evaluate(time);
+            switch (attribute)
+            {
+                case "translationX":
+                    SetTranslationX(value);
+                    break;
+                case "translationY":
+                    SetTranslationY(value);
+                    break;
+                case "rotationInDegrees":
+                    SetRotationInDegrees(value);
+                    break;
+                case "scaleX":
+                    SetScaleX(value);
+                    break;
+                case "scaleY":
+                    SetScaleY(value);
+                    break;
+                case "alpha":
+                    SetAlpha(value);
+                    break;
+                default:
+                    Debug.LogWarning("Unknown attribute in combo animation: " + attribute);
+                    break;
+            }
+        }
+    }
+
+    #endregion
 }
