@@ -400,16 +400,19 @@ public class GameController : MonoBehaviour
                     element = loadedElement;
                 });
             yield return new WaitUntil(() => loaded);
-            if (!status.Ok())
+            if (status.Ok())
             {
-                reportLoadError(status);
-                yield break;
+                bg.SetBga(element,
+                    loop: setup.patternAfterModifier.patternMetadata
+                        .playBgaOnLoop,
+                    offset: (float)setup.patternAfterModifier
+                        .patternMetadata.bgaOffset);
             }
-            bg.SetBga(element,
-                loop: setup.patternAfterModifier.patternMetadata
-                    .playBgaOnLoop,
-                offset: (float)setup.patternAfterModifier
-                    .patternMetadata.bgaOffset);
+            else
+            {
+                Debug.LogError("An error occurred when loading BGA: "
+                    + status.errorMessage + "; game will continue without BGA.");
+            }
         }
         reportLoadProgress(bga);
 
