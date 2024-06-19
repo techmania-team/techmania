@@ -873,6 +873,12 @@ public class GameController : MonoBehaviour
         Judgement judgement = GameInputManager
             .TimeDifferenceToJudgement(elements.note,
             timeDifference, timer.speed);
+        JudgementAndTimeDifference judgementAndTimeDifference =
+            new JudgementAndTimeDifference()
+            { 
+                judgement = judgement,
+                timeDifference = timeDifference
+            };
 
         switch (elements.note.type)
         {
@@ -883,18 +889,19 @@ public class GameController : MonoBehaviour
                 if (judgement == Judgement.Miss)
                 {
                     // Missed notes do not enter Ongoing state.
-                    ResolveNote(elements, judgement);
+                    ResolveNote(elements, judgementAndTimeDifference);
                 }
                 else
                 {
                     // Register an ongoing note.
-                    input.RegisterOngoingNote(elements, judgement);
+                    input.RegisterOngoingNote(elements, 
+                        judgementAndTimeDifference);
                     elements.SetOngoing();
                     vfxManager.SpawnOngoingVFX(elements, judgement);
                 }
                 break;
             default:
-                ResolveNote(elements, judgement);
+                ResolveNote(elements, judgementAndTimeDifference);
                 break;
         }
 
@@ -903,8 +910,9 @@ public class GameController : MonoBehaviour
     }
 
     public void ResolveNote(NoteElements elements,
-        Judgement judgement)
+        JudgementAndTimeDifference judgementAndTimeDifference)
     {
+        Judgement judgement = judgementAndTimeDifference.judgement;
         if (judgement != Judgement.Break &&
             Statistics.instance != null)
         {
@@ -918,7 +926,8 @@ public class GameController : MonoBehaviour
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,
-            judgement, scoreKeeper);
+            judgement, scoreKeeper, 
+            judgementAndTimeDifference.timeDifference);
         if (scoreKeeper.AllNotesResolved())
         {
             setup.onAllNotesResolved?.Function?.Call(scoreKeeper);
@@ -958,11 +967,12 @@ public class GameController : MonoBehaviour
     #region Responding to time
     public void ComboTick()
     {
-        foreach (KeyValuePair<NoteElements, Judgement> pair in
+        foreach (KeyValuePair<NoteElements,
+            JudgementAndTimeDifference> pair in
             input.ongoingNotes)
         {
             NoteElements elements = pair.Key;
-            Judgement judgement = pair.Value;
+            Judgement judgement = pair.Value.judgement;
             scoreKeeper.IncrementCombo();
             comboText.Show(elements.noteImage, judgement, scoreKeeper);
 

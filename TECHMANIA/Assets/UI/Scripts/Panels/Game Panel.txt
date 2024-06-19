@@ -10,6 +10,16 @@ gamePanel = {
     patternMetadata = nil,
 
     setlistProgressEyecatches = {},
+
+    -- Each element is a table:
+    -- {
+    --   time: correct time of note, in seconds
+    --   timeDifference: negative for too early, positive for too late, in seconds or pulses
+    --                   depending on ruleset
+    --   judgement: judgement
+    --   HP: remaining HP after note, [0, 1]
+    -- }
+    stateAfterEachNote = {},
 }
 
 pauseButton = {
@@ -115,12 +125,13 @@ gamePanel.Initialize = function()
             end
         end
 
-        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper, timeDifference)
             gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
             gamePanel.UpdateScoreDisplay(
                 scoreKeeper.ScoreFromNotes(),
                 scoreKeeper.maxCombo)
             judgementTally.Update(scoreKeeper)
+            -- print("time difference: " .. tostring(timeDifference))
         end
 
         tm.gameSetup.onAllNotesResolved = function(scoreKeeper)

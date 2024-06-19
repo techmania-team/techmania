@@ -13,6 +13,30 @@ public enum Judgement
     Break
 }
 
+public struct JudgementAndTimeDifference
+{
+    public Judgement judgement;
+    public float timeDifference;  // game time - correct time
+
+    public static JudgementAndTimeDifference Miss()
+    {
+        return new JudgementAndTimeDifference()
+        {
+            judgement = Judgement.Miss,
+            timeDifference = float.PositiveInfinity
+        };
+    }
+
+    public static JudgementAndTimeDifference Break()
+    {
+        return new JudgementAndTimeDifference()
+        {
+            judgement = Judgement.Break,
+            timeDifference = float.PositiveInfinity
+        };
+    }
+}
+
 public enum PerformanceMedal
 {
     NoMedal,
