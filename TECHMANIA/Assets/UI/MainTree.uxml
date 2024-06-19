@@ -791,12 +791,24 @@
             <ui:Label tabindex="-1" text="STAGE FAILED" display-tooltip-when-elided="true" name="stage-failed" picking-mode="Ignore" class="text-headline-1" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel" style="display: flex;">
+    <ui:Instance template="Panel" name="result-panel" class="panel-no-back-button panel" style="display: none;">
         <AttributeOverrides element-name="title" text="Result" />
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
-            <ui:VisualElement name="wrap" picking-mode="Ignore" style="width: 1200px; flex-grow: 1; flex-direction: row; padding-top: 20px;">
-                <ui:VisualElement name="left-column" picking-mode="Ignore" style="width: 480px; margin-right: 20px;">
-                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 30px; padding-right: 30px; padding-top: 15px; padding-bottom: 15px; height: 600px;">
+            <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-direction: row; padding-top: 20px;">
+                <ui:VisualElement name="left-column" picking-mode="Ignore" style="width: 400px; margin-right: 20px;">
+                    <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 395px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; flex-direction: column; align-items: center;">
+                        <ui:VisualElement name="eyecatch" picking-mode="Ignore" style="width: 200px; align-items: center; justify-content: center; height: 200px;">
+                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
+                        </ui:VisualElement>
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex; margin-top: 10px; width: 100%;">
+                            <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex; width: 100%;">
+                            <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                        <ui:Instance template="Pattern Banner" name="Pattern Banner" picking-mode="Ignore" style="width: 360px; margin-top: 10px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 30px; padding-right: 30px; padding-top: 15px; padding-bottom: 15px; height: 520px; top: 20px;">
                         <ui:VisualElement name="content" picking-mode="Ignore" style="flex-grow: 1;">
                             <ui:VisualElement name="labels" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
                                 <ui:Label tabindex="-1" text="Rainbow Max" display-tooltip-when-elided="true" picking-mode="Ignore" name="rainbow-max" class="text-subtitle" />
@@ -824,8 +836,10 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="score-and-rank" picking-mode="Ignore" style="flex-direction: row; margin-top: 20px; height: 140px;">
-                        <ui:VisualElement name="total-score" picking-mode="Ignore" class="elevation-1dp" style="width: 280px; margin-right: 20px;">
+                </ui:VisualElement>
+                <ui:VisualElement name="right-column" picking-mode="Ignore" style="flex-grow: 1; width: 820px;">
+                    <ui:VisualElement name="score-and-rank" picking-mode="Ignore" style="flex-direction: row; height: 140px;">
+                        <ui:VisualElement name="total-score" picking-mode="Ignore" class="elevation-1dp" style="width: 400px; margin-right: 20px;">
                             <ui:Label tabindex="-1" text="Total score" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
                             <ui:Label tabindex="-1" text="123456" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-4" style="-unity-text-align: middle-center; height: 60px;" />
                             <ui:Label tabindex="-1" text="ALL COMBO" display-tooltip-when-elided="true" name="medal" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
@@ -836,7 +850,7 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="record-and-ruleset" picking-mode="Ignore" style="flex-direction: row; margin-top: 20px; height: 140px;">
-                        <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="width: 280px; margin-right: 20px;">
+                        <ui:VisualElement name="my-record" picking-mode="Ignore" class="elevation-1dp" style="width: 400px; margin-right: 20px;">
                             <ui:Label tabindex="-1" text="My record" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="card-title text-subtitle" />
                             <ui:Label tabindex="-1" text="123456   S++" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
                             <ui:Label tabindex="-1" text="NEW RECORD" display-tooltip-when-elided="true" name="new-record-indicator" picking-mode="Ignore" class="text-overline-primary" style="height: 20px; -unity-text-align: middle-center;" />
@@ -846,31 +860,17 @@
                             <ui:Label tabindex="-1" text="Custom" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="-unity-text-align: middle-center; height: 50px;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement name="right-column" picking-mode="Ignore" style="flex-grow: 1;">
-                    <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 260px; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; flex-direction: row;">
-                        <ui:VisualElement name="eyecatch" picking-mode="Ignore" style="width: 200px; align-items: center; justify-content: center;">
-                            <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
-                        </ui:VisualElement>
-                        <ui:VisualElement name="metadata-wrap" picking-mode="Ignore" style="margin-left: 30px; flex-grow: 1;">
-                            <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
-                                <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-left;" />
-                            </ui:ScrollView>
-                            <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
-                                <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-left;" />
-                            </ui:ScrollView>
-                            <ui:Instance template="Pattern Banner" name="Pattern Banner" picking-mode="Ignore" style="position: absolute; left: 0; bottom: 0; right: 0;" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:VisualElement name="performance-graph" picking-mode="Ignore" class="elevation-1dp" style="height: 320px; margin-top: 20px;" />
-                    <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="height: 140px; padding-left: 20px; padding-right: 20px; margin-top: 20px;">
+                    <ui:VisualElement name="performance-graph" picking-mode="Ignore" class="elevation-1dp" style="height: 400px; margin-top: 20px;" />
+                    <ui:VisualElement name="modifiers" picking-mode="Ignore" class="elevation-1dp" style="height: 120px; padding-left: 20px; padding-right: 20px; margin-top: 20px;">
                         <ui:Label tabindex="-1" text="Modifiers" display-tooltip-when-elided="true" name="title" picking-mode="Ignore" class="text-subtitle card-title" />
                         <ui:ScrollView name="container" picking-mode="Ignore" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="scrolling-text" style="margin-top: 10px; height: 40px;">
                             <ui:Label tabindex="-1" text="Fade in 2 / Blink 2 / &lt;color=#CF6679&gt;Swap&lt;/color&gt;" display-tooltip-when-elided="true" name="content" class="text-headline-6" style="-unity-text-align: upper-center;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
-                    <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="margin-top: 20px; height: 60px;" />
-                    <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-contained" style="margin-top: 20px; height: 60px;" />
+                    <ui:VisualElement name="buttons" picking-mode="Ignore" style="flex-direction: row; margin-top: 20px;">
+                        <ui:Button text="RETRY" display-tooltip-when-elided="true" name="retry-button" class="button-outlined" style="width: 400px; margin-right: 20px;" />
+                        <ui:Button text="SELECT TRACK" display-tooltip-when-elided="true" name="select-track-button" class="button-contained" style="flex-grow: 1;" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:Label tabindex="-1" text="*Pattern contains legacy ruleset override" display-tooltip-when-elided="true" name="legacy-override-indicator" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 0; right: 0; bottom: 0; -unity-text-align: upper-right;" />

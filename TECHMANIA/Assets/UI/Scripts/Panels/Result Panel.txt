@@ -24,8 +24,8 @@ resultPanel.Show = function()
     -- Track metadata
     local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
-    panel.Q("metadata-wrap").Q("title").text = trackMetadata.title
-    panel.Q("metadata-wrap").Q("artist").text = trackMetadata.artist
+    panel.Q("title-container").Q("title").text = trackMetadata.title
+    panel.Q("artist-container").Q("artist").text = trackMetadata.artist
 
     -- Pattern metadata
     local patternBanner = panel.Q("pattern-banner")
