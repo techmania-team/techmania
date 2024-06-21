@@ -105,6 +105,14 @@ resultPanel.Show = function()
     -- Modifiers
     panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
 
+    -- Test: performance graph
+    for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
+        print("correctTime: " .. tostring(performance.correctTime) ..
+            " timeDifference: " .. tostring(performance.timeDifference) ..
+            " judgement: " .. tostring(performance.judgement) .. 
+            " HPAfterNote: " .. tostring(performance.HPAfterNote))
+    end
+
     tm.game.Conclude()
 end
 

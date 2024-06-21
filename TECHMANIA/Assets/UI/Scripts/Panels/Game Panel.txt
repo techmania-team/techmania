@@ -13,13 +13,12 @@ gamePanel = {
 
     -- Each element is a table:
     -- {
-    --   time: correct time of note, in seconds
-    --   timeDifference: negative for too early, positive for too late, in seconds or pulses
-    --                   depending on ruleset
+    --   correctTime: in seconds
+    --   timeDifference: negative for too early, positive for too late, in seconds
     --   judgement: judgement
-    --   HP: remaining HP after note, [0, 1]
+    --   HPAfterNote: remaining HP after note, [0, 1]
     -- }
-    stateAfterEachNote = {},
+    performanceOnAllNotes = {},
 }
 
 pauseButton = {
@@ -115,6 +114,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onLoadComplete = function()
+            gamePanel.performanceOnAllNotes = {}
             gamePanel.BeginGame()
         end
 
@@ -131,7 +131,14 @@ gamePanel.Initialize = function()
                 scoreKeeper.ScoreFromNotes(),
                 scoreKeeper.maxCombo)
             judgementTally.Update(scoreKeeper)
-            -- print("time difference: " .. tostring(timeDifference))
+
+            -- Record performance
+            table.insert(gamePanel.performanceOnAllNotes, {
+                correctTime = note.time,
+                timeDifference = timeDifference,
+                judgement = judgement,
+                HPAfterNote = scoreKeeper.hp / scoreKeeper.maxHp
+            })
         end
 
         tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
