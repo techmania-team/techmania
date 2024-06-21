@@ -10,7 +10,7 @@ resultPanel.Initialize = function()
         local padding = 20
 
         painter.lineWidth = 2
-        painter.strokeColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256)
+        painter.strokeColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256, 0.6)
 
         if (#gamePanel.performanceOnAllNotes == 0) then
             -- Special case: just draw HP line
@@ -47,6 +47,42 @@ resultPanel.Initialize = function()
             previousHp = hp
         end
         painter.Stroke()
+
+        -- Time differences
+        for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
+            local time = performance.correctTime
+            local t = unity.mathf.InverseLerp(minTime, maxTime, time)
+
+            local judgement = performance.judgement
+
+            local timeDifference = performance.timeDifference
+            if (not net.float.IsInfinity(timeDifference)) then
+                local y = unity.mathf.InverseLerp(-0.2, 0.2, timeDifference)
+                local center = Denormalize(t, y)
+                painter.BeginPath()
+                painter.MoveTo(unity.vector2.__new(center.x - 4, center.y - 4))
+                painter.LineTo(unity.vector2.__new(center.x + 4, center.y - 4))
+                painter.LineTo(unity.vector2.__new(center.x + 4, center.y + 4))
+                painter.LineTo(unity.vector2.__new(center.x - 4, center.y + 4))
+                painter.ClosePath()
+
+                if (judgement == tm.enum.judgement.RainbowMax) then
+                    painter.fillColor = unity.color.__new(245 / 255, 124 / 255, 0)
+                elseif (judgement == tm.enum.judgement.Max) then
+                    painter.fillColor = unity.color.__new(56 / 255, 142 / 255, 60 / 255)
+                elseif (judgement == tm.enum.judgement.Cool) then
+                    painter.fillColor = unity.color.__new(194 / 255, 24 / 255, 91 / 255)
+                elseif (judgement == tm.enum.judgement.Good) then
+                    painter.fillColor = unity.color.__new(25 / 255, 118 / 255, 210 / 255)
+                elseif (judgement == tm.enum.judgement.Miss) then
+                    painter.fillColor = unity.color.__new(123 / 255, 31 / 255, 162 / 255)
+                elseif (judgement == tm.enum.judgement.Break) then
+                    painter.fillColor = unity.color.__new(211 / 255, 47 / 255, 47 / 255)
+                end
+
+                painter.Fill()
+            end
+        end
     end)
 end
 
