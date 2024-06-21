@@ -9,19 +9,44 @@ resultPanel.Initialize = function()
         local height = element.contentRect.height
         local padding = 20
 
-        local hpWidth = 2
-        local hpColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256)
+        painter.lineWidth = 2
+        painter.strokeColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256)
 
         if (#gamePanel.performanceOnAllNotes == 0) then
             -- Special case: just draw HP line
-            painter.lineWidth = hpWidth
-            painter.strokeColor = hpColor
             painter.BeginPath()
             painter.MoveTo(unity.vector2.__new(padding, padding))
             painter.LineTo(unity.vector2.__new(width - padding, padding))
             painter.Stroke()
             return
         end
+
+        local minTime = gamePanel.performanceOnAllNotes[1].correctTime
+        if (minTime > 0) then minTime = 0 end
+        local maxTime = gamePanel.performanceOnAllNotes[#gamePanel.performanceOnAllNotes].correctTime
+
+        function Denormalize(x, y)  -- both in [0, 1]
+            return unity.vector2.__new(
+                unity.mathf.Lerp(padding, width - padding, x),
+                unity.mathf.Lerp(padding, height - padding, y)
+            )
+        end
+
+        -- HP graph
+        painter.BeginPath()
+        painter.MoveTo(unity.vector2.__new(padding, padding))
+        local previousHp = 1
+        for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
+            local time = performance.correctTime
+            local t = unity.mathf.InverseLerp(minTime, maxTime, time)
+
+            local hp = performance.HPAfterNote
+
+            painter.LineTo(Denormalize(t, 1 - previousHp))
+            painter.LineTo(Denormalize(t, 1 - hp))
+            previousHp = hp
+        end
+        painter.Stroke()
     end)
 end
 
