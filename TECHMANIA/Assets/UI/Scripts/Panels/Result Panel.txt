@@ -2,7 +2,28 @@ resultPanel = {
     panel = tm.root.Q("result-panel")
 }
 
--- There is no Initialize, all navigation is set up in Navigation.txt
+resultPanel.Initialize = function()
+    resultPanel.panel.Q("performance-graph").SetMeshGeneratorFunction(function(element, context)
+        local painter = context.painter2D
+        local width = element.contentRect.width
+        local height = element.contentRect.height
+        local padding = 20
+
+        local hpWidth = 2
+        local hpColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256)
+
+        if (#gamePanel.performanceOnAllNotes == 0) then
+            -- Special case: just draw HP line
+            painter.lineWidth = hpWidth
+            painter.strokeColor = hpColor
+            painter.BeginPath()
+            painter.MoveTo(unity.vector2.__new(padding, padding))
+            painter.LineTo(unity.vector2.__new(width - padding, padding))
+            painter.Stroke()
+            return
+        end
+    end)
+end
 
 resultPanel.Show = function()
     local panel = resultPanel.panel
@@ -105,13 +126,11 @@ resultPanel.Show = function()
     -- Modifiers
     panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
 
-    -- Test: performance graph
-    for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
-        print("correctTime: " .. tostring(performance.correctTime) ..
-            " timeDifference: " .. tostring(performance.timeDifference) ..
-            " judgement: " .. tostring(performance.judgement) .. 
-            " HPAfterNote: " .. tostring(performance.HPAfterNote))
-    end
+    -- Performance graph
+    table.sort(gamePanel.performanceOnAllNotes, function(p1, p2)
+        return p1.correctTime < p2.correctTime
+    end)
+    panel.Q("performance-graph").MarkDirtyRepaint()
 
     tm.game.Conclude()
 end
@@ -119,3 +138,5 @@ end
 resultPanel.Hide = function()
     ReleaseEyecatch(resultPanel.panel.Q("eyecatch"))
 end
+
+resultPanel.Initialize()

@@ -9,7 +9,6 @@
     <ui:Template name="Setlist Missing Pattern" src="project://database/Assets/UI/Templates/Setlist%20Missing%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6b9d46e8813bef8488f97af62ec4ed4f&amp;type=3#Setlist Missing Pattern" />
     <ui:Template name="SliderInt" src="project://database/Assets/UI/Controls/SliderInt.uxml?fileID=9197481963319205126&amp;guid=9e51ce978279d78458e93b4a2cefb40e&amp;type=3#SliderInt" />
     <ui:Template name="Progress Bar" src="project://database/Assets/UI/Controls/Progress%20Bar.uxml?fileID=9197481963319205126&amp;guid=ac74c7c748749424db3de0f625d5e25e&amp;type=3#Progress Bar" />
-    <ui:Template name="Pattern Banner" src="project://database/Assets/UI/Templates/Pattern%20Banner.uxml?fileID=9197481963319205126&amp;guid=92f172b20c519f3489dbcd11eb939f20&amp;type=3#Pattern Banner" />
     <ui:Template name="Text Field Int" src="project://database/Assets/UI/Controls/Text%20Field%20Int.uxml?fileID=9197481963319205126&amp;guid=969b5e20ab88e7e42b1b372a11cb47fe&amp;type=3#Text Field Int" />
     <Style src="project://database/Assets/UI/USS%20Variables.uss?fileID=7433441132597879392&amp;guid=81dfa3c455006e043829177ac32a90e2&amp;type=3#USS Variables" />
     <Style src="project://database/Assets/UI/MainStyle.uss?fileID=7433441132597879392&amp;guid=1aadb5d5bfa980f47b31be43a04d720b&amp;type=3#MainStyle" />
@@ -796,7 +795,7 @@
         <ui:VisualElement name="content" picking-mode="Ignore" class="panel-content" style="align-items: center;">
             <ui:VisualElement name="wrap" picking-mode="Ignore" style="flex-direction: row; padding-top: 20px;">
                 <ui:VisualElement name="left-column" picking-mode="Ignore" style="width: 400px; margin-right: 20px;">
-                    <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 395px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; flex-direction: column; align-items: center;">
+                    <ui:VisualElement name="track-and-pattern-details" picking-mode="Ignore" class="elevation-1dp" style="height: 390px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; flex-direction: column; align-items: center;">
                         <ui:VisualElement name="eyecatch" picking-mode="Ignore" style="width: 200px; align-items: center; justify-content: center; height: 200px;">
                             <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                         </ui:VisualElement>
@@ -806,9 +805,11 @@
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex; width: 100%;">
                             <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-center;" />
                         </ui:ScrollView>
-                        <ui:Instance template="Pattern Banner" name="Pattern Banner" picking-mode="Ignore" style="width: 360px; margin-top: 10px;" />
+                        <ui:Instance template="Pattern Banner Centered" name="Pattern Banner Centered" style="margin-top: 10px; overflow: hidden; max-width: 100%;">
+                            <AttributeOverrides element-name="pattern-name" text="Pattern name " />
+                        </ui:Instance>
                     </ui:VisualElement>
-                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 30px; padding-right: 30px; padding-top: 15px; padding-bottom: 15px; height: 520px; top: 20px;">
+                    <ui:VisualElement name="judgement-tally" picking-mode="Ignore" class="elevation-1dp" style="padding-left: 30px; padding-right: 30px; padding-top: 15px; padding-bottom: 15px; height: 525px; top: 20px;">
                         <ui:VisualElement name="content" picking-mode="Ignore" style="flex-grow: 1;">
                             <ui:VisualElement name="labels" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
                                 <ui:Label tabindex="-1" text="Rainbow Max" display-tooltip-when-elided="true" picking-mode="Ignore" name="rainbow-max" class="text-subtitle" />
