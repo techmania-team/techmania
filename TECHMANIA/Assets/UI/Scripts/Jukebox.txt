@@ -1,6 +1,8 @@
 jukebox = {
     enabled = false,
 
+    modifierBackup = {},
+
     -- Each element is a table:
     -- {
     --   trackInFolder
@@ -49,14 +51,50 @@ jukebox.BuildPlaylist = function(location, includeSubfolders)
         end
     end
     SearchAndProcessFolder(location)
+
+    -- Shuffle
+    -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
+    for i = #jukebox.playlist, 2, -1 do
+        local j = math.random(i)  -- [1, i] inclusive
+        jukebox.playlist[i], jukebox.playlist[j] = jukebox.playlist[j], jukebox.playlist[i]
+    end
 end
 
 jukebox.BackupAndReplaceModifiers = function()
-    -- TODO
+    function ProcessKey(key, newOption)
+        jukebox.modifierBackup[key] = tm.options.modifiers[key]
+        tm.options.modifiers[key] = newOption
+    end
+    ProcessKey("noteOpacity", tm.enum.noteOpacity.Normal)
+    ProcessKey("scanlineOpacity", tm.enum.scanlineOpacity.Normal)
+    ProcessKey("scanDirection", tm.enum.scanDirection.Normal)
+    ProcessKey("notePosition", tm.enum.notePosition.Normal)
+    ProcessKey("scanPosition", tm.enum.scanPosition.Normal)
+    ProcessKey("fever", tm.enum.fever.Normal)
+    ProcessKey("keysound", tm.enum.keysound.Normal)
+    ProcessKey("assistTick", tm.enum.assistTick.None)
+    ProcessKey("suddenDeath", tm.enum.suddenDeath.Normal)
+    ProcessKey("mode", tm.enum.mode.AutoPlay)
+    ProcessKey("controlOverride", tm.enum.controlOverride.None)
+    ProcessKey("scrollSpeed", tm.enum.scrollSpeed.Normal)
 end
 
 jukebox.RestoreModifiers = function()
-    -- TODO
+    function ProcessKey(key)
+        tm.options.modifiers[key] = jukebox.modifierBackup[key]
+    end
+    ProcessKey("noteOpacity")
+    ProcessKey("scanlineOpacity")
+    ProcessKey("scanDirection")
+    ProcessKey("notePosition")
+    ProcessKey("scanPosition")
+    ProcessKey("fever")
+    ProcessKey("keysound")
+    ProcessKey("assistTick")
+    ProcessKey("suddenDeath")
+    ProcessKey("mode")
+    ProcessKey("controlOverride")
+    ProcessKey("scrollSpeed")
 end
 
 jukebox.SetupCurrentTrack = function()
