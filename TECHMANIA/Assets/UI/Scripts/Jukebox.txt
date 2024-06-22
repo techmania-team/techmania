@@ -102,3 +102,13 @@ jukebox.SetupCurrentTrack = function()
     tm.gameSetup.trackFolder = jukebox.playlist[jukebox.currentTrack].trackInFolder.folder
     tm.gameSetup.patternGuid = jukebox.playlist[jukebox.currentTrack].patternMetadata.guid
 end
+
+jukebox.IncrementTrack = function(direction)  -- 1 or -1
+    jukebox.currentTrack = jukebox.currentTrack + direction
+    if (jukebox.currentTrack <= 0) then
+        jukebox.currentTrack = jukebox.currentTrack + #jukebox.playlist
+    end
+    if (jukebox.currentTrack > #jukebox.playlist) then
+        jukebox.currentTrack = jukebox.currentTrack - #jukebox.playlist
+    end
+end

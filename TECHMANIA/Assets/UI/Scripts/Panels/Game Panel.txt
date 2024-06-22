@@ -82,6 +82,10 @@ gamePanel.Initialize = function()
         if (tm.options.modifiers.mode == tm.enum.mode.Practice or gamePanel.inEditor) then
             practiceMode.HandleKeyDown(event.keyCode)
         end
+
+        if (jukebox.enabled) then
+            jukeboxControls.HandleKeyDown(event.keyCode)
+        end
     end)
 
     panel.RegisterCallback(eventType.ApplicationFocus, function(element, event)
@@ -248,8 +252,10 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(_)
-            -- Don't conclude the game yet
-            if (tm.gameSetup.setlist.enabled) then
+            if (jukebox.enabled) then
+                jukeboxControls.IncrementTrack(1)
+            elseif (tm.gameSetup.setlist.enabled) then
+                -- Don't conclude the game yet
                 navigation.FadeTo(gamePanel, setlistResultPanel)
             else
                 navigation.FadeTo(gamePanel, resultPanel)
@@ -1056,13 +1062,19 @@ practiceMode.controls = {
     end
 }
 
+jukeboxControls.IncrementTrack = function(direction)  -- 1 or -1
+    jukebox.IncrementTrack(direction)
+    gamePanel.ConcludeGame()
+    gamePanel.Show()
+end
+
 jukeboxControls.Initialize = function()
     local controls = jukeboxControls.jukeboxTopBar.Q("controls")
     controls.Q("prev-track-button").RegisterCallback(eventType.Click, function()
-        -- TODO
+        jukeboxControls.IncrementTrack(-1)
     end)
     controls.Q("next-track-button").RegisterCallback(eventType.Click, function()
-        -- TODO
+        jukeboxControls.IncrementTrack(1)
     end)
 end
 
@@ -1075,6 +1087,14 @@ jukeboxControls.Show = function()
 
     topBar.Q("controls").Q("track-number-display").Q("value").text = net.string.Format(
         "{0} / {1}", jukebox.currentTrack, #jukebox.playlist)
+end
+
+jukeboxControls.HandleKeyDown = function(keyCode)
+    if (keyCode == unity.enum.keyCode.F3) then
+        jukeboxControls.IncrementTrack(-1)
+    elseif (keyCode == unity.enum.keyCode.F4) then
+        jukeboxControls.IncrementTrack(1)
+    end
 end
 
 gamePanel.Initialize()

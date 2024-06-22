@@ -118,7 +118,7 @@
                         <ui:Label tabindex="-1" text="Include tracks in subfolders" display-tooltip-when-elided="true" name="jukebox-include-subfolders" picking-mode="Ignore" class="text-body item" style="height: 60px; -unity-text-align: middle-left;">
                             <ui:Instance template="Toggle" name="Toggle" style="position: absolute; right: 0; top: 0; bottom: 0; justify-content: center;" />
                         </ui:Label>
-                        <ui:Button text="START" parse-escape-sequences="true" display-tooltip-when-elided="true" name="jukebox-start-button" class="button-outlined item" />
+                        <ui:Button text="START" parse-escape-sequences="true" display-tooltip-when-elided="true" name="jukebox-start-button" class="button-outlined item special-click-sfx" />
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -149,14 +149,14 @@
                         <ui:Label tabindex="-1" text="No image" display-tooltip-when-elided="true" name="default-eyecatch" picking-mode="Ignore" class="text-body" />
                     </ui:VisualElement>
                     <ui:VisualElement name="metadata-wrap" picking-mode="Ignore" style="margin-left: 15px; flex-grow: 1;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+                            <ui:Label text="Genre" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-subtitle" style="-unity-text-align: upper-left;" />
+                        </ui:ScrollView>
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" />
                         </ui:ScrollView>
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" />
-                        </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
-                            <ui:Label text="Genre" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
                     </ui:VisualElement>
                 </ui:VisualElement>
