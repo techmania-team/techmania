@@ -152,12 +152,6 @@
                         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="genre-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
                             <ui:Label text="Genre" display-tooltip-when-elided="true" picking-mode="Ignore" name="genre" class="text-subtitle" style="-unity-text-align: upper-left;" />
                         </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
-                            <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-left;" />
-                        </ui:ScrollView>
-                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
-                            <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-left;" />
-                        </ui:ScrollView>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="wrap" picking-mode="Ignore" style="height: 645px; margin-top: 20px; flex-direction: row;">
@@ -535,7 +529,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
+    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: flex;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" style="-unity-background-scale-mode: scale-and-crop;" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">
@@ -548,7 +542,7 @@
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement name="top-bar-content" picking-mode="Ignore" style="flex-grow: 1;">
-                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: flex;">
+                <ui:VisualElement name="regular-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; display: none;">
                     <ui:VisualElement name="hp-bar-wrap" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; padding-right: 50px; padding-top: 20px; padding-bottom: 20px;">
                         <ui:VisualElement name="hp-bar-bg" picking-mode="Ignore" class="surface" style="flex-grow: 1; flex-direction: row;">
                             <ui:VisualElement name="hp-threshold-indicator" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row; justify-content: space-between;">
@@ -658,6 +652,34 @@
                                 <ui:Instance template="Toggle" name="Toggle" class="silent" style="margin-left: 20px; margin-right: 20px;" />
                                 <ui:Label tabindex="-1" text="F12" display-tooltip-when-elided="true" name="shortcut" class="text-overline" />
                             </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="jukebox-top-bar" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-direction: row;">
+                    <ui:VisualElement name="title-and-artist" picking-mode="Ignore" style="flex-grow: 1; padding-left: 50px; justify-content: center;">
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="title-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+                            <ui:Label text="Title" display-tooltip-when-elided="true" picking-mode="Ignore" name="title" class="text-headline-4" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                        <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="artist-container" picking-mode="Ignore" class="scrolling-text" style="display: flex;">
+                            <ui:Label text="Artist" display-tooltip-when-elided="true" picking-mode="Ignore" name="artist" class="text-subtitle" style="-unity-text-align: upper-center;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="controls" picking-mode="Ignore" style="width: 400px; flex-direction: row; justify-content: center;">
+                        <ui:VisualElement name="prev-track-button-wrap" picking-mode="Ignore" style="justify-content: center;">
+                            <ui:Button display-tooltip-when-elided="true" name="prev-track-button" class="button-icon-outlined silent">
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/SkipNext.png?fileID=2800000&amp;guid=b53e1197fe24c2e49b8886a6ad150bcf&amp;type=3#SkipNext&quot;); rotate: 180deg;" />
+                            </ui:Button>
+                            <ui:Label tabindex="-1" text="F3" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" style="-unity-text-align: upper-center;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="track-number-display" picking-mode="Ignore" style="width: 160px;">
+                            <ui:Label tabindex="-1" text="Track" display-tooltip-when-elided="true" name="label" picking-mode="Ignore" class="text-subtitle" style="flex-grow: 1; -unity-text-align: lower-center;" />
+                            <ui:Label tabindex="-1" text="123 / 456" display-tooltip-when-elided="true" name="value" picking-mode="Ignore" class="text-headline-6" style="flex-grow: 1; -unity-text-align: upper-center;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="next-track-button-wrap" picking-mode="Ignore" style="justify-content: center;">
+                            <ui:Button display-tooltip-when-elided="true" name="next-track-button" class="button-icon-outlined silent">
+                                <ui:VisualElement name="icon" picking-mode="Ignore" class="icon" style="background-image: url(&quot;project://database/Assets/UI/Images/SkipNext.png?fileID=2800000&amp;guid=b53e1197fe24c2e49b8886a6ad150bcf&amp;type=3#SkipNext&quot;);" />
+                            </ui:Button>
+                            <ui:Label tabindex="-1" text="F4" display-tooltip-when-elided="true" name="shortcut" picking-mode="Ignore" class="text-overline shortcut-label" style="-unity-text-align: upper-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
