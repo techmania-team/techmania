@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Panel" src="project://database/Assets/UI/Controls/Panel.uxml?fileID=9197481963319205126&amp;guid=ef0a580985f87cd47b0f5f054f6c9830&amp;type=3#Panel" />
     <ui:Template name="Text Field" src="project://database/Assets/UI/Controls/Text%20Field.uxml?fileID=9197481963319205126&amp;guid=6f6445efae019ec4098632163cf1fd2e&amp;type=3#Text Field" />
-    <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Dropdown" src="project://database/Assets/UI/Controls/Dropdown.uxml?fileID=9197481963319205126&amp;guid=f2844f21f8742cd498e5e3f976754ad8&amp;type=3#Dropdown" />
     <ui:Template name="Radio Button" src="project://database/Assets/UI/Controls/Radio%20Button.uxml?fileID=9197481963319205126&amp;guid=afc8cda1eb6d97b44b97389cd11ad332&amp;type=3#Radio Button" />
+    <ui:Template name="Toggle" src="project://database/Assets/UI/Controls/Toggle.uxml?fileID=9197481963319205126&amp;guid=0455e969d6fd03b48abbd8d31a0d6353&amp;type=3#Toggle" />
     <ui:Template name="Setlist Selectable Pattern" src="project://database/Assets/UI/Templates/Setlist%20Selectable%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6529138e2633cd241bd4be906f774234&amp;type=3#Setlist Selectable Pattern" />
     <ui:Template name="Pattern Banner Centered" src="project://database/Assets/UI/Templates/Pattern%20Banner%20Centered.uxml?fileID=9197481963319205126&amp;guid=e5a3a332f569b85448172df66881ca9c&amp;type=3#Pattern Banner Centered" />
     <ui:Template name="Setlist Missing Pattern" src="project://database/Assets/UI/Templates/Setlist%20Missing%20Pattern.uxml?fileID=9197481963319205126&amp;guid=6b9d46e8813bef8488f97af62ec4ed4f&amp;type=3#Setlist Missing Pattern" />
@@ -98,9 +98,6 @@
                         </ui:Instance>
                         <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
                         <ui:Label tabindex="-1" text="Options" display-tooltip-when-elided="true" name="options-header" picking-mode="Ignore" class="item text-headline-4" />
-                        <ui:Label tabindex="-1" text="Show tracks in all folders" display-tooltip-when-elided="true" name="all-folders" picking-mode="Ignore" class="text-body item" style="height: 60px; -unity-text-align: middle-left;">
-                            <ui:Instance template="Toggle" name="Toggle" style="position: absolute; right: 0; top: 0; bottom: 0; justify-content: center;" />
-                        </ui:Label>
                         <ui:VisualElement name="sort-order-wrap" picking-mode="Ignore" class="item">
                             <ui:Label tabindex="-1" text="Sort by" display-tooltip-when-elided="true" name="sort-by" picking-mode="Ignore" class="text-body" style="height: 60px; -unity-text-align: middle-left; justify-content: center;">
                                 <ui:Instance template="Dropdown" name="Dropdown" class="no-mini-label" style="margin-left: 170px;" />
@@ -112,6 +109,16 @@
                                 <AttributeOverrides element-name="text" text="Descending" />
                             </ui:Instance>
                         </ui:VisualElement>
+                        <ui:Label tabindex="-1" text="Show tracks in all folders" display-tooltip-when-elided="true" name="all-folders" picking-mode="Ignore" class="text-body item" style="height: 60px; -unity-text-align: middle-left;">
+                            <ui:Instance template="Toggle" name="Toggle" style="position: absolute; right: 0; top: 0; bottom: 0; justify-content: center;" />
+                        </ui:Label>
+                        <ui:VisualElement name="space" picking-mode="Ignore" class="item space" />
+                        <ui:Label tabindex="-1" text="Jukebox" display-tooltip-when-elided="true" name="jukebox-header" picking-mode="Ignore" class="item text-headline-4" />
+                        <ui:Label tabindex="-1" text="Auto play all 17 tracks in a random order." parse-escape-sequences="true" display-tooltip-when-elided="true" name="jukebox-description" picking-mode="Ignore" class="text-body item" />
+                        <ui:Label tabindex="-1" text="Include tracks in subfolders" display-tooltip-when-elided="true" name="jukebox-include-subfolders" picking-mode="Ignore" class="text-body item" style="height: 60px; -unity-text-align: middle-left;">
+                            <ui:Instance template="Toggle" name="Toggle" style="position: absolute; right: 0; top: 0; bottom: 0; justify-content: center;" />
+                        </ui:Label>
+                        <ui:Button text="START" parse-escape-sequences="true" display-tooltip-when-elided="true" name="jukebox-start-button" class="button-outlined item" />
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>

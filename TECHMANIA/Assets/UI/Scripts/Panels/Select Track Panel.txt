@@ -15,6 +15,7 @@ selectTrackPanel = {
         sortBasisDisplayString = {},
         ascending = true
     },
+    jukeboxIncludesSubfolders = false,
     
     selectedTrackFolder = "",
     selectedFullTrack = nil,
@@ -451,6 +452,9 @@ trackFilterSideSheet.Show = function()
     else
         controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
     end
+
+    controls.SetToggleIsOn(sheet.Q("jukebox-include-subfolders").Q("track"), selectTrackPanel.jukeboxIncludesSubfolders)
+    trackFilterSideSheet.RefreshJukebox()
 end
 
 trackFilterSideSheet.FadeIn = function()
@@ -468,6 +472,23 @@ trackFilterSideSheet.FadeOut = function()
             bg.display = false
         end)
     end)
+end
+
+trackFilterSideSheet.RefreshJukebox = function()
+    local bg = trackFilterSideSheet.bg
+
+    -- Show or hide the subfolder toggle
+    bg.Q("jukebox-include-subfolders").display = not selectTrackPanel.filter.showTracksInAllFolders
+
+    -- Build playlist to know how many tracks are there
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
+        jukebox.BuildPlaylist(selectTrackPanel.location, true)  -- location should be root
+    else
+        jukebox.BuildPlaylist(selectTrackPanel.location, selectTrackPanel.jukeboxIncludesSubfolders)
+    end
+    local numTracks = #jukebox.playlist
+    bg.Q("jukebox-description").text = net.string.format(tm.l10n.GetString("jukebox_description_format"), tostring(#jukebox.playlist))
+    bg.Q("jukebox-start-button").SetEnabled(numTracks > 0)
 end
 
 trackFilterSideSheet.Initialize = function()
@@ -503,6 +524,7 @@ trackFilterSideSheet.Initialize = function()
         selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
         selectTrackPanel.ClearAllCards()
         selectTrackPanel.SpawnAllCards()
+        trackFilterSideSheet.RefreshJukebox()
     end)
 
     function LocalizeDropdown()
@@ -548,6 +570,15 @@ trackFilterSideSheet.Initialize = function()
         selectTrackPanel.filter.ascending = false
         selectTrackPanel.ClearAllCards()
         selectTrackPanel.SpawnAllCards()
+    end)
+
+    bg.Q("jukebox-include-subfolders").Q("track").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.jukeboxIncludesSubfolders = not selectTrackPanel.jukeboxIncludesSubfolders
+        trackFilterSideSheet.RefreshJukebox()
+    end)
+
+    bg.Q("jukebox-start-button").RegisterCallback(eventType.Click, function()
+        -- TODO: begin jukebox
     end)
 end
 

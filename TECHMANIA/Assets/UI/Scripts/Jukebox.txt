@@ -1,0 +1,49 @@
+jukebox = {
+    -- Each element is a table:
+    -- {
+    --   trackInFolder (TrackInFolder)
+    --   patternGuid (string)
+    -- }
+    playlist = {}
+}
+
+jukebox.BuildPlaylist = function(location, includeSubfolders)
+    jukebox.playlist = {}
+    function SearchAndProcessFolder(folder)
+        for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
+            -- Pick a pattern from this track. It's usually the most difficult Touch pattern,
+            -- but if no Touch patterns exist, use Keys, and if no keys, use KM.
+            local hardestPattern = {}
+            hardestPattern[tm.enum.controlScheme.Touch] = nil
+            hardestPattern[tm.enum.controlScheme.Keys] = nil
+            hardestPattern[tm.enum.controlScheme.KM] = nil
+            for _, pattern in ipairs(trackInFolder.minimizedTrack.patterns) do
+                local level = pattern.patternMetadata.level
+                local scheme = pattern.patternMetadata.controlScheme
+                if (hardestPattern[scheme] == nil or level >= hardestPattern[scheme].patternMetadata.level) then
+                    hardestPattern[scheme] = pattern
+                end
+            end
+
+            local chosenPattern = hardestPattern[tm.enum.controlScheme.Touch]
+            if (chosenPattern == nil) then
+                chosenPattern = hardestPattern[tm.enum.controlScheme.Keys]
+            end
+            if (chosenPattern == nil) then
+                chosenPattern = hardestPattern[tm.enum.controlScheme.KM]
+            end
+
+            if (chosenPattern != nil) then
+                table.insert(jukebox.playlist, {
+                    trackInFolder = trackInFolder,
+                    patternGuid = chosenPattern.patternMetadata.guid })
+            end
+        end
+        if (includeSubfolders) then
+            for _, subfolder in ipairs(tm.resources.GetTrackSubfolders(folder)) do
+                SearchAndProcessFolder(subfolder.fullPath)
+            end
+        end
+    end
+    SearchAndProcessFolder(location)
+end
