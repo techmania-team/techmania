@@ -856,8 +856,9 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="right-column" picking-mode="Ignore" style="margin-left: 20px; flex-grow: 1;">
                         <ui:VisualElement name="performance-graph" picking-mode="Ignore" class="elevation-1dp" style="height: 235px;">
-                            <ui:Label tabindex="-1" text="Early" parse-escape-sequences="true" display-tooltip-when-elided="true" name="early-label" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 20px; top: 20px;" />
-                            <ui:Label tabindex="-1" text="Late" parse-escape-sequences="true" display-tooltip-when-elided="true" name="late-label" picking-mode="Ignore" class="text-caption" style="position: absolute; left: 20px; bottom: 20px;" />
+                            <ui:Label tabindex="-1" text="Early" parse-escape-sequences="true" display-tooltip-when-elided="true" name="early-label" picking-mode="Ignore" class="text-caption" style="flex-grow: 1; margin-left: 20px; -unity-text-align: lower-left;" />
+                            <ui:VisualElement name="middle-line" picking-mode="Ignore" class="options-divider" style="margin-left: 20px; margin-right: 20px; margin-top: 10px; margin-bottom: 10px;" />
+                            <ui:Label tabindex="-1" text="Late" parse-escape-sequences="true" display-tooltip-when-elided="true" name="late-label" picking-mode="Ignore" class="text-caption" style="flex-grow: 1; margin-left: 20px; -unity-text-align: upper-left;" />
                         </ui:VisualElement>
                         <ui:VisualElement name="ruleset-and-modifiers" picking-mode="Ignore" style="flex-direction: row; margin-top: 20px; height: 120px;">
                             <ui:VisualElement name="ruleset" picking-mode="Ignore" class="elevation-1dp" style="width: 200px;">
