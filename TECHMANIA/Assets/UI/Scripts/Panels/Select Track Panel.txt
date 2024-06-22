@@ -576,10 +576,6 @@ trackFilterSideSheet.Initialize = function()
         selectTrackPanel.jukeboxIncludesSubfolders = not selectTrackPanel.jukeboxIncludesSubfolders
         trackFilterSideSheet.RefreshJukebox()
     end)
-
-    bg.Q("jukebox-start-button").RegisterCallback(eventType.Click, function()
-        -- TODO: begin jukebox
-    end)
 end
 
 newTrackDialog.Initialize = function()

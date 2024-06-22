@@ -1,10 +1,13 @@
 jukebox = {
+    enabled = false,
+
     -- Each element is a table:
     -- {
-    --   trackInFolder (TrackInFolder)
-    --   patternGuid (string)
+    --   trackInFolder
+    --   patternMetadata
     -- }
-    playlist = {}
+    playlist = {},
+    currentTrack = 0  -- 1-index
 }
 
 jukebox.BuildPlaylist = function(location, includeSubfolders)
@@ -36,7 +39,7 @@ jukebox.BuildPlaylist = function(location, includeSubfolders)
             if (chosenPattern != nil) then
                 table.insert(jukebox.playlist, {
                     trackInFolder = trackInFolder,
-                    patternGuid = chosenPattern.patternMetadata.guid })
+                    patternMetadata = chosenPattern.patternMetadata })
             end
         end
         if (includeSubfolders) then
@@ -46,4 +49,18 @@ jukebox.BuildPlaylist = function(location, includeSubfolders)
         end
     end
     SearchAndProcessFolder(location)
+end
+
+jukebox.BackupAndReplaceModifiers = function()
+    -- TODO
+end
+
+jukebox.RestoreModifiers = function()
+    -- TODO
+end
+
+jukebox.SetupCurrentTrack = function()
+    tm.gameSetup.setlist.enabled = false
+    tm.gameSetup.trackFolder = jukebox.playlist[jukebox.currentTrack].trackInFolder.folder
+    tm.gameSetup.patternGuid = jukebox.playlist[jukebox.currentTrack].patternMetadata.guid
 end

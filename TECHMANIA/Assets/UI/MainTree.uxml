@@ -529,7 +529,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: flex;">
+    <ui:VisualElement name="game-panel" picking-mode="Ignore" focusable="true" class="panel" style="display: none;">
         <ui:VisualElement name="bg-layer" picking-mode="Ignore" class="panel" style="-unity-background-scale-mode: scale-and-crop;" />
         <ui:VisualElement name="top-bar" picking-mode="Ignore" class="surface-8dp" style="height: 100px; flex-direction: row; display: flex; visibility: visible;">
             <ui:VisualElement name="left-button" picking-mode="Ignore" style="width: 100px; align-items: center; justify-content: center;">

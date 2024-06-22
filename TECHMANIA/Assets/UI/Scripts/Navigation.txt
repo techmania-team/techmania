@@ -69,6 +69,15 @@ function SetUpNavigation()
         navigation.TransitionBackTo(selectTrackPanel, mainMenu)
     end)
 
+    selectTrackPanel.panel.Q("jukebox-start-button").RegisterCallback(eventType.Click, function()
+        if (#jukebox.playlist <= 0) then return end
+        gamePanel.inEditor = false
+        jukebox.enabled = true
+        jukebox.currentTrack = 1
+        jukebox.BackupAndReplaceModifiers()
+        navigation.TransitionTo(selectTrackPanel, gamePanel)
+    end)
+
     -- select track panel --> select pattern panel is registered on track cards,
     -- handled by Select Track Panel.txt
     selectPatternPanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
@@ -91,6 +100,7 @@ function SetUpNavigation()
 
     selectPatternPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
         gamePanel.inEditor = false
+        jukebox.enabled = false
         navigation.FadeTo(selectPatternPanel, gamePanel)
     end)
     -- game panel --> select track panel can happen on multiple occasions, set up in
@@ -131,6 +141,7 @@ function SetUpNavigation()
 
     setupSetlistPanel.panel.Q("play-button").RegisterCallback(eventType.Click, function()
         gamePanel.inEditor = false
+        jukebox.enabled = false
         navigation.FadeTo(setupSetlistPanel, gamePanel)
     end)
     -- game panel --> setup setlist panel can happen on multiple occasions, set up in
@@ -155,6 +166,7 @@ function SetUpNavigation()
         selectTrackPanel.selectedFullTrack = track
         selectPatternPanel.selectedPattern = pattern
         gamePanel.inEditor = true
+        jukebox.enabled = false
         navigation.TransitionTo(editorPatternPanel, gamePanel)
     end
     gamePanel.panel.Q("back-button").RegisterCallback(eventType.Click, function()
