@@ -8,7 +8,7 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 ,,,,,,
 ,resource_loader_loading_skins,Loading skins... ({0} / {1}),正在读取皮肤…… ({0} / {1}),正在載入造型…… ({0} / {1}),スキンをロード中… ({0} / {1}),스킨 로드 중... ({0} / {1})
 ,resource_loader_loading_track_list,Loading track list... ({0} / {1}),正在读取曲目列表…… ({0} / {1}),正在載入歌曲清單…… ({0} / {1}),トラックをロード中… ({0} / {1}),음악 로드 중... ({0} / {1})
-Added in 2.2,resource_loader_loading_setlist_list,Loading setlists... ({0} / {1}),正在读取组曲列表…… ({0} / {1}),正在載入組曲清單…… ({0} / {1}),セットリストをロード中… ({0} / {1}),디스크셋 로드 중... ({0} / {1})
+,resource_loader_loading_setlist_list,Loading setlists... ({0} / {1}),正在读取组曲列表…… ({0} / {1}),正在載入組曲清單…… ({0} / {1}),セットリストをロード中… ({0} / {1}),디스크셋 로드 중... ({0} / {1})
 ,resource_loader_loading_theme,Loading theme... ({0} / {1}),正在读取主题…… ({0} / {1}),正在載入主題…… ({0} / {1}),テーマをロード中… ({0} / {1}),테마 로드 중... ({0} / {1})
 ,boot_screen_revert_default_theme_label,Revert to default theme ({0}),复原至默认主题 ({0}),還原至預設主題 ({0}),デフォルトにします… ({0}),기본값으로 되돌리는 중... ({0})
 ,boot_screen_revert_default_theme_button,REVERT,复原,還原,デフォルトにする,기본값으로 복원
@@ -66,7 +66,7 @@ TECHMANIA 기본 테마를 사용합니다."
 ,,,,,,
 ,discord_state_editing_track,Editing Track,正在编辑曲目,正在編輯歌曲,トラック編集,패턴 편집 중
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_editing_pattern,Editing {0}L {1} - {2},正在编辑：{0}轨 {1} - {2},正在編輯：{0}軌 {1} - {2},{0}ライン {1} - {2} 編集,{1} 모드 / {0}라인 {2} 편집 중
-Added in 2.2,discord_state_editing_setlist,Editing Setlist,正在编辑组曲,正在編輯組曲,セットリスト編集,디스크셋 편집 중
+,discord_state_editing_setlist,Editing Setlist,正在编辑组曲,正在編輯組曲,セットリスト編集,디스크셋 편집 중
 ,,,,,,
 ,message_dialog_ok_button,OK,确定,確定,OK,확인
 ,,,,,,
@@ -596,7 +596,7 @@ You can continue to edit this pattern, but playback and preview will be disabled
 * このレベルはおすすめのレベルです。実際のレベルは自分で判断してください。","* 각 항목의 정의외 계산 방식은 TECHMANIA 공식 문서를 참조하십시오.
 * 이 레벨은 프로그램의 추천 값입니다. 실제 레벨을 정할 때 참고용으로만 사용하십시오."
 ,,,,,,
-All strings on setlists are added in 2.2,edit_setlist_panel_title,Editing Setlist,编辑组曲,編輯組曲,セットリスト編集,디스크셋 편집
+,edit_setlist_panel_title,Editing Setlist,编辑组曲,編輯組曲,セットリスト編集,디스크셋 편집
 ,edit_setlist_panel_resources_and_metadata_header,Resources and metadata,资源与元数据,資源與組曲資訊,リソース及びメタデータ,리소스 & 메타데이터
 ,edit_setlist_panel_import_button,Import,导入,匯入,インポート,가져오기
 ,edit_setlist_panel_import_button_help,"Import image files so they can be used

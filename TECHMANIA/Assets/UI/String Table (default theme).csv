@@ -26,15 +26,15 @@ Used in information menu.",localizer_names,N/A,DJ Hitori,Kento,"BrainInAVet, Sin
 {0} is number of lanes; {1} is control scheme; {2} is level.,discord_state_playing_pattern,{0}L {1} - {2},{0}轨 {1} - {2},{0}軌 {1} - {2},{0}ライン {1} - {2},{1} 모드 / {0}라인 {2}
 {0} is setlist title; {1} is stage number (1-4),discord_state_playing_setlist,{0} (stage {1}),{0}（第{1}曲）,{0}（第{1}首）,{0}（ステージ{1}）,{0} (스테이지 {1})
 {0} is pattern level; {1} is track title,discord_state_playing_pattern_in_setlist,({0}) {1},({0}) {1},({0}) {1},({0}) {1},({0}) {1}
-Added in 2.2,discord_state_selecting_setlist,Selecting Setlist,正在选择组曲,正在選擇組曲,セットリスト選択,디스크셋 선택 중
-Added in 2.2,discord_state_setting_up_setlist,Setting Up Setlist,正在配置组曲,正在設定組曲,セットリスト構成,디스크셋 구성 중
+,discord_state_selecting_setlist,Selecting Setlist,正在选择组曲,正在選擇組曲,セットリスト選択,디스크셋 선택 중
+,discord_state_setting_up_setlist,Setting Up Setlist,正在配置组曲,正在設定組曲,セットリスト構成,디스크셋 구성 중
 ,,,,,,
 ,#main-menu #welcome-mat-text,Click / Touch / Press any key,轻触屏幕 / 鼠标 / 任意键,觸碰螢幕 / 點擊滑鼠 / 按下任意鍵,Click / Touch / Press any key,클릭 / 터치 / 아무 키나 누르십시오.
 ,#main-menu #start-button #label,START,开始,開始,スタート,게임 시작
-Added in 2.2,#main-menu #setlists-button #label,SETLISTS,组曲,組曲,セットリスト,디스크셋
+,#main-menu #setlists-button #label,SETLISTS,组曲,組曲,セットリスト,디스크셋
 ,#main-menu #editor-button #label,EDITOR,编辑,編輯,エディタ,편집기
-Added in 2.2,#main-menu #editor-sub-buttons #edit-tracks-button,TRACKS,单曲,單曲,トラック,음악
-Added in 2.2,#main-menu #editor-sub-buttons #edit-setlists-button,SETLISTS,组曲,組曲,セットリスト,디스크셋
+,#main-menu #editor-sub-buttons #edit-tracks-button,TRACKS,单曲,單曲,トラック,음악
+,#main-menu #editor-sub-buttons #edit-setlists-button,SETLISTS,组曲,組曲,セットリスト,디스크셋
 ,#main-menu #options-button #label,OPTIONS,设置,設定,設定,설정
 ,#main-menu #information-button #label,INFORMATION,须知,須知,情報,안내
 ,#main-menu #quit-button #label,QUIT,退出,離開,終了,종료
@@ -121,10 +121,10 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 ,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
 ,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
 ,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
-,#select-track-panel #filter-sidesheet #jukebox-header,Jukebox,点唱机,,,
-{0} is the number of tracks,jukebox_description_format,Auto play all {0} tracks in a random order.,以随机顺序自动演奏全部{0}首曲目。,,,
-,#select-track-panel #filter-sidesheet #jukebox-include-subfolders,Include tracks in subfolders,包含子文件夹里的曲目,,,
-,#select-track-panel #filter-sidesheet #jukebox-start-button,START,开始,開始,スタート,게임 시작
+Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-header,Jukebox,点唱机,,,
+Added in 2.3;{0} is the number of tracks,jukebox_description_format,Auto play all {0} tracks in a random order.,以随机顺序自动演奏全部{0}首曲目。,,,
+Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-include-subfolders,Include tracks in subfolders,包含子文件夹里的曲目,,,
+Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-start-button,START,开始,開始,スタート,게임 시작
 ,,,,,,
 ,#select-track-panel #new-track-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
 ,#select-track-panel #new-track-dialog #artist-field #mini-label,Artist,艺术家,演出者,アーティスト,아티스트
@@ -142,7 +142,7 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 
 {1}"
 ,,,,,,
-All strings on setlists are added in 2.2,#select-setlist-panel #top-bar #title,Select Setlist,选择组曲,選擇組曲,セットリスト選択,Select Setlist
+,#select-setlist-panel #top-bar #title,Select Setlist,选择组曲,選擇組曲,セットリスト選択,Select Setlist
 "{0} is the number of setlists hidden;
 {1} is the search term.",select_setlist_some_setlists_hidden_text,"{0} setlist(s) are hidden as they don't match the search term ""{1}"".",{0}首组曲不包含搜索关键字“{1}”，因而没有显示。,隱藏了 {0} 首不包含搜尋關鍵字 “{1}” 的組曲。,"キーワード""{1}""を含まないセットリスト{0}個が表示されていません。","검색어 ""{1}""을 포함하지 않는 디스크셋 {0}개가 표시되지 않았습니다."
 ,select_setlist_no_setlist_text,TECHMANIA cannot find any setlist in this folder.,TECHMANIA没有在此文件夹内找到任何组曲。,找不到任何組曲,このフォルダにセットリストが見つかりませんでした,디스크셋이 없습니다.
@@ -333,14 +333,14 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#game-panel #practice-top-bar #auto-play-wrap #label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
 ,#game-panel #practice-top-bar #show-hitbox-wrap #label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
 ,,,,,,
-,#game-panel #jukebox-top-bar #track-number-display #label,Track,曲目,,,
+Added in 2.3,#game-panel #jukebox-top-bar #track-number-display #label,Track,曲目,,,
 ,,,,,,
 ,#game-panel #pause-menu #title,PAUSE,暂停,暫停,PAUSE,PAUSE
 ,#game-panel #pause-menu #resume-button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
 ,#game-panel #pause-menu #restart-button,RESTART,重试,再試一次,RESTART,RESTART
 ,#game-panel #pause-menu #select-track-button,SELECT TRACK,选曲,選擇歌曲,SELECT MUSIC,SELECT MUSIC
-Added in 2.2,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,重新開始組曲,RESTART SETLIST,RESTART SETLIST
-Added in 2.2,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,選擇組曲,SELECT SETLIST,SELECT SETLIST
+,#game-panel #pause-menu #restart-setlist-button,RESTART SETLIST,重新开始组曲,重新開始組曲,RESTART SETLIST,RESTART SETLIST
+,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选择组曲,選擇組曲,SELECT SETLIST,SELECT SETLIST
 ,#game-panel #pause-menu #bg-brightness-wrap #label,BG brightness,背景亮度,背景亮度,背景の明るさ,BGA 밝기
 ,#game-panel #pause-menu #master #label,Master,主音量,主音量,マスター,마스터 볼륨
 ,#game-panel #pause-menu #music #label,Music,音乐音量,音樂音量,音楽,반주음
@@ -363,8 +363,8 @@ Added in 2.2,#game-panel #pause-menu #select-setlist-button,SELECT SETLIST,选�
 ,#result-panel #my-record #title,My record,最高纪录,最高紀錄,記録,나의 기록
 ,#result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,NEW RECORD,NEW RECORD
 ,#result-panel #ruleset #title,Ruleset,规则,規則,ルールセット,규칙
-,#result-panel #performance-graph #early-label,Early,过早,太早,EARLY,EARLY
-,#result-panel #performance-graph #late-label,Late,过晚,太晚,LATE,LATE
+Added in 2.3,#result-panel #performance-graph #early-label,Early,过早,太早,EARLY,EARLY
+Added in 2.3,#result-panel #performance-graph #late-label,Late,过晚,太晚,LATE,LATE
 ,#result-panel #modifiers #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 ,#result-panel #retry-button,RETRY,重试,重新開始,リトライ,RETRY
 ,#result-panel #select-track-button,SELECT TRACK,选曲,選擇歌曲,トラック選択,SELECT MUSIC
@@ -474,8 +474,8 @@ Are you sure you want to change theme?","警告
 ,#options-panel #custom-data-location #label,Custom data location,自定义数据位置,自訂檔案位置,カスタムデータパス,데이터 위치 사용자 정의
 ,#options-panel #tracks-folder-location #label,Tracks folder,曲目文件夹,歌曲資料夾,トラックフォルダ,음악 폴더
 ,#options-panel #tracks-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
-Added in 2.2,#options-panel #setlists-folder-location #label,Setlists folder,组曲文件夹,組曲資料夾,セットリストフォルダ,디스크셋 폴더
-Added in 2.2,#options-panel #setlists-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
+,#options-panel #setlists-folder-location #label,Setlists folder,组曲文件夹,組曲資料夾,セットリストフォルダ,디스크셋 폴더
+,#options-panel #setlists-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
 ,#options-panel #skins-folder-location #label,Skins folder,皮肤文件夹,造型資料夾,スキンフォルダ,스킨 폴더
 ,#options-panel #skins-folder-location #button,BROWSE,浏览,瀏覽,参照…,찾아보기
 ,#options-panel #themes-folder-location #label,Themes folder,主题文件夹,主題資料夾,テーマフォルダ,테마 폴더
@@ -501,8 +501,8 @@ Added in 2.2,#options-panel #setlists-folder-location #button,BROWSE,浏览,瀏�
 ,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
 ,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
-,#select-skin-panel #reload-skins-now #label,Reload now,立刻重新读取皮肤,,,
-,#select-skin-panel #reload-skins-now #reload-button,RELOAD,读取,,,
+Added in 2.3,#select-skin-panel #reload-skins-now #label,Reload now,立刻重新读取皮肤,,,
+Added in 2.3,#select-skin-panel #reload-skins-now #reload-button,RELOAD,读取,,,
 {0} is error message,select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
 
 {0}","读取皮肤时发生错误：
@@ -572,13 +572,13 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
 
 현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
-,#information-panel #statistics-header,Statistics,统计数据,,,
-{0} - {2} are the statistics content,information_panel_statistics_timers_format,"Total time in app:<indent=30%>{0}</indent>
+Added in 2.3,#information-panel #statistics-header,Statistics,统计数据,,,
+Added in 2.3;{0} - {2} are the statistics content,information_panel_statistics_timers_format,"Total time in app:<indent=30%>{0}</indent>
 Time in game:<indent=30%>{1}</indent>
 Time in editor:<indent=30%>{2}</indent>","总时长：<indent=30%>{0}</indent>
 游戏时长：<indent=30%>{1}</indent>
 编辑器时长：<indent=30%>{2}</indent>",,,
-{0} - {2} are the statistics content,information_panel_statistics_counters_format,"Total app launches:<indent=30%>{0}</indent>
+Added in 2.3;{0} - {2} are the statistics content,information_panel_statistics_counters_format,"Total app launches:<indent=30%>{0}</indent>
 Total patterns played:<indent=30%>{1}</indent>
 Total notes hit:<indent=30%>{2}</indent>","TECHMANIA启动次数：<indent=30%>{0}</indent>
 游玩谱面总数：<indent=30%>{1}</indent>

@@ -540,7 +540,6 @@ trackFilterSideSheet.Initialize = function()
         }
         local sortBasisChoices = {}
         for _, display in pairs(selectTrackPanel.filter.sortBasisDisplayString) do
-            print("Display: " .. display)
             table.insert(sortBasisChoices, display)
         end
         local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
