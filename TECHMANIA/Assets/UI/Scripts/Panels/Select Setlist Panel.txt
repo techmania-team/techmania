@@ -40,7 +40,7 @@ function CompareSetlists(setlistInFolder1, setlistInFolder2)
     local s2 = setlistInFolder2.setlist
     local basis1, bases2
 
-    function CalculateAverageLevel(setlist)
+    local function CalculateAverageLevel(setlist)
         local totalLevel = 0
         local numPatterns = 0
         for _, patternRef in ipairs(setlist.selectablePatterns) do
@@ -120,7 +120,7 @@ selectSetlistPanel.SpawnAllCards = function()
     local setlistsInFolder = {}
     local setlistsWithError = {}
     if (selectSetlistPanel.filter.showSetlistsInAllFolders) then
-        function SearchAndProcessFolder(folder)
+        local function SearchAndProcessFolder(folder)
             for _, setlistInFolder in ipairs(tm.resources.GetSetlistsInFolder(folder)) do
                 table.insert(setlistsInFolder, setlistInFolder)
             end
@@ -167,7 +167,7 @@ selectSetlistPanel.SpawnAllCards = function()
         end
     end
 
-    function SetlistContainsAnyFilterKeyword(metadata)
+    local function SetlistContainsAnyFilterKeyword(metadata)
         if (#selectSetlistPanel.filter.keywords == 0) then
             return true
         end
@@ -541,7 +541,7 @@ setlistFilterSideSheet.Initialize = function()
         selectSetlistPanel.SpawnAllCards()
     end)
 
-    function LocalizeDropdown()
+    local function LocalizeDropdown()
         local bg = setlistFilterSideSheet.bg
         selectSetlistPanel.filter.sortBasisDisplayString = {
             Title = tm.l10n.GetString("setlist_filter_sidesheet_sort_basis_title"),

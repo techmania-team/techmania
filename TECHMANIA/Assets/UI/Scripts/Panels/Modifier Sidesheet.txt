@@ -23,7 +23,7 @@ modifierSidesheet = {
 
 modifierSidesheet.SetDropdownValues = function()
     local sheet = modifierSidesheet.sheet
-    function SetDropdownValue(containerName, modifierKey)
+    local function SetDropdownValue(containerName, modifierKey)
         local display = modifierSidesheet.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]
         sheet.Q(containerName).Q("dropdown").SetValueWithoutNotify(display)
     end
@@ -115,7 +115,7 @@ modifierSidesheet.Initialize = function()
         modifierSidesheet.FadeOut()
     end)
 
-    function LocalizeDropdowns()
+    local function LocalizeDropdowns()
         modifierSidesheet.modifierDisplayString.noteOpacity = {
             [tm.enum.noteOpacity.Normal] = tm.l10n.GetString("modifier_normal"),
             [tm.enum.noteOpacity.FadeOut] = tm.l10n.GetString("modifier_fade_out"),
@@ -179,7 +179,7 @@ modifierSidesheet.Initialize = function()
             [tm.enum.scrollSpeed.ShiftedHalfSpeed] = tm.l10n.GetString("modifier_shifted_half_speed")
         }
 
-        function LocalizeOneDropdown(bg, containerName, displayStringTable)
+        local function LocalizeOneDropdown(bg, containerName, displayStringTable)
             local choices = {}
             for _, displayString in pairs(displayStringTable) do
                 table.insert(choices, displayString)
@@ -207,7 +207,7 @@ modifierSidesheet.Initialize = function()
         setupSetlistPanel.ShowCurrentModifiers()
     end)
 
-    function InitializeDropdown(containerName, modifierKey)
+    local function InitializeDropdown(containerName, modifierKey)
         -- tm.options.modifiers and modifierSidesheet.modifierDisplayString share the same keys.
         bg.Q(containerName).Q("dropdown").RegisterCallback(eventType.ChangeString, function(element, event)
             tm.options.modifiers[modifierKey] = KeyFromValue(modifierSidesheet.modifierDisplayString[modifierKey], event.newValue)
@@ -257,7 +257,7 @@ end
 
 function CurrentModifiersToString(includeNoVideo)
     local allSegments = {}
-    function CheckAndAddSegment(modifierKey, isSpecial)
+    local function CheckAndAddSegment(modifierKey, isSpecial)
         if (tostring(tm.options.modifiers[modifierKey]) == "Normal") then return end
         if (tostring(tm.options.modifiers[modifierKey]) == "None") then return end
         local segment = modifierSidesheet.modifierDisplayString[modifierKey][tm.options.modifiers[modifierKey]]

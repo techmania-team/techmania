@@ -14,7 +14,7 @@ jukebox = {
 
 jukebox.BuildPlaylist = function(location, includeSubfolders)
     jukebox.playlist = {}
-    function SearchAndProcessFolder(folder)
+    local function SearchAndProcessFolder(folder)
         for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
             -- Pick a pattern from this track. It's usually the most difficult Touch pattern,
             -- but if no Touch patterns exist, use Keys, and if no keys, use KM.
@@ -61,7 +61,7 @@ jukebox.BuildPlaylist = function(location, includeSubfolders)
 end
 
 jukebox.BackupAndReplaceModifiers = function()
-    function ProcessKey(key, newOption)
+    local function ProcessKey(key, newOption)
         jukebox.modifierBackup[key] = tm.options.modifiers[key]
         tm.options.modifiers[key] = newOption
     end
@@ -80,7 +80,7 @@ jukebox.BackupAndReplaceModifiers = function()
 end
 
 jukebox.RestoreModifiers = function()
-    function ProcessKey(key)
+    local function ProcessKey(key)
         tm.options.modifiers[key] = jukebox.modifierBackup[key]
     end
     ProcessKey("noteOpacity")

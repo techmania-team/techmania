@@ -64,7 +64,7 @@ selectPatternPanel.ShowPatternDetails = function()
     local pattern = selectPatternPanel.selectedPattern
     local panel = selectPatternPanel.panel
 
-    function ShowRadar()
+    local function ShowRadar()
         local radarElement = panel.Q("radar")
         if (pattern == nil) then
             selectPatternPanel.radarOfSelectedPattern = nil
@@ -105,7 +105,7 @@ selectPatternPanel.ShowPatternDetails = function()
         if (e.bpm < minBpm) then minBpm = e.bpm end
         if (e.bpm > maxBpm) then maxBpm = e.bpm end
     end
-    function FormatBpm(bpm)
+    local function FormatBpm(bpm)
         local rounded = unity.mathf.RoundToInt(bpm)
         if (unity.mathf.Abs(rounded - bpm) < unity.mathf.Epsilon) then
             return tostring(rounded)
@@ -267,7 +267,7 @@ selectPatternPanel.InitializeRadar = function()
     local radarDisplayWidth = radarElement.Q("density").contentRect.width
     local radarDisplayHeight = radarElement.Q("density").contentRect.height
     local radarDisplayDistance = selectPatternPanel.radarRadiusUnit * 100 + 40
-    function PlaceRadarDisplay(element, vertex)
+    local function PlaceRadarDisplay(element, vertex)
         element.style.left = unity.styleLength.__new(
             radarCenterX + radarDisplayDistance * unity.mathf.Cos(RadarAngleForVertex(vertex)) - radarDisplayWidth * 0.5)
         element.style.top = unity.styleLength.__new(
@@ -361,7 +361,7 @@ selectPatternPanel.Initialize = function()
             painter.MoveTo(unity.vector2.__new(
                 radarCenterX,
                 radarCenterY - selectPatternPanel.radarRadiusUnit * selectPatternPanel.radarOfSelectedPattern.density.normalized))
-            function DrawRadarDimension(vertex, normalized)
+                local function DrawRadarDimension(vertex, normalized)
                 local angle = RadarAngleForVertex(vertex)
                 painter.LineTo(unity.vector2.__new(
                     radarCenterX + selectPatternPanel.radarRadiusUnit * normalized * unity.mathf.Cos(angle),

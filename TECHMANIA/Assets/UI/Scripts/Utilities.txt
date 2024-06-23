@@ -42,7 +42,7 @@ commonUI = {
 }
 
 commonUI.InitializeVolumeSliders = function(container)
-    function InitializeOneVolumeSlider(wrapName, optionKey)
+    local function InitializeOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
         local valueDisplay = wrap.Q("value-display")
@@ -62,7 +62,7 @@ commonUI.InitializeVolumeSliders = function(container)
 end
 
 commonUI.ShowVolumeSliders = function(container)
-    function ShowOneVolumeSlider(wrapName, optionKey)
+    local function ShowOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
         local valueDisplay = wrap.Q("value-display")

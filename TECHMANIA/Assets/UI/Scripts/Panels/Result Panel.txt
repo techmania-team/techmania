@@ -25,7 +25,7 @@ resultPanel.Initialize = function()
         if (minTime > 0) then minTime = 0 end
         local maxTime = gamePanel.performanceOnAllNotes[#gamePanel.performanceOnAllNotes].correctTime
 
-        function Denormalize(x, y)  -- both in [0, 1]
+        local function Denormalize(x, y)  -- both in [0, 1]
             return unity.vector2.__new(
                 unity.mathf.Lerp(padding, width - padding, x),
                 unity.mathf.Lerp(padding, height - padding, y)

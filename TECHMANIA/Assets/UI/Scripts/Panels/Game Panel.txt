@@ -99,7 +99,7 @@ gamePanel.Initialize = function()
         gamePanel.ActivateFever()
     end)
 
-    function InitializeGameSetup()
+    local function InitializeGameSetup()
         tm.gameSetup.bgContainer = panel.Q("bg-layer")
         tm.gameSetup.gameContainer = panel.Q("game-layer")
         tm.gameSetup.vfxComboContainer = nil  -- Unused
@@ -184,7 +184,7 @@ gamePanel.Initialize = function()
                     controlScheme = tm.enum.controlScheme.KM
                 end
 
-                function OneFlash()
+                local function OneFlash()
                     local fadeTimer = 0.5
                     local timer = 0
                     local maxHighlightOpacity = 0.38
@@ -811,7 +811,7 @@ pauseMenu.Initialize = function()
         event.StopPropagation()
     end)
 
-    function OnCancel()
+    local function OnCancel()
         gamePanel.Unpause()
     end
     menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)

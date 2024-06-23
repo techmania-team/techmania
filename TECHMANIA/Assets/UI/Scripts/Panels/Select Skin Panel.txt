@@ -9,7 +9,7 @@ selectSkinPanel = {
 selectSkinPanel.Show = function()
     local panel = selectSkinPanel.panel
 
-    function SetSkinDropdown(elementName, keyInOption, allSkinNames)
+    local function SetSkinDropdown(elementName, keyInOption, allSkinNames)
         local dropdown = panel.Q(elementName).Q("dropdown")
         local currentSkinName = tm.options[keyInOption]
         dropdown.SetValueWithoutNotify(currentSkinName)
@@ -38,7 +38,7 @@ end
 selectSkinPanel.Initialize = function()
     local panel = selectSkinPanel.panel
 
-    function WarnOnUndisplayableGameUiSkin()
+    local function WarnOnUndisplayableGameUiSkin()
         local gameUiSkin = tm.resources.gameUiSkin
         if (gameUiSkin.scanCountdownBackground.additiveShader or
             gameUiSkin.scanCountdownNumbers.additiveShader or
@@ -46,7 +46,7 @@ selectSkinPanel.Initialize = function()
             alertBox.Alert(tm.l10n.GetString("select_skin_panel_additive_shader_alert"))
         end
     end
-    function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
+    local function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
         local dropdown = panel.Q(elementName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             tm.skinPreview.Conclude()

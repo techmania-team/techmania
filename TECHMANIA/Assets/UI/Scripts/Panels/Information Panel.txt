@@ -13,7 +13,7 @@ infoPanel.Initialize = function()
     panel.Q("folder-location-android").display = (platform == "Android")
     panel.Q("ios-guided-access").display = (platform == "iOS")
 
-    function RegisterLinkButton(name, url)
+    local function RegisterLinkButton(name, url)
         panel.Q(name).RegisterCallback(eventType.Click, function()
             tm.OpenURL(url)
         end)
@@ -52,7 +52,7 @@ infoPanel.Show = function()
             tostring(stats.totalNotesHit))
         
         while (true) do
-            function FormatTimeSpan(timeSpan)
+            local function FormatTimeSpan(timeSpan)
                 local hours = timeSpan.Days * 24 + timeSpan.Hours
                 -- Lua's string library to the rescue
                 return string.format("%02d", hours) .. ":" ..

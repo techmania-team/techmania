@@ -76,7 +76,7 @@ function InitializeControls()
     end)
 
     -- Buttons
-    function SetUpButtonSoundsForClass(className)
+    local function SetUpButtonSoundsForClass(className)
         tm.root.Query(nil, className).ForEach(function (element)
             controls.SetUpButtonSounds(element)
         end)

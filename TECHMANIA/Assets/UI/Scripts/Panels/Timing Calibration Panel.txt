@@ -57,7 +57,7 @@ timingCalibrationPanel.Initialize = function()
     timingCalibrationPanel.kmRadio.RegisterCallback(eventType.Click,
         timingCalibrationPanel.SwitchToKm)
 
-    function OffsetChanged(newValue)
+        local function OffsetChanged(newValue)
         if (controls.RadioButtonIsOn(timingCalibrationPanel.touchRadio)) then
             tm.options.touchOffsetMs = newValue
         else  -- km
@@ -80,7 +80,7 @@ timingCalibrationPanel.Initialize = function()
         end
     end)
 
-    function LatencyChanged(newValue)
+    local function LatencyChanged(newValue)
         if (controls.RadioButtonIsOn(timingCalibrationPanel.touchRadio)) then
             tm.options.touchLatencyMs = newValue
         else  -- km
@@ -104,7 +104,7 @@ timingCalibrationPanel.Initialize = function()
     end)
 
     -- Set up calibrationPreview
-    function SetEarlyLateString()
+    local function SetEarlyLateString()
         tm.calibrationPreview.earlyString = tm.l10n.GetString("timing_calibration_early_indicator")
         tm.calibrationPreview.lateString = tm.l10n.GetString("timing_calibration_late_indicator")
     end

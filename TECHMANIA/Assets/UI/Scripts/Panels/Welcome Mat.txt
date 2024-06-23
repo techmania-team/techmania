@@ -11,12 +11,12 @@ function InitializeWelcomeMat()
 
     local slowBlinking = true
 
-    function Blink(timer, period)
+    local function Blink(timer, period)
         local opacity = unity.mathf.PingPong(timer, period) / period
         local smoothOpacity = unity.mathf.SmoothStep(0, 1, opacity)
         mat.style.opacity = unity.styleFloat.__new(smoothOpacity)
     end
-    function SlowBlink()
+    local function SlowBlink()
         local matTimer = 0
         local period = 1.5
         while (true) do
@@ -25,7 +25,7 @@ function InitializeWelcomeMat()
             coroutine.yield()
         end
     end
-    function FastBlinkThenShowMenu()
+    local function FastBlinkThenShowMenu()
         local matTimer = 0
         local period = 0.2
         while (matTimer < period * 6) do
@@ -39,7 +39,7 @@ function InitializeWelcomeMat()
     end
 
     local slowBlinkCoroutine = tm.StartCoroutine(SlowBlink)
-    function OnAnyInteraction()
+    local function OnAnyInteraction()
         if (not slowBlinking) then return end
         slowBlinking = false
         tm.StopCoroutine(slowBlinkCoroutine)

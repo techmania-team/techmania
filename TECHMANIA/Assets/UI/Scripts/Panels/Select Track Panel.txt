@@ -41,7 +41,7 @@ function CompareTracks(trackInFolder1, trackInFolder2)
     local t2 = trackInFolder2.minimizedTrack
     local basis1, basis2
 
-    function FindBasisPatternLevel(track, controlScheme)
+    local function FindBasisPatternLevel(track, controlScheme)
         -- When ascending, this looks for the lowest level.
         -- When descending, this looks for the highest level.
 
@@ -138,7 +138,7 @@ selectTrackPanel.SpawnAllCards = function()
     local tracksInFolder = {}
     local tracksWithError = {}
     if (selectTrackPanel.filter.showTracksInAllFolders) then
-        function SearchAndProcessFolder(folder)
+        local function SearchAndProcessFolder(folder)
             for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
                 table.insert(tracksInFolder, trackInFolder)
             end
@@ -185,7 +185,7 @@ selectTrackPanel.SpawnAllCards = function()
         end
     end
 
-    function TrackContainsAnyFilterKeyword(metadata)
+    local function TrackContainsAnyFilterKeyword(metadata)
         if (#selectTrackPanel.filter.keywords == 0) then
             return true
         end
@@ -527,7 +527,7 @@ trackFilterSideSheet.Initialize = function()
         trackFilterSideSheet.RefreshJukebox()
     end)
 
-    function LocalizeDropdown()
+    local function LocalizeDropdown()
         local bg = trackFilterSideSheet.bg
         selectTrackPanel.filter.sortBasisDisplayString = {
             Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
@@ -540,6 +540,7 @@ trackFilterSideSheet.Initialize = function()
         }
         local sortBasisChoices = {}
         for _, display in pairs(selectTrackPanel.filter.sortBasisDisplayString) do
+            print("Display: " .. display)
             table.insert(sortBasisChoices, display)
         end
         local sortBasisDropdown = bg.Q("sort-by").Q("dropdown")
