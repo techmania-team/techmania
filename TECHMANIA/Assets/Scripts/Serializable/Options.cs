@@ -505,6 +505,7 @@ public class EditorOptions
     public bool lockNotesInTime;
     public bool lockDragAnchorsInTime;
     public bool snapDragAnchors;
+    public bool autoSave;
 
     // Playback
 
@@ -525,6 +526,7 @@ public class EditorOptions
         lockNotesInTime = false;
         lockDragAnchorsInTime = false;
         snapDragAnchors = true;
+        autoSave = false;
 
         metronome = false;
         assistTickOnSilentNotes = false;
@@ -546,7 +548,9 @@ public class EditorOptions
 
             metronome = metronome,
             assistTickOnSilentNotes = assistTickOnSilentNotes,
-            returnScanlineAfterPlayback = returnScanlineAfterPlayback
+            returnScanlineAfterPlayback = returnScanlineAfterPlayback,
+
+            autoSave = autoSave
         };
     }
 }
