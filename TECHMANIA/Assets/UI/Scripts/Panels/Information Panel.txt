@@ -1,5 +1,6 @@
 infoPanel = {
-    panel = tm.root.Q("information-panel")
+    panel = tm.root.Q("information-panel"),
+    statsCoroutine = nil
 }
 
 infoPanel.Initialize = function()
@@ -12,7 +13,7 @@ infoPanel.Initialize = function()
     panel.Q("folder-location-android").display = (platform == "Android")
     panel.Q("ios-guided-access").display = (platform == "iOS")
 
-    function RegisterLinkButton(name, url)
+    local function RegisterLinkButton(name, url)
         panel.Q(name).RegisterCallback(eventType.Click, function()
             tm.OpenURL(url)
         end)
@@ -42,6 +43,40 @@ end
 
 infoPanel.Show = function()
     tm.SetDiscordActivity("", tm.l10n.GetString("discord_state_information"))
+
+    infoPanel.statsCoroutine = tm.StartCoroutine(function()
+        local stats = tm.stats
+        local counters = net.string.Format(tm.l10n.GetString("information_panel_statistics_counters_format"),
+            tostring(stats.timesAppLaunched),
+            tostring(stats.totalPatternsPlayed),
+            tostring(stats.totalNotesHit))
+        
+        while (true) do
+            local function FormatTimeSpan(timeSpan)
+                local hours = timeSpan.Days * 24 + timeSpan.Hours
+                -- Lua's string library to the rescue
+                return string.format("%02d", hours) .. ":" ..
+                    string.format("%02d", timeSpan.Minutes) .. ":" ..
+                    string.format("%02d", timeSpan.Seconds)
+            end
+            local timers = net.string.Format(tm.l10n.GetString("information_panel_statistics_timers_format"),
+                FormatTimeSpan(stats.totalPlayTime),
+                FormatTimeSpan(stats.timeInGame),
+                FormatTimeSpan(stats.timeInEditor))
+            local statsContent = timers .. "\r\n\r\n" .. counters
+            infoPanel.panel.Q("statistics-text").text = statsContent
+
+            local timer = 0
+            while (timer < 1) do
+                timer = timer + unity.time.deltaTime
+                coroutine.yield()
+            end
+        end
+    end)
+end
+
+infoPanel.Hide = function()
+    tm.StopCoroutine(infoPanel.statsCoroutine)
 end
 
 infoPanel.Initialize()

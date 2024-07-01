@@ -32,8 +32,15 @@ public class ChainNodeElements : ChainElementsBase
 
     protected override void TypeSpecificInitializeSizeExceptHitbox()
     {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.chainNode.flipWhenScanningLeft);
+
         pathToPreviousNote.style.height = layout.laneHeight *
             GlobalResource.noteSkin.chainPath.scale;
+        pathToPreviousNote.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.chainPath.flipWhenScanningLeft);
         
         // During initialization, this does nothing as there is no
         // next node.

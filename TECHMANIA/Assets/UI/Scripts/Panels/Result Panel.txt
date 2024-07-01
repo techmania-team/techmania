@@ -2,7 +2,89 @@ resultPanel = {
     panel = tm.root.Q("result-panel")
 }
 
--- There is no Initialize, all navigation is set up in Navigation.txt
+resultPanel.Initialize = function()
+    resultPanel.panel.Q("performance-graph").SetMeshGeneratorFunction(function(element, context)
+        local painter = context.painter2D
+        local width = element.contentRect.width
+        local height = element.contentRect.height
+        local padding = 20
+
+        painter.lineWidth = 2
+        painter.strokeColor = unity.color.__new(114 / 256, 202 / 256, 249 / 256, 0.6)
+
+        if (#gamePanel.performanceOnAllNotes == 0) then
+            -- Special case: just draw HP line
+            painter.BeginPath()
+            painter.MoveTo(unity.vector2.__new(padding, padding))
+            painter.LineTo(unity.vector2.__new(width - padding, padding))
+            painter.Stroke()
+            return
+        end
+
+        local minTime = gamePanel.performanceOnAllNotes[1].correctTime
+        if (minTime > 0) then minTime = 0 end
+        local maxTime = gamePanel.performanceOnAllNotes[#gamePanel.performanceOnAllNotes].correctTime
+
+        local function Denormalize(x, y)  -- both in [0, 1]
+            return unity.vector2.__new(
+                unity.mathf.Lerp(padding, width - padding, x),
+                unity.mathf.Lerp(padding, height - padding, y)
+            )
+        end
+
+        -- HP graph
+        painter.BeginPath()
+        painter.MoveTo(unity.vector2.__new(padding, padding))
+        local previousHp = 1
+        for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
+            local time = performance.correctTime
+            local t = unity.mathf.InverseLerp(minTime, maxTime, time)
+
+            local hp = performance.HPAfterNote
+
+            painter.LineTo(Denormalize(t, 1 - previousHp))
+            painter.LineTo(Denormalize(t, 1 - hp))
+            previousHp = hp
+        end
+        painter.Stroke()
+
+        -- Time differences
+        for _, performance in ipairs(gamePanel.performanceOnAllNotes) do
+            local time = performance.correctTime
+            local t = unity.mathf.InverseLerp(minTime, maxTime, time)
+
+            local judgement = performance.judgement
+
+            local timeDifference = performance.timeDifference
+            if (not net.float.IsInfinity(timeDifference)) then
+                local y = unity.mathf.InverseLerp(-0.2, 0.2, timeDifference)
+                local center = Denormalize(t, y)
+                painter.BeginPath()
+                painter.MoveTo(unity.vector2.__new(center.x - 4, center.y - 4))
+                painter.LineTo(unity.vector2.__new(center.x + 4, center.y - 4))
+                painter.LineTo(unity.vector2.__new(center.x + 4, center.y + 4))
+                painter.LineTo(unity.vector2.__new(center.x - 4, center.y + 4))
+                painter.ClosePath()
+
+                if (judgement == tm.enum.judgement.RainbowMax) then
+                    painter.fillColor = unity.color.__new(245 / 255, 124 / 255, 0)
+                elseif (judgement == tm.enum.judgement.Max) then
+                    painter.fillColor = unity.color.__new(56 / 255, 142 / 255, 60 / 255)
+                elseif (judgement == tm.enum.judgement.Cool) then
+                    painter.fillColor = unity.color.__new(194 / 255, 24 / 255, 91 / 255)
+                elseif (judgement == tm.enum.judgement.Good) then
+                    painter.fillColor = unity.color.__new(25 / 255, 118 / 255, 210 / 255)
+                elseif (judgement == tm.enum.judgement.Miss) then
+                    painter.fillColor = unity.color.__new(123 / 255, 31 / 255, 162 / 255)
+                elseif (judgement == tm.enum.judgement.Break) then
+                    painter.fillColor = unity.color.__new(211 / 255, 47 / 255, 47 / 255)
+                end
+
+                painter.Fill()
+            end
+        end
+    end)
+end
 
 resultPanel.Show = function()
     local panel = resultPanel.panel
@@ -24,8 +106,8 @@ resultPanel.Show = function()
     -- Track metadata
     local eyecatchPath = tm.paths.Combine(selectTrackPanel.selectedTrackFolder, trackMetadata.eyecatchImage)
     LoadAndShowEyecatch(eyecatchPath, panel.Q("eyecatch"))
-    panel.Q("metadata-wrap").Q("title").text = trackMetadata.title
-    panel.Q("metadata-wrap").Q("artist").text = trackMetadata.artist
+    panel.Q("title-container").Q("title").text = trackMetadata.title
+    panel.Q("artist-container").Q("artist").text = trackMetadata.artist
 
     -- Pattern metadata
     local patternBanner = panel.Q("pattern-banner")
@@ -105,9 +187,17 @@ resultPanel.Show = function()
     -- Modifiers
     panel.Q("modifiers").Q("content").text = CurrentModifiersToString(--[[includeNoVideo=]]false)
 
+    -- Performance graph
+    table.sort(gamePanel.performanceOnAllNotes, function(p1, p2)
+        return p1.correctTime < p2.correctTime
+    end)
+    panel.Q("performance-graph").MarkDirtyRepaint()
+
     tm.game.Conclude()
 end
 
 resultPanel.Hide = function()
     ReleaseEyecatch(resultPanel.panel.Q("eyecatch"))
 end
+
+resultPanel.Initialize()

@@ -1,5 +1,5 @@
 function InitializeThemeOptions()
-    function InitializeOneOption(key, defaultValue)
+    local function InitializeOneOption(key, defaultValue)
         if (not themeOptions.ContainsKey(key)) then
             themeOptions.Add(key, defaultValue)
         end
@@ -121,7 +121,7 @@ optionsPanel.Show = function()
 
     optionsPanel.UpdateThemeDropdown()
 
-    function ShowThemeOptionToggle(containerName, key)
+    local function ShowThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
         controls.SetToggleIsOn(toggle, net.bool.Parse(themeOptions[key]))
     end
@@ -169,8 +169,8 @@ optionsPanel.SetDiscordActivity = function()
 end
 
 optionsPanel.Initialize = function()
-    function InitializeLocalizedDropdowns(panel)
-        function InitializeOneLocalizedDropdown(containerName, stringTable)
+    local function InitializeLocalizedDropdowns(panel)
+        local function InitializeOneLocalizedDropdown(containerName, stringTable)
             local dropdown = panel.Q(containerName).Q("dropdown")
             local choices = {}
             for enum, display in pairs(stringTable) do
@@ -329,7 +329,7 @@ optionsPanel.Initialize = function()
             end)
     end)
 
-    function InitializeThemeOptionToggle(containerName, key)
+    local function InitializeThemeOptionToggle(containerName, key)
         local toggle = panel.Q(containerName).Q("track")
         toggle.RegisterCallback(eventType.Click, function()
             local oldValue = themeOptions[key]
@@ -351,7 +351,7 @@ optionsPanel.Initialize = function()
     -- because tables are passed by value, and the string tables may change
     -- with locale change, so we need the callbacks to query the up-to-date
     -- tables.
-    function InitializeThemeOptionDropdown(containerName, key, stringTableKey)
+    local function InitializeThemeOptionDropdown(containerName, key, stringTableKey)
         local dropdown = panel.Q(containerName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             enum = KeyFromValue(optionsPanel[stringTableKey], event.newValue)
@@ -394,7 +394,7 @@ optionsPanel.Initialize = function()
         end)
     end
 
-    function OnTracksFolderSelected(newFolder)
+    local function OnTracksFolderSelected(newFolder)
         if (newFolder != nil) then
             tm.options.tracksFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
@@ -407,7 +407,7 @@ optionsPanel.Initialize = function()
         tm.OpenSelectFolderDialog("", tm.options.tracksFolderLocation, OnTracksFolderSelected)
     end)
 
-    function OnSetlistsFolderSelected(newFolder)
+    local function OnSetlistsFolderSelected(newFolder)
         if (newFolder != nil) then
             tm.options.setlistsFolderLocation = newFolder
             tm.paths.ApplyCustomDataLocation()
@@ -420,7 +420,7 @@ optionsPanel.Initialize = function()
         tm.OpenSelectFolderDialog("", tm.options.setlistsFolderLocation, OnSetlistsFolderSelected)
     end)
     
-    function OnSkinsFolderSelected(newFolder)
+    local function OnSkinsFolderSelected(newFolder)
         if (newFolder != nil) then
             tm.options.skinsFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()
@@ -432,7 +432,7 @@ optionsPanel.Initialize = function()
         tm.OpenSelectFolderDialog("", tm.options.skinsFolderLocation, OnSkinsFolderSelected)
     end)
 
-    function OnThemeFolderSelected(newFolder)
+    local function OnThemeFolderSelected(newFolder)
         if (newFolder != nil) then
             tm.options.themesFolderLocation = newFolder;
             tm.paths.ApplyCustomDataLocation()

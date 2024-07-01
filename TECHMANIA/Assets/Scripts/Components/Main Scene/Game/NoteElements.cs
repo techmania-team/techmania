@@ -64,6 +64,8 @@ using UnityEngine.UIElements;
 // stuff.
 public class NoteElements : INoteHolder
 {
+    public const string hFlippedClass = "h-flipped";
+
     public Note note;
     Note INoteHolder.note
     {
@@ -236,13 +238,16 @@ public class NoteElements : INoteHolder
             scale = GlobalResource.vfxSkin.feverOverlay.scale;
             feverOverlay.style.width = laneHeight * scale;
             feverOverlay.style.height = laneHeight * scale;
+            feverOverlay.EnableInClassList(hFlippedClass,
+                scanDirection == GameLayout.ScanDirection.Left &&
+                GlobalResource.vfxSkin.feverOverlay.flipWhenScanningLeft);
         }
         if (approachOverlay != null)
         {
             scale = GlobalResource.gameUiSkin.approachOverlay.scale;
             approachOverlay.style.width = laneHeight * scale;
             approachOverlay.style.height = laneHeight * scale;
-            approachOverlay.EnableInClassList("h-flipped",
+            approachOverlay.EnableInClassList(hFlippedClass,
                 scanDirection == GameLayout.ScanDirection.Left);
         }
 
@@ -258,7 +263,7 @@ public class NoteElements : INoteHolder
             "NoteElements.GetNoteImageScaleFromRuleset should never be called.");
     }
 
-    // For paths and trails and stuff.
+    // For paths and trails and stuff. Also flipping.
     protected virtual void TypeSpecificInitializeSizeExceptHitbox() { }
     #endregion
 
@@ -552,6 +557,11 @@ public class NoteElements : INoteHolder
         {
             // Do nothing.
             return;
+        }
+
+        if (self.ClassListContains(hFlippedClass))
+        {
+            delta = -delta;
         }
 
         float angleInRadian = Mathf.Atan2(delta.y, delta.x);

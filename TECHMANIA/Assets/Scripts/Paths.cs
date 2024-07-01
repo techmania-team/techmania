@@ -257,6 +257,11 @@ public static class Paths
     {
         return Path.Combine(dataFolder, "records.json");
     }
+
+    public static string GetStatisticsFilePath()
+    {
+        return Path.Combine(dataFolder, "stats.json");
+    }
     #endregion
 
     #region Listing files of specific type

@@ -9,7 +9,7 @@ selectSkinPanel = {
 selectSkinPanel.Show = function()
     local panel = selectSkinPanel.panel
 
-    function SetSkinDropdown(elementName, keyInOption, allSkinNames)
+    local function SetSkinDropdown(elementName, keyInOption, allSkinNames)
         local dropdown = panel.Q(elementName).Q("dropdown")
         local currentSkinName = tm.options[keyInOption]
         dropdown.SetValueWithoutNotify(currentSkinName)
@@ -38,7 +38,7 @@ end
 selectSkinPanel.Initialize = function()
     local panel = selectSkinPanel.panel
 
-    function WarnOnUndisplayableGameUiSkin()
+    local function WarnOnUndisplayableGameUiSkin()
         local gameUiSkin = tm.resources.gameUiSkin
         if (gameUiSkin.scanCountdownBackground.additiveShader or
             gameUiSkin.scanCountdownNumbers.additiveShader or
@@ -46,7 +46,7 @@ selectSkinPanel.Initialize = function()
             alertBox.Alert(tm.l10n.GetString("select_skin_panel_additive_shader_alert"))
         end
     end
-    function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
+    local function InitializeSkinDropdown(elementName, keyInOption, reloadFunction)
         local dropdown = panel.Q(elementName).Q("dropdown")
         dropdown.RegisterCallback(eventType.ChangeString, function(element, event)
             tm.skinPreview.Conclude()
@@ -84,6 +84,22 @@ selectSkinPanel.Initialize = function()
     local reloadToggle = panel.Q("reload-skins").Q("track")
     reloadToggle.RegisterCallback(eventType.Click, function()
         tm.options.reloadSkinsWhenLoadingPattern = not tm.options.reloadSkinsWhenLoadingPattern
+    end)
+
+    panel.Q("reload-skins-now").Q("reload-button").RegisterCallback(eventType.Click, function()
+        tm.skinPreview.Conclude()
+        tm.io.ReloadAllSkins(
+            nil,  -- progress callback
+            function(status)  -- complete callback
+                if (not status.Ok()) then
+                    local errorMessage = net.string.Format(
+                        tm.l10n.GetString("select_skin_panel_load_error_format"),
+                        status.errorMessage)
+                    alertBox.Alert(errorMessage)
+                end
+                tm.skinPreview.Begin()
+            end
+        )
     end)
 
     -- Set up SkinPreview

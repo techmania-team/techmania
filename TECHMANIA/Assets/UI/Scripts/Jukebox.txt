@@ -1,0 +1,114 @@
+jukebox = {
+    enabled = false,
+
+    modifierBackup = {},
+
+    -- Each element is a table:
+    -- {
+    --   trackInFolder
+    --   patternMetadata
+    -- }
+    playlist = {},
+    currentTrack = 0  -- 1-index
+}
+
+jukebox.BuildPlaylist = function(location, includeSubfolders)
+    jukebox.playlist = {}
+    local function SearchAndProcessFolder(folder)
+        for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
+            -- Pick a pattern from this track. It's usually the most difficult Touch pattern,
+            -- but if no Touch patterns exist, use Keys, and if no keys, use KM.
+            local hardestPattern = {}
+            hardestPattern[tm.enum.controlScheme.Touch] = nil
+            hardestPattern[tm.enum.controlScheme.Keys] = nil
+            hardestPattern[tm.enum.controlScheme.KM] = nil
+            for _, pattern in ipairs(trackInFolder.minimizedTrack.patterns) do
+                local level = pattern.patternMetadata.level
+                local scheme = pattern.patternMetadata.controlScheme
+                if (hardestPattern[scheme] == nil or level >= hardestPattern[scheme].patternMetadata.level) then
+                    hardestPattern[scheme] = pattern
+                end
+            end
+
+            local chosenPattern = hardestPattern[tm.enum.controlScheme.Touch]
+            if (chosenPattern == nil) then
+                chosenPattern = hardestPattern[tm.enum.controlScheme.Keys]
+            end
+            if (chosenPattern == nil) then
+                chosenPattern = hardestPattern[tm.enum.controlScheme.KM]
+            end
+
+            if (chosenPattern != nil) then
+                table.insert(jukebox.playlist, {
+                    trackInFolder = trackInFolder,
+                    patternMetadata = chosenPattern.patternMetadata })
+            end
+        end
+        if (includeSubfolders) then
+            for _, subfolder in ipairs(tm.resources.GetTrackSubfolders(folder)) do
+                SearchAndProcessFolder(subfolder.fullPath)
+            end
+        end
+    end
+    SearchAndProcessFolder(location)
+
+    -- Shuffle
+    -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
+    for i = #jukebox.playlist, 2, -1 do
+        local j = math.random(i)  -- [1, i] inclusive
+        jukebox.playlist[i], jukebox.playlist[j] = jukebox.playlist[j], jukebox.playlist[i]
+    end
+end
+
+jukebox.BackupAndReplaceModifiers = function()
+    local function ProcessKey(key, newOption)
+        jukebox.modifierBackup[key] = tm.options.modifiers[key]
+        tm.options.modifiers[key] = newOption
+    end
+    ProcessKey("noteOpacity", tm.enum.noteOpacity.Normal)
+    ProcessKey("scanlineOpacity", tm.enum.scanlineOpacity.Normal)
+    ProcessKey("scanDirection", tm.enum.scanDirection.Normal)
+    ProcessKey("notePosition", tm.enum.notePosition.Normal)
+    ProcessKey("scanPosition", tm.enum.scanPosition.Normal)
+    ProcessKey("fever", tm.enum.fever.Normal)
+    ProcessKey("keysound", tm.enum.keysound.Normal)
+    ProcessKey("assistTick", tm.enum.assistTick.None)
+    ProcessKey("suddenDeath", tm.enum.suddenDeath.Normal)
+    ProcessKey("mode", tm.enum.mode.AutoPlay)
+    ProcessKey("controlOverride", tm.enum.controlOverride.None)
+    ProcessKey("scrollSpeed", tm.enum.scrollSpeed.Normal)
+end
+
+jukebox.RestoreModifiers = function()
+    local function ProcessKey(key)
+        tm.options.modifiers[key] = jukebox.modifierBackup[key]
+    end
+    ProcessKey("noteOpacity")
+    ProcessKey("scanlineOpacity")
+    ProcessKey("scanDirection")
+    ProcessKey("notePosition")
+    ProcessKey("scanPosition")
+    ProcessKey("fever")
+    ProcessKey("keysound")
+    ProcessKey("assistTick")
+    ProcessKey("suddenDeath")
+    ProcessKey("mode")
+    ProcessKey("controlOverride")
+    ProcessKey("scrollSpeed")
+end
+
+jukebox.SetupCurrentTrack = function()
+    tm.gameSetup.setlist.enabled = false
+    tm.gameSetup.trackFolder = jukebox.playlist[jukebox.currentTrack].trackInFolder.folder
+    tm.gameSetup.patternGuid = jukebox.playlist[jukebox.currentTrack].patternMetadata.guid
+end
+
+jukebox.IncrementTrack = function(direction)  -- 1 or -1
+    jukebox.currentTrack = jukebox.currentTrack + direction
+    if (jukebox.currentTrack <= 0) then
+        jukebox.currentTrack = jukebox.currentTrack + #jukebox.playlist
+    end
+    if (jukebox.currentTrack > #jukebox.playlist) then
+        jukebox.currentTrack = jukebox.currentTrack - #jukebox.playlist
+    end
+end

@@ -21,6 +21,7 @@ public class SpriteSheet
     public float scale;  // Relative to 1x lane height
     public float speed;  // Relative to 60 fps
     public bool additiveShader;
+    public bool flipWhenScanningLeft;
 
     [NonSerialized]  // Loaded at runtime
     public Texture2D texture;
@@ -39,6 +40,7 @@ public class SpriteSheet
         scale = 1f;
         speed = 1f;
         additiveShader = false;
+        flipWhenScanningLeft = false;
     }
 
     // Call after loading texture.
@@ -138,6 +140,91 @@ public class SpriteSheet
         return s;
     }
     #endregion
+}
+
+[Serializable]
+[MoonSharpUserData]
+public class SkinAnimationKeyframe
+{
+    // All values default to 0.
+
+    public float time;
+    public float value;
+    public float inTangent;
+    public float outTangent;
+    public float inWeight;
+    public float outWeight;
+    public int weightedMode;
+
+    public Keyframe ToUnityKeyframe()
+    {
+        return new Keyframe(time, value, inTangent, outTangent)
+        {
+            inWeight = inWeight,
+            outWeight = outWeight,
+            weightedMode = (WeightedMode)weightedMode
+        };
+    }
+}
+
+[Serializable]
+[MoonSharpUserData]
+public class SkinAnimationCurve
+{
+    public List<SkinAnimationKeyframe> keys;
+
+    // Which attribute this curve controls. Possible values:
+    // translationX
+    // translationY
+    // rotationInDegrees
+    // scaleX
+    // scaleY
+    // alpha
+    public string attribute;
+
+    // "once" (default)
+    // "pingpong"
+    // "loop"
+    public string loopMode;
+
+    public SkinAnimationCurve()
+    {
+        keys = new List<SkinAnimationKeyframe>();
+    }
+
+    public void AddKeyframe(float time, float value,
+        float inTangent = 0f, float outTangent = 0f)
+    {
+        keys.Add(new SkinAnimationKeyframe()
+        {
+            time = time,
+            value = value,
+            inTangent = inTangent,
+            outTangent = outTangent
+        });
+    }
+
+    public Tuple<AnimationCurve, string> ToUnityCurveAndAttribute()
+    {
+        AnimationCurve curve = new AnimationCurve();
+        foreach (SkinAnimationKeyframe k in keys)
+        {
+            curve.AddKey(k.ToUnityKeyframe());
+        }
+        switch (loopMode)
+        {
+            case "pingpong":
+                curve.postWrapMode = WrapMode.PingPong;
+                break;
+            case "loop":
+                curve.postWrapMode = WrapMode.Loop;
+                break;
+            default:
+                curve.postWrapMode = WrapMode.Once;
+                break;
+        }
+        return new Tuple<AnimationCurve, string>(curve, attribute);
+    }
 }
 
 [Serializable]
@@ -342,6 +429,8 @@ public class ComboSkin : ComboSkinBase
     public List<SpriteSheet> coolDigits;
     public List<SpriteSheet> goodDigits;
 
+    public List<SkinAnimationCurve> animationCurves;
+
     public ComboSkin()
     {
         version = kVersion;
@@ -368,6 +457,43 @@ public class ComboSkin : ComboSkinBase
             coolDigits.Add(new SpriteSheet());
             goodDigits.Add(new SpriteSheet());
         }
+
+        animationCurves = new List<SkinAnimationCurve>();
+
+        // Default curves
+
+        SkinAnimationCurve scaleXCurve = new SkinAnimationCurve()
+        {
+            attribute = "scaleX"
+        };
+        scaleXCurve.AddKeyframe(0f, 1.2f);
+        scaleXCurve.AddKeyframe(0.1f, 0.8f);
+        scaleXCurve.AddKeyframe(0.133f, 1.1f);
+        scaleXCurve.AddKeyframe(0.167f, 1f);
+        scaleXCurve.AddKeyframe(1f, 1f);
+        animationCurves.Add(scaleXCurve);
+
+        SkinAnimationCurve scaleYCurve = new SkinAnimationCurve()
+        {
+            attribute = "scaleY"
+        };
+        scaleYCurve.AddKeyframe(0f, 1.2f);
+        scaleYCurve.AddKeyframe(0.1f, 0.8f);
+        scaleYCurve.AddKeyframe(0.133f, 1.1f);
+        scaleYCurve.AddKeyframe(0.167f, 1f);
+        scaleYCurve.AddKeyframe(0.833f, 1f);
+        scaleYCurve.AddKeyframe(1f, 2f);
+        animationCurves.Add(scaleYCurve);
+
+        SkinAnimationCurve alphaCurve = new SkinAnimationCurve()
+        {
+            attribute = "alpha"
+        };
+        alphaCurve.AddKeyframe(0f, 0.5f, inTangent: 8f);
+        alphaCurve.AddKeyframe(0.1f, 1f);
+        alphaCurve.AddKeyframe(0.833f, 1f);
+        alphaCurve.AddKeyframe(1f, 0f);
+        animationCurves.Add(alphaCurve);
     }
 
     public List<SpriteSheet> GetReferenceToAllSpriteSheets()

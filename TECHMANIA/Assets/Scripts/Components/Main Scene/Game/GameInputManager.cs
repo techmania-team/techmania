@@ -42,7 +42,8 @@ public class GameInputManager
     {
         // Initialize data structures.
         fingerInLane = new Dictionary<int, int>();
-        ongoingNotes = new Dictionary<NoteElements, Judgement>();
+        ongoingNotes = new Dictionary<NoteElements, 
+            JudgementAndTimeDifference>();
         ongoingNoteIsHitOnThisFrame = new
             Dictionary<NoteElements, bool>();
         ongoingNoteLastInput = new Dictionary<NoteElements, float>();
@@ -313,7 +314,8 @@ public class GameInputManager
                 &&
                 !ongoingNotes.ContainsKey(upcoming))
             {
-                controller.ResolveNote(upcoming, Judgement.Break);
+                controller.ResolveNote(upcoming,
+                    JudgementAndTimeDifference.Break());
             }
         }
     }
@@ -701,16 +703,16 @@ public class GameInputManager
     #endregion
 
     #region Ongoing notes
-    // Value is the judgement at note's head.
-    public Dictionary<NoteElements, Judgement> ongoingNotes
-    { get; private set; }
+    // Value is the judgement and time difference at note's head.
+    public Dictionary<NoteElements, JudgementAndTimeDifference> 
+        ongoingNotes { get; private set; }
     private Dictionary<NoteElements, bool> ongoingNoteIsHitOnThisFrame;
     private Dictionary<NoteElements, float> ongoingNoteLastInput;
 
     public void RegisterOngoingNote(NoteElements elements,
-        Judgement judgement)
+        JudgementAndTimeDifference judgementAndTimeDifference)
     {
-        ongoingNotes.Add(elements, judgement);
+        ongoingNotes.Add(elements, judgementAndTimeDifference);
         ongoingNoteIsHitOnThisFrame.Add(elements, true);
     }
 
@@ -766,7 +768,8 @@ public class GameInputManager
                 {
                     // No input on this note for too long, resolve
                     // as MISS.
-                    controller.ResolveNote(elements, Judgement.Miss);
+                    controller.ResolveNote(elements,
+                        JudgementAndTimeDifference.Miss());
                     controller.StopKeysoundIfPlaying(note);
                     ongoingNotes.Remove(elements);
                     ongoingNoteLastInput.Remove(elements);

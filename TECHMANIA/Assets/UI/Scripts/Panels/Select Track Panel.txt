@@ -15,6 +15,7 @@ selectTrackPanel = {
         sortBasisDisplayString = {},
         ascending = true
     },
+    jukeboxIncludesSubfolders = false,
     
     selectedTrackFolder = "",
     selectedFullTrack = nil,
@@ -40,7 +41,7 @@ function CompareTracks(trackInFolder1, trackInFolder2)
     local t2 = trackInFolder2.minimizedTrack
     local basis1, basis2
 
-    function FindBasisPatternLevel(track, controlScheme)
+    local function FindBasisPatternLevel(track, controlScheme)
         -- When ascending, this looks for the lowest level.
         -- When descending, this looks for the highest level.
 
@@ -137,7 +138,7 @@ selectTrackPanel.SpawnAllCards = function()
     local tracksInFolder = {}
     local tracksWithError = {}
     if (selectTrackPanel.filter.showTracksInAllFolders) then
-        function SearchAndProcessFolder(folder)
+        local function SearchAndProcessFolder(folder)
             for _, trackInFolder in ipairs(tm.resources.GetTracksInFolder(folder)) do
                 table.insert(tracksInFolder, trackInFolder)
             end
@@ -184,7 +185,7 @@ selectTrackPanel.SpawnAllCards = function()
         end
     end
 
-    function TrackContainsAnyFilterKeyword(metadata)
+    local function TrackContainsAnyFilterKeyword(metadata)
         if (#selectTrackPanel.filter.keywords == 0) then
             return true
         end
@@ -451,6 +452,9 @@ trackFilterSideSheet.Show = function()
     else
         controls.SetRadioButton(descendingRadioButton, {ascendingRadioButton, descendingRadioButton})
     end
+
+    controls.SetToggleIsOn(sheet.Q("jukebox-include-subfolders").Q("track"), selectTrackPanel.jukeboxIncludesSubfolders)
+    trackFilterSideSheet.RefreshJukebox()
 end
 
 trackFilterSideSheet.FadeIn = function()
@@ -468,6 +472,23 @@ trackFilterSideSheet.FadeOut = function()
             bg.display = false
         end)
     end)
+end
+
+trackFilterSideSheet.RefreshJukebox = function()
+    local bg = trackFilterSideSheet.bg
+
+    -- Show or hide the subfolder toggle
+    bg.Q("jukebox-include-subfolders").display = not selectTrackPanel.filter.showTracksInAllFolders
+
+    -- Build playlist to know how many tracks are there
+    if (selectTrackPanel.filter.showTracksInAllFolders) then
+        jukebox.BuildPlaylist(selectTrackPanel.location, true)  -- location should be root
+    else
+        jukebox.BuildPlaylist(selectTrackPanel.location, selectTrackPanel.jukeboxIncludesSubfolders)
+    end
+    local numTracks = #jukebox.playlist
+    bg.Q("jukebox-description").text = net.string.format(tm.l10n.GetString("jukebox_description_format"), tostring(#jukebox.playlist))
+    bg.Q("jukebox-start-button").SetEnabled(numTracks > 0)
 end
 
 trackFilterSideSheet.Initialize = function()
@@ -503,9 +524,10 @@ trackFilterSideSheet.Initialize = function()
         selectTrackPanel.filter.showTracksInAllFolders = not selectTrackPanel.filter.showTracksInAllFolders
         selectTrackPanel.ClearAllCards()
         selectTrackPanel.SpawnAllCards()
+        trackFilterSideSheet.RefreshJukebox()
     end)
 
-    function LocalizeDropdown()
+    local function LocalizeDropdown()
         local bg = trackFilterSideSheet.bg
         selectTrackPanel.filter.sortBasisDisplayString = {
             Title = tm.l10n.GetString("track_filter_sidesheet_sort_basis_title"),
@@ -548,6 +570,16 @@ trackFilterSideSheet.Initialize = function()
         selectTrackPanel.filter.ascending = false
         selectTrackPanel.ClearAllCards()
         selectTrackPanel.SpawnAllCards()
+    end)
+
+    bg.Q("jukebox-include-subfolders").Q("track").RegisterCallback(eventType.Click, function()
+        selectTrackPanel.jukeboxIncludesSubfolders = not selectTrackPanel.jukeboxIncludesSubfolders
+        trackFilterSideSheet.RefreshJukebox()
+    end)
+
+    bg.Q("jukebox-start-button").RegisterCallback(eventType.Click, function()
+        tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Play.wav"))
+        -- Navigation.txt will handle the rest
     end)
 end
 

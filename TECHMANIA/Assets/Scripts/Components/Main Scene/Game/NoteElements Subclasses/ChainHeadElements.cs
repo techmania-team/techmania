@@ -6,6 +6,13 @@ public class ChainHeadElements : ChainElementsBase
 {
     public ChainHeadElements(Note n) : base(n) { }
 
+    protected override void TypeSpecificInitializeSizeExceptHitbox()
+    {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.chainHead.flipWhenScanningLeft);
+    }
+
     protected override float GetNoteImageScaleFromRuleset()
     {
         return GlobalResource.noteSkin.chainHead.scale;

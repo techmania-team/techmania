@@ -11,12 +11,15 @@ public class EditorTopBar : MonoBehaviour
     public Button undoButton;
     public Button redoButton;
 
+    private DateTime lastAutoSaveTime;
+
     private void OnEnable()
     {
         EditorContext.DirtynessUpdated += RefreshTitle;
         EditorContext.UndoRedoStackUpdated += RefreshUndoRedoButtons;
         RefreshTitle(EditorContext.Dirty);
         RefreshUndoRedoButtons();
+        lastAutoSaveTime = DateTime.Now;
     }
 
     private void OnDisable()
@@ -36,6 +39,7 @@ public class EditorTopBar : MonoBehaviour
         {
             EditorContext.SaveSetlist();
         }
+        lastAutoSaveTime = DateTime.Now;
     }
 
     public void Undo()
@@ -77,6 +81,16 @@ public class EditorTopBar : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Y))
             {
                 Redo();
+            }
+        }
+
+        if (Options.instance.editorOptions.autoSave)
+        {
+            if (DateTime.Now - lastAutoSaveTime >
+                TimeSpan.FromMinutes(5))
+            {
+                Debug.Log("Auto saving.");
+                Save();
             }
         }
     }

@@ -23,6 +23,9 @@ public static class GlobalResource
     public static ComboSkin comboSkin;
     public static GameUISkin gameUiSkin;
 
+    public static List<Tuple<AnimationCurve, string>> 
+        comboAnimationCurvesAndAttributes;
+
     public static List<string> GetSkinList(SkinType type)
     {
         return AllSkinsInFolder(

@@ -7,5 +7,10 @@ public class RepeatNoteElements : RepeatNoteElementsBase
 {
     public RepeatNoteElements(Note n) : base(n) { }
 
-    // That's the whole class.
+    protected override void TypeSpecificInitializeSizeExceptHitbox()
+    {
+        noteImage.EnableInClassList(hFlippedClass,
+            scanDirection == GameLayout.ScanDirection.Left &&
+            GlobalResource.noteSkin.repeat.flipWhenScanningLeft);
+    }
 }

@@ -16,6 +16,7 @@ public class EditorOptionsTab : MonoBehaviour
     public Toggle lockNotesInTimeToggle;
     public Toggle lockDragAnchorsInTimeToggle;
     public Toggle snapDragAnchorsToggle;
+    public Toggle autoSaveToggle;
 
     [Header("Playback")]
     public Toggle metronomeToggle;
@@ -53,6 +54,8 @@ public class EditorOptionsTab : MonoBehaviour
             Options.instance.editorOptions.lockDragAnchorsInTime);
         snapDragAnchorsToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.snapDragAnchors);
+        autoSaveToggle.SetIsOnWithoutNotify(
+            Options.instance.editorOptions.autoSave);
 
         metronomeToggle.SetIsOnWithoutNotify(
             Options.instance.editorOptions.metronome);
@@ -80,6 +83,8 @@ public class EditorOptionsTab : MonoBehaviour
             lockDragAnchorsInTimeToggle.isOn;
         Options.instance.editorOptions.snapDragAnchors =
             snapDragAnchorsToggle.isOn;
+        Options.instance.editorOptions.autoSave =
+            autoSaveToggle.isOn;
 
         Options.instance.editorOptions.metronome =
             metronomeToggle.isOn;

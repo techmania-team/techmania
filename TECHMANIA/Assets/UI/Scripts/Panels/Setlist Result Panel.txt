@@ -25,9 +25,9 @@ setlistResultPanel.Show = function()
     -- Patterns
     local anyPatternHasLegacySetlistOverride = false
     -- stageNumber is in 1-index; patternRef can be nil
-    function ShowPattern(stageNumber, patternRef)
+    local function ShowPattern(stageNumber, patternRef)
         local patternElement = panel.Q("patterns").Children()[stageNumber]
-        function NoPattern()
+        local function NoPattern()
             patternElement.Q("eyecatch").display = false
             patternElement.Q("title").visible = false
             patternElement.Q("pattern-banner").visible = false

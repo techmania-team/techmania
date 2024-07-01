@@ -112,7 +112,8 @@ namespace ThemeApi
         // Parameter: GameTimer. Called every frame, in
         // Ongoing and Paused states.
         public DynValue onUpdate;
-        // Parameter: Note, Judgement, ScoreKeeper.
+        // Parameter: Note, Judgement, ScoreKeeper, time difference
+        // in seconds (may be +infinity for MISS and BREAK).
         public DynValue onNoteResolved;
         // Parameter: ScoreKeeper.
         public DynValue onAllNotesResolved;

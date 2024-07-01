@@ -6,10 +6,20 @@ gamePanel = {
 
     -- Copied on Show() from select pattern/setup setlist panel,
     -- so other parts don't need to care where the pattern comes from.
+    -- Inaccurate in jukebox mode.
     trackMetadata = nil,
     patternMetadata = nil,
 
     setlistProgressEyecatches = {},
+
+    -- Each element is a table:
+    -- {
+    --   correctTime: in seconds
+    --   timeDifference: negative for too early, positive for too late, in seconds
+    --   judgement: judgement
+    --   HPAfterNote: remaining HP after note, [0, 1]
+    -- }
+    performanceOnAllNotes = {},
 }
 
 pauseButton = {
@@ -40,6 +50,10 @@ practiceMode = {
     loopEnd = 0
 }
 
+jukeboxControls = {
+    jukeboxTopBar = gamePanel.panel.Q("jukebox-top-bar")
+}
+
 function FillBar(barElement, amount)
     barElement.style.width = StyleLengthInPercent(amount * 100)
 end
@@ -68,6 +82,10 @@ gamePanel.Initialize = function()
         if (tm.options.modifiers.mode == tm.enum.mode.Practice or gamePanel.inEditor) then
             practiceMode.HandleKeyDown(event.keyCode)
         end
+
+        if (jukebox.enabled) then
+            jukeboxControls.HandleKeyDown(event.keyCode)
+        end
     end)
 
     panel.RegisterCallback(eventType.ApplicationFocus, function(element, event)
@@ -81,7 +99,7 @@ gamePanel.Initialize = function()
         gamePanel.ActivateFever()
     end)
 
-    function InitializeGameSetup()
+    local function InitializeGameSetup()
         tm.gameSetup.bgContainer = panel.Q("bg-layer")
         tm.gameSetup.gameContainer = panel.Q("game-layer")
         tm.gameSetup.vfxComboContainer = nil  -- Unused
@@ -105,6 +123,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onLoadComplete = function()
+            gamePanel.performanceOnAllNotes = {}
             gamePanel.BeginGame()
         end
 
@@ -115,12 +134,20 @@ gamePanel.Initialize = function()
             end
         end
 
-        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper)
+        tm.gameSetup.onNoteResolved = function(note, judgement, scoreKeeper, timeDifference)
             gamePanel.UpdateHpDisplay(scoreKeeper.hp, scoreKeeper.maxHp)
             gamePanel.UpdateScoreDisplay(
                 scoreKeeper.ScoreFromNotes(),
                 scoreKeeper.maxCombo)
             judgementTally.Update(scoreKeeper)
+
+            -- Record performance
+            table.insert(gamePanel.performanceOnAllNotes, {
+                correctTime = note.time,
+                timeDifference = timeDifference,
+                judgement = judgement,
+                HPAfterNote = scoreKeeper.hp / scoreKeeper.maxHp
+            })
         end
 
         tm.gameSetup.onAllNotesResolved = function(scoreKeeper)
@@ -157,7 +184,7 @@ gamePanel.Initialize = function()
                     controlScheme = tm.enum.controlScheme.KM
                 end
 
-                function OneFlash()
+                local function OneFlash()
                     local fadeTimer = 0.5
                     local timer = 0
                     local maxHighlightOpacity = 0.38
@@ -225,8 +252,10 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onStageClear = function(_)
-            -- Don't conclude the game yet
-            if (tm.gameSetup.setlist.enabled) then
+            if (jukebox.enabled) then
+                jukeboxControls.IncrementTrack(1)
+            elseif (tm.gameSetup.setlist.enabled) then
+                -- Don't conclude the game yet
                 navigation.FadeTo(gamePanel, setlistResultPanel)
             else
                 navigation.FadeTo(gamePanel, resultPanel)
@@ -303,6 +332,10 @@ end
 gamePanel.Show = function()
     tm.options.TemporarilyDisableVSync()
 
+    if (jukebox.enabled) then
+        jukebox.SetupCurrentTrack()
+    end
+
     -- For setlists it's necessary to start loading before doing anything else,
     -- as it increments stage number.
     if (tm.gameSetup.setlist.enabled) then
@@ -329,6 +362,11 @@ gamePanel.Show = function()
             gamePanel.patternMetadata = pattern.patternMetadata
         end
 
+        -- Also prepare track options so pause menu can work
+        commonUI.trackOptions = tm.options.GetPerTrackOptions(gamePanel.trackMetadata.guid)
+    elseif (jukebox.enabled) then
+        gamePanel.trackMetadata = jukebox.playlist[jukebox.currentTrack].trackInFolder.minimizedTrack.trackMetadata
+        gamePanel.patternMetadata = jukebox.playlist[jukebox.currentTrack].patternMetadata
         -- Also prepare track options so pause menu can work
         commonUI.trackOptions = tm.options.GetPerTrackOptions(gamePanel.trackMetadata.guid)
     else
@@ -363,25 +401,36 @@ gamePanel.Show = function()
             metadata.playableLanes,
             controlSchemeString,
             metadata.level)
-        tm.SetDiscordActivity(selectTrackPanel.selectedFullTrack.trackMetadata.title,
+        tm.SetDiscordActivity(gamePanel.trackMetadata.title,
             discordActivity,
             true)  -- show elapsed time
     end
     
     local panel = gamePanel.panel
 
-    panel.Q("top-bar").visible = false  -- Cannot turn off display as it influences #remaining-space
+    local topBar = panel.Q("top-bar")
+    topBar.visible = false  -- Cannot turn off display as it influences #remaining-space
     if (gamePanel.inEditor) then
-        panel.Q("top-bar").Q("pause-button").display = false
-        panel.Q("top-bar").Q("back-button").display = true
-        panel.Q("top-bar").Q("regular-top-bar").display = false
-        panel.Q("top-bar").Q("practice-top-bar").display = true
+        topBar.Q("pause-button").display = false
+        topBar.Q("back-button").display = true
+        topBar.Q("regular-top-bar").display = false
+        topBar.Q("practice-top-bar").display = true
+        topBar.Q("jukebox-top-bar").display = false
     else
-        panel.Q("top-bar").Q("pause-button").display = true
-        panel.Q("top-bar").Q("back-button").display = false
-        panel.Q("top-bar").Q("regular-top-bar").display = tm.options.modifiers.mode != tm.enum.mode.Practice
-        panel.Q("top-bar").Q("regular-top-bar").Q("hp-threshold-indicator").display = tm.gameSetup.setlist.enabled
-        panel.Q("top-bar").Q("practice-top-bar").display = tm.options.modifiers.mode == tm.enum.mode.Practice
+        topBar.Q("pause-button").display = true
+        topBar.Q("back-button").display = false
+        topBar.Q("regular-top-bar").display = false
+        topBar.Q("practice-top-bar").display = false
+        topBar.Q("jukebox-top-bar").display = false
+        if (tm.options.modifiers.mode == tm.enum.mode.Practice) then
+            topBar.Q("practice-top-bar").display = true
+        elseif (jukebox.enabled) then
+            topBar.Q("jukebox-top-bar").display = true
+            jukeboxControls.Show()
+        else
+            topBar.Q("regular-top-bar").display = true
+            topBar.Q("regular-top-bar").Q("hp-threshold-indicator").display = tm.gameSetup.setlist.enabled
+        end
     end
     panel.Q("markers").display = false
     panel.Q("fps-counter").display = false
@@ -449,7 +498,7 @@ gamePanel.BeginGame = function()
         practiceMode.BeginGame()
     end
 
-    -- Relocate game area if necessary.
+    -- Reposition BG layer if necessary.
     local scalingMode = themeOptions["backgroundScalingMode"]
     local bgLayer = panel.Q("bg-layer")
     if (scalingMode == "FillEntireScreen" and
@@ -762,7 +811,7 @@ pauseMenu.Initialize = function()
         event.StopPropagation()
     end)
 
-    function OnCancel()
+    local function OnCancel()
         gamePanel.Unpause()
     end
     menu.Q("resume-button").RegisterCallback(eventType.Click, OnCancel)
@@ -777,6 +826,7 @@ pauseMenu.Initialize = function()
     end)
 
     menu.Q("select-track-button").RegisterCallback(eventType.Click, function()
+        if (jukebox.enabled) then jukebox.RestoreModifiers() end
         gamePanel.ConcludeGame()
         navigation.FadeTo(gamePanel, selectTrackPanel)
     end)
@@ -1012,8 +1062,44 @@ practiceMode.controls = {
     end
 }
 
+jukeboxControls.IncrementTrack = function(direction)  -- 1 or -1
+    jukebox.IncrementTrack(direction)
+    gamePanel.ConcludeGame()
+    gamePanel.Show()
+end
+
+jukeboxControls.Initialize = function()
+    local controls = jukeboxControls.jukeboxTopBar.Q("controls")
+    controls.Q("prev-track-button").RegisterCallback(eventType.Click, function()
+        jukeboxControls.IncrementTrack(-1)
+    end)
+    controls.Q("next-track-button").RegisterCallback(eventType.Click, function()
+        jukeboxControls.IncrementTrack(1)
+    end)
+end
+
+jukeboxControls.Show = function()
+    local topBar = jukeboxControls.jukeboxTopBar
+
+    local trackMetadata = jukebox.playlist[jukebox.currentTrack].trackInFolder.minimizedTrack.trackMetadata
+    topBar.Q("title-container").Q("title").text = trackMetadata.title
+    topBar.Q("artist-container").Q("artist").text = trackMetadata.artist
+
+    topBar.Q("controls").Q("track-number-display").Q("value").text = net.string.Format(
+        "{0} / {1}", jukebox.currentTrack, #jukebox.playlist)
+end
+
+jukeboxControls.HandleKeyDown = function(keyCode)
+    if (keyCode == unity.enum.keyCode.F3) then
+        jukeboxControls.IncrementTrack(-1)
+    elseif (keyCode == unity.enum.keyCode.F4) then
+        jukeboxControls.IncrementTrack(1)
+    end
+end
+
 gamePanel.Initialize()
 pauseButton.Initialize()
 pauseMenu.Initialize()
 fpsCounter.Initialize()
 practiceMode.Initialize()
+jukeboxControls.Initialize()

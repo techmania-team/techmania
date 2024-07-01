@@ -78,7 +78,7 @@ alertBox.Initialize = function()
         end
     end)
 
-    function OnCancel()
+    local function OnCancel()
         alertBox.fadeOutCoroutine = FadeOutDialog(bg, bg.Q("alert-box"))
         if (alertBox.cancelCallback != nil) then
             alertBox.cancelCallback()

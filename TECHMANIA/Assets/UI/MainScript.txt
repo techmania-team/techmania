@@ -1,4 +1,4 @@
-api = getApi(3)
+api = getApi(4)
 tm = api.tm
 net = api.net
 unity = api.unity
@@ -19,6 +19,7 @@ tm.ExecuteScriptFromTheme("Assets/UI/Controls/Controls.txt")
 InitializeControls()
 
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Alert Box.txt")
+tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Jukebox.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Welcome Mat.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Track Panel.txt")
 tm.ExecuteScriptFromTheme("Assets/UI/Scripts/Panels/Select Setlist Panel.txt")

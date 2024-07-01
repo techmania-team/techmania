@@ -37,12 +37,12 @@ function ReleaseEyecatch(eyecatchElement)
 end
 
 commonUI = {
-    -- Can be set by select pattern panel or game panel (in setlists).
+    -- Can be set by select pattern panel, game panel (in setlists) or jukebox.
     trackOptions = nil,
 }
 
 commonUI.InitializeVolumeSliders = function(container)
-    function InitializeOneVolumeSlider(wrapName, optionKey)
+    local function InitializeOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
         local valueDisplay = wrap.Q("value-display")
@@ -62,7 +62,7 @@ commonUI.InitializeVolumeSliders = function(container)
 end
 
 commonUI.ShowVolumeSliders = function(container)
-    function ShowOneVolumeSlider(wrapName, optionKey)
+    local function ShowOneVolumeSlider(wrapName, optionKey)
         local wrap = container.Q(wrapName)
         local slider = wrap.Q("slider")
         local valueDisplay = wrap.Q("value-display")

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using ThemeApi;
@@ -12,7 +13,6 @@ public class ComboText : MonoBehaviour
     public UnityEngine.UI.Image judgementText;
     public RectTransform space;
     public List<UnityEngine.UI.Image> comboDigits;
-    public Animator animator;
 
     private UnityEngine.UIElements.VisualElement elementToFollow;
     private RectTransform rect;
@@ -209,8 +209,9 @@ public class ComboText : MonoBehaviour
         }
 
         startTime = Time.time;
+        ResetAllAnimationAttributes();
+        UpdateAnimationCurves();
         UpdateSprites();
-        animator.SetTrigger("Activate");
     }
 
     private void UpdateSprites()
@@ -234,8 +235,12 @@ public class ComboText : MonoBehaviour
 
     private void Update()
     {
-        Follow();
-        UpdateSprites();
+        if (elementToFollow != null)
+        {
+            Follow();
+            UpdateAnimationCurves();
+            UpdateSprites();
+        }
     }
 
     private void Follow()
@@ -247,4 +252,93 @@ public class ComboText : MonoBehaviour
         rect.anchorMin = viewportPoint;
         rect.anchorMax = viewportPoint;
     }
+
+    #region Animation
+    private void SetTranslationX(float value)
+    {
+        comboTextLayout.anchoredPosition = new Vector2(
+            value * sizeUnit,
+            comboTextLayout.anchoredPosition.y);
+    }
+
+    private void SetTranslationY(float value)
+    {
+        comboTextLayout.anchoredPosition = new Vector2(
+            comboTextLayout.anchoredPosition.x,
+            GlobalResource.comboSkin.distanceToNote * sizeUnit + value);
+    }
+
+    private void SetRotationInDegrees(float value)
+    {
+        comboTextLayout.localRotation = Quaternion.Euler(
+            0f, 0f, value);
+    }
+
+    private void SetScaleX(float value)
+    {
+        comboTextLayout.localScale = new Vector3(value,
+            comboTextLayout.localScale.y, 1f);
+    }
+
+    private void SetScaleY(float value)
+    {
+        comboTextLayout.localScale = new Vector3(
+            comboTextLayout.localScale.x, value, 1f);
+    }
+
+    private void SetAlpha(float value)
+    {
+        comboTextLayout.GetComponent<CanvasGroup>().alpha =
+            value;
+    }
+
+    private void ResetAllAnimationAttributes()
+    {
+        SetTranslationX(0f);
+        SetTranslationY(0f);
+        SetRotationInDegrees(0f);
+        SetScaleX(1f);
+        SetScaleY(1f);
+        SetAlpha(1f);
+    }
+
+    private void UpdateAnimationCurves()
+    {
+        float time = Time.time - startTime;
+
+        foreach (Tuple<AnimationCurve, string> tuple in
+            GlobalResource.comboAnimationCurvesAndAttributes)
+        {
+            AnimationCurve curve = tuple.Item1;
+            string attribute = tuple.Item2;
+
+            float value = curve.Evaluate(time);
+            switch (attribute)
+            {
+                case "translationX":
+                    SetTranslationX(value);
+                    break;
+                case "translationY":
+                    SetTranslationY(value);
+                    break;
+                case "rotationInDegrees":
+                    SetRotationInDegrees(value);
+                    break;
+                case "scaleX":
+                    SetScaleX(value);
+                    break;
+                case "scaleY":
+                    SetScaleY(value);
+                    break;
+                case "alpha":
+                    SetAlpha(value);
+                    break;
+                default:
+                    Debug.LogWarning("Unknown attribute in combo animation: " + attribute);
+                    break;
+            }
+        }
+    }
+
+    #endregion
 }
