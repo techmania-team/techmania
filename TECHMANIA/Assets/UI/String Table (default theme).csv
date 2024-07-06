@@ -121,9 +121,10 @@ It is recommended that you backup your tracks before upgrading.","有一部分�
 ,track_filter_sidesheet_sort_basis_touch_level,Touch level,触控谱面难度,觸控譜面難度,レベル(タッチ),레벨(터치)
 ,track_filter_sidesheet_sort_basis_keys_level,Keys level,键盘谱面难度,鍵盤譜面難度,レベル(キーボード),레벨(키보드)
 ,track_filter_sidesheet_sort_basis_km_level,KM level,键鼠谱面难度,鍵鼠譜面難度,レベル(キーボード・マウス),레벨(키보드+마우스)
-Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-header,Jukebox,点唱机,,,
-Added in 2.3;{0} is the number of tracks,jukebox_description_format,Auto play all {0} tracks in a random order.,以随机顺序自动演奏全部{0}首曲目。,,,
-Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-include-subfolders,Include tracks in subfolders,包含子文件夹里的曲目,,,
+Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-header,Jukebox,点唱机,點唱機,ジュークボックス,주크박스
+"Added in 2.3;
+{0} is the number of tracks",jukebox_description_format,Auto play all {0} tracks in a random order.,以随机顺序自动演奏全部{0}首曲目。,以隨機順序自動演奏全部{0}首歌曲。,{0}個のトラックをランダムにオートプレイします。,{0}곡을 무작위로 자동 연주합니다.
+Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-include-subfolders,Include tracks in subfolders,包含子文件夹里的曲目,包含子資料夾裡的歌曲,サブフォルダ内のトラックを含む,하위 폴더 포함
 Added in 2.3,#select-track-panel #filter-sidesheet #jukebox-start-button,START,开始,開始,スタート,게임 시작
 ,,,,,,
 ,#select-track-panel #new-track-dialog #title-field #mini-label,Title,标题,標題,曲名,제목
@@ -333,7 +334,7 @@ Shown behind the HP bar when no fail is active.,#game-panel #top-bar #no-fail-in
 ,#game-panel #practice-top-bar #auto-play-wrap #label,Auto play,自动演奏,自動演奏,オートプレイ,자동 연주
 ,#game-panel #practice-top-bar #show-hitbox-wrap #label,Show hitbox,显示操作范围,顯示操作範圍,ヒットボックスを表示,판정 영역 보이기
 ,,,,,,
-Added in 2.3,#game-panel #jukebox-top-bar #track-number-display #label,Track,曲目,,,
+Added in 2.3,#game-panel #jukebox-top-bar #track-number-display #label,Track,曲目,歌曲,トラック,재생 순서
 ,,,,,,
 ,#game-panel #pause-menu #title,PAUSE,暂停,暫停,PAUSE,PAUSE
 ,#game-panel #pause-menu #resume-button,CONTINUE,继续,繼續,CONTINUE,CONTINUE
@@ -363,8 +364,8 @@ Added in 2.3,#game-panel #jukebox-top-bar #track-number-display #label,Track,曲
 ,#result-panel #my-record #title,My record,最高纪录,最高紀錄,記録,나의 기록
 ,#result-panel #my-record #new-record-indicator,NEW RECORD,新纪录,新紀錄,NEW RECORD,NEW RECORD
 ,#result-panel #ruleset #title,Ruleset,规则,規則,ルールセット,규칙
-Added in 2.3,#result-panel #performance-graph #early-label,Early,过早,太早,EARLY,EARLY
-Added in 2.3,#result-panel #performance-graph #late-label,Late,过晚,太晚,LATE,LATE
+Added in 2.3,#result-panel #performance-graph #early-label,Early,过早,EARLY,EARLY,EARLY
+Added in 2.3,#result-panel #performance-graph #late-label,Late,过晚,LATE,LATE,LATE
 ,#result-panel #modifiers #title,Modifiers,游戏选项,遊戲選項,モディファイア,옵션
 ,#result-panel #retry-button,RETRY,重试,重新開始,リトライ,RETRY
 ,#result-panel #select-track-button,SELECT TRACK,选曲,選擇歌曲,トラック選択,SELECT MUSIC
@@ -501,8 +502,8 @@ Are you sure you want to change theme?","警告
 ,#select-skin-panel #combo-skin #label,Combo,连击,連擊,コンボ,판정/콤보
 ,#select-skin-panel #game-ui-skin #label,Game UI,游戏内界面,遊戲介面,ゲームUI,게임 UI
 ,#select-skin-panel #reload-skins #label,Reload skins when loading patterns,读取谱面时重新读取皮肤,載入譜面時重新載入造型,パターンの読み込み時にスキンを再読み込み,패턴을 열 때 스킨 다시 로드
-Added in 2.3,#select-skin-panel #reload-skins-now #label,Reload now,立刻重新读取皮肤,,,
-Added in 2.3,#select-skin-panel #reload-skins-now #reload-button,RELOAD,读取,,,
+Added in 2.3,#select-skin-panel #reload-skins-now #label,Reload now,立刻重新读取皮肤,立即重新載入造型,今すぐ再読み込み,오른쪽 버튼을 눌러 즉시 다시 로드
+Added in 2.3,#select-skin-panel #reload-skins-now #reload-button,RELOAD,读取,載入,再読み込み,다시 로드
 {0} is error message,select_skin_panel_load_error_format,"An error occurred when loading the selected skin:
 
 {0}","读取皮肤时发生错误：
@@ -572,17 +573,31 @@ Flashing lights may trigger seizures, even in people who never experienced it be
 극소수이나 몇몇 사람들은 비디오 게임 등에서 볼 수 있는 번쩍이는 빛이나 무늬와 같은 시각적 이미지에 노출되면 ""광과민성 간질 발작""을 일으킬 수 있습니다.
 
 현기증, 환각, 눈이나 얼굴의 경련, 팔이나 다리의 경련이나 떨림, 방향감각 상실, 정신 착란, 일시적인 의식 상실 등의 증상 중 한 가지라도 나타나면 즉시 게임을 중단하고 의사와 상의하십시오."
-Added in 2.3,#information-panel #statistics-header,Statistics,统计数据,,,
-Added in 2.3;{0} - {2} are the statistics content,information_panel_statistics_timers_format,"Total time in app:<indent=30%>{0}</indent>
+Added in 2.3,#information-panel #statistics-header,Statistics,统计数据,統計資料,統計,통계
+"Added in 2.3;
+{0} - {2} are the statistics content",information_panel_statistics_timers_format,"Total time in app:<indent=30%>{0}</indent>
 Time in game:<indent=30%>{1}</indent>
 Time in editor:<indent=30%>{2}</indent>","总时长：<indent=30%>{0}</indent>
 游戏时长：<indent=30%>{1}</indent>
-编辑器时长：<indent=30%>{2}</indent>",,,
-Added in 2.3;{0} - {2} are the statistics content,information_panel_statistics_counters_format,"Total app launches:<indent=30%>{0}</indent>
+编辑器时长：<indent=30%>{2}</indent>","總時數：<indent=30%>{0}</indent>
+遊戲時數：<indent=30%>{1}</indent>
+編輯器時數：<indent=30%>{2}</indent>","総ゲーム起動時間：<indent=30%>{0}</indent>
+総プレイ時間：<indent=30%>{1}</indent>
+総エディタ使用時間：<indent=30%>{2}</indent>","프로그램 실행 시간:<indent=30%>{0}</indent>
+게임 플레이 시간:<indent=30%>{1}</indent>
+편집기 이용 시간:<indent=30%>{2}</indent>"
+"Added in 2.3;
+{0} - {2} are the statistics content",information_panel_statistics_counters_format,"Total app launches:<indent=30%>{0}</indent>
 Total patterns played:<indent=30%>{1}</indent>
 Total notes hit:<indent=30%>{2}</indent>","TECHMANIA启动次数：<indent=30%>{0}</indent>
 游玩谱面总数：<indent=30%>{1}</indent>
-击打音符总数：<indent=30%>{2}</indent>",,,
+击打音符总数：<indent=30%>{2}</indent>","TECHMANIA啟動次數：<indent=30%>{0}</indent>
+遊玩譜面總數：<indent=30%>{1}</indent>
+點擊音符總數：<indent=30%>{2}</indent>","ゲーム起動回数：<indent=30%>{0}</indent>
+プレイしたパターンの数：<indent=30%>{1}</indent>
+タップしたノートの数：<indent=30%>{2}</indent>","프로그램 실행 횟수:<indent=30%>{0}</indent>
+플레이한 패턴 수:<indent=30%>{1}</indent>
+연주한 노트 수:<indent=30%>{2}</indent>"
 ,#information-panel #credits-header,Credits,制作人,製作者,クレジット,제작진
 ,#information-panel #program-subheader,Program,程序,程式,プログラミング,프로그래밍
 ,#information-panel #localization-subheader,Localization (in alphabetical order),本地化（字母序）,翻譯 (字母排序),翻訳（アルファベット順）,번역(이름순)
