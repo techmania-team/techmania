@@ -20,6 +20,8 @@ gamePanel = {
     --   HPAfterNote: remaining HP after note, [0, 1]
     -- }
     performanceOnAllNotes = {},
+    -- Each element is the game time, odd elements are fever start, even are fever end
+    feverStartAndEnd = {},
 }
 
 pauseButton = {
@@ -124,6 +126,7 @@ gamePanel.Initialize = function()
 
         tm.gameSetup.onLoadComplete = function()
             gamePanel.performanceOnAllNotes = {}
+            gamePanel.feverStartAndEnd = {}
             gamePanel.BeginGame()
         end
 
@@ -233,6 +236,7 @@ gamePanel.Initialize = function()
 
         tm.gameSetup.onFeverActivated = function()
             tm.audio.PlaySfx(tm.io.LoadAudioFromTheme("Assets/UI/SFX/Fever.wav"))
+            table.insert(gamePanel.feverStartAndEnd, tm.game.timer.gameTime)
             gamePanel.ShowFeverOff()
         end
 
@@ -241,6 +245,7 @@ gamePanel.Initialize = function()
         end
 
         tm.gameSetup.onFeverEnd = function(feverBonus)
+            table.insert(gamePanel.feverStartAndEnd, tm.game.timer.gameTime)
             gamePanel.ShowFeverOff()
             gamePanel.feverBonusCoroutine = tm.StartCoroutine(function()
                 local bonusDisplay = gamePanel.panel.Q("middle-fever-bar-bg").Q("fever-bonus")

@@ -32,6 +32,26 @@ resultPanel.Initialize = function()
             )
         end
 
+        -- Fever
+        if (#gamePanel.feverStartAndEnd % 2 == 1) then
+            table.insert(gamePanel.feverStartAndEnd, maxTime)
+        end
+        painter.fillColor = unity.color.__new(251 / 255, 192 / 255, 45 / 255, 13 / 255)
+        for i = 1, #gamePanel.feverStartAndEnd, 2 do
+            local feverStart = gamePanel.feverStartAndEnd[i]
+            local feverEnd = gamePanel.feverStartAndEnd[i + 1]
+            local startX = unity.mathf.InverseLerp(minTime, maxTime, feverStart)
+            local endX = unity.mathf.InverseLerp(minTime, maxTime, feverEnd)
+
+            painter.BeginPath()
+            painter.MoveTo(Denormalize(startX, 0))
+            painter.LineTo(Denormalize(startX, 1))
+            painter.LineTo(Denormalize(endX, 1))
+            painter.LineTo(Denormalize(endX, 0))
+            painter.ClosePath()
+            painter.Fill()
+        end
+
         -- HP graph
         painter.BeginPath()
         painter.MoveTo(unity.vector2.__new(padding, padding))
