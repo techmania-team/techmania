@@ -235,13 +235,7 @@ public class DragNoteElements : NoteElements
                 float vInTexture = Mathf.Lerp(
                     spriteRectInTexture.yMin,
                     spriteRectInTexture.yMax, v);
-                return new Vector2(
-                    Mathf.Lerp(
-                        data.uvRegion.xMin, data.uvRegion.xMax,
-                        uInTexture),
-                    Mathf.Lerp(
-                        data.uvRegion.yMin, data.uvRegion.yMax,
-                        vInTexture));
+                return new Vector2(uInTexture, vInTexture);
             };
 
         // Calculate left vector on each point. Then generate

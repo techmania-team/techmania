@@ -57,7 +57,10 @@ namespace ThemeApi
 
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
         public IStyle style => inner.style;
+#pragma warning disable CS0618
+        // Deprecated, but kept for Theme API backwards compatibility
         public ITransform transform => inner.transform;
+#pragma warning restore CS0618
 
         public Rect contentRect => inner.contentRect;
         public Rect localBound => inner.localBound;
