@@ -16,7 +16,7 @@ public class GlobalResourceLoader : MonoBehaviour
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<GlobalResourceLoader>();
+            instance = FindAnyObjectByType<GlobalResourceLoader>();
         }
         return instance;
     }

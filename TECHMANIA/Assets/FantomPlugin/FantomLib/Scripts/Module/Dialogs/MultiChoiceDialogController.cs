@@ -312,7 +312,7 @@ namespace FantomLib
 
             //Callback from Android to Unity is received under 'GameObject.name'. That is, it is unique within the hierarchy.
             //Note: Search only within the same type.
-            MultiChoiceDialogController[] objs = FindObjectsOfType<MultiChoiceDialogController>();
+            MultiChoiceDialogController[] objs = FindObjectsByType<MultiChoiceDialogController>(FindObjectsSortMode.InstanceID);
             if (objs.Length > 1)
             {
                 HashSet<string> set = new HashSet<string>(objs.Select(e => e.gameObject.name).ToArray());

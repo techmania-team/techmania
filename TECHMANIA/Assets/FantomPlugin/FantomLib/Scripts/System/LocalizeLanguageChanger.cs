@@ -195,7 +195,7 @@ namespace FantomLib
             Array.Sort(defaultStrings);     //For 'BinarySearch()'
 
             if (findLocalizable)
-                localizableObjects = FindObjectsOfType<LocalizableBehaviour>(); //'ILocalizable' can not be used for 'FindObjectsOfType'. Also note that it is high load.
+                localizableObjects = FindObjectsByType<LocalizableBehaviour>(FindObjectsSortMode.InstanceID); //'ILocalizable' can not be used for 'FindObjectsOfType'. Also note that it is high load.
 
             if (implGameobjects.Length > 0)
                 MakeILocalizableList();

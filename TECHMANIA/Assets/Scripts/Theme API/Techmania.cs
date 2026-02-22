@@ -17,7 +17,7 @@ namespace ThemeApi
         {
             instance = this;
 
-            uiDocument = Object.FindObjectOfType<UIDocument>();
+            uiDocument = Object.FindAnyObjectByType<UIDocument>();
             root = new VisualElementWrap(uiDocument.rootVisualElement);
 
             l10n = new ThemeL10n(uiDocument.rootVisualElement);
@@ -347,7 +347,6 @@ namespace ThemeApi
             string log = "bubbles: " + e.bubbles +
                 "\ncurrentTarget: " + (e.currentTarget as VisualElement).name +
                 "\ndispatch: " + e.dispatch +
-                "\nisDefaultPrevented: " + e.isDefaultPrevented +
                 "\nisImmediatePropagationStopped: " + e.isImmediatePropagationStopped +
                 "\nisPropagationStopped: " + e.isPropagationStopped +
                 "\npropagationPhase: " + e.propagationPhase +

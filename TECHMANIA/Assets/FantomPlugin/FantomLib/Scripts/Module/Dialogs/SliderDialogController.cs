@@ -349,7 +349,7 @@ namespace FantomLib
 
             //Callback from Android to Unity is received under 'GameObject.name'. That is, it is unique within the hierarchy.
             //Note: Search only within the same type.
-            SliderDialogController[] objs = FindObjectsOfType<SliderDialogController>();
+            SliderDialogController[] objs = FindObjectsByType<SliderDialogController>(FindObjectsSortMode.InstanceID);
             if (objs.Length > 1)
             {
                 HashSet<string> set = new HashSet<string>(objs.Select(e => e.gameObject.name).ToArray());

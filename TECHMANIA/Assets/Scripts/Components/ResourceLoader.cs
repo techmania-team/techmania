@@ -17,7 +17,7 @@ public class ResourceLoader : MonoBehaviour
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<ResourceLoader>();
+            instance = FindAnyObjectByType<ResourceLoader>();
             instance.emptySound = FmodManager
                 .CreateSoundFromAudioClip(
                 instance.emptyClip);
