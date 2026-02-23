@@ -59,7 +59,14 @@ namespace ThemeApi
         public IStyle style => inner.style;
 #pragma warning disable CS0618
         // Deprecated, but kept for Theme API backwards compatibility
-        public ITransform transform => inner.transform;
+        public ITransform transform
+        {
+            get
+            {
+                Debug.LogWarning("VisualElementWrap.transform is deprecated. You can query translation, rotation and scale via style.");
+                return inner.transform;
+            }
+        }
 #pragma warning restore CS0618
 
         public Rect contentRect => inner.contentRect;

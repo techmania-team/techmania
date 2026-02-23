@@ -12,6 +12,7 @@ public class GameLayout
     private VisualElement rootElement;
     private TemplateContainer layoutContainer;
     public VisualElement inputFeedbackContainer { get; private set; }
+    private Material additiveMaterial;
 
     public enum ScanDirection
     {
@@ -71,9 +72,11 @@ public class GameLayout
 
     public GameLayout(Pattern pattern,
         VisualElement gameContainer,
-        VisualTreeAsset layoutTemplate)
+        VisualTreeAsset layoutTemplate,
+        Material additiveMaterial)
     {
         this.pattern = pattern;
+        this.additiveMaterial = additiveMaterial;
 
         rootElement = TopLevelObjects.instance.mainUiDocument
             .rootVisualElement;
@@ -104,19 +107,17 @@ public class GameLayout
         bottomHalf = makeHalfElements(layoutContainer.Q(
             "bottom-half"));
 
-        // While UI Toolkit doesn't support shaders, we can't
-        // draw countdown elements that request the additive shader.
         if (GlobalResource.gameUiSkin.scanCountdownBackground
             .additiveShader)
         {
-            topHalf.countdownBg.style.display = DisplayStyle.None;
-            bottomHalf.countdownBg.style.display = DisplayStyle.None;
+            topHalf.countdownBg.style.unityMaterial = additiveMaterial;
+            bottomHalf.countdownBg.style.unityMaterial = additiveMaterial;
         }
         if (GlobalResource.gameUiSkin.scanCountdownNumbers
             .additiveShader)
         {
-            topHalf.countdownNum.style.display = DisplayStyle.None;
-            bottomHalf.countdownNum.style.display = DisplayStyle.None;
+            topHalf.countdownNum.style.unityMaterial = additiveMaterial;
+            bottomHalf.countdownNum.style.unityMaterial = additiveMaterial;
         }
     }
 

@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
 
     public VisualTreeAsset layoutTemplate;
     public VisualTreeAsset scanlineTemplate;
+    public Material additiveMaterial;
 
     [Serializable]
     public class NoteTemplates
@@ -447,7 +448,8 @@ public class GameController : MonoBehaviour
         layout = new GameLayout(
             pattern: setup.patternAfterModifier,
             gameContainer: setup.gameContainer.inner,
-            layoutTemplate: layoutTemplate);
+            layoutTemplate: layoutTemplate,
+            additiveMaterial: additiveMaterial);
         layout.Prepare(
             firstScan: timer.firstScan,
             lastScan: timer.lastScan,
