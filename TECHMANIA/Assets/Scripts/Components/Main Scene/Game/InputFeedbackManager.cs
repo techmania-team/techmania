@@ -11,7 +11,7 @@ public class InputFeedbackManager
         private VisualElement element;
         private float spawnTime;
 
-        public InputFeedback(TemplateContainer templateContainer)
+        public InputFeedback(TemplateContainer templateContainer, Material additiveMaterial)
         {
             this.templateContainer = templateContainer;
             this.templateContainer.AddToClassList(
@@ -19,12 +19,10 @@ public class InputFeedbackManager
             element = templateContainer.Q("input-feedback");
             spawnTime = Time.time;
 
-            // While UI Toolkit doesn't support shaders, we can't
-            // draw feedbacks that request the additive shader.
             if (GlobalResource.gameUiSkin.touchClickFeedback
                 .additiveShader)
             {
-                element.style.display = DisplayStyle.None;
+                element.style.unityMaterial = additiveMaterial;
             }
         }
 
@@ -59,6 +57,7 @@ public class InputFeedbackManager
 
     private VisualElement feedbackContainer;
     private VisualTreeAsset feedbackTemplate;
+    private Material additiveMaterial;
     private GameLayout layout;
     private GameInputManager inputManager;
 
@@ -74,12 +73,14 @@ public class InputFeedbackManager
 
     public InputFeedbackManager(VisualTreeAsset feedbackTemplate,
         GameLayout layout,
-        GameInputManager inputManager)
+        GameInputManager inputManager,
+        Material additiveMaterial)
     {
         this.feedbackContainer = layout.inputFeedbackContainer;
         this.feedbackTemplate = feedbackTemplate;
         this.layout = layout;
         this.inputManager = inputManager;
+        this.additiveMaterial = additiveMaterial;
     }
 
     public void Prepare(PatternMetadata metadata)
@@ -231,7 +232,7 @@ public class InputFeedbackManager
         TemplateContainer templateContainer = feedbackTemplate
             .Instantiate();
         feedbackContainer.Add(templateContainer);
-        InputFeedback feedback = new InputFeedback(templateContainer);
+        InputFeedback feedback = new InputFeedback(templateContainer, additiveMaterial);
         feedback.ResetSize();
         feedback.SetPosition(position);
         idToFeedback.Add(id, feedback);

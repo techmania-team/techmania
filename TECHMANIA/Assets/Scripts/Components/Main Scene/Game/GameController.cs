@@ -475,7 +475,7 @@ public class GameController : MonoBehaviour
 
         // Prepare for input feedback.
         inputFeedback = new InputFeedbackManager(
-            inputFeedbackTemplate, layout, input);
+            inputFeedbackTemplate, layout, input, additiveMaterial);
         inputFeedback.Prepare(
             setup.patternAfterModifier.patternMetadata);
 
