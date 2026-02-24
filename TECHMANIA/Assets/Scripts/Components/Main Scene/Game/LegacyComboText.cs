@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ComboText : MonoBehaviour
+public class LegacyComboText : MonoBehaviour
 {
     public RectTransform comboTextLayout;
     public UnityEngine.UI.Image judgementText;

@@ -76,8 +76,8 @@ public class GameController : MonoBehaviour
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
-    public VFXManager vfxManager;
-    public ComboText comboText;
+    public LegacyVfxManager vfxManager;
+    public LegacyComboText comboText;
 
     [HideInInspector]
     public bool autoPlay;

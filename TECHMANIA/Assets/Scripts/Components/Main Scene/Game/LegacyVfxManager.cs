@@ -4,7 +4,7 @@ using ThemeApi;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class VFXManager : MonoBehaviour
+public class LegacyVfxManager : MonoBehaviour
 {
     public GameObject vfxPrefab;
 
@@ -58,7 +58,7 @@ public class VFXManager : MonoBehaviour
         foreach (SpriteSheet layer in spriteSheetLayers)
         {
             GameObject vfx = Instantiate(vfxPrefab, transform);
-            vfx.GetComponent<VFXDrawer>().Initialize(
+            vfx.GetComponent<LegacyVfxDrawer>().Initialize(
                 viewportPoint, layer, laneHeight, loop);
             layers.Add(vfx);
         }
@@ -284,7 +284,7 @@ public class VFXManager : MonoBehaviour
                     .GetOngoingTrailEndPosition(timer.intScan));
             foreach (GameObject o in pair.Value)
             {
-                o.GetComponent<VFXDrawer>().SetViewportPoint(
+                o.GetComponent<LegacyVfxDrawer>().SetViewportPoint(
                     new Vector2(viewportXOfScanline,
                     ongoingTrailEndPosition.y));
             }
@@ -294,7 +294,7 @@ public class VFXManager : MonoBehaviour
         {
             foreach (GameObject o in pair.Value)
             {
-                o.GetComponent<VFXDrawer>().SetViewportPoint(
+                o.GetComponent<LegacyVfxDrawer>().SetViewportPoint(
                     VisualElementTransform
                     .ElementCenterToViewportSpace(
                         pair.Key.noteImage));

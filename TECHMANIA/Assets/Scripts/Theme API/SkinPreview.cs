@@ -18,9 +18,9 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualTreeAsset skinPreviewTemplate;
         [MoonSharpHidden]
-        public VFXManager vfxManager;
+        public LegacyVfxManager vfxManager;
         [MoonSharpHidden]
-        public ComboText comboText;
+        public LegacyComboText comboText;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;

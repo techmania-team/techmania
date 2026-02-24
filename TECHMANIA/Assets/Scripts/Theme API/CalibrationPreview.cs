@@ -19,7 +19,7 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualTreeAsset calibrationPreviewTemplate;
         [MoonSharpHidden]
-        public VFXManager vfxManager;
+        public LegacyVfxManager vfxManager;
         [Header("Audio")]
         [MoonSharpHidden]
         public AudioManager audioManager;

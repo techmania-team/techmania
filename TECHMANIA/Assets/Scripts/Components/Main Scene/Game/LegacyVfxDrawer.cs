@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // "Script 'VFXRenderer' has the same name as built-in Unity component."
 //
 // What the heck.
-public class VFXDrawer : MonoBehaviour
+public class LegacyVfxDrawer : MonoBehaviour
 {
     public Material additiveMaterial;
 

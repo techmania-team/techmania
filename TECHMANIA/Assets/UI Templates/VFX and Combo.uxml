@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Templates/VFX%20and%20Combo.uss?fileID=7433441132597879392&amp;guid=01c73cbb5ce1d494bb9d2932fac2daa4&amp;type=3#VFX and Combo"/>
+    <ui:VisualElement name="vfx-container" picking-mode="Ignore" class="full-screen"/>
+    <ui:VisualElement name="combo-text-center" picking-mode="Ignore" class="size-zero" style="position: absolute; left: 200px; top: 200px;">
+        <ui:VisualElement name="distance-to-note" picking-mode="Ignore" class="size-zero" style="bottom: 80px; position: absolute; align-items: center; justify-content: center;">
+            <ui:VisualElement name="layout-container" picking-mode="Ignore" style="height: 40px; flex-direction: row; position: absolute;">
+                <ui:VisualElement name="judgement" style="width: 20px;"/>
+                <ui:VisualElement name="space" style="width: 20px;"/>
+                <ui:VisualElement name="digit-1" style="width: 20px;"/>
+                <ui:VisualElement name="digit-2" style="width: 20px;"/>
+                <ui:VisualElement name="digit-3" style="width: 20px;"/>
+                <ui:VisualElement name="digit-4" style="width: 20px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
