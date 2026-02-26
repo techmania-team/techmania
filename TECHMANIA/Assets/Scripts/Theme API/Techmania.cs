@@ -252,12 +252,14 @@ namespace ThemeApi
         {
             TopLevelObjects.instance.vfxComboCanvas
                 .GetComponent<CanvasGroup>().alpha = 0f;
+            // TODO: migrate
         }
 
         public void RestoreVfxAndComboText()
         {
             TopLevelObjects.instance.vfxComboCanvas
                 .GetComponent<CanvasGroup>().alpha = 1f;
+            // TODO: migrate
         }
 
         // Does nothing if Discord Rich Presence is turned off
