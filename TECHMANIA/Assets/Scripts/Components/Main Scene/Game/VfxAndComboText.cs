@@ -1,4 +1,3 @@
-using FMOD;
 using System;
 using System.Collections.Generic;
 using ThemeApi;
@@ -241,16 +240,6 @@ public class VfxAndComboText
             elements.center.style.top = new StyleLength(position.y);
         }
 
-        private void ResetAllAnimationAttributes()
-        {
-
-        }
-
-        private void UpdateAnimationCurves()
-        {
-
-        }
-
         private void UpdateSprites()
         {
             float time = Time.time - startTime;
@@ -270,7 +259,92 @@ public class VfxAndComboText
             }
         }
 
-        
+        #region Animation
+        private void SetTranslationX(float value)
+        {
+            elements.distanceToNote.style.left = new StyleLength(
+                value * sizeUnit);
+        }
+
+        private void SetTranslationY(float value)
+        {
+            elements.distanceToNote.style.bottom = new StyleLength(
+                (GlobalResource.comboSkin.distanceToNote + value) * sizeUnit);
+        }
+
+        private void SetRotationInDegrees(float value)
+        {
+            // Negate the value to rotate in the opposite direction, for backwards
+            // compatibility w/ UGUI combo text.
+            elements.layoutContainer.style.rotate = new StyleRotate(new Rotate(
+                Angle.Degrees(-value)));
+        }
+
+        private void SetScaleX(float value)
+        {
+            elements.layoutContainer.style.scale = new StyleScale(new Vector2(
+                value, elements.layoutContainer.style.scale.value.value.y));
+        }
+
+        private void SetScaleY(float value)
+        {
+            elements.layoutContainer.style.scale = new StyleScale(new Vector2(
+                elements.layoutContainer.style.scale.value.value.x, value));
+        }
+
+        private void SetAlpha(float value)
+        {
+            elements.layoutContainer.style.opacity = new StyleFloat(value);
+        }
+
+        private void ResetAllAnimationAttributes()
+        {
+            SetTranslationX(0f);
+            SetTranslationY(0f);
+            SetRotationInDegrees(0f);
+            SetScaleX(1f);
+            SetScaleY(1f);
+            SetAlpha(1f);
+        }
+
+        private void UpdateAnimationCurves()
+        {
+            float time = Time.time - startTime;
+
+            foreach (Tuple<AnimationCurve, string> tuple in
+                GlobalResource.comboAnimationCurvesAndAttributes)
+            {
+                AnimationCurve curve = tuple.Item1;
+                string attribute = tuple.Item2;
+
+                float value = curve.Evaluate(time);
+                switch (attribute)
+                {
+                    case "translationX":
+                        SetTranslationX(value);
+                        break;
+                    case "translationY":
+                        SetTranslationY(value);
+                        break;
+                    case "rotationInDegrees":
+                        SetRotationInDegrees(value);
+                        break;
+                    case "scaleX":
+                        SetScaleX(value);
+                        break;
+                    case "scaleY":
+                        SetScaleY(value);
+                        break;
+                    case "alpha":
+                        SetAlpha(value);
+                        break;
+                    default:
+                        Debug.LogWarning("Unknown attribute in combo animation: " + attribute);
+                        break;
+                }
+            }
+        }
+        #endregion
     }
 
     private TemplateContainer templateInstance;
