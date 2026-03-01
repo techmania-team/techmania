@@ -79,7 +79,6 @@ public class GameController : MonoBehaviour
     public ScoreKeeper scoreKeeper { get; private set; }
 
     public LegacyVfxManager legacyVfxManager;
-    public LegacyComboText legacyComboText;
 
     [HideInInspector]
     public bool autoPlay;
@@ -487,8 +486,6 @@ public class GameController : MonoBehaviour
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
         vfxAndComboText.HideComboText();
         legacyVfxManager.Prepare(layout.laneHeight, timer, layout);
-        legacyComboText.ResetSize(layout.scanHeight);
-        legacyComboText.Hide();
 
         // Initialize scores.
         scoreKeeper = new ScoreKeeper(setup, state);
@@ -625,7 +622,6 @@ public class GameController : MonoBehaviour
         input?.Dispose();
         vfxAndComboText?.Dispose();
         legacyVfxManager.Dispose();
-        legacyComboText.Hide();
     }
     #endregion
 
@@ -714,7 +710,6 @@ public class GameController : MonoBehaviour
         noteManager.ResetSize();
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
         legacyVfxManager.ResetSize(layout.laneHeight);
-        legacyComboText.ResetSize(layout.scanHeight);
     }
 
     public void ActivateFever()
@@ -937,7 +932,6 @@ public class GameController : MonoBehaviour
         vfxAndComboText.SpawnResolvedVFX(elements, judgement);
         vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
         legacyVfxManager.SpawnResolvedVFX(elements, judgement);
-        legacyComboText.Show(elements.noteImage, judgement, scoreKeeper);
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,
@@ -990,7 +984,6 @@ public class GameController : MonoBehaviour
             Judgement judgement = pair.Value.judgement;
             scoreKeeper.IncrementCombo();
             vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
-            legacyComboText.Show(elements.noteImage, judgement, scoreKeeper);
 
             setup.onComboTick?.Function.Call(scoreKeeper.currentCombo);
         }

@@ -74,7 +74,7 @@ public class VfxAndComboText
 
             sizeUnit = scanHeight / 500f;
             elements.distanceToNote.style.bottom = new StyleLength(
-                sizeUnit * GlobalResource.comboSkin.distanceToNote + 200);
+                sizeUnit * GlobalResource.comboSkin.distanceToNote);
             elements.layoutContainer.style.height = new StyleLength(
                 sizeUnit * GlobalResource.comboSkin.height);
             elements.space.style.width = new StyleLength(
