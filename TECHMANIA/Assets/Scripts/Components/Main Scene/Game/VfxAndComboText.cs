@@ -1,6 +1,7 @@
 using FMOD;
 using System;
 using System.Collections.Generic;
+using ThemeApi;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -159,6 +160,14 @@ public class VfxAndComboText
             }
             elements.judgement.style.width = new StyleLength(
                 getSpriteWidth(judgementSpriteSheet));
+            if (judgementSpriteSheet.additiveShader)
+            {
+                elements.judgement.style.unityMaterial = additiveMaterial;
+            }
+            else
+            {
+                elements.judgement.style.unityMaterial = null;
+            }
 
             // Draw combo, if applicable.
 
@@ -201,6 +210,14 @@ public class VfxAndComboText
                         continue;
                     elements.digits[i].style.width = new StyleLength(
                         getSpriteWidth(comboDigitSpriteSheet[i]));
+                    if (comboDigitSpriteSheet[i].additiveShader)
+                    {
+                        elements.digits[i].style.unityMaterial = additiveMaterial;
+                    }
+                    else
+                    {
+                        elements.digits[i].style.unityMaterial = null;
+                    }
                 }
             }
             else
