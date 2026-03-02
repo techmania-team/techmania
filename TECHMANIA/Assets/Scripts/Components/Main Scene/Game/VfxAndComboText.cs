@@ -355,8 +355,6 @@ public class VfxAndComboText
     private VisualElement vfxContainer;
     private float laneHeight;
 
-    private Material additiveMaterial;
-
     // To be passed to
     // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
     private GameTimer timer;
@@ -374,7 +372,6 @@ public class VfxAndComboText
 
         vfxContainer = templateInstance.Q<VisualElement>("vfx-container");
 
-        this.additiveMaterial = additiveMaterial;
         this.timer = timer;
         this.layout = layout;
 
@@ -405,6 +402,12 @@ public class VfxAndComboText
         ScoreKeeper scoreKeeper)
     {
         comboText.Show(noteImage, judgement, scoreKeeper);
+    }
+
+    public void ShowComboText(VisualElement noteImage, Judgement judgement,
+        bool fever, int combo)
+    {
+        comboText.Show(noteImage, judgement, fever, combo);
     }
 
     public void HideComboText()

@@ -54126,7 +54126,6 @@ MonoBehaviour:
   vfxAndComboTemplate: {fileID: 9197481963319205126, guid: 26a12d523dd44c94aa27705674d7a200,
     type: 3}
   legacyVfxManager: {fileID: 1865618701}
-  legacyComboText: {fileID: 6153932700612440402}
   autoPlay: 0
   showHitbox: 0
 --- !u!114 &1527373385
@@ -54143,8 +54142,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinPreviewTemplate: {fileID: 9197481963319205126, guid: 63f25639cf42fde48b0668323db1be45,
     type: 3}
-  vfxManager: {fileID: 1865618701}
-  comboText: {fileID: 6153932700612440402}
+  vfxAndComboTemplate: {fileID: 9197481963319205126, guid: 26a12d523dd44c94aa27705674d7a200,
+    type: 3}
+  additiveMaterial: {fileID: 2100000, guid: fcbc02a1b9c9f084991e6f01617b73d1, type: 2}
+  legacyVfxManager: {fileID: 1865618701}
+  legacyComboText: {fileID: 6153932700612440402}
   bpm: 0
   lanes: 0
   judgement: 0
