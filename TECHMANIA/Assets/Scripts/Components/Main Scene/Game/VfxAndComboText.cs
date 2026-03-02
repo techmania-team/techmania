@@ -235,9 +235,10 @@ public class VfxAndComboText
         {
             if (elementToFollow == null) return;
 
-            Vector2 position = elementToFollow.worldBound.center;
-            elements.center.style.left = new StyleLength(position.x);
-            elements.center.style.top = new StyleLength(position.y);
+            Vector2 worldPosition = elementToFollow.worldBound.center;
+            Vector2 localPosition = elements.center.parent.WorldToLocal(worldPosition);
+            elements.center.style.left = new StyleLength(localPosition.x);
+            elements.center.style.top = new StyleLength(localPosition.y);
         }
 
         private void UpdateSprites()

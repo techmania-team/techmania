@@ -12,5 +12,6 @@
                 <ui:VisualElement name="digit-4" style="width: 20px;"/>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="center-visualizer" picking-mode="Ignore" style="position: absolute; top: -10px; bottom: -10px; left: -10px; right: -10px; border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-left-color: rgb(114, 205, 118); border-right-color: rgb(114, 205, 118); border-top-color: rgb(114, 205, 118); border-bottom-color: rgb(114, 205, 118); display: none;"/>
     </ui:VisualElement>
 </ui:UXML>
