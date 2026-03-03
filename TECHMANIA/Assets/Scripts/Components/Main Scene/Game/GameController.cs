@@ -905,7 +905,7 @@ public class GameController : MonoBehaviour
                     input.RegisterOngoingNote(elements, 
                         judgementAndTimeDifference);
                     elements.SetOngoing();
-                    vfxAndComboText.SpawnOngoingVFX(elements, judgement);
+                    vfxAndComboText.SpawnOngoingVfx(elements, judgement);
                     legacyVfxManager.SpawnOngoingVFX(elements, judgement);
                 }
                 break;
@@ -930,7 +930,7 @@ public class GameController : MonoBehaviour
 
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
-        vfxAndComboText.SpawnResolvedVFX(elements, judgement);
+        vfxAndComboText.SpawnResolvedVfx(elements, judgement);
         vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
         legacyVfxManager.SpawnResolvedVFX(elements, judgement);
         elements.Resolve();

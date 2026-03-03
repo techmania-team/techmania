@@ -542,17 +542,191 @@ public class VfxAndComboText
 
         public void SpawnOngoingVfx(NoteElements noteElements, Judgement judgement)
         {
+            if (judgement == Judgement.Miss ||
+                judgement == Judgement.Break)
+            {
+                return;
+            }
 
+            switch (noteElements.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                case NoteType.RepeatHead:
+                case NoteType.Repeat:
+                    // Do nothing. VFX is spawned on resolve.
+                    break;
+                case NoteType.Hold:
+                    holdNoteToOngoingHeadVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.holdOngoingHead,
+                            loop: true));
+                    holdNoteToOngoingTrailVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.holdOngoingTrail,
+                            loop: true));
+                    break;
+                case NoteType.Drag:
+                    dragNoteToOngoingVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.dragOngoing,
+                            loop: true));
+                    break;
+                case NoteType.RepeatHeadHold:
+                    holdNoteToOngoingHeadVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.repeatHoldOngoingHead,
+                            loop: true));
+                    holdNoteToOngoingTrailVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.repeatHoldOngoingTrail,
+                            loop: true));
+                    break;
+                case NoteType.RepeatHold:
+                    // Spawn the head VFX on repeat head.
+                    NoteElements head = (noteElements as RepeatNoteElementsBase)
+                        .head;
+                    holdNoteToOngoingHeadVfx.Add(head,
+                        SpawnVfxAt(head,
+                            GlobalResource.vfxSkin.repeatHoldOngoingHead,
+                            loop: true));
+                    holdNoteToOngoingTrailVfx.Add(noteElements,
+                        SpawnVfxAt(noteElements,
+                            GlobalResource.vfxSkin.repeatHoldOngoingTrail,
+                            loop: true));
+                    break;
+            }
         }
 
         public void SpawnResolvedVfx(NoteElements noteElements, Judgement judgement)
         {
+            // Even if judgement is Miss or Break, we still need
+            // to despawn ongoing VFX, if any.
 
+            Action<Dictionary<NoteElements, List<VfxLayer>>, NoteElements> despawnVfx =
+                (Dictionary<NoteElements, List<VfxLayer>> dictionary,
+                NoteElements elements) =>
+                {
+                    if (!dictionary.ContainsKey(elements)) return;
+                    dictionary[elements].ForEach(l => l.Dispose());
+                    dictionary.Remove(elements);
+                };
+
+            bool missOrBreak = judgement == Judgement.Miss ||
+                judgement == Judgement.Break;
+            List<VfxLayer> newLayers = null;
+
+            switch (noteElements.note.type)
+            {
+                case NoteType.Basic:
+                case NoteType.ChainHead:
+                case NoteType.ChainNode:
+                    switch (judgement)
+                    {
+                        case Judgement.RainbowMax:
+                        case Judgement.Max:
+                            newLayers = SpawnVfxAt(noteElements,
+                                GlobalResource.vfxSkin.basicMax);
+                            break;
+                        case Judgement.Cool:
+                            newLayers = SpawnVfxAt(noteElements,
+                                GlobalResource.vfxSkin.basicCool);
+                            break;
+                        case Judgement.Good:
+                            newLayers = SpawnVfxAt(noteElements,
+                                GlobalResource.vfxSkin.basicGood);
+                            break;
+                    }
+                    break;
+                case NoteType.Hold:
+                    despawnVfx(holdNoteToOngoingHeadVfx, noteElements);
+                    despawnVfx(holdNoteToOngoingTrailVfx, noteElements);
+                    if (!missOrBreak)
+                    {
+                        newLayers = SpawnVfxAt(
+                            noteElements.holdTrailAndExtensions
+                            .GetDurationTrailEndPosition(),
+                            GlobalResource.vfxSkin.holdComplete);
+                    }
+                    break;
+                case NoteType.Drag:
+                    despawnVfx(dragNoteToOngoingVfx, noteElements);
+                    if (!missOrBreak)
+                    {
+                        newLayers = SpawnVfxAt(
+                            (noteElements as DragNoteElements).curveEnd,
+                            GlobalResource.vfxSkin.dragComplete);
+                    }
+                    break;
+                case NoteType.RepeatHead:
+                    if (missOrBreak) break;
+                    newLayers = SpawnVfxAt(noteElements,
+                        GlobalResource.vfxSkin.repeatHead);
+                    break;
+                case NoteType.Repeat:
+                    if (missOrBreak) break;
+                    newLayers = SpawnVfxAt(noteElements,
+                        GlobalResource.vfxSkin.repeatNote);
+                    newLayers = SpawnVfxAt((noteElements as RepeatNoteElementsBase).head,
+                        GlobalResource.vfxSkin.repeatHead);
+                    break;
+                case NoteType.RepeatHeadHold:
+                    despawnVfx(holdNoteToOngoingHeadVfx, noteElements);
+                    despawnVfx(holdNoteToOngoingTrailVfx, noteElements);
+                    if (!missOrBreak)
+                    {
+                        newLayers = SpawnVfxAt(
+                            noteElements.holdTrailAndExtensions
+                            .GetDurationTrailEndPosition(),
+                            GlobalResource.vfxSkin.repeatHoldComplete);
+                    }
+                    break;
+                case NoteType.RepeatHold:
+                    // Despawn VFX on repeat head.
+                    NoteElements head = (noteElements as RepeatNoteElementsBase)
+                        .head;
+                    despawnVfx(holdNoteToOngoingHeadVfx, head);
+                    despawnVfx(holdNoteToOngoingTrailVfx, noteElements);
+                    if (!missOrBreak)
+                    {
+                        newLayers = SpawnVfxAt(
+                            noteElements.holdTrailAndExtensions
+                            .GetDurationTrailEndPosition(),
+                            GlobalResource.vfxSkin.repeatHoldComplete);
+                    }
+                    break;
+            }
+            if (newLayers != null)
+            {
+                foreach (VfxLayer l in newLayers) oneShotLayers.Add(l);
+            }
         }
 
         public void SpawnOneShotVfx(VisualElement element, Judgement judgement)
         {
+            List<VfxLayer> newLayers = null;
 
+            switch (judgement)
+            {
+                case Judgement.RainbowMax:
+                case Judgement.Max:
+                    newLayers = SpawnVfxAt(element,
+                        GlobalResource.vfxSkin.basicMax);
+                    break;
+                case Judgement.Cool:
+                    newLayers = SpawnVfxAt(element,
+                        GlobalResource.vfxSkin.basicCool);
+                    break;
+                case Judgement.Good:
+                    newLayers = SpawnVfxAt(element,
+                        GlobalResource.vfxSkin.basicGood);
+                    break;
+            }
+            if (newLayers != null)
+            {
+                foreach (VfxLayer l in newLayers) oneShotLayers.Add(l);
+            }
         }
 
         public void Update()
@@ -635,29 +809,18 @@ public class VfxAndComboText
     private VfxManager vfxManager;
     private ComboText comboText;
 
-    private VisualElement vfxContainer;
-    private float laneHeight;
-
-    // To be passed to
-    // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
-    private GameTimer timer;
-    // To query scanline position when placing ongoing VFX.
-    private GameLayout layout;
-
     public VfxAndComboText(VisualTreeAsset vfxAndComboTemplate,
         VisualTreeAsset vfxLayerTemplate,
         VisualElement vfxAndComboContainer,
         Material additiveMaterial,
+        // To be passed to
+        // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
         GameTimer timer,
+        // To query scanline position when placing ongoing VFX.
         GameLayout layout)
     {
         templateInstance = vfxAndComboTemplate.Instantiate();
         vfxAndComboContainer.Add(templateInstance);
-
-        vfxContainer = templateInstance.Q<VisualElement>("vfx-container");
-
-        this.timer = timer;
-        this.layout = layout;
 
         comboText = new ComboText(templateInstance, additiveMaterial);
         vfxManager = new VfxManager(templateInstance, vfxLayerTemplate,
@@ -704,13 +867,18 @@ public class VfxAndComboText
         vfxManager.JumpToScan();
     }
 
-    public void SpawnOngoingVFX(NoteElements elements, Judgement judgement)
+    public void SpawnOngoingVfx(NoteElements elements, Judgement judgement)
     {
         vfxManager.SpawnOngoingVfx(elements, judgement);
     }
 
-    public void SpawnResolvedVFX(NoteElements elements, Judgement judgement)
+    public void SpawnResolvedVfx(NoteElements elements, Judgement judgement)
     {
         vfxManager.SpawnResolvedVfx(elements, judgement);
+    }
+
+    public void SpawnOneShotVfx(VisualElement element, Judgement judgement)
+    {
+        vfxManager.SpawnOneShotVfx(element, judgement);
     }
 }

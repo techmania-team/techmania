@@ -139,6 +139,7 @@ namespace ThemeApi
             // Spawn VFX and combo on beat 2
             if (beat >= bps / 2 && prevFrameBeat < bps / 2)
             {
+                vfxAndComboText.SpawnOneShotVfx(noteAnchor, judgement);
                 vfxAndComboText.ShowComboText(noteImage, judgement, fever, combo);
                 legacyVfxManager.SpawnOneShotVFX(noteAnchor, judgement);
             }
