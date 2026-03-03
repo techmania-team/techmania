@@ -348,8 +348,291 @@ public class VfxAndComboText
         #endregion
     }
 
+    private class VfxManager
+    {
+        /* One-shot VFX vs Looping VFX
+         * 
+         *                |      One-shot       |        Looping
+         *  -------------------------------------------------------------
+         *  Managed       | Update(),           | Update(), ResetSize(),
+         *  once spawned? | ResetSize()         | SetCenter(), Dispose()
+         *  -------------------------------------------------------------
+         *  Removed when  |        No           |          Yes
+         *  jumping scan? |                     |
+         *  -------------------------------------------------------------
+         *  End of life   | Removes itself once | Removed by VfxManager
+         *                | animation ends      | once note resolves
+         *  -------------------------------------------------------------
+         */
+        private class VfxLayer
+        {
+            // If false, VfxManager should remove this object.
+            public bool active;
+
+            private TemplateContainer templateContainer;
+            private VisualElement centerElement;
+            private VisualElement layerElement;
+
+            private SpriteSheet spriteSheet;
+            private bool loop;
+
+            private float startTime;
+
+            public void Initialize(VisualElement vfxContainer,
+                VisualTreeAsset vfxLayerTemplate,
+                Material additiveMaterial, Vector2 center,
+                SpriteSheet spriteSheet, bool loop)
+            {
+                this.spriteSheet = spriteSheet;
+                this.loop = loop;
+
+                if (spriteSheet.sprites == null ||
+                    spriteSheet.sprites.Count == 0)
+                {
+                    active = false;
+                    templateContainer = null;
+                    centerElement = null;
+                    layerElement = null;
+                    return;
+                }
+
+                active = true;
+                templateContainer = vfxLayerTemplate.Instantiate();
+                vfxContainer.Add(templateContainer);
+                centerElement = templateContainer.Q<VisualElement>("center");
+                layerElement = centerElement.Q<VisualElement>("vfx-layer");
+
+                SetCenter(center);
+
+                // Set initial sprite and material.
+                layerElement.style.backgroundImage = new StyleBackground(
+                    spriteSheet.sprites[0]);
+                if (spriteSheet.additiveShader)
+                {
+                    layerElement.style.unityMaterial = additiveMaterial;
+                }
+
+                startTime = Time.time;
+            }
+
+            public void ResetSize(float laneHeight)
+            {
+                if (!active) return;
+
+                float height = laneHeight * spriteSheet.scale;
+                float width = spriteSheet.sprites[0].rect.width /
+                    spriteSheet.sprites[0].rect.height * height;
+                layerElement.style.width = new StyleLength(width);
+                layerElement.style.height = new StyleLength(height);
+            }
+
+            public void Update()
+            {
+                float time = Time.time - startTime;
+                Sprite sprite = spriteSheet.GetSpriteForTime(time, loop);
+                if (sprite == null)
+                {
+                    Dispose();
+                }
+                else
+                {
+                    layerElement.style.backgroundImage = new StyleBackground(sprite);
+                }
+            }
+
+            public void Dispose()
+            {
+                templateContainer.RemoveFromHierarchy();
+                active = false;
+            }
+
+            // center is in vfxContainer's local space.
+            public void SetCenter(Vector2 center)
+            {
+                if (!active) return;
+
+                centerElement.style.left = new StyleLength(center.x + 200);
+                centerElement.style.top = new StyleLength(center.y);
+            }
+        }
+
+        private VisualElement vfxContainer;
+        private VisualTreeAsset vfxLayerTemplate;
+        private Material additiveMaterial;
+
+        // Track all the one-shot and looping VfxLayers.
+        private List<VfxLayer> oneShotLayers;
+        private Dictionary<NoteElements, List<VfxLayer>> holdNoteToOngoingHeadVfx;
+        private Dictionary<NoteElements, List<VfxLayer>> holdNoteToOngoingTrailVfx;
+        private Dictionary<NoteElements, List<VfxLayer>> dragNoteToOngoingVfx;
+
+        private float laneHeight;
+        // To be passed to HoldTrailAndExtensions.GetOngoingTrailEndPosition.
+        private GameTimer timer;
+        // To query scanline position when placing ongoing VFX.
+        private GameLayout layout;
+
+        public VfxManager(TemplateContainer vfxAndComboTextTemplateInstance,
+            VisualTreeAsset vfxLayerTemplate, Material additiveMaterial,
+            GameTimer timer, GameLayout layout)
+        {
+            this.vfxContainer = vfxAndComboTextTemplateInstance.Q<VisualElement>(
+                "vfx-container");
+            this.vfxLayerTemplate = vfxLayerTemplate;
+            this.additiveMaterial = additiveMaterial;
+            this.timer = timer;
+            this.layout = layout;
+
+            oneShotLayers = new List<VfxLayer>();
+            holdNoteToOngoingHeadVfx = new Dictionary<NoteElements, List<VfxLayer>>();
+            holdNoteToOngoingTrailVfx = new Dictionary<NoteElements, List<VfxLayer>>();
+            dragNoteToOngoingVfx = new Dictionary<NoteElements, List<VfxLayer>>();
+        }
+
+        public void ResetSize(float laneHeight)
+        {
+            foreach (VfxLayer l in oneShotLayers)
+            {
+                l.ResetSize(laneHeight);
+            }
+            foreach (List<VfxLayer> list in holdNoteToOngoingHeadVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+            }
+            foreach (List<VfxLayer> list in holdNoteToOngoingTrailVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+            }
+            foreach (List<VfxLayer> list in dragNoteToOngoingVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+            }
+        }
+
+        // center is in vfxContainer's local space.
+        private List<VfxLayer> SpawnVfxAt(Vector2 center,
+            List<SpriteSheet> spriteSheetLayers, bool loop = false)
+        {
+            List<VfxLayer> vfxLayers = new List<VfxLayer>();
+            foreach (SpriteSheet spriteSheetLayer in spriteSheetLayers)
+            {
+                VfxLayer vfxLayer = new VfxLayer();
+                vfxLayer.Initialize(vfxContainer, vfxLayerTemplate,
+                    additiveMaterial, center, spriteSheetLayer, loop);
+                vfxLayer.ResetSize(laneHeight);
+                vfxLayers.Add(vfxLayer);
+            }
+            return vfxLayers;
+        }
+
+        private List<VfxLayer> SpawnVfxAt(VisualElement element,
+            List<SpriteSheet> spriteSheetLayers, bool loop = false)
+        {
+            Vector2 worldPosition = element.worldBound.center;
+            Vector2 localPosition = vfxContainer.WorldToLocal(worldPosition);
+            return SpawnVfxAt(localPosition, spriteSheetLayers, loop);
+        }
+
+        private List<VfxLayer> SpawnVfxAt(NoteElements noteElements,
+            List<SpriteSheet> spriteSheetLayers, bool loop = false)
+        {
+            return SpawnVfxAt(noteElements.templateContainer,
+                spriteSheetLayers, loop);
+        }
+
+        public void SpawnOngoingVfx(NoteElements noteElements, Judgement judgement)
+        {
+
+        }
+
+        public void SpawnResolvedVfx(NoteElements noteElements, Judgement judgement)
+        {
+
+        }
+
+        public void SpawnOneShotVfx(VisualElement element, Judgement judgement)
+        {
+
+        }
+
+        public void Update()
+        {
+            // Move ongoing VFX.
+            float worldXOfScanline = layout.GetWorldXOfScanline(timer.intScan);
+            foreach (KeyValuePair<NoteElements, List<VfxLayer>> pair in
+                holdNoteToOngoingTrailVfx)
+            {
+                VisualElement ongoingTrailEnd = pair.Key.holdTrailAndExtensions
+                    .GetOngoingTrailEndPosition(timer.intScan);
+                Vector2 ongoingTrailEndWorldPosition = ongoingTrailEnd.worldBound.center;
+                Vector2 vfxWorldPosition = new Vector2(
+                    worldXOfScanline, ongoingTrailEndWorldPosition.y);
+                Vector2 vfxLocalPosition = vfxContainer.WorldToLocal(vfxWorldPosition);
+                foreach (VfxLayer l in pair.Value)
+                {
+                    l.SetCenter(vfxLocalPosition);
+                }
+            }
+            foreach (KeyValuePair<NoteElements, List<VfxLayer>> pair in
+                dragNoteToOngoingVfx)
+            {
+                Vector2 noteWorldPosition = pair.Key.noteImage.worldBound.center;
+                Vector2 vfxLocalPosition = vfxContainer.WorldToLocal(noteWorldPosition);
+                foreach (VfxLayer l in pair.Value)
+                {
+                    l.SetCenter(vfxLocalPosition);
+                }
+            }
+
+            // Find and collect one-shot layers, if any.
+            List<VfxLayer> remainingOneShotLayers = new List<VfxLayer>();
+            foreach (VfxLayer l in oneShotLayers)
+            {
+                if (l.active) remainingOneShotLayers.Add(l);
+            }
+            if (remainingOneShotLayers.Count < oneShotLayers.Count)
+            {
+                oneShotLayers = remainingOneShotLayers;
+            }
+        }
+
+        // The caller should remove all VFX and combo from hierarchy.
+        public void Dispose()
+        {
+            oneShotLayers.Clear();
+            holdNoteToOngoingHeadVfx.Clear();
+            holdNoteToOngoingTrailVfx.Clear();
+            dragNoteToOngoingVfx.Clear();
+        }
+
+        public void JumpToScan()
+        {
+            foreach (VfxLayer l in oneShotLayers)
+            {
+                l.Dispose();
+            }
+            oneShotLayers.Clear();
+            foreach (List<VfxLayer> list in holdNoteToOngoingHeadVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.Dispose();
+            }
+            holdNoteToOngoingHeadVfx.Clear();
+            foreach (List<VfxLayer> list in holdNoteToOngoingTrailVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.Dispose();
+            }
+            holdNoteToOngoingTrailVfx.Clear();
+            foreach (List<VfxLayer> list in dragNoteToOngoingVfx.Values)
+            {
+                foreach (VfxLayer l in list) l.Dispose();
+            }
+            dragNoteToOngoingVfx.Clear();
+        }
+    }
+
     private TemplateContainer templateInstance;
 
+    private VfxManager vfxManager;
     private ComboText comboText;
 
     private VisualElement vfxContainer;
@@ -362,6 +645,7 @@ public class VfxAndComboText
     private GameLayout layout;
 
     public VfxAndComboText(VisualTreeAsset vfxAndComboTemplate,
+        VisualTreeAsset vfxLayerTemplate,
         VisualElement vfxAndComboContainer,
         Material additiveMaterial,
         GameTimer timer,
@@ -376,26 +660,26 @@ public class VfxAndComboText
         this.layout = layout;
 
         comboText = new ComboText(templateInstance, additiveMaterial);
+        vfxManager = new VfxManager(templateInstance, vfxLayerTemplate,
+            additiveMaterial, timer, layout);
     }
 
     public void Update()
     {
-        // VFX: TODO
-
+        vfxManager.Update();
         comboText.Update();
     }
 
     public void ResetSize(float laneHeight, float scanHeight)
     {
-        // VFX
-        this.laneHeight = laneHeight;
-
+        vfxManager.ResetSize(laneHeight);
         comboText.ResetSize(scanHeight);
     }
 
     public void Dispose()
     {
         templateInstance.RemoveFromHierarchy();
+        vfxManager.Dispose();
     }
 
     public void ShowComboText(VisualElement noteImage, Judgement judgement,
@@ -417,16 +701,16 @@ public class VfxAndComboText
 
     public void JumpToScan()
     {
-
+        vfxManager.JumpToScan();
     }
 
     public void SpawnOngoingVFX(NoteElements elements, Judgement judgement)
     {
-
+        vfxManager.SpawnOngoingVfx(elements, judgement);
     }
 
     public void SpawnResolvedVFX(NoteElements elements, Judgement judgement)
     {
-
+        vfxManager.SpawnResolvedVfx(elements, judgement);
     }
 }

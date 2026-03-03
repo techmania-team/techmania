@@ -60,6 +60,7 @@ public class GameController : MonoBehaviour
     public NoteTemplates noteTemplates;
     public VisualTreeAsset inputFeedbackTemplate;
     public VisualTreeAsset vfxAndComboTemplate;
+    public VisualTreeAsset vfxLayerTemplate;
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
@@ -481,7 +482,7 @@ public class GameController : MonoBehaviour
             setup.patternAfterModifier.patternMetadata);
 
         // Prepare for VFX and combo text.
-        vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
+        vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate, vfxLayerTemplate,
             setup.vfxComboContainer.inner, additiveMaterial, timer, layout);
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
         vfxAndComboText.HideComboText();

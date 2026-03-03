@@ -542,7 +542,7 @@ public class GameLayout
             y * gameContainerHeight);
     }
 
-    public float GetViewportXOfScanline(int intScan)
+    public float GetWorldXOfScanline(int intScan)
     {
         if (!intScanToElements.ContainsKey(intScan)) return 0f;
 
@@ -557,6 +557,12 @@ public class GameLayout
             left);
         float worldX = layoutContainer.LocalToWorld(
             new Vector2(localX, 0f)).x;
-        return worldX / rootElement.contentRect.width;
+        return worldX;
+    }
+
+    // Delete with LegacyVfxManager
+    public float GetViewportXOfScanline(int intScan)
+    {
+        return GetWorldXOfScanline(intScan) / rootElement.contentRect.width;
     }
 }

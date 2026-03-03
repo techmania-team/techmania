@@ -20,6 +20,8 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualTreeAsset vfxAndComboTemplate;
         [MoonSharpHidden]
+        public VisualTreeAsset vfxLayerTemplate;
+        [MoonSharpHidden]
         public Material additiveMaterial;
         [MoonSharpHidden]
         public LegacyVfxManager legacyVfxManager;
@@ -74,6 +76,7 @@ namespace ThemeApi
             previewContainer.inner.Add(previewBg);
 
             vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
+                vfxLayerTemplate,
                 previewContainer.inner,
                 additiveMaterial,
                 null, null);
