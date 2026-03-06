@@ -489,24 +489,27 @@ public class VfxAndComboText
             dragNoteToOngoingVfx = new Dictionary<NoteElements, List<VfxLayer>>();
         }
 
-        public void ResetSize(float laneHeight)
+        private void ForEachVfxLayer(Action<VfxLayer> action)
         {
-            foreach (VfxLayer l in oneShotLayers)
-            {
-                l.ResetSize(laneHeight);
-            }
+            foreach (VfxLayer l in oneShotLayers) action(l);
             foreach (List<VfxLayer> list in holdNoteToOngoingHeadVfx.Values)
             {
-                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+                foreach (VfxLayer l in list) action(l);
             }
             foreach (List<VfxLayer> list in holdNoteToOngoingTrailVfx.Values)
             {
-                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+                foreach (VfxLayer l in list) action(l);
             }
             foreach (List<VfxLayer> list in dragNoteToOngoingVfx.Values)
             {
-                foreach (VfxLayer l in list) l.ResetSize(laneHeight);
+                foreach (VfxLayer l in list) action(l);
             }
+        }
+
+        public void ResetSize(float laneHeight)
+        {
+            this.laneHeight = laneHeight;
+            ForEachVfxLayer(l => l.ResetSize(laneHeight));
         }
 
         // center is in vfxContainer's local space.
@@ -668,8 +671,10 @@ public class VfxAndComboText
                     if (missOrBreak) break;
                     newLayers = SpawnVfxAt(noteElements,
                         GlobalResource.vfxSkin.repeatNote);
-                    newLayers = SpawnVfxAt((noteElements as RepeatNoteElementsBase).head,
+                    List<VfxLayer> headLayers = SpawnVfxAt(
+                        (noteElements as RepeatNoteElementsBase).head,
                         GlobalResource.vfxSkin.repeatHead);
+                    headLayers.ForEach(l => newLayers.Add(l));
                     break;
                 case NoteType.RepeatHeadHold:
                     despawnVfx(holdNoteToOngoingHeadVfx, noteElements);
@@ -731,6 +736,9 @@ public class VfxAndComboText
 
         public void Update()
         {
+            // Update all layers.
+            ForEachVfxLayer(l => l.Update());
+
             // Move ongoing VFX.
             float worldXOfScanline = layout.GetWorldXOfScanline(timer.intScan);
             foreach (KeyValuePair<NoteElements, List<VfxLayer>> pair in
@@ -781,25 +789,11 @@ public class VfxAndComboText
 
         public void JumpToScan()
         {
-            foreach (VfxLayer l in oneShotLayers)
-            {
-                l.Dispose();
-            }
+            ForEachVfxLayer(l => l.Dispose());
+
             oneShotLayers.Clear();
-            foreach (List<VfxLayer> list in holdNoteToOngoingHeadVfx.Values)
-            {
-                foreach (VfxLayer l in list) l.Dispose();
-            }
             holdNoteToOngoingHeadVfx.Clear();
-            foreach (List<VfxLayer> list in holdNoteToOngoingTrailVfx.Values)
-            {
-                foreach (VfxLayer l in list) l.Dispose();
-            }
             holdNoteToOngoingTrailVfx.Clear();
-            foreach (List<VfxLayer> list in dragNoteToOngoingVfx.Values)
-            {
-                foreach (VfxLayer l in list) l.Dispose();
-            }
             dragNoteToOngoingVfx.Clear();
         }
     }
