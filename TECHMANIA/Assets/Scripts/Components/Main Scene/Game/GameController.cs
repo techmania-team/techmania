@@ -768,6 +768,7 @@ public class GameController : MonoBehaviour
             // Input feedbacks should work through pauses as fingers
             // may enter and leave during a pause.
             inputFeedback.Update(timer.scan);
+            vfxAndComboText.ApplyAlpha();
         }
         else if (state.state == ThemeApi.GameState.State.Ongoing)
         {
@@ -779,6 +780,7 @@ public class GameController : MonoBehaviour
             inputFeedback.Update(timer.scan);
             scoreKeeper.UpdateFever();
             vfxAndComboText.Update();
+            vfxAndComboText.ApplyAlpha();
 
             CheckForStageFailed();
             CheckForStageClear();

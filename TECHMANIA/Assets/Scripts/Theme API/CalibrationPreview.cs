@@ -310,6 +310,7 @@ namespace ThemeApi
 
             // Update VFX and combo text
             vfxAndComboText.Update();
+            vfxAndComboText.ApplyAlpha();
         }
 
         public void Conclude()

@@ -805,6 +805,8 @@ public class VfxAndComboText
     private VfxManager vfxManager;
     private ComboText comboText;
 
+    static public float globalAlpha = 1f;
+
     public VfxAndComboText(VisualTreeAsset vfxAndComboTemplate,
         VisualTreeAsset vfxLayerTemplate,
         VisualElement vfxAndComboContainer,
@@ -834,6 +836,11 @@ public class VfxAndComboText
         comboText.Update();
     }
 
+    public void ApplyAlpha()
+    {
+        templateInstance.style.opacity = globalAlpha;
+    }
+
     public void ResetSize(float laneHeight, float scanHeight)
     {
         vfxManager.ResetSize(laneHeight);
@@ -846,6 +853,7 @@ public class VfxAndComboText
         vfxManager.Dispose();
     }
 
+    #region Combo text APIs
     public void ShowComboText(VisualElement noteImage, Judgement judgement,
         ScoreKeeper scoreKeeper)
     {
@@ -862,12 +870,9 @@ public class VfxAndComboText
     {
         comboText.Hide();
     }
+    #endregion
 
-    public void JumpToScan()
-    {
-        vfxManager.JumpToScan();
-    }
-
+    #region VFX APIs
     public void SpawnOngoingVfx(NoteElements elements, Judgement judgement)
     {
         vfxManager.SpawnOngoingVfx(elements, judgement);
@@ -882,4 +887,10 @@ public class VfxAndComboText
     {
         vfxManager.SpawnOneShotVfx(element, judgement);
     }
+
+    public void JumpToScan()
+    {
+        vfxManager.JumpToScan();
+    }
+    #endregion
 }
