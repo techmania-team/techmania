@@ -250,15 +250,15 @@ namespace ThemeApi
         #region Miscellaneous
         public void HideVfxAndComboText()
         {
-            TopLevelObjects.instance.vfxComboCanvas
-                .GetComponent<CanvasGroup>().alpha = 0f;
+            //TopLevelObjects.instance.vfxComboCanvas
+            //    .GetComponent<CanvasGroup>().alpha = 0f;
             // TODO: migrate
         }
 
         public void RestoreVfxAndComboText()
         {
-            TopLevelObjects.instance.vfxComboCanvas
-                .GetComponent<CanvasGroup>().alpha = 1f;
+            //TopLevelObjects.instance.vfxComboCanvas
+            //    .GetComponent<CanvasGroup>().alpha = 1f;
             // TODO: migrate
         }
 
