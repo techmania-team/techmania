@@ -79,8 +79,6 @@ public class GameController : MonoBehaviour
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
 
-    public LegacyVfxManager legacyVfxManager;
-
     [HideInInspector]
     public bool autoPlay;
     [HideInInspector]
@@ -486,7 +484,6 @@ public class GameController : MonoBehaviour
             setup.vfxComboContainer.inner, additiveMaterial, timer, layout);
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
         vfxAndComboText.HideComboText();
-        legacyVfxManager.Prepare(layout.laneHeight, timer, layout);
 
         // Initialize scores.
         scoreKeeper = new ScoreKeeper(setup, state);
@@ -622,7 +619,6 @@ public class GameController : MonoBehaviour
         noteManager?.Dispose();
         input?.Dispose();
         vfxAndComboText?.Dispose();
-        legacyVfxManager.Dispose();
     }
     #endregion
 
@@ -710,7 +706,6 @@ public class GameController : MonoBehaviour
         layout.ResetSize();
         noteManager.ResetSize();
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
-        legacyVfxManager.ResetSize(layout.laneHeight);
     }
 
     public void ActivateFever()
@@ -746,7 +741,6 @@ public class GameController : MonoBehaviour
         input.JumpToScan();
         scoreKeeper.JumpToScan();
         vfxAndComboText.JumpToScan();
-        legacyVfxManager.JumpToScan();
 
         // Play keysounds before the current time if they last enough.
         keysoundPlayer.StopAll();
@@ -906,7 +900,6 @@ public class GameController : MonoBehaviour
                         judgementAndTimeDifference);
                     elements.SetOngoing();
                     vfxAndComboText.SpawnOngoingVfx(elements, judgement);
-                    legacyVfxManager.SpawnOngoingVFX(elements, judgement);
                 }
                 break;
             default:
@@ -932,7 +925,6 @@ public class GameController : MonoBehaviour
         scoreKeeper.ResolveNote(elements.note.type, judgement);
         vfxAndComboText.SpawnResolvedVfx(elements, judgement);
         vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
-        legacyVfxManager.SpawnResolvedVFX(elements, judgement);
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,

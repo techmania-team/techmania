@@ -451,7 +451,7 @@ public class VfxAndComboText
             {
                 if (!active) return;
 
-                centerElement.style.left = new StyleLength(center.x + 200);
+                centerElement.style.left = new StyleLength(center.x);
                 centerElement.style.top = new StyleLength(center.y);
             }
         }
