@@ -19,7 +19,12 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualTreeAsset calibrationPreviewTemplate;
         [MoonSharpHidden]
-        public LegacyVfxManager vfxManager;
+        public VisualTreeAsset vfxAndComboTemplate;
+        [MoonSharpHidden]
+        public VisualTreeAsset vfxLayerTemplate;
+        [MoonSharpHidden]
+        public Material additiveMaterial;
+
         [Header("Audio")]
         [MoonSharpHidden]
         public AudioManager audioManager;
@@ -63,6 +68,7 @@ namespace ThemeApi
         private const float secondPerScan = secondPerBeat * bps;
         private const int differenceThresholdMs = 200;
         private TemplateContainer previewBg;
+        private VfxAndComboText vfxAndComboText;
         private List<VisualElement> scanlineAnchors;
         private List<VisualElement> scanlines;
         private List<VisualElement> noteAnchors;
@@ -141,6 +147,12 @@ namespace ThemeApi
             previewBg = calibrationPreviewTemplate.Instantiate();
             previewBg.style.flexGrow = new StyleFloat(1f);
             previewContainer.inner.Add(previewBg);
+
+            vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
+                vfxLayerTemplate,
+                previewContainer.inner,
+                additiveMaterial,
+                null, null);
 
             scanlineAnchors = new List<VisualElement>();
             scanlines = new List<VisualElement>();
@@ -222,7 +234,7 @@ namespace ThemeApi
                 image.style.height = laneHeight * noteScale;
             }
 
-            vfxManager.ResetSize(laneHeight);
+            vfxAndComboText.ResetSize(laneHeight, scanHeight);
         }
 
         public void SwitchToTouch()
@@ -295,13 +307,16 @@ namespace ThemeApi
             {
                 OnAnyKeyDown();
             }
+
+            // Update VFX and combo text
+            vfxAndComboText.Update();
         }
 
         public void Conclude()
         {
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
-            vfxManager.Dispose();
+            vfxAndComboText.Dispose();
             backingTrackChannel.loop = false;
             backingTrackChannel.Stop();
 
@@ -406,7 +421,7 @@ namespace ThemeApi
             InputDevice device)
         {
             // VFX and keysound
-            vfxManager.SpawnOneShotVFX(noteImages[noteIndex], 
+            vfxAndComboText.SpawnOneShotVfx(noteImages[noteIndex],
                 Judgement.RainbowMax);
             switch (laneOfNote[noteIndex])
             {
