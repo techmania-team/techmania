@@ -23,8 +23,6 @@ namespace ThemeApi
         public VisualTreeAsset vfxLayerTemplate;
         [MoonSharpHidden]
         public Material additiveMaterial;
-        [MoonSharpHidden]
-        public LegacyVfxManager legacyVfxManager;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;
@@ -110,7 +108,6 @@ namespace ThemeApi
             noteImage.style.height = laneHeight * noteScale;
 
             vfxAndComboText.ResetSize(laneHeight, scanHeight);
-            legacyVfxManager.ResetSize(laneHeight);
         }
 
         private void Update()
@@ -141,7 +138,6 @@ namespace ThemeApi
             {
                 vfxAndComboText.SpawnOneShotVfx(noteAnchor, judgement);
                 vfxAndComboText.ShowComboText(noteImage, judgement, fever, combo);
-                legacyVfxManager.SpawnOneShotVFX(noteAnchor, judgement);
             }
             prevFrameBeat = beat;
 
@@ -154,7 +150,6 @@ namespace ThemeApi
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
             vfxAndComboText.Dispose();
-            legacyVfxManager.Dispose();
 
             running = false;
         }

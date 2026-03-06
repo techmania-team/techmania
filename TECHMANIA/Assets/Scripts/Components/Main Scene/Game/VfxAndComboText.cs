@@ -740,7 +740,9 @@ public class VfxAndComboText
             ForEachVfxLayer(l => l.Update());
 
             // Move ongoing VFX.
-            float worldXOfScanline = layout.GetWorldXOfScanline(timer.intScan);
+            float worldXOfScanline = layout != null
+                ? layout.GetWorldXOfScanline(timer.intScan)
+                : 0f;
             foreach (KeyValuePair<NoteElements, List<VfxLayer>> pair in
                 holdNoteToOngoingTrailVfx)
             {
