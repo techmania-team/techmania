@@ -816,6 +816,11 @@ public class VfxAndComboText
         GameLayout layout)
     {
         templateInstance = vfxAndComboTemplate.Instantiate();
+        templateInstance.style.position = Position.Absolute;
+        templateInstance.style.top = 0f;
+        templateInstance.style.bottom = 0f;
+        templateInstance.style.left = 0f;
+        templateInstance.style.right = 0f;
         vfxAndComboContainer.Add(templateInstance);
 
         comboText = new ComboText(templateInstance, additiveMaterial);
