@@ -92,6 +92,7 @@ namespace ThemeApi
                 case 2:  // 2.1
                 case 3:  // 2.2
                 case 4:  // 2.3
+                case 5:  // 2.4
                     return GetApiVersion1();
                 default:
                     throw new ApiNotSupportedException();
