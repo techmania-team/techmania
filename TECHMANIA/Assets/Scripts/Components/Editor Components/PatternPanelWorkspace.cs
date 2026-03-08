@@ -656,6 +656,8 @@ public class PatternPanelWorkspace : MonoBehaviour
         numScans = Mathf.Max(numScansBackup, lastScan + 2);
         // Minimal 16 scans
         numScans = Mathf.Max(numScans, 16);
+        // Ceil to the nearest multiple of 16
+        numScans = (numScans - 1) / 16 * 16 + 16;
 
         return numScans != numScansBackup;
     }
