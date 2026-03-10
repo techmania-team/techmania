@@ -532,6 +532,21 @@ namespace ThemeApi
                 style.backgroundImage = new StyleBackground(value);
             }
         }
+
+        public bool additiveShader
+        {
+            get
+            {
+                return style.unityMaterial.value.material ==
+                    TopLevelObjects.instance.additiveShaderMaterial;
+            }
+            set
+            {
+                style.unityMaterial = value ?
+                    TopLevelObjects.instance.additiveShaderMaterial :
+                    null;
+            }
+        }
         #endregion
 
         #region DOM
