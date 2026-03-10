@@ -49,6 +49,7 @@ namespace ThemeApi
             UserData.RegisterType<UnityEngine.Video.VideoClip>();
             UserData.RegisterType<UnityEngine.Video.VideoPlayer>();
             UserData.RegisterType<UnityEngine.TextCore.Text.FontAsset>();
+            UserData.RegisterType<Material>();
             
             foreach (VisualElementWrap.EventType typeEnum in
                 Enum.GetValues(typeof(VisualElementWrap.EventType)))
@@ -200,6 +201,8 @@ namespace ThemeApi
             addType(unityTypes, typeof(Scale));
             addType(unityTypes, typeof(StyleTransformOrigin));
             addType(unityTypes, typeof(TransformOrigin));
+            addType(unityTypes, typeof(StyleMaterialDefinition));
+            addType(unityTypes, typeof(MaterialDefinition));
             // Types used by Painter2D
             addType(unityTypes, typeof(Painter2D));
             addType(unityTypes, typeof(VectorImage));

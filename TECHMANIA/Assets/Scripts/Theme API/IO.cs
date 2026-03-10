@@ -1,7 +1,8 @@
+using MoonSharp.Interpreter;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using MoonSharp.Interpreter;
 
 namespace ThemeApi
 {
@@ -151,6 +152,11 @@ namespace ThemeApi
         {
             return GlobalResource.GetThemeContent
                 <UnityEngine.TextCore.Text.FontAsset>(path);
+        }
+
+        public static Material LoadMaterialFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<Material>(path);
         }
 
         public static Track LoadFullTrack(string path)
