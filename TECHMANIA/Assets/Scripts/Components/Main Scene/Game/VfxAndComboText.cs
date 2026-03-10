@@ -24,10 +24,7 @@ public class VfxAndComboText
         private SpriteSheet judgementSpriteSheet;
         private List<SpriteSheet> comboDigitSpriteSheet;
 
-        private Material additiveMaterial;
-
-        public ComboText(TemplateContainer vfxAndComboTextTemplateInstance,
-            Material additiveMaterial)
+        public ComboText(TemplateContainer vfxAndComboTextTemplateInstance)
         {
             elements = new ComboTextElements
             {
@@ -54,8 +51,6 @@ public class VfxAndComboText
             {
                 comboDigitSpriteSheet.Add(null);
             }
-
-            this.additiveMaterial = additiveMaterial;
         }
 
         public void Update()
@@ -161,7 +156,8 @@ public class VfxAndComboText
                 getSpriteWidth(judgementSpriteSheet));
             if (judgementSpriteSheet.additiveShader)
             {
-                elements.judgement.style.unityMaterial = additiveMaterial;
+                elements.judgement.style.unityMaterial = 
+                    TopLevelObjects.instance.additiveShaderMaterial;
             }
             else
             {
@@ -211,7 +207,8 @@ public class VfxAndComboText
                         getSpriteWidth(comboDigitSpriteSheet[i]));
                     if (comboDigitSpriteSheet[i].additiveShader)
                     {
-                        elements.digits[i].style.unityMaterial = additiveMaterial;
+                        elements.digits[i].style.unityMaterial =
+                            TopLevelObjects.instance.additiveShaderMaterial;
                     }
                     else
                     {
@@ -379,8 +376,7 @@ public class VfxAndComboText
             private float startTime;
 
             public void Initialize(VisualElement vfxContainer,
-                VisualTreeAsset vfxLayerTemplate,
-                Material additiveMaterial, Vector2 center,
+                VisualTreeAsset vfxLayerTemplate, Vector2 center,
                 SpriteSheet spriteSheet, bool loop)
             {
                 this.spriteSheet = spriteSheet;
@@ -409,7 +405,8 @@ public class VfxAndComboText
                     spriteSheet.sprites[0]);
                 if (spriteSheet.additiveShader)
                 {
-                    layerElement.style.unityMaterial = additiveMaterial;
+                    layerElement.style.unityMaterial = 
+                        TopLevelObjects.instance.additiveShaderMaterial;
                 }
 
                 startTime = Time.time;
@@ -458,7 +455,6 @@ public class VfxAndComboText
 
         private VisualElement vfxContainer;
         private VisualTreeAsset vfxLayerTemplate;
-        private Material additiveMaterial;
 
         // Track all the one-shot and looping VfxLayers.
         private List<VfxLayer> oneShotLayers;
@@ -473,13 +469,11 @@ public class VfxAndComboText
         private GameLayout layout;
 
         public VfxManager(TemplateContainer vfxAndComboTextTemplateInstance,
-            VisualTreeAsset vfxLayerTemplate, Material additiveMaterial,
-            GameTimer timer, GameLayout layout)
+            VisualTreeAsset vfxLayerTemplate, GameTimer timer, GameLayout layout)
         {
             this.vfxContainer = vfxAndComboTextTemplateInstance.Q<VisualElement>(
                 "vfx-container");
             this.vfxLayerTemplate = vfxLayerTemplate;
-            this.additiveMaterial = additiveMaterial;
             this.timer = timer;
             this.layout = layout;
 
@@ -521,7 +515,7 @@ public class VfxAndComboText
             {
                 VfxLayer vfxLayer = new VfxLayer();
                 vfxLayer.Initialize(vfxContainer, vfxLayerTemplate,
-                    additiveMaterial, center, spriteSheetLayer, loop);
+                    center, spriteSheetLayer, loop);
                 vfxLayer.ResetSize(laneHeight);
                 vfxLayers.Add(vfxLayer);
             }
@@ -810,7 +804,6 @@ public class VfxAndComboText
     public VfxAndComboText(VisualTreeAsset vfxAndComboTemplate,
         VisualTreeAsset vfxLayerTemplate,
         VisualElement vfxAndComboContainer,
-        Material additiveMaterial,
         // To be passed to
         // HoldTrailAndExtensions.GetOngoingTrailEndPosition.
         GameTimer timer,
@@ -825,9 +818,9 @@ public class VfxAndComboText
         templateInstance.style.right = 0f;
         vfxAndComboContainer.Add(templateInstance);
 
-        comboText = new ComboText(templateInstance, additiveMaterial);
+        comboText = new ComboText(templateInstance);
         vfxManager = new VfxManager(templateInstance, vfxLayerTemplate,
-            additiveMaterial, timer, layout);
+            timer, layout);
     }
 
     public void Update()

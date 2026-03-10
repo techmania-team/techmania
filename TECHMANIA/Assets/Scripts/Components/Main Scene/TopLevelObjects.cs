@@ -13,6 +13,7 @@ public class TopLevelObjects : MonoBehaviour
     public PatternPanel patternPanel;
     public EditSetlistPanel editSetlistPanel;
     public EventSystem eventSystem;
+    public Material additiveShaderMaterial;
 
     public static TopLevelObjects instance { get; private set; }
 

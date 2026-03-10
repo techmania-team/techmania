@@ -22,8 +22,6 @@ namespace ThemeApi
         public VisualTreeAsset vfxAndComboTemplate;
         [MoonSharpHidden]
         public VisualTreeAsset vfxLayerTemplate;
-        [MoonSharpHidden]
-        public Material additiveMaterial;
 
         [Header("Audio")]
         [MoonSharpHidden]
@@ -151,7 +149,6 @@ namespace ThemeApi
             vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
                 vfxLayerTemplate,
                 previewContainer.inner,
-                additiveMaterial,
                 null, null);
 
             scanlineAnchors = new List<VisualElement>();

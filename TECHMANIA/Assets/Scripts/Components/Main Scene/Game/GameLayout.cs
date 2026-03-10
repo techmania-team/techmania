@@ -12,7 +12,6 @@ public class GameLayout
     private VisualElement rootElement;
     private TemplateContainer layoutContainer;
     public VisualElement inputFeedbackContainer { get; private set; }
-    private Material additiveMaterial;
 
     public enum ScanDirection
     {
@@ -72,11 +71,9 @@ public class GameLayout
 
     public GameLayout(Pattern pattern,
         VisualElement gameContainer,
-        VisualTreeAsset layoutTemplate,
-        Material additiveMaterial)
+        VisualTreeAsset layoutTemplate)
     {
         this.pattern = pattern;
-        this.additiveMaterial = additiveMaterial;
 
         rootElement = TopLevelObjects.instance.mainUiDocument
             .rootVisualElement;
@@ -110,14 +107,18 @@ public class GameLayout
         if (GlobalResource.gameUiSkin.scanCountdownBackground
             .additiveShader)
         {
-            topHalf.countdownBg.style.unityMaterial = additiveMaterial;
-            bottomHalf.countdownBg.style.unityMaterial = additiveMaterial;
+            topHalf.countdownBg.style.unityMaterial = 
+                TopLevelObjects.instance.additiveShaderMaterial;
+            bottomHalf.countdownBg.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
         }
         if (GlobalResource.gameUiSkin.scanCountdownNumbers
             .additiveShader)
         {
-            topHalf.countdownNum.style.unityMaterial = additiveMaterial;
-            bottomHalf.countdownNum.style.unityMaterial = additiveMaterial;
+            topHalf.countdownNum.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
+            bottomHalf.countdownNum.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
         }
     }
 

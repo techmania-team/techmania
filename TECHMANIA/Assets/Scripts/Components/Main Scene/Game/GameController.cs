@@ -11,7 +11,6 @@ public class GameController : MonoBehaviour
 
     public VisualTreeAsset layoutTemplate;
     public VisualTreeAsset scanlineTemplate;
-    public Material additiveMaterial;
 
     [Serializable]
     public class NoteTemplates
@@ -448,8 +447,7 @@ public class GameController : MonoBehaviour
         layout = new GameLayout(
             pattern: setup.patternAfterModifier,
             gameContainer: setup.gameContainer.inner,
-            layoutTemplate: layoutTemplate,
-            additiveMaterial: additiveMaterial);
+            layoutTemplate: layoutTemplate);
         layout.Prepare(
             firstScan: timer.firstScan,
             lastScan: timer.lastScan,
@@ -475,13 +473,13 @@ public class GameController : MonoBehaviour
 
         // Prepare for input feedback.
         inputFeedback = new InputFeedbackManager(
-            inputFeedbackTemplate, layout, input, additiveMaterial);
+            inputFeedbackTemplate, layout, input);
         inputFeedback.Prepare(
             setup.patternAfterModifier.patternMetadata);
 
         // Prepare for VFX and combo text.
         vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate, vfxLayerTemplate,
-            setup.vfxComboContainer.inner, additiveMaterial, timer, layout);
+            setup.vfxComboContainer.inner, timer, layout);
         vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
         vfxAndComboText.HideComboText();
 

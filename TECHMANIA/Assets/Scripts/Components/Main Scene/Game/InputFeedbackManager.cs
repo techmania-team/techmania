@@ -11,7 +11,7 @@ public class InputFeedbackManager
         private VisualElement element;
         private float spawnTime;
 
-        public InputFeedback(TemplateContainer templateContainer, Material additiveMaterial)
+        public InputFeedback(TemplateContainer templateContainer)
         {
             this.templateContainer = templateContainer;
             this.templateContainer.AddToClassList(
@@ -22,7 +22,8 @@ public class InputFeedbackManager
             if (GlobalResource.gameUiSkin.touchClickFeedback
                 .additiveShader)
             {
-                element.style.unityMaterial = additiveMaterial;
+                element.style.unityMaterial =
+                    TopLevelObjects.instance.additiveShaderMaterial;
             }
         }
 
@@ -57,7 +58,6 @@ public class InputFeedbackManager
 
     private VisualElement feedbackContainer;
     private VisualTreeAsset feedbackTemplate;
-    private Material additiveMaterial;
     private GameLayout layout;
     private GameInputManager inputManager;
 
@@ -73,14 +73,12 @@ public class InputFeedbackManager
 
     public InputFeedbackManager(VisualTreeAsset feedbackTemplate,
         GameLayout layout,
-        GameInputManager inputManager,
-        Material additiveMaterial)
+        GameInputManager inputManager)
     {
         this.feedbackContainer = layout.inputFeedbackContainer;
         this.feedbackTemplate = feedbackTemplate;
         this.layout = layout;
         this.inputManager = inputManager;
-        this.additiveMaterial = additiveMaterial;
     }
 
     public void Prepare(PatternMetadata metadata)
@@ -232,7 +230,7 @@ public class InputFeedbackManager
         TemplateContainer templateContainer = feedbackTemplate
             .Instantiate();
         feedbackContainer.Add(templateContainer);
-        InputFeedback feedback = new InputFeedback(templateContainer, additiveMaterial);
+        InputFeedback feedback = new InputFeedback(templateContainer);
         feedback.ResetSize();
         feedback.SetPosition(position);
         idToFeedback.Add(id, feedback);

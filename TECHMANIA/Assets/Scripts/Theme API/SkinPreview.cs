@@ -21,8 +21,6 @@ namespace ThemeApi
         public VisualTreeAsset vfxAndComboTemplate;
         [MoonSharpHidden]
         public VisualTreeAsset vfxLayerTemplate;
-        [MoonSharpHidden]
-        public Material additiveMaterial;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;
@@ -76,7 +74,6 @@ namespace ThemeApi
             vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
                 vfxLayerTemplate,
                 previewContainer.inner,
-                additiveMaterial,
                 null, null);
 
             scanlineAnchor = previewBg.Q("scanline-anchor");
