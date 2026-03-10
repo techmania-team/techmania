@@ -36619,8 +36619,9 @@ MonoBehaviour:
   trackSetupPanel: {fileID: 2012463507}
   patternPanel: {fileID: 1897794178}
   editSetlistPanel: {fileID: 931571750}
-  vfxComboCanvas: {fileID: 0}
   eventSystem: {fileID: 244936759}
+  additiveShaderMaterial: {fileID: 2100000, guid: fcbc02a1b9c9f084991e6f01617b73d1,
+    type: 2}
 --- !u!114 &1144905157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54021,7 +54022,6 @@ MonoBehaviour:
     type: 3}
   scanlineTemplate: {fileID: 9197481963319205126, guid: 5832688611e48a7408bd8c077aafc8f7,
     type: 3}
-  additiveMaterial: {fileID: 2100000, guid: fcbc02a1b9c9f084991e6f01617b73d1, type: 2}
   noteTemplates:
     basicNote: {fileID: 9197481963319205126, guid: 36363bbd296f5fb439d97085a32d9033,
       type: 3}
@@ -54073,7 +54073,6 @@ MonoBehaviour:
     type: 3}
   vfxLayerTemplate: {fileID: 9197481963319205126, guid: a986bf3e63d1d3a47a213ecb5de14bda,
     type: 3}
-  additiveMaterial: {fileID: 2100000, guid: fcbc02a1b9c9f084991e6f01617b73d1, type: 2}
   bpm: 0
   lanes: 0
   judgement: 0
@@ -54097,7 +54096,6 @@ MonoBehaviour:
     type: 3}
   vfxLayerTemplate: {fileID: 9197481963319205126, guid: a986bf3e63d1d3a47a213ecb5de14bda,
     type: 3}
-  additiveMaterial: {fileID: 2100000, guid: fcbc02a1b9c9f084991e6f01617b73d1, type: 2}
   audioManager: {fileID: 759281148068718237}
   backingTrack: {fileID: 8300000, guid: cde484f3bf79d8e4b91e767a36fc1b54, type: 3}
   kick: {fileID: 8300000, guid: c79be2f9a15da574fb604092127371ec, type: 3}
