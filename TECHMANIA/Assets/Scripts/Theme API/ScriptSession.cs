@@ -222,6 +222,7 @@ namespace ThemeApi
             addType(unityEnums, typeof(LengthUnit));
             addType(unityEnums, typeof(AngleUnit));
             addType(unityEnums, typeof(Overflow));
+            addType(unityEnums, typeof(FilterFunctionType));
             // Enums used by Painter2D
             addType(unityEnums, typeof(LineCap));
             addType(unityEnums, typeof(LineJoin));
