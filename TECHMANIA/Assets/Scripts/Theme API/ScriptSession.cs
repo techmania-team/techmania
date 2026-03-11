@@ -203,6 +203,7 @@ namespace ThemeApi
             addType(unityTypes, typeof(TransformOrigin));
             addType(unityTypes, typeof(StyleMaterialDefinition));
             addType(unityTypes, typeof(MaterialDefinition));
+            addTypeAs(unityTypes, typeof(StyleEnum<Overflow>), "styleOverflow");
             // Types used by Painter2D
             addType(unityTypes, typeof(Painter2D));
             addType(unityTypes, typeof(VectorImage));
@@ -220,6 +221,7 @@ namespace ThemeApi
             addType(unityEnums, typeof(StyleKeyword));
             addType(unityEnums, typeof(LengthUnit));
             addType(unityEnums, typeof(AngleUnit));
+            addType(unityEnums, typeof(Overflow));
             // Enums used by Painter2D
             addType(unityEnums, typeof(LineCap));
             addType(unityEnums, typeof(LineJoin));

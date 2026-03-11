@@ -533,6 +533,15 @@ namespace ThemeApi
             }
         }
 
+        public VectorImage backgroundSvg
+        {
+            get { return style.backgroundImage.value.vectorImage; }
+            set
+            {
+                style.backgroundImage = new StyleBackground(value);
+            }
+        }
+
         public bool additiveShader
         {
             get
