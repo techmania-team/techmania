@@ -218,6 +218,7 @@ end
 
 resultPanel.Hide = function()
     ReleaseEyecatch(resultPanel.panel.Q("eyecatch"))
+    tm.io.UnloadUnusedAssets()
 end
 
 resultPanel.Initialize()
