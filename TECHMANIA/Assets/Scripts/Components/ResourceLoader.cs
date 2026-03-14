@@ -296,6 +296,7 @@ public class ResourceLoader : MonoBehaviour
         {
             sound = FmodManager.CreateSoundFromAudioClip(
                 clipFromRequest);
+            clipFromRequest.UnloadAudioData();
             status = Status.OKStatus();
         }
         catch (System.Exception ex)

@@ -56,6 +56,7 @@ Material:
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!28 &-1828295786794960688
 Texture2D:
   m_ObjectHideFlags: 0
@@ -66,10 +67,8 @@ Texture2D:
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
-  serializedVersion: 2
+  serializedVersion: 4
   m_Width: 1
   m_Height: 1
   m_CompleteImageSize: 1
@@ -141,13 +140,14 @@ MonoBehaviour:
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
+  IsEditorFont: 0
   m_FaceInfo:
     m_FaceIndex: 2
     m_FamilyName: Noto Sans CJK SC
     m_StyleName: Regular
     m_PointSize: 90
     m_Scale: 1
-    m_UnitsPerEM: 0
+    m_UnitsPerEM: 1000
     m_LineHeight: 133.20001
     m_AscentLine: 104.4
     m_CapLine: 66
@@ -169,6 +169,7 @@ MonoBehaviour:
   - {fileID: -1828295786794960688}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 1
+  m_GetFontFeatures: 1
   m_ClearDynamicDataOnBuild: 1
   m_AtlasWidth: 1024
   m_AtlasHeight: 1024
@@ -186,6 +187,7 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
     m_MarkToBaseAdjustmentRecords: []
     m_MarkToMarkAdjustmentRecords: []
+  m_ShouldReimportFontFeatures: 0
   m_FallbackFontAssetTable: []
   m_FontWeightTable:
   - regularTypeface: {fileID: 0}
