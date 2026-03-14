@@ -58,12 +58,12 @@ For general discussions, head to [Discord](https://discord.gg/K4Nf7AnAZt).
 ## Making your own builds
 It's not clearly documented whether we can distribute FMOD for Unity in an open source project, so to be on the safe side, we do not include FMOD for Unity in this repo, and ask you to acquire your own FMOD license and plugin. They are [free](https://fmod.com/licensing) for developers with less than $200k revenue per year.
 * Go to [fmod.com](http://fmod.com) and register an account, if you don't already have one.
-* Go to [Download](https://fmod.com/download#fmodforunity) and download "FMOD for Unity". You should receive a file named `fmodstudio20219.unitypackage`.
+* Go to [Download](https://fmod.com/download#fmodforunity) and download "FMOD for Unity". You should receive a file named `fmodstudio20312.unitypackage` (possibly with a larger number than 20312, reflecting a newer version).
 
 To build TECHMANIA:
 * Install [Unity Hub](https://unity.com/download).
 * Clone this repo, then open it from Unity Hub, after downloading the project's Unity version. When warned about scripts failing to compile, you can ignore the warning and open the project anyway.
-* In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20219.unitypackage` you downloaded earlier. Import everything from the package.
+* In the menu, click Assets - Import Package - Custom Package, then choose the `fmodstudio20312.unitypackage` you downloaded earlier. Import everything from the package.
 * At any point if the FMOD Setup Wizard popups up, you can simply dismiss it.
 * The compile errors should now be gone and the project now buildable. Go to File - Build Settings.
 * Choose your target platform, then build.
