@@ -46,6 +46,13 @@ public class PreviewTrackPlayer : MonoBehaviour
         double startTime, double endTime,
         bool loop)
     {
+        // Stop previous playback if applicable
+        if (channel != null && channel.isPlaying)
+        {
+            channel.Stop();
+            sound.Release();
+        }
+
         // We could use ResourceLoader.LoadAudio, but this creates
         // problems when the user stops preview track playback
         // before the loading completes.
