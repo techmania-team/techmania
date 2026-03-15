@@ -218,7 +218,7 @@ namespace ThemeApi
             }
             else
             {
-                ScriptSession.Execute(script);
+                ScriptSession.Execute(script, path);
             }
         }
 
