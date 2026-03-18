@@ -76,10 +76,10 @@ public class FmodManager
             // The default virtual channel count is 128, according
             // to FMODUnity.Platform.PropertyAccessors
             // .VirtualChannelCount.
-            // Likewise, the default real channel count is 32,
-            // but we increase it to 64.
-            EnsureOk(system.setSoftwareChannels(64));
-            EnsureOk(system.init(128, FMOD.INITFLAGS.NORMAL, 
+            // Likewise, the default real channel count is 32.
+            // We can use much more than that.
+            EnsureOk(system.setSoftwareChannels(256));
+            EnsureOk(system.init(256, FMOD.INITFLAGS.NORMAL, 
                 IntPtr.Zero));
         }
 
