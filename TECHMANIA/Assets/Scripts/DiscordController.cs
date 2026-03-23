@@ -26,6 +26,7 @@ public class DiscordController
         catch (Exception ex)
         {
             UnityEngine.Debug.LogException(ex);
+            UnityEngine.Debug.LogError("An error occurred when initializing Discord Rich Presence. TECHMANIA will continue without it.");
         }
     }
     
