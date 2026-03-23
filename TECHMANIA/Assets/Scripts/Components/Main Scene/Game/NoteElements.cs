@@ -190,12 +190,14 @@ public class NoteElements : INoteHolder
 
         // Set up additive shader if specified.
         TypeSpecificApplyAdditiveShader();
-        if (GlobalResource.vfxSkin.feverOverlay.additiveShader)
+        if (feverOverlay != null &&
+            GlobalResource.vfxSkin.feverOverlay.additiveShader)
         {
             feverOverlay.style.unityMaterial =
                 TopLevelObjects.instance.additiveShaderMaterial;
         }
-        if (GlobalResource.gameUiSkin.approachOverlay.additiveShader)
+        if (approachOverlay != null && 
+            GlobalResource.gameUiSkin.approachOverlay.additiveShader)
         {
             approachOverlay.style.unityMaterial = 
                 TopLevelObjects.instance.additiveShaderMaterial;
