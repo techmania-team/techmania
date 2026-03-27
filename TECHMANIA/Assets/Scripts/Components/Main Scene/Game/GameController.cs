@@ -617,6 +617,8 @@ public class GameController : MonoBehaviour
         noteManager?.Dispose();
         input?.Dispose();
         vfxAndComboText?.Dispose();
+
+        Resources.UnloadUnusedAssets();
     }
     #endregion
 

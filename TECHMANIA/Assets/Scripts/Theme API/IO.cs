@@ -165,11 +165,6 @@ namespace ThemeApi
             return GlobalResource.GetThemeContent<Material>(path);
         }
 
-        public static void UnloadUnusedAssets()
-        {
-            Resources.UnloadUnusedAssets();
-        }
-
         public static Track LoadFullTrack(string path)
         {
             return Track.LoadFromFile(path) as Track;
