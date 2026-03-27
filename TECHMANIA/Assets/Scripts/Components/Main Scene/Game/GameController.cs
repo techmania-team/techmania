@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ThemeApi;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -619,6 +620,7 @@ public class GameController : MonoBehaviour
         vfxAndComboText?.Dispose();
 
         Resources.UnloadUnusedAssets();
+        ScriptSession.session.DoString("collectgarbage()");
     }
     #endregion
 
