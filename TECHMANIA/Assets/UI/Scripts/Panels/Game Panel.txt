@@ -493,7 +493,6 @@ gamePanel.ConcludeGame = function()
     if (tm.game.state != tm.enum.gameState.Idle) then
         tm.game.Conclude()
     end
-    tm.io.UnloadUnusedAssets()
 end
 
 gamePanel.BeginGame = function()
