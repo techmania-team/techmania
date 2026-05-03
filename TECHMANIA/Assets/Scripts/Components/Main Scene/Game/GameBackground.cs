@@ -41,6 +41,7 @@ public class GameBackground
         bgaCovered = false;
     }
 
+    // The passed in texture will be released upon Conclude().
     public void DisplayImage(Texture2D bgImage)
     {
         bgContainer.style.backgroundImage =
@@ -98,6 +99,12 @@ public class GameBackground
 
     public void Conclude()
     {
+        Texture2D bgTexture = bgContainer.style.backgroundImage.value.texture;
+        if (bgTexture != null)
+        {
+            Object.Destroy(bgTexture);
+            bgContainer.style.backgroundImage = new StyleBackground();
+        }
         // TODO: if the backing track already stopped, this will
         // print a warning.
         backingChannel?.Stop();

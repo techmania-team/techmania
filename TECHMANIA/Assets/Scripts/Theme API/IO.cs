@@ -1,7 +1,9 @@
+using MoonSharp.Interpreter;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using MoonSharp.Interpreter;
+using UnityEngine.UIElements;
 
 namespace ThemeApi
 {
@@ -68,6 +70,11 @@ namespace ThemeApi
                 Debug.LogWarning("The texture being released was not loaded from a file. This may cause issues in the theme.");
             }
             Object.Destroy(texture);
+        }
+
+        public static VectorImage LoadSvgFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<VectorImage>(path);
         }
 
         public static FmodSoundWrap LoadAudioFromTheme(string path)
@@ -151,6 +158,11 @@ namespace ThemeApi
         {
             return GlobalResource.GetThemeContent
                 <UnityEngine.TextCore.Text.FontAsset>(path);
+        }
+
+        public static Material LoadMaterialFromTheme(string path)
+        {
+            return GlobalResource.GetThemeContent<Material>(path);
         }
 
         public static Track LoadFullTrack(string path)

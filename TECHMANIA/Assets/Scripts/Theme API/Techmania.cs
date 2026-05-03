@@ -17,7 +17,7 @@ namespace ThemeApi
         {
             instance = this;
 
-            uiDocument = Object.FindObjectOfType<UIDocument>();
+            uiDocument = Object.FindAnyObjectByType<UIDocument>();
             root = new VisualElementWrap(uiDocument.rootVisualElement);
 
             l10n = new ThemeL10n(uiDocument.rootVisualElement);
@@ -218,7 +218,7 @@ namespace ThemeApi
             }
             else
             {
-                ScriptSession.Execute(script);
+                ScriptSession.Execute(script, path);
             }
         }
 
@@ -250,14 +250,12 @@ namespace ThemeApi
         #region Miscellaneous
         public void HideVfxAndComboText()
         {
-            TopLevelObjects.instance.vfxComboCanvas
-                .GetComponent<CanvasGroup>().alpha = 0f;
+            VfxAndComboText.globalAlpha = 0f;
         }
 
         public void RestoreVfxAndComboText()
         {
-            TopLevelObjects.instance.vfxComboCanvas
-                .GetComponent<CanvasGroup>().alpha = 1f;
+            VfxAndComboText.globalAlpha = 1f;
         }
 
         // Does nothing if Discord Rich Presence is turned off
@@ -347,7 +345,6 @@ namespace ThemeApi
             string log = "bubbles: " + e.bubbles +
                 "\ncurrentTarget: " + (e.currentTarget as VisualElement).name +
                 "\ndispatch: " + e.dispatch +
-                "\nisDefaultPrevented: " + e.isDefaultPrevented +
                 "\nisImmediatePropagationStopped: " + e.isImmediatePropagationStopped +
                 "\nisPropagationStopped: " + e.isPropagationStopped +
                 "\npropagationPhase: " + e.propagationPhase +

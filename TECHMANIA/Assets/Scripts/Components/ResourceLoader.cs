@@ -17,7 +17,7 @@ public class ResourceLoader : MonoBehaviour
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<ResourceLoader>();
+            instance = FindAnyObjectByType<ResourceLoader>();
             instance.emptySound = FmodManager
                 .CreateSoundFromAudioClip(
                 instance.emptyClip);
@@ -296,6 +296,7 @@ public class ResourceLoader : MonoBehaviour
         {
             sound = FmodManager.CreateSoundFromAudioClip(
                 clipFromRequest);
+            clipFromRequest.UnloadAudioData();
             status = Status.OKStatus();
         }
         catch (System.Exception ex)

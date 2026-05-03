@@ -18,9 +18,9 @@ namespace ThemeApi
         [MoonSharpHidden]
         public VisualTreeAsset skinPreviewTemplate;
         [MoonSharpHidden]
-        public VFXManager vfxManager;
+        public VisualTreeAsset vfxAndComboTemplate;
         [MoonSharpHidden]
-        public ComboText comboText;
+        public VisualTreeAsset vfxLayerTemplate;
 
         [HideInInspector]
         public VisualElementWrap previewContainer;
@@ -41,6 +41,7 @@ namespace ThemeApi
             previewContainer.resolvedStyle.height;
         private float laneHeight => scanHeight / lanes;
         private TemplateContainer previewBg;
+        private VfxAndComboText vfxAndComboText;
         private VisualElement scanlineAnchor;
         private VisualElement scanline;
         private VisualElement noteAnchor;
@@ -70,6 +71,11 @@ namespace ThemeApi
             previewBg.style.flexGrow = new StyleFloat(1f);
             previewContainer.inner.Add(previewBg);
 
+            vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate,
+                vfxLayerTemplate,
+                previewContainer.inner,
+                null, null);
+
             scanlineAnchor = previewBg.Q("scanline-anchor");
             scanline = scanlineAnchor.Q("scanline");
             noteAnchor = previewBg.Q("note-anchor");
@@ -98,8 +104,7 @@ namespace ThemeApi
             noteImage.style.width = laneHeight * noteScale;
             noteImage.style.height = laneHeight * noteScale;
 
-            vfxManager.ResetSize(laneHeight);
-            comboText.ResetSize(scanHeight);
+            vfxAndComboText.ResetSize(laneHeight, scanHeight);
         }
 
         private void Update()
@@ -128,18 +133,21 @@ namespace ThemeApi
             // Spawn VFX and combo on beat 2
             if (beat >= bps / 2 && prevFrameBeat < bps / 2)
             {
-                vfxManager.SpawnOneShotVFX(noteAnchor, judgement);
-                comboText.Show(noteImage, judgement, fever, combo);
+                vfxAndComboText.SpawnOneShotVfx(noteAnchor, judgement);
+                vfxAndComboText.ShowComboText(noteImage, judgement, fever, combo);
             }
             prevFrameBeat = beat;
+
+            // Update VFX and combo text
+            vfxAndComboText.Update();
+            vfxAndComboText.ApplyAlpha();
         }
 
         public void Conclude()
         {
             previewBg.RemoveFromHierarchy();
             stopwatch.Stop();
-            vfxManager.Dispose();
-            comboText.Hide();
+            vfxAndComboText.Dispose();
 
             running = false;
         }

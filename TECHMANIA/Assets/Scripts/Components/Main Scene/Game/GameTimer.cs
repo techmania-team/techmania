@@ -133,10 +133,9 @@ public class GameTimer
         if (!string.IsNullOrEmpty(
             pattern.patternMetadata.backingTrack))
         {
-            // Back up by 0.1s to make sure patternStartTime
-            // is strictly less than 0.
+            
             patternStartTime = Mathf.Min(
-                patternStartTime, -0.1f);
+                patternStartTime);
             patternEndTime = Mathf.Max(
                 patternEndTime, backingTrackLength);
         }
@@ -144,14 +143,14 @@ public class GameTimer
             pattern.patternMetadata.bga) &&
             pattern.patternMetadata.waitForEndOfBga)
         {
-            // Back up by 0.1s to make sure patternStartTime
-            // is strictly less than bgaOffset.
             patternStartTime = Mathf.Min(patternStartTime,
-                (float)pattern.patternMetadata.bgaOffset
-                - 0.1f);
+                (float)pattern.patternMetadata.bgaOffset);
             patternEndTime = Mathf.Max(patternEndTime,
                 bgaLength + (float)pattern.patternMetadata.bgaOffset);
         }
+        // Back up by 0.1s to make sure patternStartTime
+        // is strictly less than 0.
+        patternStartTime = Mathf.Min(patternStartTime, -0.1f);
 
         // Calculate first and last scan.
         firstScan = Mathf.FloorToInt(

@@ -104,7 +104,7 @@ gamePanel.Initialize = function()
     local function InitializeGameSetup()
         tm.gameSetup.bgContainer = panel.Q("bg-layer")
         tm.gameSetup.gameContainer = panel.Q("game-layer")
-        tm.gameSetup.vfxComboContainer = nil  -- Unused
+        tm.gameSetup.vfxComboContainer = panel.Q("vfx-combo-layer")
         tm.gameSetup.assistTick = tm.io.LoadAudioFromTheme("Assets/UI/SFX/Assist Tick.wav")
 
         tm.gameSetup.onLoadProgress = function(progress)
@@ -650,7 +650,6 @@ gamePanel.Pause = function(silent)  -- boolean
     tm.game.Pause()
     FadeInDialog(bg, menu)
     pauseMenu.Show()
-    tm.HideVfxAndComboText()
 end
 
 gamePanel.Unpause = function()
@@ -659,7 +658,6 @@ gamePanel.Unpause = function()
     FadeOutDialog(bg, menu, function()
         -- Only unpause after the menu has fully faded out.
         tm.game.Unpause()
-        tm.RestoreVfxAndComboText()
     end)
 end
 

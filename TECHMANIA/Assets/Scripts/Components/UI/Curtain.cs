@@ -27,7 +27,7 @@ public class Curtain : MonoBehaviour
 
     public static void DrawCurtainThenGoToScene(string name)
     {
-        Curtain c = FindObjectOfType<Curtain>();
+        Curtain c = FindAnyObjectByType<Curtain>();
         if (c.transitioning) return;
         c.transitioning = true;
         c.StopAllCoroutines();
@@ -36,7 +36,7 @@ public class Curtain : MonoBehaviour
 
     public static void DrawCurtainThenQuit()
     {
-        Curtain c = FindObjectOfType<Curtain>();
+        Curtain c = FindAnyObjectByType<Curtain>();
         if (c.transitioning) return;
         c.transitioning = true;
         c.StopAllCoroutines();

@@ -11,7 +11,7 @@ public class InputDialog : ModalDialog
     {
         if (instance == null)
         {
-            instance = FindObjectOfType<Canvas>().GetComponentInChildren<InputDialog>(includeInactive: true);
+            instance = FindAnyObjectByType<Canvas>().GetComponentInChildren<InputDialog>(includeInactive: true);
         }
         return instance;
     }

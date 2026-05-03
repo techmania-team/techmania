@@ -9,6 +9,7 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
   <assembly fullname="UnityEngine.CoreModule">
     <type fullname="UnityEngine.Rect" preserve="all" />
     <type fullname="UnityEngine.Texture2D" preserve="all" />
+    <type fullname="UnityEngine.Material" preserve="all" />
     <type fullname="UnityEngine.Time" preserve="all" />
     <type fullname="UnityEngine.Screen" preserve="all" />
     <type fullname="UnityEngine.Resolution" preserve="all" />
@@ -57,11 +58,16 @@ Refer to comments in ThemeApi.ScriptSession.Prepare for more details.
     <type fullname="UnityEngine.UIElements.Scale" preserve="all" />
     <type fullname="UnityEngine.UIElements.StyleTransformOrigin" preserve="all" />
     <type fullname="UnityEngine.UIElements.TransformOrigin" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleMaterialDefinition" preserve="all" />
+    <type fullname="UnityEngine.UIElements.MaterialDefinition" preserve="all" />
+    <type fullname="UnityEngine.UIElements.StyleEnum`1" preserve="all" />
     <type fullname="UnityEngine.UIElements.Painter2D" preserve="all" />
     <type fullname="UnityEngine.UIElements.VectorImage" preserve="all" />
     <type fullname="UnityEngine.UIElements.StyleKeyword" preserve="all" />
     <type fullname="UnityEngine.UIElements.LengthUnit" preserve="all" />
     <type fullname="UnityEngine.UIElements.AngleUnit" preserve="all" />
+    <type fullname="UnityEngine.UIElements.Overflow" preserve="all" />
+    <type fullname="UnityEngine.UIElements.FilterFunctionType" preserve="all" />
     <type fullname="UnityEngine.UIElements.LineCap" preserve="all" />
     <type fullname="UnityEngine.UIElements.LineJoin" preserve="all" />
     <type fullname="UnityEngine.UIElements.FillRule" preserve="all" />

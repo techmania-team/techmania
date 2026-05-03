@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ThemeApi;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -58,6 +59,8 @@ public class GameController : MonoBehaviour
     }
     public NoteTemplates noteTemplates;
     public VisualTreeAsset inputFeedbackTemplate;
+    public VisualTreeAsset vfxAndComboTemplate;
+    public VisualTreeAsset vfxLayerTemplate;
 
     private ThemeApi.GameSetup setup;
     private ThemeApi.GameState state;
@@ -70,13 +73,11 @@ public class GameController : MonoBehaviour
     private NoteManager noteManager;
     private GameInputManager input;
     private InputFeedbackManager inputFeedback;
+    private VfxAndComboText vfxAndComboText;
     // Accessible from Lua via GameState.setlist.scoreKeeper
     public SetlistScoreKeeper setlistScoreKeeper { get; private set; }
     // Accessible from Lua via GameState.scoreKeeper
     public ScoreKeeper scoreKeeper { get; private set; }
-
-    public VFXManager vfxManager;
-    public ComboText comboText;
 
     [HideInInspector]
     public bool autoPlay;
@@ -478,9 +479,10 @@ public class GameController : MonoBehaviour
             setup.patternAfterModifier.patternMetadata);
 
         // Prepare for VFX and combo text.
-        vfxManager.Prepare(layout.laneHeight, timer, layout);
-        comboText.ResetSize(layout.scanHeight);
-        comboText.Hide();
+        vfxAndComboText = new VfxAndComboText(vfxAndComboTemplate, vfxLayerTemplate,
+            setup.vfxComboContainer.inner, timer, layout);
+        vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
+        vfxAndComboText.HideComboText();
 
         // Initialize scores.
         scoreKeeper = new ScoreKeeper(setup, state);
@@ -615,8 +617,10 @@ public class GameController : MonoBehaviour
         layout?.Dispose();
         noteManager?.Dispose();
         input?.Dispose();
-        vfxManager.Dispose();
-        comboText.Hide();
+        vfxAndComboText?.Dispose();
+
+        Resources.UnloadUnusedAssets();
+        ScriptSession.session.DoString("collectgarbage()");
     }
     #endregion
 
@@ -703,8 +707,7 @@ public class GameController : MonoBehaviour
     {
         layout.ResetSize();
         noteManager.ResetSize();
-        vfxManager.ResetSize(layout.laneHeight);
-        comboText.ResetSize(layout.scanHeight);
+        vfxAndComboText.ResetSize(layout.laneHeight, layout.scanHeight);
     }
 
     public void ActivateFever()
@@ -739,7 +742,7 @@ public class GameController : MonoBehaviour
         noteManager.JumpToScan(timer.intScan, timer.intPulse);
         input.JumpToScan();
         scoreKeeper.JumpToScan();
-        vfxManager.JumpToScan();
+        vfxAndComboText.JumpToScan();
 
         // Play keysounds before the current time if they last enough.
         keysoundPlayer.StopAll();
@@ -767,6 +770,7 @@ public class GameController : MonoBehaviour
             // Input feedbacks should work through pauses as fingers
             // may enter and leave during a pause.
             inputFeedback.Update(timer.scan);
+            vfxAndComboText.ApplyAlpha();
         }
         else if (state.state == ThemeApi.GameState.State.Ongoing)
         {
@@ -777,6 +781,8 @@ public class GameController : MonoBehaviour
             input.Update();
             inputFeedback.Update(timer.scan);
             scoreKeeper.UpdateFever();
+            vfxAndComboText.Update();
+            vfxAndComboText.ApplyAlpha();
 
             CheckForStageFailed();
             CheckForStageClear();
@@ -897,7 +903,7 @@ public class GameController : MonoBehaviour
                     input.RegisterOngoingNote(elements, 
                         judgementAndTimeDifference);
                     elements.SetOngoing();
-                    vfxManager.SpawnOngoingVFX(elements, judgement);
+                    vfxAndComboText.SpawnOngoingVfx(elements, judgement);
                 }
                 break;
             default:
@@ -921,8 +927,8 @@ public class GameController : MonoBehaviour
 
         noteManager.ResolveNote(elements);
         scoreKeeper.ResolveNote(elements.note.type, judgement);
-        vfxManager.SpawnResolvedVFX(elements, judgement);
-        comboText.Show(elements.noteImage, judgement, scoreKeeper);
+        vfxAndComboText.SpawnResolvedVfx(elements, judgement);
+        vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
         elements.Resolve();
 
         setup.onNoteResolved?.Function?.Call(elements.note,
@@ -974,7 +980,7 @@ public class GameController : MonoBehaviour
             NoteElements elements = pair.Key;
             Judgement judgement = pair.Value.judgement;
             scoreKeeper.IncrementCombo();
-            comboText.Show(elements.noteImage, judgement, scoreKeeper);
+            vfxAndComboText.ShowComboText(elements.noteImage, judgement, scoreKeeper);
 
             setup.onComboTick?.Function.Call(scoreKeeper.currentCombo);
         }

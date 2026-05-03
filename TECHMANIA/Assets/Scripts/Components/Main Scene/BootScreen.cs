@@ -256,6 +256,7 @@ public class BootScreen : MonoBehaviour
             messageDialog.Show($"{L10n.GetString("theme_error_api_not_supported")}\n\n{L10n.GetString("theme_error_instruction")}", () => QuitGame());
             yield break;
         }
+        // TODO: also catch other exceptions to let the user contact theme maker?
 
         // Start debug server if running in Unity editor.
         if (Application.isEditor)

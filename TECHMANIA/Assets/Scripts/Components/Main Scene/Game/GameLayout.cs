@@ -104,19 +104,21 @@ public class GameLayout
         bottomHalf = makeHalfElements(layoutContainer.Q(
             "bottom-half"));
 
-        // While UI Toolkit doesn't support shaders, we can't
-        // draw countdown elements that request the additive shader.
         if (GlobalResource.gameUiSkin.scanCountdownBackground
             .additiveShader)
         {
-            topHalf.countdownBg.style.display = DisplayStyle.None;
-            bottomHalf.countdownBg.style.display = DisplayStyle.None;
+            topHalf.countdownBg.style.unityMaterial = 
+                TopLevelObjects.instance.additiveShaderMaterial;
+            bottomHalf.countdownBg.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
         }
         if (GlobalResource.gameUiSkin.scanCountdownNumbers
             .additiveShader)
         {
-            topHalf.countdownNum.style.display = DisplayStyle.None;
-            bottomHalf.countdownNum.style.display = DisplayStyle.None;
+            topHalf.countdownNum.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
+            bottomHalf.countdownNum.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
         }
     }
 
@@ -541,7 +543,7 @@ public class GameLayout
             y * gameContainerHeight);
     }
 
-    public float GetViewportXOfScanline(int intScan)
+    public float GetWorldXOfScanline(int intScan)
     {
         if (!intScanToElements.ContainsKey(intScan)) return 0f;
 
@@ -556,6 +558,12 @@ public class GameLayout
             left);
         float worldX = layoutContainer.LocalToWorld(
             new Vector2(localX, 0f)).x;
-        return worldX / rootElement.contentRect.width;
+        return worldX;
+    }
+
+    // Delete with LegacyVfxManager
+    public float GetViewportXOfScanline(int intScan)
+    {
+        return GetWorldXOfScanline(intScan) / rootElement.contentRect.width;
     }
 }

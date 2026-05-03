@@ -5,6 +5,7 @@ using MoonSharp.Interpreter;
 using UnityEngine.UIElements;
 using System.Reflection;
 using System;
+using UnityEngine.Experimental.AI;
 
 namespace ThemeApi
 {
@@ -57,7 +58,17 @@ namespace ThemeApi
 
         public IResolvedStyle resolvedStyle => inner.resolvedStyle;
         public IStyle style => inner.style;
-        public ITransform transform => inner.transform;
+#pragma warning disable CS0618
+        // Deprecated, but kept for Theme API backwards compatibility
+        public ITransform transform
+        {
+            get
+            {
+                Debug.LogWarning("VisualElementWrap.transform is deprecated. You can query translation, rotation and scale via style.");
+                return inner.transform;
+            }
+        }
+#pragma warning restore CS0618
 
         public Rect contentRect => inner.contentRect;
         public Rect localBound => inner.localBound;
@@ -520,6 +531,125 @@ namespace ThemeApi
             set 
             {
                 style.backgroundImage = new StyleBackground(value);
+            }
+        }
+
+        public VectorImage backgroundSvg
+        {
+            get { return style.backgroundImage.value.vectorImage; }
+            set
+            {
+                style.backgroundImage = new StyleBackground(value);
+            }
+        }
+
+        public bool additiveShader
+        {
+            get
+            {
+                return style.unityMaterial.value.material ==
+                    TopLevelObjects.instance.additiveShaderMaterial;
+            }
+            set
+            {
+                style.unityMaterial = value ?
+                    TopLevelObjects.instance.additiveShaderMaterial :
+                    null;
+            }
+        }
+
+        // In Luau, this is an array of arrays of {function type, parameter}.
+        public DynValue filter
+        {
+            // style.filter seems to always return a StyleList whose keyword and value
+            // are null. Maybe this will be fixed in a future Unity version? Until then
+            // this getter will return nil.
+            get
+            {
+                StyleList<FilterFunction> styleList = style.filter;
+                if (styleList == null)
+                {
+                    return DynValue.Nil;
+                }
+                List<FilterFunction> list = styleList.value;
+                DynValue returnValue = DynValue.NewTable(ScriptSession.session);
+                foreach (FilterFunction f in styleList.value)
+                {
+                    DynValue array = DynValue.NewTable(ScriptSession.session);
+                    array.Table.Append(DynValue.FromObject(ScriptSession.session, f.type));
+                    if (f.parameterCount > 0)
+                    {
+                        FilterParameter parameter = f.GetParameter(0);
+                        switch (parameter.type)
+                        {
+                            case FilterParameterType.Float:
+                                array.Table.Append(DynValue.FromObject(
+                                    ScriptSession.session, parameter.floatValue));
+                                break;
+                            case FilterParameterType.Color:
+                                array.Table.Append(DynValue.FromObject(
+                                    ScriptSession.session, parameter.colorValue));
+                                break;
+                        }
+                    }
+                    returnValue.Table.Append(array);
+                }
+                return returnValue;
+            }
+            set
+            {
+                List<FilterFunction> filterFunctions = new List<FilterFunction>();
+                if (value.Type != DataType.Table)
+                {
+                    Debug.LogError("VisualElementWrap.filter's setter expects a table of tables.");
+                    return;
+                }
+                foreach (DynValue v in value.Table.Values)
+                {
+                    if (v.Type != DataType.Table)
+                    {
+                        Debug.LogError("VisualElementWrap.filter's setter expects a table of tables.");
+                        return;
+                    }
+
+                    DynValue element1 = v.Table.Get(1);
+                    if (element1.Type != DataType.UserData ||
+                        element1.UserData.Object.GetType() != typeof(FilterFunctionType))
+                    {
+                        Debug.LogError("The first element of each filter function array must be a FilterFunctionType.");
+                        return;
+                    }
+                    FilterFunctionType type = (FilterFunctionType)element1.UserData.Object;
+                    if (type == FilterFunctionType.Custom)
+                    {
+                        Debug.LogError("The Theme API does not support custom filter functions.");
+                        return;
+                    }
+
+                    DynValue element2 = v.Table.Get(2);
+                    bool isFloat = element2.Type == DataType.Number;
+                    bool isColor = element2.Type == DataType.UserData &&
+                        element2.UserData.Object.GetType() == typeof(Color);
+                    if (!isFloat && !isColor)
+                    {
+                        Debug.LogError("The second element of each filter function array must be either a number or a Color.");
+                        return;
+                    }
+
+                    FilterFunction f = new FilterFunction(type);
+                    if (isFloat)
+                    {
+                        float parameter = (float)element2.Number;
+                        f.AddParameter(new FilterParameter(parameter));
+                    }
+                    else if (isColor)
+                    {
+                        Color color = (Color)element2.UserData.Object;
+                        f.AddParameter(new FilterParameter(color));
+                    }
+                    filterFunctions.Add(f);
+                }
+                style.filter = new StyleList<FilterFunction>(filterFunctions);
             }
         }
         #endregion

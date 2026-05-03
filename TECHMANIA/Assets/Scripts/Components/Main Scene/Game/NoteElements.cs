@@ -188,6 +188,21 @@ public class NoteElements : INoteHolder
 
         TypeSpecificInitialize();
 
+        // Set up additive shader if specified.
+        TypeSpecificApplyAdditiveShader();
+        if (feverOverlay != null &&
+            GlobalResource.vfxSkin.feverOverlay.additiveShader)
+        {
+            feverOverlay.style.unityMaterial =
+                TopLevelObjects.instance.additiveShaderMaterial;
+        }
+        if (approachOverlay != null && 
+            GlobalResource.gameUiSkin.approachOverlay.additiveShader)
+        {
+            approachOverlay.style.unityMaterial = 
+                TopLevelObjects.instance.additiveShaderMaterial;
+        }
+
         // Set up initial alphaUpperBound.
         alphaUpperBound = 1f;
         if (!controlledExternally)
@@ -222,6 +237,11 @@ public class NoteElements : INoteHolder
     // For elements other than note head, fever overlay, approach
     // overlay and hitbox.
     protected virtual void TypeSpecificInitialize() { }
+
+    protected virtual void TypeSpecificApplyAdditiveShader()
+    {
+        // TODO: each subclass should override this
+    }
 
     // Takes care of note image, fever overlay and approach overlay.
     // Not hitbox; that's by InitializeHitbox, and called when

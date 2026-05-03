@@ -12,8 +12,8 @@ public class TopLevelObjects : MonoBehaviour
     public TrackSetupPanel trackSetupPanel;
     public PatternPanel patternPanel;
     public EditSetlistPanel editSetlistPanel;
-    public Canvas vfxComboCanvas;
     public EventSystem eventSystem;
+    public Material additiveShaderMaterial;
 
     public static TopLevelObjects instance { get; private set; }
 
